@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Conversation — Belanja di Toko</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#2A2150;
+    --navy-2:#4B4370;
+    --yellow:#F6C445;
+    --blue-bg:#DFF0FC;
+    --blue-text:#1C86D6;
+    --purple-bg:#EAE3FC;
+    --purple-text:#6D4FE0;
+    --gray-bg:#EDEBF7;
+    --gray-text:#5B5479;
+    --green:#3FAE5C;
+    --green-bg:#E7F7EC;
+    --red:#E2586B;
+    --bg:#FBFAFE;
+    --card-border:#ECE9F7;
+    --shadow: 0 10px 30px -12px rgba(42,33,80,0.18);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Nunito',sans-serif;
+    color:var(--navy);
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+    padding:20px 12px 60px;
+  }
+  .app{
+    width:100%;
+    max-width:640px;
+  }
+  /* ---- Top bar ---- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:6px 4px 18px;
+  }
+  .close-btn{
+    background:none;border:none;cursor:pointer;
+    font-size:22px;color:var(--navy);
+    width:32px;height:32px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;
+  }
+  .close-btn:hover{background:var(--gray-bg);}
+  .progress-track{
+    flex:1;
+    height:12px;
+    background:var(--gray-bg);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--yellow);
+    border-radius:99px;
+    transition:width .35s ease;
+  }
+  .counter{
+    font-weight:800;
+    font-size:15px;
+    color:var(--navy-2);
+    min-width:40px;
+    text-align:right;
+  }
+  .translate-toggle{
+    background:none;border:none;cursor:pointer;
+    color:var(--navy);
+    font-weight:800;
+    font-size:16px;
+    width:32px;height:32px;
+    border-radius:8px;
+  }
+  .translate-toggle.off{color:#B9B4CE;}
+  .translate-toggle:hover{background:var(--gray-bg);}
+  hr.divider{border:none;border-top:1px solid var(--card-border);margin:0 0 22px;}
+
+  /* ---- Speaker row ---- */
+  .speaker{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .avatar{
+    width:48px;height:48px;border-radius:50%;
+    background:#FBD7B4;
+    position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+    flex-shrink:0;
+  }
+  .avatar::before{
+    content:"";
+    position:absolute;top:-12px;left:-6px;right:-6px;height:26px;
+    background:#4CAF6D;
+    border-radius:0 0 60% 60% / 0 0 90% 90%;
+  }
+  .speaker-name{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    color:var(--navy-2);
+    font-size:15px;
+  }
+
+  /* ---- Bubble ---- */
+  .bubble{
+    background:#fff;
+    border:1px solid var(--card-border);
+    border-radius:22px;
+    padding:22px 22px 20px;
+    box-shadow:var(--shadow);
+  }
+  .target-en{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:22px;
+    line-height:1.35;
+    margin:0 0 8px;
+  }
+  .target-id{
+    font-style:italic;
+    color:var(--gray-text);
+    font-size:15px;
+    margin:0 0 20px;
+    transition:opacity .2s ease;
+  }
+  .target-id.hidden{display:none;}
+
+  /* ---- Mic panel (before attempt) ---- */
+  .mic-panel{
+    background:var(--gray-bg);
+    border-radius:18px;
+    padding:30px 20px;
+    text-align:center;
+  }
+  .mic-btn{
+    width:78px;height:78px;
+    border-radius:50%;
+    border:none;
+    background:var(--navy);
+    color:#fff;
+    font-size:30px;
+    cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 20px -6px rgba(42,33,80,0.45);
+    transition:transform .15s ease;
+  }
+  .mic-btn:hover{transform:scale(1.04);}
+  .mic-btn.recording{
+    background:var(--red);
+    animation:pulse 1.1s ease-in-out infinite;
+  }
+  .mic-btn:disabled{background:#C9C4DC;cursor:not-allowed;box-shadow:none;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(226,88,107,.45);}
+    70%{box-shadow:0 0 0 16px rgba(226,88,107,0);}
+    100%{box-shadow:0 0 0 0 rgba(226,88,107,0);}
+  }
+  .mic-hint{
+    margin-top:14px;
+    font-weight:700;
+    font-size:14px;
+    color:var(--navy-2);
+  }
+  .mic-note{
+    margin-top:6px;
+    font-size:12.5px;
+    color:#8B84A6;
+  }
+
+  /* ---- Result panel ---- */
+  .result-panel{
+    background:var(--gray-bg);
+    border-radius:18px;
+    padding:24px 20px 20px;
+    text-align:center;
+  }
+  .stars{
+    font-size:30px;
+    letter-spacing:6px;
+    margin-bottom:6px;
+  }
+  .star-empty{color:#D9D5E8;}
+  .star-filled{color:var(--yellow);}
+  .feedback-text{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:18px;
+    margin:2px 0 16px;
+  }
+  .word-feedback{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:17px;
+    line-height:1.9;
+    margin-bottom:20px;
+  }
+  .word-feedback span{
+    display:inline-block;
+    margin:0 4px;
+    padding-bottom:2px;
+    border-bottom:3px solid transparent;
+  }
+  .word-feedback span.ok{color:var(--green);border-color:var(--green);}
+  .word-feedback span.miss{color:#B9B4CE;border-color:#D9D5E8;text-decoration:line-through;}
+  .heard-line{
+    font-size:13px;
+    color:#8B84A6;
+    margin:-10px 0 18px;
+  }
+
+  .btn-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .pill{
+    border:none;
+    border-radius:99px;
+    padding:12px 18px;
+    font-weight:800;
+    font-size:14.5px;
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:'Nunito',sans-serif;
+  }
+  .pill:disabled{opacity:.45;cursor:not-allowed;}
+  .pill-blue{background:var(--blue-bg);color:var(--blue-text);}
+  .pill-purple{background:var(--purple-bg);color:var(--purple-text);}
+  .pill-navy{background:var(--navy);color:#fff;}
+  .pill-gray{background:var(--gray-bg);color:var(--navy-2);border:1px solid #E1DCF2;}
+  .pill-gray.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+  .toast{
+    text-align:center;
+    font-size:13.5px;
+    color:var(--red);
+    font-weight:700;
+    min-height:18px;
+    margin-top:4px;
+  }
+  .warning-banner{
+    background:#FFF4E5;
+    color:#8A5A00;
+    border:1px solid #FCD9A0;
+    border-radius:14px;
+    padding:12px 16px;
+    font-size:13px;
+    font-weight:700;
+    line-height:1.55;
+    margin-bottom:16px;
+  }
+  .warning-banner code{
+    background:rgba(0,0,0,0.06);
+    padding:1px 6px;
+    border-radius:6px;
+    font-weight:700;
+  }
+
+  /* ---- Completion screen ---- */
+  .done-card{
+    background:#fff;
+    border:1px solid var(--card-border);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    padding:40px 24px;
+    text-align:center;
+  }
+  .done-card h2{
+    font-family:'Baloo 2',sans-serif;
+    font-size:26px;
+    margin:14px 0 6px;
+  }
+  .done-card p{color:var(--gray-text);margin:0 0 22px;}
+  .done-score{
+    font-family:'Baloo 2',sans-serif;
+    font-size:40px;
+    color:var(--navy);
+    font-weight:800;
+  }
+  .done-score span{color:var(--yellow);}
+
+  @media (prefers-reduced-motion: reduce){
+    .mic-btn.recording{animation:none;}
+  }
+  .speed-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:0 0 20px;
+  }
+  .speed-label{
+    font-size:12.5px;
+    font-weight:800;
+    color:#8B84A6;
+  }
+  .speed-control{
+    display:inline-flex;
+    background:var(--gray-bg);
+    border-radius:99px;
+    padding:4px;
+    gap:2px;
+  }
+  .speed-btn{
+    border:none;
+    background:transparent;
+    color:var(--gray-text);
+    font-weight:800;
+    font-size:12.5px;
+    padding:6px 11px;
+    border-radius:99px;
+    cursor:pointer;
+    font-family:'Nunito',sans-serif;
+  }
+  .speed-btn.active{background:var(--navy);color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div id="secureWarning"></div>
+  <div class="topbar">
+    <button class="close-btn" id="closeBtn" aria-label="Tutup latihan">✕</button>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="counter" id="counter">1/10</div>
+    <button class="translate-toggle" id="translateToggle" aria-label="Tampilkan/sembunyikan terjemahan">文A</button>
+  </div>
+  <hr class="divider">
+
+  <div class="speed-row" id="speedRow"></div>
+
+  <div id="exerciseArea"></div>
+
+</div>
+
+<script>
+(function(){
+
+  // ---------- Content ----------
+  var conversation = [
+    { en: "Good morning! What would you like to buy?", id: "Selamat pagi! Mau beli apa?" },
+    { en: "We have fresh bread and coffee today.", id: "Kami punya roti segar dan kopi hari ini." },
+    { en: "How many would you like?", id: "Kamu mau berapa banyak?" },
+    { en: "That will be five dollars, please.", id: "Totalnya lima dolar ya." },
+    { en: "Do you want a bag for that?", id: "Mau pakai kantong plastik?" },
+    { en: "Here is your change, thank you.", id: "Ini kembaliannya, terima kasih." },
+    { en: "Please come again tomorrow.", id: "Silakan datang lagi besok." },
+    { en: "Have a nice day!", id: "Semoga harimu menyenangkan!" },
+    { en: "Is there anything else you need?", id: "Ada lagi yang kamu butuhkan?" },
+    { en: "Thank you for shopping with us.", id: "Terima kasih sudah belanja di sini." }
+  ];
+
+  var TOTAL = conversation.length;
+
+  // ---------- State ----------
+  var idx = 0;
+  var showTranslation = true;
+  var starsEarned = [];       // stars per turn, filled once scored
+  var recordedBlobUrl = null;
+  var mediaRecorder = null;
+  var recordingStream = null; // persistent mic stream, reused across turns so the browser only prompts once
+  var recognizer = null;
+  var recognizerRunning = false;  // true while the single shared recognizer session is live
+  var awaitingResult = false;     // true only during the turn we actually want to score
+  var isRecording = false;
+  var SPEEDS = [0.5, 0.75, 1, 1.25, 1.5];
+  var playbackRate = 1;
+
+  var SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var speechSupported = !!SpeechRecognitionCtor;
+  var ttsSupported = 'speechSynthesis' in window;
+
+  // ---------- DOM refs ----------
+  var exerciseArea = document.getElementById('exerciseArea');
+  var progressFill = document.getElementById('progressFill');
+  var counterEl = document.getElementById('counter');
+  var translateToggle = document.getElementById('translateToggle');
+  var closeBtn = document.getElementById('closeBtn');
+  var secureWarningEl = document.getElementById('secureWarning');
+
+  if (!window.isSecureContext){
+    secureWarningEl.innerHTML =
+      '<div class="warning-banner">⚠️ <b>Halaman ini dibuka lewat <code>file://</code></b> — dan di mode ini Chrome sengaja <b>tidak menyimpan izin mikrofon</b>, jadi pop-up &ldquo;Allow&rdquo; bisa muncul berulang. Ini batasan browser, bukan bisa dihilangkan 100% lewat kode.<br><br>' +
+      '✅ <b>Solusi:</b> jalankan lewat local server supaya izin cukup sekali. Di folder project:<br>' +
+      '<code>npx serve .</code> lalu buka <code>http://localhost:3000/daily-conversation-asr.html</code><br>' +
+      '(atau <code>python3 -m http.server</code> → <code>http://localhost:8000</code>). Setelah pakai <code>localhost</code>/HTTPS, klik <b>Allow</b> sekali dan tidak akan muncul lagi.</div>';
+  }
+
+  translateToggle.addEventListener('click', function(){
+    showTranslation = !showTranslation;
+    translateToggle.classList.toggle('off', !showTranslation);
+    render();
+  });
+
+  closeBtn.addEventListener('click', function(){
+    if (idx === 0 || confirm('Keluar dari latihan? Progres akan hilang.')) {
+      idx = 0; starsEarned = []; recordedBlobUrl = null;
+      render();
+    }
+  });
+
+  window.addEventListener('beforeunload', function(){
+    if (recordingStream) recordingStream.getTracks().forEach(function(t){ t.stop(); });
+    if (recognizer && recognizerRunning){ try { recognizer.stop(); } catch(e){} }
+  });
+
+  // ---------- Playback speed ----------
+  function renderSpeedControl(){
+    var el = document.getElementById('speedRow');
+    el.innerHTML =
+      '<span class="speed-label">Kecepatan</span>' +
+      '<div class="speed-control">' +
+        SPEEDS.map(function(s){
+          return '<button class="speed-btn' + (s === playbackRate ? ' active' : '') + '" data-speed="' + s + '">' + s + 'x</button>';
+        }).join('') +
+      '</div>';
+    Array.prototype.forEach.call(el.querySelectorAll('.speed-btn'), function(btn){
+      btn.addEventListener('click', function(){
+        playbackRate = parseFloat(btn.getAttribute('data-speed'));
+        renderSpeedControl();
+      });
+    });
+  }
+
+  // Reuse a single mic permission/stream for the whole session instead of
+  // calling getUserMedia fresh every turn — that's what was causing the
+  // browser to re-show the "This file wants to use your microphone" prompt
+  // on every attempt.
+  function ensureMicStream(onReady, onError){
+    if (recordingStream && recordingStream.active){
+      onReady(recordingStream);
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
+      recordingStream = stream;
+      onReady(stream);
+    }).catch(function(err){
+      if (onError) onError(err);
+    });
+  }
+
+  // ---------- Rule-based scoring ----------
+  function normalize(str){
+    return str.toLowerCase()
+      .replace(/[^a-z0-9' ]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean);
+  }
+
+  function levenshtein(a, b){
+    var m = a.length, n = b.length;
+    var dp = [];
+    for (var i = 0; i <= m; i++){ dp.push([i]); }
+    for (var j = 0; j <= n; j++){ dp[0][j] = j; }
+    for (i = 1; i <= m; i++){
+      for (j = 1; j <= n; j++){
+        var cost = a[i-1] === b[j-1] ? 0 : 1;
+        dp[i][j] = Math.min(
+          dp[i-1][j] + 1,
+          dp[i][j-1] + 1,
+          dp[i-1][j-1] + cost
+        );
+      }
+    }
+    return dp[m][n];
+  }
+
+  function fuzzyMatch(a, b){
+    if (a === b) return true;
+    if (Math.min(a.length, b.length) <= 2) return false;
+    return levenshtein(a, b) <= 1;
+  }
+
+  function scoreTranscript(targetSentence, transcript){
+    var targetWords = normalize(targetSentence);
+    var saidWords = normalize(transcript);
+    var matched = targetWords.map(function(tw){
+      return saidWords.some(function(sw){ return fuzzyMatch(tw, sw); });
+    });
+    var matchCount = matched.filter(Boolean).length;
+    var ratio = targetWords.length ? matchCount / targetWords.length : 0;
+    var stars = ratio >= 0.9 ? 3 : ratio >= 0.6 ? 2 : ratio >= 0.3 ? 1 : 0;
+    var feedbackText =
+      stars === 3 ? 'Wow, kamu juara!' :
+      stars === 2 ? 'Bagus, terus berlatih!' :
+      stars === 1 ? 'Lumayan, coba sekali lagi ya' :
+      'Yuk dengarkan lagi & coba ulang';
+    return { targetWords: targetWords, matched: matched, ratio: ratio, stars: stars, feedbackText: feedbackText };
+  }
+
+  // ---------- Rendering ----------
+  function render(){
+    progressFill.style.width = (idx / TOTAL * 100) + '%';
+    counterEl.textContent = Math.min(idx + 1, TOTAL) + '/' + TOTAL;
+
+    if (idx >= TOTAL){
+      renderDone();
+      return;
+    }
+    renderTurn();
+  }
+
+  function renderTurn(){
+    recordedBlobUrl = null;
+    var turn = conversation[idx];
+
+    exerciseArea.innerHTML =
+      '<div class="speaker">' +
+        '<div class="avatar">🙂</div>' +
+        '<div class="speaker-name">Penjual</div>' +
+      '</div>' +
+      '<div class="bubble">' +
+        '<p class="target-en">"' + turn.en + '"</p>' +
+        '<p class="target-id' + (showTranslation ? '' : ' hidden') + '">"' + turn.id + '"</p>' +
+        '<div id="panelSlot"></div>' +
+        '<div class="toast" id="toast"></div>' +
+      '</div>';
+
+    renderMicPanel();
+  }
+
+  function renderMicPanel(){
+    var slot = document.getElementById('panelSlot');
+    slot.innerHTML =
+      '<div class="mic-panel">' +
+        '<div class="btn-row" style="margin-bottom:18px;">' +
+          '<button class="pill pill-blue" id="listenBtn" ' + (ttsSupported ? '' : 'disabled') + '>🔊 Dengarkan</button>' +
+        '</div>' +
+        '<button class="mic-btn" id="micBtn" ' + (speechSupported ? '' : 'disabled') + '>🎤</button>' +
+        '<div class="mic-hint" id="micHint">' +
+          (speechSupported ? 'Ucapkan kalimat di atas' : 'Fitur rekam suara tidak didukung di browser ini') +
+        '</div>' +
+        (speechSupported ? '' : '<div class="mic-note">Coba buka halaman ini lewat Chrome atau Edge.</div>') +
+      '</div>';
+
+    var listenBtn = document.getElementById('listenBtn');
+    if (listenBtn) listenBtn.addEventListener('click', function(){ playOriginal(conversation[idx].en); });
+
+    var micBtn = document.getElementById('micBtn');
+    if (micBtn && speechSupported){
+      micBtn.addEventListener('click', handleMicClick);
+    }
+  }
+
+  function handleMicClick(){
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      setToast('Browser ini tidak mendukung akses mikrofon.');
+      return;
+    }
+    // Proactively check permission state where supported (Chrome/Edge).
+    // If it's already denied, the browser will NOT show a popup again —
+    // so we skip straight to a manual-fix guide instead of erroring.
+    if (navigator.permissions && navigator.permissions.query){
+      navigator.permissions.query({ name: 'microphone' }).then(function(status){
+        if (status.state === 'denied'){
+          renderBlockedGuide();
+        } else {
+          startRecording(); // 'granted' or 'prompt' — this call itself triggers the native popup if needed
+        }
+      }).catch(function(){
+        startRecording(); // Permissions API unsupported for mic (e.g. Firefox) — just try directly
+      });
+    } else {
+      startRecording();
+    }
+  }
+
+  function renderBlockedGuide(){
+    var slot = document.getElementById('panelSlot');
+    slot.innerHTML =
+      '<div class="mic-panel">' +
+        '<div style="font-size:34px;">🔒</div>' +
+        '<div class="mic-hint" style="margin-top:10px;">Mikrofon diblokir untuk halaman ini</div>' +
+        '<div class="mic-note" style="max-width:320px;margin:8px auto 0;line-height:1.6;">' +
+          'Browser tidak akan menampilkan pop-up izin lagi karena sebelumnya sudah ditolak. Klik ikon 🔒 di sebelah kiri alamat website → cari <b>Mikrofon</b> → ubah ke <b>Allow</b> → muat ulang halaman.' +
+        '</div>' +
+        '<div class="btn-row" style="margin-top:18px;">' +
+          '<button class="pill pill-navy" id="recheckBtn">Sudah saya izinkan, coba lagi</button>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('recheckBtn').addEventListener('click', handleMicClick);
+  }
+
+  function setToast(msg){
+    var t = document.getElementById('toast');
+    if (t) t.textContent = msg || '';
+  }
+
+  function renderResult(result, transcript){
+    starsEarned[idx] = result.stars;
+    var slot = document.getElementById('panelSlot');
+
+    var starsHtml = '';
+    for (var s = 0; s < 3; s++){
+      starsHtml += '<span class="' + (s < result.stars ? 'star-filled' : 'star-empty') + '">★</span>';
+    }
+
+    var wordsHtml = result.targetWords.map(function(w, i){
+      var cls = result.matched[i] ? 'ok' : 'miss';
+      return '<span class="' + cls + '">' + w + '</span>';
+    }).join('');
+
+    slot.innerHTML =
+      '<div class="result-panel">' +
+        '<div class="stars">' + starsHtml + '</div>' +
+        '<p class="feedback-text">' + result.feedbackText + '</p>' +
+        '<div class="word-feedback">' + wordsHtml + '</div>' +
+        '<p class="heard-line">Terdengar: &ldquo;' + (transcript || '-') + '&rdquo;</p>' +
+        '<div class="btn-row">' +
+          '<button class="pill pill-blue" id="playOriginal">🔊 Dengarkan</button>' +
+          '<button class="pill pill-purple" id="playMine" ' + (recordedBlobUrl ? '' : 'disabled') + '>▶ Suaramu</button>' +
+        '</div>' +
+        '<div class="btn-row">' +
+          '<button class="pill pill-navy" id="retryBtn">↻ Coba Lagi</button>' +
+          '<button class="pill pill-gray" id="nextBtn">Lanjut</button>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById('playOriginal').addEventListener('click', function(){ playOriginal(conversation[idx].en); });
+    document.getElementById('playMine').addEventListener('click', playMine);
+    document.getElementById('retryBtn').addEventListener('click', renderMicPanel);
+    document.getElementById('nextBtn').addEventListener('click', function(){ idx++; render(); });
+  }
+
+  function renderDone(){
+    var total = starsEarned.reduce(function(a, b){ return a + (b || 0); }, 0);
+    exerciseArea.innerHTML =
+      '<div class="done-card">' +
+        '<div style="font-size:44px;">🎉</div>' +
+        '<h2>Latihan selesai!</h2>' +
+        '<p>Kamu sudah menyelesaikan percakapan "Belanja di Toko"</p>' +
+        '<div class="done-score">' + total + '<span>/30</span> ⭐</div>' +
+        '<div class="btn-row" style="margin-top:24px;">' +
+          '<button class="pill pill-navy" id="restartBtn">Ulangi Latihan</button>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('restartBtn').addEventListener('click', function(){
+      idx = 0; starsEarned = []; render();
+    });
+  }
+
+  // ---------- Audio: TTS playback ----------
+  function playOriginal(text){
+    if (!ttsSupported) { setToast('Text-to-speech tidak didukung di browser ini'); return; }
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = playbackRate;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter);
+  }
+
+  function playMine(){
+    if (!recordedBlobUrl) return;
+    var audio = new Audio(recordedBlobUrl);
+    audio.playbackRate = playbackRate;
+    audio.play();
+  }
+
+  // ---------- Recording + recognition ----------
+  // Free the mic completely when a turn ends, so Chrome's red "recording"
+  // tab indicator only shows WHILE actually recording — not the whole session.
+  function releaseMic(){
+    if (mediaRecorder && mediaRecorder.state !== 'inactive'){
+      try { mediaRecorder.stop(); } catch(e){}
+    }
+    mediaRecorder = null;
+    if (recordingStream){
+      recordingStream.getTracks().forEach(function(t){ t.stop(); });
+      recordingStream = null;
+    }
+    if (recognizer && recognizerRunning){
+      try { recognizer.stop(); } catch(e){}
+    }
+  }
+
+  // Build the speech recognizer ONCE and reuse the instance. On a proper
+  // origin (localhost / HTTPS) the mic permission is remembered, so starting
+  // it again on the next turn does NOT re-prompt — while releasing it between
+  // turns keeps the recording indicator off when idle.
+  function getRecognizer(){
+    if (recognizer) return recognizer;
+    recognizer = new SpeechRecognitionCtor();
+    recognizer.lang = 'en-US';
+    recognizer.continuous = false;     // auto-stops after the phrase → mic freed each turn
+    recognizer.interimResults = false;
+    recognizer.maxAlternatives = 1;
+
+    recognizer.onstart = function(){ recognizerRunning = true; };
+
+    recognizer.onresult = function(event){
+      if (!awaitingResult) return;
+      var last = event.results[event.results.length - 1];
+      var transcript = last[0].transcript;
+      awaitingResult = false;
+      isRecording = false;
+      var result = scoreTranscript(conversation[idx].en, transcript);
+      renderResult(result, transcript);
+      // mic gets freed in onend, which fires right after this
+    };
+
+    recognizer.onerror = function(event){
+      awaitingResult = false;
+      isRecording = false;
+      var msg = 'Terjadi kendala rekaman, coba lagi';
+      if (event.error === 'no-speech') msg = 'Tidak ada suara terdengar, coba lagi';
+      else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') msg = 'Izin mikrofon ditolak. Cek ikon 🔒 di address bar lalu izinkan mikrofon.';
+      else if (event.error === 'audio-capture') msg = 'Mikrofon tidak ditemukan di perangkat ini.';
+      else if (event.error === 'network') msg = 'Koneksi internet bermasalah, coba lagi.';
+      setToast(msg);
+    };
+
+    recognizer.onend = function(){
+      recognizerRunning = false;
+      releaseMic();                    // frees mic → red indicator turns off
+      if (isRecording){ isRecording = false; renderMicPanel(); }
+    };
+
+    return recognizer;
+  }
+
+  function startRecording(){
+    if (isRecording || !speechSupported) return;
+    setToast('');
+    var micBtn = document.getElementById('micBtn');
+    var micHint = document.getElementById('micHint');
+    isRecording = true;
+    awaitingResult = true;
+    micBtn.classList.add('recording');
+    micHint.textContent = 'Mendengarkan... bicara sekarang';
+    recordedBlobUrl = null;
+
+    // Optional: record raw audio for "Suaramu".
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      ensureMicStream(function(stream){
+        var chunks = [];
+        try {
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.ondataavailable = function(e){ if (e.data.size > 0) chunks.push(e.data); };
+          mediaRecorder.onstop = function(){
+            var blob = new Blob(chunks, { type: 'audio/webm' });
+            recordedBlobUrl = URL.createObjectURL(blob);
+          };
+          mediaRecorder.start();
+        } catch (e){ mediaRecorder = null; }
+      }, function(){ mediaRecorder = null; });
+    }
+
+    // Primary: speech recognition for scoring.
+    try {
+      var rec = getRecognizer();
+      if (!recognizerRunning){ rec.start(); }
+    } catch (e){
+      if (!recognizerRunning){
+        isRecording = false;
+        awaitingResult = false;
+        releaseMic();
+        setToast('Browser tidak bisa menjalankan fitur rekam suara ini.');
+        renderMicPanel();
+      }
+    }
+  }
+
+  function finishRecording(){
+    isRecording = false;
+    awaitingResult = false;
+    releaseMic();
+  }
+
+  // ---------- Init ----------
+  renderSpeedControl();
+  render();
+
+})();
+</script>
+
+</body>
+</html>

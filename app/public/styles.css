@@ -1,0 +1,837 @@
+/* ============================================================================
+   InggrisinYuk Kids — design system
+   ----------------------------------------------------------------------------
+   IDENTITAS WARNA (rationale singkat, dipakai konsisten di seluruh app):
+
+   - Primary "Lagoon" teal (--brand-*): hue ~178°, sengaja jauh dari indigo-ungu
+     (~253°) yang jadi warna utama app pembanding. Teal tua terbaca tenang &
+     bisa dipercaya untuk orang tua, tapi tetap segar (bukan biru korporat).
+   - Accent "Mango" (--sun-*): hue ~38°, komplemen hangat dari teal. Dipakai
+     untuk hal yang menyenangkan: CTA di panel gelap, state aktif navigasi,
+     bintang/penghargaan. Kombinasi laut + matahari terasa cerah & lokal,
+     bukan gradasi ungu-biru generik.
+   - Ink (--ink*): teal-slate #0F2E38, BUKAN navy keunguan. Karena warna teks
+     ada di setiap pixel, ini pembeda paling murah & paling terasa.
+   - Netral bertint mint (--paper/--line/--muted) menggantikan netral lavender.
+   - Warna kategori skill (--c-*) cuma dipakai DI DALAM konteks skill-nya,
+     tidak pernah jadi warna chrome. Vocabulary dipindah dari indigo #6D4FE0
+     (terlalu mirip pembanding) ke grape #8E3FA8.
+
+   TIPOGRAFI: Baloo 2 (judul, ramah anak) + Nunito (body, x-height tinggi &
+   mudah dibaca) — pasangan yang sudah dipakai di seluruh keluarga produk ini.
+   ============================================================================ */
+
+:root{
+  /* --- Brand: Lagoon teal --- */
+  --brand-900:#06333A;
+  --brand-800:#0A4A4E;
+  --brand-700:#0B6E6B;   /* aksi utama; teks putih di atasnya lolos AA */
+  --brand-600:#0E8079;
+  --brand-500:#12A398;   /* ikon/ilustrasi cerah */
+  --brand-300:#7FD3CC;
+  --brand-100:#D6F0EC;
+  --brand-50:#EDF8F6;
+
+  /* --- Accent: Mango --- */
+  --sun-600:#8A4B04;     /* teks di atas latar mango muda */
+  --sun-500:#FFB53D;
+  --sun-400:#FFC862;
+  --sun-100:#FFF1D8;
+
+  /* --- Ink & netral (bertint mint, bukan lavender) --- */
+  --ink:#0F2E38;
+  --ink-2:#3C5C66;
+  --ink-3:#6A868E;
+  --paper:#F2F7F7;
+  --surface:#FFFFFF;
+  --line:#DCE9E9;
+  --muted:#EBF2F2;
+
+  /* --- Semantik (non-punitive: "coba lagi", bukan "salah") --- */
+  --ok:#1F7A43;
+  --ok-bg:#E4F5EA;
+  --try:#C7455B;
+  --try-bg:#FCE9EC;
+
+  /* --- Kategori skill --- */
+  --c-vocab:#9B2FA8;  --c-vocab-bg:#F7E7FB;
+  --c-listen:#1E6FB8; --c-listen-bg:#E3F0FC;
+  --c-speak:#1F7A43;  --c-speak-bg:#E4F5EA;
+  --c-gram:#B45B0C;   --c-gram-bg:#FDEEDC;
+
+  /* --accent diganti per-skill lewat JS; default = brand */
+  --accent:var(--brand-700);
+  --accent-bg:var(--brand-100);
+
+  /* --- Bentuk & elevasi --- */
+  --r-sm:12px; --r-md:18px; --r-lg:24px; --r-xl:30px; --r-pill:999px;
+  --sh-1:0 1px 2px rgba(15,46,56,.05), 0 8px 20px -14px rgba(15,46,56,.30);
+  --sh-2:0 2px 5px rgba(15,46,56,.06), 0 20px 36px -22px rgba(15,46,56,.40);
+  --sh-rail:0 0 40px -10px rgba(6,51,58,.55);
+
+  /* --- Skala tipografi --- */
+  --fs-display:clamp(1.5rem, 1.18rem + 1.4vw, 2.125rem);
+  --fs-h2:clamp(1.125rem, 1.02rem + .45vw, 1.375rem);
+  --fs-h3:1.0625rem;
+  --fs-body:0.9375rem;
+  --fs-meta:0.8125rem;
+  --fs-eyebrow:0.6875rem;
+
+  --font-head:'Baloo 2','Trebuchet MS',system-ui,sans-serif;
+  --font-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+
+  /* --- Spasi (4-based) --- */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+}
+
+@media (min-width:768px){
+  :root{ --fs-body:1rem; --fs-meta:0.875rem; }
+}
+
+/* ---------------------------------------------------------------- base ---- */
+*{ box-sizing:border-box; }
+
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  font-weight:600;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+}
+
+h1,h2,h3,h4,.baloo{ font-family:var(--font-head); font-weight:700; line-height:1.15; margin:0; }
+p{ margin:0; }
+button{ font-family:var(--font-body); font-size:1rem; cursor:pointer; border:none; background:none; color:inherit; }
+[role="button"]{ cursor:pointer; }
+ol,ul{ margin:0; padding:0; }
+svg.ico{ width:24px; height:24px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+svg.ico-sm{ width:18px; height:18px; }
+
+.display{ font-family:var(--font-head); font-size:var(--fs-display); letter-spacing:-.01em; }
+.h2{ font-family:var(--font-head); font-size:var(--fs-h2); }
+.lede{ color:var(--ink-2); font-size:var(--fs-body); max-width:52ch; }
+.eyebrow{
+  display:inline-block; font-size:var(--fs-eyebrow); font-weight:800;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
+}
+.meta{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
+
+.hidden{ display:none !important; }
+[hidden]{ display:none !important; }
+
+.skip-link{
+  position:absolute; left:8px; top:-60px; z-index:99;
+  background:var(--brand-700); color:#fff; font-weight:800;
+  padding:10px 16px; border-radius:var(--r-pill); text-decoration:none;
+  transition:top .15s ease;
+}
+.skip-link:focus{ top:8px; }
+
+/* ------------------------------------------------------------- shell ------ */
+.shell{ display:flex; min-height:100vh; min-height:100dvh; }
+
+.viewport{
+  flex:1; min-width:0; display:flex; flex-direction:column;
+  background:
+    radial-gradient(900px 320px at 12% -8%, #DFF3EF 0%, rgba(223,243,239,0) 70%),
+    radial-gradient(700px 280px at 105% 0%, #FFF3DE 0%, rgba(255,243,222,0) 65%),
+    var(--paper);
+}
+
+.main{
+  flex:1; width:100%; max-width:1180px; margin:0 auto;
+  padding:var(--s4) var(--s4) 108px;
+}
+.main:focus{ outline:none; }
+
+/* --------------------------------------------------------- brand mark ---- */
+.brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
+.brand-mark{ width:38px; height:38px; flex:none; border-radius:13px; }
+.brand-word{ font-family:var(--font-head); font-weight:800; font-size:1.0625rem; line-height:1.05; letter-spacing:-.01em; }
+.brand-word small{ display:block; font-family:var(--font-body); font-size:.625rem; font-weight:800; letter-spacing:.16em; text-transform:uppercase; opacity:.7; }
+
+/* ------------------------------------------------- topline (mobile) ------ */
+.topline{
+  position:sticky; top:0; z-index:20;
+  display:flex; align-items:center; justify-content:space-between; gap:var(--s3);
+  padding:10px var(--s4);
+  background:rgba(255,255,255,.86);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+
+.level-chip{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--brand-50); border:1px solid var(--brand-100);
+  color:var(--brand-700); border-radius:var(--r-pill);
+  padding:6px 12px; font-weight:800; font-size:var(--fs-meta);
+}
+.level-chip b{ font-family:var(--font-head); }
+.level-chip .cefr{
+  background:var(--surface); border-radius:var(--r-pill); padding:2px 8px;
+  font-size:.625rem; letter-spacing:.04em; color:var(--ink-3); font-weight:800;
+}
+
+/* ------------------------------------------------------ rail (desktop) --- */
+.rail{ display:none; }
+
+.rail-nav{ display:flex; flex-direction:column; gap:6px; }
+
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  width:100%; text-align:left;
+  padding:11px 12px; border-radius:var(--r-md);
+  color:#B6DED9; font-weight:800; font-size:.9375rem;
+  transition:background .15s ease, color .15s ease;
+}
+.nav-item .nav-ico{
+  width:36px; height:36px; border-radius:12px; flex:none;
+  display:grid; place-items:center;
+  background:rgba(255,255,255,.08);
+  transition:background .15s ease, color .15s ease, transform .18s ease;
+}
+.nav-item[aria-current="page"]{ background:rgba(255,255,255,.12); color:#fff; }
+/* Pill mango + ikon sedikit "membesar" saat aktif — versi kid-friendly dari
+   indikator aktif polos: kombinasi pill + pop + ikon yang ikut terisi
+   (.ico-accent, lihat icons.ts) terasa lebih hidup daripada cuma ganti warna. */
+.nav-item[aria-current="page"] .nav-ico{ background:var(--sun-500); color:var(--brand-900); transform:scale(1.08); }
+
+/* Sub-path "ico-accent" (lihat icons.ts) transparan sampai ikonnya aktif —
+   supaya nav aktif terasa "penuh"/hangat tanpa perlu 2 set SVG terpisah. */
+svg.ico .ico-accent{ transition:fill .15s ease; }
+[aria-current="page"] .ico-accent{ fill:currentColor; }
+
+/* ------------------------------------------------- tabbar (mobile) ------- */
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  display:flex; gap:4px;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+  background:linear-gradient(170deg,var(--brand-800),var(--brand-900));
+  border-radius:22px 22px 0 0;
+  box-shadow:0 -8px 28px -14px rgba(6,51,58,.7);
+}
+.tab{
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:6px 4px 4px; border-radius:var(--r-md);
+  color:#9FD1CC; font-size:.6875rem; font-weight:800; letter-spacing:.01em;
+}
+.tab .nav-ico{
+  width:46px; height:28px; border-radius:var(--r-pill);
+  display:grid; place-items:center;
+  transition:background .15s ease, color .15s ease;
+}
+.tab[aria-current="page"]{ color:#fff; }
+.tab[aria-current="page"] .nav-ico{ background:var(--sun-500); color:var(--brand-900); }
+
+/* ---------------------------------------------------------- breadcrumb --- */
+.crumb{
+  display:flex; flex-wrap:wrap; align-items:center; gap:5px;
+  font-size:var(--fs-meta); font-weight:800; color:var(--ink-3);
+  margin-bottom:var(--s3);
+}
+.crumb .sep{ opacity:.45; }
+.crumb .current{ color:var(--ink); }
+
+/* --------------------------------------------------------- primitives ---- */
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-lg);
+  box-shadow:var(--sh-1);
+  padding:var(--s5) var(--s4);
+}
+@media (min-width:768px){ .card{ padding:var(--s5); } }
+
+.card-head{ display:flex; align-items:center; gap:10px; margin-bottom:var(--s3); }
+.card-title{ font-family:var(--font-head); font-size:var(--fs-h3); }
+
+.stack{ display:flex; flex-direction:column; gap:var(--s4); }
+.two-col{ display:grid; gap:var(--s4); align-items:start; }
+
+.cta{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  background:var(--sun-500); color:var(--brand-900);
+  font-family:var(--font-head); font-weight:700; font-size:1rem;
+  padding:12px 22px; border-radius:var(--r-pill);
+  box-shadow:0 8px 18px -10px rgba(138,75,4,.7);
+  transition:transform .12s ease, filter .15s ease;
+}
+.cta:active{ transform:translateY(1px) scale(.985); }
+
+.tag{
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--muted); color:var(--ink-2);
+  border-radius:var(--r-pill); padding:4px 10px;
+  font-size:var(--fs-eyebrow); font-weight:800; letter-spacing:.04em;
+}
+.tag.ok{ background:var(--ok-bg); color:var(--ok); }
+.tag.accent{ background:var(--accent-bg); color:var(--accent); }
+
+.iconbtn{
+  width:42px; height:42px; flex:none; border-radius:14px;
+  display:grid; place-items:center;
+  background:var(--surface); border:1px solid var(--line);
+  color:var(--ink); box-shadow:var(--sh-1);
+  transition:transform .12s ease, background .15s ease;
+}
+.iconbtn:active{ transform:scale(.94); }
+
+/* ------------------------------------------------------------- beranda --- */
+.greet{ margin-bottom:var(--s4); }
+.greet .display{ margin-bottom:6px; }
+
+.spark{
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; gap:var(--s4);
+  background:linear-gradient(140deg,var(--brand-700) 0%, var(--brand-800) 55%, var(--brand-900) 100%);
+  color:#fff; border-radius:var(--r-xl);
+  padding:var(--s5) var(--s4);
+  box-shadow:var(--sh-2);
+}
+.spark::after{
+  content:''; position:absolute; right:-120px; top:-160px;
+  width:420px; height:420px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,181,61,.38) 0%, rgba(255,181,61,.16) 42%, rgba(255,181,61,0) 72%);
+  pointer-events:none;
+}
+.spark-body{ position:relative; z-index:1; flex:1; min-width:0; }
+.spark .eyebrow{ color:var(--sun-400); }
+.spark-title{ font-family:var(--font-head); font-size:clamp(1.25rem,1.05rem + 1vw,1.75rem); margin:4px 0 4px; }
+.spark-sub{ color:#C9E7E3; font-size:var(--fs-meta); font-weight:700; margin-bottom:var(--s4); }
+.spark-art{
+  position:relative; z-index:1; flex:none;
+  width:76px; height:76px; border-radius:24px;
+  display:grid; place-items:center; font-size:40px;
+  background:rgba(255,255,255,.12);
+}
+
+.jump-grid{ display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); }
+.jump{
+  display:flex; align-items:center; gap:10px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+  padding:12px; box-shadow:var(--sh-1); text-align:left;
+  transition:transform .12s ease, border-color .15s ease;
+}
+.jump:active{ transform:scale(.97); }
+.jump .ic{
+  width:42px; height:42px; border-radius:13px; flex:none;
+  display:grid; place-items:center; font-size:21px;
+}
+.jump .txt{ min-width:0; }
+.jump .txt b{ display:block; font-family:var(--font-head); font-size:.9375rem; }
+.jump .txt span{ display:block; font-size:.6875rem; font-weight:800; color:var(--ink-3); }
+
+.level-card .lvl-name{ font-family:var(--font-head); font-size:1.25rem; display:flex; align-items:center; gap:8px; }
+.level-card .lvl-meta{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:2px; }
+.progress-track{
+  height:10px; border-radius:var(--r-pill); background:var(--muted);
+  margin-top:var(--s4); overflow:hidden;
+}
+.progress-fill{
+  height:100%; border-radius:var(--r-pill);
+  background:linear-gradient(90deg,var(--brand-500),var(--brand-700));
+}
+.star-row{ font-size:22px; letter-spacing:3px; line-height:1.3; }
+
+/* XP — angka pertumbuhan yang cuma pernah naik (progress.ts). Sengaja dikasih
+   warna mango cerah ("energi"), BUKAN merah/hijau — supaya tidak kebaca
+   seperti health bar yang bisa berkurang. */
+.xp-row{
+  display:flex; align-items:center; gap:10px;
+  margin-top:var(--s4); padding-top:var(--s4); border-top:1px solid var(--line);
+}
+.xp-badge{
+  width:38px; height:38px; flex:none; border-radius:50%;
+  display:grid; place-items:center; font-size:18px;
+  background:var(--sun-100); color:var(--sun-600);
+}
+.xp-text{ min-width:0; display:flex; flex-direction:column; }
+.xp-text b{ font-family:var(--font-head); font-size:1rem; color:var(--ink); }
+.xp-text span{ font-size:.6875rem; font-weight:700; color:var(--ink-3); }
+.level-card .ghost-btn{ margin-top:var(--s4); }
+
+.note-card{ background:var(--sun-100); border-color:#F6E2BE; }
+.note-card .card-title{ color:var(--sun-600); }
+.note-card p{ font-size:var(--fs-meta); color:#6C4A16; font-weight:700; }
+
+/* ---------------------------------------------------------- menu belajar - */
+.skill-grid{ display:grid; gap:var(--s3); }
+.skill-card{
+  display:flex; align-items:center; gap:var(--s3);
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg);
+  padding:var(--s4); box-shadow:var(--sh-1); text-align:left; width:100%;
+  transition:transform .12s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.skill-card:active{ transform:scale(.985); }
+.skill-card .ic{
+  width:54px; height:54px; border-radius:17px; flex:none;
+  display:grid; place-items:center; font-size:26px;
+}
+.skill-card .body{ flex:1; min-width:0; }
+.skill-card h3{ font-size:var(--fs-h3); margin-bottom:2px; }
+.skill-card p{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
+.skill-card .row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.skill-card .chev{ color:var(--ink-3); flex:none; }
+
+.howto{ list-style:none; margin:var(--s3) 0 0; padding:0; }
+.howto li{
+  display:flex; gap:12px; align-items:flex-start; padding:10px 0;
+  border-top:1px solid var(--line); font-size:var(--fs-meta); font-weight:700; color:var(--ink-2);
+}
+.howto li:first-child{ border-top:none; }
+.howto b{ display:block; font-family:var(--font-head); font-size:.9375rem; color:var(--ink); }
+.howto .n{
+  width:26px; height:26px; border-radius:50%; flex:none;
+  display:grid; place-items:center; font-family:var(--font-head); font-weight:700;
+  background:var(--brand-100); color:var(--brand-700); font-size:.8125rem;
+}
+
+/* Kartu ajakan Tantangan Bos di bawah grid skill — sengaja beda rupa dari
+   .spark (Beranda) supaya tidak kebaca sebagai CTA utama duplikat, tapi tetap
+   "besar & seru" (Mario/Pokémon gym-leader energy, bukan tegang). */
+.boss-teaser{
+  margin-top:var(--s4); display:flex; align-items:center; gap:var(--s4);
+  background:linear-gradient(135deg,var(--sun-100) 0%, #FFF7E9 100%);
+  border:1px solid #F3DDA8; border-radius:var(--r-xl);
+  padding:var(--s5) var(--s4); box-shadow:var(--sh-1);
+}
+.boss-teaser-art{ flex:none; font-size:clamp(38px,9vw,52px); line-height:1; }
+.boss-teaser-body{ min-width:0; }
+.boss-teaser-body .eyebrow{ color:var(--sun-600); }
+.boss-teaser-body .cta{ margin-top:var(--s3); }
+
+/* ------------------------------------------------------- daftar materi --- */
+.screen-head{ display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s4); }
+.screen-head .txt{ min-width:0; flex:1; }
+.screen-head .txt h1{ font-size:var(--fs-h2); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.screen-head .txt p{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:2px; }
+
+.topic-grid{ display:grid; gap:var(--s3); }
+.topic-card{
+  display:flex; align-items:center; gap:var(--s3); text-align:left; width:100%;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg);
+  padding:14px var(--s4); box-shadow:var(--sh-1);
+  transition:transform .12s ease, border-color .15s ease;
+}
+.topic-card:active{ transform:scale(.985); }
+.topic-card .num{
+  width:40px; height:40px; border-radius:14px; flex:none;
+  display:grid; place-items:center; font-family:var(--font-head); font-weight:700; font-size:1rem;
+  background:var(--accent-bg); color:var(--accent);
+}
+.topic-card .info{ flex:1; min-width:0; }
+.topic-card .info b{ display:block; font-family:var(--font-head); font-size:var(--fs-h3); }
+.topic-card .info span{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
+.topic-card .go{
+  flex:none; background:var(--accent); color:#fff; border-radius:var(--r-pill);
+  padding:9px 16px; font-weight:800; font-size:var(--fs-meta);
+  font-family:var(--font-head);
+}
+.topic-card.done .num{ background:var(--ok-bg); color:var(--ok); }
+
+/* --------------------------------------------------------- peta level ---- */
+/* Sekuens vertikal 6 level (PRD §3) dengan "rel" penghubung ala world map —
+   konsep dipinjam dari Peta Anglora `inggrisinyuk` (dewasa), lihat app.ts.
+   3 status visual: cleared (bos ditaklukkan), open (bisa dimainkan/dicoba),
+   locked (tersegel, cuma "rel"+gembok yang kelihatan). */
+.level-map{ list-style:none; margin:0; padding:0; max-width:640px; }
+.level-node{ display:flex; gap:var(--s3); }
+.level-node-rail{ display:flex; flex-direction:column; align-items:center; flex:none; width:40px; }
+.level-node-dot{
+  width:40px; height:40px; border-radius:50%; flex:none;
+  display:grid; place-items:center; font-family:var(--font-head); font-weight:800;
+  background:var(--muted); color:var(--ink-3); box-shadow:var(--sh-1);
+}
+.level-node-line{ width:3px; flex:1; min-height:28px; background:var(--line); margin:2px 0; border-radius:2px; }
+.level-node-card{
+  flex:1; min-width:0; margin-bottom:var(--s4);
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg);
+  padding:var(--s4); box-shadow:var(--sh-1);
+}
+.level-node-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.level-node-emoji{ font-size:28px; flex:none; }
+.level-node-txt{ flex:1; min-width:0; }
+.level-node-txt h3{ font-family:var(--font-head); font-size:var(--fs-h3); }
+.level-node-txt .row{ display:flex; align-items:center; gap:6px; margin-top:2px; flex-wrap:wrap; }
+.level-node-actions{ margin-top:var(--s3); display:flex; flex-direction:column; gap:8px; }
+.level-node-actions .primary-btn,
+.level-node-actions .ghost-btn{ margin-top:0; }
+
+.level-node.cleared .level-node-dot{ background:var(--ok-bg); color:var(--ok); }
+.level-node.open .level-node-dot{ background:var(--brand-100); color:var(--brand-700); }
+.level-node.soon .level-node-card,
+.level-node.locked .level-node-card{ opacity:.82; }
+.level-node.locked .level-node-dot{ background:var(--muted); color:var(--ink-3); }
+.level-node.locked .level-node-emoji{ filter:grayscale(.55); opacity:.7; }
+
+/* -------------------------------------------------------------- aktivitas */
+.act-head{ display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s4); }
+.act-head .txt{ flex:1; min-width:0; }
+.act-head h1{ font-size:var(--fs-h2); }
+.act-head .sub{ display:flex; align-items:center; gap:8px; margin-top:3px; }
+
+.act-body{ display:grid; gap:var(--s4); }
+
+.stepper{ display:flex; gap:8px; list-style:none; margin:0; padding:0; }
+.stepper li{
+  flex:1; display:flex; align-items:center; gap:8px; justify-content:center;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+  padding:9px 6px; font-size:var(--fs-eyebrow); font-weight:800; color:var(--ink-3);
+  letter-spacing:.02em; text-align:center;
+}
+.stepper li .dot{
+  width:20px; height:20px; border-radius:50%; flex:none;
+  display:grid; place-items:center; font-size:.625rem;
+  background:var(--muted); color:var(--ink-3); font-weight:800;
+}
+.stepper li.active{ background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:var(--sh-1); }
+.stepper li.active .dot{ background:rgba(255,255,255,.25); color:#fff; }
+.stepper li.done{ background:var(--accent-bg); border-color:var(--accent-bg); color:var(--accent); }
+.stepper li.done .dot{ background:var(--accent); color:#fff; }
+.stepper li[role="button"]{ cursor:pointer; }
+
+.voice-drop{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+  box-shadow:var(--sh-1); overflow:hidden;
+}
+.voice-drop > summary{
+  list-style:none; cursor:pointer; padding:12px var(--s4);
+  font-weight:800; font-size:var(--fs-meta); color:var(--ink-2);
+  display:flex; align-items:center; gap:8px;
+}
+.voice-drop > summary::-webkit-details-marker{ display:none; }
+.voice-drop > summary::after{ content:'⌄'; margin-left:auto; font-size:1rem; opacity:.6; }
+.voice-drop[open] > summary::after{ content:'⌃'; }
+.voice-drop .voice-panel{ border:none; box-shadow:none; border-radius:0; margin:0; padding:0 var(--s4) var(--s4); }
+
+/* Panel suara (dipakai di Pengaturan & di dropdown aktivitas) */
+.voice-panel{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+  box-shadow:var(--sh-1); padding:14px var(--s4);
+  display:flex; flex-direction:column; gap:12px;
+}
+.voice-flush .voice-panel{ border:none; box-shadow:none; padding:0; border-radius:0; }
+.voice-panel-row{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.voice-panel-label{ font-size:var(--fs-meta); font-weight:800; color:var(--ink-2); flex:none; }
+.voice-panel-pills{ display:inline-flex; background:var(--muted); border-radius:var(--r-pill); padding:4px; gap:2px; }
+.pill-btn{
+  border:none; background:transparent; color:var(--ink-2);
+  font-weight:800; font-size:var(--fs-meta); padding:7px 13px; border-radius:var(--r-pill);
+  transition:background .15s ease, color .15s ease;
+}
+.pill-btn.active{ background:var(--brand-700); color:#fff; }
+.voice-select{
+  border:1px solid var(--line); background:var(--surface); border-radius:var(--r-pill);
+  padding:8px 13px; font-weight:700; font-size:var(--fs-meta); color:var(--ink);
+  font-family:var(--font-body); max-width:100%; flex:1; min-width:150px;
+}
+
+/* --------------------------------------------------------- panggung game - */
+#stage{ padding:var(--s5) var(--s4); }
+@media (min-width:768px){ #stage{ padding:var(--s6) var(--s5); } }
+
+/* Panggung Tantangan Bos = #stage biasa, cuma dikasih rim mango tipis supaya
+   terasa "acara besar" dibanding modul biasa — tetap kartu yang sama, bukan
+   redesain baru (non-scary, cuma sedikit lebih meriah). */
+.boss-stage{ border-color:var(--sun-400); box-shadow:0 0 0 3px var(--sun-100), var(--sh-1); }
+.boss-badge{ background:var(--sun-100); color:var(--sun-600); }
+
+.stage-badge{
+  display:inline-block; font-size:var(--fs-eyebrow); font-weight:800; letter-spacing:.08em;
+  padding:6px 13px; border-radius:var(--r-pill); margin-bottom:var(--s3);
+  background:var(--accent-bg); color:var(--accent); text-transform:uppercase;
+}
+.big-emoji{ font-size:clamp(56px,14vw,76px); text-align:center; margin:var(--s2) 0 var(--s3); line-height:1; }
+.en-text{ font-family:var(--font-head); font-weight:700; font-size:clamp(1.25rem,1.05rem + .9vw,1.625rem); text-align:center; }
+.id-text{ text-align:center; color:var(--ink-3); font-weight:700; font-size:var(--fs-meta); margin-top:3px; }
+
+.speak-row{ display:flex; justify-content:center; margin:var(--s4) 0; }
+.speak-btn{
+  background:var(--accent); color:#fff; border-radius:var(--r-pill);
+  padding:13px 24px; font-weight:800; font-size:.9375rem;
+  display:flex; align-items:center; gap:8px; box-shadow:var(--sh-1);
+  transition:transform .12s ease;
+}
+.speak-btn:active{ transform:scale(.97); }
+
+.primer-list{ display:flex; flex-direction:column; gap:10px; margin-top:var(--s3); }
+.primer-item{
+  display:flex; align-items:center; gap:12px;
+  background:var(--accent-bg); border-radius:var(--r-md); padding:13px var(--s4);
+}
+.primer-item .txt{ flex:1; min-width:0; }
+.primer-item .txt b{ font-family:var(--font-head); font-size:1.0625rem; display:block; }
+.primer-item .txt span{ font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; }
+.mini-play{
+  width:38px; height:38px; border-radius:50%; background:var(--surface); color:var(--accent);
+  display:grid; place-items:center; font-size:15px; flex:none; cursor:pointer;
+  box-shadow:var(--sh-1);
+}
+
+.primary-btn{
+  display:block; width:100%; background:var(--accent); color:#fff; border-radius:var(--r-md);
+  padding:15px; font-family:var(--font-head); font-weight:700; font-size:1.0625rem;
+  margin-top:var(--s4); box-shadow:var(--sh-1);
+  transition:transform .12s ease;
+}
+.primary-btn:active{ transform:scale(.985); }
+.ghost-btn{
+  display:block; width:100%; background:var(--surface); color:var(--accent);
+  border:2px solid var(--accent-bg); border-radius:var(--r-md);
+  padding:13px; font-family:var(--font-head); font-weight:700; font-size:1rem; margin-top:10px;
+}
+
+.opt-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:var(--s3);
+  margin:var(--s4) auto 0; max-width:520px;
+}
+.opt-grid.three{ grid-template-columns:repeat(3,1fr); }
+.opt-btn{
+  background:var(--surface); border:3px solid var(--line); border-radius:var(--r-md);
+  padding:18px 8px; text-align:center; font-size:clamp(30px,8vw,44px); line-height:1.1;
+  transition:transform .12s ease, border-color .15s ease;
+}
+.opt-btn .lbl{
+  display:block; font-family:var(--font-head); font-size:.8125rem; font-weight:700;
+  color:var(--ink-2); margin-top:6px;
+}
+.opt-btn.correct{ border-color:var(--ok); background:var(--ok-bg); animation:pop .3s ease; }
+.opt-btn.wrong{ border-color:var(--try); animation:shake .3s ease; }
+
+@keyframes pop{ 0%{transform:scale(1);} 50%{transform:scale(1.1);} 100%{transform:scale(1);} }
+@keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+.feedback{
+  text-align:center; font-family:var(--font-head); font-weight:700;
+  font-size:1.0625rem; margin-top:var(--s3); min-height:26px;
+}
+.feedback.good{ color:var(--ok); }
+.feedback.bad{ color:var(--try); }
+
+.answer-row{
+  display:flex; flex-wrap:wrap; gap:8px; min-height:58px;
+  background:var(--accent-bg); border-radius:var(--r-md); padding:11px;
+  margin:var(--s4) auto var(--s3); justify-content:center; align-items:center;
+  max-width:560px;
+}
+.answer-row.empty::after{ content:'Tap kata di bawah ⤵️'; color:var(--accent); font-weight:800; font-size:var(--fs-meta); }
+.bank-row{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:560px; margin:0 auto; }
+.chip{
+  background:var(--surface); border:2px solid var(--accent); color:var(--accent);
+  border-radius:14px; padding:10px 15px; font-family:var(--font-head);
+  font-weight:700; font-size:1.0625rem; cursor:pointer;
+  transition:transform .12s ease;
+}
+.chip:active{ transform:scale(.94); }
+.chip.placed{ background:var(--accent); color:#fff; }
+.chip.letter{ padding:10px 14px; min-width:22px; text-align:center; text-transform:uppercase; }
+
+.mic-wrap{ text-align:center; margin:var(--s5) 0 var(--s2); }
+/* Mikrofon selalu mango — "giliran kamu bicara" — supaya tidak tertukar dengan
+   tombol dengar yang warnanya ikut skill (di Speaking dua-duanya akan hijau). */
+.mic-btn{
+  width:84px; height:84px; border-radius:50%; background:var(--sun-500); color:var(--brand-900);
+  font-size:32px; box-shadow:0 12px 26px -10px rgba(180,110,10,.65);
+  transition:transform .12s ease;
+}
+.mic-btn:active{ transform:scale(.95); }
+.mic-btn.listening{ animation:pulse 1s infinite; background:var(--try); }
+@keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(199,69,91,.45);} 70%{box-shadow:0 0 0 18px rgba(199,69,91,0);} 100%{box-shadow:0 0 0 0 rgba(199,69,91,0);} }
+.mic-hint{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:10px; }
+.heard-text{ text-align:center; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; margin-top:8px; min-height:20px; }
+
+.turn-dots{ display:flex; justify-content:center; gap:7px; margin-bottom:var(--s3); }
+.turn-dot{ width:10px; height:10px; border-radius:50%; background:var(--line); }
+.turn-dot.on{ background:var(--accent); }
+
+/* ------------------------------------------------------------- selesai --- */
+.done-wrap{ position:relative; text-align:center; padding:var(--s3) 0; }
+.done-mascot{ font-size:clamp(58px,15vw,80px); line-height:1; }
+.stars{ font-size:30px; letter-spacing:8px; margin:var(--s3) 0; }
+.done-title{ font-size:clamp(1.375rem,1.2rem + .8vw,1.75rem); margin-bottom:6px; }
+.done-sub{ color:var(--ink-3); font-weight:700; font-size:var(--fs-meta); margin-bottom:var(--s4); }
+.done-wrap .primary-btn,
+.done-wrap .ghost-btn{ max-width:340px; margin-left:auto; margin-right:auto; }
+
+/* --------------------------------------------------------- animasi kecil - */
+/* Sengaja restrained (polish, bukan redesain motion) — cuma 3 tempat: idle
+   mascot kecil (badge XP, kartu Tantangan Bos), "pop" sekali saat layar
+   selesai/menang muncul, dan confetti kecil khusus menang Bos. Semua tunduk
+   ke @media (prefers-reduced-motion) di bagian bawah file ini. */
+@keyframes mascotIdle{
+  0%,100%{ transform:translateY(0) rotate(0deg); }
+  50%{ transform:translateY(-3px) rotate(-4deg); }
+}
+.mascot-idle{ display:inline-block; animation:mascotIdle 2.4s ease-in-out infinite; }
+
+@keyframes mascotPop{
+  0%{ transform:scale(.6) rotate(-8deg); opacity:0; }
+  60%{ transform:scale(1.12) rotate(3deg); opacity:1; }
+  100%{ transform:scale(1) rotate(0deg); }
+}
+.mascot-pop{ animation:mascotPop .5s cubic-bezier(.34,1.56,.64,1) both; }
+
+@keyframes starsPop{
+  0%{ transform:scale(.5); opacity:0; }
+  70%{ transform:scale(1.15); opacity:1; }
+  100%{ transform:scale(1); }
+}
+.stars-pop{ animation:starsPop .45s cubic-bezier(.34,1.56,.64,1) .15s both; }
+
+/* Confetti kecil khusus menang Bos — beberapa emoji melayang & memudar sekali. */
+.boss-burst{ position:absolute; left:50%; top:8px; width:0; height:0; pointer-events:none; }
+.boss-burst span{ position:absolute; font-size:22px; opacity:0; animation:burstFloat 1.1s ease-out both; }
+.boss-burst span:nth-child(1){ left:-70px; top:10px; animation-delay:.05s; }
+.boss-burst span:nth-child(2){ left:-30px; top:-14px; animation-delay:.15s; }
+.boss-burst span:nth-child(3){ left:10px; top:-18px; animation-delay:.25s; }
+.boss-burst span:nth-child(4){ left:46px; top:-6px; animation-delay:.1s; }
+.boss-burst span:nth-child(5){ left:74px; top:14px; animation-delay:.2s; }
+@keyframes burstFloat{
+  0%{ opacity:0; transform:translateY(10px) scale(.5) rotate(0deg); }
+  30%{ opacity:1; }
+  100%{ opacity:0; transform:translateY(-46px) scale(1.15) rotate(18deg); }
+}
+
+/* ---------------------------------------------------------- pengaturan --- */
+.set-grid{ display:grid; gap:var(--s4); }
+.set-list{ list-style:none; margin:var(--s3) 0 0; padding:0; }
+.set-list li{
+  display:flex; gap:10px; padding:8px 0; border-top:1px solid var(--line);
+  font-size:var(--fs-meta); font-weight:700; color:var(--ink-2);
+}
+.set-list li:first-child{ border-top:none; }
+.set-list li b{ color:var(--ink); }
+.danger-btn{
+  margin-top:var(--s4); border:2px solid var(--try-bg); color:var(--try);
+  background:var(--surface); border-radius:var(--r-md); padding:11px 18px;
+  font-family:var(--font-head); font-weight:700;
+}
+
+/* ============================ RESPONSIVE ================================== */
+/* Layar sempit: badge CEFR di header disembunyikan (tetap ada di Beranda &
+   Pengaturan) supaya baris merek + level tidak pernah meluber. */
+@media (max-width:559px){
+  .level-chip .cefr{ display:none; }
+}
+
+/* Di HP, breadcrumb mubazir — tombol kembali + judul layar sudah menjelaskan
+   posisi, dan tiap baris chrome yang dihemat = panggung game naik ke atas. */
+@media (max-width:767px){
+  .crumb{ display:none; }
+}
+
+/* Sebelum layar cukup lebar untuk kolom samping, panel suara turun ke bawah
+   panggung supaya anak langsung melihat gamenya. */
+@media (max-width:1079px){
+  .act-body{ display:flex; flex-direction:column; gap:var(--s4); }
+  .act-side{ display:contents; }
+  .stepper{ order:1; }
+  .act-stage{ order:2; }
+  .voice-drop{ order:3; }
+}
+
+/* Tablet ke atas: rail ikon ringkas menggantikan tab bar bawah. */
+@media (min-width:768px){
+  .topline{ display:none; }
+  .tabbar{ display:none; }
+
+  .rail{
+    display:flex; flex-direction:column; gap:var(--s5);
+    position:sticky; top:0; align-self:flex-start;
+    height:100vh; height:100dvh; width:92px; flex:none;
+    padding:var(--s5) 14px var(--s4);
+    background:linear-gradient(168deg,var(--brand-800) 0%, var(--brand-900) 100%);
+    box-shadow:var(--sh-rail);
+    overflow-y:auto;
+  }
+  .rail .brand{ justify-content:center; }
+  .rail .brand-word{ display:none; }
+  .rail-nav{ gap:8px; }
+  .nav-item{ flex-direction:column; gap:5px; padding:8px 4px; font-size:.625rem; text-align:center; letter-spacing:.02em; }
+  .nav-item .nav-ico{ width:44px; height:36px; border-radius:14px; }
+  .rail-foot{ margin-top:auto; }
+  .rail-foot .rail-level{
+    text-align:center; color:#B6DED9; font-size:.625rem; font-weight:800;
+    background:rgba(255,255,255,.08); border-radius:14px; padding:10px 6px;
+  }
+  .rail-foot .rail-level .eyebrow{ color:#8FC8C2; }
+  .rail-foot .rail-level b{ display:block; font-family:var(--font-head); font-size:.8125rem; color:#fff; }
+  .rail-foot .rail-level .cefr{ display:none; }
+
+  .main{ padding:var(--s5) var(--s5) var(--s6); }
+  /* Panggung game tetap selebar tangan anak walau layarnya lebar — teks,
+     tombol, dan kartu pilihan tidak ikut melar. */
+  .act-stage > .card{ max-width:700px; margin-left:auto; margin-right:auto; }
+  .act-stage .primary-btn,
+  .act-stage .ghost-btn{ max-width:460px; margin-left:auto; margin-right:auto; }
+  .jump-grid{ grid-template-columns:repeat(4,1fr); }
+  .skill-grid{ grid-template-columns:1fr 1fr; }
+  .topic-grid{ grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); }
+  /* Game (renderGame) tidak duduk di dalam .two-col seperti Menu Belajar —
+     seluruh lebar layar kepakai, jadi grid-nya boleh tetap 2 kolom di sini. */
+  .skill-grid.game-grid{ grid-template-columns:1fr 1fr; }
+  .set-grid{ grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); }
+  .spark{ padding:var(--s5) var(--s5); }
+  .spark-art{ width:92px; height:92px; font-size:48px; }
+}
+
+/* Desktop lebar: rail penuh + komposisi 2 kolom yang benar-benar memanfaatkan ruang. */
+@media (min-width:1080px){
+  .rail{ width:252px; padding:var(--s5) var(--s4) var(--s4); }
+  .rail .brand{ justify-content:flex-start; padding:0 6px; }
+  .rail .brand-word{ display:block; color:#fff; }
+  .nav-item{ flex-direction:row; gap:12px; padding:11px 12px; font-size:.9375rem; text-align:left; }
+  .nav-item .nav-ico{ width:36px; height:36px; border-radius:12px; }
+  .rail-foot .rail-level{ text-align:left; padding:12px 14px; font-size:.6875rem; }
+  .rail-foot .rail-level b{ font-size:1rem; }
+  .rail-foot .rail-level .cefr{ display:block; opacity:.8; }
+
+  .main{ padding:var(--s6) var(--s6) var(--s7); }
+  .two-col{ grid-template-columns:minmax(0,1.55fr) minmax(276px,.85fr); gap:var(--s5); }
+  .jump-grid{ grid-template-columns:1fr 1fr; }
+  .skill-grid{ grid-template-columns:1fr; }
+  .skill-grid.game-grid{ grid-template-columns:repeat(3,1fr); }
+  .set-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .act-body{ grid-template-columns:minmax(0,1fr) 264px; gap:var(--s5); }
+  .act-side{
+    order:2; align-self:start; position:sticky; top:var(--s5);
+    display:flex; flex-direction:column; gap:var(--s3);
+  }
+  .act-stage{ order:1; min-width:0; }
+  .stepper{ flex-direction:column; }
+  .stepper li{ justify-content:flex-start; text-align:left; padding:12px 14px; font-size:var(--fs-meta); }
+}
+
+/* ------------------------------------------------------------ interaksi -- */
+@media (hover:hover){
+  .nav-item:hover{ background:rgba(255,255,255,.10); color:#fff; }
+  .skill-card:hover,.topic-card:hover,.jump:hover{ border-color:var(--brand-300); box-shadow:var(--sh-2); }
+  .cta:hover{ filter:brightness(1.05); }
+  .opt-btn:hover{ border-color:var(--brand-300); }
+  .chip:hover{ filter:brightness(.97); }
+  .iconbtn:hover{ background:var(--brand-50); }
+}
+
+:focus-visible{
+  outline:3px solid var(--brand-600);
+  outline-offset:2px;
+  border-radius:6px;
+}
+.rail :focus-visible,
+.tabbar :focus-visible,
+.spark :focus-visible{ outline-color:var(--sun-400); }
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}

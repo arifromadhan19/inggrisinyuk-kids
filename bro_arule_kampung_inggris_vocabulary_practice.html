@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bro Arule - Kampung Inggris Vocabulary Practice</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              brand: {
+                50: '#eff6ff',
+                100: '#dbeafe',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Custom grid background pattern matching the reference screenshot */
+      body {
+        background-color: #f4f7fc;
+        background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
+        background-size: 24px 24px;
+        font-family: 'Inter', sans-serif;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      .pulse-ring {
+        animation: pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+      }
+      @keyframes pulseRing {
+        0% { transform: scale(0.95); opacity: 0.8; }
+        50% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(0.95); opacity: 0.8; }
+      }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen pb-16">
+
+    <div id="app" class="max-w-4xl mx-auto px-4 pt-6 sm:pt-10">
+
+        <!-- TOP NAVIGATION & HEADER CARD (Matches Screenshot) -->
+        <header class="bg-white/90 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xl shadow-slate-200/50 mb-8 transition-all duration-300">
+            <!-- Top Controls Row -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
+                <!-- Back Button -->
+                <button id="btnBack" onclick="goHome()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-2xl transition duration-200 text-sm shadow-sm group">
+                    <i class="fa-solid font-bold text-xs group-hover:-translate-x-0.5 transition-transform duration-200">←</i>
+                    <span>Kembali</span>
+                </button>
+
+                <!-- YouTube Video Modal Trigger -->
+                <button onclick="openVideoModal()" class="flex items-center justify-center gap-2.5 px-6 py-2.5 border border-slate-200 bg-white hover:bg-red-50 hover:border-red-200 text-slate-800 font-bold rounded-2xl transition duration-200 text-sm shadow-sm">
+                    <i class="fa-brands fa-youtube text-red-600 text-lg"></i>
+                    <span>TONTON – Hafal Vocab Tanpa Hafalan</span>
+                </button>
+            </div>
+
+            <!-- Header Info & Progress Row -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 shrink-0">
+                        <i class="fa-solid fa-book-open text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Vocabulary</h1>
+                        <p class="text-slate-500 text-sm font-medium">Let's learn new words with Bro Arule!</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-end justify-center self-end sm:self-center">
+                    <div class="flex items-center gap-3 mb-1">
+                        <span id="progressCountText" class="text-2xl font-black text-blue-600">0<span class="text-slate-400 text-base font-bold">/3</span></span>
+                        <button onclick="resetProgress()" class="flex items-center gap-1 text-slate-400 hover:text-slate-600 text-xs font-semibold px-2 py-1 rounded-lg hover:bg-slate-100 transition">
+                            <i class="fa-solid fa-rotate-right"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar Bar Indicator -->
+            <div class="mt-4 relative">
+                <div class="flex justify-between text-xs font-bold text-blue-600 mb-1">
+                    <span id="progressPercentText" class="ml-[0%] transition-all duration-500">0%</span>
+                </div>
+                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/50">
+                    <div id="progressBar" class="h-full bg-blue-600 rounded-full transition-all duration-500 shadow-sm" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEW 1: TOPIC SELECTION LIST (HomeScreen) -->
+        <main id="viewTopics" class="space-y-4">
+            <div class="text-slate-500 text-xs font-bold uppercase tracking-wider px-2 mb-2">Pilih Topik Belajar Hari Ini:</div>
+            
+            <div id="topicsContainer" class="space-y-3.5">
+                <!-- Dynamic topic cards will be rendered here -->
+            </div>
+        </main>
+
+        <!-- VIEW 2: TOPIC LESSON & WRITING CHALLENGE -->
+        <section id="viewLesson" class="hidden space-y-6">
+            <!-- Bro Arule Greeting Card -->
+            <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl"></div>
+                <div class="flex items-start gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-amber-400 text-blue-950 font-black rounded-2xl flex items-center justify-center text-xl shrink-0 shadow-md">
+                        🤠
+                    </div>
+                    <div class="space-y-1">
+                        <span class="inline-block px-2.5 py-0.5 bg-blue-800/80 border border-blue-400/30 text-amber-300 rounded-full text-xs font-bold tracking-wide">Tutor Bro Arule</span>
+                        <p id="broGreeting" class="text-base sm:text-lg font-medium leading-relaxed">
+                            Hallo aku Bro Arule dari Kampung Inggris, ini Box of Words kamu hari ini 📦🔥
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box of Words (BOW) Table -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span>📦</span> <span id="bowTitle">Box of Words</span>
+                    </h2>
+                    <span class="text-xs bg-slate-100 font-semibold text-slate-600 px-3 py-1 rounded-full border border-slate-200">UK Phonetic /ˈ/</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                                <th class="p-3.5 rounded-l-xl">Vocab + Phonetic Symbol</th>
+                                <th class="p-3.5 rounded-r-xl">Arti Bahasa Indonesia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bowTableBody" class="divide-y divide-slate-100">
+                            <!-- Dynamic Vocab Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Writing Challenge Options -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md space-y-6">
+                <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <span>✍️</span> <span>Writing Challenge</span>
+                    </h2>
+                    <span class="text-xs font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full">Level A1 (Beginner)</span>
+                </div>
+
+                <!-- Option Selection Tabs -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button id="tabOpt1" onclick="switchOption(1)" class="p-4 rounded-2xl border-2 text-left transition duration-200 border-blue-600 bg-blue-50/50">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-extrabold text-blue-900 text-sm">🥇 Opsi 1 — Mini Story</span>
+                            <span id="badgeOpt1" class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px]">✓</span>
+                        </div>
+                        <p class="text-xs text-slate-600">Tulis cerita pendek berdasarkan 3–5 kata dari Box of Words.</p>
+                    </button>
+
+                    <button id="tabOpt2" onclick="switchOption(2)" class="p-4 rounded-2xl border-2 text-left transition duration-200 border-slate-200 hover:border-slate-300">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-extrabold text-slate-800 text-sm">🥈 Opsi 2 — Make Sentences</span>
+                            <span id="badgeOpt2" class="w-4 h-4 rounded-full border border-slate-300 text-transparent flex items-center justify-center text-[10px]">✓</span>
+                        </div>
+                        <p class="text-xs text-slate-600">Pilih 3–5 kata, lalu buat masing-masing 1 kalimat sederhana.</p>
+                    </button>
+                </div>
+
+                <!-- Prompt Guidance Box -->
+                <div id="challengeGuideBox" class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm space-y-3">
+                    <!-- Dynamic guide injected here -->
+                </div>
+
+                <!-- User Input Form -->
+                <div class="space-y-3">
+                    <label class="block font-bold text-slate-800 text-sm">
+                        Tuliskan jawabanmu di sini <span class="text-slate-400 font-normal">(Gunakan 3-5 kosakata BOW)</span>:
+                    </label>
+                    <textarea id="userWritingInput" rows="5" class="w-full p-4 rounded-2xl border border-slate-300 focus:ring-4 focus:ring-blue-100 focus:border-blue-600 outline-none transition text-slate-800 placeholder-slate-400 text-sm leading-relaxed" placeholder="Contoh: Hello, my name is Arif. I live with my father and mother. I love my family so much because they always help me..."></textarea>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                    <p class="text-xs text-slate-500 italic">💡 Bro Arule akan langsung mengoreksi grammar & memberikan feedback 5W+1H!</p>
+                    <button id="btnSubmitWriting" onclick="submitWriting()" class="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold rounded-2xl transition duration-200 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2">
+                        <span>Gas Full Koreksi 🚀</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: CORRECTION & FEEDBACK (Langkah 2 Output) -->
+        <section id="viewCorrection" class="hidden space-y-6">
+            <div class="bg-amber-50 border border-amber-200/80 rounded-3xl p-5 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🔥</span>
+                    <div>
+                        <h3 class="font-extrabold text-amber-900">Koreksi & Feedback Bro Arule</h3>
+                        <p class="text-xs text-amber-700">Mantap bro! Yuk kita bedah tulisanmu biar makin jago!</p>
+                    </div>
+                </div>
+                <button onclick="backToWriting()" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-xl border border-slate-200">Edit Tulisan</button>
+            </div>
+
+            <!-- Loading Spinner State -->
+            <div id="correctionLoading" class="hidden bg-white rounded-3xl p-12 border border-slate-200 text-center space-y-4">
+                <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p class="text-slate-600 font-bold">Bro Arule lagi membaca & menganalisa tulisanmu...</p>
+            </div>
+
+            <!-- Correction Content Container -->
+            <div id="correctionResult" class="space-y-6">
+                <!-- 1. Koreksi Writing Table -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xs font-black">1</span>
+                        <span>Koreksi Writing & Grammar</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                                    <th class="p-3 rounded-l-xl w-1/3">Kalimat Asli</th>
+                                    <th class="p-3 w-1/3">Penjelasan Grammar</th>
+                                    <th class="p-3 rounded-r-xl w-1/3 text-emerald-700">Kalimat Benar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableGrammarBody" class="divide-y divide-slate-100">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 2. Analisa BOW -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md space-y-3">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center text-xs font-black">2</span>
+                        <span>Analisa Penggunaan Box of Words (BOW)</span>
+                    </h3>
+                    <div id="bowAnalysisBox" class="p-4 bg-slate-50 rounded-2xl text-sm text-slate-700 leading-relaxed border border-slate-200">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- 3. Perbandingan 5W + 1H -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md space-y-4">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span class="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-lg flex items-center justify-center text-xs font-black">3</span>
+                        <span>Pengembangan Cerita (5W + 1H)</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 font-bold">
+                                    <th class="p-3 rounded-l-xl w-1/4">Elemen</th>
+                                    <th class="p-3 rounded-r-xl">Detail Ceritamu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table5W1HBody" class="divide-y divide-slate-100">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Paragraf Utuh Setelah Dikembangkan:</h4>
+                        <div id="fullExpandedParagraph" class="p-4 bg-blue-50/60 border border-blue-200 rounded-2xl text-sm text-blue-950 leading-relaxed italic font-serif">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Speaking Challenge Callout -->
+                <div class="bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-3xl p-6 shadow-xl space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+                            <span>🎙️</span> <span>Speaking Challenge</span>
+                        </h3>
+                        <span class="text-xs font-bold bg-blue-600/60 text-blue-200 px-2.5 py-1 rounded-full border border-blue-400/30">Langkah 3</span>
+                    </div>
+
+                    <p class="text-sm text-slate-300">Jawab pertanyaan berikut secara lisan atau ketik untuk latihan percakapan dengan Bro Arule:</p>
+
+                    <div id="speakingQuestionsList" class="space-y-3">
+                        <!-- Dynamic Speaking Questions -->
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p class="text-xs text-amber-300 font-medium">
+                            👇 Klik tombol di bawah ini atau ketik <span class="underline font-bold">"I'm ready to practice"</span> untuk masuk Mode Speaking!
+                        </p>
+                        <button onclick="startSpeakingMode()" class="w-full sm:w-auto px-6 py-3 bg-amber-400 hover:bg-amber-300 text-blue-950 font-extrabold rounded-2xl transition duration-200 shadow-lg shadow-amber-400/20 flex items-center justify-center gap-2 text-sm">
+                            <i class="fa-solid fa-microphone"></i>
+                            <span>I'm ready to practice</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: MODE SPEAKING SESSION (Langkah 3 Interactive) -->
+        <section id="viewSpeaking" class="hidden space-y-6">
+            <!-- Header bar for speaking mode -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-amber-400 text-blue-950 font-black rounded-xl flex items-center justify-center text-lg">
+                        🎙️
+                    </div>
+                    <div>
+                        <h2 class="font-extrabold text-slate-900">Mode Speaking Tutor (Bro Arule)</h2>
+                        <p class="text-xs text-slate-500">Latihan pengucapan & merespons pertanyaan 1 demi 1</p>
+                    </div>
+                </div>
+                <span id="speakingProgressBadge" class="text-xs font-extrabold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full">Soal 1/3</span>
+            </div>
+
+            <!-- Current Speaking Question Card -->
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-3xl p-6 shadow-xl space-y-4 relative">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-200 tracking-wider uppercase">Pertanyaan Bro Arule</span>
+                    <button id="btnListenQuestion" onclick="speakCurrentQuestion()" class="text-xs font-bold bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-volume-high"></i> Dengarkan Audio (UK)
+                    </button>
+                </div>
+                <div id="speakingQuestionBox" class="space-y-1">
+                    <h3 id="spkEngText" class="text-xl sm:text-2xl font-extrabold">...</h3>
+                    <p id="spkIndoText" class="text-sm text-blue-200 italic font-medium">...</p>
+                </div>
+            </div>
+
+            <!-- Speech Feedback & Drill Panel -->
+            <div id="speakingFeedbackPanel" class="hidden bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md space-y-4">
+                <!-- Feedback Header -->
+                <div class="flex items-center gap-2 text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
+                    <span>💡 Feedback Bro Arule:</span>
+                </div>
+
+                <div id="spkFeedbackText" class="text-sm text-slate-700 leading-relaxed space-y-2">
+                    <!-- Dynamic evaluation feedback -->
+                </div>
+
+                <!-- Mandatory Drill Box -->
+                <div id="spkDrillBox" class="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-2">
+                    <span class="text-xs font-extrabold text-amber-900 uppercase tracking-wide flex items-center gap-1.5">
+                        <span>🔁</span> <span>Drill Pengucapan (Wajib Diulangi):</span>
+                    </span>
+                    <p id="spkTargetDrillText" class="text-base font-extrabold text-amber-950 font-mono"></p>
+                    <p class="text-xs text-amber-700">Ucapkan atau ketik ulang kalimat yang sudah dikoreksi ini persis di bawah untuk melatih lidahmu!</p>
+                </div>
+            </div>
+
+            <!-- User Response Controls (Mic + Text) -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-md space-y-4">
+                <label class="block text-sm font-bold text-slate-800">
+                    <span id="speakingInputLabel">Jawabanmu (Bicara atau Ketik):</span>
+                </label>
+
+                <div class="flex gap-2">
+                    <input type="text" id="userSpeakingInput" class="flex-1 p-3.5 rounded-2xl border border-slate-300 focus:ring-4 focus:ring-blue-100 focus:border-blue-600 outline-none transition text-sm text-slate-800" placeholder="Ketik jawabanmu di sini...">
+                    
+                    <button id="btnMicRecord" onclick="toggleMic()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition flex items-center justify-center shrink-0 border border-slate-300">
+                        <i id="micIcon" class="fa-solid fa-microphone text-base"></i>
+                    </button>
+
+                    <button id="btnSubmitSpeaking" onclick="submitSpeakingAnswer()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition shadow-md shrink-0 text-sm">
+                        Kirim Jawaban
+                    </button>
+                </div>
+
+                <div class="flex justify-between items-center text-xs text-slate-400 px-1">
+                    <span>Status: <span id="speechStatus" class="font-medium text-slate-600">Siap</span></span>
+                    <span id="drillWarningText" class="text-amber-600 font-bold hidden">Selesaikan drill dulu bro!</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIDEO TUTORIAL MODAL -->
+        <div id="videoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 shadow-2xl relative">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                        <i class="fa-brands fa-youtube text-red-600"></i>
+                        <span>Metode Kampung Inggris — Bro Arule</span>
+                    </h3>
+                    <button onclick="closeVideoModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center">✕</button>
+                </div>
+
+                <div class="aspect-video bg-slate-900 rounded-2xl overflow-hidden flex items-center justify-center relative">
+                    <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=0" title="Vocabulary Tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl text-xs text-blue-900 leading-relaxed">
+                    💡 <strong>Tips Bro Arule:</strong> Pelajari kosakata dengan memahami konteks dan pola kalimatnya, bukan sekadar menghafal terjemahan kata per kata!
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. TOPICS DATA (3 Days) ---
+        const TOPICS_DATA = [
+            {
+                id: 1,
+                dayTag: "DAY 1",
+                title: "Daily Routine",
+                description: "Kosakata kegiatan sehari-hari dari bangun tidur sampai malam hari.",
+                bow: [
+                    { vocab: "Wake up", phonetic: "/ˈweɪk ʌp/", meaning: "bangun" },
+                    { vocab: "Have breakfast", phonetic: "/hæv ˈbrekfəst/", meaning: "sarapan" },
+                    { vocab: "Take a shower", phonetic: "/teɪk ə ˈʃaʊə/", meaning: "mandi" },
+                    { vocab: "Go to work", phonetic: "/ɡəʊ tuː wɜːk/", meaning: "pergi bekerja" },
+                    { vocab: "Cook dinner", phonetic: "/kʊk ˈdɪnə/", meaning: "memasak makan malam" },
+                    { vocab: "Read a book", phonetic: "/riːd ə bʊk/", meaning: "membaca buku" },
+                    { vocab: "Drink coffee", phonetic: "/drɪŋk ˈkɒfi/", meaning: "minum kopi" },
+                    { vocab: "Sleep", phonetic: "/sliːp/", meaning: "tidur" }
+                ],
+                op1Title: "My Daily Routine",
+                op1Questions: [
+                    { eng: "What time do you usually wake up?", ind: "Jam berapa kamu biasanya bangun tidur?" },
+                    { eng: "What do you do in the morning?", ind: "Apa yang kamu lakukan di pagi hari?" },
+                    { eng: "How do you spend your evening?", ind: "Bagaimana kamu menghabiskan waktu malam hari?" }
+                ],
+                speakingQuestions: [
+                    { eng: "What time do you wake up every morning?", ind: "Jam berapa kamu bangun setiap pagi?" },
+                    { eng: "What is your favorite drink in the morning?", ind: "Apa minuman favoritmu di pagi hari?" },
+                    { eng: "Do you like to read books before sleep?", ind: "Apakah kamu suka membaca buku sebelum tidur?" }
+                ]
+            },
+            {
+                id: 2,
+                dayTag: "DAY 2",
+                title: "My Family",
+                description: "Kosakata seputar anggota keluarga dan kebiasaan bersama di rumah.",
+                bow: [
+                    { vocab: "Family", phonetic: "/ˈfæməli/", meaning: "keluarga" },
+                    { vocab: "Father", phonetic: "/ˈfɑːðə/", meaning: "ayah" },
+                    { vocab: "Mother", phonetic: "/ˈmʌðə/", meaning: "ibu" },
+                    { vocab: "Brother", phonetic: "/ˈbrʌðə/", meaning: "saudara laki-laki" },
+                    { vocab: "Sister", phonetic: "/ˈsɪstə/", meaning: "saudara perempuan" },
+                    { vocab: "Live with", phonetic: "/lɪv wɪð/", meaning: "tinggal bersama" },
+                    { vocab: "Love", phonetic: "/lʌv/", meaning: "mencintai" },
+                    { vocab: "Help", phonetic: "/help/", meaning: "membantu" }
+                ],
+                op1Title: "My Family",
+                op1Questions: [
+                    { eng: "Who is in your family?", ind: "Siapa saja yang ada di keluargamu?" },
+                    { eng: "Where does your family live?", ind: "Di mana keluargamu tinggal?" },
+                    { eng: "What do you do with your family?", ind: "Apa yang kamu lakukan bersama keluargamu?" }
+                ],
+                speakingQuestions: [
+                    { eng: "How many people are there in your family?", ind: "Berapa banyak orang yang ada di keluargamu?" },
+                    { eng: "What does your father or mother do?", ind: "Apa pekerjaan ayah atau ibumu?" },
+                    { eng: "Do you like to play or talk with your brother or sister?", ind: "Apakah kamu suka bermain atau mengobrol dengan saudaramu?" }
+                ]
+            },
+            {
+                id: 3,
+                dayTag: "DAY 3",
+                title: "Hobbies & Free Time",
+                description: "Kosakata hobi, waktu luang, dan aktivitas santai di akhir pekan.",
+                bow: [
+                    { vocab: "Listen to music", phonetic: "/ˈlɪsn tuː ˈmjuːzɪk/", meaning: "mendengarkan musik" },
+                    { vocab: "Play games", phonetic: "/pleɪ ɡeɪmz/", meaning: "bermain game" },
+                    { vocab: "Watch movie", phonetic: "/wɒtʃ ˈmuːvi/", meaning: "nonton film" },
+                    { vocab: "Weekend", phonetic: "/ˌwiːkˈend/", meaning: "akhir pekan" },
+                    { vocab: "Enjoy", phonetic: "/ɪnˈdʒɔɪ/", meaning: "menikmati" },
+                    { vocab: "Together", phonetic: "/təˈɡeðə/", meaning: "bersama-sama" },
+                    { vocab: "Relax", phonetic: "/rɪˈlæks/", meaning: "bersantai" },
+                    { vocab: "Park", phonetic: "/pɑːk/", meaning: "taman" }
+                ],
+                op1Title: "My Free Time",
+                op1Questions: [
+                    { eng: "What is your main hobby?", ind: "Apa hobi utamamu?" },
+                    { eng: "What do you do on the weekend?", ind: "Apa yang kamu lakukan di akhir pekan?" },
+                    { eng: "Who do you spend your free time with?", ind: "Dengan siapa kamu menghabiskan waktu luangmu?" }
+                ],
+                speakingQuestions: [
+                    { eng: "What do you usually do to relax on weekends?", ind: "Apa yang biasanya kamu lakukan untuk bersantai di akhir pekan?" },
+                    { eng: "Do you like listening to English music or watching movies?", ind: "Apakah kamu suka mendengarkan musik Inggris atau menonton film?" },
+                    { eng: "Where do you usually go with your friends?", ind: "Ke mana kamu biasanya pergi bersama teman-temanmu?" }
+                ]
+            }
+        ];
+
+        // --- 2. GLOBAL APP STATE ---
+        let completedTopics = JSON.parse(localStorage.getItem('broArule_completed') || '[]');
+        let currentTopic = null;
+        let selectedOption = 1;
+        let userSubmittedWriting = "";
+        let generatedCorrectionData = null;
+        
+        // Speaking session states
+        let spkIndex = 0;
+        let awaitingDrillRepeat = false;
+        let targetDrillSentence = "";
+        let recognition = null;
+        let isRecording = false;
+
+        // --- STREAMING_CHUNK:Initializing navigation and UI view switchers... ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTopicsList();
+            updateProgressHeader();
+            initSpeechRecognition();
+        });
+
+        function updateProgressHeader() {
+            const count = completedTopics.length;
+            const total = TOPICS_DATA.length;
+            const percent = Math.round((count / total) * 100);
+
+            document.getElementById('progressCountText').innerHTML = `${count}<span class="text-slate-400 text-base font-bold">/${total}</span>`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressPercentText').innerText = `${percent}%`;
+        }
+
+        function resetProgress() {
+            completedTopics = [];
+            localStorage.setItem('broArule_completed', JSON.stringify(completedTopics));
+            renderTopicsList();
+            updateProgressHeader();
+        }
+
+        function goHome() {
+            document.getElementById('viewTopics').classList.remove('hidden');
+            document.getElementById('viewLesson').classList.add('hidden');
+            document.getElementById('viewCorrection').classList.add('hidden');
+            document.getElementById('viewSpeaking').classList.add('hidden');
+        }
+
+        // Render Topics List (HomeScreen view matching design)
+        function renderTopicsList() {
+            const container = document.getElementById('topicsContainer');
+            container.innerHTML = '';
+
+            TOPICS_DATA.forEach(topic => {
+                const isDone = completedTopics.includes(topic.id);
+
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-3xl p-5 border border-slate-200/80 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group`;
+                card.onclick = () => openTopic(topic.id);
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <span class="px-3 py-1.5 bg-slate-100 font-extrabold text-slate-700 rounded-xl text-xs group-hover:bg-blue-600 group-hover:text-white transition">
+                            ${topic.dayTag}
+                        </span>
+                        <div>
+                            <h3 class="text-lg font-extrabold text-slate-900 group-hover:text-blue-600 transition">
+                                ${topic.title}
+                            </h3>
+                            <p class="text-xs text-slate-500 font-medium">${topic.description}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 self-end sm:self-center">
+                        ${isDone 
+                            ? `<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-black shadow-sm" title="Selesai">✓</div>` 
+                            : `<div class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-sm group-hover:bg-blue-100 group-hover:text-blue-600 transition">➔</div>`
+                        }
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Open a specific topic learning view
+        function openTopic(topicId) {
+            currentTopic = TOPICS_DATA.find(t => t.id === topicId);
+            if (!currentTopic) return;
+
+            // Render BOW Table
+            document.getElementById('bowTitle').innerText = `Box of Words — ${currentTopic.dayTag}: ${currentTopic.title}`;
+            const tbody = document.getElementById('bowTableBody');
+            tbody.innerHTML = '';
+
+            currentTopic.bow.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition";
+                tr.innerHTML = `
+                    <td class="p-3.5 font-bold text-slate-800 flex items-center gap-2">
+                        <button onclick="playWordAudio('${item.vocab}') text-slate-400 hover:text-blue-600" title="Dengarkan pengucapan UK">
+                            <i class="fa-solid fa-volume-low text-xs text-blue-500"></i>
+                        </button>
+                        <span>${index + 1}. ${item.vocab}</span>
+                        <span class="text-slate-400 font-medium text-xs ml-1">${item.phonetic}</span>
+                    </td>
+                    <td class="p-3.5 text-slate-600 text-sm font-medium">${item.meaning}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Switch to Option 1 by default
+            switchOption(1);
+
+            // Clear input
+            document.getElementById('userWritingInput').value = '';
+
+            // Navigation transition
+            document.getElementById('viewTopics').classList.add('hidden');
+            document.getElementById('viewLesson').classList.remove('hidden');
+            document.getElementById('viewCorrection').classList.add('hidden');
+            document.getElementById('viewSpeaking').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- STREAMING_CHUNK:Handling Option switching and prompt rendering... ---
+        function switchOption(optNum) {
+            selectedOption = optNum;
+            const btn1 = document.getElementById('tabOpt1');
+            const btn2 = document.getElementById('tabOpt2');
+            const badge1 = document.getElementById('badgeOpt1');
+            const badge2 = document.getElementById('badgeOpt2');
+
+            if (optNum === 1) {
+                btn1.className = "p-4 rounded-2xl border-2 text-left transition duration-200 border-blue-600 bg-blue-50/50";
+                btn2.className = "p-4 rounded-2xl border-2 text-left transition duration-200 border-slate-200 hover:border-slate-300";
+                badge1.className = "w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px]";
+                badge2.className = "w-4 h-4 rounded-full border border-slate-300 text-transparent flex items-center justify-center text-[10px]";
+
+                // Render Guide 1
+                let qHtml = currentTopic.op1Questions.map(q => `
+                    <div class="space-y-0.5">
+                        <p class="font-bold text-slate-900 text-xs sm:text-sm">${q.eng}</p>
+                        <p class="text-xs text-slate-500 italic">${q.ind}</p>
+                    </div>
+                `).join('');
+
+                document.getElementById('challengeGuideBox').innerHTML = `
+                    <div class="font-bold text-slate-800">Tulis cerita pendek dengan judul “${currentTopic.op1Title}”. Gunakan 3–5 kosakata dari Box of Words.</div>
+                    <div class="space-y-2 pt-1">
+                        ${qHtml}
+                    </div>
+                `;
+            } else {
+                btn2.className = "p-4 rounded-2xl border-2 text-left transition duration-200 border-blue-600 bg-blue-50/50";
+                btn1.className = "p-4 rounded-2xl border-2 text-left transition duration-200 border-slate-200 hover:border-slate-300";
+                badge2.className = "w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px]";
+                badge1.className = "w-4 h-4 rounded-full border border-slate-300 text-transparent flex items-center justify-center text-[10px]";
+
+                const exampleVocab = currentTopic.bow[1] || currentTopic.bow[0];
+
+                document.getElementById('challengeGuideBox').innerHTML = `
+                    <div class="font-bold text-slate-800">Pilih 3–5 kosakata dari Box of Words, lalu buat masing-masing 1 kalimat bahasa Inggris.</div>
+                    <div class="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-xs space-y-1">
+                        <span class="font-bold text-amber-900">Contoh Format:</span>
+                        <p class="text-amber-800">${exampleVocab.vocab} ${exampleVocab.phonetic} ➔ <em>My ${exampleVocab.vocab.toLowerCase()} is very kind.</em></p>
+                    </div>
+                `;
+            }
+        }
+
+        // Speech Audio Player for Vocabs
+        function playWordAudio(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-GB';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // --- STREAMING_CHUNK:Integrating Gemini AI API & Fallback Evaluator (Langkah 2 Engine)... ---
+        async function submitWriting() {
+            const input = document.getElementById('userWritingInput').value.trim();
+            if (!input) {
+                alertModal("Yuk isi tulisanmu dulu bro sebelum di-submit! 😊");
+                return;
+            }
+            userSubmittedWriting = input;
+
+            // Switch view to correction page
+            document.getElementById('viewLesson').classList.add('hidden');
+            document.getElementById('viewCorrection').classList.remove('hidden');
+            document.getElementById('correctionLoading').classList.remove('hidden');
+            document.getElementById('correctionResult').classList.add('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            try {
+                // Call Gemini API or fallback parser
+                const evalData = await fetchBroAruleEvaluation(input, currentTopic);
+                generatedCorrectionData = evalData;
+
+                renderCorrectionResults(evalData);
+            } catch (err) {
+                console.error(err);
+                // Fallback rendering
+                const fallback = generateFallbackCorrection(input, currentTopic);
+                generatedCorrectionData = fallback;
+                renderCorrectionResults(fallback);
+            } finally {
+                document.getElementById('correctionLoading').classList.add('hidden');
+                document.getElementById('correctionResult').classList.remove('hidden');
+            }
+        }
+
+        function backToWriting() {
+            document.getElementById('viewCorrection').classList.add('hidden');
+            document.getElementById('viewLesson').classList.remove('hidden');
+        }
+
+        // Call Gemini API with strict system instructions for Bro Arule persona
+        async function fetchBroAruleEvaluation(userText, topic) {
+            const apiKey = ""; // Handled automatically in runtime context
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `
+You are Bro Arule, a friendly, relaxed tutor from Kampung Inggris teaching English level A1 (Beginner).
+Student Name: Bro Arif.
+Topic: ${topic.dayTag} - ${topic.title}.
+Box of Words: ${topic.bow.map(b => b.vocab).join(', ')}.
+
+Instructions:
+Evaluate the user's text and reply ONLY in structured JSON format matching this schema:
+{
+  "grammarCorrections": [
+    {
+      "original": "Original sentence written by student",
+      "explanation": "Simple Bahasa Indonesia grammar correction for level A1",
+      "corrected": "Corrected English sentence"
+    }
+  ],
+  "bowAnalysis": "Bahasa Indonesia evaluation on whether BOW words were used correctly + encouraging natural tip",
+  "fiveW1H": {
+    "what": "What happens in story",
+    "why": "Why",
+    "where": "Where",
+    "when": "When",
+    "who": "Who",
+    "how": "How"
+  },
+  "expandedParagraph": "Natural, complete expanded paragraph combining 5W+1H for A1 level",
+  "speakingQuestions": [
+    {
+      "eng": "Speaking question 1 in English",
+      "ind": "Terjemahan Indonesia dalam format miring"
+    },
+    {
+      "eng": "Speaking question 2 in English",
+      "ind": "Terjemahan Indonesia dalam format miring"
+    }
+  ]
+}
+No extra commentary, output strictly valid JSON.
+`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userText }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json"
+                }
+            };
+
+            const resp = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resp.ok) throw new Error("API call failed");
+
+            const data = await resp.json();
+            const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            return JSON.parse(jsonText);
+        }
+
+        // Fallback local evaluator generator for offline / instant performance
+        function generateFallbackCorrection(text, topic) {
+            const sentences = text.split(/(?<=[.?!])\s+/).filter(Boolean);
+            const grammarTable = sentences.map(s => {
+                let corr = s.trim();
+                let exp = "Sudah cukup bagus! Perhatikan keselarasan kata kerja dan kata ganti subjek.";
+                
+                // Simple A1 heuristics
+                if (corr.toLowerCase().includes("i is")) {
+                    corr = corr.replace(/i is/gi, "I am");
+                    exp = "Gunakan 'am' untuk subjek 'I', bukan 'is'.";
+                } else if (corr.toLowerCase().includes("he live")) {
+                    corr = corr.replace(/he live/gi, "He lives");
+                    exp = "Gunakan akhiran -s ('lives') untuk subjek He/She/It.";
+                } else if (corr.toLowerCase().includes("they helps")) {
+                    corr = corr.replace(/they helps/gi, "They help");
+                    exp = "Subjek jamak 'They' tidak perlu tambahan -s pada kata kerja.";
+                }
+                
+                // Capitalization check
+                if (corr.length > 0) {
+                    corr = corr.charAt(0).toUpperCase() + corr.slice(1);
+                }
+
+                return {
+                    original: s,
+                    explanation: exp,
+                    corrected: corr
+                };
+            });
+
+            // BOW match check
+            const usedBow = topic.bow.filter(b => text.toLowerCase().includes(b.vocab.toLowerCase()));
+            const bowAnalysisText = usedBow.length >= 3 
+                ? `Mantap bro! Kamu sudah pakai ${usedBow.length} kosakata BOW (${usedBow.map(b => b.vocab).join(', ')}) dengan tepat. Susunan kalimatmu sudah natural untuk level A1! 🔥`
+                : `Kamu pakai ${usedBow.length} kata BOW. Coba sisipkan lebih banyak kosakata seperti ${topic.bow.slice(0, 3).map(b => b.vocab).join(', ')} agar ceritamu makin kaya! 💡`;
+
+            return {
+                grammarCorrections: grammarTable.length > 0 ? grammarTable : [
+                    { original: text, explanation: "Tata bahasa sudah rapi dan jelas untuk level A1!", corrected: text }
+                ],
+                bowAnalysis: bowAnalysisText,
+                fiveW1H: {
+                    what: topic.title + " activity",
+                    why: "To spend quality time",
+                    where: "At home or nearby",
+                    when: "Everyday or weekends",
+                    who: "Arif and people around",
+                    how: "Happily together"
+                },
+                expandedParagraph: text + " We really enjoy our time together every single day.",
+                speakingQuestions: topic.speakingQuestions
+            };
+        }
+
+        // Render Langkah 2 Output into DOM
+        function renderCorrectionResults(data) {
+            // 1. Grammar Table
+            const tbodyGrammar = document.getElementById('tableGrammarBody');
+            tbodyGrammar.innerHTML = '';
+            (data.grammarCorrections || []).forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-800 font-medium">${row.original}</td>
+                    <td class="p-3 text-slate-600 text-xs">${row.explanation}</td>
+                    <td class="p-3 text-emerald-700 font-bold">${row.corrected}</td>
+                `;
+                tbodyGrammar.appendChild(tr);
+            });
+
+            // 2. BOW Analysis
+            document.getElementById('bowAnalysisBox').innerHTML = `<p>${data.bowAnalysis}</p>`;
+
+            // 3. 5W+1H Table
+            const tbody5W = document.getElementById('table5W1HBody');
+            tbody5W.innerHTML = '';
+            const fw = data.fiveW1H || {};
+            const items = [
+                { label: "What (Apa)", val: fw.what },
+                { label: "Why (Mengapa)", val: fw.why },
+                { label: "Where (Di mana)", val: fw.where },
+                { label: "When (Kapan)", val: fw.when },
+                { label: "Who (Siapa)", val: fw.who },
+                { label: "How (Bagaimana)", val: fw.how }
+            ];
+
+            items.forEach(item => {
+                if (item.val) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-3 font-bold text-slate-700 bg-slate-50/50">${item.label}</td>
+                        <td class="p-3 text-slate-800">${item.val}</td>
+                    `;
+                    tbody5W.appendChild(tr);
+                }
+            });
+
+            // Expanded Paragraph
+            document.getElementById('fullExpandedParagraph').innerText = `"${data.expandedParagraph || userSubmittedWriting}"`;
+
+            // 4. Speaking Questions Callout
+            const spkList = document.getElementById('speakingQuestionsList');
+            spkList.innerHTML = '';
+
+            const questions = data.speakingQuestions || currentTopic.speakingQuestions;
+            questions.forEach((q, idx) => {
+                const div = document.createElement('div');
+                div.className = "p-3.5 bg-slate-800/80 border border-slate-700 rounded-2xl space-y-1";
+                div.innerHTML = `
+                    <p class="font-bold text-white text-sm sm:text-base">${idx + 1}. ${q.eng}</p>
+                    <p class="text-xs text-amber-300 italic font-medium">${q.ind}</p>
+                `;
+                spkList.appendChild(div);
+            });
+        }
+
+        // --- STREAMING_CHUNK:Implementing Langkah 3: Mode Speaking interactive session & mandatory pronunciation drill... ---
+        function startSpeakingMode() {
+            document.getElementById('viewCorrection').classList.add('hidden');
+            document.getElementById('viewSpeaking').classList.remove('hidden');
+
+            spkIndex = 0;
+            awaitingDrillRepeat = false;
+            targetDrillSentence = "";
+
+            loadCurrentSpeakingQuestion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function loadCurrentSpeakingQuestion() {
+            const questions = generatedCorrectionData?.speakingQuestions || currentTopic.speakingQuestions;
+            const total = questions.length;
+
+            if (spkIndex >= total) {
+                // Sesi Speaking selesai!
+                finishSpeakingSession();
+                return;
+            }
+
+            const q = questions[spkIndex];
+
+            document.getElementById('speakingProgressBadge').innerText = `Soal ${spkIndex + 1}/${total}`;
+            document.getElementById('spkEngText').innerText = q.eng;
+            document.getElementById('spkIndoText').innerText = q.ind;
+
+            // Reset Feedback & Input UI
+            document.getElementById('speakingFeedbackPanel').classList.add('hidden');
+            document.getElementById('userSpeakingInput').value = '';
+            document.getElementById('drillWarningText').classList.add('hidden');
+            document.getElementById('speakingInputLabel').innerText = "Jawabanmu (Bicara atau Ketik):";
+
+            // Automatically read question
+            speakCurrentQuestion();
+        }
+
+        function speakCurrentQuestion() {
+            const qText = document.getElementById('spkEngText').innerText;
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(qText);
+                utterance.lang = 'en-GB';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        async function submitSpeakingAnswer() {
+            const userInput = document.getElementById('userSpeakingInput').value.trim();
+            if (!userInput) {
+                alertModal("Bicara atau ketik jawabanmu dulu bro! 🎙️");
+                return;
+            }
+
+            // Check if currently locked in MANDATORY DRILL REPEAT step
+            if (awaitingDrillRepeat) {
+                // Verify user repeated target sentence (fuzzy matching)
+                const cleanUser = userInput.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+                const cleanTarget = targetDrillSentence.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+
+                if (cleanUser.includes(cleanTarget) || calculateSimilarity(cleanUser, cleanTarget) > 0.6) {
+                    // Drill passed! Move to next question
+                    awaitingDrillRepeat = false;
+                    targetDrillSentence = "";
+                    spkIndex++;
+                    loadCurrentSpeakingQuestion();
+                } else {
+                    document.getElementById('drillWarningText').classList.remove('hidden');
+                    document.getElementById('userSpeakingInput').classList.add('border-red-500');
+                    setTimeout(() => document.getElementById('userSpeakingInput').classList.remove('border-red-500'), 1500);
+                }
+                return;
+            }
+
+            // Otherwise, evaluate answer for current question
+            document.getElementById('speechStatus').innerText = "Menganalisa jawaban Bro Arule...";
+
+            // Format evaluation with Verb 1 tags e.g. called (call)
+            const evaluation = evaluateA1SpeakingAnswer(userInput);
+            
+            // Show Feedback Panel
+            document.getElementById('spkFeedbackText').innerHTML = `
+                <p><strong>Kalimat diperbaiki:</strong> <span class="text-blue-600 font-bold">${evaluation.improvedSentence}</span></p>
+                <p class="text-xs text-slate-600"><strong>Alasan:</strong> ${evaluation.explanation}</p>
+            `;
+
+            // Setup Mandatory Pronunciation Drill
+            targetDrillSentence = evaluation.improvedSentenceClean;
+            document.getElementById('spkTargetDrillText').innerText = `"${targetDrillSentence}"`;
+            document.getElementById('speakingFeedbackPanel').classList.remove('hidden');
+
+            // Lock input for mandatory repeat
+            awaitingDrillRepeat = true;
+            document.getElementById('speakingInputLabel').innerText = "🔁 Ulangi Kalimat Hasil Koreksi di Atas:";
+            document.getElementById('userSpeakingInput').value = '';
+            document.getElementById('speechStatus').innerText = "Wajib ulangi pengucapan!";
+
+            // Speak corrected sentence aloud to student
+            if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance(targetDrillSentence);
+                u.lang = 'en-GB';
+                u.rate = 0.85;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        // Rule-based A1 speaking evaluator + verb tag generator e.g., went (go)
+        function evaluateA1SpeakingAnswer(answer) {
+            let corr = answer;
+            let exp = "Susunan kalimatmu sudah tepat dan dapat dipahami dengan baik!";
+
+            // Example irregular verb annotations for A1
+            corr = corr.replace(/\bwent\b/gi, "went *(go)*");
+            corr = corr.replace(/\bhad\b/gi, "had *(have)*");
+            corr = corr.replace(/\bplayed\b/gi, "played *(play)*");
+            corr = corr.replace(/\blived\b/gi, "lived *(live)*");
+            corr = corr.replace(/\bhelped\b/gi, "helped *(help)*");
+            corr = corr.replace(/\bcooked\b/gi, "cooked *(cook)*");
+
+            let cleanSentence = answer;
+            if (!cleanSentence.endsWith('.')) cleanSentence += '.';
+            cleanSentence = cleanSentence.charAt(0).toUpperCase() + cleanSentence.slice(1);
+
+            return {
+                improvedSentence: corr.charAt(0).toUpperCase() + corr.slice(1),
+                improvedSentenceClean: cleanSentence.replace(/\*\([^)]*\)\*/g, '').trim(),
+                explanation: exp
+            };
+        }
+
+        // Finish Speaking Session & Award Progress
+        function finishSpeakingSession() {
+            if (!completedTopics.includes(currentTopic.id)) {
+                completedTopics.push(currentTopic.id);
+                localStorage.setItem('broArule_completed', JSON.stringify(completedTopics));
+                updateProgressHeader();
+                renderTopicsList();
+            }
+
+            document.getElementById('viewSpeaking').classList.add('hidden');
+            document.getElementById('viewTopics').classList.remove('hidden');
+
+            alertModal(` Mantap Bro Arif! Sesi ${currentTopic.dayTag} selesai! Kosakata dan pengucapanmu makin oke! 🔥`);
+        }
+
+        // --- STREAMING_CHUNK:Integrating Web Speech API Microphone recording... ---
+        function initSpeechRecognition() {
+            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+                const SpeechReg = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechReg();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    isRecording = true;
+                    document.getElementById('micIcon').className = "fa-solid fa-microphone-slash text-red-600 pulse-ring";
+                    document.getElementById('speechStatus').innerText = "Mendengarkan...";
+                };
+
+                recognition.onresult = (e) => {
+                    const transcript = e.results[0][0].transcript;
+                    document.getElementById('userSpeakingInput').value = transcript;
+                    document.getElementById('speechStatus').innerText = "Terdeteksi!";
+                };
+
+                recognition.onerror = () => {
+                    document.getElementById('speechStatus').innerText = "Gagal mendeteksi suara.";
+                    stopMic();
+                };
+
+                recognition.onend = () => {
+                    stopMic();
+                };
+            }
+        }
+
+        function toggleMic() {
+            if (!recognition) {
+                alertModal("Browser kamu belum mendukung Speech Recognition. Silakan ketik jawabanmu di kolom teks ya! 😊");
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        function stopMic() {
+            isRecording = false;
+            document.getElementById('micIcon').className = "fa-solid fa-microphone text-base";
+            document.getElementById('speechStatus').innerText = "Siap";
+        }
+
+        // String similarity helper for drill validation
+        function calculateSimilarity(s1, s2) {
+            const set1 = new Set(s1.split(' '));
+            const set2 = new Set(s2.split(' '));
+            const intersection = new Set([...set1].filter(x => set2.has(x)));
+            return intersection.size / Math.max(set1.size, set2.size);
+        }
+
+        // Video Modal Handler
+        function openVideoModal() {
+            document.getElementById('videoModal').classList.remove('hidden');
+        }
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.add('hidden');
+        }
+
+        // Simple alert replacement modal
+        function alertModal(msg) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-6 right-6 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl z-50 text-sm font-bold flex items-center gap-3 border border-slate-700 animate-bounce";
+            toast.innerHTML = `<span>🤠 Bro Arule:</span> <span>${msg}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "inggrisinyuk-kids-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prototipe TypeScript alur modul belajar (Vocabulary, Listening, Speaking, Grammar) - client-side murni, tanpa backend, dibundel jadi 1 file JS statis.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && esbuild src/main.ts --bundle --outfile=public/bundle.js --format=iife --target=es2019 --minify",
+    "dev": "esbuild src/main.ts --bundle --outfile=public/bundle.js --format=iife --target=es2019 --servedir=public --serve=127.0.0.1:8000"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}

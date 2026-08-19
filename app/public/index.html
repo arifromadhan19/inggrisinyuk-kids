@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A4A4E">
+<meta name="description" content="InggrisinYuk Kids — belajar Bahasa Inggris untuk anak lewat main: Vocabulary, Listening, Speaking, dan Grammar.">
+<title>InggrisinYuk Kids — Belajar Bahasa Inggris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Lewati ke konten</a>
+
+<div class="shell">
+
+  <!-- Rail navigasi (tablet & desktop) -->
+  <aside class="rail">
+    <button class="brand" type="button" data-action="navigate" data-payload="home" aria-label="Beranda InggrisinYuk Kids">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="40" height="40" rx="13" fill="#0FA79C"/>
+        <circle cx="20" cy="15" r="6.6" fill="#FFC862"/>
+        <path d="M6 26.5c3.3 0 3.3 3.2 6.7 3.2s3.3-3.2 6.6-3.2 3.4 3.2 6.7 3.2 3.3-3.2 6.7-3.2" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-word">InggrisinYuk<small>Kids</small></span>
+    </button>
+
+    <nav class="rail-nav" id="railNav" aria-label="Navigasi utama"></nav>
+
+    <div class="rail-foot" id="railFoot"></div>
+  </aside>
+
+  <div class="viewport">
+
+    <!-- Header ringkas (mobile) -->
+    <header class="topline">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+          <rect x="0" y="0" width="40" height="40" rx="13" fill="#0FA79C"/>
+          <circle cx="20" cy="15" r="6.6" fill="#FFC862"/>
+          <path d="M6 26.5c3.3 0 3.3 3.2 6.7 3.2s3.3-3.2 6.6-3.2 3.4 3.2 6.7 3.2 3.3-3.2 6.7-3.2" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-word">InggrisinYuk<small>Kids</small></span>
+      </div>
+      <div id="topLevel"></div>
+    </header>
+
+    <main class="main" id="main" tabindex="-1">
+      <div id="crumb" class="crumb" hidden></div>
+      <div id="root"></div>
+    </main>
+
+  </div>
+</div>
+
+<!-- Tab bar (mobile) -->
+<nav class="tabbar" id="tabbar" aria-label="Navigasi utama"></nav>
+
+<script src="./bundle.js"></script>
+</body>
+</html>

@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alur Modul Belajar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#2A2150;
+    --navy-2:#4B4370;
+    --yellow:#F6C445;
+    --blue-bg:#DFF0FC;
+    --blue-text:#1C86D6;
+    --purple-bg:#EAE3FC;
+    --purple-text:#6D4FE0;
+    --orange-bg:#FEF0DE;
+    --orange-text:#D97706;
+    --gray-bg:#EDEBF7;
+    --gray-text:#5B5479;
+    --green:#3FAE5C;
+    --green-bg:#E7F7EC;
+    --red:#E2586B;
+    --bg:#FBFAFE;
+    --card-border:#ECE9F7;
+    --shadow: 0 10px 30px -12px rgba(42,33,80,0.18);
+    --accent:#6D4FE0;
+    --accent-bg:#EAE3FC;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Nunito',sans-serif;
+    color:var(--navy);
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+    padding:16px 10px 50px;
+  }
+  .app{
+    width:100%;
+    max-width:460px;
+  }
+  h1,h2,h3,button,.baloo{ font-family:'Baloo 2',sans-serif; }
+  button{ font-size:16px; cursor:pointer; border:none; }
+
+  /* ---------- Top note banner (explains this is a prototype) ---------- */
+  .note{
+    background:var(--navy);
+    color:#fff;
+    font-size:12.5px;
+    line-height:1.5;
+    padding:10px 14px;
+    border-radius:14px;
+    margin-bottom:14px;
+    opacity:0.92;
+  }
+  .note b{ color:var(--yellow); }
+
+  /* ---------- Breadcrumb ---------- */
+  .crumb{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:4px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--gray-text);
+    margin-bottom:10px;
+    padding:0 2px;
+  }
+  .crumb span.sep{ opacity:.5; }
+  .crumb span.current{ color:var(--navy); }
+
+  /* ---------- Cards ---------- */
+  .card{
+    background:#fff;
+    border:1px solid var(--card-border);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    padding:20px;
+    margin-bottom:14px;
+  }
+
+  /* ---------- Menu Belajar ---------- */
+  .hero{
+    display:flex; align-items:center; gap:12px;
+    background:linear-gradient(135deg,var(--navy),var(--navy-2));
+    color:#fff;
+    border-radius:22px;
+    padding:16px 18px;
+    margin-bottom:16px;
+  }
+  .hero .mascot{ font-size:36px; }
+  .hero .lvl{ font-weight:800; font-size:16px; }
+  .hero .lvl small{ display:block; font-weight:600; font-size:12px; opacity:.8; font-family:'Nunito',sans-serif;}
+
+  .skill-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .skill-card{
+    background:#fff;
+    border:2px solid var(--card-border);
+    border-radius:20px;
+    padding:16px 12px;
+    text-align:center;
+    box-shadow:var(--shadow);
+    transition:transform .12s ease;
+  }
+  .skill-card:active{ transform:scale(.96); }
+  .skill-card .ic{
+    width:56px;height:56px;border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px; margin:0 auto 10px;
+  }
+  .skill-card h3{ margin:0 0 4px; font-size:16px; color:var(--navy); }
+  .skill-card p{ margin:0; font-size:11.5px; color:var(--gray-text); font-weight:700; line-height:1.4; }
+
+  /* ---------- Topic list ---------- */
+  .topic-item{
+    display:flex; align-items:center; gap:12px;
+    background:#fff; border:1px solid var(--card-border);
+    border-radius:18px; padding:14px 16px; margin-bottom:10px;
+    box-shadow:var(--shadow);
+  }
+  .topic-item .num{
+    width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800; font-size:15px; flex-shrink:0;
+    background:var(--accent-bg); color:var(--accent);
+  }
+  .topic-item .info{ flex:1; }
+  .topic-item .info b{ display:block; font-size:15px; color:var(--navy); font-family:'Baloo 2',sans-serif; }
+  .topic-item .info span{ font-size:11.5px; color:var(--gray-text); font-weight:700; }
+  .topic-item .go{
+    background:var(--accent); color:#fff; border-radius:999px;
+    padding:8px 16px; font-weight:800; font-size:13px;
+  }
+
+  /* ---------- Activity top bar ---------- */
+  .topbar{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .backbtn{
+    background:#fff; border:1px solid var(--card-border); border-radius:50%;
+    width:38px; height:38px; flex-shrink:0; box-shadow:var(--shadow);
+    font-size:16px; display:flex; align-items:center; justify-content:center;
+  }
+  .topbar .title{ font-weight:800; font-size:15px; color:var(--navy); flex:1; }
+  .topbar .title small{ display:block; font-weight:700; font-size:11px; color:var(--gray-text); font-family:'Nunito',sans-serif;}
+
+  /* ---------- Step dots ---------- */
+  .steps{ display:flex; gap:8px; margin-bottom:16px; }
+  .step{
+    flex:1; text-align:center; padding:8px 4px; border-radius:14px;
+    background:#fff; border:2px solid var(--card-border);
+    font-size:11px; font-weight:800; color:var(--gray-text);
+  }
+  .step.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .step.done{ background:var(--accent-bg); border-color:var(--accent-bg); color:var(--accent); }
+
+  /* ---------- Generic activity card ---------- */
+  .stage-badge{
+    display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em;
+    padding:5px 12px; border-radius:999px; margin-bottom:10px;
+    background:var(--accent-bg); color:var(--accent);
+  }
+  .big-emoji{ font-size:64px; text-align:center; margin:6px 0 10px; }
+  .en-text{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:20px; color:var(--navy); text-align:center; }
+  .id-text{ text-align:center; color:var(--gray-text); font-weight:700; font-size:13px; margin-top:2px; }
+
+  .speak-row{ display:flex; justify-content:center; margin:14px 0; }
+  .speak-btn{
+    background:var(--accent); color:#fff; border-radius:999px;
+    padding:12px 22px; font-weight:800; font-size:14px;
+    display:flex; align-items:center; gap:8px; box-shadow:var(--shadow);
+  }
+  .speak-btn:active{ transform:scale(.97); }
+
+  .primer-list{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+  .primer-item{
+    display:flex; align-items:center; gap:10px;
+    background:var(--accent-bg); border-radius:16px; padding:12px 14px;
+  }
+  .primer-item .txt{ flex:1; }
+  .primer-item .txt b{ font-family:'Baloo 2',sans-serif; font-size:14.5px; color:var(--navy); display:block; }
+  .primer-item .txt span{ font-size:11.5px; color:var(--gray-text); font-weight:700; }
+  .mini-play{
+    width:34px;height:34px;border-radius:50%; background:#fff; color:var(--accent);
+    display:flex;align-items:center;justify-content:center; font-size:14px; flex-shrink:0;
+  }
+
+  .primary-btn{
+    width:100%; background:var(--accent); color:#fff; border-radius:18px;
+    padding:15px; font-weight:800; font-size:15.5px; margin-top:16px;
+    box-shadow:var(--shadow);
+  }
+  .primary-btn:active{ transform:scale(.98); }
+  .ghost-btn{
+    width:100%; background:#fff; color:var(--accent); border:2px solid var(--accent-bg);
+    border-radius:18px; padding:13px; font-weight:800; font-size:14px; margin-top:10px;
+  }
+
+  /* ---------- Option grid (tebak & cocokkan / dengar & pilih) ---------- */
+  .opt-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  .opt-grid.three{ grid-template-columns:1fr 1fr 1fr; }
+  .opt-btn{
+    background:#fff; border:3px solid var(--card-border); border-radius:18px;
+    padding:16px 8px; text-align:center; font-size:34px;
+  }
+  .opt-btn .lbl{ display:block; font-size:11px; font-weight:800; color:var(--gray-text); margin-top:6px; font-family:'Baloo 2',sans-serif;}
+  .opt-btn.correct{ border-color:var(--green); background:var(--green-bg); animation:pop .3s ease; }
+  .opt-btn.wrong{ border-color:var(--red); animation:shake .3s ease; }
+
+  @keyframes pop{ 0%{transform:scale(1);} 50%{transform:scale(1.12);} 100%{transform:scale(1);} }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+  .feedback{
+    text-align:center; font-weight:800; font-family:'Baloo 2',sans-serif;
+    font-size:15px; margin-top:12px; min-height:22px;
+  }
+  .feedback.good{ color:var(--green); }
+  .feedback.bad{ color:var(--red); }
+
+  /* ---------- Chip builder (susun kalimat / eja kata) ---------- */
+  .answer-row{
+    display:flex; flex-wrap:wrap; gap:8px; min-height:52px;
+    background:var(--accent-bg); border-radius:16px; padding:10px;
+    margin:14px 0 10px; justify-content:center; align-items:center;
+  }
+  .answer-row.empty::after{ content:'Tap kata di bawah ⤵️'; color:var(--accent); font-weight:700; font-size:12.5px; }
+  .bank-row{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .chip{
+    background:#fff; border:2px solid var(--accent); color:var(--accent);
+    border-radius:14px; padding:9px 14px; font-weight:800; font-size:15px;
+    font-family:'Baloo 2',sans-serif;
+  }
+  .chip.placed{ background:var(--accent); color:#fff; }
+  .chip.letter{ padding:9px 13px; min-width:20px; text-align:center; text-transform:uppercase; }
+
+  /* ---------- Mic button (speaking) ---------- */
+  .mic-wrap{ text-align:center; margin:18px 0 8px; }
+  .mic-btn{
+    width:78px; height:78px; border-radius:50%; background:var(--green); color:#fff;
+    font-size:30px; box-shadow:0 10px 24px -8px rgba(63,174,92,.55);
+  }
+  .mic-btn.listening{ animation:pulse 1s infinite; background:var(--red); }
+  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(226,88,107,.5);} 70%{box-shadow:0 0 0 16px rgba(226,88,107,0);} 100%{box-shadow:0 0 0 0 rgba(226,88,107,0);} }
+  .mic-hint{ font-size:12px; color:var(--gray-text); font-weight:700; margin-top:8px; }
+  .heard-text{ text-align:center; font-size:13px; color:var(--gray-text); font-weight:700; margin-top:8px; min-height:18px; }
+
+  /* ---------- Roleplay turn indicator ---------- */
+  .turn-dots{ display:flex; justify-content:center; gap:6px; margin-bottom:10px; }
+  .turn-dot{ width:9px;height:9px;border-radius:50%; background:var(--card-border); }
+  .turn-dot.on{ background:var(--accent); }
+
+  /* ---------- Selesai screen ---------- */
+  .done-wrap{ text-align:center; padding:12px 4px; }
+  .done-mascot{ font-size:70px; }
+  .stars{ font-size:30px; letter-spacing:6px; margin:10px 0; }
+  .done-title{ font-size:20px; margin:4px 0 4px; }
+  .done-sub{ color:var(--gray-text); font-weight:700; font-size:13px; margin-bottom:6px; }
+
+  .hidden{ display:none !important; }
+
+  [onclick]:focus-visible, button:focus-visible{
+    outline:3px solid var(--navy-2);
+    outline-offset:2px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .opt-btn.correct, .opt-btn.wrong, .mic-btn.listening{ animation:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="note">
+    🧪 <b>Prototipe alur</b> — bukan desain final, cuma untuk lihat urutan layar: Menu Belajar → Daftar Materi → <b>Kenalan → Latihan Inti → Tantangan</b>. TTS &amp; mikrofon pakai Web Speech API bawaan browser (paling stabil di Chrome).
+  </div>
+
+  <div id="crumb" class="crumb"></div>
+  <div id="root"></div>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA — 1 topik per submodul dibuat lengkap, 2 lainnya versi ringkas
+   ============================================================ */
+const SKILLS = {
+  vocabulary: {
+    label:'Vocabulary', emoji:'📚', tagline:'Kenal kata baru',
+    accent:'var(--purple-text)', accentBg:'var(--purple-bg)',
+    topics: [
+      { id:'keluarga', title:'Anggota Keluarga', desc:'4 kata', items:[
+        {en:'Mother', id:'Ibu', emoji:'👩', example:{en:'This is my mother.', id:'Ini ibuku.', emoji:'👩'}},
+        {en:'Father', id:'Ayah', emoji:'👨', example:{en:'This is my father.', id:'Ini ayahku.', emoji:'👨'}},
+        {en:'Sister', id:'Kakak Perempuan', emoji:'👧', example:{en:'I love my sister.', id:'Aku sayang kakak perempuanku.', emoji:'👧'}},
+        {en:'Brother', id:'Kakak Laki-laki', emoji:'👦', example:{en:'I play with my brother.', id:'Aku main dengan kakak laki-lakiku.', emoji:'👦'}},
+      ]},
+      { id:'angka', title:'Angka 1–4', desc:'4 kata', items:[
+        {en:'One', id:'Satu', emoji:'1️⃣', example:{en:'I have one apple.', id:'Aku punya satu apel.', emoji:'🍎'}},
+        {en:'Two', id:'Dua', emoji:'2️⃣', example:{en:'Budi has two apples.', id:'Budi punya dua apel.', emoji:'🍎🍎'}},
+        {en:'Three', id:'Tiga', emoji:'3️⃣', example:{en:'I see three cats.', id:'Aku lihat tiga kucing.', emoji:'🐱🐱🐱'}},
+        {en:'Four', id:'Empat', emoji:'4️⃣', example:{en:'She has four balls.', id:'Dia punya empat bola.', emoji:'⚽⚽⚽⚽'}},
+      ]},
+      { id:'warna', title:'Warna', desc:'4 kata', items:[
+        {en:'Red', id:'Merah', emoji:'🔴', example:{en:'The apple is red.', id:'Apel itu merah.', emoji:'🍎'}},
+        {en:'Blue', id:'Biru', emoji:'🔵', example:{en:'The sky is blue.', id:'Langitnya biru.', emoji:'🌤️'}},
+        {en:'Green', id:'Hijau', emoji:'🟢', example:{en:'The grass is green.', id:'Rumputnya hijau.', emoji:'🌿'}},
+        {en:'Sun', id:'Matahari', emoji:'☀️', example:{en:'I can see the sun.', id:'Aku bisa lihat mataharinya.', emoji:'☀️'}},
+      ]},
+    ]
+  },
+  listening: {
+    label:'Listening', emoji:'🎧', tagline:'Dengar & pahami',
+    accent:'var(--blue-text)', accentBg:'var(--blue-bg)',
+    topics: [
+      { id:'toko', title:'Di Toko', scene:'🏪', desc:'Cerita belanja',
+        primer:[
+          {en:'How much is this?', id:'Berapa harganya?'},
+          {en:'I want to buy an apple.', id:'Saya mau beli apel.'},
+        ],
+        drill:[
+          { en:'I want a red apple.', opts:[{emoji:'🍎',ok:true},{emoji:'🍌'},{emoji:'🍇'}] },
+          { en:'Can I have a banana?', opts:[{emoji:'🍌',ok:true},{emoji:'🍉'},{emoji:'🍎'}] },
+        ],
+        story:['Andi goes to the shop.','He buys a red apple.','The apple is one dollar.'],
+        question:{ en:'What did Andi buy?', opts:[{emoji:'🍎',lbl:'Apple',ok:true},{emoji:'🍌',lbl:'Banana'},{emoji:'🍇',lbl:'Grape'}] }
+      },
+      { id:'perkenalan', title:'Perkenalan', scene:'👋', desc:'Cerita kenalan',
+        primer:[ {en:'What is your name?', id:'Siapa namamu?'} ],
+        drill:[ { en:'She is my sister.', opts:[{emoji:'👧',ok:true},{emoji:'👴'}] } ],
+        story:['This is Ara.','Ara is seven years old.','Ara likes blue.'],
+        question:{ en:'What color does Ara like?', opts:[{emoji:'🔵',lbl:'Blue',ok:true},{emoji:'🔴',lbl:'Red'}] }
+      },
+      { id:'sekolah', title:'Di Sekolah', scene:'🏫', desc:'Cerita sekolah',
+        primer:[ {en:'This is my classroom.', id:'Ini kelasku.'} ],
+        drill:[ { en:'I have a pencil.', opts:[{emoji:'✏️',ok:true},{emoji:'📕'}] } ],
+        story:['Budi is at school.','He has a blue bag.','He likes his teacher.'],
+        question:{ en:"What color is Budi's bag?", opts:[{emoji:'🔵',lbl:'Blue',ok:true},{emoji:'🟢',lbl:'Green'}] }
+      },
+    ]
+  },
+  speaking: {
+    label:'Speaking', emoji:'🗣️', tagline:'Berani ngomong',
+    accent:'var(--green)', accentBg:'var(--green-bg)',
+    topics: [
+      { id:'kenalan-teman', title:'Kenalan dengan Teman', desc:'2 latihan bicara',
+        model:[ 'Hello, my name is Ara.', 'Nice to meet you.' ],
+        drill:[ 'My name is Ara.', 'I am seven years old.' ],
+        roleplay:[ "What's your name?", 'How old are you?', 'What is your favorite color?' ]
+      },
+      { id:'beli-toko', title:'Beli di Toko', desc:'2 latihan bicara',
+        model:[ 'How much is this?' ],
+        drill:[ 'I want an apple, please.' ],
+        roleplay:[ 'What do you want to buy?', 'How many do you want?' ]
+      },
+      { id:'tanya-kabar', title:'Tanya Kabar', desc:'2 latihan bicara',
+        model:[ 'How are you?' ],
+        drill:[ 'I am fine, thank you.' ],
+        roleplay:[ 'How are you today?', 'Are you happy?' ]
+      },
+    ]
+  },
+  grammar: {
+    label:'Grammar', emoji:'✏️', tagline:'Susun pola kalimat',
+    accent:'var(--orange-text)', accentBg:'var(--orange-bg)',
+    topics: [
+      { id:'this-is', title:'Pola "This is..."', desc:'To be — perkenalan',
+        examples:[ {en:'This is a cat.', emoji:'🐱'}, {en:'This is a dog.', emoji:'🐶'} ],
+        scramble:[
+          { emoji:'🐱', target:['This','is','a','cat'] },
+          { emoji:'⚽', target:['This','is','a','ball'] },
+        ],
+        fill:{ before:['This','is','my'], after:[], options:[
+          {word:'book', emoji:'📕'}, {word:'ball', emoji:'⚽'}, {word:'cat', emoji:'🐱'}
+        ]}
+      },
+      { id:'there-is', title:'There is / There are', desc:'Menyebut benda',
+        examples:[ {en:'There is a ball.', emoji:'⚽'}, {en:'There are two cats.', emoji:'🐱🐱'} ],
+        scramble:[ { emoji:'⚽', target:['There','is','a','ball'] } ],
+        fill:{ before:['There','is','a'], after:[], options:[
+          {word:'cat', emoji:'🐱'}, {word:'dog', emoji:'🐶'}, {word:'book', emoji:'📕'}
+        ]}
+      },
+      { id:'pronouns', title:'Kata Ganti Orang', desc:'I / You / He / She',
+        examples:[ {en:'I am happy.', emoji:'😊'}, {en:'She is my sister.', emoji:'👧'} ],
+        scramble:[ { emoji:'😊', target:['I','am','happy'] } ],
+        fill:{ before:['I','like'], after:[], options:[
+          {word:'apples', emoji:'🍎'}, {word:'blue', emoji:'🔵'}, {word:'football', emoji:'⚽'}
+        ]}
+      },
+    ]
+  }
+};
+
+const STEP_LABELS = ['Kenalan','Latihan Inti','Tantangan'];
+
+/* ============================================================
+   STATE + ROUTER
+   ============================================================ */
+let state = { screen:'menu', skillKey:null, topicIndex:0, step:0 };
+const root = document.getElementById('root');
+const crumbEl = document.getElementById('crumb');
+
+function go(screen, extra){
+  state.screen = screen;
+  Object.assign(state, extra||{});
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function render(){
+  renderCrumb();
+  if(state.screen==='menu') return renderMenu();
+  if(state.screen==='topics') return renderTopics();
+  if(state.screen==='activity') return renderActivity();
+}
+
+function renderCrumb(){
+  const parts = ['🏠 Menu Belajar'];
+  if(state.skillKey){ parts.push(SKILLS[state.skillKey].label); }
+  if(state.screen==='activity'){
+    const t = SKILLS[state.skillKey].topics[state.topicIndex];
+    parts.push(t.title);
+    parts.push(STEP_LABELS[state.step]);
+  }
+  crumbEl.innerHTML = parts.map((p,i)=>{
+    const isLast = i===parts.length-1;
+    return `<span class="${isLast?'current':''}">${p}</span>` + (isLast? '' : `<span class="sep">›</span>`);
+  }).join('');
+}
+
+/* ---------- SCREEN 1: Menu Belajar ---------- */
+function renderMenu(){
+  root.innerHTML = `
+    <div class="hero">
+      <div class="mascot">🦁</div>
+      <div class="lvl">Explorer 🧭
+        <small>≈ Pre-A1 → A1 · Usia 7–9 th</small>
+      </div>
+    </div>
+    <div class="skill-grid">
+      ${Object.keys(SKILLS).map(key=>{
+        const s = SKILLS[key];
+        return `
+        <div class="skill-card" tabindex="0" role="button" onclick="go('topics',{skillKey:'${key}', topicIndex:0})" onkeydown="if(event.key==='Enter')go('topics',{skillKey:'${key}', topicIndex:0})">
+          <div class="ic" style="background:${s.accentBg};color:${s.accent}">${s.emoji}</div>
+          <h3>${s.label}</h3>
+          <p>${s.tagline}</p>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+/* ---------- SCREEN 2: Daftar Materi ---------- */
+function renderTopics(){
+  const s = SKILLS[state.skillKey];
+  document.documentElement.style.setProperty('--accent', s.accent);
+  document.documentElement.style.setProperty('--accent-bg', s.accentBg);
+  root.innerHTML = `
+    <div class="topbar">
+      <button class="backbtn" onclick="go('menu')">←</button>
+      <div class="title">${s.emoji} ${s.label}<small>Pilih materi untuk mulai belajar</small></div>
+    </div>
+    ${s.topics.map((t,i)=>`
+      <div class="topic-item" tabindex="0" role="button" onclick="go('activity',{topicIndex:${i}, step:0})" onkeydown="if(event.key==='Enter')go('activity',{topicIndex:${i}, step:0})">
+        <div class="num">${i+1}</div>
+        <div class="info"><b>${t.title}</b><span>${t.desc || ''}</span></div>
+        <div class="go">Mulai</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ---------- SCREEN 3: Activity shell (Kenalan / Latihan Inti / Tantangan) ---------- */
+function renderActivity(){
+  const s = SKILLS[state.skillKey];
+  const t = s.topics[state.topicIndex];
+  document.documentElement.style.setProperty('--accent', s.accent);
+  document.documentElement.style.setProperty('--accent-bg', s.accentBg);
+
+  const stepsHtml = STEP_LABELS.map((label,i)=>{
+    let cls = '';
+    if(i===state.step) cls='active'; else if(i<state.step) cls='done';
+    return `<div class="step ${cls}">${label}</div>`;
+  }).join('');
+
+  root.innerHTML = `
+    <div class="topbar">
+      <button class="backbtn" onclick="go('topics')">←</button>
+      <div class="title">${t.title}<small>${s.label}</small></div>
+    </div>
+    <div class="steps">${stepsHtml}</div>
+    <div class="card" id="stage"></div>
+  `;
+
+  const stageEl = document.getElementById('stage');
+  if(state.step===0) renderKenalan(stageEl, s, t);
+  if(state.step===1) renderLatihanInti(stageEl, s, t);
+  if(state.step===2) renderTantangan(stageEl, s, t);
+}
+
+function nextStep(){
+  if(state.step<2){ state.step++; render(); }
+  else renderSelesai();
+}
+
+function renderSelesai(){
+  const s = SKILLS[state.skillKey];
+  document.getElementById('stage').innerHTML = `
+    <div class="done-wrap">
+      <div class="done-mascot">🦁🎉</div>
+      <div class="stars">⭐⭐⭐</div>
+      <h2 class="done-title baloo">Kerja Bagus!</h2>
+      <p class="done-sub">Modul "${s.topics[state.topicIndex].title}" selesai kamu coba.</p>
+      <button class="primary-btn" onclick="go('activity',{step:0})">🔁 Ulangi Modul Ini</button>
+      <button class="ghost-btn" onclick="go('topics')">📋 Pilih Materi Lain</button>
+      <button class="ghost-btn" onclick="go('menu')">🏠 Menu Belajar</button>
+    </div>
+  `;
+}
+
+/* ============================================================
+   TTS / STT helpers
+   ============================================================ */
+const ttsSupported = 'speechSynthesis' in window;
+function speak(text){
+  if(!ttsSupported) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+}
+function speakSequence(lines, gapMs){
+  if(!ttsSupported || !lines.length) return;
+  window.speechSynthesis.cancel();
+  lines.forEach((line,i)=>{
+    const u = new SpeechSynthesisUtterance(line);
+    u.lang='en-US'; u.rate=0.9;
+    setTimeout(()=>window.speechSynthesis.speak(u), i*(gapMs||1600));
+  });
+}
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const sttSupported = !!SR;
+function listenOnce(onResult, onError){
+  if(!sttSupported){ onError && onError('unsupported'); return; }
+  const rec = new SR();
+  rec.lang = 'en-US';
+  rec.maxAlternatives = 1;
+  rec.onresult = (e)=> onResult(e.results[0][0].transcript);
+  rec.onerror = ()=> onError && onError('error');
+  rec.start();
+  return rec;
+}
+function normalize(str){
+  return str.toLowerCase().replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim();
+}
+function looseMatch(said, target){
+  const s = normalize(said), t = normalize(target);
+  if(!s) return false;
+  const tWords = t.split(' ').filter(w=>w.length>2);
+  const hit = tWords.filter(w=>s.includes(w)).length;
+  return hit >= Math.max(1, Math.ceil(tWords.length*0.5));
+}
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+/* ============================================================
+   KENALAN (per skill)
+   ============================================================ */
+function renderKenalan(el, s, t){
+  if(s.label==='Vocabulary'){
+    el.innerHTML = `
+      <span class="stage-badge">👀 KENALAN</span>
+      <div class="id-text" style="margin-bottom:10px;">Dengarkan kata-katanya dulu, tap 🔊 untuk mengulang</div>
+      <div class="primer-list">
+        ${t.items.map((it,i)=>`
+          <div class="primer-item">
+            <div style="font-size:26px">${it.emoji}</div>
+            <div class="txt"><b>${it.en}</b><span>${it.id}</span></div>
+            <div class="mini-play" onclick="speak('${it.en}')">🔊</div>
+          </div>
+        `).join('')}
+      </div>
+      <button class="primary-btn" onclick="nextStep()">Lanjut ke Latihan Inti →</button>
+    `;
+  } else if(s.label==='Listening'){
+    el.innerHTML = `
+      <span class="stage-badge">👀 KENALAN</span>
+      <div class="big-emoji">${t.scene}</div>
+      <div class="id-text" style="margin-bottom:10px;">Dengar dulu contoh kalimatnya</div>
+      <div class="primer-list">
+        ${t.primer.map(p=>`
+          <div class="primer-item">
+            <div class="txt"><b>${p.en}</b><span>${p.id}</span></div>
+            <div class="mini-play" onclick="speak('${p.en}')">🔊</div>
+          </div>
+        `).join('')}
+      </div>
+      <button class="primary-btn" onclick="nextStep()">Lanjut ke Latihan Inti →</button>
+    `;
+  } else if(s.label==='Speaking'){
+    el.innerHTML = `
+      <span class="stage-badge">👀 KENALAN</span>
+      <div class="id-text" style="margin-bottom:10px;">Dengarkan cara mengucapkannya dulu, ya!</div>
+      <div class="primer-list">
+        ${t.model.map(m=>`
+          <div class="primer-item">
+            <div class="txt"><b>${m}</b></div>
+            <div class="mini-play" onclick="speak('${m}')">🔊</div>
+          </div>
+        `).join('')}
+      </div>
+      <button class="primary-btn" onclick="nextStep()">Lanjut ke Latihan Inti →</button>
+    `;
+  } else if(s.label==='Grammar'){
+    el.innerHTML = `
+      <span class="stage-badge">👀 KENALAN</span>
+      <div class="id-text" style="margin-bottom:10px;">Perhatikan polanya lewat contoh (bukan rumus!)</div>
+      <div class="primer-list">
+        ${t.examples.map(ex=>`
+          <div class="primer-item">
+            <div style="font-size:26px">${ex.emoji}</div>
+            <div class="txt"><b>${ex.en}</b></div>
+            <div class="mini-play" onclick="speak('${ex.en}')">🔊</div>
+          </div>
+        `).join('')}
+      </div>
+      <button class="primary-btn" onclick="nextStep()">Lanjut ke Latihan Inti →</button>
+    `;
+  }
+}
+
+/* ============================================================
+   LATIHAN INTI (per skill)
+   ============================================================ */
+function renderLatihanInti(el, s, t){
+  if(s.label==='Vocabulary') return gameTebakCocokkan(el, t.items, ()=>nextStep());
+  if(s.label==='Listening') return gameDengarPilih(el, t.drill, ()=>nextStep());
+  if(s.label==='Speaking') return gameUcapkanCek(el, t.drill, ()=>nextStep());
+  if(s.label==='Grammar') return gameSusunKalimat(el, t.scramble, ()=>nextStep());
+}
+
+/* --- Vocabulary: Tebak & Cocokkan --- */
+function gameTebakCocokkan(el, items, onDone){
+  let round = 0;
+  const order = shuffle(items);
+  function draw(){
+    if(round>=order.length) return onDone();
+    const target = order[round];
+    const opts = shuffle([target, ...shuffle(items.filter(i=>i!==target)).slice(0,3)]);
+    el.innerHTML = `
+      <span class="stage-badge">🎯 LATIHAN INTI · Tebak & Cocokkan</span>
+      <div class="id-text">Soal ${round+1} dari ${order.length}</div>
+      <div class="speak-row"><button class="speak-btn" onclick="speak('${target.en}')">🔊 Dengar Lagi</button></div>
+      <div class="opt-grid" id="opts">
+        ${opts.map((o,i)=>`<button class="opt-btn" data-i="${i}" onclick="pickVocab(${i})">${o.emoji}</button>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+    `;
+    speak(target.en);
+    window.pickVocab = function(i){
+      const btn = document.querySelector(`#opts [data-i="${i}"]`);
+      const fb = document.getElementById('fb');
+      if(opts[i]===target){
+        btn.classList.add('correct');
+        fb.textContent = 'Betul! 🎉'; fb.className='feedback good';
+        round++;
+        setTimeout(draw, 800);
+      } else {
+        btn.classList.add('wrong');
+        fb.textContent = 'Coba lagi ya 💪'; fb.className='feedback bad';
+        setTimeout(()=>btn.classList.remove('wrong'), 350);
+      }
+    };
+  }
+  draw();
+}
+
+/* --- Listening: Dengar & Pilih --- */
+function gameDengarPilih(el, drill, onDone){
+  let round = 0;
+  function draw(){
+    if(round>=drill.length) return onDone();
+    const d = drill[round];
+    el.innerHTML = `
+      <span class="stage-badge">🎯 LATIHAN INTI · Dengar & Pilih</span>
+      <div class="id-text">Soal ${round+1} dari ${drill.length}</div>
+      <div class="speak-row"><button class="speak-btn" onclick="speak('${d.en}')">🔊 Putar Kalimat</button></div>
+      <div class="opt-grid ${d.opts.length>2?'three':''}" id="opts">
+        ${d.opts.map((o,i)=>`<button class="opt-btn" data-i="${i}" onclick="pickListen(${i})">${o.emoji}</button>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+    `;
+    speak(d.en);
+    window.pickListen = function(i){
+      const btn = document.querySelector(`#opts [data-i="${i}"]`);
+      const fb = document.getElementById('fb');
+      if(d.opts[i].ok){
+        btn.classList.add('correct');
+        fb.textContent = 'Tepat! 🎉'; fb.className='feedback good';
+        round++;
+        setTimeout(draw, 800);
+      } else {
+        btn.classList.add('wrong');
+        fb.textContent = 'Dengar lagi, yuk 💪'; fb.className='feedback bad';
+        setTimeout(()=>btn.classList.remove('wrong'), 350);
+      }
+    };
+  }
+  draw();
+}
+
+/* --- Speaking: Ucapkan & Cek --- */
+function gameUcapkanCek(el, drill, onDone){
+  let round = 0;
+  function draw(){
+    if(round>=drill.length) return onDone();
+    const phrase = drill[round];
+    el.innerHTML = `
+      <span class="stage-badge">🎯 LATIHAN INTI · Ucapkan &amp; Cek</span>
+      <div class="id-text">Soal ${round+1} dari ${drill.length}</div>
+      <div class="en-text">"${phrase}"</div>
+      <div class="speak-row"><button class="speak-btn" onclick="speak('${phrase}')">🔊 Dengar Contoh</button></div>
+      <div class="mic-wrap">
+        <button class="mic-btn" id="micBtn" onclick="tryMic()">🎤</button>
+        <div class="mic-hint">${sttSupported? 'Tap mic, lalu ucapkan kalimatnya' : 'Mikrofon tidak didukung browser ini'}</div>
+      </div>
+      <div class="heard-text" id="heard"></div>
+      <div class="feedback" id="fb"></div>
+      ${sttSupported? '' : `<button class="ghost-btn" onclick="speakOk()">✅ Aku Sudah Coba Ucapkan</button>`}
+    `;
+    window.speakOk = function(){ round++; draw(); };
+    window.tryMic = function(){
+      const btn = document.getElementById('micBtn');
+      btn.classList.add('listening');
+      listenOnce(
+        (said)=>{
+          btn.classList.remove('listening');
+          document.getElementById('heard').textContent = `Kamu bilang: "${said}"`;
+          const fb = document.getElementById('fb');
+          if(looseMatch(said, phrase)){
+            fb.textContent = 'Keren banget! 🎉'; fb.className='feedback good';
+            round++; setTimeout(draw, 900);
+          } else {
+            fb.textContent = 'Hampir! Coba sekali lagi 💪'; fb.className='feedback bad';
+          }
+        },
+        ()=>{ btn.classList.remove('listening'); document.getElementById('fb').textContent='Belum kedengaran, coba lagi 🎧'; }
+      );
+    };
+  }
+  draw();
+}
+
+/* --- Grammar: Susun Kalimat --- */
+function gameSusunKalimat(el, scrambleList, onDone){
+  let round = 0;
+  let answer = [];
+  let bank = [];
+  function draw(){
+    if(round>=scrambleList.length) return onDone();
+    const sc = scrambleList[round];
+    answer = [];
+    bank = shuffle(sc.target.map((w,i)=>({w,used:false,idx:i})));
+    paint(sc);
+  }
+  function paint(sc){
+    el.innerHTML = `
+      <span class="stage-badge">🎯 LATIHAN INTI · Susun Kalimat</span>
+      <div class="id-text">Soal ${round+1} dari ${scrambleList.length}</div>
+      <div class="big-emoji" style="font-size:44px;">${sc.emoji}</div>
+      <div class="answer-row ${answer.length? '':'empty'}" id="answerRow">
+        ${answer.map((a,ai)=>`<span class="chip placed" onclick="unpick(${ai})">${a.w}</span>`).join('')}
+      </div>
+      <div class="bank-row" id="bankRow">
+        ${bank.map((b,bi)=>`<span class="chip ${b.used?'hidden':''}" onclick="pick(${bi})">${b.w}</span>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+      <button class="primary-btn" onclick="checkSentence()">Cek Jawaban ✅</button>
+    `;
+    window.pick = function(bi){
+      if(bank[bi].used) return;
+      bank[bi].used = true;
+      answer.push(bank[bi]);
+      paint(sc);
+    };
+    window.unpick = function(ai){
+      const item = answer[ai];
+      answer.splice(ai,1);
+      bank.find(b=>b.idx===item.idx).used = false;
+      paint(sc);
+    };
+    window.checkSentence = function(){
+      const fb = document.getElementById('fb');
+      const built = answer.map(a=>a.w).join(' ');
+      if(built === sc.target.join(' ')){
+        fb.textContent = 'Kalimatnya pas! 🎉'; fb.className='feedback good';
+        speak(built);
+        round++;
+        setTimeout(draw, 1000);
+      } else {
+        fb.textContent = 'Urutannya masih pas, coba atur lagi 💪'; fb.className='feedback bad';
+      }
+    };
+  }
+  draw();
+}
+
+/* ============================================================
+   TANTANGAN (per skill)
+   ============================================================ */
+function renderTantangan(el, s, t){
+  if(s.label==='Vocabulary') return gameEjaKata(el, t.items, ()=>gameContohPenggunaan(el, t.items, ()=>nextStep()));
+  if(s.label==='Listening') return gameCeritaMini(el, t, ()=>nextStep());
+  if(s.label==='Speaking') return gameRoleplay(el, t.roleplay, ()=>nextStep());
+  if(s.label==='Grammar') return gameBikinSendiri(el, t.fill, ()=>nextStep());
+}
+
+/* --- Vocabulary Tantangan: Eja Kata --- */
+function gameEjaKata(el, items, onDone){
+  let round = 0;
+  let slots = [];
+  let bank = [];
+  function draw(){
+    if(round>=items.length) return onDone();
+    const it = items[round];
+    slots = new Array(it.en.length).fill(null);
+    bank = shuffle(it.en.toUpperCase().split('').map((ch,i)=>({ch,used:false,idx:i})));
+    paint(it);
+    speak(it.en);
+  }
+  function paint(it){
+    el.innerHTML = `
+      <span class="stage-badge">🌟 TANTANGAN · Eja Kata</span>
+      <div class="id-text">Kata ${round+1} dari ${items.length}</div>
+      <div class="big-emoji">${it.emoji}</div>
+      <div class="speak-row"><button class="speak-btn" onclick="speak('${it.en}')">🔊 Dengar Kata</button></div>
+      <div class="answer-row" id="answerRow">
+        ${slots.map(s=> s? `<span class="chip placed letter">${s}</span>` : `<span class="chip letter" style="opacity:.35">_</span>`).join('')}
+      </div>
+      <div class="bank-row" id="bankRow">
+        ${bank.map((b,bi)=>`<span class="chip letter ${b.used?'hidden':''}" onclick="pickLetter(${bi})">${b.ch}</span>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+    `;
+    window.pickLetter = function(bi){
+      if(bank[bi].used) return;
+      const emptyIndex = slots.findIndex(x=>x===null);
+      if(emptyIndex===-1) return;
+      slots[emptyIndex] = bank[bi].ch;
+      bank[bi].used = true;
+      paint(it);
+      if(slots.every(x=>x!==null)){
+        const built = slots.join('');
+        const fb = document.getElementById('fb');
+        if(built.toLowerCase()===it.en.toLowerCase()){
+          fb.textContent = 'Ejaannya benar! 🎉'; fb.className='feedback good';
+          round++; setTimeout(draw, 1000);
+        } else {
+          fb.textContent = 'Belum pas, coba susun ulang 💪'; fb.className='feedback bad';
+          setTimeout(()=>{ slots = new Array(it.en.length).fill(null); bank.forEach(b=>b.used=false); paint(it); }, 900);
+        }
+      }
+    };
+  }
+  draw();
+}
+
+/* --- Vocabulary Tantangan (lanjutan): Contoh Penggunaan — dengar+ucapkan lalu susun kata --- */
+function gameContohPenggunaan(el, items, onDone){
+  let round = 0;
+  let phase = 'ucap'; // 'ucap' -> 'susun'
+  function draw(){
+    if(round>=items.length) return onDone();
+    const it = items[round];
+    if(phase==='ucap') drawUcap(it); else drawSusun(it);
+  }
+  function drawUcap(it){
+    const ex = it.example;
+    el.innerHTML = `
+      <span class="stage-badge">🌟 TANTANGAN · Contoh Penggunaan</span>
+      <div class="id-text">Kata "${it.en}" · ${round+1} dari ${items.length}</div>
+      <div class="big-emoji" style="font-size:40px;">${ex.emoji}</div>
+      <div class="en-text">${ex.en}</div>
+      <div class="id-text">${ex.id}</div>
+      <div class="speak-row"><button class="speak-btn" onclick="speak('${ex.en}')">🔊 Dengar Contoh</button></div>
+      <div class="mic-wrap">
+        <button class="mic-btn" id="micBtn" onclick="tryMicUse()">🎤</button>
+        <div class="mic-hint">${sttSupported? 'Tap mic, coba ucapkan kalimatnya' : 'Mikrofon tidak didukung browser ini'}</div>
+      </div>
+      <div class="heard-text" id="heard"></div>
+      <div class="feedback" id="fb"></div>
+      ${sttSupported? '' : `<button class="ghost-btn" onclick="skipUse()">✅ Aku Sudah Coba Ucapkan</button>`}
+    `;
+    window.skipUse = function(){ phase='susun'; draw(); };
+    window.tryMicUse = function(){
+      const btn = document.getElementById('micBtn');
+      btn.classList.add('listening');
+      listenOnce(
+        (said)=>{
+          btn.classList.remove('listening');
+          document.getElementById('heard').textContent = `Kamu bilang: "${said}"`;
+          const fb = document.getElementById('fb');
+          if(looseMatch(said, ex.en)){
+            fb.textContent = 'Pas banget! 🎉'; fb.className='feedback good';
+          } else {
+            fb.textContent = 'Bagus, sudah dicoba! Lanjut, yuk 👍'; fb.className='feedback good';
+          }
+          setTimeout(()=>{ phase='susun'; draw(); }, 900);
+        },
+        ()=>{ btn.classList.remove('listening'); document.getElementById('fb').textContent='Belum kedengaran, coba lagi 🎧'; }
+      );
+    };
+  }
+  function drawSusun(it){
+    const ex = it.example;
+    const words = ex.en.replace('.','').split(' ');
+    let answer = [];
+    let bank = shuffle(words.map((w,i)=>({w,used:false,idx:i})));
+    function paint(){
+      el.innerHTML = `
+        <span class="stage-badge">🌟 TANTANGAN · Susun Kata</span>
+        <div class="id-text">Susun jadi kalimat yang tadi kamu dengar</div>
+        <div class="big-emoji" style="font-size:36px;">${ex.emoji}</div>
+        <div class="answer-row ${answer.length? '':'empty'}">
+          ${answer.map((a,ai)=>`<span class="chip placed" onclick="unpickUse(${ai})">${a.w}</span>`).join('')}
+        </div>
+        <div class="bank-row">
+          ${bank.map((b,bi)=>`<span class="chip ${b.used?'hidden':''}" onclick="pickUse(${bi})">${b.w}</span>`).join('')}
+        </div>
+        <div class="feedback" id="fb"></div>
+        <button class="primary-btn" onclick="checkUse()">Cek Jawaban ✅</button>
+      `;
+      window.pickUse = function(bi){ if(bank[bi].used) return; bank[bi].used=true; answer.push(bank[bi]); paint(); };
+      window.unpickUse = function(ai){ const item=answer[ai]; answer.splice(ai,1); bank.find(b=>b.idx===item.idx).used=false; paint(); };
+      window.checkUse = function(){
+        const fb = document.getElementById('fb');
+        const built = answer.map(a=>a.w).join(' ');
+        if(built.toLowerCase() === words.join(' ').toLowerCase()){
+          fb.textContent = 'Kalimatnya pas! 🎉'; fb.className='feedback good';
+          speak(ex.en);
+          round++; phase='ucap';
+          setTimeout(draw, 1100);
+        } else {
+          fb.textContent = 'Coba atur lagi 💪'; fb.className='feedback bad';
+        }
+      };
+    }
+    paint();
+  }
+  draw();
+}
+
+/* --- Listening Tantangan: Dengar Cerita Mini --- */
+function gameCeritaMini(el, t, onDone){
+  el.innerHTML = `
+    <span class="stage-badge">🌟 TANTANGAN · Dengar Cerita Mini</span>
+    <div class="big-emoji">${t.scene}</div>
+    <div class="speak-row"><button class="speak-btn" onclick="playStory()">▶️ Putar Ceritanya</button></div>
+    <div class="id-text" id="qArea" style="margin-top:6px;">Putar dulu ceritanya, baru jawab pertanyaannya</div>
+    <div id="qWrap"></div>
+    <div class="feedback" id="fb"></div>
+  `;
+  window.playStory = function(){
+    speakSequence(t.story, 1900);
+    document.getElementById('qArea').textContent = '';
+    document.getElementById('qWrap').innerHTML = `
+      <div class="en-text" style="margin-top:10px;">${t.question.en}</div>
+      <div class="opt-grid ${t.question.opts.length>2?'three':''}">
+        ${t.question.opts.map((o,i)=>`<button class="opt-btn" data-i="${i}" onclick="answerStory(${i})">${o.emoji}<span class="lbl">${o.lbl}</span></button>`).join('')}
+      </div>
+    `;
+  };
+  window.answerStory = function(i){
+    const btn = document.querySelectorAll('#qWrap .opt-btn')[i];
+    const fb = document.getElementById('fb');
+    if(t.question.opts[i].ok){
+      btn.classList.add('correct');
+      fb.textContent = 'Ceritanya kedengeran ya! 🎉'; fb.className='feedback good';
+      setTimeout(onDone, 900);
+    } else {
+      btn.classList.add('wrong');
+      fb.textContent = 'Coba putar & dengar lagi 💪'; fb.className='feedback bad';
+      setTimeout(()=>btn.classList.remove('wrong'), 350);
+    }
+  };
+}
+
+/* --- Speaking Tantangan: Mini Roleplay --- */
+function gameRoleplay(el, questions, onDone){
+  let turn = 0;
+  function draw(){
+    if(turn>=questions.length) return onDone();
+    const q = questions[turn];
+    el.innerHTML = `
+      <span class="stage-badge">🌟 TANTANGAN · Mini-Roleplay</span>
+      <div class="turn-dots">${questions.map((_,i)=>`<div class="turn-dot ${i<=turn?'on':''}"></div>`).join('')}</div>
+      <div class="id-text">Giliran ${turn+1} dari ${questions.length}</div>
+      <div class="en-text">🦁 "${q}"</div>
+      <div class="speak-row"><button class="speak-btn" onclick="speak('${q}')">🔊 Dengar Lagi</button></div>
+      <div class="mic-wrap">
+        <button class="mic-btn" id="micBtn" onclick="tryMicRp()">🎤</button>
+        <div class="mic-hint">${sttSupported? 'Tap mic, jawab pertanyaannya bebas' : 'Mikrofon tidak didukung browser ini'}</div>
+      </div>
+      <div class="heard-text" id="heard"></div>
+      <div class="feedback" id="fb"></div>
+      ${sttSupported? '' : `<button class="ghost-btn" onclick="skipRp()">✅ Aku Sudah Jawab</button>`}
+    `;
+    speak(q);
+    window.skipRp = function(){ turn++; draw(); };
+    window.tryMicRp = function(){
+      const btn = document.getElementById('micBtn');
+      btn.classList.add('listening');
+      listenOnce(
+        (said)=>{
+          btn.classList.remove('listening');
+          document.getElementById('heard').textContent = `Kamu jawab: "${said}"`;
+          document.getElementById('fb').textContent = 'Bagus, sudah berani jawab! 🎉';
+          document.getElementById('fb').className = 'feedback good';
+          turn++; setTimeout(draw, 1000);
+        },
+        ()=>{ btn.classList.remove('listening'); document.getElementById('fb').textContent='Belum kedengaran, coba lagi 🎧'; }
+      );
+    };
+  }
+  draw();
+}
+
+/* --- Grammar Tantangan: Bikin Sendiri --- */
+function gameBikinSendiri(el, fill, onDone){
+  el.innerHTML = `
+    <span class="stage-badge">🌟 TANTANGAN · Bikin Sendiri</span>
+    <div class="id-text">Lengkapi kalimat ini jadi ceritamu sendiri</div>
+    <div class="en-text" id="sentencePreview">${fill.before.join(' ')} ___ ${fill.after.join(' ')}</div>
+    <div class="opt-grid three" style="margin-top:16px;">
+      ${fill.options.map((o,i)=>`<button class="opt-btn" data-i="${i}" onclick="pickFill(${i})">${o.emoji}<span class="lbl">${o.word}</span></button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  window.pickFill = function(i){
+    const o = fill.options[i];
+    const sentence = [...fill.before, o.word, ...fill.after].join(' ');
+    document.getElementById('sentencePreview').textContent = sentence + '.';
+    document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('correct'));
+    document.querySelectorAll('.opt-btn')[i].classList.add('correct');
+    document.getElementById('fb').textContent = 'Keren, itu kalimatmu sendiri! 🎉';
+    document.getElementById('fb').className = 'feedback good';
+    speak(sentence);
+    setTimeout(onDone, 1400);
+  };
+}
+
+/* ============================================================ */
+render();
+</script>
+</body>
+</html>
