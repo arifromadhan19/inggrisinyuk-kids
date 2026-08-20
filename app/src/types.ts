@@ -107,7 +107,17 @@ export interface LevelMeta {
   hasContent: boolean;
 }
 
-export type Screen = 'home' | 'menu' | 'topics' | 'activity' | 'settings' | 'levels' | 'boss' | 'game';
+export type Screen =
+  | 'home'
+  | 'menu'
+  | 'topics'
+  | 'activity'
+  | 'settings'
+  | 'levels'
+  | 'boss'
+  | 'game'
+  | 'account'
+  | 'placementTest';
 
 /** Tujuan navigasi yang benar-benar ada di app (rail desktop & tab bar mobile). */
 export type NavKey = 'home' | 'belajar' | 'game' | 'settings';

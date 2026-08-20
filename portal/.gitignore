@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env — JANGAN pernah commit credential asli
+.env
+.env.local
+.env*.local
+
+# prisma
+/prisma/generated
+
+# misc
+*.tsbuildinfo
+.DS_Store

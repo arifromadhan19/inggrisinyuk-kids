@@ -1,5 +1,6 @@
 import type { ListeningTopic, OnDone } from '../types';
 import { setHandlers } from '../interaction';
+import { recordAttempt } from '../progress';
 import { speak, speakSequence } from '../speech';
 
 export function renderKenalan(container: HTMLElement, topic: ListeningTopic, onNext: OnDone): void {
@@ -50,12 +51,14 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
         const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
         const fb = container.querySelector<HTMLElement>('#fb')!;
         if (d.opts[i].ok) {
+          recordAttempt(true);
           btn.classList.add('correct');
           fb.textContent = 'Tepat! 🎉';
           fb.className = 'feedback good';
           round += 1;
           setTimeout(draw, 800);
         } else {
+          recordAttempt(false);
           btn.classList.add('wrong');
           fb.textContent = 'Dengar lagi, yuk 💪';
           fb.className = 'feedback bad';
@@ -99,11 +102,13 @@ export function runTantangan(container: HTMLElement, topic: ListeningTopic, onDo
           const btn = container.querySelectorAll<HTMLElement>('#qWrap .opt-btn')[i];
           const fb = container.querySelector<HTMLElement>('#fb')!;
           if (topic.question.opts[i].ok) {
+            recordAttempt(true);
             btn.classList.add('correct');
             fb.textContent = 'Ceritanya kedengeran ya! 🎉';
             fb.className = 'feedback good';
             setTimeout(onDone, 900);
           } else {
+            recordAttempt(false);
             btn.classList.add('wrong');
             fb.textContent = 'Coba putar & dengar lagi 💪';
             fb.className = 'feedback bad';

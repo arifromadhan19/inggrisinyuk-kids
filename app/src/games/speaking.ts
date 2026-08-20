@@ -1,5 +1,6 @@
 import type { OnDone, SpeakingTopic } from '../types';
 import { setHandlers } from '../interaction';
+import { recordAttempt } from '../progress';
 import { listenOnce, looseMatch, speak, sttSupported } from '../speech';
 
 export function renderKenalan(container: HTMLElement, topic: SpeakingTopic, onNext: OnDone): void {
@@ -60,11 +61,13 @@ export function runLatihanInti(container: HTMLElement, topic: SpeakingTopic, onD
             container.querySelector<HTMLElement>('#heard')!.textContent = `Kamu bilang: "${said}"`;
             const fb = container.querySelector<HTMLElement>('#fb')!;
             if (looseMatch(said, phrase)) {
+              recordAttempt(true);
               fb.textContent = 'Keren banget! 🎉';
               fb.className = 'feedback good';
               round += 1;
               setTimeout(draw, 900);
             } else {
+              recordAttempt(false);
               fb.textContent = 'Hampir! Coba sekali lagi 💪';
               fb.className = 'feedback bad';
             }

@@ -1,0 +1,73 @@
+// Skema diadaptasi dari inggrisinyuk-app (project dewasa, sibling). Auth
+// SEKARANG passwordless — persis pola inggrisinyuk asli (WA/email lookup,
+// tanpa password sama sekali untuk end-user, lihat RESEARCH.md §15/§16).
+// Identitas dikonfirmasi lewat sukses bayar (Transaction/Xendit — masih
+// BACKLOG, PRD §14); sebelum itu digarap, registrasi langsung (tanpa bayar)
+// dipertahankan biar tetap bisa dites/dipakai.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ParentAccount {
+  id          String    @id @default(uuid())
+  phone       String?   @unique
+  email       String?   @unique
+  createdAt   DateTime  @default(now()) @map("created_at")
+  lastLoginAt DateTime? @map("last_login_at")
+  isSuspended Boolean   @default(false) @map("is_suspended")
+
+  children ChildProfile[]
+
+  @@map("parent_accounts")
+}
+
+/** 1 anak per akun untuk sekarang (multi-anak = backlog, PRD §14). `level`
+ *  dipakai sebagai LevelKey yang sama dengan app/src/types.ts (starter,
+ *  explorer, dst) — bukan skala CEFR mentah seperti di inggrisinyuk dewasa,
+ *  supaya langsung selaras dengan tangga level yang sudah ada di app anak. */
+model ChildProfile {
+  id                     String   @id @default(uuid())
+  parentId               String   @map("parent_id")
+  name                   String?
+  level                  String   @default("starter")
+  placementTestDone      Boolean  @default(false) @map("placement_test_done")
+  dismissedPlacementTest Boolean  @default(false) @map("dismissed_placement_test")
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  parent            ParentAccount          @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  placementResults  PlacementTestResult[]
+
+  @@map("child_profiles")
+}
+
+/** Append-only — retake tidak menghapus riwayat lama, sama seperti pola
+ *  PlacementTestResult di inggrisinyuk dewasa (bukan tabel yang di-overwrite).
+ *  Jumlah baris di tabel ini JUGA dipakai sebagai penghitung percobaan
+ *  ("max 2 kali") — lihat app/api/placement-test/route.ts. */
+model PlacementTestResult {
+  id               String   @id @default(uuid())
+  childId          String   @map("child_id")
+  levelRecommended String   @map("level_recommended")
+  correctByLevel   Json     @map("correct_by_level")
+  totalCorrect     Int      @map("total_correct")
+  /** Jumlah soal yang di-skor pada percobaan INI (vocab+listening+speaking
+   *  recognition) — disimpan per-baris (bukan dihitung ulang dari bank soal
+   *  sekarang) supaya hasil lama tetap akurat kalau jumlah soal berubah nanti. */
+  totalItems       Int      @map("total_items")
+  /** 1 atau 2 — urutan percobaan anak ini, dicatat di sini juga (bukan cuma
+   *  dihitung on-the-fly) supaya riwayat tetap terbaca jelas di query manual. */
+  attemptNumber    Int      @map("attempt_number")
+  /** Sinyal item mic terbuka (openmic) — {questionId, matched, confidence}[].
+   *  TIDAK pernah dipakai untuk levelRecommended/correctByLevel (PRD §13.1:
+   *  ASR anak tidak selalu akurat) — cuma dicatat sebagai sinyal internal. */
+  speakingSignals  Json?    @map("speaking_signals")
+  takenAt          DateTime @default(now()) @map("taken_at")
+
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@map("placement_test_results")
+}

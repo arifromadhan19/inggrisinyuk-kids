@@ -15,6 +15,7 @@ src/
   interaction.ts       delegasi klik (data-action/data-payload) ke handler aktif
   util.ts              helper kecil (shuffle, qs)
   icons.ts             ikon SVG inline untuk chrome app (navigasi, kembali, centang)
+  scenery.ts           dekorasi SVG inline: siluet bukit, awan & jejak Peta Level
   progress.ts          progres di localStorage: modul selesai + materi terakhir dibuka
   voice-panel.ts       panel kecepatan/suara TTS (dipakai di Pengaturan & layar aktivitas)
   app.ts               router/shell: Beranda → Belajar (Daftar Materi → Kenalan/Latihan Inti/Tantangan) → Pengaturan
@@ -44,8 +45,15 @@ dan **Pengaturan** (suara/kecepatan TTS, progres, catatan untuk orang tua).
 | `768–1079px` | rail ikon ringkas (92px) | 1 kolom lebih lebar, kartu jadi 2–4 kolom |
 | `≥ 1080px` | rail penuh (252px) + wordmark | 2 kolom: konten utama + kolom pendamping (level/bintang, cara main, stepper aktivitas) |
 
-Token warna & tipografi terkumpul di `:root` `public/styles.css` — warna merek teal "lagoon" + aksen mango,
-warna per-skill hanya dipakai di dalam konteks skill-nya lewat `--accent`/`--accent-bg`.
+Token warna & tipografi terkumpul di `:root` `public/styles.css` — warna merek teal "lagoon" + aksen mango
+di atas tanah pasir hangat (`--paper`), warna per-skill hanya dipakai di dalam konteks skill-nya lewat
+`--accent`/`--accent-bg`, dan warna "tanah" `--t1..--t6` hanya hidup di Peta Level.
+
+**Peta Level** (`renderLevels` di `app.ts` + `scenery.ts`) digambar sebagai satu papan peta: 6 perhentian
+bertumpuk, masing-masing punya warna tanah & siluet bukitnya sendiri, dijahit jejak titik-titik yang
+berkelok. Medali memakai emoji level, stempel mango = Bos sudah ditaklukkan, gembok = masih tersegel, dan
+singa 🦁 menandai perhentian anak sekarang. Status buka/kunci tetap dihitung `progress.ts` — tampilannya
+saja yang berubah.
 
 ## Menjalankan (development, di localhost)
 

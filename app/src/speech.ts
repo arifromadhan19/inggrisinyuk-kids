@@ -157,9 +157,16 @@ export const sttSupported = !!SR;
 
 export type ListenErrorKind = 'unsupported' | 'error';
 
-/** Rekam 1 ucapan anak, panggil onResult dengan transkrip mentah dari browser. */
+/**
+ * Rekam 1 ucapan anak, panggil onResult dengan transkrip mentah dari browser.
+ * `confidence` (0-1) datang gratis dalam paket respons yang sama — nol biaya
+ * tambahan (doc/first_placement_test.md §7.2a). Peringatan: tidak konsisten
+ * antar-browser (Firefox dilaporkan selalu balikin 1), jadi cuma layak
+ * dipakai sebagai sinyal tambahan/bonus, bukan syarat tunggal — lihat
+ * pemakaiannya di games/placement.ts (evaluasi openmic).
+ */
 export function listenOnce(
-  onResult: (said: string) => void,
+  onResult: (said: string, confidence: number) => void,
   onError: (kind: ListenErrorKind) => void
 ): void {
   if (!SR) {
@@ -169,7 +176,7 @@ export function listenOnce(
   const rec = new SR();
   rec.lang = 'en-US';
   rec.maxAlternatives = 1;
-  rec.onresult = (e) => onResult(e.results[0][0].transcript);
+  rec.onresult = (e) => onResult(e.results[0][0].transcript, e.results[0][0].confidence);
   rec.onerror = () => onError('error');
   rec.start();
 }

@@ -17,6 +17,7 @@
  */
 import { GRAMMAR_TOPICS, LISTENING_TOPICS, SPEAKING_TOPICS, VOCAB_TOPICS } from '../content';
 import { setHandlers } from '../interaction';
+import { recordAttempt } from '../progress';
 import { listenOnce, looseMatch, speak, sttSupported } from '../speech';
 import type { OnDone } from '../types';
 import { shuffle } from '../util';
@@ -75,11 +76,13 @@ export function runBoss(container: HTMLElement, onWin: OnDone): void {
           const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
           const fb = container.querySelector<HTMLElement>('#fb')!;
           if (opts[i] === target) {
+            recordAttempt(true);
             btn.classList.add('correct');
             fb.textContent = 'Kena! 🎉';
             fb.className = 'feedback good';
             setTimeout(() => runVocabPhase(round + 1), 750);
           } else {
+            recordAttempt(false);
             btn.classList.add('wrong');
             fb.textContent = 'Coba lagi ya 💪';
             fb.className = 'feedback bad';
@@ -113,11 +116,13 @@ export function runBoss(container: HTMLElement, onWin: OnDone): void {
           const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
           const fb = container.querySelector<HTMLElement>('#fb')!;
           if (d.opts[i].ok) {
+            recordAttempt(true);
             btn.classList.add('correct');
             fb.textContent = 'Tepat! 🎉';
             fb.className = 'feedback good';
             setTimeout(() => runListenPhase(round + 1), 750);
           } else {
+            recordAttempt(false);
             btn.classList.add('wrong');
             fb.textContent = 'Dengar lagi, yuk 💪';
             fb.className = 'feedback bad';
@@ -173,11 +178,13 @@ export function runBoss(container: HTMLElement, onWin: OnDone): void {
           const fb = container.querySelector<HTMLElement>('#fb')!;
           const built = answer.map((a) => a.w).join(' ');
           if (built === sc.target.join(' ')) {
+            recordAttempt(true);
             fb.textContent = 'Pas banget! 🎉';
             fb.className = 'feedback good';
             speak(built);
             setTimeout(() => runGrammarPhase(round + 1), 900);
           } else {
+            recordAttempt(false);
             fb.textContent = 'Urutannya belum pas, coba atur lagi 💪';
             fb.className = 'feedback bad';
           }

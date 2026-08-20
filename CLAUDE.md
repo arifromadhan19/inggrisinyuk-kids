@@ -20,3 +20,4 @@ Aturan yang sama berlaku persis di PRD.md — dua dokumen ini harus tetap sinkro
 - **Tanpa backend, database, auth, atau AI API di v1** — client-side murni (PRD §5). Kalau nanti ada logic backend, wajib TypeScript.
 - **Tanpa coin/mata uang, tanpa leaderboard, tanpa antrian review yang diekspos ke anak** — reward pakai bintang/stiker, non-punitive (PRD §4.6).
 - Struktur kode: `app/` adalah aplikasi TypeScript utama (lihat [app/README.md](app/README.md) untuk cara build/run/deploy). File HTML lepas di root repo adalah prototipe cepat, bukan sumber kebenaran produksi.
+- **Deploy pakai VPS murah** — target spesifikasi kelas 2 core / 4GB RAM (bukan platform serverless/managed mahal). Pertimbangkan ini saat menyarankan arsitektur, teknologi, atau dependency baru — hindari yang butuh resource besar atau layanan cloud mahal secara default.

@@ -1,5 +1,6 @@
 import type { GrammarFill, GrammarScramble, GrammarTopic, OnDone } from '../types';
 import { setHandlers } from '../interaction';
+import { recordAttempt } from '../progress';
 import { speak } from '../speech';
 import { shuffle } from '../util';
 
@@ -82,12 +83,14 @@ export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDo
         const fb = container.querySelector<HTMLElement>('#fb')!;
         const built = answer.map((a) => a.w).join(' ');
         if (built === sc.target.join(' ')) {
+          recordAttempt(true);
           fb.textContent = 'Kalimatnya pas! 🎉';
           fb.className = 'feedback good';
           speak(built);
           round += 1;
           setTimeout(draw, 1000);
         } else {
+          recordAttempt(false);
           fb.textContent = 'Urutannya belum pas, coba atur lagi 💪';
           fb.className = 'feedback bad';
         }

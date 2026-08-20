@@ -323,6 +323,22 @@ Kompetitor menunjukkan screenshot desktop DAN mobile dari app mereka, lalu dimin
 
 Sumber: screenshot kompetitor (referensi internal, desktop & mobile — bukan link publik).
 
+### 12.5 Iterasi Kedua: "SaaS Dashboard" → "Dunia Petualangan"
+
+Setelah §12 & §13 (Peta Level, Tantangan Bos) jalan, feedback user lewat screenshot kompetitor (Beranda mereka — glossy, koin, akurasi, kalender hadiah harian terkunci) plus komentar langsung: **"design saat ini seperti untuk aplikasi orang dewasa"**. Dikerjakan lagi lewat agent terpisah (model Opus, task eksplisit "coba berkreasi" — user minta skill `artifact-design` diaktifkan meski ini bukan publish Artifact, prosesnya tetap relevan: rencana token dulu, dicek "apakah ini generic-default", baru dieksekusi).
+
+**Diagnosis akar masalah** (bukan cuma "kurang warna"): token `--paper` (ground/background utama) sebelumnya mint `#F2F7F7` — SEHUE dengan brand teal — yang justru bikin teal terasa seperti warna primer SaaS generik, bukan air. Diganti jadi pasir hangat `#FCF4E6` (+ turunan shadow/line yang di-re-tint dari dingin ke hangat). Sekarang teal terbaca sebagai laguna di atas pasir, bukan brand-color dashboard.
+
+**Perubahan terbesar**: `renderLevels()` (Peta Level) dari daftar vertikal jadi peta perjalanan — jalur titik-titik SVG berkelok kiri-kanan menghubungkan 6 "perhentian", tiap perhentian punya siluet medan sendiri via file baru `app/src/scenery.ts` (bukit pasir → padang → laguna [warna merek, "tempat anak sekarang" karena Explorer satu-satunya level berkonten] → sungai → ngarai senja → puncak berbintang) — urutan warnanya sendiri jadi storytelling jarak tempuh. Medali level pakai emoji (PRD §3, tidak diganti), cap centang mango kalau sudah ditaklukkan, gembok + medan pudar kalau terkunci, dan maskot 🦁 nangkring di perhentian saat ini.
+
+**Mood dari kompetitor, bukan mekaniknya**: cuma "kesan glossy" yang diambil (1 resep CSS highlight dipakai di badge XP/skill/maskot/medali) — dicek eksplisit tidak ada "koin"/"akurasi"/"hadiah harian" yang menyelinap masuk (grep bersih). XP tetap angka polos tanpa progress bar (supaya tidak menyiratkan ada "plafon").
+
+**Kepatuhan ke RESEARCH §13.2 dikonfirmasi**: label medan ("Tepi Lagoon", dst.) di `scenery.ts` eksplisit dikomentari sebagai "MURNI label pemandangan", ditampilkan kecil di atas nama level — nama & emoji level (Little Stars…Trailblazer) tetap primer, tidak diganti nama fantasi. Sesi utama membaca kode `scenery.ts` langsung untuk memverifikasi ini, bukan cuma percaya laporan agent.
+
+**Verifikasi**: `npm run build` bersih (0 error, bundle 62.0kb), dev server 200 untuk `index.html`/`styles.css`/`bundle.js` (dicek ulang oleh sesi utama, bukan cuma agent). **File baru**: `app/src/scenery.ts`. **File diubah**: `app/public/styles.css`, `app/src/app.ts`, `app/README.md`.
+
+Sumber: screenshot kompetitor — Beranda (referensi internal, bukan link publik).
+
 ---
 
 ## 13. Adaptasi Konsep "Anglora" (Game Dewasa) → Peta Level Anak
@@ -361,7 +377,163 @@ Sumber: `inggrisinyuk/prd_user_game.md`, `inggrisinyuk/architecture_game.md` (do
 
 ---
 
-## 14. Sumber Referensi
+## 14. Revisi: Progresmu — Streak, XP, Ketepatan (Iterasi Ketiga Beranda)
+
+Screenshot baru dari beranda kompetitor (`progress_kompetitor.jpeg`, ditambahkan ke root repo) menunjukkan strip stat (koin/XP/streak/akurasi) + progress bar level + kalender hadiah harian terkunci. Diminta secara eksplisit: tiru **konsep**-nya (progress bar ke level berikutnya, streak harian "mirip konsep `inggrisinyuk`", istilah XP/HP ala anime yang perlu didefinisikan ulang untuk app ini, dan akurasi = tepat/total), ditaruh di bawah Peta Petualangan mini di Beranda — bukan tampilannya, dan lewat filter kid-friendly yang sama (CLAUDE.md/PRD.md), bukan asumsi otomatis cocok.
+
+### 14.1 Kenapa Ini Sebuah Revisi, Bukan Fitur Baru Polos
+
+Permintaan ini bentrok langsung dengan **tiga** keputusan yang sudah eksplisit ditulis sebelumnya di repo ini:
+
+1. `app/src/progress.ts` (`getWeekActivity`) — komentar kode eksplisit: "SENGAJA bukan streak: tidak ada hitungan hari berturut-turut, ... tidak ada apa pun yang bisa 'putus'/hilang kalau anak libur sehari."
+2. PRD §12.4 — "tidak ada mekanik HP/nyawa yang bisa habis (sengaja tidak dibuat)".
+3. `app/src/app.ts` (komentar di kalkulasi progress bar Beranda) & RESEARCH §11.2 poin 2 — akurasi/skor ditandai sebagai bahasa "evaluatif/klinis" ala app dewasa yang sengaja dihindari.
+
+Karena tiga hal ini adalah keputusan produk yang sudah dikunci dengan rationale tertulis, bukan detail implementasi, tiga pertanyaan diajukan balik ke user sebelum eksekusi (bukan diasumsikan sepihak):
+
+| Pertanyaan | Keputusan user | Konsekuensi desain |
+|---|---|---|
+| HP diperlakukan bagaimana, mengingat §12.4 melarang stat yang bisa habis? | **Skip HP, cukup XP** | Tidak ada stat kedua ditambahkan — "HP" dari istilah anime user cukup dijawab dengan "tidak dipakai di app ini, XP saja" |
+| Streak putus gimana kalau anak libur 1 hari, mengingat `progress.ts` sengaja anti-streak? | **Ada 1 hari pelindung dulu** | Streak baru reset kalau bolong 2 hari berturut-turut, bukan 1 — lebih non-punitive dari streak kompetitor/kebanyakan app |
+| Akurasi ditampilkan gimana, mengingat riset menandainya "evaluatif"? | **Persentase, dibingkai hangat** | Label "Ketepatan" (bukan "skor"/"nilai"), warna brand biasa (bukan merah/hijau tegas), disembunyikan ("–") kalau belum ada percobaan |
+
+### 14.2 Definisi XP/HP untuk App Ini
+
+User secara eksplisit meminta XP/HP (istilah umum RPG/anime) didefinisikan ulang dalam konteks app ini, bukan diporting mentah. Hasilnya:
+
+- **XP** — tidak berubah dari definisi §12.4: satu angka pertumbuhan yang cuma naik, dari Belajar/Bos (besar) & Game (kecil), murni motivasi, tidak bisa dibelanjakan.
+- **HP** — **sengaja tidak diadakan sama sekali** di app ini. Alasan intinya bukan "belum sempat", tapi karena definisi standar HP (bisa habis/berkurang) secara struktural bertentangan dengan prinsip non-punitive yang sudah dikunci sejak §4.5 PRD — kalau HP dipaksa masuk tanpa fungsi berkurang, itu cuma XP dengan nama lain (redundan, bukan variasi berarti). Jawaban paling jujur ke pertanyaan "HP itu apa di app ini" adalah: tidak ada, dan itu keputusan sadar, bukan kelalaian.
+
+### 14.3 Definisi Ketepatan (Akurasi)
+
+Tepat/total percobaan (`recordAttempt`, `getAccuracy` di `progress.ts`), TAPI cuma dihitung dari jenis soal yang punya jawaban benar-salah objektif (Tebak & Cocokkan, Dengar & Pilih, Susun Kata/Kalimat, Eja Kata) — mencakup ronde Latihan Inti maupun Tantangan/Bos. **Sengaja tidak menghitung percobaan lewat mic** (Speaking — Latihan Inti pun, apalagi Mini-Roleplay): kode di `games/speaking.ts`, `games/vocabulary.ts` (Contoh Penggunaan bagian ucap), dan `games/boss.ts` (fase Speaking) memang sudah didesain supaya hasil ASR yang tidak cocok tetap diperlakukan sebagai "sudah dicoba, lanjut" (bukan retry paksa) karena ASR anak tidak selalu akurat — menghitungnya sebagai "salah" di angka Ketepatan cuma akan bikin angkanya menyesatkan (mengukur ASR, bukan kemampuan anak), bukan menambah insight.
+
+Aturan tampilan: `null` (belum ada percobaan) → tampil "–" dan label "belum ada data", bukan "0%" (§4.6, state kosong tidak ditampilkan mencolok/seperti nilai jelek).
+
+### 14.4 Streak: Derived, Bukan Field Baru
+
+Konsisten dengan pola "derived, bukan sumber kebenaran baru" yang sudah dipakai untuk XP (§13.1 Anglora): `getStreak()` dihitung ulang tiap dipanggil dari `activeDays` yang sama dipakai `getWeekActivity` — bukan counter tersimpan terpisah yang bisa desync. Algoritma: jalan mundur dari hari ini, hari ini yang belum sempat dimainkan tidak dihitung "bolong", lalu diberi tepat 1 hari bolong gratis sebelum berhenti menghitung. `getWeekActivity` (strip 7 hari, tanpa aturan berturut-turut) dipertahankan apa adanya sebagai tampilan pelengkap yang berbeda — bukan diganti oleh streak.
+
+### 14.5 Verifikasi
+
+`npm run build` bersih (0 error TypeScript, bundle 65.1kb). Diverifikasi visual lewat Playwright (Chrome sistem, karena Chromium bundled Playwright belum didukung di macOS 13/mac13-arm64) di lebar 390px & 1440px, dua kondisi: `localStorage` kosong (memastikan XP "0", streak & akurasi tampil "–"/"yuk mulai!"/"belum ada data", bukan "NaN"/"0%") dan `localStorage` terisi simulasi (XP 240, 5 hari aktif dengan 1 bolong di tengah → streak terhitung 5 lewat hari pelindung, 37/44 percobaan → Ketepatan 84%) — keduanya cocok dengan perhitungan manual, tanpa error console.
+
+**File baru**: tidak ada (semua nempel di file yang sudah ada). **File diubah**: `app/src/progress.ts` (state `correctAttempts`/`totalAttempts`, `recordAttempt`, `getAccuracy`, `getStreak`), `app/src/app.ts` (panel "Progresmu" baru di bawah mini Peta Petualangan, `level-card` disederhanakan jadi identitas saja), `app/public/styles.css` (`.stat-row`/`.stat-tile`/`.stat-ic`), `app/src/games/vocabulary.ts`, `app/src/games/listening.ts`, `app/src/games/speaking.ts`, `app/src/games/grammar.ts`, `app/src/games/boss.ts` (panggilan `recordAttempt` di tiap titik jawaban benar/salah objektif), `PRD.md` (§13 baru + amandemen §11).
+
+Sumber: `progress_kompetitor.jpeg` (screenshot beranda kompetitor, root repo — bukan link publik).
+
+---
+
+## 15. Akun Orang Tua, Login & Placement Test — Temuan dari Kode Asli `inggrisinyuk`
+
+User minta pivot besar: integrasi database ala `inggrisinyuk` (dewasa) + login orang tua (no HP/email + password) + placement test saat akun baru dibuat (skip → mulai dari level awal). Sebelum desain, 3 subagent membaca LANGSUNG kode asli `inggrisinyuk-app` (`/Users/arifromadhan/Documents/arif/github_project/inggrisinyuk/inggrisinyuk-app/` — di luar repo ini, sibling project) supaya "mirip konsepnya" akurat, bukan tebakan dari deskripsi RESEARCH §8 yang cuma ringkasan permukaan.
+
+### 15.1 Temuan: Skema Prisma Asli
+
+`prisma/schema.prisma` (172 baris, 1 file, tanpa enum — semua "status" berupa `String` + komentar). Poin kunci:
+
+- **`User` TIDAK punya field password sama sekali.** Identitas = `waNumber` (WhatsApp, unique, optional) ATAU `googleSub` (Google OAuth, unique, optional) — dua-duanya nullable. `level`/`levelName` (CEFR) disimpan langsung di `User`, plus flag `placementTestDone`/`dismissedPlacementTest`/`placementTotalCorrect`.
+- **`Transaction`** (pembelian via Xendit) bisa ADA SEBELUM `User` — `userId` nullable, `waNumber`/`email`/`panggilan` diduplikasi langsung di `Transaction`. **Pembelian yang membuat akun**, bukan sebaliknya: webhook Xendit meng-upsert `User` begitu `status=paid`.
+- **`PendingSignup`** (`googleSub`, `expiresAt` TTL) — nampung niat daftar via Google SEBELUM pembayaran lunas, khusus jalur Google OAuth.
+- **`PlacementTestResult`** — append-only (retake tidak menghapus riwayat), `levelRecommended`/`correctByLevel` (Json)/`totalCorrect`.
+- **`Admin`** adalah SATU-SATUNYA model dengan `passwordHash` (bcrypt) di seluruh skema — konfirmasi eksplisit bahwa user biasa memang tidak pernah punya password.
+- Tidak ada tabel NextAuth (`Session`/`Account`/`VerificationToken`) — auth 100% kustom.
+
+### 15.2 Temuan: Implementasi Auth Asli
+
+`lib/session.ts` — JWT kustom pakai `jose` (HS256), cookie httpOnly `iy_session` (30 hari), BUKAN NextAuth/Auth.js (dikonfirmasi grep, nol hasil "nextauth" di seluruh `app/`/`lib/`).
+
+`app/api/auth/login/route.ts` — login **cuma lookup nomor WA, TIDAK ADA pengecekan password sama sekali**:
+```ts
+const user = await db.user.findUnique({ where: { waNumber: normalizeWaNumber(waNumber) } })
+if (!user || user.isSuspended || user.isDeleted) return NextResponse.json({ error: "not_found" }, { status: 404 })
+await createSession(user.id)
+```
+Google OAuth (`app/api/auth/google/callback/route.ts`) adalah jalur kedua, verifikasi id_token via `jose`'s `createRemoteJWKSet`.
+
+`app/api/webhooks/xendit/route.ts` — begitu status `PAID`/`SETTLED`, `upsert` `User` (by `waNumber` atau `googleSub`) di dalam `db.$transaction`. **Tidak ada password yang dibuat/dikirim di flow ini sama sekali.** `app/api/checkout/finalize/route.ts` (dipoll dari `payment/success/page.tsx`) langsung `createSession(user.id)` setelah pembayaran sukses — user otomatis ter-login, tanpa kredensial apa pun.
+
+`middleware.ts` cuma melindungi route ADMIN (`/najatech/*`) — dashboard user biasa (`app/dashboard/**`) tidak digerbang middleware, gating-nya client-side (fetch `/api/me`, redirect kalau 401).
+
+**Kesimpulan buat kids-app**: kalimat awal user ("no HP/email + password yang diberikan setelah beli") **tidak match** dengan cara `inggrisinyuk` asli bekerja sama sekali. Dikonfirmasi ulang ke user via pertanyaan eksplisit — user tetap pilih password-based login, sadar itu berbeda dari pola asli (bukan salah paham yang perlu diluruskan diam-diam).
+
+### 15.3 Temuan: Placement Test Asli
+
+Fully implemented (bukan cuma di dokumen) — `prd_user.md`, `architecture.md`, dan kode (`lib/placement-test-data.ts`, `app/api/placement-test/route.ts`, `app/dashboard/placement-test/page.tsx`) semua konsisten:
+
+- **40 soal** — Grammar (15), Vocabulary (15), Reading Comprehension (10), A/B/C/D, makin sulit A1→C2. Timer countdown **30 menit**, auto-submit saat habis.
+- **Scoring "mastery/ceiling"**: mulai dari A1, naik level tiap band CEFR terpenuhi threshold-nya, **berhenti di kegagalan threshold pertama** (bukan skor total). Threshold per level: A1:3/5, A2:4/6, B1:5/7, B2:5/7, C1:4/6, C2:3/5.
+- **100% deterministik, TANPA AI/LLM** — fungsi murni (`scorePlacement`), bukan panggilan model.
+- Muncul tepat setelah login pertama (post-pembayaran), sebelum "Panduan Penggunaan"/Dashboard. **Skip ("Nanti") → level default A1**, `dismissedPlacementTest=true`, lanjut ke onboarding — persis konsep "kalau belum ambil maka mulai dari level awal" yang diminta user untuk kids-app.
+- **Server re-scoring**: client hitung skor buat UX instan, tapi server hitung ULANG dari jawaban mentah sebelum simpan (`architecture.md:216-220`: "jangan percaya angka dari client") — SATU-SATUNYA flow placement-adjacent yang re-validasi di server (beda dari Checkpoint/Day-31 test yang percaya skor client).
+
+Pola non-AI/deterministik ini yang paling relevan & langsung ditiru untuk kids-app — sudah selaras PRD §5 (tanpa AI API di v1).
+
+### 15.4 Keputusan Final (dikonfirmasi user via pertanyaan eksplisit)
+
+| Pertanyaan | Jawaban user |
+|---|---|
+| HP diperlakukan gimana (RPG/anime XP+HP)? | *(dari sesi sebelumnya, §14 PRD)* Skip HP, cukup XP |
+| Password atau ikut pola asli (WA-OTP/Google, tanpa password)? | **Tetap password** — email/no HP + password |
+| Backend baru strukturnya gimana? | **Next.js baru**, mirip struktur `inggrisinyuk-app` (folder `portal/` terpisah dari `app/`) |
+| Checkout dibangun di mana? | Awalnya "di sini juga" — lalu **scope dipersempit**: checkout masuk backlog, registrasi LANGSUNG dulu tanpa pembayaran |
+| Akun WA Business API? | Belum ada — di-scaffold nanti kalau checkout digarap (backlog) |
+| Login untuk siapa? | **Orang tua saja** — anak main tanpa login terpisah, "1 akun keluarga" |
+| Scope iterasi ini? | **Cukup login + placement test** — sisanya (checkout/Xendit/notify WA/dashboard penuh/multi-anak/sync progres) masuk backlog eksplisit |
+
+### 15.5 Implementasi & Verifikasi
+
+`portal/` (Next.js 16 + React 19 + Prisma 7 + PostgreSQL, `@prisma/adapter-pg` + `pg`, `bcryptjs`, `jose` — versi sama dgn `inggrisinyuk-app/package.json` biar konsisten) dibangun terpisah dari `app/`. Skema disederhanakan dari versi asli: `ParentAccount` (password_hash ditambah — beda sadar dari `User` asli), `ChildProfile` (1 anak/akun, `level` pakai `LevelKey` yang sama dgn `app/src/types.ts` bukan CEFR mentah), `PlacementTestResult`. `Transaction`/pembelian SENGAJA belum dibuat (backlog).
+
+Placement test kids-app: 9 soal (bukan 40), 3 band (Starter/Explorer/Adventurer, bukan 6 CEFR), **tanpa timer** (kid-friendly filter wajib, CLAUDE.md — 30 menit versi dewasa ditolak, bentrok §4.6), reuse mekanik Tebak & Cocokkan (`app/src/games/vocabulary.ts`) — audio TTS + tap emoji, bukan soal bacaan. Threshold 2/3 seragam per band (bukan makin ketat di atas ala versi dewasa — disederhanakan, dicatat di kode kenapa).
+
+Verifikasi end-to-end nyata (bukan cuma build check): Postgres lokal (`brew services`, `psql`), `prisma migrate dev` (sempat kena drift dari `db push` awal → direset dengan izin eksplisit user, Prisma CLI sendiri punya guard yang memblokir `migrate reset` dari AI agent tanpa konfirmasi — dipatuhi, bukan dilewati), seed akun tes (no HP "123"/password "111"), lalu dites manual via curl (login salah/benar, `/api/me`, skip & selesai placement test, middleware redirect, logout) DAN via Playwright (form register/login, tap-flow placement test 9 soal, dashboard, fallback level Adventurer→Explorer karena konten Adventurer belum ada). Jembatan `?assignedLevel=` ke `app/` juga dites: tersimpan benar ke `localStorage`, URL dibersihkan, nilai sampah ditolak validasi. `npm run build` bersih di `portal/` maupun `app/` (tidak ada regresi di `app/`).
+
+**File baru**: seluruh `portal/` (proyek Next.js terpisah). **File diubah**: `app/src/progress.ts` (`assignedLevel` + `setAssignedLevel`/`getAssignedLevel`), `app/src/app.ts` (`applyAssignedLevelFromUrl` di `initApp`), `PRD.md` (§14 baru + amandemen §5/§6).
+
+Sumber: `inggrisinyuk-app` (kode asli, sibling project, path lokal — bukan link publik), `prd_user.md`/`architecture.md`/`CLAUDE.md` di `inggrisinyuk/` (dokumen internal).
+
+---
+
+## 16. Revisi Arsitektur: Login Pindah ke `app/`, `portal/` Jadi API Murni
+
+Lanjutan §15 — begitu implementasi awal (`portal/` sbg Next.js dgn halaman sendiri: `/login`, `/register`, `/dashboard`, `/placement-test`, `/settings`) selesai dites end-to-end (curl + Playwright, semua lolos), user mencoba alurnya dan bertanya balik "apa bedanya portal dan app anak?" — lalu langsung menyusul 2 instruksi eksplisit: **"tidak usah dipisah jadi login tetap di app anak"** dan **"fokus ke app anak jangan pernah buat apps lain"**.
+
+### 16.1 Kenapa Ini Bukan Cuma "Pindah Halaman"
+
+`app/` statis (esbuild) tidak bisa menjalankan Prisma/Postgres sendiri — backend HARUS tetap ada di suatu tempat. Sebelum eksekusi, dikonfirmasi ke user lewat pertanyaan langsung: backend (Postgres/Prisma/API) tetap jalan terpisah TANPA halaman sendiri, dan SEMUA tampilan pindah jadi layar baru di dalam `app/` — dipilih user sebagai opsi "Recommended" (alternatifnya: `app/` sendiri diubah jadi server, ditolak karena kontradiksi PRD §5).
+
+### 16.2 Masalah Teknis: Auth Lintas-Origin
+
+`app/` (port 8000) dan `portal/` (port 3000) adalah origin berbeda. Cookie session `httpOnly` yang dipakai desain awal (persis pola `inggrisinyuk-app/lib/session.ts`) tidak otomatis terkirim lintas-origin lewat `fetch()` kecuali `SameSite=None; Secure` — riskan gagal beda browser/protokol (HTTP di dev lokal). **Solusi**: ganti ke token — `POST /api/auth/login`/`register` balikin `{token}` di response body (bukan cuma cookie), `app/` simpan sendiri di `localStorage` (`app/src/account.ts`, key terpisah dari `progress.ts` — beda concern: token akun vs progres belajar), kirim balik lewat header `Authorization: Bearer <token>` di tiap panggilan. `portal/lib/session.ts` (`getSessionParentId`) dibikin baca DUA sumber: cookie (fallback) dan header Authorization (jalur utama). CORS ditangani di `portal/middleware.ts` yang dirombak total — dari page-guard (redirect ke `/login` kalau tanpa sesi) jadi cuma nambah header CORS + jawab preflight `OPTIONS`, karena tidak ada lagi halaman yang perlu digerbang (tiap API route sudah cek sesi sendiri-sendiri).
+
+### 16.3 Apa yang Dihapus, Apa yang Dipindah
+
+**Dihapus dari `portal/`**: `app/register/`, `app/login/`, `app/placement-test/`, `app/dashboard/`, `app/settings/`, `app/components/`, `app/page.tsx`, `app/layout.tsx`, `app/globals.css` — semuanya. Sisa `portal/` cuma `app/api/**` (5 route), `lib/**`, `prisma/**`, `middleware.ts` (CORS). Build Next.js dites tetap sukses dgn nol halaman (cuma route API + `_not-found` bawaan) — konfirmasi Next.js App Router memang bisa API-only.
+
+**Dipindah ke `app/` (file baru)**:
+- `app/src/account.ts` — state token + identifier + cache status anak (level/placementTestDone) di localStorage, plus semua panggilan `fetch()` ke API (`register`/`login`/`logout`/`refreshChildStatus`/`submitPlacementTest`/`skipPlacementTest`).
+- `app/src/placement-test-data.ts` — 9 soal, HARUS identik id-nya dgn `portal/lib/placement-test-data.ts` (server yang re-scoring, cuma butuh `questionId`+`chosenEmoji` yg match) — sengaja tanpa field `correct` di sisi client (client bahkan tidak tahu kunci jawabannya, cuma server yang tahu).
+- `app/src/games/placement.ts` — render intro/soal/hasil, reuse kelas CSS yang sudah ada (`opt-grid`/`opt-btn`/`speak-row`/`stage-badge`) — bukan desain baru.
+- `renderAccount()` & `renderPlacementTestScreen()` baru di `app.ts`, dipanggil lewat `Screen` union baru (`'account' | 'placementTest'`, `types.ts`) — dibuka dari kartu "Akun Orang Tua" di Pengaturan, bukan nav utama (login tetap opsional/sekunder, bukan gerbang wajib — selaras filosofi "anak main tanpa login" yang sudah dikunci §14.5).
+
+**Field lama dihapus** dari `progress.ts` (`assignedLevel`, `placementTestDone` + getter/setter-nya) — itu peninggalan mekanisme link `?assignedLevel=` yang sudah tidak ada lagi (digantikan panggilan API langsung dari `account.ts`).
+
+### 16.4 Fitur Baru yang Diminta Bareng Pivot Ini
+
+Sekalian diminta user saat pivot: **logout** (kartu Akun di Pengaturan), **nudge placement test** yang persisten di layar Belajar & Pengaturan (bukan cuma sekali redirect di awal — tetap tampil selama belum selesai, termasuk yang sempat skip), **retest** dengan entry point di Pengaturan (bukan di tempat lain), dan **3 cara buka level + boss sequential** (redesain PRD §12.1 — detail keputusan & rationale ada di PRD.md §14.8, bukan diulang di sini).
+
+Bug yang ditemukan & diperbaiki selama verifikasi: form akun (`renderAccount`) sempat baca nilai input SETELAH `paint()` menimpa DOM dgn versi kosong (status "Memproses…") — jadi selalu kirim field kosong ke API (400 "Isi no HP atau email dulu"). Diperbaiki dgn baca nilai input SEBELUM memanggil `paint()`/`submit()`. Ditemukan lewat Playwright end-to-end (bukan cuma type-check) — konfirmasi kenapa verifikasi fungsional (bukan cuma build) penting untuk kode yang melibatkan urutan render vs baca DOM.
+
+### 16.5 Verifikasi
+
+`npm run build` bersih di `app/` (78.4kb, naik dari 67.6kb sebelum fitur akun) dan `portal/` (0 halaman, 5 API route). End-to-end nyata lewat Playwright: daftar akun baru dari `app/` (lintas-origin ke `portal/`, CORS dikonfirmasi jalan — bukan diasumsikan), placement test lengkap (jawab semua benar → rekomendasi Adventurer → Peta Level otomatis unlock Starter+Explorer+Adventurer+Achiever+Trailblazer sekaligus, persis "beberapa level otomatis kebuka"), placement test di-skip (level tetap default, tidak ada yang ke-unlock), boss sequential (sebelum placement test: cuma Adventurer yang tombol Bos-nya hidup, Achiever & Trailblazer mati), dan logout (kembali ke state "Belum masuk").
+
+**File dihapus**: seluruh halaman `portal/app/**` non-API. **File baru**: `app/src/account.ts`, `app/src/placement-test-data.ts`, `app/src/games/placement.ts`. **File diubah signifikan**: `app/src/app.ts` (2 screen baru + boss sequential + unlock otomatis), `app/src/types.ts`, `app/src/progress.ts` (cleanup field lama), `app/public/styles.css` (`.pt-progress`, `.ghost-btn:disabled`), `portal/lib/session.ts` (token), `portal/middleware.ts` (CORS bukan page-guard), `portal/app/api/auth/{login,register}/route.ts` (balikin token), `portal/README.md`, `PRD.md` §14 (rombak besar).
+
+---
+
+## 17. Sumber Referensi
 
 - Cambridge — [Qualifications for young learners](https://www.cambridgeenglish.org/exams-and-tests/qualifications/young-learners/), [Wikipedia: Cambridge English Young Learners](https://en.wikipedia.org/wiki/Cambridge_English:_Young_Learners)
 - Pearson — [Global Scale of English for educators](https://www.pearson.com/languages/en-us/why-pearson/the-global-scale-of-english/educators.html), [GSE Assessment Framework Young Learners (PDF)](https://www.pearson.com/content/dam/one-dot-com/one-dot-com/pearson-languages/en-gb/pdfs/gse/gse-resources/gse-assessment-framework-young-learners.pdf)

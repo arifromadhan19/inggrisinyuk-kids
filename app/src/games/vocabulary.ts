@@ -1,5 +1,6 @@
 import type { OnDone, VocabItem, VocabTopic } from '../types';
 import { setHandlers } from '../interaction';
+import { recordAttempt } from '../progress';
 import { listenOnce, looseMatch, speak, sttSupported } from '../speech';
 import { shuffle } from '../util';
 
@@ -55,12 +56,14 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
         const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
         const fb = container.querySelector<HTMLElement>('#fb')!;
         if (opts[i] === target) {
+          recordAttempt(true);
           btn.classList.add('correct');
           fb.textContent = 'Betul! 🎉';
           fb.className = 'feedback good';
           round += 1;
           setTimeout(draw, 800);
         } else {
+          recordAttempt(false);
           btn.classList.add('wrong');
           fb.textContent = 'Coba lagi ya 💪';
           fb.className = 'feedback bad';
@@ -139,11 +142,13 @@ function runEjaKata(container: HTMLElement, items: VocabItem[], onDone: OnDone):
           const built = slots.join('');
           const fb = container.querySelector<HTMLElement>('#fb')!;
           if (built.toLowerCase() === it.en.toLowerCase()) {
+            recordAttempt(true);
             fb.textContent = 'Ejaannya benar! 🎉';
             fb.className = 'feedback good';
             round += 1;
             setTimeout(draw, 1000);
           } else {
+            recordAttempt(false);
             fb.textContent = 'Belum pas, coba susun ulang 💪';
             fb.className = 'feedback bad';
             setTimeout(() => {
@@ -265,6 +270,7 @@ function runContohPenggunaan(container: HTMLElement, items: VocabItem[], onDone:
           const fb = container.querySelector<HTMLElement>('#fb')!;
           const built = answer.map((a) => a.w).join(' ');
           if (built.toLowerCase() === words.join(' ').toLowerCase()) {
+            recordAttempt(true);
             fb.textContent = 'Kalimatnya pas! 🎉';
             fb.className = 'feedback good';
             speak(ex.en);
@@ -272,6 +278,7 @@ function runContohPenggunaan(container: HTMLElement, items: VocabItem[], onDone:
             phase = 'ucap';
             setTimeout(draw, 1100);
           } else {
+            recordAttempt(false);
             fb.textContent = 'Coba atur lagi 💪';
             fb.className = 'feedback bad';
           }
