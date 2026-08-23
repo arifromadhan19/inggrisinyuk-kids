@@ -13,7 +13,7 @@ const ALLOWED_ORIGIN = process.env.APP_ORIGIN ?? 'http://127.0.0.1:8000';
 function corsHeaders(): Record<string, string> {
   return {
     'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
 }

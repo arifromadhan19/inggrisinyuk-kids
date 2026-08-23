@@ -197,6 +197,19 @@ Contoh item Explorer:
 > 🔊 (cerita) "Mira has a red bag. She goes to school with her mother. They walk together."
 > ❓ "Who goes to school with Mira?" → tap: 👩 (mother) / 👨 (father) / 🐱 (cat) / 👦 (brother)
 
+### 4.3b Reading — "Baca & Jawab" (ditambah belakangan, riset susulan)
+
+> Skill ini TIDAK ada di riset awal §4 (cuma Vocab/Grammar/Listening/Speaking) — ditambah belakangan lewat permintaan user ad hoc ("tambahkan reading 3 soal"), dan sempat diimplementasikan salah: soal ditampilkan sebagai kata TERTULIS (mis. "father"), tapi opsi jawabannya JUGA menampilkan label teks Inggris di bawah tiap gambar (pool opsi dipakai bareng vocab/listening) — jadi salah satu opsi literally menampilkan kata "father" lagi. Anak bisa mencocokkan dua string yang identik tanpa membaca/memahami sama sekali. Bug ini dilaporkan user, riset susulan di bawah jadi dasar perbaikannya.
+
+**Sumber**: [Cambridge Pre A1 Starters — Teacher's Guide (PDF resmi)](https://resources.collins.co.uk/Samples/ELT/74863_Pre_A1_Starters_Teacher's_Guide.pdf); ringkasan task type juga dikonfirmasi di [Exam Seekers — YLE Pre A1 Starters Reading & Writing](https://exam-seekers.com/2021/05/04/ee-026a-yle-pre-a1-starters-reading-and-writing-exam/) & [flyer.us — Pre A1 Cambridge Starters exam format](https://flyer.us/pre-a1-cambridge-starters/).
+
+- Cambridge Pre A1 Starters Reading & Writing punya 5 task type. Yang relevan buat kita:
+  - **Task 3 (Word Identification)**: **gambar** ditampilkan, anak mencari **kata** yang cocok — soal & jawaban SENGAJA beda modalitas (gambar↔kata), tidak pernah dua-duanya teks.
+  - **Task 2 & 5 (Read & Answer)**: anak membaca **1-2 kalimat pendek** tentang sebuah gambar, lalu menjawab pertanyaan sederhana — ini pemahaman bacaan pendek, bukan sekadar cocok-kata.
+- **Pola intinya**: soal & jawaban HARUS beda modalitas. Kalau soalnya teks, opsinya wajib gambar (tanpa label) — begitu sebaliknya. Begitu keduanya sama-sama teks, tesnya berubah jadi "cocokkan string", bukan tes membaca.
+- **Keputusan desain kita**: pakai pola Task 2/5 (kalimat pendek → 1 pertanyaan → tap gambar), bukan Task 3 (gambar → cari kata), karena bentuknya bisa reuse persis shape data `story`+`question` yang sudah ada untuk Listening (`app/src/placement-test-data.ts`) — bedanya cuma **dibaca sendiri (silent, TANPA TTS)**, bukan diucapkan. Ini juga membuat Reading jadi skill yang benar-benar beda dari Vocab (arti kata) dan Listening (pemahaman lisan): Reading = pemahaman teks tertulis pendek.
+- **Implikasi implementasi**: opsi jawaban Reading harus gambar-saja, TANPA label teks di bawahnya (beda dari Listening yang boleh berlabel, karena soal Listening tidak pernah tampil sebagai teks di layar — tidak ada yang bisa dicocokkan visual).
+
 ### 4.4 Speaking — Dua Lapis, dan Hanya Satu yang Di-skor
 
 Ini bagian paling perlu kehati-hatian, karena keterbatasan teknologinya nyata (§7.5).
@@ -213,6 +226,14 @@ Ini bagian paling perlu kehati-hatian, karena keterbatasan teknologinya nyata (�
 - **Selalu dianggap berhasil**, apa pun transkripnya — persis perilaku yang sudah ada di `runTantangan()` speaking hari ini, dan konsisten dengan PRD §13.1 yang secara eksplisit **mengecualikan percobaan mic dari perhitungan "Ketepatan"** dengan alasan "ASR anak tidak selalu akurat".
 - **Fungsinya**: (a) memberi rasa "aku sudah ngomong Inggris hari ini" di menit-menit pertama, (b) memancing izin mikrofon lebih awal supaya modul Speaking berikutnya lancar, (c) mengumpulkan **sinyal internal lunak** (§7.2) yang boleh dipakai sebagai tie-breaker, tidak pernah sebagai penentu level.
 - Jika `sttSupported === false`, tampilkan tombol "✅ Aku Sudah Coba Ucapkan" — pola fallback yang sudah dipakai di `speaking.ts`.
+
+**Revisi (dilaporkan user): "TIDAK di-skor" dipecah jadi dua hal berbeda**
+
+> Judul §4.4 di atas ("hanya satu yang di-skor") awalnya diterjemahkan jadi "openmic tidak muncul di angka apa pun" — dan itu bikin bug yang dilaporkan user: bar progress selama tes menghitung **16 item** (13 pilihan-ganda + 3 item mic, `TOTAL_ITEMS` di `app/src/games/placement.ts`), tapi layar hasil cuma bilang "… dari **13**" karena `scorePlacement()` hanya menjumlahkan `PLACEMENT_QUESTIONS`. Dari sisi anak, 3 kegiatan terakhirnya seolah hilang.
+
+- **Angka skor (`totalCorrect`/`totalItems`) SEKARANG termasuk openmic**: `totalItems` = 13 + 3 = **16**, dan tiap item mic dengan `matched === true` (turunan `wordRatio`, ambang `OPENMIC_MATCHED_THRESHOLD`) menambah 1 ke `totalCorrect`. Konsisten dengan bar progress & dengan bintang yang anak lihat di layar mic.
+- **Keputusan level (`levelRecommended`/`correctByLevel`) TETAP murni dari 13 soal pilihan-ganda** — openmic tidak pernah ikut, sesuai PRD §13.1 (ASR browser terhadap suara anak tidak cukup andal untuk sampai menurunkan rekomendasi level). Ini bagian yang dikunci; yang berubah cuma angka yang ditampilkan.
+- Copy di layar mic & layar hasil (`games/placement.ts`) ikut diperbarui supaya tidak lagi mengklaim "belum ikut dihitung" — nadanya tetap non-punitive (CLAUDE.md poin 2): mic dibingkai sebagai "berani coba", bukan sebagai soal bernilai.
 
 ### 4.5 Adaptif Ringan (CAT/IRT Sederhana) — Nol Biaya, Ditulis Tangan
 

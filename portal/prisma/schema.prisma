@@ -41,7 +41,271 @@ model ChildProfile {
   parent            ParentAccount          @relation(fields: [parentId], references: [id], onDelete: Cascade)
   placementResults  PlacementTestResult[]
 
+  progressState    ChildProgressState?
+  topicCompletions TopicCompletion[]
+  bossClearances   BossClearance[]
+  dailyStats       ChildDailyStat[]
+  sectionProgress  ChildSectionProgress[]
+  itemProgress     ChildItemProgress[]
+  events           LearningEvent[]
+
   @@map("child_profiles")
+}
+
+/**
+ * Skema progres terstruktur — pengganti `ChildProgress.data: Json` (blob
+ * opaque, cuma cukup untuk "resume", tidak bisa di-query untuk rapor/
+ * analitik). Desain lengkap & rasional tiap keputusan: lihat TRD.md.
+ *
+ * Tiga lapis dengan tanggung jawab beda (TRD.md §3):
+ *  - STATE (ChildProgressState/TopicCompletion/BossClearance/
+ *    ChildSectionProgress/ChildItemProgress) — di-upsert dari snapshot
+ *    `Store` client, SELF-HEALING (client selalu kirim snapshot penuh).
+ *  - ROLLUP (ChildDailyStat) — dihitung ULANG dari LearningEvent per hari
+ *    yang tersentuh, bukan di-increment (idempotent terhadap retry/dobel).
+ *  - LOG (LearningEvent) — riwayat mentah tiap percobaan, boleh bolong
+ *    (offline/outbox penuh) TANPA merusak state/rollup di atas.
+ *
+ * localStorage (`app/src/progress.ts` `Store`) TETAP sumber kebenaran utama
+ * offline (PRD §5/§14.4) — semua tabel di sini murni backup/sync +
+ * analitik begitu anak login & online.
+ */
+
+/** 1 baris/anak — field SKALAR `Store` (xp, akurasi, identitas lokal,
+ *  posisi terakhir). Angka di-merge GREATEST (monoton, xp tidak pernah
+ *  turun — PRD §4.6); posisi terakhir last-write-wins ber-guard
+ *  `clientUpdatedAt` (anak boleh mundur, jadi "max" salah di situ). */
+model ChildProgressState {
+  id      String @id @default(uuid())
+  childId String @unique @map("child_id")
+
+  xp              Int @default(0)
+  correctAttempts Int @default(0) @map("correct_attempts")
+  totalAttempts   Int @default(0) @map("total_attempts")
+
+  /** Nama panggilan/avatar yang anak pilih di app (Store.name/avatar) —
+   *  SENGAJA beda dari `ChildProfile.name` (diisi orang tua saat daftar). */
+  nickname String?
+  avatar   String?
+
+  lastSkill      String? @map("last_skill")
+  lastTopicId    String? @map("last_topic_id")
+  lastTopicIndex Int?    @map("last_topic_index")
+  lastStep       Int?    @map("last_step")
+  lastLevel      String? @map("last_level")
+
+  lastActiveDay String? @map("last_active_day") @db.VarChar(10)
+
+  clientUpdatedAt DateTime? @map("client_updated_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@map("child_progress_state")
+}
+
+/** Pengganti `Store.done: string[]` (tag `${skill}:${topicId}`) — 1 baris
+ *  per topik yang sudah tuntas dicoba (= 1 bintang). Idempotent by design
+ *  (unique key), `lastDoneAt` GREATEST-merge kalau ditandai ulang. */
+model TopicCompletion {
+  id          String   @id @default(uuid())
+  childId     String   @map("child_id")
+  skill       String
+  topicId     String   @map("topic_id")
+  level       String?
+  firstDoneAt DateTime @default(now()) @map("first_done_at")
+  lastDoneAt  DateTime @default(now()) @map("last_done_at")
+
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, skill, topicId])
+  @@map("topic_completions")
+}
+
+/** Pengganti `Store.bossCleared: LevelKey[]` — penggerak buka/kunci Peta
+ *  Level (`levelUnlockMap`). 1 baris per (anak, level), upsert DO NOTHING. */
+model BossClearance {
+  id        String   @id @default(uuid())
+  childId   String   @map("child_id")
+  level     String
+  clearedAt DateTime @default(now()) @map("cleared_at")
+
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, level])
+  @@map("boss_clearances")
+}
+
+/** Rollup per HARI LOKAL PERANGKAT (bukan UTC — streak/strip 7 hari
+ *  didefinisikan pada kalender lokal, PRD/`isoDate`). Ada-baris = hari itu
+ *  aktif (pengganti `Store.activeDays`); kolom lain = sumber tren rapor,
+ *  DIHITUNG ULANG dari `LearningEvent` per hari (bukan di-increment) —
+ *  idempotent terhadap event yang terkirim ulang/terbalik urutan. */
+model ChildDailyStat {
+  id      String @id @default(uuid())
+  childId String @map("child_id")
+
+  day String @db.VarChar(10)
+
+  attempts    Int @default(0)
+  correct     Int @default(0)
+  hintsUsed   Int @default(0) @map("hints_used")
+  micAttempts Int @default(0) @map("mic_attempts")
+  micScoreSum Int @default(0) @map("mic_score_sum")
+  topicsDone  Int @default(0) @map("topics_done")
+  xpGained    Int @default(0) @map("xp_gained")
+
+  /** Histogram jam lokal {"7":12,"19":40} — pra-agregasi "pola waktu main". */
+  hourHistogram Json? @map("hour_histogram")
+
+  firstEventAt DateTime? @map("first_event_at")
+  lastEventAt  DateTime? @map("last_event_at")
+  recomputedAt DateTime  @updatedAt @map("recomputed_at")
+
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, day])
+  @@map("child_daily_stats")
+}
+
+/** 1 baris per (anak, skill, topik, SECTION) — "section" = unit dgn urutan
+ *  & navigasi sendiri: 'kenalan' | 'latihan' | 'tantangan-eja' |
+ *  'tantangan-ucap' | 'tantangan-susun'. String (bukan enum): daftar ini
+ *  akan tumbuh saat pola Vocab dibawa ke skill lain.
+ *
+ *  `plan` = urutan soal yang dimaterialisasi (cuma dipakai 'latihan', yang
+ *  sumbernya `buildLatihanOrder()` — di-shuffle; section lain meng-iterasi
+ *  `topic.items` alami, `plan=null`, slot=index item) — INI yang membuat
+ *  "soal ke-N" punya identitas stabil lintas sesi, jadi penanda per soal &
+ *  navigasi ⬅️/➡️ bermakna (TRD.md §6). */
+model ChildSectionProgress {
+  id      String @id @default(uuid())
+  childId String @map("child_id")
+  level   String
+  skill   String
+  topicId String @map("topic_id")
+  section String
+
+  /** Putaran ke-berapa — reserved utk "Ulangi Modul" nanti, belum dipakai
+   *  UI sekarang (selalu 1). */
+  round Int @default(1)
+
+  plan     Json?
+  planSeed Int?  @map("plan_seed")
+
+  slotCount Int @map("slot_count")
+
+  /** Posisi terakhir dilihat anak (resume ⬅️/➡️) — LWW, BUKAN penanda kunci
+   *  (non-punitive, tidak ada soal yang "terkunci" karena cursor). */
+  cursorSlot Int @default(0) @map("cursor_slot")
+
+  answeredSlots Int @default(0) @map("answered_slots")
+  correctSlots  Int @default(0) @map("correct_slots")
+
+  startedAt       DateTime  @default(now()) @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+  clientUpdatedAt DateTime  @map("client_updated_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, skill, topicId, section])
+  @@map("child_section_progress")
+}
+
+/** 1 baris per (anak, skill, topik, section, slot) — dibaca layar saat
+ *  topik dibuka ulang untuk mewarnai "sudah dikerjakan": penanda soal
+ *  Latihan Inti/Tantangan MAUPUN tombol 🔊/🎤/🎮 per kata di Kenalan
+ *  (`Store.wordInteractions` lama DILEBUR ke sini — section='kenalan',
+ *  kunci/pola akses/masa hidupnya identik, jadi tidak ada sistem paralel). */
+model ChildItemProgress {
+  id      String @id @default(uuid())
+  childId String @map("child_id")
+  skill   String
+  topicId String @map("topic_id")
+  section String
+  slot    Int
+  round   Int    @default(1)
+  level   String?
+
+  /** Item konten di slot ini — DENORMALISASI SENGAJA (konten hidup di
+   *  bundle client, bukan DB): rapor "kata apa yang masih susah" bisa
+   *  GROUP BY `itemRef` langsung tanpa tabel konten. */
+  itemIndex Int?    @map("item_index")
+  itemRef   String? @map("item_ref")
+  kind      String?
+
+  /** 0=belum, 1=dilihat, 2=dijawab. INT (bukan string) supaya merge
+   *  monoton cukup GREATEST. */
+  status Int @default(0)
+
+  everCorrect Boolean  @default(false) @map("ever_correct")
+  lastCorrect Boolean? @map("last_correct")
+  bestScore   Int?     @map("best_score")
+
+  attemptCount Int     @default(0) @map("attempt_count")
+  wrongCount   Int     @default(0) @map("wrong_count")
+  hintUsed     Boolean @default(false) @map("hint_used")
+
+  /** Tap tombol Kenalan — "pertama kali kena", tidak pernah dibatalkan. */
+  listenedAt DateTime? @map("listened_at")
+  micAt      DateTime? @map("mic_at")
+  gameAt     DateTime? @map("game_at")
+
+  firstAnsweredAt DateTime? @map("first_answered_at")
+  lastAnsweredAt  DateTime? @map("last_answered_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@unique([childId, skill, topicId, section, slot])
+  @@index([childId, itemRef])
+  @@map("child_item_progress")
+}
+
+/** "Setiap mencoba pakai di save" — 1 baris per percobaan/kejadian, log
+ *  mentah lebar & flat (analitik/drill-down), TANPA join ke konten.
+ *  `id` dibuat CLIENT (UUID) = dedup key: insert `ON CONFLICT DO NOTHING`,
+ *  jadi outbox client boleh kirim ulang batch yang sama tanpa efek ganda.
+ *  Boleh bolong (offline/outbox penuh) TANPA merusak progres — progres
+ *  hidup di tabel state di atas, bukan di sini (TRD.md §3). */
+model LearningEvent {
+  id      String @id @db.Uuid
+  childId String @map("child_id")
+  /** 'answer' (soal objektif) | 'speak' (mic, graded=false) |
+   *  'interact' (tap 🎤/🎮 Kenalan) | 'topic_done' | 'boss_clear' | 'freeplay'. */
+  kind    String
+
+  occurredAt DateTime @map("occurred_at")
+  localDay   String   @map("local_day") @db.VarChar(10)
+  localHour  Int      @map("local_hour")
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  level     String?
+  skill     String?
+  topicId   String? @map("topic_id")
+  section   String?
+  slot      Int?
+  round     Int?
+  itemIndex Int?    @map("item_index")
+  itemRef   String? @map("item_ref")
+  activity  String?
+
+  graded     Boolean  @default(true)
+  correct    Boolean?
+  score      Int?
+  hintUsed   Boolean  @default(false) @map("hint_used")
+  attemptNo  Int      @default(1) @map("attempt_no")
+  durationMs Int?     @map("duration_ms")
+  xpAwarded  Int      @default(0) @map("xp_awarded")
+
+  detail Json?
+
+  child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@index([childId, localDay, occurredAt])
+  @@index([childId, kind, occurredAt])
+  @@map("learning_events")
 }
 
 /** Append-only — retake tidak menghapus riwayat lama, sama seperti pola

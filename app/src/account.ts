@@ -226,14 +226,23 @@ export interface PlacementMcqAnswer {
   chosenEmoji: string;
 }
 
-/** Jawaban mic terbuka (openmic) — TIDAK di-skor untuk level (PRD §13.1).
- *  `matched`/`confidence` dihitung di client karena ASR jalan di browser
- *  (server tidak pernah dengar audionya) — dikirim apa adanya sebagai
- *  sinyal, bukan sebagai skor. */
+/** Jawaban mic terbuka (openmic) — TIDAK di-skor untuk level (PRD §13.1),
+ *  tapi `matched` ikut dihitung server di angka skor total (`totalCorrect`/
+ *  `totalItems` = 16, lihat portal/lib/placement-scoring.ts).
+ *  `matched`/`wordRatio`/`confidence` dihitung di client karena ASR jalan
+ *  di browser (server tidak pernah dengar audionya) — dikirim apa adanya
+ *  sebagai sinyal, bukan sebagai skor level. */
 export interface PlacementOpenmicAnswer {
   kind: 'openmic';
   questionId: string;
+  /** Turunan `wordRatio >= ambang` (lihat games/placement.ts) — bukan lagi
+   *  fungsi longgar terpisah, supaya konsisten dengan bintang yang anak
+   *  lihat di layar. */
   matched: boolean;
+  /** Rasio kata target yang kedengaran (0-1) — skor proporsional
+   *  sesungguhnya, dipakai juga untuk bintang di layar. Contoh: "I like my
+   *  school" yang cuma kedengaran "school" → ~0.25, BUKAN skor penuh. */
+  wordRatio: number;
   confidence: number;
 }
 
@@ -247,6 +256,12 @@ export interface PlacementResult {
   attemptNumber?: number;
   attemptsUsed?: number;
   attemptsRemaining?: number;
+  /** Cuma ada di hasil submit asli (bukan skip) — dipakai layar hasil buat
+   *  nampilin skor+mapping ke level (permintaan user). Server yang hitung,
+   *  bukan client. */
+  totalCorrect?: number;
+  totalItems?: number;
+  correctByLevel?: Record<string, number>;
 }
 
 export async function submitPlacementTest(answers: PlacementAnswer[]): Promise<PlacementResult> {
@@ -268,4 +283,25 @@ export async function skipPlacementTest(): Promise<PlacementResult> {
   });
   if (result.level) cacheChildStatus(result.level, false, result.attemptsUsed ?? 0, null);
   return result;
+}
+
+/**
+ * Sync progres main (bintang/XP/streak/interaksi kata, dst — `progress.ts`)
+ * ke `portal/` (permintaan user: "simpan setiap progress ke database").
+ * Blob JSON apa adanya — bentuknya dipegang `progress.ts` (`Store`), file ini
+ * cuma jadi jalur HTTP-nya, tidak perlu tahu isinya. Cuma jalan kalau sudah
+ * login (`progress.ts` yang cek lewat `setSyncHandler`) — offline/tanpa akun
+ * tetap main penuh dari localStorage saja (PRD §5/§14.4).
+ */
+export async function getProgress(): Promise<Record<string, unknown> | null> {
+  const data = await apiFetch<{ data: Record<string, unknown> | null }>('/api/progress', { method: 'GET' });
+  return data.data;
+}
+
+/** `events` — outbox `LearningEventInput[]` (progress.ts `peekOutbox`) dikirim
+ *  bareng snapshot `Store` di request YANG SAMA (TRD.md §7.0: 1 request/burst,
+ *  bukan 1 HTTP per tap). Tipe di sini sengaja `unknown[]`: bentuk persisnya
+ *  dipegang `progress.ts`, file ini murni jalur HTTP. */
+export async function saveProgress(data: Record<string, unknown>, events: unknown[] = []): Promise<void> {
+  await apiFetch('/api/progress', { method: 'PUT', body: JSON.stringify({ data, events }) });
 }

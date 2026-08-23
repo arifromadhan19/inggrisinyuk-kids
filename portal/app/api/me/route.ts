@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSessionParentId } from '@/lib/session';
+import { withErrorHandling } from '@/lib/api-error';
+import { MAX_ATTEMPTS, resolveAttemptsUsed } from '@/lib/placement-attempts';
 
-const MAX_ATTEMPTS = 2;
-
-export async function GET(): Promise<NextResponse> {
+export const GET = withErrorHandling(async (): Promise<NextResponse> => {
   const parentId = await getSessionParentId();
   if (!parentId) return NextResponse.json({ error: 'Belum login.' }, { status: 401 });
 
@@ -32,7 +32,7 @@ export async function GET(): Promise<NextResponse> {
       db.placementTestResult.count({ where: { childId: child.id } }),
       db.placementTestResult.findFirst({ where: { childId: child.id }, orderBy: { takenAt: 'desc' } }),
     ]);
-    attemptsUsed = count;
+    attemptsUsed = resolveAttemptsUsed(parent.phone, count);
     latestPlacementResult = latest
       ? {
           levelRecommended: latest.levelRecommended,
@@ -59,4 +59,4 @@ export async function GET(): Promise<NextResponse> {
         }
       : null,
   });
-}
+});

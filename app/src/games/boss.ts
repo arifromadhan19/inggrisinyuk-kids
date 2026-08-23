@@ -15,19 +15,35 @@
  *    seperti aturan selesai modul biasa, cuma bentuknya lebih besar & seru
  *    (framing "bos" ala Mario/Pokémon gym-leader — bukan tegang/menakutkan).
  */
-import { GRAMMAR_TOPICS, LISTENING_TOPICS, SPEAKING_TOPICS, VOCAB_TOPICS } from '../content';
+import {
+  BOSS_NAME,
+  GRAMMAR_TOPICS_BY_LEVEL,
+  LISTENING_TOPICS_BY_LEVEL,
+  SPEAKING_TOPICS_BY_LEVEL,
+  VOCAB_TOPICS_BY_LEVEL,
+} from '../content';
 import { setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
 import { listenOnce, looseMatch, speak, sttSupported } from '../speech';
-import type { OnDone } from '../types';
+import type { LevelKey, OnDone } from '../types';
 import { shuffle } from '../util';
+
+/** Materi Bos ikut level yang ditantang (permintaan user: Adventurer
+ *  sekarang punya materi sendiri, dulu Bos SELALU nyoal dari Explorer
+ *  apa pun levelnya) — jatuh ke Explorer kalau skill tertentu di level itu
+ *  belum ada topiknya sama sekali, konsisten dgn "Bos level terkunci
+ *  pertama tetap bisa dicoba pakai materi yang ada" (app.ts `renderLevels`). */
+function poolFor<T>(byLevel: Partial<Record<LevelKey, T[]>>, level: LevelKey): T[] {
+  const own = byLevel[level];
+  return own && own.length > 0 ? own : (byLevel.explorer ?? []);
+}
 
 const ROUNDS_PER_PHASE = 2;
 const TOTAL_PHASES = 4;
 const TOTAL_ROUNDS = ROUNDS_PER_PHASE * TOTAL_PHASES;
 
-function phaseBadge(n: number, label: string, emoji: string): string {
-  return `<span class="stage-badge boss-badge">👑 TANTANGAN BOS · Babak ${n}/${TOTAL_PHASES} · ${emoji} ${label}</span>`;
+function phaseBadge(bossName: string, n: number, label: string, emoji: string): string {
+  return `<span class="stage-badge boss-badge">🏰 ${bossName.toUpperCase()} · Babak ${n}/${TOTAL_PHASES} · ${emoji} ${label}</span>`;
 }
 
 function roundMeta(n: number): string {
@@ -36,18 +52,37 @@ function roundMeta(n: number): string {
 
 /** Jalankan seluruh gauntlet 4 babak, lalu panggil onWin (selalu tercapai —
  *  tidak ada jalur "kalah", cuma jalur "belum selesai"). */
-export function runBoss(container: HTMLElement, onWin: OnDone): void {
+export function runBoss(container: HTMLElement, onWin: OnDone, level: LevelKey): void {
+  const bossName = BOSS_NAME[level];
   let roundNo = 0;
   const next = (fn: () => void) => {
     roundNo += 1;
     fn();
   };
 
-  const vocabItems = shuffle(VOCAB_TOPICS.flatMap((t) => t.items)).slice(0, ROUNDS_PER_PHASE);
-  const listenDrills = shuffle(LISTENING_TOPICS.flatMap((t) => t.drill)).slice(0, ROUNDS_PER_PHASE);
-  const grammarScrambles = shuffle(GRAMMAR_TOPICS.flatMap((t) => t.scramble)).slice(0, ROUNDS_PER_PHASE);
-  const speakPhrases = shuffle(SPEAKING_TOPICS.flatMap((t) => t.drill)).slice(0, ROUNDS_PER_PHASE);
-  const allVocab = VOCAB_TOPICS.flatMap((t) => t.items);
+  const vocabTopics = poolFor(VOCAB_TOPICS_BY_LEVEL, level);
+  const listeningTopics = poolFor(LISTENING_TOPICS_BY_LEVEL, level);
+  const grammarTopics = poolFor(GRAMMAR_TOPICS_BY_LEVEL, level);
+  const speakingTopics = poolFor(SPEAKING_TOPICS_BY_LEVEL, level);
+
+  const vocabItems = shuffle(vocabTopics.flatMap((t) => t.items)).slice(0, ROUNDS_PER_PHASE);
+  // Listening py 2 format berdampingan (`AnyListeningTopic`, types.ts) —
+  // format baru (`items`, mis. Little Stars) diadaptasi jadi bentuk
+  // `ListeningDrill` di sini (`ListeningQuestionOption` sudah struktural
+  // cocok dgn `ListeningOption`), supaya babak ini TETAP 1 implementasi
+  // generik tanpa perlu tahu format aslinya.
+  const listenDrills = shuffle(
+    listeningTopics.flatMap((t) => ('items' in t ? t.items.map((it) => ({ en: it.example.en, opts: it.question.options })) : t.drill))
+  ).slice(0, ROUNDS_PER_PHASE);
+  const grammarScrambles = shuffle(grammarTopics.flatMap((t) => t.scramble)).slice(0, ROUNDS_PER_PHASE);
+  // Speaking py 2 format berdampingan (`AnySpeakingTopic`, types.ts) — sama
+  // adapter inline dgn `listenDrills` di atas: format baru (`items`, Little
+  // Stars) diratakan jadi `string[]` frasa target, format lama tetap `.drill`
+  // apa adanya, supaya babak ini TETAP 1 implementasi generik.
+  const speakPhrases = shuffle(
+    speakingTopics.flatMap((t) => ('items' in t ? t.items.map((it) => it.phrase.en) : t.drill))
+  ).slice(0, ROUNDS_PER_PHASE);
+  const allVocab = vocabTopics.flatMap((t) => t.items);
 
   runVocabPhase();
 
@@ -59,7 +94,7 @@ export function runBoss(container: HTMLElement, onWin: OnDone): void {
 
     next(() => {
       container.innerHTML = `
-        ${phaseBadge(1, 'Vocabulary', '📚')}
+        ${phaseBadge(bossName, 1, 'Vocabulary', '📚')}
         ${roundMeta(roundNo)}
         <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar Lagi</button></div>
         <div class="opt-grid">
@@ -99,7 +134,7 @@ export function runBoss(container: HTMLElement, onWin: OnDone): void {
 
     next(() => {
       container.innerHTML = `
-        ${phaseBadge(2, 'Listening', '🎧')}
+        ${phaseBadge(bossName, 2, 'Listening', '🎧')}
         ${roundMeta(roundNo)}
         <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Putar Kalimat</button></div>
         <div class="opt-grid ${d.opts.length > 2 ? 'three' : ''}">
@@ -141,7 +176,7 @@ export function runBoss(container: HTMLElement, onWin: OnDone): void {
 
     const paint = () => {
       container.innerHTML = `
-        ${phaseBadge(3, 'Grammar', '✏️')}
+        ${phaseBadge(bossName, 3, 'Grammar', '✏️')}
         ${roundMeta(roundNo)}
         <div class="big-emoji" style="font-size:44px;">${sc.emoji}</div>
         <div class="answer-row ${answer.length ? '' : 'empty'}">
@@ -201,7 +236,7 @@ export function runBoss(container: HTMLElement, onWin: OnDone): void {
 
     next(() => {
       container.innerHTML = `
-        ${phaseBadge(4, 'Speaking', '🗣️')}
+        ${phaseBadge(bossName, 4, 'Speaking', '🗣️')}
         ${roundMeta(roundNo)}
         <div class="en-text">"${phrase}"</div>
         <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar Contoh</button></div>
@@ -229,8 +264,12 @@ export function runBoss(container: HTMLElement, onWin: OnDone): void {
               fb.className = 'feedback good';
               setTimeout(() => runSpeakPhase(round + 1), 850);
             },
-            () => {
+            (kind) => {
               btn.classList.remove('listening');
+              // 'aborted' — mic dihentikan paksa krn "🔊 Dengar Contoh"
+              // ditap pas masih dengar (speech.ts `stopListening()`), bukan
+              // STT gagal — reset diam-diam.
+              if (kind === 'aborted') return;
               container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
             }
           );

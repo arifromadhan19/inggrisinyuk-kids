@@ -69,6 +69,9 @@
   --c-listen:#1E6FB8; --c-listen-bg:#E3F0FC;
   --c-speak:#1F7A43;  --c-speak-bg:#E4F5EA;
   --c-gram:#B45B0C;   --c-gram-bg:#FDEEDC;
+  /* Reading cuma dipakai First Placement Test (belum jadi skill Belajar
+     tersendiri) — warna baru, beda dari 4 di atas. */
+  --c-read:#C4488A;   --c-read-bg:#FBE7F1;
 
   /* --- Tanah Peta Level: 6 perhentian, dibaca sebagai perjalanan --- */
   --t1:#FFD9B0; --t1-soft:#FFF1E0; --t1-deep:#E09A55;  /* padang fajar     */
@@ -185,6 +188,22 @@ body.is-login .topline,
 body.is-login .rail,
 body.is-login .tabbar{ display:none; }
 body.is-login .main{ max-width:none; padding:0; margin:0; }
+
+/* Homepage marketing — sama pola dgn is-login (halaman berdiri sendiri,
+   full-bleed), lihat `.landing-*` (bawah file) & `renderLandingPage` (app.ts). */
+body.is-landing .topline,
+body.is-landing .rail,
+body.is-landing .tabbar{ display:none; }
+body.is-landing .main{ max-width:none; padding:0; margin:0; }
+
+/* First Placement Test — halaman berdiri sendiri juga (permintaan user):
+   tanpa rail/topline/tabbar (tidak ada jalan keluar diam-diam lewat nav),
+   TAPI beda dari is-login, `.main` TETAP pakai padding/max-width normal
+   karena layar ini masih pakai shell .act-head + .card standar (activity),
+   bukan layout full-bleed sendiri kayak login. */
+body.is-placement-test .topline,
+body.is-placement-test .rail,
+body.is-placement-test .tabbar{ display:none; }
 
 /* --------------------------------------------------------- brand mark ---- */
 .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
@@ -349,11 +368,21 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 /* Kartu "lanjutkan" di Beranda = panorama kecil, bukan panel gelap: langit
    lagoon di atas, matahari mango di kanan, awan, lalu siluet bukit di kaki
    kartu. Isi & tombolnya tidak berubah — cuma latarnya yang sekarang bercerita
-   "kamu lagi di suatu tempat", selaras dengan Peta Level. */
+   "kamu lagi di suatu tempat", selaras dengan Peta Level.
+   `--spark-accent` (permintaan user, Menu Belajar: "warna sesuaikan dengan
+   warna modulnya") — di-set INLINE per elemen ke warna skill tujuan
+   (`SKILL_META[key].accent`, app.ts), gradiennya dihitung dari 1 warna itu
+   pakai color-mix() jadi tidak perlu 5 blok CSS per-skill. Fallback ke
+   teal/brand lama kalau variabelnya tidak di-set (mis. Beranda, atau kartu
+   "semua materi tuntas" yang tidak menunjuk skill tertentu). */
 .spark{
+  --spark-base: var(--spark-accent, var(--brand-600));
   position:relative; overflow:hidden;
   display:flex; align-items:center; gap:var(--s4);
-  background:linear-gradient(176deg,#13AFA3 0%, var(--brand-600) 34%, var(--brand-700) 68%, var(--brand-800) 100%);
+  background:linear-gradient(176deg,
+    color-mix(in srgb, var(--spark-base) 55%, white) 0%,
+    var(--spark-base) 38%,
+    color-mix(in srgb, var(--spark-base) 100%, black 32%) 100%);
   color:#fff; border-radius:var(--r-xl);
   padding:var(--s5) var(--s4) calc(var(--s5) + 10px);
   box-shadow:var(--sh-2);
@@ -376,7 +405,23 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .spark-body{ position:relative; z-index:1; flex:1; min-width:0; }
 .spark .eyebrow{ color:var(--sun-300); }
 .spark-title{ font-family:var(--font-head); font-size:clamp(1.25rem,1.05rem + 1vw,1.75rem); margin:4px 0 4px; }
-.spark-sub{ color:#CFEBE7; font-size:var(--fs-meta); font-weight:700; margin-bottom:var(--s4); }
+.spark-sub{ color:rgba(255,255,255,.86); font-size:var(--fs-meta); font-weight:700; margin-bottom:var(--s4); }
+
+/* Strip progres di dalam kartu spark (Menu Belajar, permintaan user: gabung
+   progress+lanjutkan jadi 1 section, DI BAWAH tombol, & lebih slim daripada
+   versi awal) — track+label sebaris (bukan bar lalu label di bawahnya lagi)
+   supaya tetap ringkas, track translusen tipis di atas gradien, isi bar
+   pakai warna mango yang sama dgn glow matahari di kartu ini supaya kebaca
+   "satu keluarga warna", bukan tempelan komponen putih lain. */
+.spark-progress{ display:flex; align-items:center; gap:8px; margin-top:14px; max-width:260px; }
+.spark-progress-track{
+  flex:1; height:4px; border-radius:var(--r-pill); background:rgba(255,255,255,.22); overflow:hidden;
+}
+.spark-progress-fill{
+  height:100%; border-radius:var(--r-pill); min-width:3px;
+  background:linear-gradient(90deg,var(--sun-400),var(--sun-500));
+}
+.spark-progress-label{ flex:none; font-size:11px; font-weight:800; color:rgba(255,255,255,.86); letter-spacing:.02em; white-space:nowrap; }
 .spark-art{
   position:relative; z-index:1; flex:none;
   width:82px; height:82px; border-radius:50%;
@@ -384,6 +429,15 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   background:radial-gradient(circle at 34% 26%, var(--sun-400) 0%, var(--sun-500) 58%, #EF9C24 100%);
   box-shadow:0 0 0 6px rgba(255,255,255,.14), 0 14px 26px -12px rgba(6,51,58,.85);
 }
+
+/* Versi slim (permintaan user) — padding & ukuran dikecilkan, dipakai di
+   kartu "lanjutkan" Beranda MAUPUN kartu serupa di Menu Belajar (progress
+   bar-nya, `.spark-progress`, tetap muat di bawah tombol versi compact ini). */
+.spark.compact{ padding:var(--s4) var(--s4) calc(var(--s4) + 8px); gap:var(--s3); }
+.spark.compact .spark-title{ font-size:1.1875rem; margin:0 0 3px; }
+.spark.compact .spark-sub{ margin-bottom:var(--s3); }
+.spark.compact .cta{ padding:10px 20px; font-size:.9375rem; }
+.spark.compact .spark-art{ width:60px; height:60px; font-size:28px; box-shadow:0 0 0 4px rgba(255,255,255,.14), 0 10px 20px -10px rgba(6,51,58,.85); }
 
 .jump-grid{ display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); }
 .jump{
@@ -466,12 +520,23 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 /* ---------------------------------------------------------- menu belajar - */
 .skill-grid{ display:grid; gap:var(--s3); }
 .skill-card{
+  position:relative;
   display:flex; align-items:center; gap:var(--s3);
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg);
   padding:var(--s4); box-shadow:var(--sh-1); text-align:left; width:100%;
   transition:transform .12s ease, box-shadow .15s ease, border-color .15s ease;
 }
 .skill-card:active{ transform:scale(.985); }
+/* Persentase materi selesai per modul (permintaan user) — pojok kanan atas,
+   netral (bukan warna modul) supaya tidak baku hantam dgn `.ic`; hijau "ok"
+   cuma begitu genap 100% (perayaan kecil, konsisten dgn .topic-card.done). */
+.skill-pct{
+  position:absolute; top:10px; right:12px;
+  font-size:11px; font-weight:800; letter-spacing:.02em;
+  padding:3px 8px; border-radius:var(--r-pill);
+  background:var(--muted); color:var(--ink-3);
+}
+.skill-pct.done{ background:var(--ok-bg); color:var(--ok); }
 .skill-card .ic{
   width:54px; height:54px; border-radius:17px; flex:none;
   display:grid; place-items:center; font-size:26px;
@@ -568,6 +633,47 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .screen-head .txt h1{ font-size:var(--fs-h2); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .screen-head .txt p{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:2px; }
 
+/* Kepala Daftar Materi (permintaan user: gabung judul+progress jadi 1
+   section, bukan kartu terpisah di bawahnya). Modifier KHUSUS di sini,
+   bukan ubah `.screen-head` langsung, supaya layar lain yang pakai class
+   yang sama (Peta Level, Pengaturan, dst) tidak ikut kepengaruh.
+   Header ini sendiri TIDAK sticky — dia scroll away seperti konten biasa;
+   yang "tetap ada"/slim pas discroll adalah `.topics-compact-bar` di bawah
+   (pola project inggrisinyuk: 2 elemen terpisah, bukan 1 elemen yg
+   menyusut). Margin negatif = bleed ke tepi `.main` (var(--s4) di app.ts)
+   biar kerasa jadi 1 strip berwarna, bukan konten biasa. */
+.topics-head{
+  background:var(--paper);
+  margin:calc(-1 * var(--s4)) calc(-1 * var(--s4)) var(--s4);
+  padding:var(--s4) var(--s4) var(--s3);
+  border-bottom:1px solid var(--line);
+}
+
+/* Bar ringkas (permintaan user: "jadi slim/collapse pas discroll", pola
+   dari app/dashboard/[module]/page.tsx project inggrisinyuk) — fixed,
+   disembunyikan default (translateY+opacity, BUKAN display:none — biar
+   transisinya mulus), muncul begitu `.topics-head` besar sudah lewat scroll
+   (app.ts `wireTopicsCompactBar`, ambang scrollY>140). `top` ikut tinggi
+   `.topline` (sticky, mobile-only), di ≥768px geser ke kanan `.rail`
+   (width:92px) krn topline diganti rail di situ. */
+.topics-compact-bar{
+  position:fixed; top:59px; left:0; right:0; z-index:25;
+  background:var(--surface); border-bottom:1px solid var(--line); box-shadow:var(--sh-1);
+  transform:translateY(-100%); opacity:0; pointer-events:none;
+  transition:transform .18s ease, opacity .18s ease;
+}
+.topics-compact-bar.is-visible{ transform:translateY(0); opacity:1; pointer-events:auto; }
+.topics-compact-inner{
+  max-width:1180px; margin:0 auto;
+  display:flex; align-items:center; gap:var(--s3);
+  padding:8px var(--s4);
+}
+.topics-compact-label{ flex:1; font-family:var(--font-head); font-weight:800; font-size:.9375rem; text-align:center; }
+.topics-compact-pct{ flex:none; font-weight:800; font-size:.875rem; color:var(--brand-700); }
+@media (min-width:768px){
+  .topics-compact-bar{ top:0; left:92px; }
+}
+
 .topic-grid{ display:grid; gap:var(--s3); }
 .topic-card{
   display:flex; align-items:center; gap:var(--s3); text-align:left; width:100%;
@@ -584,12 +690,22 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .topic-card .info{ flex:1; min-width:0; }
 .topic-card .info b{ display:block; font-family:var(--font-head); font-size:var(--fs-h3); }
 .topic-card .info span{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
+/* Persentase per materi (permintaan user) — inline di akhir judul (bukan
+   block terpisah) supaya "Judul - 80%" kebaca senapas, sama palet dgn
+   .skill-pct (ok/hijau cuma pas genap 100%). */
+.topic-card .info .topic-pct{ font-size:var(--fs-meta); font-weight:800; color:var(--ink-3); }
+.topic-card .info .topic-pct.done{ color:var(--ok); }
 .topic-card .go{
   flex:none; background:var(--accent); color:#fff; border-radius:var(--r-pill);
   padding:9px 16px; font-weight:800; font-size:var(--fs-meta);
   font-family:var(--font-head);
 }
-.topic-card.done .num{ background:var(--ok-bg); color:var(--ok); }
+/* Materi yang sudah dikerjakan (permintaan user: warna dibedakan, bukan
+   cuma badge nomor) — tint kartu penuh dgn palet "ok" yang sama dipakai di
+   seluruh app utk status selesai/benar. */
+.topic-card.done{ background:var(--ok-bg); border-color:var(--ok); }
+.topic-card.done .num{ background:#fff; color:var(--ok); }
+.topic-card.done .go{ background:var(--ok); }
 
 /* ============================== PETA LEVEL ================================ */
 /* Dulu: daftar vertikal 6 kartu dengan garis penghubung — jujur, tapi kebaca
@@ -822,7 +938,18 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 }
 .stat-value{ font-family:var(--font-head); font-size:1.0625rem; color:var(--ink); }
 .stat-label{ font-size:.6875rem; font-weight:800; color:var(--ink-3); letter-spacing:.01em; }
-.progress-panel .progress-track{ margin-top:var(--s4); }
+/* Progresmu dibuat lebih ringkas/slim (permintaan user) — jarak antar-baris
+   & ukuran stat-tile dikecilkan, TANPA membuang info apa pun (masih level+%,
+   bar, keterangan modul, 3 stat). Cuma padding & spacing yang dirapatkan. */
+.progress-panel{ padding:var(--s4); }
+.progress-panel .level-progress-head{ margin-top:var(--s2); }
+.progress-panel .progress-track{ height:8px; margin-top:var(--s2); }
+.progress-panel > p.meta{ margin-top:var(--s2) !important; font-size:.75rem; }
+.progress-panel .stat-row{ margin-top:var(--s3); gap:var(--s2); }
+.progress-panel .stat-tile{ padding:var(--s2) var(--s1); gap:2px; }
+.progress-panel .stat-ic{ width:28px; height:28px; font-size:14px; }
+.progress-panel .stat-value{ font-size:.9375rem; }
+.progress-panel .stat-label{ font-size:.625rem; }
 
 /* -------------------------------------------------------------- aktivitas */
 .act-head{ display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s4); }
@@ -850,21 +977,22 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .stepper li.done .dot{ background:var(--accent); color:#fff; }
 .stepper li[role="button"]{ cursor:pointer; }
 
-.voice-drop{
+/* Dulu <details>/<summary> tersembunyi (harus di-tap dulu buat kelihatan) —
+   permintaan user: tampil penuh dari awal di layar aktivitas biar anak/ortu
+   langsung aware ada kontrol suara & kecepatan, bukan disembunyikan kayak
+   dropdown. */
+.voice-shown{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
   box-shadow:var(--sh-1); overflow:hidden;
 }
-.voice-drop > summary{
-  list-style:none; cursor:pointer; padding:12px var(--s4);
+.voice-shown-head{
+  padding:12px var(--s4);
   font-weight:800; font-size:var(--fs-meta); color:var(--ink-2);
   display:flex; align-items:center; gap:8px;
 }
-.voice-drop > summary::-webkit-details-marker{ display:none; }
-.voice-drop > summary::after{ content:'⌄'; margin-left:auto; font-size:1rem; opacity:.6; }
-.voice-drop[open] > summary::after{ content:'⌃'; }
-.voice-drop .voice-panel{ border:none; box-shadow:none; border-radius:0; margin:0; padding:0 var(--s4) var(--s4); }
+.voice-shown .voice-panel{ border:none; box-shadow:none; border-radius:0; margin:0; padding:0 var(--s4) var(--s4); }
 
-/* Panel suara (dipakai di Pengaturan & di dropdown aktivitas) */
+/* Panel suara (dipakai di Pengaturan & di layar aktivitas) */
 .voice-panel{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
   box-shadow:var(--sh-1); padding:14px var(--s4);
@@ -884,6 +1012,22 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   border:1px solid var(--line); background:var(--surface); border-radius:var(--r-pill);
   padding:8px 13px; font-weight:700; font-size:var(--fs-meta); color:var(--ink);
   font-family:var(--font-body); max-width:100%; flex:1; min-width:150px;
+}
+
+/* Menu Belajar — pemilih markas lain yang sudah terbuka (permintaan user:
+   "gimana di menu belajar bisa pilih materi per level"), SATU baris ringkas
+   (dropdown, bukan pill row 2 baris — revisi user: pill row "boros" & bikin
+   konten belajar ketutup turun) sebelum kartu materi, konsisten dengan
+   design awal yang tanpa header sama sekali kalau cuma 1 level tersedia. */
+.menu-level-head{ margin-bottom:12px; }
+.level-select-wrap{
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-pill);
+  padding:6px 12px 6px 14px;
+}
+.level-select{
+  border:none; background:transparent; color:var(--ink); font-weight:800;
+  font-size:var(--fs-meta); font-family:var(--font-body); padding:2px 4px 2px 0;
 }
 
 /* --------------------------------------------------------- panggung game - */
@@ -915,11 +1059,26 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   background:var(--muted); color:var(--ink-2); font-weight:800; font-size:var(--fs-meta);
   padding:8px 14px; border-radius:var(--r-pill);
 }
-.pt-story{
-  background:var(--brand-50); border:1px solid var(--brand-100); color:var(--ink-2);
-  border-radius:var(--r-md); padding:14px; font-weight:700; font-size:var(--fs-meta); line-height:1.5;
+/* Warna per skill sama dengan Belajar (content.ts SKILL_META) — biar 1 identitas visual. */
+.pt-skill-pill.pt-vocab{ background:var(--c-vocab-bg); color:var(--c-vocab); }
+.pt-skill-pill.pt-gram{ background:var(--c-gram-bg); color:var(--c-gram); }
+.pt-skill-pill.pt-listen{ background:var(--c-listen-bg); color:var(--c-listen); }
+.pt-skill-pill.pt-speak{ background:var(--c-speak-bg); color:var(--c-speak); }
+.pt-skill-pill.pt-read{ background:var(--c-read-bg); color:var(--c-read); }
+
+/* Konfirmasi keluar di tengah First Placement Test — muncul begitu anak
+   tap balik/nav lain SAAT lagi jawab soal, biar progres tidak hilang
+   tanpa sadar. Overlay custom (bukan window.confirm bawaan browser yang
+   tidak bisa diatur gaya & terasa asing utk anak). */
+.pt-confirm-overlay{
+  position:fixed; inset:0; background:rgba(46,33,20,.45); backdrop-filter:blur(2px);
+  display:flex; align-items:center; justify-content:center; padding:var(--s5); z-index:200;
 }
-.pt-story b{ color:var(--brand-700); }
+.pt-confirm-card{
+  background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--sh-2);
+  padding:28px 24px; max-width:340px; width:100%; text-align:center;
+  animation:loginCardIn .25s ease;
+}
 /* Harus SETELAH .stage-badge: badge Bos memakai kedua kelas sekaligus, jadi
    yang menang adalah aturan yang ditulis belakangan (spesifisitasnya sama). */
 .stage-badge.boss-badge{ background:linear-gradient(180deg,var(--sun-100),#FFE7BE); color:var(--sun-600); }
@@ -927,7 +1086,39 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .en-text{ font-family:var(--font-head); font-weight:700; font-size:clamp(1.25rem,1.05rem + .9vw,1.625rem); text-align:center; }
 .id-text{ text-align:center; color:var(--ink-3); font-weight:700; font-size:var(--fs-meta); margin-top:3px; }
 
-.speak-row{ display:flex; justify-content:center; margin:var(--s4) 0; }
+/* Reading (First Placement Test): kalimat dibaca SENDIRI, TANPA TTS — beda
+   dari Listening (diucapkan). Font besar & line-height longgar khusus utk
+   pembaca pemula (permintaan user, konsisten dgn .opt-btn-text Vocab).
+   Warna pakai token --c-read/--c-read-bg biar identitas skill konsisten
+   dgn .pt-skill-pill.pt-read. */
+.reading-passage{
+  background:var(--c-read-bg); border:3px solid var(--c-read); border-radius:var(--r-md);
+  padding:var(--s4) var(--s5); margin:8px auto 14px; max-width:520px;
+}
+.reading-passage p{
+  font-family:var(--font-head); font-weight:700; color:var(--ink);
+  font-size:clamp(1.125rem,1rem + .6vw,1.5rem); line-height:1.5; margin:0 0 6px;
+}
+.reading-passage p:last-child{ margin-bottom:0; }
+.reading-question{
+  font-family:var(--font-head); font-weight:800; color:var(--ink); text-align:center;
+  font-size:clamp(1.0625rem,.95rem + .5vw,1.3125rem); margin:0 0 14px;
+}
+
+/* Reading "Baca Kata" (Little Stars, format `ReadingWordTopic`) — kartu 1
+   KATA ala flashcard, beda dari `.reading-passage` (kalimat/paragraf) di
+   atas: font jauh lebih besar + letter-spacing lebar khusus menonjolkan
+   BENTUK CETAK 1 kata (print awareness), bukan alur baca kalimat. */
+.reading-word-card{
+  background:var(--c-read-bg); border:3px solid var(--c-read); border-radius:var(--r-md);
+  padding:22px var(--s5); margin:8px auto 14px; max-width:420px; text-align:center;
+}
+.reading-word-card b{
+  display:block; font-family:var(--font-head); font-weight:800; color:var(--ink);
+  font-size:clamp(1.75rem,1.35rem + 2vw,2.75rem); letter-spacing:.04em; line-height:1.2;
+}
+
+.speak-row{ display:flex; justify-content:center; align-items:center; gap:10px; margin:var(--s4) 0; flex-wrap:wrap; }
 .speak-btn{
   background:var(--accent); color:#fff; border-radius:var(--r-pill);
   padding:13px 24px; font-weight:800; font-size:.9375rem;
@@ -935,6 +1126,16 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   transition:transform .12s ease;
 }
 .speak-btn:active{ transform:scale(.97); }
+/* Tombol sekunder di `.speak-row` (mis. "💡 Petunjuk" di sebelah "🔊 Dengar
+   Lagi", modul Listening) — UKURAN sama persis dgn .speak-btn (padding
+   dikurangi 2px tiap sisi krn border, supaya total box tetap sama), tapi
+   ghost/outline (bukan warna solid) biar tidak tertukar sbg aksi utama. */
+.speak-btn-ghost{
+  background:var(--surface); color:var(--accent); border:2px solid var(--accent-bg);
+  border-radius:var(--r-pill); padding:11px 22px; font-weight:800; font-size:.9375rem;
+  display:flex; align-items:center; gap:8px; font-family:inherit;
+}
+.speak-btn-ghost:disabled{ background:var(--muted); color:var(--ink-3); border-color:var(--line); cursor:not-allowed; }
 
 .primer-list{ display:flex; flex-direction:column; gap:10px; margin-top:var(--s3); }
 .primer-item{
@@ -948,6 +1149,28 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   width:38px; height:38px; border-radius:50%; background:var(--surface); color:var(--accent);
   display:grid; place-items:center; font-size:15px; flex:none; cursor:pointer;
   box-shadow:var(--sh-1);
+}
+/* Mic mini di Kenalan Vocab (permintaan user) — reuse animasi pulse yang
+   sama dgn .mic-btn.listening (Speaking First Placement Test), cuma versi
+   kecil biar konsisten pas "sedang mendengarkan". */
+.mini-play.listening{ animation:pulse 1s infinite; background:var(--try); color:#fff; }
+/* Sudah ditap (dengarkan/mic/main, permintaan user) — warna beda dari status
+   "listening" di atas, sama palet dgn .topic-card.done di bawah supaya
+   "sudah dicoba" kebaca konsisten di semua tempat. */
+.mini-play.done{ background:var(--ok-bg); color:var(--ok); }
+
+/* Popup hasil mic Kenalan — kompak, overlay generik (pola sama dgn
+   .pt-confirm-overlay First Placement Test), muncul SETELAH hasil mic ada,
+   bukan menjelaskan langkah "sedang merekam" (itu tetap di tombol mic
+   mini-nya sendiri lewat kelas .listening di atas). */
+.mic-pop-overlay{
+  position:fixed; inset:0; background:rgba(46,33,20,.45); backdrop-filter:blur(2px);
+  display:flex; align-items:center; justify-content:center; padding:var(--s5); z-index:200;
+}
+.mic-pop-card{
+  background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--sh-2);
+  padding:24px 22px; max-width:300px; width:100%; text-align:center;
+  animation:loginCardIn .25s ease;
 }
 
 .primary-btn{
@@ -993,11 +1216,168 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   display:block; font-family:var(--font-head); font-size:.8125rem; font-weight:700;
   color:var(--ink-2); margin-top:6px;
 }
+/* Opsi teks-saja (Vocab First Placement Test — permintaan user: ID→EN
+   tanpa gambar) — font besar & tebal jadi konten utama tombol, bukan
+   ukuran emoji (clamp 30-44px di atas kekecilan/kebesaran utk kata). */
+.opt-btn.opt-btn-text{
+  font-size:1.375rem; font-family:var(--font-head); font-weight:800;
+  color:var(--ink); padding:20px 14px; line-height:1.3;
+}
 .opt-btn.correct{ border-color:var(--ok); background:var(--ok-bg); animation:pop .3s ease; }
 .opt-btn.wrong{ border-color:var(--try); animation:shake .3s ease; }
+/* Terkunci setelah dijawab (permintaan user: tombol Coba Lagi/Lanjut di
+   bawah yang jadi jalan lanjut, bukan tap opsi lain) & opsi yang dimatikan
+   hint 50/50 — dua kasus beda TAPI visualnya sama: redup, tidak bisa ditap. */
+.opt-btn:disabled{ opacity:.4; pointer-events:none; }
+.opt-btn.eliminated{ text-decoration:line-through; }
+
+/* Kartu jawaban gambar+teks+lencana huruf (permintaan user: "analogi
+   dibantu image", contoh kompetitor) — co-class dgn `.opt-btn` (bukan
+   pengganti), jadi warisi border/padding/correct/wrong/disabled dari situ,
+   cuma isi & layout dalamnya yang beda. Diramping-kan (permintaan user:
+   tombol Coba Lagi/Lanjut jadi ketutup) — emoji & padding dikecilkan,
+   layout HORIZONTAL (emoji kiri, label+lencana kanan) bukan lagi vertikal
+   gambar-di-atas, supaya tinggi kartu jauh lebih pendek. Teks tetap besar
+   & tebal (permintaan user), cuma areanya yang diperkecil, bukan font-nya. */
+.opt-btn.answer-card{
+  display:flex; flex-direction:row; align-items:center; gap:10px;
+  min-height:0; padding:10px 12px; text-align:left;
+}
+.answer-card-emoji{ flex:none; font-size:clamp(26px,7vw,34px); line-height:1; }
+.answer-card-bottom{ flex:1; display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; }
+.answer-card-label{ font-family:var(--font-head); font-weight:800; font-size:1rem; line-height:1.25; color:var(--ink); }
+.answer-card-badge{
+  flex:none; width:24px; height:24px; border-radius:50%; background:var(--muted); color:var(--ink-3);
+  font-family:var(--font-head); font-weight:800; font-size:.75rem;
+  display:flex; align-items:center; justify-content:center;
+}
+.opt-btn.answer-card.correct .answer-card-badge{ background:var(--ok); color:#fff; }
+
+/* Header soal Latihan Inti (permintaan user: "button petunjuk simpan di
+   atas sejajar text LENGKAPI KALIMAT") — stage-badge kiri, tombol Petunjuk
+   kanan, satu baris, bukan lagi block penuh di bawah opsi. */
+.latihan-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.latihan-head .stage-badge{ margin-bottom:0; }
+.hint-chip{ display:inline-block; width:auto; margin-top:0; padding:7px 14px; font-size:.8125rem; }
+
+/* Tombol wajib "Coba Lagi"/"Lanjut" di tiap soal (permintaan user, CLAUDE.md
+   "Format Wajib Materi Vocabulary") — muncul SETELAH jawaban, ganti
+   auto-advance timer lama. */
+.round-actions{ display:flex; gap:10px; margin-top:14px; }
+.round-actions .ghost-btn{ flex:1; margin-top:0; }
+.round-actions .primary-btn{ flex:1; }
+
+/* Hint/clue "didampingi" — Latihan Inti SAJA (permintaan user: Tantangan
+   sengaja TANPA ini), tombol kecil terpisah dari opsi jawaban. */
+.hint-row{ display:flex; justify-content:center; margin-top:10px; }
+.hint-row .ghost-btn{ margin-top:0; padding:8px 18px; font-size:var(--fs-meta); }
+
+/* Navigasi bebas per soal (permintaan user, Latihan Inti & Tantangan) —
+   beda dari `.round-actions` (itu pasca-jawab, ini murni pindah tempat,
+   boleh dipakai kapan saja & tidak pernah mengunci). Ditaruh di atas soal,
+   di bawah stage-badge (kalau ada).
+   Revisi #2 (permintaan user: "2 tombol Lanjut redundant") — tombol "➡️
+   Lanjut" arah maju DIHAPUS dari sini (satu-satunya "Lanjut" sekarang cuma
+   yang pasca-jawab, `.round-actions`); titik status jadi <button> BERNOMOR
+   & DIPERBESAR jadi target tap sungguhan (CLAUDE.md "target tap besar" —
+   versi lama 9-12px terlalu kecil buat jari anak).
+   Revisi #3 (permintaan user: "remove button kembali ... sudah ada number
+   yang bisa diklik") — tombol "⬅️ Kembali" JUGA dihapus: nomor soal
+   sebelumnya sendiri sudah jadi jalan mundur, jadi sekarang nav ini CUMA
+   titik-titik nomor, tidak ada tombol terpisah sama sekali. */
+.quiz-nav{ margin:10px 0 4px; }
+.quiz-dots{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+.quiz-dot{
+  width:30px; height:30px; border-radius:50%; flex:none;
+  display:grid; place-items:center; font-family:var(--font-head); font-weight:800; font-size:.8125rem;
+  background:var(--surface); color:var(--ink-3);
+  box-shadow:inset 0 0 0 1.5px var(--line); cursor:pointer;
+}
+.quiz-dot.done{ background:var(--ok-bg); color:var(--ok); box-shadow:inset 0 0 0 1.5px var(--ok); }
+.quiz-dot.current{ box-shadow:0 0 0 3px var(--brand-100), inset 0 0 0 1.5px var(--brand-500); color:var(--brand-700); }
+.quiz-dot.current.done{ box-shadow:0 0 0 3px var(--brand-100), inset 0 0 0 1.5px var(--ok); }
+
+/* "⌫ Hapus Huruf"/"⌫ Hapus Kata" berdampingan dgn "🔄 Ulang Susunan"/
+   "🔄 Bersihkan" (permintaan user, Tantangan). */
+.letter-actions{ display:flex; justify-content:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.letter-actions .ghost-btn{ margin-top:0; flex:1; max-width:180px; }
+/* Versi lebih ramping (permintaan user: "Petunjuk"/"Hapus Huruf"/"Ulang
+   Susunan" 3 tombol sekaligus di Eja Kata) — padding & font lebih kecil
+   drpd `.ghost-btn` biasa, supaya 3 tombol tetap enteng dilihat sebaris. */
+.letter-actions .ghost-btn.slim{ padding:8px 10px; font-size:.8125rem; max-width:150px; }
+
+/* 2 tab permanen Tantangan (permintaan user: "kalau ingin kembali ke
+   tantangan sebelumnya susah" — dulu Eja Kata → Contoh Penggunaan berantai
+   lurus tanpa jalan balik) — pola sama dgn `.stepper` (Kenalan/Latihan
+   Inti/Tantangan di atasnya), skala lebih kecil krn cuma 2 sub-bagian.
+   Pindah tab kapan saja, dua-duanya resume dari cursor masing-masing. */
+.tantangan-tabs{ display:flex; gap:8px; margin-bottom:var(--s4); }
+.tantangan-tab{
+  flex:1; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+  padding:10px 8px; font-family:var(--font-head); font-size:var(--fs-meta); font-weight:800;
+  color:var(--ink-3); text-align:center; cursor:pointer;
+}
+.tantangan-tab.active{ background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:var(--sh-1); }
 
 @keyframes pop{ 0%{transform:scale(1);} 50%{transform:scale(1.1);} 100%{transform:scale(1);} }
 @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+/* Burst kecil di atas tombol yang benar — First Placement Test (§ celebrate
+   animasi). Pakai ::after (bukan elemen baru) supaya tidak perlu ubah JS
+   struktur DOM tombol yang sudah ada di game lain. */
+.opt-btn.pt-celebrate{ position:relative; overflow:visible; }
+.opt-btn.pt-celebrate::after{
+  content:'⭐✨⭐'; position:absolute; left:50%; top:-6px; transform:translate(-50%,0);
+  font-size:20px; white-space:nowrap; pointer-events:none;
+  animation:ptBurst .7s ease-out forwards;
+}
+@keyframes ptBurst{
+  0%{ opacity:0; transform:translate(-50%,4px) scale(.5); }
+  35%{ opacity:1; transform:translate(-50%,-14px) scale(1.15); }
+  100%{ opacity:0; transform:translate(-50%,-34px) scale(1); }
+}
+@media (prefers-reduced-motion: reduce){
+  .opt-btn.pt-celebrate::after{ animation:none; opacity:0; }
+}
+
+/* Celebrate "podium" (permintaan user, CLAUDE.md Aturan Wajib apresiasi) —
+   dipakai di jawaban benar Latihan Inti/Tantangan Vocab, lebih ramai
+   drpd .pt-celebrate (3 emoji, bounce elemennya sendiri juga) biar berasa
+   lebih festive. Class generik (bukan cuma buat .opt-btn) — attach ke
+   elemen mana pun yang lagi dirayakan (tombol, kartu bintang, dst). */
+.win-burst{ position:relative; overflow:visible; animation:winBounce .5s ease; }
+.win-burst::after{
+  content:'🎉🏆✨'; position:absolute; left:50%; top:-10px; transform:translate(-50%,0);
+  font-size:22px; white-space:nowrap; pointer-events:none;
+  animation:winBurst .8s ease-out forwards;
+}
+@keyframes winBounce{
+  0%{ transform:scale(1); }
+  40%{ transform:scale(1.12); }
+  100%{ transform:scale(1); }
+}
+@keyframes winBurst{
+  0%{ opacity:0; transform:translate(-50%,6px) scale(.5); }
+  35%{ opacity:1; transform:translate(-50%,-16px) scale(1.2); }
+  100%{ opacity:0; transform:translate(-50%,-38px) scale(1); }
+}
+@media (prefers-reduced-motion: reduce){
+  .win-burst{ animation:none; }
+  .win-burst::after{ animation:none; opacity:0; }
+}
+
+/* Confetti asli (confetti.ts `fireConfetti`) — kepingan jatuh & berputar
+   dari atas layar, dipicu di titik yang sama dgn .win-burst. Full-viewport
+   & self-cleaning (elemennya dihapus JS sendiri sesudah animasi selesai). */
+.confetti-layer{ position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden; }
+.confetti-piece{
+  position:absolute; top:-14px; border-radius:2px;
+  animation-name:confettiFall; animation-timing-function:ease-in; animation-fill-mode:forwards;
+}
+@keyframes confettiFall{
+  0%{ transform:translate(0,0) rotate(0deg); opacity:1; }
+  100%{ transform:translate(var(--drift),108vh) rotate(var(--rotate)); opacity:.9; }
+}
 
 .feedback{
   text-align:center; font-family:var(--font-head); font-weight:700;
@@ -1023,6 +1403,33 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .chip:active{ transform:scale(.94); }
 .chip.placed{ background:var(--accent); color:#fff; }
 .chip.letter{ padding:10px 14px; min-width:22px; text-align:center; text-transform:uppercase; }
+/* Huruf dari "💡 Petunjuk" Eja Kata (permintaan user) — beda tampilan dari
+   huruf yang anak taruh sendiri (`.chip.placed` solid), supaya jelas mana
+   "diberi" vs "usaha sendiri": outline aksen di atas kertas, bukan solid. */
+.chip.placed.letter.hint{ background:var(--surface); color:var(--accent); border-style:dashed; }
+
+/* Tantangan "📝 Lengkapi Catatan" (Achiever, note completion) —
+   games/listening.ts runTantanganNote. Kartu ala kertas catatan, blank
+   digarisbawahi putus-putus sampai terisi (solid + aksen sesudahnya). */
+.note-card{
+  background:var(--surface); border:2px dashed var(--accent);
+  border-radius:var(--r-md); padding:var(--s3) var(--s4);
+  max-width:480px; margin:var(--s3) auto; text-align:left;
+}
+.note-heading{ font-family:var(--font-head); font-weight:800; font-size:1.0625rem; margin-bottom:var(--s2); }
+.note-line{ display:flex; gap:6px; padding:6px 0; font-size:1rem; flex-wrap:wrap; }
+.note-label{ font-weight:700; color:var(--ink-soft,inherit); }
+.note-blank{
+  font-family:var(--font-head); font-weight:700; color:var(--accent);
+  border-bottom:2px dashed var(--accent); min-width:80px; display:inline-block;
+}
+.note-blank.filled{ border-bottom-style:solid; }
+
+/* Tantangan "🧩 Dengar & Simpulkan" (Trailblazer, gist/inference) —
+   games/listening.ts runTantanganDialogue. Transkrip percakapan pakai
+   `.note-card` yg sama (kartu kertas), baris per tokoh dibedakan warna nama. */
+.dialogue-line{ margin-bottom:2px; }
+.dialogue-speaker{ font-weight:800; color:var(--accent); margin-right:4px; }
 
 .mic-wrap{ text-align:center; margin:var(--s5) 0 var(--s2); }
 /* Mikrofon selalu mango — "giliran kamu bicara" — supaya tidak tertukar dengan
@@ -1037,6 +1444,20 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(199,69,91,.45);} 70%{box-shadow:0 0 0 18px rgba(199,69,91,0);} 100%{box-shadow:0 0 0 0 rgba(199,69,91,0);} }
 .mic-hint{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:10px; }
 .heard-text{ text-align:center; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; margin-top:8px; min-height:20px; }
+/* Skor kata angka — pelengkap bintang, bukan pengganti (bintang tetap yang
+   utama/non-evaluatif). Netral, bukan hijau/merah, supaya tidak berasa
+   vonis benar/salah. */
+.mic-score{ text-align:center; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; margin-top:6px; }
+.mic-score-pct{ color:var(--ink-3); font-weight:600; }
+
+/* Highlight per-kata hasil Speaking (mic) — hijau+garis bawah = kedengaran,
+   abu+coret = tidak kedengaran. Referensi: backup/daily-conversation-asr
+   (1).html. Non-punitive: tetap tidak ada kata "salah" di teksnya, cuma
+   visual perbedaan warna. */
+.word-diff{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px 10px; margin-top:10px; }
+.word-diff span{ font-family:var(--font-head); font-weight:800; font-size:1rem; }
+.word-diff span.ok{ color:var(--ok); border-bottom:2px solid var(--ok); padding-bottom:1px; }
+.word-diff span.miss{ color:var(--ink-3); text-decoration:line-through; text-decoration-color:var(--line); opacity:.7; }
 
 .turn-dots{ display:flex; justify-content:center; gap:7px; margin-bottom:var(--s3); }
 .turn-dot{ width:10px; height:10px; border-radius:50%; background:var(--line); }
@@ -1132,12 +1553,139 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   100%{ opacity:1; transform:translateY(0) scale(1); }
 }
 
-.login-footer{
+/* Dipakai di semua halaman "berdiri sendiri" (tanpa rail/topline/tabbar) —
+   login DAN First Placement Test (permintaan user: footer yang sama). */
+.standalone-footer{
   position:relative; z-index:1;
   border-top:1px solid var(--line);
   padding:var(--s4); text-align:center;
 }
-.login-footer p{ font-size:var(--fs-eyebrow); font-weight:700; color:var(--ink-3); }
+.standalone-footer p{ font-size:var(--fs-eyebrow); font-weight:700; color:var(--ink-3); }
+
+/* --------------------------------------------------------- homepage --- */
+/* Homepage marketing (pengunjung belum login, app.ts `renderLandingPage`) —
+   full-bleed spt .login-page (body.is-landing sembunyikan rail/topline/
+   tabbar, lihat aturan .is-login di atas). Reuse token warna/kartu yang
+   sama dgn seluruh app (bukan palet baru), cuma ditata jadi bentuk homepage
+   (hero → cara kerja → fitur → testimoni → CTA → footer). */
+.landing-nav{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:var(--s4); max-width:1180px; margin:0 auto;
+}
+/* "Masuk" (ghost) + "Daftar" (solid) berdampingan — pola navbar inggrisinyuk
+   (Login ghost + Beli Sekarang solid), cuma istilah beli disesuaikan jadi
+   Daftar. Keduanya menuju layar akun yang sama (satu-satunya pintu nyata
+   hari ini), lihat komentar `renderLandingPage`. */
+.landing-nav-actions{ display:flex; align-items:center; gap:8px; }
+.landing-nav-btn{ width:auto; margin-top:0; padding:9px 16px; font-size:.875rem; }
+.landing-hero{
+  padding:var(--s3) var(--s4) var(--s7);
+  text-align:center;
+  background-image:
+    radial-gradient(1000px 420px at 20% -12%, rgba(146,222,212,.5) 0%, rgba(146,222,212,0) 70%),
+    radial-gradient(760px 320px at 100% -4%, rgba(255,197,98,.4) 0%, rgba(255,197,98,0) 66%);
+}
+.landing-hero-inner{
+  max-width:600px; margin:0 auto;
+  display:flex; flex-direction:column; align-items:center; gap:var(--s3);
+}
+.landing-mascot{ font-size:52px; }
+.landing-price{
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--sun-100); color:var(--sun-600);
+  border-radius:var(--r-pill); padding:10px 18px;
+  font-family:var(--font-head); font-weight:800; font-size:.9375rem;
+}
+.landing-section{ padding:var(--s6) var(--s4) 0; max-width:1180px; margin:0 auto; }
+.landing-section > h2{ text-align:center; margin-bottom:var(--s5); }
+.landing-steps{ display:grid; gap:var(--s5) var(--s4); grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+.landing-step{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; }
+.landing-step-ic{
+  position:relative;
+  width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font-size:26px;
+  background:radial-gradient(circle at 34% 26%, var(--brand-300) 0%, var(--brand-500) 100%);
+  box-shadow:0 6px 14px -8px rgba(6,51,58,.5), inset 0 0 0 2px rgba(255,255,255,.35);
+}
+.landing-step-num{
+  position:absolute; top:-4px; right:-4px; width:20px; height:20px; border-radius:50%;
+  background:var(--sun-500); color:var(--brand-900); font-family:var(--font-head); font-weight:800; font-size:.6875rem;
+  display:grid; place-items:center;
+}
+.landing-step h3{ font-size:var(--fs-h3); margin-top:2px; }
+.landing-step p{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
+/* Grid fitur — SENGAJA tanpa kartu/border (beda dari `.skill-card` DAN dari
+   versi kotak sebelumnya di sini), pola sama dgn `.landing-step` di atasnya
+   (ikon bulat + label, tanpa background/border) supaya section Level→Fitur
+   yang sebelumnya kotak-kotak beruntun kebaca tidak monoton — cuma ikonnya
+   yang tetap pakai warna aksen per-skill (`f.accent`/`f.accentBg`, inline
+   style), bukan satu warna teal seragam spt `.landing-step-ic`. Kolom TETAP
+   (bukan auto-fit) — 8 item ÷ 4 kolom = 2 baris simetris di desktop, ÷ 2
+   kolom = 4 baris simetris di mobile. */
+.landing-feature-grid{ display:grid; gap:var(--s5) var(--s3); grid-template-columns:repeat(2,1fr); }
+@media (min-width:768px){
+  .landing-feature-grid{ grid-template-columns:repeat(4,1fr); }
+}
+.landing-feature-item{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; }
+.landing-feature-ic{
+  width:56px; height:56px; border-radius:50%; flex:none;
+  display:grid; place-items:center; font-size:26px;
+  box-shadow:0 6px 14px -8px rgba(6,51,58,.35), inset 0 0 0 2px rgba(255,255,255,.5);
+}
+.landing-feature-item h3{ font-size:var(--fs-h3); margin-top:2px; }
+.landing-feature-item p{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
+/* Kartu level reuse token "tanah" Peta Level asli (.t-dawn..t-summit,
+   placeFor() scenery.ts) via --band/--band-deep — bukan palet baru. */
+.landing-levels{ display:grid; gap:var(--s3); grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); }
+.landing-level{
+  display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center;
+  background:linear-gradient(180deg,var(--band-soft) 0%, var(--surface) 72%);
+  border:1px solid var(--line); border-radius:var(--r-lg); padding:var(--s4) var(--s3);
+  box-shadow:var(--sh-1);
+}
+.landing-level-ic{
+  width:52px; height:52px; border-radius:50%; flex:none; display:grid; place-items:center; font-size:26px;
+  background:var(--surface); border:3px solid var(--band-deep);
+}
+.landing-level h3{ font-size:var(--fs-h3); margin-top:2px; }
+.landing-level p{ font-size:var(--fs-eyebrow); color:var(--ink-3); font-weight:700; margin:0; }
+.landing-testis{ display:grid; gap:var(--s4); grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); }
+.landing-testi p{ font-size:var(--fs-body); color:var(--ink-2); font-weight:700; }
+.landing-testi .who{ display:flex; align-items:center; gap:8px; margin-top:auto; }
+.landing-testi .who-badge{
+  width:34px; height:34px; border-radius:50%; flex:none; display:grid; place-items:center;
+  background:var(--brand-700); color:#fff; font-family:var(--font-head); font-weight:800; font-size:.8125rem;
+}
+.landing-testi .who-name{ font-family:var(--font-head); font-size:.875rem; }
+.landing-testi .who-role{ font-size:.75rem; color:var(--ink-3); font-weight:700; }
+.landing-bottomcta{
+  background:linear-gradient(176deg,var(--brand-600) 0%, var(--brand-900) 100%);
+  color:#fff; text-align:center; padding:var(--s6) var(--s4);
+  border-radius:var(--r-xl); box-shadow:var(--sh-2);
+  max-width:720px; margin:0 auto;
+  display:flex; flex-direction:column; align-items:center; gap:var(--s3);
+}
+.landing-bottomcta h2{ color:#fff; margin-bottom:0; }
+.landing-bottomcta .lede{ color:rgba(255,255,255,.86); }
+.landing-bottomcta .landing-price{ background:rgba(255,255,255,.16); color:#fff; }
+.landing-footer-links{ display:flex; justify-content:center; gap:16px; margin-bottom:var(--s3); flex-wrap:wrap; }
+.landing-footer-links a{ color:var(--ink-3); font-size:var(--fs-meta); font-weight:700; text-decoration:none; }
+
+/* FAQ — native <details>/<summary> (tanpa JS tambahan, accessible bawaan
+   browser); tanda +/- lewat ::after, bukan ikon SVG baru. */
+.landing-faqs{ display:flex; flex-direction:column; gap:10px; max-width:760px; margin:0 auto; }
+.landing-faq{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+  padding:14px var(--s4); box-shadow:var(--sh-1);
+}
+.landing-faq summary{
+  cursor:pointer; list-style:none;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  font-family:var(--font-head); font-weight:700; font-size:.9375rem; color:var(--ink);
+}
+.landing-faq summary::-webkit-details-marker{ display:none; }
+.landing-faq summary::after{ content:'+'; font-size:1.25rem; color:var(--ink-3); flex:none; }
+.landing-faq[open] summary::after{ content:'–'; }
+.landing-faq p{ margin-top:10px; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; }
 
 /* Confetti kecil khusus menang Bos — beberapa emoji melayang & memudar sekali. */
 .boss-burst{ position:absolute; left:50%; top:58px; width:0; height:0; pointer-events:none; z-index:2; }
@@ -1206,7 +1754,7 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   .act-side{ display:contents; }
   .stepper{ order:1; }
   .act-stage{ order:2; }
-  .voice-drop{ order:3; }
+  .voice-shown{ order:3; }
 }
 
 /* Tablet ke atas: rail ikon ringkas menggantikan tab bar bawah. */

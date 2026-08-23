@@ -7,7 +7,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && esbuild src/main.ts --bundle --outfile=public/bundle.js --format=iife --target=es2019 --minify",
-    "dev": "esbuild src/main.ts --bundle --outfile=public/bundle.js --format=iife --target=es2019 --servedir=public --serve=127.0.0.1:8000"
+    "dev": "node dev-server.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.24.0",

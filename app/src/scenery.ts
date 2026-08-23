@@ -75,12 +75,24 @@ export const HILLS_RIDGE = HILLS_DUNES;
 export const CLOUD = `<svg class="cloud-art" viewBox="0 0 90 34" aria-hidden="true" focusable="false"><g fill="currentColor"><ellipse cx="30" cy="20" rx="22" ry="12"/><ellipse cx="53" cy="16" rx="17" ry="14"/><ellipse cx="68" cy="22" rx="16" ry="10"/></g></svg>`;
 
 /**
- * Satu "perhentian" di peta = 1 level (PRD §3). Nama tempat di sini MURNI
- * label pemandangan untuk bagian peta yang sedang dilewati — nama & emoji level
+ * Satu "markas" di peta = 1 level (PRD §3). Nama tempat di sini MURNI label
+ * pemandangan untuk bagian peta yang sedang dilewati — nama & emoji level
  * tetap yang utama dan tidak diganti (PRD §7, RESEARCH §13.2: nama level tidak
  * boleh ditukar dengan nama fantasi). Urutan warnanya menceritakan jarak:
- * fajar → padang → lagoon (warna merek, tempat anak sekarang) → sungai →
- * ngarai senja → puncak yang masih jauh.
+ * padang pasir → kebun → pantai (warna merek, tempat anak sekarang) → sungai →
+ * gunung senja → puncak yang masih jauh.
+ *
+ * Nama pemandangan & istilah "perhentian" direvisi (permintaan user: kata
+ * yang lebih familiar & menarik, TIDAK terlalu formal, buat anak SD) — lewat
+ * beberapa iterasi: "Perhentian" (istilah bus/kereta, formal) → "Pos" (netral
+ * tapi kurang seru) → "Gerbang" (masih berasa formal/resmi) → **"Markas"**
+ * — kata santai yang sudah biasa dipakai anak dalam main pura-pura
+ * ("markas rahasia"), pas dengan tema petualangan & tidak terikat satu jenis
+ * medan (beda dari "Gerbang" yang berasa struktur besar). Nama pemandangan
+ * lama ("Fajar", "Tunas", "Lagoon", "Berliku", "Ngarai", "Berbintang") juga
+ * diganti ke benda/tempat konkret yang sudah dikenal anak sejak dini
+ * (pasir, bunga, pantai, deras, gunung, bintang) — struktur warna & urutan
+ * "perjalanan"-nya TIDAK berubah, cuma katanya lebih sederhana & hidup.
  */
 export interface Place {
   /** class token warna tanah di styles.css (--band/--band-soft/--band-deep) */
@@ -93,12 +105,12 @@ export interface Place {
 const FALLBACK: Place = { cls: 't-meadow', name: 'Jalur Baru', hills: HILLS_MEADOW };
 
 const PLACES: Partial<Record<LevelKey, Place>> = {
-  'little-stars': { cls: 't-dawn', name: 'Padang Fajar', hills: HILLS_DUNES },
-  starter: { cls: 't-meadow', name: 'Kebun Tunas', hills: HILLS_MEADOW },
-  explorer: { cls: 't-lagoon', name: 'Tepi Lagoon', hills: HILLS_WAVES },
-  adventurer: { cls: 't-river', name: 'Sungai Berliku', hills: HILLS_RIVER },
-  achiever: { cls: 't-canyon', name: 'Ngarai Senja', hills: HILLS_CANYON },
-  trailblazer: { cls: 't-summit', name: 'Puncak Berbintang', hills: HILLS_SUMMIT },
+  'little-stars': { cls: 't-dawn', name: 'Padang Pasir', hills: HILLS_DUNES },
+  starter: { cls: 't-meadow', name: 'Kebun Bunga', hills: HILLS_MEADOW },
+  explorer: { cls: 't-lagoon', name: 'Pantai Biru', hills: HILLS_WAVES },
+  adventurer: { cls: 't-river', name: 'Sungai Deras', hills: HILLS_RIVER },
+  achiever: { cls: 't-canyon', name: 'Gunung Senja', hills: HILLS_CANYON },
+  trailblazer: { cls: 't-summit', name: 'Puncak Bintang', hills: HILLS_SUMMIT },
 };
 
 export function placeFor(key: LevelKey): Place {

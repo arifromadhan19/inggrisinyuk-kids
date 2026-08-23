@@ -30,6 +30,15 @@ async function main(): Promise<void> {
     await db.childProfile.update({ where: { id: doneChild.id }, data: { level: 'explorer', placementTestDone: true } });
   }
 
+  // "124" — SELALU direset ke kondisi belum-pernah-coba tiap seed dijalankan
+  // ulang (permintaan dev: masih iterasi First Placement Test, butuh akun
+  // yang bisa dites berkali-kali tanpa kena limit "maks 2 percobaan"). Beda
+  // dari "123" yang SENGAJA dibiarkan apa adanya (merepresentasikan akun
+  // yang sudah selesai) — jalankan `npm run db:seed` kapan pun untuk reset.
+  // CATATAN: limit 2x sekarang JUGA sudah otomatis di-bypass di level API
+  // buat no HP "124" (lihat `portal/lib/placement-attempts.ts`) — reset di
+  // sini masih berguna buat balikin `level`/`placementTestDone` ke kondisi
+  // fresh, tapi bukan lagi satu-satunya cara supaya tidak kena limit.
   const notDone = await db.parentAccount.upsert({
     where: { phone: '124' },
     update: {},
@@ -38,7 +47,8 @@ async function main(): Promise<void> {
   const notDoneChild = await db.childProfile.findFirst({ where: { parentId: notDone.id } });
   if (!notDoneChild) {
     await db.childProfile.create({ data: { parentId: notDone.id, name: 'Anak Tes (belum placement test)' } });
-  } else if (notDoneChild.placementTestDone || notDoneChild.dismissedPlacementTest) {
+  } else {
+    await db.placementTestResult.deleteMany({ where: { childId: notDoneChild.id } });
     await db.childProfile.update({
       where: { id: notDoneChild.id },
       data: { level: 'starter', placementTestDone: false, dismissedPlacementTest: false },

@@ -59,10 +59,12 @@ saja yang berubah.
 
 ```bash
 npm install     # sekali saja
-npm run dev     # type-check + bundle + serve di http://127.0.0.1:8000, auto-rebuild tiap request
+npm run dev     # bundle (esbuild watch) + serve di http://127.0.0.1:8000, auto-rebuild tiap perubahan
 ```
 
 Buka **http://127.0.0.1:8000** di browser (bukan buka file `index.html` langsung). Ini penting khusus untuk fitur mikrofon (Speaking) — Chrome cuma nyimpen izin mikrofon secara permanen untuk origin `http://`/`https://` (termasuk localhost), sedangkan untuk `file://` izinnya sering kebersihkan lagi tiap reload sehingga terus-terusan minta izin ulang. Biarkan `npm run dev` tetap berjalan di terminal selama development; berhenti dengan `Ctrl+C`.
+
+`npm run dev` sekarang menjalankan `dev-server.mjs` (esbuild JS API + proxy kecil), bukan langsung CLI `esbuild --servedir` — supaya ada **SPA fallback**: URL layar (`/belajar`, `/pengaturan`, dst — lihat bagian "URL routing" di `app.ts`) bukan file asli, jadi request ke path itu perlu diarahkan balik ke `index.html` supaya router client-side yang render layarnya. Tanpa ini, reload langsung di `/belajar` akan 404 di localhost juga.
 
 ## Build untuk produksi / deploy
 
@@ -89,7 +91,11 @@ Karena hasilnya cuma file statis (HTML + 1 file JS, tanpa proses Node yang perlu
        server_name kids.namadomainmu.com;
        root /var/www/inggrisinyuk-kids/public;
        index index.html;
-       location / { try_files $uri $uri/ =404; }
+       # SPA fallback WAJIB — app.ts pakai History API routing (URL beneran
+       # berubah tiap layar, mis. /belajar, /pengaturan, bukan hash #/...).
+       # Tanpa fallback ke index.html ini, reload langsung di path seperti
+       # /belajar akan 404 karena file itu memang tidak ada.
+       location / { try_files $uri $uri/ /index.html; }
    }
    ```
    lalu `sudo nginx -t && sudo systemctl reload nginx`.

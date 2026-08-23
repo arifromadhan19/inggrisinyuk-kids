@@ -1,25 +1,30 @@
 import {
-  GRAMMAR_TOPICS,
+  BOSS_NAME,
+  GRAMMAR_TOPICS_BY_LEVEL,
   LEVEL,
   LEVELS,
-  LISTENING_TOPICS,
+  LISTENING_TOPICS_BY_LEVEL,
+  READING_TOPICS_BY_LEVEL,
   SKILL_META,
-  SPEAKING_TOPICS,
-  VOCAB_TOPICS,
+  SPEAKING_TOPICS_BY_LEVEL,
+  VOCAB_TOPICS_BY_LEVEL,
 } from './content';
 import {
   ApiRequestError,
   cacheChildStatus,
   getCachedChildStatus,
+  getProgress,
   isLoggedIn,
   login as apiLogin,
   logout as apiLogout,
   refreshChildStatus,
+  saveProgress,
 } from './account';
 import * as bossGame from './games/boss';
 import * as grammarGame from './games/grammar';
 import * as listeningGame from './games/listening';
 import * as placementGame from './games/placement';
+import * as readingGame from './games/reading';
 import * as speakingGame from './games/speaking';
 import * as vocabularyGame from './games/vocabulary';
 import {
@@ -35,12 +40,12 @@ import {
 } from './icons';
 import { bindDelegatedClicks, clearHandlers, setHandlers } from './interaction';
 import { CLOUD, HILLS_RIDGE, HILLS_SHORE, TRAIL_BEND_LEFT, TRAIL_BEND_RIGHT, placeFor } from './scenery';
-import type { LastSpot } from './progress';
+import type { LastSpot, Store } from './progress';
 import {
   addXp,
   ANIMAL_AVATARS,
+  clearOutboxIds,
   doneCount,
-  doneCountFor,
   getAccuracy,
   getAvatar,
   getLast,
@@ -49,15 +54,23 @@ import {
   getWeekActivity,
   getXp,
   isBossCleared,
-  isDone,
+  isStepVisited,
   levelUnlockMap,
+  listeningTopicPercent,
   markBossCleared,
   markDone,
+  markStepVisited,
+  mergeFromServer,
+  peekOutbox,
   setAvatar,
+  setEventSyncHandler,
   setLast,
   setName,
+  setSyncHandler,
+  snapshot,
+  vocabTopicPercent,
 } from './progress';
-import type { AppState, LevelKey, NavKey, Screen, SkillKey } from './types';
+import type { AppState, LevelKey, LevelMeta, NavKey, Screen, SkillKey } from './types';
 import { escapeHtml, qs } from './util';
 import { renderVoicePanel } from './voice-panel';
 
@@ -78,6 +91,12 @@ const BOSS_AVATAR: Record<LevelKey, string> = {
   achiever: '🦅',
   trailblazer: '🦄',
 };
+
+/** "Tantangan ${nama raja}" — fallback generik "Tantangan Raja" dipakai cuma
+ *  saat belum ada level aktif sama sekali (mis. progres kosong). */
+function bossLabel(lvl: LevelMeta | null | undefined): string {
+  return lvl ? `Tantangan ${BOSS_NAME[lvl.key]}` : 'Tantangan Raja';
+}
 
 /**
  * XP = angka pertumbuhan murni-naik (lihat progress.ts). Belajar (modul & Bos)
@@ -108,17 +127,59 @@ interface TopicRef {
   desc: string;
 }
 
-const TOPICS: Record<SkillKey, TopicRef[]> = {
-  vocabulary: VOCAB_TOPICS.map((t) => ({ id: t.id, title: t.title, desc: t.desc })),
-  listening: LISTENING_TOPICS.map((t) => ({ id: t.id, title: t.title, desc: t.desc })),
-  speaking: SPEAKING_TOPICS.map((t) => ({ id: t.id, title: t.title, desc: t.desc })),
-  grammar: GRAMMAR_TOPICS.map((t) => ({ id: t.id, title: t.title, desc: t.desc })),
-};
+/**
+ * Konten sekarang per-level (permintaan user: fokus materi Adventurer dulu,
+ * bukan cuma Explorer) — `*_TOPICS_BY_LEVEL` di content.ts jadi satu-satunya
+ * sumber. Fungsi-fungsi di bawah GANTI const `TOPICS`/`TOTAL_TOPICS` statis
+ * yang lama: sekarang level anak bisa berubah saat runtime (login, submit
+ * placement test), jadi daftar topik/topic count TIDAK BOLEH dihitung
+ * sekali di awal — harus selalu ditanya ulang dari `currentLevelMeta()`.
+ */
+function vocabTopicsForLevel(level: LevelKey) {
+  return VOCAB_TOPICS_BY_LEVEL[level] ?? [];
+}
+function listeningTopicsForLevel(level: LevelKey) {
+  return LISTENING_TOPICS_BY_LEVEL[level] ?? [];
+}
+function speakingTopicsForLevel(level: LevelKey) {
+  return SPEAKING_TOPICS_BY_LEVEL[level] ?? [];
+}
+function grammarTopicsForLevel(level: LevelKey) {
+  return GRAMMAR_TOPICS_BY_LEVEL[level] ?? [];
+}
+function readingTopicsForLevel(level: LevelKey) {
+  return READING_TOPICS_BY_LEVEL[level] ?? [];
+}
+
+function topicsForSkill(key: SkillKey, level: LevelKey): TopicRef[] {
+  const toRef = (t: { id: string; title: string; desc: string }): TopicRef => ({ id: t.id, title: t.title, desc: t.desc });
+  switch (key) {
+    case 'vocabulary':
+      return vocabTopicsForLevel(level).map(toRef);
+    case 'listening':
+      return listeningTopicsForLevel(level).map(toRef);
+    case 'speaking':
+      return speakingTopicsForLevel(level).map(toRef);
+    case 'grammar':
+      return grammarTopicsForLevel(level).map(toRef);
+    case 'reading':
+      return readingTopicsForLevel(level).map(toRef);
+  }
+}
 
 const SKILL_KEYS = Object.keys(SKILL_META) as SkillKey[];
-const TOTAL_TOPICS = SKILL_KEYS.reduce((n, key) => n + TOPICS[key].length, 0);
+/** Skill yang topiknya kosong di level ini disembunyikan (bukan kartu
+ *  "0 materi" yang kelihatan rusak) — mis. Reading baru ada utk Adventurer,
+ *  Explorer belum. Dipakai Menu Belajar & Game (permintaan user, konsisten
+ *  dgn prinsip "placeholder jujur" content.ts, bukan navigasi bohong). */
+function visibleSkillKeys(level: LevelKey): SkillKey[] {
+  return SKILL_KEYS.filter((key) => topicsForSkill(key, level).length > 0);
+}
+function totalTopicsForLevel(level: LevelKey): number {
+  return SKILL_KEYS.reduce((n, key) => n + topicsForSkill(key, level).length, 0);
+}
 
-const state: AppState = { screen: 'home', skillKey: null, topicIndex: 0, step: 0, bossLevel: null };
+const state: AppState = { screen: 'home', skillKey: null, topicIndex: 0, step: 0, bossLevel: null, soonLevel: null, viewLevel: null };
 
 let root: HTMLElement;
 let crumbEl: HTMLElement;
@@ -141,6 +202,89 @@ function unlockLevelsUpTo(levelKey: string): void {
   }
 }
 
+/**
+ * Level rekomendasi First Placement Test yang BENERAN sudah dijalani anak —
+ * `null` kalau belum pernah tes atau tes-nya di-skip ("Nanti Aja" TIDAK
+ * menghasilkan rekomendasi, level di server tetap default-nya). Dipakai dua
+ * tempat: `syncUnlocksFromAccount` (samakan status buka/kunci peta) dan
+ * `currentStopKey` (perhentian "Kamu di sini") — dua-duanya harus memakai
+ * definisi yang SAMA, makanya dipusatkan di sini, bukan dibaca ulang
+ * sendiri-sendiri.
+ */
+function placementAnchorLevel(): LevelKey | null {
+  const { level, placementTestDone } = getCachedChildStatus();
+  if (placementTestDone !== true || !level) return null;
+  return LEVELS.some((l) => l.key === level) ? level : null;
+}
+
+/**
+ * Samakan status buka/kunci peta dengan rekomendasi placement test yang
+ * DIINGAT SERVER — dipanggil tiap boot & tiap `refreshChildStatus()` selesai,
+ * bukan cuma sekali sesudah tes selesai (`toContinue`).
+ *
+ * Kenapa perlu: `bossCleared` (progress.ts) hidup di localStorage PER
+ * PERANGKAT/PER BROWSER, sedangkan hasil tes hidup di server. Begitu anak
+ * buka app di browser/profil lain, atau data situsnya kehapus, atau tesnya
+ * dikerjakan sebelum perangkat ini dipakai, localStorage-nya kosong — dan
+ * dulu peta jadi tidak sinkron sama sekali dengan hasil tes (dilaporkan
+ * user: rekomendasi Adventurer, tapi peta masih nunjuk Explorer & Adventurer
+ * malah terkunci), karena `unlockLevelsUpTo` cuma pernah dipanggil di detik
+ * anak menyelesaikan tes. Aman dipanggil berkali-kali: `markBossCleared`
+ * idempotent dan HANYA menambah — tidak ada jalan progres jadi berkurang
+ * (non-punitive, PRD §4.6/§12.4).
+ */
+function syncUnlocksFromAccount(): void {
+  const anchor = placementAnchorLevel();
+  if (anchor) unlockLevelsUpTo(anchor);
+}
+
+/**
+ * Sync progres (bintang/XP/streak/status soal per section, dst) + outbox
+ * event ("setiap mencoba pakai di save") ke `portal/` — dipasang SEKALI di
+ * boot lewat `setSyncHandler`/`setEventSyncHandler` (progress.ts), jadi tiap
+ * `write()`/`recordEvent()` internal di sana (dari MANA pun dipanggil)
+ * otomatis memicu debounce yang SAMA, tanpa perlu menyentuh puluhan titik
+ * panggil satu-satu. 1 flush = 1 request PUT berisi snapshot `Store` TERBARU
+ * (`snapshot()`, bukan snapshot basi dari pemicu pertama) + outbox event
+ * yang belum terkirim — event yang sukses dikirim baru dihapus dari outbox
+ * (`clearOutboxIds`), supaya gagal kirim tidak menghilangkan detailnya.
+ * Didebounce 1.5s supaya ronde beruntun (mis. 10 soal Latihan Inti) cuma
+ * kirim 1 request. Kalau belum login: no-op (localStorage TETAP jalan penuh
+ * sendirian, PRD §5/§14.4 — main tanpa akun harus utuh).
+ */
+let progressSyncTimer: ReturnType<typeof setTimeout> | undefined;
+function scheduleProgressSync(): void {
+  if (!isLoggedIn()) return;
+  clearTimeout(progressSyncTimer);
+  progressSyncTimer = setTimeout(() => {
+    const events = peekOutbox().slice(0, 200); // server juga membatasi 200/request
+    void saveProgress(snapshot() as unknown as Record<string, unknown>, events)
+      .then(() => clearOutboxIds(events.map((e) => (e as { id: string }).id)))
+      .catch(() => {
+        /* offline/gagal kirim — progres tetap aman di localStorage, coba lagi di write/event berikutnya */
+      });
+  }, 1500);
+}
+
+function wireProgressSync(): void {
+  setSyncHandler(() => scheduleProgressSync());
+  setEventSyncHandler(() => scheduleProgressSync());
+}
+
+/** Tarik progres dari server & gabung ke localStorage (union, bukan
+ *  overwrite — lihat `mergeFromServer`) — dipanggil sesudah login & tiap
+ *  boot kalau sudah ada akun, supaya progres dari perangkat lain ikut
+ *  kebawa tanpa menghapus progres yang sempat dibuat di perangkat ini. */
+async function hydrateProgressFromServer(): Promise<void> {
+  if (!isLoggedIn()) return;
+  try {
+    const remote = await getProgress();
+    mergeFromServer(remote as Partial<Store> | null);
+  } catch {
+    /* offline-friendly — localStorage tetap sumber kebenaran */
+  }
+}
+
 export function initApp(): void {
   root = qs<HTMLDivElement>(document, '#root');
   crumbEl = qs<HTMLDivElement>(document, '#crumb');
@@ -150,38 +294,128 @@ export function initApp(): void {
   // Delegasi klik dipasang di body supaya rail & tab bar (di luar #root) ikut terlayani.
   bindDelegatedClicks(document.body);
 
-  // Pulihkan layar dari hash URL saat pertama dibuka (reload/bookmark/link
+  // Pulihkan layar dari URL saat pertama dibuka (reload/bookmark/link
   // dibagikan) — replaceState, bukan push, supaya boot pertama tidak jadi
   // 2 entri riwayat browser.
-  if (location.hash) applyHashToState(location.hash);
-  lastKnownHash = hashFromState(state);
-  if (location.hash !== lastKnownHash) history.replaceState(null, '', lastKnownHash);
+  applyPathToState(location.pathname, location.search);
+  const initialUrl = pathFromState(state);
+  if (location.pathname + location.search !== initialUrl) {
+    history.replaceState(null, '', initialUrl);
+  }
 
-  // Tombol back/forward browser (atau URL diketik manual) mengubah hash dari
-  // LUAR go() — sinkronkan state balik dari situ. Dibedakan dari echo hash
-  // yang kita ubah sendiri lewat perbandingan ke `lastKnownHash`.
-  window.addEventListener('hashchange', () => {
-    if (location.hash === lastKnownHash) return;
-    applyHashToState(location.hash);
-    lastKnownHash = location.hash;
+  // Tombol back/forward browser mengubah URL dari LUAR go() — popstate
+  // CUMA terpicu oleh navigasi beneran (bukan pushState/replaceState kita
+  // sendiri), jadi tidak butuh penjaga echo seperti versi hash dulu.
+  window.addEventListener('popstate', () => {
+    applyPathToState(location.pathname, location.search);
     render();
     window.scrollTo({ top: 0, behavior: 'auto' });
   });
 
   paintLevelChips();
   paintNav();
+  wireProgressSync(); // pasang sekali — dari sini tiap write() progress.ts otomatis ikut ke-push kalau login
+  // SEBELUM render pertama — supaya peta (/peta) & strip peta di Beranda
+  // langsung tampil sinkron dengan hasil placement test yang tersimpan,
+  // tanpa nunggu fetch /api/me selesai (cache lokal dibaca sinkron).
+  syncUnlocksFromAccount();
   render();
 
-  // Segarkan status placement test di background (kalau sudah login) —
-  // render ulang cuma kalau layarnya kemungkinan kepengaruh (Belajar/Pengaturan).
+  // Segarkan status placement test + progres di background (kalau sudah
+  // login) — chip header/rail (di luar #root, tidak ikut ke-render() ulang)
+  // selalu disegarkan; layar penuh cuma di-render() ulang kalau kemungkinan
+  // kepengaruh (Belajar/Materi/Aktivitas/Pengaturan + Beranda/Peta yang
+  // menampilkan perhentian "Kamu di sini" ATAU progres bintang/warna tombol
+  // kata) — supaya level/progres yang ditampilkan tidak pernah nge-hardcode
+  // cache lama begitu ada data lebih baru dari server.
   if (isLoggedIn()) {
-    void refreshChildStatus().then(() => {
-      if (state.screen === 'menu' || state.screen === 'settings') render();
+    void Promise.all([refreshChildStatus(), hydrateProgressFromServer()]).then(() => {
+      paintLevelChips();
+      syncUnlocksFromAccount(); // level dari server bisa lebih baru dari cache lokal
+      if (
+        state.screen === 'menu' ||
+        state.screen === 'settings' ||
+        state.screen === 'home' ||
+        state.screen === 'levels' ||
+        state.screen === 'topics' ||
+        state.screen === 'activity'
+      ) {
+        render();
+      }
     });
   }
 }
 
 /* ------------------------------------------------------------------ shell -- */
+
+/**
+ * Level yang BENERAN ditampilkan di seluruh app — dari hasil First
+ * Placement Test kalau anak sudah login & sudah dapat rekomendasi,
+ * fallback ke `LEVEL` (Explorer, satu-satunya yang kontennya nyata) kalau
+ * belum login/belum ada data. TANPA fungsi ini, chip header/Pengaturan
+ * selalu nge-hardcode "Explorer" walau placement test bilang levelnya
+ * beda (dilaporkan user) — dipanggil ulang di tiap titik level bisa
+ * berubah: boot, sesudah login, sesudah submit placement test, sesudah
+ * logout (lihat pemanggil `paintLevelChips()`).
+ */
+function currentLevelMeta(): LevelMeta {
+  const cachedLevel = getCachedChildStatus().level;
+  if (!cachedLevel) return LEVEL;
+  return LEVELS.find((l) => l.key === cachedLevel) ?? LEVEL;
+}
+
+/**
+ * Level BADGE anak (`currentLevelMeta`) bisa beda dari level KONTEN yang
+ * ditampilkan — mis. anak levelnya "Starter" (belum ada materi sama
+ * sekali) HARUS tetap dapat sesuatu buat dimainkan di Menu Belajar/Game,
+ * bukan layar kosong (dulu sebelum konten per-level, SEMUA anak selalu
+ * lihat Explorer apa pun levelnya — makanya ini baru kelihatan sebagai
+ * regresi begitu konten jadi genuinely per-level, dilaporkan lewat testing
+ * akun Starter). Jatuh ke level ber-`hasContent` TERDEKAT (pola sama
+ * dengan `resolvePlayableLevel` di portal/lib/placement-scoring.ts &
+ * `poolFor` di games/boss.ts) — badge/chip tetap jujur nunjukkin level
+ * asli, cuma KONTEN yang dialihkan.
+ */
+function playableLevelFor(level: LevelKey): LevelKey {
+  if (LEVELS.find((l) => l.key === level)?.hasContent) return level;
+  const idx = LEVELS.findIndex((l) => l.key === level);
+  let best: LevelKey | null = null;
+  let bestDistance = Infinity;
+  LEVELS.forEach((l, i) => {
+    if (!l.hasContent) return;
+    const distance = Math.abs(i - idx);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = l.key;
+    }
+  });
+  return best ?? 'explorer';
+}
+
+function currentPlayableLevel(): LevelMeta {
+  const key = playableLevelFor(currentLevelMeta().key);
+  return LEVELS.find((l) => l.key === key) ?? LEVEL;
+}
+
+/**
+ * Level konten yang SEDANG DIJELAJAHI di alur Menu Belajar (menu/materi/
+ * aktivitas) — beda dari `currentPlayableLevel()` (level asli anak, tanpa
+ * override). Semua markas yang SUDAH terbuka di Peta Level boleh dibuka
+ * Menu Belajar-nya sendiri (`state.viewLevel`, diisi `openMenuFromLevels`
+ * atau pemilih level di `renderMenu`) buat lihat/ulang materinya, TANPA
+ * mengubah level asli anak. Divalidasi ulang di sini (bukan cuma dipercaya
+ * dari state) — `hasContent` & benar-benar terbuka (`levelUnlockMap`) —
+ * supaya URL yang diketik manual tidak bisa mengintip markas yang belum
+ * ditaklukkan; kalau tidak valid, jatuh ke `currentPlayableLevel()` seperti
+ * biasa (perilaku default/lama, bukan layar rusak).
+ */
+function browsingLevel(): LevelMeta {
+  if (state.viewLevel) {
+    const lvl = LEVELS.find((l) => l.key === state.viewLevel);
+    if (lvl?.hasContent && levelUnlockMap(LEVELS)[lvl.key]) return lvl;
+  }
+  return currentPlayableLevel();
+}
 
 function paintLevelChips(): void {
   // Sapaan header — "Hi {nama} : Level" kalau nama sudah diisi (lewat
@@ -190,21 +424,26 @@ function paintLevelChips(): void {
   // bukan akun (PRD §5).
   const name = getName();
   const avatar = getAvatar();
-  const chipText = name ? `${avatar} Hi ${escapeHtml(name)} : ${LEVEL.emoji} ${LEVEL.name}` : `${LEVEL.emoji} ${LEVEL.name}`;
+  const level = currentLevelMeta();
+  const chipText = name ? `${avatar} Hi ${escapeHtml(name)} : ${level.emoji} ${level.name}` : `${level.emoji} ${level.name}`;
   qs<HTMLElement>(document, '#topLevel').innerHTML = `
     <span class="level-chip"><b>${chipText}</b></span>
   `;
   qs<HTMLElement>(document, '#railFoot').innerHTML = `
     <div class="rail-level">
       <span class="eyebrow">Level</span>
-      <b>${LEVEL.emoji} ${LEVEL.name}</b>
-      <span class="cefr">${LEVEL.cefr}</span>
+      <b>${level.emoji} ${level.name}</b>
+      <span class="cefr">${level.cefr}</span>
     </div>
   `;
 }
 
 function activeNav(): NavKey {
-  if (state.screen === 'home' || state.screen === 'levels') return 'home';
+  // 'levelSoon' (layar perhentian yang materinya belum ada) ikut Beranda —
+  // sama seperti Peta Level, karena dibuka DARI peta & isinya info perhentian,
+  // bukan kegiatan belajar (tanpa baris ini dia jatuh ke fallback 'belajar'
+  // dan tab Belajar nyala padahal anak sedang melihat peta).
+  if (state.screen === 'home' || state.screen === 'levels' || state.screen === 'levelSoon') return 'home';
   if (state.screen === 'settings') return 'settings';
   if (state.screen === 'game') return 'game';
   return 'belajar'; // menu, topics, activity, boss
@@ -231,14 +470,21 @@ function syncNav(): void {
 
 /* ------------------------------------------------------------ URL routing -- */
 /**
- * Hash-routing ringan (permintaan user: URL sebaiknya berubah pindah tab,
- * bukan cuma diam di satu alamat) — `#/<screen>?param=...`. `go()` men-
- * dorong hash baru (push, bikin tombol back/forward browser kerja), sedang
- * `render()` cuma MEMPERBAIKI hash di tempat (replaceState) kalau state
- * berubah di luar go() (mis. gerbang login memaksa ke 'account') — supaya
- * back-button tidak nyangkut di layar yang sebenarnya diblokir. `lastKnownHash`
- * dipakai buat bedakan hashchange asli (tombol back/forward/URL diketik
- * manual) dari echo perubahan yang kita lakukan sendiri.
+ * Path routing asli (History API) — URL beneran berubah tiap pindah layar
+ * (mis. `/belajar`, `/pengaturan`), TANPA `#` (kurang cocok utk production —
+ * permintaan user). `go()` mendorong path baru (pushState, bikin tombol
+ * back/forward browser kerja); `render()` cuma MEMPERBAIKI path di tempat
+ * (replaceState) kalau state berubah di luar go() (mis. gerbang login
+ * memaksa ke 'account') — supaya back-button tidak nyangkut di layar yang
+ * sebenarnya diblokir. Beda dari hash: `pushState`/`replaceState` TIDAK
+ * pernah memicu event apa pun (cuma navigasi back/forward beneran yang
+ * memicu `popstate`), jadi TIDAK perlu penjaga echo seperti versi hash dulu.
+ *
+ * PENTING buat server: path asli (bukan hash) butuh server diarahkan balik
+ * ke index.html untuk path apa pun yang bukan file statis (SPA fallback) —
+ * kalau tidak, reload langsung di `/belajar` akan 404. Lihat
+ * `dev-server.mjs` (dev lokal) & config nginx contoh di README.md
+ * (produksi) — keduanya sudah diarahkan untuk ini.
  */
 /** Segmen URL yang dilihat orang — dibuat SAMA dengan nama halaman yang
  *  tampak (Beranda/Belajar/Game/Pengaturan di nav, bukan nama internal
@@ -253,42 +499,50 @@ const SCREEN_TO_SLUG: Record<Screen, string> = {
   activity: 'aktivitas',
   settings: 'pengaturan',
   levels: 'peta',
+  levelSoon: 'materi-segera',
   boss: 'bos',
   game: 'game',
   account: 'masuk',
   placementTest: 'placement-test',
+  landing: '',
 };
 const SLUG_TO_SCREEN: Record<string, Screen> = Object.fromEntries(
   (Object.entries(SCREEN_TO_SLUG) as [Screen, string][]).map(([screen, slug]) => [slug, screen])
 );
-let lastKnownHash = '';
 
-function hashFromState(s: AppState): string {
+function pathFromState(s: AppState): string {
   const query: string[] = [];
   if (s.screen === 'topics' || s.screen === 'activity') {
     if (s.skillKey) query.push(`skill=${s.skillKey}`);
     query.push(`topic=${s.topicIndex}`);
     if (s.screen === 'activity') query.push(`step=${s.step}`);
   }
+  // Tiga layar per-level (`bos`, `materi-segera`, & alur Menu Belajar) pakai
+  // query `level=` yang sama bentuknya — biar URL-nya konsisten & gampang
+  // di-reverse-parse. `viewLevel` cuma ditulis kalau memang diisi (jelajah
+  // markas lain) — default (ikut level asli anak) tidak perlu nongol di URL.
   if (s.screen === 'boss' && s.bossLevel) query.push(`level=${s.bossLevel}`);
-  return `#/${SCREEN_TO_SLUG[s.screen]}${query.length ? '?' + query.join('&') : ''}`;
+  if (s.screen === 'levelSoon' && s.soonLevel) query.push(`level=${s.soonLevel}`);
+  if ((s.screen === 'menu' || s.screen === 'topics' || s.screen === 'activity') && s.viewLevel) {
+    query.push(`level=${s.viewLevel}`);
+  }
+  return `/${SCREEN_TO_SLUG[s.screen]}${query.length ? '?' + query.join('&') : ''}`;
 }
 
-/** Terapkan hash dari URL ke `state` — divalidasi ketat (skill/level harus
- *  dikenal, angka harus valid) supaya hash yang diketik manual/lama tidak
- *  bisa bikin renderer nge-crash gara-gara state setengah jadi. */
-function applyHashToState(hash: string): void {
-  const raw = hash.replace(/^#\/?/, '');
-  const [screenPart, queryPart] = raw.split('?');
-  const screen = SLUG_TO_SCREEN[screenPart] ?? 'home';
-  const params = new URLSearchParams(queryPart ?? '');
+/** Terapkan path+query dari URL ke `state` — divalidasi ketat (skill/level
+ *  harus dikenal, angka harus valid) supaya URL yang diketik manual/lama
+ *  tidak bisa bikin renderer nge-crash gara-gara state setengah jadi. */
+function applyPathToState(pathname: string, search: string): void {
+  const raw = pathname.replace(/^\//, '');
+  const screen = SLUG_TO_SCREEN[raw] ?? 'home';
+  const params = new URLSearchParams(search);
 
   const skillParam = params.get('skill');
   const skillKey = SKILL_KEYS.includes(skillParam as SkillKey) ? (skillParam as SkillKey) : null;
   const topicParam = Number(params.get('topic'));
   const stepParam = Number(params.get('step'));
   const levelParam = params.get('level');
-  const bossLevel = LEVELS.some((l) => l.key === levelParam) ? (levelParam as LevelKey) : null;
+  const levelFromUrl = LEVELS.some((l) => l.key === levelParam) ? (levelParam as LevelKey) : null;
 
   state.screen = screen;
   if (screen === 'topics' || screen === 'activity') {
@@ -299,19 +553,36 @@ function applyHashToState(hash: string): void {
     } else {
       state.skillKey = skillKey;
       state.topicIndex = Number.isFinite(topicParam) ? topicParam : 0;
-      if (screen === 'activity') state.step = Number.isFinite(stepParam) ? stepParam : 0;
+      // Kenalan/Latihan Inti/Tantangan sengaja TIDAK terkunci (permintaan
+      // user) — step dari URL dipakai langsung, cuma diklem ke rentang
+      // valid supaya angka ngawur tidak bikin index out-of-range.
+      if (screen === 'activity') {
+        state.step = Number.isFinite(stepParam) ? Math.min(Math.max(stepParam, 0), STEP_LABELS.length - 1) : 0;
+      }
     }
   }
-  if (screen === 'boss') state.bossLevel = bossLevel;
+  if (screen === 'boss') state.bossLevel = levelFromUrl;
+  if (screen === 'levelSoon') state.soonLevel = levelFromUrl;
+  if (screen === 'menu' || screen === 'topics' || screen === 'activity') state.viewLevel = levelFromUrl;
+}
+
+/** Sinkron URL dgn `state.step` tanpa nambah entri riwayat baru (dipakai
+ *  jumpStep/prevStep/nextStep — beda dari `go()` yang selalu pushState) —
+ *  supaya refresh/bagikan link tetap mendarat di langkah yang sama, bukan
+ *  balik ke Kenalan terus. */
+function syncActivityUrl(): void {
+  const url = pathFromState(state);
+  if (location.pathname + location.search !== url) {
+    history.replaceState(null, '', url);
+  }
 }
 
 function go(screen: Screen, extra?: Partial<AppState>): void {
   state.screen = screen;
   Object.assign(state, extra ?? {});
-  const hash = hashFromState(state);
-  if (location.hash !== hash) {
-    lastKnownHash = hash;
-    location.hash = hash;
+  const url = pathFromState(state);
+  if (location.pathname + location.search !== url) {
+    history.pushState(null, '', url);
   }
   render();
   const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -323,37 +594,49 @@ function render(): void {
   setHandlers({
     navigate: (payload) => {
       const item = NAV.find((n) => n.key === payload);
-      if (item) go(item.screen);
+      // Nav rail/tab bar selalu masuk "segar" — jangan bawa `viewLevel`
+      // nyangkut dari sesi jelajah level sebelumnya di Menu Belajar.
+      if (item) go(item.screen, { viewLevel: null });
     },
   });
 
-  // Login wajib — semua layar digerbang KECUALI layar akun itu sendiri.
-  // Dipusatkan di sini (bukan per-tombol) supaya SEMUA jalur navigasi
-  // (nav, tombol dalam, deep action) otomatis kena, tanpa perlu guard
-  // berulang di tiap handler.
-  if (!isLoggedIn() && state.screen !== 'account') {
-    state.screen = 'account';
+  // Login wajib — semua layar digerbang KECUALI layar akun & homepage
+  // marketing itu sendiri. Pengunjung yang belum login mendarat di 'landing'
+  // (bukan langsung dilempar ke form masuk) supaya masih ada penjelasan
+  // produk sebelum gerbang login — CTA di 'landing' sendiri yang membawa ke
+  // 'account'. Dipusatkan di sini (bukan per-tombol) supaya SEMUA jalur
+  // navigasi (nav, tombol dalam, deep action) otomatis kena, tanpa perlu
+  // guard berulang di tiap handler.
+  if (!isLoggedIn() && state.screen !== 'account' && state.screen !== 'landing') {
+    state.screen = 'landing';
   }
-  // Kebalikannya: hash URL bisa saja masih "#/account" (mis. dari sesi lama
-  // yang tokennya sudah kedaluwarsa) padahal sekarang sudah login — jangan
-  // tampilkan layar login ke orang yang sudah masuk.
-  if (isLoggedIn() && state.screen === 'account') {
+  // Kebalikannya: URL bisa saja masih "/" atau "/masuk" (mis. dari sesi lama
+  // yang tokennya sudah kedaluwarsa, atau bookmark homepage) padahal sekarang
+  // sudah login — jangan tampilkan layar marketing/login ke orang yang sudah masuk.
+  if (isLoggedIn() && (state.screen === 'account' || state.screen === 'landing')) {
     state.screen = getCachedChildStatus().placementTestDone === false ? 'placementTest' : 'home';
   }
 
   // Perbaiki URL DI TEMPAT (replaceState, bukan push) kalau state barusan
   // berubah di luar go() — mis. gerbang login barusan memaksa ke 'account'.
   // replaceState supaya back-button tidak nyangkut di layar yang diblokir.
-  const correctedHash = hashFromState(state);
-  if (location.hash !== correctedHash) {
-    lastKnownHash = correctedHash;
-    history.replaceState(null, '', correctedHash);
+  const correctedUrl = pathFromState(state);
+  if (location.pathname + location.search !== correctedUrl) {
+    history.replaceState(null, '', correctedUrl);
   }
 
   // Layar login = halaman tersendiri (pola inggrisinyuk dewasa) — tanpa rail/
   // topline/tabbar & tanpa header nama+level, supaya tidak kelihatan separuh
   // app di baliknya sebelum benar-benar masuk.
   document.body.classList.toggle('is-login', state.screen === 'account');
+  // Homepage marketing = halaman tersendiri juga (pola sama .is-login) —
+  // tanpa rail/topline/tabbar, full-bleed, punya nav+footer sendiri.
+  document.body.classList.toggle('is-landing', state.screen === 'landing');
+  // First Placement Test juga halaman tersendiri (permintaan user) — supaya
+  // tidak ada jalan keluar diam-diam lewat tab Beranda/Belajar/Game/
+  // Pengaturan di tengah tes; keluar cuma lewat tombol balik yang sudah
+  // digerbang konfirmasi (renderPlacementTestScreen).
+  document.body.classList.toggle('is-placement-test', state.screen === 'placementTest');
 
   syncNav();
   renderCrumb();
@@ -361,6 +644,7 @@ function render(): void {
 
   if (state.screen === 'home') return renderHome();
   if (state.screen === 'levels') return renderLevels();
+  if (state.screen === 'levelSoon') return renderLevelSoon();
   if (state.screen === 'settings') return renderSettings();
   if (state.screen === 'menu') return renderMenu();
   if (state.screen === 'topics') return renderTopics();
@@ -368,6 +652,7 @@ function render(): void {
   if (state.screen === 'boss') return renderBoss();
   if (state.screen === 'account') return renderAccount();
   if (state.screen === 'placementTest') return renderPlacementTestScreen();
+  if (state.screen === 'landing') return renderLandingPage();
   renderActivity();
 }
 
@@ -383,8 +668,8 @@ function setAccent(key: SkillKey | null): void {
   el.style.setProperty('--accent-bg', SKILL_META[key].accentBg);
 }
 
-function topicTitle(key: SkillKey, index: number): string {
-  return TOPICS[key][index]?.title ?? '';
+function topicTitle(key: SkillKey, index: number, level: LevelKey): string {
+  return topicsForSkill(key, level)[index]?.title ?? '';
 }
 
 function renderCrumb(): void {
@@ -398,11 +683,11 @@ function renderCrumb(): void {
 
   const parts = ['Menu Belajar'];
   if (state.screen === 'boss' && state.bossLevel) {
-    parts.push(LEVELS.find((l) => l.key === state.bossLevel)!.name, 'Tantangan Bos');
+    parts.push(LEVELS.find((l) => l.key === state.bossLevel)!.name, `Tantangan ${BOSS_NAME[state.bossLevel]}`);
   } else {
     if (state.skillKey) parts.push(SKILL_META[state.skillKey].label);
     if (state.screen === 'activity' && state.skillKey) {
-      parts.push(topicTitle(state.skillKey, state.topicIndex));
+      parts.push(topicTitle(state.skillKey, state.topicIndex, browsingLevel().key));
       parts.push(STEP_LABELS[state.step]);
     }
   }
@@ -420,9 +705,100 @@ function renderCrumb(): void {
 function validLast(): LastSpot | null {
   const last = getLast();
   if (!last) return null;
-  const list = TOPICS[last.skill];
-  if (!list || !list[last.topicIndex]) return null;
+  const list = topicsForSkill(last.skill, currentPlayableLevel().key);
+  if (!list[last.topicIndex]) return null;
   return last;
+}
+
+interface NextMateri {
+  skill: SkillKey;
+  topicIndex: number;
+  /** true = materi terakhir yang dibuka BELUM selesai → tombol "Yuk
+   *  Lanjutkan" balik ke situ. false = materi terakhir sudah selesai (atau
+   *  belum pernah buka apa pun sama sekali) → tombol "Yuk Mulai" ke materi
+   *  BERIKUTNYA yang belum selesai (permintaan user: kasus "belum pernah
+   *  mulai" disamakan labelnya dgn "lanjut ke materi baru"). */
+  continuing: boolean;
+}
+
+/**
+ * Topik SUNGGUH selesai (permintaan user, fix "70% tapi sudah tertulis
+ * selesai", DIPERLUAS permintaan user berikutnya: "munculkan modul selesai
+ * setelah statusnya 100%... berlaku di semua materi vocab, reading,
+ * listening, grammar, speaking" — bug: layar "Kerja Bagus" dulu muncul
+ * begitu STEP TERAKHIR yang lagi dikerjakan tuntas, apa pun step itu
+ * (`nextStep()` di bawah cuma cek `state.step`, TIDAK PERNAH cek progress
+ * beneran) — anak yang loncat langsung ke Tantangan (stepper bebas, TIDAK
+ * pernah dikunci) & menuntaskannya BISA dapat "Kerja Bagus" walau Latihan
+ * Inti masih 0%. SATU sumber kebenaran "topik ini kelar belum" dipakai DUA
+ * tempat sekarang: kartu materi/skill/target Lanjutkan (spt sebelumnya) DAN
+ * gate layar Kerja Bagus (`nextStep()`) — supaya keduanya TIDAK PERNAH
+ * cerita beda:
+ *  - Vocab & Listening FORMAT BARU (`ListeningSentenceTopic`, py section
+ *    granular per-soal spt Vocab) → `vocabTopicPercent`/
+ *    `listeningTopicPercent` (>=100), akurasi PER SOAL (bukan cuma "step
+ *    ini pernah dituntaskan").
+ *  - Listening FORMAT LAMA (Explorer/Adventurer) + Speaking/Grammar/
+ *    Reading (SEMUA belum py section granular per-soal) → `isStepVisited`
+ *    utk 'latihan' DAN 'tantangan' (Kenalan TETAP tidak dihitung, konsisten
+ *    dgn Vocab) — lebih kasar drpd persen (cuma "pernah dituntaskan 1x",
+ *    bukan per-soal), tapi TETAP benar menutup bug utama: step yang BELUM
+ *    PERNAH disentuh sama sekali TIDAK akan lolos gate ini.
+ */
+function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): number {
+  if (key === 'vocabulary') {
+    const vocabTopic = vocabTopicsForLevel(level).find((t) => t.id === topicId);
+    return vocabTopicPercent(topicId, vocabTopic?.items.length ?? 0);
+  }
+  if (key === 'listening') {
+    const listeningTopic = listeningTopicsForLevel(level).find((t) => t.id === topicId);
+    if (listeningTopic && 'items' in listeningTopic) {
+      // `ListeningNoteTopic` (Achiever) & `ListeningDialogueTopic` (Trailblazer)
+      // py Tantangan beda dari `ListeningSentenceTopic` (Little Stars/Starter)
+      // — section & total slotnya per GAP catatan / per pertanyaan inferensi,
+      // bukan per kalimat dikte (`progress.ts` `listeningTopicPercent`).
+      const tantangan =
+        'noteGaps' in listeningTopic
+          ? { section: 'tantangan-note', total: listeningTopic.noteGaps.length }
+          : 'dialogueLines' in listeningTopic
+            ? { section: 'tantangan-dialog', total: listeningTopic.inferenceQuestions.length }
+            : undefined;
+      return listeningTopicPercent(topicId, listeningTopic.items.length, tantangan);
+    }
+  }
+  return isStepVisited(key, topicId, 'latihan') && isStepVisited(key, topicId, 'tantangan') ? 100 : 0;
+}
+
+function topicFinished(key: SkillKey, topicId: string, level: LevelKey): boolean {
+  return topicProgressPercent(key, topicId, level) >= 100;
+}
+
+/**
+ * Kartu "lanjutkan/mulai" di Menu Belajar (permintaan user) — beda dari
+ * `spark` Beranda yang cuma menunjuk balik ke `last` apa adanya: di sini
+ * kalau materi terakhir SUDAH selesai, otomatis loncat ke materi berikutnya
+ * yang belum selesai (skill sama dulu, baru skill lain) supaya anak tidak
+ * diarahkan ke materi yang sudah tuntas. `null` = benar-benar semua materi
+ * level ini sudah tuntas.
+ */
+function findNextMateri(level: LevelKey): NextMateri | null {
+  const last = validLast();
+  if (last) {
+    const list = topicsForSkill(last.skill, level);
+    const lastTopic = list[last.topicIndex];
+    if (lastTopic && !topicFinished(last.skill, lastTopic.id, level)) {
+      return { skill: last.skill, topicIndex: last.topicIndex, continuing: true };
+    }
+    for (let i = last.topicIndex + 1; i < list.length; i += 1) {
+      if (!topicFinished(last.skill, list[i].id, level)) return { skill: last.skill, topicIndex: i, continuing: false };
+    }
+  }
+  for (const key of visibleSkillKeys(level)) {
+    const list = topicsForSkill(key, level);
+    const idx = list.findIndex((t) => !topicFinished(key, t.id, level));
+    if (idx >= 0) return { skill: key, topicIndex: idx, continuing: false };
+  }
+  return null;
 }
 
 function renderHome(): void {
@@ -434,23 +810,24 @@ function renderHome(): void {
   // petanya (hiasan murni, aria-hidden, tidak menambah informasi baru).
   const sky = `<span class="cloud c1" aria-hidden="true">${CLOUD}</span><span class="cloud c2" aria-hidden="true">${CLOUD}</span>${HILLS_SHORE}`;
 
+  // Slim (permintaan user) — modifier `compact` KHUSUS instance Beranda,
+  // TIDAK dipakai di `.spark` Menu Belajar (biar tidak ikut mengecil) — dan
+  // tanpa eyebrow "Lanjutkan"/"Mulai di sini" di atas judul (permintaan user).
   const spark = last
     ? `
-      <article class="spark">
+      <article class="spark compact">
         ${sky}
         <div class="spark-body">
-          <span class="eyebrow">Lanjutkan</span>
-          <h2 class="spark-title">${topicTitle(last.skill, last.topicIndex)}</h2>
+          <h2 class="spark-title">${topicTitle(last.skill, last.topicIndex, currentPlayableLevel().key)}</h2>
           <p class="spark-sub">${SKILL_META[last.skill].label} · ${SKILL_META[last.skill].tagline}</p>
           <button class="cta" type="button" data-action="resume">${ICON_PLAY} Main lagi</button>
         </div>
         <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${SKILL_META[last.skill].emoji}</span></div>
       </article>`
     : `
-      <article class="spark">
+      <article class="spark compact">
         ${sky}
         <div class="spark-body">
-          <span class="eyebrow">Mulai di sini</span>
           <h2 class="spark-title">Yuk kenalan sama kata baru</h2>
           <p class="spark-sub">Dengar, tebak, ucapkan, lalu susun. Semua lewat main.</p>
           <button class="cta" type="button" data-action="openMenu">${ICON_PLAY} Buka Menu Belajar</button>
@@ -488,10 +865,21 @@ function renderHome(): void {
       </li>`;
   }).join('');
 
+  // Perhentian yang materinya belum ada butuh kalimatnya sendiri: di stop
+  // seperti itu TIDAK ada Tantangan Bos yang bisa ditagih (lihat `stops` di
+  // renderLevels), dan perhentian berikutnya biasanya malah sudah ikut kebuka
+  // — jadi "taklukkan Bos untuk buka X" bakal jadi janji yang tidak ada
+  // tombolnya. Sejak "Kamu di sini" bisa mendarat persis di stop begini
+  // (hasil First Placement Test, lihat `currentStopKey`), ini bukan kasus
+  // pinggiran lagi.
+  // "Kamu di [level]" DIHAPUS dari sini (permintaan user) — info level anak
+  // sudah ada di chip header, tidak perlu diulang di caption strip peta ini.
   const miniTrailCaption = hereLevel
-    ? nextLevel
-      ? `🗺️ Kamu di <b>${hereLevel.emoji} ${hereLevel.name}</b> — taklukkan Bos untuk buka <b>${nextLevel.name}</b>.`
-      : `🗺️ Kamu di <b>${hereLevel.emoji} ${hereLevel.name}</b> — perhentian terjauh yang sudah siap!`
+    ? !hereLevel.hasContent
+      ? `🗺️ Kegiatannya masih dibikin, mampir lagi nanti ya.`
+      : nextLevel
+        ? `🗺️ Taklukkan ${BOSS_NAME[hereLevel.key]} untuk buka <b>${nextLevel.name}</b>.`
+        : `🗺️ Markas terjauh yang sudah siap!`
     : '🗺️ Peta petualanganmu menunggu di sini.';
 
   const miniTrail = `
@@ -507,7 +895,8 @@ function renderHome(): void {
   // benar-salah (PRD §4.5/§4.6: tanpa rasio benar/salah dalam bentuk apa pun
   // dipakai untuk buka/kunci apa pun; "Ketepatan" di panel Progresmu di bawah
   // cuma motivasi tampilan, tidak pernah menggerbang progres).
-  const bossPct = TOTAL_TOPICS > 0 ? Math.round((done / TOTAL_TOPICS) * 100) : 0;
+  const totalTopics = totalTopicsForLevel(currentPlayableLevel().key);
+  const bossPct = totalTopics > 0 ? Math.round((done / totalTopics) * 100) : 0;
 
   const starCard =
     done > 0
@@ -559,16 +948,16 @@ function renderHome(): void {
   const levelProgressHead = `
     <div class="level-progress-head">
       <span class="level-progress-name">${hereLevel ? `${hereLevel.emoji} ${hereLevel.name}` : 'Level kamu'}</span>
-      <span class="level-progress-pct">${bossPct}% menuju ${nextLevel ? nextLevel.name : 'Tantangan Bos'}</span>
+      <span class="level-progress-pct">${bossPct}% menuju ${nextLevel ? nextLevel.name : bossLabel(hereLevel)}</span>
     </div>`;
   const levelProgress = `
     ${levelProgressHead}
-    <div class="progress-track" role="img" aria-label="${bossPct}% menuju Tantangan Bos${hereLevel ? ` ${hereLevel.name}` : ''}">
+    <div class="progress-track" role="img" aria-label="${bossPct}% menuju ${bossLabel(hereLevel)}">
       <div class="progress-fill" style="width:${bossPct}%"></div>
     </div>
     <p class="meta" style="margin-top:8px">${
       done > 0
-        ? `${done} dari ${TOTAL_TOPICS} modul sudah kamu tuntaskan.`
+        ? `${done} dari ${totalTopics} modul sudah kamu tuntaskan.`
         : `Ayo mulai dari modul pertama!`
     }</p>`;
 
@@ -651,12 +1040,12 @@ function renderHome(): void {
   `;
 
   setHandlers({
-    openMenu: () => go('menu'),
+    openMenu: () => go('menu', { viewLevel: null }),
     openLevels: () => go('levels'),
     openPlacementTest: () => go('placementTest'),
     resume: () => {
-      if (!last) return go('menu');
-      go('activity', { skillKey: last.skill, topicIndex: last.topicIndex, step: 0 });
+      if (!last) return go('menu', { viewLevel: null });
+      go('activity', { skillKey: last.skill, topicIndex: last.topicIndex, step: 0, viewLevel: null });
     },
   });
 }
@@ -664,24 +1053,103 @@ function renderHome(): void {
 /* ----------------------------------------------------------- menu belajar -- */
 
 function renderMenu(): void {
-  const cards = SKILL_KEYS.map((key) => {
+  const level = browsingLevel();
+  // Markas lain yang boleh dijelajahi Menu Belajar-nya dari sini langsung
+  // (permintaan user: "gimana di menu belajar bisa pilih materi per
+  // level") — hanya yang sudah terbuka & punya materi, konsisten dengan
+  // tombol "Buka Menu Belajar" di Peta Level (`renderLevels`).
+  const unlockedMap = levelUnlockMap(LEVELS);
+  const browsableLevels = LEVELS.filter((l) => l.hasContent && unlockedMap[l.key]);
+  // Dropdown 1 baris (permintaan user: pill row 2 baris "boros" & mendorong
+  // konten belajar turun) — muncul cuma kalau ada lebih dari 1 markas yang
+  // bisa dijelajahi; kalau cuma 1, tidak perlu kontrol apa pun (design awal).
+  const menuLevelHead =
+    browsableLevels.length > 1
+      ? `
+    <div class="menu-level-head">
+      <label class="level-select-wrap">
+        <span aria-hidden="true">📋</span>
+        <select class="level-select" id="menuLevelSelect" aria-label="Pilih level Menu Belajar">
+          ${browsableLevels
+            .map((l) => `<option value="${l.key}" ${l.key === level.key ? 'selected' : ''}>${l.emoji} ${l.name}</option>`)
+            .join('')}
+        </select>
+      </label>
+    </div>`
+      : '';
+  // Progres keseluruhan lintas SEMUA modul di level ini (permintaan user) —
+  // formula SAMA dgn levelProgress Beranda/mapProgress Peta Level
+  // (doneCount() global ÷ totalTopicsForLevel level ini), supaya angkanya
+  // konsisten di mana pun ditampilkan.
+  const doneTotal = doneCount();
+  const topicsTotal = totalTopicsForLevel(level.key);
+  const menuPct = topicsTotal > 0 ? Math.round((doneTotal / topicsTotal) * 100) : 0;
+  const progressBar = `
+    <div class="spark-progress">
+      <div class="spark-progress-track" role="img" aria-label="${menuPct}% seluruh materi ${level.name} sudah dikerjakan">
+        <div class="spark-progress-fill" style="width:${menuPct}%"></div>
+      </div>
+      <span class="spark-progress-label">${doneTotal}/${topicsTotal} materi · ${menuPct}%</span>
+    </div>`;
+
+  // SATU kartu ringkas (permintaan user: gabung progress + lanjutkan/mulai
+  // jadi 1 section, bukan 2 kartu terpisah) — pola visual `spark` Beranda
+  // (sky+hills, gradien lagoon+mango) dipertahankan karena itu elemen
+  // paling "menarik" yang sudah ada, progress bar-nya diselipkan sebagai
+  // strip tipis translus di atas judul, bukan kartu putih terpisah lagi.
+  // `findNextMateri` yang beda dari Beranda: otomatis loncat ke materi
+  // BERIKUTNYA begitu materi terakhir sudah selesai (Beranda cuma menunjuk
+  // balik ke `last` apa adanya). Klik tombolnya langsung ke materinya.
+  const next = findNextMateri(level.key);
+  const sky = `<span class="cloud c1" aria-hidden="true">${CLOUD}</span><span class="cloud c2" aria-hidden="true">${CLOUD}</span>${HILLS_SHORE}`;
+  const nextCard = next
+    ? `
+      <article class="spark compact" style="--spark-accent:${SKILL_META[next.skill].accent}">
+        ${sky}
+        <div class="spark-body">
+          <h2 class="spark-title">${topicTitle(next.skill, next.topicIndex, level.key)}</h2>
+          <p class="spark-sub">${SKILL_META[next.skill].label} · ${SKILL_META[next.skill].tagline}</p>
+          <button class="cta" type="button" data-action="continueMateri">${ICON_PLAY} ${next.continuing ? 'Yuk Lanjutkan' : 'Yuk Mulai'}</button>
+          ${progressBar}
+        </div>
+        <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${SKILL_META[next.skill].emoji}</span></div>
+      </article>`
+    : `
+      <article class="spark compact">
+        ${sky}
+        <div class="spark-body">
+          <span class="eyebrow">Keren banget!</span>
+          <h2 class="spark-title">Semua materi ${level.name} sudah tuntas! 🎉</h2>
+          <p class="spark-sub">Yuk coba Markas ${BOSS_NAME[level.key]} — atau ulang materi mana saja kapan pun mau.</p>
+          <button class="cta" type="button" data-action="openBoss">🏰 Coba Tantangan ${BOSS_NAME[level.key]}</button>
+          ${progressBar}
+        </div>
+        <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${BOSS_AVATAR[level.key]}</span></div>
+      </article>`;
+
+  const cards = visibleSkillKeys(level.key).map((key) => {
     const s = SKILL_META[key];
-    const ids = TOPICS[key].map((t) => t.id);
-    const doneHere = doneCountFor(key, ids);
+    const topics = topicsForSkill(key, level.key);
+    const doneHere = topics.filter((t) => topicFinished(key, t.id, level.key)).length;
+    const skillPct = topics.length > 0 ? Math.round((doneHere / topics.length) * 100) : 0;
     const tags = s.activities.map((a) => `<span class="tag">${a}</span>`).join('');
     return `
       <div class="skill-card" role="button" tabindex="0" data-action="openSkill" data-payload="${key}">
+        <span class="skill-pct${skillPct >= 100 ? ' done' : ''}">${skillPct}%</span>
         <span class="ic" style="background:${s.accentBg};color:${s.accent}" aria-hidden="true">${s.emoji}</span>
         <div class="body">
           <h3>${s.label}</h3>
-          <p>${s.tagline} · ${TOPICS[key].length} materi</p>
+          <p>${s.tagline} · ${topics.length} materi</p>
           <span class="row">${tags}${doneHere > 0 ? `<span class="tag ok">${doneHere} selesai ⭐</span>` : ''}</span>
         </div>
         <span class="chev" aria-hidden="true">${ICON_CHEVRON}</span>
       </div>`;
   }).join('');
 
-  const bossCleared = isBossCleared('explorer');
+  // Teaser Bos ikut level yang sedang dilihat (dulu hardcode 'explorer' —
+  // permintaan user: Adventurer sekarang punya materi juga, jadi anak yang
+  // levelnya Adventurer harus lihat "Tantangan Bos Adventurer", bukan Explorer).
+  const bossCleared = isBossCleared(level.key);
 
   // Nudge First Placement Test — sama seperti Beranda (PRD §16): tampil kalau
   // pernah login (`placementTestDone !== null`) tapi belum benar-benar
@@ -701,22 +1169,20 @@ function renderMenu(): void {
       : '';
 
   root.innerHTML = `
+    ${menuLevelHead}
     <section class="two-col">
       <div class="stack">
-        <div class="greet">
-          <h1 class="display">Menu Belajar</h1>
-          <p class="lede">Empat kegiatan dengan alur yang sama, jadi sekali paham bisa dipakai di semua kegiatan.</p>
-        </div>
+        ${nextCard}
         <div class="skill-grid">${cards}</div>
 
         <article class="boss-teaser">
           ${HILLS_RIDGE}
-          <div class="sunburst" aria-hidden="true"><span class="face mascot-idle">${BOSS_AVATAR.explorer}</span><span class="crown">👑</span></div>
+          <div class="sunburst" aria-hidden="true"><span class="face mascot-idle">${BOSS_AVATAR[level.key]}</span><span class="crown">👑</span></div>
           <div class="boss-teaser-body">
             <span class="eyebrow">${bossCleared ? 'Sudah kamu taklukkan' : 'Tantangan besar'}</span>
-            <h2 class="h2">Tantangan Bos Explorer</h2>
+            <h2 class="h2">🏰 Markas ${BOSS_NAME[level.key]}</h2>
             <p class="lede">Campuran soal dari semua kegiatan di atas, sekaligus — lebih rame, lebih seru. ${bossCleared ? 'Boleh dicoba lagi kapan saja.' : 'Menang sekali saja sudah cukup buat buka level berikutnya!'}</p>
-            <button class="cta" type="button" data-action="openBoss">${ICON_PLAY} ${bossCleared ? 'Main Lagi Lawan Bos' : 'Coba Tantangan Bos'}</button>
+            <button class="cta" type="button" data-action="openBoss">${ICON_PLAY} ${bossCleared ? `Main Lagi Lawan ${BOSS_NAME[level.key]}` : `Coba Tantangan ${BOSS_NAME[level.key]}`}</button>
           </div>
         </article>
       </div>
@@ -742,9 +1208,23 @@ function renderMenu(): void {
 
   setHandlers({
     openSkill: (payload) => go('topics', { skillKey: payload as SkillKey, topicIndex: 0 }),
-    openBoss: () => go('boss', { bossLevel: 'explorer' }),
+    openBoss: () => go('boss', { bossLevel: level.key }),
     openPlacementTest: () => go('placementTest'),
+    continueMateri: () => {
+      if (!next) return;
+      setLast({ skill: next.skill, topicIndex: next.topicIndex });
+      go('activity', { skillKey: next.skill, topicIndex: next.topicIndex, step: 0 });
+    },
   });
+
+  // <select> pakai event `change`, di luar delegasi klik data-action biasa
+  // (pola sama dengan `wireTopicsCompactBar` — wiring langsung sekali pas
+  // render, self-contained di fungsi ini).
+  if (browsableLevels.length > 1) {
+    qs<HTMLSelectElement>(root, '#menuLevelSelect').addEventListener('change', (e) => {
+      go('menu', { viewLevel: (e.target as HTMLSelectElement).value as LevelKey });
+    });
+  }
 }
 
 /* ---------------------------------------------------------- daftar materi -- */
@@ -752,16 +1232,24 @@ function renderMenu(): void {
 function renderTopics(): void {
   const key = state.skillKey as SkillKey;
   const meta = SKILL_META[key];
-  const items = TOPICS[key];
+  const level = browsingLevel().key;
+  const items = topicsForSkill(key, level);
 
+  // "Selesai" (checkmark, warna, teks "Sudah selesai") WAJIB ikut
+  // `topicFinished()`/`topicProgressPercent()` (pct>=100), bukan `isDone()`
+  // mentah lagi — permintaan user: dulu topik Vocab bisa kepentok "Sudah
+  // selesai" di 70% gara-gara `isDone()` cuma cek "pernah 1x nyampe layar
+  // Kerja Bagus", yang bisa terjadi tanpa Latihan Inti/Tantangan tuntas
+  // semua (mis. anak loncat langsung ke Tantangan lewat stepper bebas).
   const cards = items
     .map((t, i) => {
-      const finished = isDone(key, t.id);
+      const pct = topicProgressPercent(key, t.id, level);
+      const finished = topicFinished(key, t.id, level);
       return `
       <div class="topic-card ${finished ? 'done' : ''}" role="button" tabindex="0" data-action="openTopic" data-payload="${i}">
         <div class="num" aria-hidden="true">${finished ? ICON_CHECK : i + 1}</div>
         <div class="info">
-          <b>${t.title}</b>
+          <b>${t.title} <span class="topic-pct${finished ? ' done' : ''}">- ${pct}%</span></b>
           <span>${finished ? '⭐ Sudah selesai' : t.desc}</span>
         </div>
         <div class="go">${finished ? 'Main lagi' : 'Mulai'}</div>
@@ -769,14 +1257,36 @@ function renderTopics(): void {
     })
     .join('');
 
-  const doneHere = doneCountFor(key, items.map((t) => t.id));
+  const doneHere = items.filter((t) => topicFinished(key, t.id, level)).length;
+  // Progres "X dari N materi" — SELALU tampil termasuk 0%, non-punitive.
+  // Digabung LANGSUNG ke dalam screen-head (1 section, bukan kartu terpisah
+  // di bawahnya). Header penuh ini TIDAK sticky (dulu sempat dibuat sticky,
+  // direvisi user: "jadi slim/collapse pas discroll") — pola dari halaman
+  // module project inggrisinyuk (app/dashboard/[module]/page.tsx): header
+  // besar scroll away seperti biasa, lalu `.topics-compact-bar` (fixed,
+  // disembunyikan lewat translateY+opacity) fade-in gantiin begitu
+  // `window.scrollY` lewat ambang — bukan 1 elemen yang animasi
+  // menyusut/berubah ukuran di tempat (lebih sederhana & robust).
+  const topicPct = items.length > 0 ? Math.round((doneHere / items.length) * 100) : 0;
 
   root.innerHTML = `
-    <div class="screen-head">
+    <div class="topics-compact-bar" id="topicsCompactBar">
+      <div class="topics-compact-inner">
+        <button class="iconbtn" type="button" data-action="backToMenu" aria-label="Kembali ke Menu Belajar">${ICON_BACK}</button>
+        <span class="topics-compact-label">${meta.emoji} ${meta.label}</span>
+        <span class="topics-compact-pct">${topicPct}%</span>
+      </div>
+    </div>
+
+    <div class="screen-head topics-head">
       <button class="iconbtn" type="button" data-action="backToMenu" aria-label="Kembali ke Menu Belajar">${ICON_BACK}</button>
       <div class="txt">
         <h1>${meta.emoji} ${meta.label} <span class="tag accent">${items.length} materi</span></h1>
         <p>${meta.tagline} — pilih materi untuk mulai</p>
+        <div class="progress-track" role="img" aria-label="${topicPct}% materi ${meta.label} sudah dikerjakan" style="margin-top:10px;max-width:340px">
+          <div class="progress-fill" style="width:${topicPct}%"></div>
+        </div>
+        <p class="meta" style="margin-top:6px">${doneHere} dari ${items.length} materi (${topicPct}%)${doneHere > 0 ? ' · Boleh diulang kapan saja.' : ''}</p>
       </div>
     </div>
 
@@ -794,18 +1304,6 @@ function renderTopics(): void {
           </ol>
           <p class="meta" style="margin-top:12px">Tiap materi jalannya sama: Kenalan → Latihan Inti → Tantangan.</p>
         </div>
-        ${
-          doneHere > 0
-            ? `<div class="card">
-                 <span class="eyebrow">Sudah selesai</span>
-                 <div class="star-row" aria-label="${doneHere} bintang">${'⭐'.repeat(doneHere)}</div>
-                 <p class="meta">${doneHere} dari ${items.length} materi di ${meta.label}. Boleh diulang kapan saja.</p>
-               </div>`
-            : `<div class="card note-card">
-                 <div class="card-title">Belum tahu mau mulai dari mana?</div>
-                 <p>Mulai dari materi pertama — urutannya sudah disusun dari yang paling gampang.</p>
-               </div>`
-        }
       </aside>
     </section>
   `;
@@ -818,6 +1316,26 @@ function renderTopics(): void {
       go('activity', { topicIndex: index, step: 0 });
     },
   });
+
+  wireTopicsCompactBar();
+}
+
+/** Nyalakan/matikan `.topics-compact-bar` sesuai posisi scroll (permintaan
+ *  user, pola dari project inggrisinyuk). Self-cleaning: kalau
+ *  `#topicsCompactBar` sudah tidak ada di DOM (anak sudah pindah layar,
+ *  `root.innerHTML` sudah ditimpa render lain), listener-nya melepas diri
+ *  sendiri — tidak perlu registry cleanup terpisah tiap `go()`. */
+function wireTopicsCompactBar(): void {
+  const onScroll = (): void => {
+    const bar = document.getElementById('topicsCompactBar');
+    if (!bar) {
+      window.removeEventListener('scroll', onScroll);
+      return;
+    }
+    bar.classList.toggle('is-visible', window.scrollY > 140);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 }
 
 /* --------------------------------------------------------------- aktivitas -- */
@@ -825,20 +1343,28 @@ function renderTopics(): void {
 function renderActivity(): void {
   const key = state.skillKey as SkillKey;
   const meta = SKILL_META[key];
+  // Panel kecepatan/suara cuma relevan kalau skill-nya benar-benar pakai TTS
+  // (`speak()`)/mic di suatu titik (revisi user: sempat digerbang ke
+  // listening/speaking saja, TAPI Vocabulary & Grammar juga pakai dengar 🔊/
+  // ucap 🎤 di Kenalan-nya, jadi salah kalau ikut disembunyikan). Reading
+  // SATU-SATUNYA skill yang sengaja TANPA TTS sama sekali (dibaca sendiri,
+  // types.ts) — cuma itu yang panelnya benar-benar tidak relevan.
+  const showVoicePanel = key !== 'reading';
 
   const steps = STEP_LABELS.map((label, i) => {
     const cls = i === state.step ? 'active' : i < state.step ? 'done' : '';
-    // Cuma langkah yang sudah/sedang dilewati yang boleh diklik — tidak bisa lompat maju.
-    const attrs = i <= state.step ? `data-action="jumpStep" data-payload="${i}" role="button" tabindex="0"` : '';
+    // Semua langkah boleh diklik bebas (permintaan user: Latihan Inti &
+    // Tantangan TIDAK BOLEH terkunci) — anak boleh loncat ke mana saja di
+    // Kenalan/Latihan Inti/Tantangan kapan saja, non-sequential by design.
     const dot = i < state.step ? ICON_CHECK : String(i + 1);
-    return `<li class="${cls}" ${attrs}><span class="dot" aria-hidden="true">${dot}</span>${label}</li>`;
+    return `<li class="${cls}" data-action="jumpStep" data-payload="${i}" role="button" tabindex="0"><span class="dot" aria-hidden="true">${dot}</span>${label}</li>`;
   }).join('');
 
   root.innerHTML = `
     <div class="act-head">
       <button class="iconbtn" type="button" data-action="backStep" aria-label="Kembali satu langkah">${ICON_BACK}</button>
       <div class="txt">
-        <h1>${topicTitle(key, state.topicIndex)}</h1>
+        <h1>${topicTitle(key, state.topicIndex, browsingLevel().key)}</h1>
         <div class="sub">
           <span class="tag accent">${meta.emoji} ${meta.label}</span>
           <span class="meta">Langkah ${state.step + 1} dari ${STEP_LABELS.length}</span>
@@ -849,10 +1375,14 @@ function renderActivity(): void {
     <div class="act-body">
       <div class="act-side">
         <ol class="stepper">${steps}</ol>
-        <details class="voice-drop">
-          <summary>🔊 Suara &amp; kecepatan</summary>
+        ${
+          showVoicePanel
+            ? `<div class="voice-shown">
+          <div class="voice-shown-head">🔊 Suara &amp; kecepatan</div>
           <div id="voicePanelMount"></div>
-        </details>
+        </div>`
+            : ''
+        }
       </div>
       <div class="act-stage">
         <div class="card" id="stage"></div>
@@ -864,11 +1394,12 @@ function renderActivity(): void {
     backStep: () => prevStep(),
     jumpStep: (payload) => {
       state.step = Number(payload);
+      syncActivityUrl();
       render();
     },
   });
 
-  renderVoicePanel(qs<HTMLDivElement>(root, '#voicePanelMount'));
+  if (showVoicePanel) renderVoicePanel(qs<HTMLDivElement>(root, '#voicePanelMount'));
   runStage(key, qs<HTMLDivElement>(root, '#stage'));
 }
 
@@ -876,46 +1407,130 @@ function renderActivity(): void {
 function prevStep(): void {
   if (state.step > 0) {
     state.step -= 1;
+    syncActivityUrl();
     render();
   } else {
     go('topics');
   }
 }
 
+/**
+ * Permintaan user (fix): "Kerja Bagus" WAJIB nunggu progress topik BENERAN
+ * 100% (`topicFinished()`), BUKAN cuma "step yang lagi dikerjakan kebetulan
+ * tuntas" — dulu `nextStep()` cuma cek `state.step` mentah, jadi anak yang
+ * loncat langsung ke Tantangan (stepper bebas, tidak pernah dikunci) lalu
+ * menuntaskannya BISA dapat layar "Kerja Bagus" walau Latihan Inti masih
+ * 0%. `markStepVisited` dipanggil DULU (sebelum keputusan step berikutnya)
+ * supaya Latihan Inti/Tantangan skill TANPA section granular (progress.ts
+ * `isStepVisited`) ikut tercatat brp pun urutan anak menyelesaikannya.
+ * Kalau step terakhir tuntas TAPI topik belum 100% (`!topicFinished`) —
+ * balik ke daftar materi (BUKAN diam di tempat/dead-end) supaya anak bisa
+ * lanjut ke bagian yang belum, tanpa perayaan palsu.
+ */
 function nextStep(): void {
+  const key = state.skillKey as SkillKey;
+  const level = browsingLevel().key;
+  const topic = topicsForSkill(key, level)[state.topicIndex];
+  if (state.step === 1) markStepVisited(key, topic.id, 'latihan');
+  else if (state.step === 2) markStepVisited(key, topic.id, 'tantangan');
+
   if (state.step < STEP_LABELS.length - 1) {
     state.step += 1;
+    syncActivityUrl();
     render();
-  } else {
+  } else if (topicFinished(key, topic.id, level)) {
     renderSelesai();
+  } else {
+    go('topics');
   }
 }
 
 function runStage(key: SkillKey, stage: HTMLElement): void {
+  // Dua level BEDA sengaja dipisah di sini:
+  //  - `contentLevel` (browsing, bisa override lewat Peta Level/pemilih di
+  //    Menu Belajar, jatuh ke playable kalau tidak ada) nentuin topik/materi
+  //    mana yang ditampilkan — anak di level tanpa materi (mis. Starter)
+  //    tetap dapat sesuatu utk dimainkan, bukan layar kosong.
+  //  - `praiseLevel` (badge asli, TANPA fallback/override) nentuin bahasa
+  //    pujian/semangat (praise.ts `PRAISE_LANG_BY_LEVEL`, permintaan user) —
+  //    anak level tinggi yang kebetulan lagi main materi markas lain (baik
+  //    fallback maupun sengaja dijelajahi) tetap dapat pujian sesuai
+  //    levelnya SENDIRI, bukan ikut level kontennya.
+  const contentLevel = browsingLevel().key;
+  const praiseLevel = currentLevelMeta().key;
   switch (key) {
     case 'vocabulary': {
-      const topic = VOCAB_TOPICS[state.topicIndex];
-      if (state.step === 0) vocabularyGame.renderKenalan(stage, topic, nextStep);
-      else if (state.step === 1) vocabularyGame.runLatihanInti(stage, topic, nextStep);
-      else vocabularyGame.runTantangan(stage, topic, nextStep);
+      const topic = vocabTopicsForLevel(contentLevel)[state.topicIndex];
+      if (state.step === 0) vocabularyGame.renderKenalan(stage, topic, praiseLevel);
+      else if (state.step === 1) vocabularyGame.runLatihanInti(stage, topic, nextStep, praiseLevel);
+      else vocabularyGame.runTantangan(stage, topic, nextStep, praiseLevel);
       return;
     }
     case 'listening': {
-      const topic = LISTENING_TOPICS[state.topicIndex];
-      if (state.step === 0) listeningGame.renderKenalan(stage, topic, nextStep);
-      else if (state.step === 1) listeningGame.runLatihanInti(stage, topic, nextStep);
-      else listeningGame.runTantangan(stage, topic, nextStep);
+      const topic = listeningTopicsForLevel(contentLevel)[state.topicIndex];
+      // `AnyListeningTopic` — format lama (Explorer/Adventurer, `scene`/
+      // `drill`/`story`) vs 3 varian format baru ala Vocab (Little Stars/
+      // Starter/Achiever/Trailblazer, `items`), dibedakan runtime lewat
+      // `'items' in topic` (types.ts komentar `AnyListeningTopic`). JANGAN
+      // migrasi format lama ke sini tanpa arahan baru user — sudah sengaja
+      // dipisah (lihat riwayat commit). Pembeda KEDUA (`'noteGaps' in topic`
+      // / `'dialogueLines' in topic`) cuma dipakai di Tantangan (step 2) —
+      // Kenalan/Latihan Inti generik utk SEMUA varian format baru
+      // (`ListeningItemsTopic`, types.ts).
+      if ('items' in topic) {
+        if (state.step === 0) listeningGame.renderKenalanSentence(stage, topic, praiseLevel);
+        else if (state.step === 1) listeningGame.runLatihanIntiSentence(stage, topic, nextStep, praiseLevel);
+        else if ('noteGaps' in topic) listeningGame.runTantanganNote(stage, topic, nextStep, praiseLevel);
+        else if ('dialogueLines' in topic) listeningGame.runTantanganDialogue(stage, topic, nextStep, praiseLevel);
+        else listeningGame.runTantanganSentence(stage, topic, nextStep, praiseLevel);
+      } else {
+        if (state.step === 0) listeningGame.renderKenalan(stage, topic, nextStep);
+        else if (state.step === 1) listeningGame.runLatihanInti(stage, topic, nextStep);
+        else listeningGame.runTantangan(stage, topic, nextStep);
+      }
       return;
     }
     case 'speaking': {
-      const topic = SPEAKING_TOPICS[state.topicIndex];
-      if (state.step === 0) speakingGame.renderKenalan(stage, topic, nextStep);
-      else if (state.step === 1) speakingGame.runLatihanInti(stage, topic, nextStep);
-      else speakingGame.runTantangan(stage, topic, nextStep);
+      const topic = speakingTopicsForLevel(contentLevel)[state.topicIndex];
+      // `AnySpeakingTopic` — format lama (Explorer/Adventurer, `model`/
+      // `drill`/`roleplay` bebas) vs format baru "py `items`" (Little Stars,
+      // target tertutup 3-tangga recognize/imitate/recall), dibedakan
+      // runtime lewat `'items' in topic` (types.ts komentar
+      // `AnySpeakingTopic`), sama pola persis dgn `AnyListeningTopic`/
+      // `AnyReadingTopic`. JANGAN migrasi format lama ke sini tanpa arahan
+      // baru user.
+      if ('items' in topic) {
+        if (state.step === 0) speakingGame.renderKenalanPhrase(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) speakingGame.runLatihanIntiPhrase(stage, topic, nextStep, praiseLevel);
+        else speakingGame.runTantanganPhrase(stage, topic, nextStep, praiseLevel);
+      } else {
+        if (state.step === 0) speakingGame.renderKenalan(stage, topic, nextStep);
+        else if (state.step === 1) speakingGame.runLatihanInti(stage, topic, nextStep);
+        else speakingGame.runTantangan(stage, topic, nextStep);
+      }
+      return;
+    }
+    case 'reading': {
+      const topic = readingTopicsForLevel(contentLevel)[state.topicIndex];
+      // `AnyReadingTopic` — format lama (Adventurer, `primer`/`drill`/`story`,
+      // baca kalimat/cerita) vs format baru "py `items`" (Little Stars, baca
+      // KATA tunggal ↔ gambar), dibedakan runtime lewat `'items' in topic`
+      // (types.ts komentar `AnyReadingTopic`), sama pola persis dgn
+      // `AnyListeningTopic`. JANGAN migrasi format lama ke sini tanpa arahan
+      // baru user.
+      if ('items' in topic) {
+        if (state.step === 0) readingGame.renderKenalanWord(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) readingGame.runLatihanIntiWord(stage, topic, nextStep, praiseLevel);
+        else readingGame.runTantanganWord(stage, topic, nextStep, praiseLevel);
+      } else {
+        if (state.step === 0) readingGame.renderKenalan(stage, topic, nextStep);
+        else if (state.step === 1) readingGame.runLatihanInti(stage, topic, nextStep, praiseLevel);
+        else readingGame.runTantangan(stage, topic, nextStep, praiseLevel);
+      }
       return;
     }
     case 'grammar': {
-      const topic = GRAMMAR_TOPICS[state.topicIndex];
+      const topic = grammarTopicsForLevel(contentLevel)[state.topicIndex];
       if (state.step === 0) grammarGame.renderKenalan(stage, topic, nextStep);
       else if (state.step === 1) grammarGame.runLatihanInti(stage, topic, nextStep);
       else grammarGame.runTantangan(stage, topic, nextStep);
@@ -926,7 +1541,7 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
 
 function renderSelesai(): void {
   const key = state.skillKey as SkillKey;
-  const topic = TOPICS[key][state.topicIndex];
+  const topic = topicsForSkill(key, browsingLevel().key)[state.topicIndex];
   // Selesai = 1 putaran tuntas dicoba, bukan skor minimum (PRD §4.5).
   markDone(key, topic.id);
   addXp(XP_MODULE);
@@ -940,13 +1555,11 @@ function renderSelesai(): void {
       <p class="done-sub">Modul "${topic.title}" selesai kamu coba. Bintangnya masuk ke Beranda. <b>+${XP_MODULE} XP</b> ⚡</p>
       <button class="primary-btn" type="button" data-action="restart">🔁 Ulangi Modul Ini</button>
       <button class="ghost-btn" type="button" data-action="backToTopics">📋 Pilih Materi Lain</button>
-      <button class="ghost-btn" type="button" data-action="backToHome">🏠 Beranda</button>
     </div>
   `;
   setHandlers({
     restart: () => go('activity', { step: 0 }),
     backToTopics: () => go('topics'),
-    backToHome: () => go('home'),
   });
 }
 
@@ -954,6 +1567,7 @@ function renderSelesai(): void {
 
 function renderSettings(): void {
   const avatar = getAvatar();
+  const level = currentLevelMeta();
   const avatarGrid = ANIMAL_AVATARS.map(
     (a) =>
       `<button class="avatar-opt ${a === avatar ? 'is-active' : ''}" type="button" data-action="pickAvatar" data-payload="${a}" aria-label="Pilih avatar ${a}">${a}</button>`
@@ -991,8 +1605,8 @@ function renderSettings(): void {
 
       <section class="card">
         <span class="eyebrow">Level</span>
-        <div class="lvl-name" style="margin:4px 0 2px">${LEVEL.emoji} ${LEVEL.name}</div>
-        <div class="lvl-meta">${LEVEL.cefr} · ${LEVEL.age}</div>
+        <div class="lvl-name" style="margin:4px 0 2px">${level.emoji} ${level.name}</div>
+        <div class="lvl-meta">${level.cefr} · ${level.age}</div>
         <ul class="set-list">
           <li><span>Badge CEFR ditampilkan kecil untuk orang tua; anak cukup lihat nama levelnya.</span></li>
           <li><span>Naik level berbasis modul yang selesai, bukan nilai atau lamanya belajar.</span></li>
@@ -1015,6 +1629,7 @@ function renderSettings(): void {
     logoutAccount: () => {
       apiLogout();
       cacheChildStatus(null, null);
+      paintLevelChips(); // balik ke default (Explorer) — jangan nyisain level akun lama di chip
       render();
     },
     pickAvatar: (payload) => {
@@ -1033,6 +1648,222 @@ function renderSettings(): void {
   });
 
   renderVoicePanel(qs<HTMLDivElement>(root, '#voicePanelMount'));
+}
+
+/* ------------------------------------------------------------- homepage -- */
+
+/** Fitur yang ditonjolkan di homepage — 5 skill asli `SKILL_META` + 1 kartu
+ *  bonus Peta Level/Tantangan Bos (bukan skill, ditulis manual krn di luar
+ *  `SKILL_META`). Dibuat sekali di module scope, bukan tiap render. */
+const LANDING_FEATURES: { emoji: string; label: string; desc: string; accent: string; accentBg: string }[] = [
+  ...Object.values(SKILL_META).map((s) => ({ emoji: s.emoji, label: s.label, desc: s.tagline, accent: s.accent, accentBg: s.accentBg })),
+  {
+    emoji: '👑',
+    label: 'Peta Level & Tantangan Bos',
+    desc: '6 dunia, taklukkan Raja di tiap level',
+    accent: 'var(--brand-700)',
+    accentBg: 'var(--brand-100)',
+  },
+  {
+    emoji: '🎮',
+    label: 'Mode Game Bebas',
+    desc: 'Latihan santai kapan aja, di luar Peta Level',
+    accent: 'var(--brand-600)',
+    accentBg: 'var(--brand-50)',
+  },
+  {
+    emoji: '📊',
+    label: 'Progresmu (Rapor Ringkas)',
+    desc: 'Orang tua pantau XP, streak, & skor tiap skill anak',
+    accent: 'var(--sun-600)',
+    accentBg: 'var(--sun-100)',
+  },
+];
+
+/** Teks di sini SENGAJA singkat — detail per poin (CEFR, jumlah materi,
+ *  daftar level) sudah masing-masing punya section sendiri di bawah
+ *  ("6 Level…", "Apa Aja yang Bisa Dipelajari?"), jadi tidak diulang di sini
+ *  (CLAUDE.md "Teks Singkat, Padat, Jelas" — satu fakta cukup sekali). */
+const LANDING_STEPS: { emoji: string; title: string; desc: string }[] = [
+  { emoji: '🎯', title: 'Cek Kemampuan Dulu', desc: 'First Placement Test yang seru, buat tahu level awal anak.' },
+  { emoji: '🗺️', title: 'Pilih Petualangan', desc: 'Jelajahi Peta Level, dari Little Stars sampai Trailblazer.' },
+  { emoji: '🎮', title: 'Belajar Sambil Main', desc: 'Vocabulary, Listening, Speaking, Grammar, Reading.' },
+  { emoji: '👑', title: 'Taklukkan Raja', desc: 'Menang Tantangan Bos, ujian naik level tiap dunia.' },
+];
+
+/** Testimoni placeholder dari sudut pandang ORANG TUA (bukan anak, PRD §14.5
+ *  — login/keputusan beli ada di tangan orang tua) — nama & peran generik,
+ *  bukan klaim atas orang sungguhan tertentu. */
+const LANDING_TESTIMONIALS: { quote: string; name: string; role: string }[] = [
+  { quote: 'Anakku jadi suka buka sendiri, seneng banget tiap kali naik level.', name: 'Bunda Sari', role: 'Orang tua anak Explorer' },
+  { quote: 'Cuma latihan 10 menit sehari, tapi progresnya kelihatan jelas tiap minggu.', name: 'Ayah Denis', role: 'Orang tua anak Adventurer' },
+  { quote: 'Anakku semangat belajar demi bisa menaklukkan Raja berikutnya.', name: 'Bunda Wulan', role: 'Orang tua anak Little Stars' },
+];
+
+const LANDING_FAQS: { q: string; a: string }[] = [
+  { q: 'Apakah ada biaya lagi setelah bayar?', a: 'Tidak. Rp 99.000 itu sekali bayar untuk akses selamanya — semua level, semua skill, tanpa biaya bulanan atau tambahan lain.' },
+  { q: 'Apakah aksesnya dibatasi (per hari/tanggal habis)?', a: 'Tidak. Akses selamanya, anak bisa main kapan saja tanpa batas waktu harian atau tanggal kedaluwarsa.' },
+  { q: 'Untuk usia berapa aplikasi ini?', a: '3 sampai 13+ tahun — dari Little Stars sampai Trailblazer, kontennya otomatis menyesuaikan level anak.' },
+  { q: 'Apakah anak perlu akun sendiri?', a: 'Tidak, cukup 1 akun keluarga (orang tua) untuk masuk & pantau progres — anak main langsung di app yang sama.' },
+  { q: 'Bisa dimainkan tanpa internet?', a: 'Bisa. Progres anak tersimpan otomatis di perangkat; internet cuma dibutuhkan buat masuk akun & sinkron data.' },
+  { q: 'Bagaimana kalau jawaban anak salah?', a: 'Tidak ada nilai gagal — jawaban yang belum tepat tetap dapat dorongan semangat & bisa dicoba lagi kapan saja, tanpa timer atau tekanan.' },
+  { q: 'Bagaimana orang tua memantau progres anak?', a: 'Lewat panel Progresmu di app — XP, streak, dan skor tiap skill kelihatan begitu orang tua masuk dengan akun keluarga.' },
+];
+
+/** Homepage marketing untuk pengunjung yang belum login (lihat gerbang di
+ *  `render()`) — hero/cara-kerja/fitur/testimoni/CTA, konsepnya mirip
+ *  homepage produk pada umumnya tapi difilter lewat lensa kid-friendly
+ *  (CLAUDE.md): harga ditampilkan polos tanpa urgensi/scare tactics, framing
+ *  "menaklukkan Raja" (bukan pertarungan) reuse istilah yang sudah dikunci
+ *  (`BOSS_NAME`), tanpa timer/skor tekanan apa pun. CTA-nya semua menuju
+ *  `go('account')` — satu-satunya pintu yang benar-benar ada hari ini (lihat
+ *  komentar `renderAccount` di bawah: akun baru dibuat lewat sukses bayar,
+ *  masih backlog, jadi form itu-lah yang menjelaskan langkah berikutnya). */
+function renderLandingPage(): void {
+  const brandMark = `
+    <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+      <rect x="0" y="0" width="40" height="40" rx="13" fill="#0FA79C"/>
+      <circle cx="20" cy="15" r="6.6" fill="#FFC862"/>
+      <path d="M6 26.5c3.3 0 3.3 3.2 6.7 3.2s3.3-3.2 6.6-3.2 3.4 3.2 6.7 3.2 3.3-3.2 6.7-3.2" fill="none" stroke="#FFFFFF" stroke-width="2.7" stroke-linecap="round"/>
+    </svg>`;
+
+  // Ikon bulat + label, TANPA kartu/border (permintaan user: 3 section kotak
+  // beruntun — Level→Fitur→Testimoni — kebaca monoton) — pola sama dgn
+  // `.landing-step` di atasnya, TIDAK menyentuh `.skill-card`/`renderMenu`
+  // in-app sama sekali (hindari risiko regresi ke layar yang sudah
+  // diverifikasi).
+  const featureCards = LANDING_FEATURES.map(
+    (f) => `
+      <div class="landing-feature-item">
+        <span class="landing-feature-ic" style="background:${f.accentBg};color:${f.accent}" aria-hidden="true">${f.emoji}</span>
+        <h3>${f.label}</h3>
+        <p>${f.desc}</p>
+      </div>`
+  ).join('');
+
+  const stepCards = LANDING_STEPS.map(
+    (s, i) => `
+      <div class="landing-step">
+        <span class="landing-step-ic" aria-hidden="true">${s.emoji}<span class="landing-step-num">${i + 1}</span></span>
+        <h3>${s.title}</h3>
+        <p>${s.desc}</p>
+      </div>`
+  ).join('');
+
+  // Nama level (Little Stars…Trailblazer) sendiri belum umum dikenal orang
+  // tua — supaya tetap kebaca jelas ini beneran belajar Bahasa Inggris (bukan
+  // cuma game), tiap kartu digrounding ke badge CEFR yang SUDAH ada di data
+  // asli (`LEVELS[].cefr`, sama seperti yang tampil di Peta Level dalam app,
+  // `renderLevels`), bukan angka baru. Little Stars (3-5 th) sengaja TANPA
+  // CEFR (`cefr:''`) — riset (RESEARCH.md §3.4, British Council "Early
+  // Years") & EF Kids "Small Stars" sama-sama TIDAK memberi label CEFR di
+  // usia ini, jadi "Fase Awal" lebih jujur drpd mengarang band CEFR palsu.
+  // Warna tiap kartu reuse `placeFor()` (scenery.ts) — token tanah yang SAMA
+  // dgn Peta Level asli, bukan palet baru, biar kartu ini kebaca sbg preview
+  // sungguhan bukan ilustrasi marketing lepas.
+  const levelCards = LEVELS.map((lvl) => {
+    const cefrTag = lvl.cefr ? `<span class="tag">${lvl.cefr}</span>` : `<span class="tag">Fase Awal</span>`;
+    return `
+      <div class="landing-level ${placeFor(lvl.key).cls}">
+        <span class="landing-level-ic" aria-hidden="true">${lvl.emoji}</span>
+        <h3>${lvl.name}</h3>
+        ${cefrTag}
+        <p>${lvl.age}</p>
+      </div>`;
+  }).join('');
+
+  const faqCards = LANDING_FAQS.map(
+    (f) => `
+      <details class="landing-faq">
+        <summary>${f.q}</summary>
+        <p>${f.a}</p>
+      </details>`
+  ).join('');
+
+  const testiCards = LANDING_TESTIMONIALS.map(
+    (t) => `
+      <div class="card landing-testi">
+        <p>“${t.quote}”</p>
+        <div class="who">
+          <span class="who-badge" aria-hidden="true">${t.name.trim().split(' ').pop()!.slice(0, 1)}</span>
+          <span>
+            <span class="who-name" style="display:block">${t.name}</span>
+            <span class="who-role">${t.role}</span>
+          </span>
+        </div>
+      </div>`
+  ).join('');
+
+  root.innerHTML = `
+    <div class="landing-page">
+      <div class="landing-nav">
+        <span class="brand">${brandMark}<span class="brand-word">InggrisinYuk<small>Kids</small></span></span>
+        <div class="landing-nav-actions">
+          <button class="ghost-btn landing-nav-btn" type="button" data-action="landingAccount">Masuk</button>
+          <button class="cta landing-nav-btn" type="button" data-action="landingAccount">Daftar</button>
+        </div>
+      </div>
+
+      <section class="landing-hero">
+        <div class="landing-hero-inner">
+          <span class="landing-mascot mascot-idle" aria-hidden="true">🦁</span>
+          <span class="eyebrow">Petualangan Bahasa Inggris Anak</span>
+          <h1 class="display">Naik Level, Taklukkan Raja, Makin Jago Inggris!</h1>
+          <p class="lede">Anak main sendiri, level naik sendiri — dari Little Stars sampai Trailblazer, kapan saja dan di mana saja.</p>
+          <span class="landing-price">✨ Akses Selamanya — Rp 99.000 sekali bayar</span>
+          <button class="cta pt-cta" type="button" data-action="landingAccount">🚀 Daftar &amp; Mulai Sekarang</button>
+        </div>
+      </section>
+
+      <section class="landing-section" id="cara-kerja">
+        <h2 class="h2">Cara Kerja</h2>
+        <div class="landing-steps">${stepCards}</div>
+      </section>
+
+      <section class="landing-section" id="level">
+        <h2 class="h2">6 Level, Ikuti Standar CEFR/Cambridge</h2>
+        <div class="landing-levels">${levelCards}</div>
+      </section>
+
+      <section class="landing-section" id="fitur">
+        <h2 class="h2">Apa Aja yang Bisa Dipelajari?</h2>
+        <div class="landing-feature-grid">${featureCards}</div>
+      </section>
+
+      <section class="landing-section">
+        <h2 class="h2">Kata Orang Tua</h2>
+        <div class="landing-testis">${testiCards}</div>
+      </section>
+
+      <section class="landing-section" id="faq">
+        <h2 class="h2">Pertanyaan yang Sering Ditanyakan</h2>
+        <div class="landing-faqs">${faqCards}</div>
+      </section>
+
+      <section class="landing-section">
+        <div class="landing-bottomcta">
+          <h2 class="h2">Yuk, Mulai Petualangan Bahasa Inggris Anak!</h2>
+          <p class="lede">Akses semua level, semua skill, selamanya — sekali bayar, tanpa langganan bulanan.</p>
+          <span class="landing-price">✨ Rp 99.000 sekali bayar</span>
+          <button class="cta pt-cta" type="button" data-action="landingAccount">🚀 Daftar &amp; Mulai Sekarang</button>
+        </div>
+      </section>
+
+      <footer class="standalone-footer">
+        <div class="landing-footer-links">
+          <a href="#cara-kerja">Cara Kerja</a>
+          <a href="#level">Level</a>
+          <a href="#fitur">Fitur</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
+      </footer>
+    </div>
+  `;
+
+  setHandlers({
+    landingAccount: () => go('account'),
+  });
 }
 
 /* --------------------------------------------------------- akun orang tua -- */
@@ -1076,7 +1907,7 @@ function renderAccount(): void {
           </div>
         </main>
 
-        <footer class="login-footer">
+        <footer class="standalone-footer">
           <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
         </footer>
       </div>
@@ -1100,6 +1931,9 @@ function renderAccount(): void {
     try {
       await apiLogin(identifier);
       await refreshChildStatus();
+      await hydrateProgressFromServer(); // tarik progres akun ini (perangkat lain) & gabung ke lokal
+      paintLevelChips(); // chip header/rail langsung pakai level akun ini, bukan default lama
+      syncUnlocksFromAccount(); // peta ikut hasil tes akun ini walau tesnya dikerjakan di perangkat lain
       const status = getCachedChildStatus();
       go(status.placementTestDone ? 'home' : 'placementTest');
     } catch (err) {
@@ -1115,6 +1949,28 @@ function renderAccount(): void {
 /* --------------------------------------------------------- placement test -- */
 
 function renderPlacementTestScreen(): void {
+  // Jawaban belum tersimpan ke mana pun sampai submit sukses (§"max 2
+  // kali") — kalau anak tap balik/nav lain SAAT ini true, tampilkan
+  // konfirmasi dulu (permintaan user) bukan langsung keluar & kehilangan
+  // progres diam-diam.
+  let testInProgress = false;
+
+  function confirmExit(leave: () => void): void {
+    if (!testInProgress) {
+      leave();
+      return;
+    }
+    placementGame.renderExitConfirm(
+      () => {
+        /* "Yuk Lanjut" — overlay sudah ditutup sendiri, tidak perlu apa-apa lagi di sini */
+      },
+      () => {
+        testInProgress = false;
+        leave();
+      }
+    );
+  }
+
   function shell(): HTMLDivElement {
     root.innerHTML = `
       <div class="act-head">
@@ -1125,20 +1981,29 @@ function renderPlacementTestScreen(): void {
         </div>
       </div>
       <div class="card" style="max-width:480px" id="stage"></div>
+      <footer class="standalone-footer">
+        <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
+      </footer>
     `;
-    setHandlers({ backToHome: () => go('home') });
+    // Rail/tabbar disembunyikan total lewat body.is-placement-test (CSS) —
+    // tidak perlu lagi digerbang di sini, satu-satunya jalan keluar yang
+    // masih kelihatan/bisa di-tap cuma tombol balik ini.
+    setHandlers({ backToHome: () => confirmExit(() => go('home')) });
     return qs<HTMLDivElement>(root, '#stage');
   }
 
-  function toContinue(levelRecommended: string | undefined): void {
+  function toContinue(levelRecommended: string | undefined, totalCorrect?: number, totalItems?: number): void {
     if (levelRecommended) {
       unlockLevelsUpTo(levelRecommended);
+      paintLevelChips(); // chip header/rail langsung ikut level baru, bukan nunggu layar lain ke-render
       const stage = qs<HTMLDivElement>(root, '#stage');
       placementGame.renderPlacementResult(
         stage,
         levelRecommended,
         () => go('home'),
-        () => go('levels')
+        () => go('levels'),
+        totalCorrect,
+        totalItems
       );
     } else {
       go('home');
@@ -1158,6 +2023,7 @@ function renderPlacementTestScreen(): void {
             stage.innerHTML = `<p class="meta" style="color:var(--try)">${escapeHtml(outcome.error)}</p>`;
             return;
           }
+          paintLevelChips();
           go('home');
         })();
       }
@@ -1165,13 +2031,15 @@ function renderPlacementTestScreen(): void {
   }
 
   function paintQuestions(): void {
+    testInProgress = true;
     const stage = qs<HTMLDivElement>(root, '#stage');
     placementGame.runPlacementQuestions(stage, (outcome) => {
+      testInProgress = false;
       if (outcome.error) {
         stage.innerHTML = `<p class="meta" style="color:var(--try)">${escapeHtml(outcome.error)}</p>`;
         return;
       }
-      toContinue(outcome.levelRecommended);
+      toContinue(outcome.levelRecommended, outcome.totalCorrect, outcome.totalItems);
     });
   }
 
@@ -1215,13 +2083,59 @@ function renderPlacementTestScreen(): void {
  * (`renderPlacementTestScreen`/`unlockLevelsUpTo`) — hasilnya menandai Bos
  * semua level di bawah rekomendasi sebagai "ditaklukkan" sekaligus.
  */
-/** Perhentian tempat anak berada sekarang: level terbuka pertama yang materinya
- *  ada tapi Bos-nya belum ditaklukkan; kalau semua sudah, pakai yang terakhir
- *  terbuka. Murni turunan dari data yang sudah ada — tidak menyimpan apa pun. */
+/**
+ * Perhentian tempat anak berada sekarang ("Kamu di sini" + 🦁 di peta penuh
+ * & strip peta Beranda). Hasil placement test WAJIB sinkron dengan peta
+ * (dilaporkan user 2x: rekomendasi "Adventurer" tapi peta nunjuk perhentian
+ * lain) — jadi rekomendasi itu dipakai langsung sebagai JANGKAR, bukan cuma
+ * diharapkan muncul sendiri dari efek samping `bossCleared`:
+ *
+ *  A) ADA hasil placement test (`placementAnchorLevel`) → mulai mencari dari
+ *     level rekomendasi itu, JANGAN dari awal tangga. Praktisnya ini bikin
+ *     "Kamu di sini" jatuh PERSIS di level yang direkomendasikan (level di
+ *     bawahnya sudah ditandai taklukkan oleh `unlockLevelsUpTo`), dan cuma
+ *     bergerak lebih maju kalau anak sendiri sudah menaklukkan Bos level itu
+ *     — progres nyata, bukan kebobolan. Dulu jangkar ini tidak ada, jadi
+ *     hasilnya ditentukan lapis (B) di bawah dan bisa menyimpang ke depan
+ *     (level rekomendasi tanpa materi ikut terlewat) maupun ke belakang
+ *     (rekomendasi Starter tapi peta nunjuk Explorer). Kalau level jangkarnya
+ *     ternyata belum terbuka (mis. localStorage progres kosong DAN
+ *     `syncUnlocksFromAccount` belum/ tidak bisa jalan — storage diblokir di
+ *     mode privat), jangkar diabaikan & jatuh ke (B) — lebih baik nunjuk
+ *     perhentian yang beneran terbuka daripada yang masih tergembok.
+ *  B) BELUM pernah tes / tes di-skip → perilaku default lama: level terbuka
+ *     pertama yang materinya ADA & Bos-nya belum ditaklukkan (akun baru
+ *     otomatis ke Explorer, bukan nyangkut di Little Stars/Starter yang cuma
+ *     placeholder), lalu perhentian terbuka berikutnya apa pun jenisnya,
+ *     lalu—sebagai jaring terakhir—perhentian terbuka terjauh. Lapis kedua
+ *     ini penting supaya tidak lompat ke ujung tangga cuma karena rantai
+ *     pass-through `hasContent:false` (progress.ts `levelUnlockMap`) ikut
+ *     membuka perhentian di depan.
+ *
+ * Perhentian tanpa materi tetap jujur ke anak lewat kartu "Sudah terbuka!
+ * Materinya masih disiapkan, tunggu ya." (lihat `stops` di bawah) — bukan
+ * dead-end/tombol mati. Murni turunan dari data yang sudah ada — tidak
+ * menyimpan apa pun.
+ */
 function currentStopKey(unlocked: Record<string, boolean>): LevelKey | null {
-  const next = LEVELS.find((l) => l.hasContent && unlocked[l.key] && !isBossCleared(l.key));
-  if (next) return next.key;
-  const lastOpen = LEVELS.filter((l) => unlocked[l.key]).pop();
+  const openUncleared = (levels: readonly LevelMeta[]): LevelMeta | undefined =>
+    levels.find((l) => unlocked[l.key] && !isBossCleared(l.key));
+  const lastOpenOf = (levels: readonly LevelMeta[]): LevelMeta | undefined =>
+    levels.filter((l) => unlocked[l.key]).pop();
+
+  const anchor = placementAnchorLevel();
+  const anchorIdx = anchor ? LEVELS.findIndex((l) => l.key === anchor) : -1;
+  if (anchorIdx >= 0 && unlocked[LEVELS[anchorIdx].key]) {
+    const fromAnchor = LEVELS.slice(anchorIdx);
+    const stop = openUncleared(fromAnchor) ?? lastOpenOf(fromAnchor);
+    if (stop) return stop.key;
+  }
+
+  const nextPlayable = LEVELS.find((l) => l.hasContent && unlocked[l.key] && !isBossCleared(l.key));
+  if (nextPlayable) return nextPlayable.key;
+  const nextFrontier = openUncleared(LEVELS);
+  if (nextFrontier) return nextFrontier.key;
+  const lastOpen = lastOpenOf(LEVELS);
   return lastOpen ? lastOpen.key : null;
 }
 
@@ -1242,7 +2156,8 @@ function renderLevels(): void {
   // renderHome) — ditampilkan lagi di sini supaya begitu anak buka peta penuh,
   // progresnya tetap kelihatan tanpa harus balik ke Beranda dulu.
   const done = doneCount();
-  const mapBossPct = TOTAL_TOPICS > 0 ? Math.round((done / TOTAL_TOPICS) * 100) : 0;
+  const mapTotalTopics = hereLevel ? totalTopicsForLevel(hereLevel.key) : 0;
+  const mapBossPct = mapTotalTopics > 0 ? Math.round((done / mapTotalTopics) * 100) : 0;
   // Selalu tampil (termasuk 0%) selama sudah ada perhentian aktif — sama
   // seperti levelProgress di renderHome (heading nama level + persentase
   // besar di atas bar, supaya bar-nya jelas kebaca, bukan garis dekoratif).
@@ -1250,15 +2165,29 @@ function renderLevels(): void {
     ? `
         <div class="level-progress-head" style="max-width:44ch;position:relative;z-index:1">
           <span class="level-progress-name">${hereLevel.emoji} ${hereLevel.name}</span>
-          <span class="level-progress-pct">${mapBossPct}% menuju ${nextLevel ? nextLevel.name : 'Tantangan Bos'}</span>
+          <span class="level-progress-pct">${mapBossPct}% menuju ${nextLevel ? nextLevel.name : bossLabel(hereLevel)}</span>
         </div>
-        <div class="progress-track" role="img" aria-label="${mapBossPct}% menuju Tantangan Bos ${hereLevel.name}" style="margin-top:10px;max-width:44ch">
+        <div class="progress-track" role="img" aria-label="${mapBossPct}% menuju ${bossLabel(hereLevel)}" style="margin-top:10px;max-width:44ch">
           <div class="progress-fill" style="width:${mapBossPct}%"></div>
         </div>
         <p class="meta" style="margin-top:8px;position:relative;z-index:1">${
-          done > 0 ? `${done} dari ${TOTAL_TOPICS} modul sudah kamu tuntaskan.` : `Ayo mulai dari modul pertama!`
+          done > 0 ? `${done} dari ${mapTotalTopics} modul sudah kamu tuntaskan.` : `Ayo mulai dari modul pertama!`
         }</p>`
     : '';
+
+  // Badge Rank (permintaan user) — SATU badge global di judul peta, BUKAN
+  // diulang per-perhentian: level/Bos di tiap perhentian sudah menjawab
+  // "sedang di mana & Bos mana yang dihadapi" (progression, dari
+  // levelUnlockMap/isBossCleared), rank cuma menjawab pertanyaan BEDA
+  // ("seberapa jago keseluruhan dari First Placement Test terakhir") —
+  // taruh sekali di sini sudah cukup, mengulanginya di tiap trail-stop
+  // cuma bikin noise tanpa info baru. Rank-nya sendiri SEKARANG cuma
+  // restatement CEFR dari `levelRecommended` (lihat `pickRank` di
+  // games/placement.ts) — bukan skala S/A/B/C/D terpisah lagi, biar tidak
+  // bentrok dengan badge CEFR yang sudah dipakai per-perhentian di bawah.
+  const { latestPlacementResult: rankResult } = getCachedChildStatus();
+  const rank = rankResult ? placementGame.pickRank(rankResult.levelRecommended) : null;
+  const rankBadge = rank ? `<span class="tag accent">${rank.emoji} Rank ${rank.cefr}</span>` : '';
 
   const stops = LEVELS.map((lvl, i) => {
     const cleared = isBossCleared(lvl.key);
@@ -1268,7 +2197,7 @@ function renderLevels(): void {
     const cefrBadge = lvl.cefr ? `<span class="tag">${lvl.cefr}</span>` : '';
 
     const statusChip = cleared
-      ? `<span class="tag ok">${ICON_CHECK} Bos ditaklukkan</span>`
+      ? `<span class="tag ok">${ICON_CHECK} ${BOSS_NAME[lvl.key]} ditaklukkan</span>`
       : isUnlocked && lvl.hasContent
         ? `<span class="tag accent">Terbuka</span>`
         : isUnlocked
@@ -1279,20 +2208,31 @@ function renderLevels(): void {
     if (lvl.hasContent && isUnlocked) {
       actions = `
         <button class="primary-btn" type="button" data-action="openMenuFromLevels" data-payload="${lvl.key}">📋 Buka Menu Belajar</button>
-        <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} ${cleared ? 'Main Lagi Lawan Bos' : 'Coba Tantangan Bos'}</button>`;
+        <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} ${cleared ? `Main Lagi Lawan ${BOSS_NAME[lvl.key]}` : `Coba Tantangan ${BOSS_NAME[lvl.key]}`}</button>`;
     } else if (isUnlocked) {
-      actions = `<p class="meta">Sudah terbuka! Materinya masih disiapkan, tunggu ya.</p>`;
+      // Terbuka tapi materinya belum ada (`hasContent:false`). Dulu cuma teks
+      // polos tanpa tombol — kartunya kelihatan setengah jadi, padahal sejak
+      // `currentStopKey` berjangkar ke hasil placement test, perhentian
+      // seperti ini bisa jadi tempat "Kamu di sini" anak yang SEBENARNYA
+      // (mis. rekomendasi Adventurer). Tombolnya nyata & bisa di-tap, tapi
+      // mendaratnya di layar placeholder yang jujur (`renderLevelSoon`) —
+      // bukan materi palsu & bukan tombol mati (content.ts: "placeholder
+      // jujur, bukan link mati atau konten palsu"; CLAUDE.md: link ke fitur
+      // yang belum ada = navigasi bohong).
+      actions = `
+        <button class="ghost-btn" type="button" data-action="openSoonFromLevels" data-payload="${lvl.key}">🚧 Intip Markas Ini</button>
+        <p class="meta">Sudah terbuka! Materinya masih disiapkan, tunggu ya.</p>`;
     } else if (i === firstLockedIndex) {
       // Level terkunci PERTAMA (persis setelah batas terbuka) — satu-satunya
       // yang boleh ditantang duluan. Bos di sini berfungsi sebagai uji
       // kemampuan umum (mirip placement test) kalau level ini sendiri belum
       // punya materi, jadi tetap bisa dicoba pakai soal dari materi yang ada.
       actions = `
-        <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} Coba Tantangan Bos, Buka Duluan</button>
+        <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} Coba Tantangan ${BOSS_NAME[lvl.key]}, Buka Duluan</button>
         <p class="meta">${
           lvl.hasContent
-            ? 'Atau taklukkan dulu Bos level sebelumnya — otomatis kebuka.'
-            : 'Materi lengkap level ini belum ada, tapi Tantangan Bos-nya tetap bisa dicoba sebagai uji kemampuan umum.'
+            ? 'Atau taklukkan dulu Raja level sebelumnya — otomatis kebuka.'
+            : `Materi lengkap level ini belum ada, tapi Tantangan ${BOSS_NAME[lvl.key]} tetap bisa dicoba sebagai uji kemampuan umum.`
         }</p>`;
     } else {
       // Berurutan (PRD §12.1/§16, direvisi) — level lebih jauh dari batas
@@ -1300,8 +2240,8 @@ function renderLevels(): void {
       // dulu Bos level sebelumnya (atau placement test yang merekomendasikan
       // sejauh ini, lihat §16) baru tombol ini hidup.
       actions = `
-        <button class="ghost-btn" type="button" disabled aria-disabled="true">${ICON_LOCK} Bos Terkunci</button>
-        <p class="meta">Taklukkan dulu Bos level sebelumnya secara berurutan — atau coba Placement Test di Pengaturan.</p>`;
+        <button class="ghost-btn" type="button" disabled aria-disabled="true">${ICON_LOCK} Raja Terkunci</button>
+        <p class="meta">Taklukkan dulu Raja level sebelumnya secara berurutan — atau coba Placement Test di Pengaturan.</p>`;
     }
 
     // Stempel di bahu medali: mango+centang kalau bos sudah ditaklukkan, pasir
@@ -1329,7 +2269,7 @@ function renderLevels(): void {
           ${here ? `<span class="trail-you mascot-idle" aria-hidden="true">🦁</span>` : ''}
         </div>
         <div class="trail-card">
-          <span class="trail-place">Perhentian ${i + 1} · ${place.name}</span>
+          <span class="trail-place">🏰 Markas ${i + 1} · ${place.name}</span>
           <h3>${lvl.name}${here ? ' <span class="tag accent">Kamu di sini</span>' : ''}</h3>
           <div class="trail-meta">${cefrBadge}<span class="meta">${lvl.age}</span>${statusChip}</div>
           <div class="trail-actions">${actions}</div>
@@ -1341,8 +2281,8 @@ function renderLevels(): void {
     <div class="screen-head">
       <button class="iconbtn" type="button" data-action="backToHome" aria-label="Kembali ke Beranda">${ICON_BACK}</button>
       <div class="txt">
-        <h1>🗺️ Peta Level</h1>
-        <p>Enam perhentian, satu jalur. Taklukkan Bos di perhentianmu untuk membuka yang berikutnya.</p>
+        <h1>🗺️ Peta Level${rankBadge}</h1>
+        <p>Enam markas, satu jalur. Taklukkan Raja di markasmu untuk membuka yang berikutnya.</p>
       </div>
     </div>
 
@@ -1361,7 +2301,7 @@ function renderLevels(): void {
           <div class="trail-rail" aria-hidden="true">${TRAIL_BEND_RIGHT}</div>
           <div class="trail-horizon-txt">
             <b>Ujung jalur untuk sekarang</b>
-            <span>Perhentian berikutnya masih dibangun — materinya menyusul.</span>
+            <span>Markas berikutnya masih dibangun — materinya menyusul.</span>
           </div>
         </div>
       </div>
@@ -1370,15 +2310,15 @@ function renderLevels(): void {
         <div class="card">
           <span class="eyebrow">Tanda di peta</span>
           <ul class="map-legend" style="margin-top:12px">
-            <li><span class="legend-dot is-cleared" aria-hidden="true">${ICON_CHECK}</span>Bos-nya sudah kamu taklukkan</li>
+            <li><span class="legend-dot is-cleared" aria-hidden="true">${ICON_CHECK}</span>Raja-nya sudah kamu taklukkan</li>
             <li><span class="legend-dot" aria-hidden="true">🧭</span>Terbuka — boleh dimainkan sekarang</li>
             <li><span class="legend-dot is-locked" aria-hidden="true">${ICON_LOCK}</span>Masih tersegel</li>
           </ul>
-          <p class="meta" style="margin-top:12px">Singa 🦁 menandai perhentianmu sekarang.</p>
+          <p class="meta" style="margin-top:12px">Singa 🦁 menandai markasmu sekarang.</p>
         </div>
         <div class="card note-card">
           <div class="card-title">Mau lompat lebih jauh?</div>
-          <p>Tantangan Bos perhentian berikutnya (yang paling dekat) boleh langsung dicoba tanpa nunggu — tapi perhentian setelahnya tetap harus berurutan. Mau lompat lebih jauh lagi? Coba Placement Test di Pengaturan.</p>
+          <p>Tantangan Raja markas berikutnya (yang paling dekat) boleh langsung dicoba tanpa nunggu — tapi markas setelahnya tetap harus berurutan. Mau lompat lebih jauh lagi? Coba Placement Test di Pengaturan.</p>
         </div>
       </aside>
     </section>
@@ -1386,8 +2326,97 @@ function renderLevels(): void {
 
   setHandlers({
     backToHome: () => go('home'),
-    openMenuFromLevels: () => go('menu'),
+    openMenuFromLevels: (payload) => go('menu', { viewLevel: payload as LevelKey }),
     openBossFromLevels: (payload) => go('boss', { bossLevel: payload as LevelKey }),
+    openSoonFromLevels: (payload) => go('levelSoon', { soonLevel: payload as LevelKey }),
+  });
+}
+
+/* ------------------------------------------- perhentian: materi belum ada -- */
+/**
+ * Layar perhentian yang SUDAH terbuka tapi materinya belum diauthoring
+ * (`hasContent:false` di content.ts — v1 cuma Explorer yang punya materi).
+ *
+ * Kenapa perlu layar sendiri: sejak `currentStopKey` berjangkar ke hasil First
+ * Placement Test, "Kamu di sini" bisa mendarat PERSIS di perhentian seperti
+ * ini (mis. rekomendasi Adventurer) — jadi ini titik pendaratan nyata anak,
+ * bukan lagi kasus pinggiran. Kartu peta yang cuma berisi teks tanpa tombol
+ * kelihatan setengah jadi di posisi sepenting itu.
+ *
+ * Yang TIDAK dilakukan di sini (sengaja): tidak ada materi/kegiatan palsu &
+ * tidak ada tombol mati — content.ts sudah mematok "placeholder jujur, bukan
+ * link mati atau konten palsu", dan CLAUDE.md melarang navigasi bohong.
+ * Yang dilakukan: rayakan bahwa perhentian ini memang MILIK anak, jelaskan apa
+ * adanya bahwa kegiatannya masih dibikin (tanpa bahasa gagal/evaluatif), dan
+ * selalu sediakan jalan lanjut yang nyata — main di perhentian yang materinya
+ * sudah siap, atau balik ke peta (CLAUDE.md poin 4: tanpa layar dead-end).
+ *
+ * Begitu level ini diauthoring (`hasContent:true`), layar ini otomatis tidak
+ * pernah tampil lagi untuk level itu — tombol di peta berubah sendiri jadi
+ * "Buka Menu Belajar", dan URL lama diarahkan ke Menu Belajar (lihat guard di
+ * bawah). Tidak ada yang perlu dihapus manual.
+ */
+function renderLevelSoon(): void {
+  const level = LEVELS.find((l) => l.key === state.soonLevel);
+  // URL diketik/di-bookmark manual: key ngawur → balik ke peta; level yang
+  // materinya SUDAH ada → antar ke Menu Belajar. Jangan pernah bilang "materi
+  // belum siap" untuk level yang sebenarnya sudah siap (bohong ke arah
+  // sebaliknya).
+  if (!level) {
+    go('levels');
+    return;
+  }
+  if (level.hasContent) {
+    go('menu', { viewLevel: level.key });
+    return;
+  }
+
+  // Perhentian yang materinya SUDAH siap (v1: Explorer) — dibaca dari data,
+  // bukan di-hardcode, supaya ikut sendiri begitu level lain diauthoring.
+  const ready = LEVELS.find((l) => l.hasContent);
+
+  root.innerHTML = `
+    <div class="screen-head">
+      <button class="iconbtn" type="button" data-action="backToLevels" aria-label="Kembali ke Peta Level">${ICON_BACK}</button>
+      <div class="txt">
+        <h1>${level.emoji} ${level.name}</h1>
+        <p>Markas ini sudah terbuka — kegiatan belajarnya masih disiapkan.</p>
+      </div>
+    </div>
+
+    <section class="two-col">
+      <div class="stack">
+        <div class="card" style="text-align:center">
+          <span class="stage-badge">🚧 Sedang Disiapkan</span>
+          <div style="font-size:56px;line-height:1;margin:14px 0 6px" aria-hidden="true"><span class="mascot-idle">${level.emoji}</span></div>
+          <h2 class="h2" style="margin-bottom:8px">Kegiatannya masih dibikin, ya!</h2>
+          <p class="lede" style="margin-bottom:10px">Kamu sudah sampai di markas <b>${level.name}</b> — keren banget! 🎉 Kegiatan belajar khusus markas ini masih dibikin, jadi belum bisa dimainkan sekarang.</p>
+          <p class="meta" style="margin-bottom:18px">Santai aja: markas ini tetap punya kamu 🎈 — nggak bakal hilang. Mampir lagi nanti ya!</p>
+          ${
+            ready
+              ? `<button class="primary-btn" type="button" data-action="soonOpenReady">${ready.emoji} Main di ${ready.name} Dulu</button>`
+              : ''
+          }
+          <button class="ghost-btn" type="button" data-action="backToLevels">🗺️ Balik ke Peta Level</button>
+        </div>
+      </div>
+
+      <aside class="stack">
+        <div class="card note-card">
+          <div class="card-title">Yang sudah bisa dimainkan</div>
+          <ul class="set-list">
+            <li><span><b>📋 Menu Belajar${ready ? ` di ${ready.emoji} ${ready.name}` : ''}</b> — 4 kegiatan lengkap, plus bintang &amp; Tantangan Raja.</span></li>
+            <li><span><b>🎮 Game</b> — main bebas kapan saja, ulang kegiatan yang sudah kamu buka.</span></li>
+            <li><span><b>🗺️ Peta Level</b> — lihat semua markas &amp; posisimu sekarang.</span></li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+  `;
+
+  setHandlers({
+    backToLevels: () => go('levels'),
+    soonOpenReady: () => go('menu', { viewLevel: ready?.key ?? null }),
   });
 }
 
@@ -1403,7 +2432,7 @@ function renderBoss(): void {
     root.innerHTML = `
       <div class="screen-head">
         <button class="iconbtn" type="button" data-action="backToLevels" aria-label="Kembali ke Peta Level">${ICON_BACK}</button>
-        <div class="txt"><h1>Tantangan Bos</h1><p>Level ini tidak ditemukan — coba lewat Peta Level lagi ya.</p></div>
+        <div class="txt"><h1>Tantangan Raja</h1><p>Level ini tidak ditemukan — coba lewat Peta Level lagi ya.</p></div>
       </div>`;
     setHandlers({ backToLevels: () => go('levels') });
     return;
@@ -1430,9 +2459,9 @@ function renderBoss(): void {
 
   root.innerHTML = `
     <div class="act-head">
-      <button class="iconbtn" type="button" data-action="exitBoss" aria-label="Keluar dari Tantangan Bos">${ICON_BACK}</button>
+      <button class="iconbtn" type="button" data-action="exitBoss" aria-label="Keluar dari Tantangan ${BOSS_NAME[levelKey]}">${ICON_BACK}</button>
       <div class="txt">
-        <h1>${level.emoji} Tantangan Bos ${level.name}</h1>
+        <h1>${level.emoji} 🏰 Markas ${BOSS_NAME[levelKey]}</h1>
         <div class="sub"><span class="meta">${subLine}</span></div>
       </div>
     </div>
@@ -1442,7 +2471,7 @@ function renderBoss(): void {
       <div class="sunburst" aria-hidden="true"><span class="face mascot-idle">${BOSS_AVATAR[levelKey]}</span><span class="crown">👑</span></div>
       <div class="boss-arena-body">
         <span class="eyebrow" style="color:#7A4A08">Arena Tantangan</span>
-        <h2>Bos ${level.name} sudah siap main!</h2>
+        <h2>${BOSS_NAME[levelKey]} sudah siap main!</h2>
         <p>Empat babak, santai saja — boleh diulang sebanyak yang kamu mau.</p>
         <div class="boss-phases">${phases}</div>
       </div>
@@ -1452,11 +2481,15 @@ function renderBoss(): void {
 
   setHandlers({ exitBoss: () => go('levels') });
 
-  bossGame.runBoss(qs<HTMLDivElement>(root, '#stage'), () => {
-    markBossCleared(levelKey);
-    addXp(XP_BOSS);
-    renderBossWin(levelKey);
-  });
+  bossGame.runBoss(
+    qs<HTMLDivElement>(root, '#stage'),
+    () => {
+      markBossCleared(levelKey);
+      addXp(XP_BOSS);
+      renderBossWin(levelKey);
+    },
+    levelKey
+  );
 }
 
 function renderBossWin(levelKey: LevelKey): void {
@@ -1471,13 +2504,18 @@ function renderBossWin(levelKey: LevelKey): void {
   // menu belajar buat level ini) — supaya menang tidak terasa seperti bug
   // ("kok gak ada apa-apa di sini").
   const wonLine = !wonLevel.hasContent
-    ? `<p class="done-sub">Jalur ke <b>${wonLevel.emoji} ${wonLevel.name}</b> sudah kebuka. Materi belajarnya sendiri masih disiapkan — untuk sekarang, lanjut aja ke perhentian berikutnya lewat Peta Level.</p>`
+    ? `<p class="done-sub">Jalur ke <b>${wonLevel.emoji} ${wonLevel.name}</b> sudah kebuka. Materi belajarnya sendiri masih disiapkan — untuk sekarang, lanjut aja ke markas berikutnya lewat Peta Level.</p>`
     : '';
 
   const nextLine =
     nextLevel && nextUnlocked
       ? `<p class="done-sub">Level <b>${nextLevel.emoji} ${nextLevel.name}</b> baru kebuka! ${
-          nextLevel.hasContent ? 'Yuk lanjut ke sana lewat Peta Level.' : '(Materinya masih disiapkan — tunggu ya.)'
+          nextLevel.hasContent
+            ? 'Yuk lanjut ke sana lewat Peta Level.'
+            : // Bukan lagi cuma keterangan mati dalam tanda kurung: markasnya
+              // sekarang punya layar sendiri (`renderLevelSoon`), yang dibuka dari
+              // tombol "Intip Markas Ini" di Peta Level — jadi arahkan ke situ.
+              'Kegiatannya masih dibikin — intip markasnya di Peta Level ya.'
         }</p>`
       : '';
 
@@ -1486,8 +2524,8 @@ function renderBossWin(levelKey: LevelKey): void {
       <div class="boss-burst" aria-hidden="true"><span>⭐</span><span>✨</span><span>⭐</span><span>🎉</span><span>✨</span><span>🎊</span><span>⭐</span><span>🎉</span><span>✨</span></div>
       <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">${BOSS_AVATAR[levelKey]}</span><span class="crown">👑</span></div>
       <div class="stars stars-pop" aria-hidden="true">⭐⭐⭐</div>
-      <h2 class="win-banner">Bos Ditaklukkan!</h2>
-      <p class="done-sub">Kamu menang lawan Bos ${wonLevel.name}. <b>+${XP_BOSS} XP</b> ⚡</p>
+      <h2 class="win-banner">${BOSS_NAME[levelKey]} Ditaklukkan!</h2>
+      <p class="done-sub">Kamu menang lawan ${BOSS_NAME[levelKey]}. <b>+${XP_BOSS} XP</b> ⚡</p>
       ${wonLine}
       ${nextLine}
       <button class="primary-btn" type="button" data-action="backToLevels">Lihat Peta Level</button>
@@ -1510,9 +2548,10 @@ function renderBossWin(levelKey: LevelKey): void {
  * tetap satu-satunya jalur nyata untuk membuka level baru.
  */
 function renderGame(): void {
+  const level = currentPlayableLevel().key;
   const cards = SKILL_KEYS.flatMap((key) => {
     const meta = SKILL_META[key];
-    return TOPICS[key].map(
+    return topicsForSkill(key, level).map(
       (t, i) => `
       <div class="skill-card" role="button" tabindex="0" data-action="playFree" data-payload="${key}:${i}">
         <span class="ic" style="background:${meta.accentBg};color:${meta.accent}" aria-hidden="true">${meta.emoji}</span>
@@ -1528,7 +2567,7 @@ function renderGame(): void {
   root.innerHTML = `
     <div class="greet">
       <h1 class="display">Game</h1>
-      <p class="lede">Main bebas kapan saja — ulang kegiatan yang sudah kamu buka di Explorer. Tetap dapat XP tiap main, tapi tidak menambah bintang dan tidak dihitung untuk buka level baru — bintang &amp; Tantangan Bos tetap dari Menu Belajar.</p>
+      <p class="lede">Main bebas kapan saja — ulang kegiatan yang sudah kamu buka di Explorer. Tetap dapat XP tiap main, tapi tidak menambah bintang dan tidak dihitung untuk buka level baru — bintang &amp; Tantangan Raja tetap dari Menu Belajar.</p>
     </div>
     <div class="skill-grid game-grid">${cards}</div>
   `;
@@ -1548,7 +2587,7 @@ function openFreePlay(key: SkillKey, index: number): void {
     <div class="act-head">
       <button class="iconbtn" type="button" data-action="backToGame" aria-label="Kembali ke Game">${ICON_BACK}</button>
       <div class="txt">
-        <h1>${topicTitle(key, index)}</h1>
+        <h1>${topicTitle(key, index, currentPlayableLevel().key)}</h1>
         <div class="sub"><span class="tag accent">${meta.emoji} Main Bebas</span></div>
       </div>
     </div>
@@ -1560,23 +2599,37 @@ function openFreePlay(key: SkillKey, index: number): void {
 
 function runFreePlayRound(key: SkillKey, index: number): void {
   const stage = qs<HTMLDivElement>(root, '#freeStage');
+  const contentLevel = currentPlayableLevel().key;
+  const praiseLevel = currentLevelMeta().key;
   const onRoundDone = () => {
     addXp(XP_FREEPLAY);
     showFreePlayDone(key, index);
   };
   switch (key) {
     case 'vocabulary':
-      vocabularyGame.runLatihanInti(stage, VOCAB_TOPICS[index], onRoundDone);
+      vocabularyGame.runLatihanInti(stage, vocabTopicsForLevel(contentLevel)[index], onRoundDone, praiseLevel);
       return;
-    case 'listening':
-      listeningGame.runLatihanInti(stage, LISTENING_TOPICS[index], onRoundDone);
+    case 'listening': {
+      const topic = listeningTopicsForLevel(contentLevel)[index];
+      if ('items' in topic) listeningGame.runLatihanIntiSentence(stage, topic, onRoundDone, praiseLevel);
+      else listeningGame.runLatihanInti(stage, topic, onRoundDone);
       return;
-    case 'speaking':
-      speakingGame.runLatihanInti(stage, SPEAKING_TOPICS[index], onRoundDone);
+    }
+    case 'speaking': {
+      const topic = speakingTopicsForLevel(contentLevel)[index];
+      if ('items' in topic) speakingGame.runLatihanIntiPhrase(stage, topic, onRoundDone, praiseLevel);
+      else speakingGame.runLatihanInti(stage, topic, onRoundDone);
       return;
+    }
     case 'grammar':
-      grammarGame.runLatihanInti(stage, GRAMMAR_TOPICS[index], onRoundDone);
+      grammarGame.runLatihanInti(stage, grammarTopicsForLevel(contentLevel)[index], onRoundDone);
       return;
+    case 'reading': {
+      const topic = readingTopicsForLevel(contentLevel)[index];
+      if ('items' in topic) readingGame.runLatihanIntiWord(stage, topic, onRoundDone, praiseLevel);
+      else readingGame.runLatihanInti(stage, topic, onRoundDone, praiseLevel);
+      return;
+    }
   }
 }
 

@@ -6,7 +6,6 @@ import { shuffle } from '../util';
 
 export function renderKenalan(container: HTMLElement, topic: GrammarTopic, onNext: OnDone): void {
   container.innerHTML = `
-    <span class="stage-badge">👀 KENALAN</span>
     <div class="id-text" style="margin-bottom:10px;">Perhatikan polanya lewat contoh (bukan rumus!)</div>
     <div class="primer-list">
       ${topic.examples
@@ -46,7 +45,7 @@ export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDo
 
   function paint(sc: GrammarScramble): void {
     container.innerHTML = `
-      <span class="stage-badge">🎯 LATIHAN INTI · Susun Kalimat</span>
+      <span class="stage-badge">🎯 Susun Kalimat</span>
       <div class="id-text">Soal ${round + 1} dari ${topic.scramble.length}</div>
       <div class="big-emoji" style="font-size:44px;">${sc.emoji}</div>
       <div class="answer-row ${answer.length ? '' : 'empty'}">
@@ -104,7 +103,7 @@ export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDo
 export function runTantangan(container: HTMLElement, topic: GrammarTopic, onDone: OnDone): void {
   const fill: GrammarFill = topic.fill;
   container.innerHTML = `
-    <span class="stage-badge">🌟 TANTANGAN · Bikin Sendiri</span>
+    <span class="stage-badge">🌟 Bikin Sendiri</span>
     <div class="id-text">Lengkapi kalimat ini jadi ceritamu sendiri</div>
     <div class="en-text" id="sentencePreview">${fill.before.join(' ')} ___ ${fill.after.join(' ')}</div>
     <div class="opt-grid three" style="margin-top:16px;">

@@ -2,32 +2,32 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSessionParentId } from '@/lib/session';
 import { scorePlacement, type PlacementAnswer } from '@/lib/placement-scoring';
-
-/** Iterasi 2 (LLM opsional, doc/first_placement_test.md §8) bisa mengonsumsi
- *  kuota gratis per anak per percobaan — makanya jumlah percobaan DIBATASI
- *  di sini juga (bukan cuma alasan non-teknis), supaya kalau lapis LLM itu
- *  suatu saat dibangun, penggunaannya otomatis ikut terkontrol. Dihitung
- *  dari jumlah baris `PlacementTestResult` (append-only, §schema) — bukan
- *  counter terpisah yang bisa nyimpang dari riwayat asli. `skip` TIDAK
- *  membuat baris di sini, jadi TIDAK ikut kepotong kuota (skip tidak pernah
- *  memanggil apa pun yang mahal). */
-const MAX_ATTEMPTS = 2;
+import { withErrorHandling } from '@/lib/api-error';
+import { MAX_ATTEMPTS, resolveAttemptsUsed } from '@/lib/placement-attempts';
 
 /**
  * Server re-scoring dari jawaban mentah — pola sama dengan
  * inggrisinyuk-app/app/api/placement-test/route.ts ("jangan percaya angka
  * dari client"). Body cuma berisi jawaban mentah, TIDAK ada field skor.
  */
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export const POST = withErrorHandling(async (req: NextRequest): Promise<NextResponse> => {
   const parentId = await getSessionParentId();
   if (!parentId) return NextResponse.json({ error: 'Belum login.' }, { status: 401 });
 
   const body = (await req.json().catch(() => null)) as { answers?: PlacementAnswer[]; skip?: boolean } | null;
 
-  const child = await db.childProfile.findFirst({ where: { parentId }, orderBy: { createdAt: 'asc' } });
+  const child = await db.childProfile.findFirst({
+    where: { parentId },
+    orderBy: { createdAt: 'asc' },
+    include: { parent: { select: { phone: true } } },
+  });
   if (!child) return NextResponse.json({ error: 'Profil anak tidak ditemukan.' }, { status: 404 });
 
-  const attemptsUsed = await db.placementTestResult.count({ where: { childId: child.id } });
+  const rawAttemptsUsed = await db.placementTestResult.count({ where: { childId: child.id } });
+  // Akun tes "124" (portal/lib/placement-attempts.ts) selalu dianggap 0
+  // percobaan terpakai — permintaan user, supaya limit 2x tidak pernah
+  // kena buat akun yang memang khusus dipakai coba-coba berkali-kali.
+  const attemptsUsed = resolveAttemptsUsed(child.parent.phone, rawAttemptsUsed);
 
   if (body?.skip) {
     // "Nanti Aja" — non-punitive, level tetap default level pertama (PRD §14 & §4.5: tanpa tekanan).
@@ -80,4 +80,4 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     attemptsUsed: attemptNumber,
     attemptsRemaining: MAX_ATTEMPTS - attemptNumber,
   });
-}
+});
