@@ -13,20 +13,25 @@ import {
   ApiRequestError,
   cacheChildStatus,
   getCachedChildStatus,
+  getCachedLeaderboard,
   getProgress,
   isLoggedIn,
   login as apiLogin,
   logout as apiLogout,
   refreshChildStatus,
+  refreshLeaderboard,
   saveProgress,
 } from './account';
 import * as bossGame from './games/boss';
 import * as grammarGame from './games/grammar';
 import * as listeningGame from './games/listening';
+import * as balloonPopGame from './games/balloonpop';
 import * as placementGame from './games/placement';
 import * as readingGame from './games/reading';
+import * as sentencePuzzleGame from './games/sentencepuzzle';
 import * as speakingGame from './games/speaking';
 import * as vocabularyGame from './games/vocabulary';
+import * as wordMatchGame from './games/wordmatch';
 import {
   ICON_BACK,
   ICON_CHECK,
@@ -36,32 +41,43 @@ import {
   ICON_LEARN,
   ICON_LOCK,
   ICON_PLAY,
+  ICON_RAPOR,
   ICON_SETTINGS,
 } from './icons';
 import { bindDelegatedClicks, clearHandlers, setHandlers } from './interaction';
-import { CLOUD, HILLS_RIDGE, HILLS_SHORE, TRAIL_BEND_LEFT, TRAIL_BEND_RIGHT, placeFor } from './scenery';
-import type { LastSpot, Store } from './progress';
+import { CLOUD, HILLS_RIDGE, HILLS_SHORE, rajaMascot, TRAIL_BEND_LEFT, TRAIL_BEND_RIGHT, placeFor } from './scenery';
+import type { LastSpot, Store, TopicSignal } from './progress';
 import {
+  addGameXp,
   addXp,
   ANIMAL_AVATARS,
   clearOutboxIds,
+  computeInsights,
   doneCount,
   getAccuracy,
+  getActiveDaysCount,
   getAvatar,
+  getBossClearedCount,
+  getGameXp,
   getLast,
+  getLongestStreak,
   getName,
   getStreak,
   getWeekActivity,
   getXp,
+  grammarTopicPercent,
+  hasSeenCaraMain,
   isBossCleared,
   isStepVisited,
   levelUnlockMap,
   listeningTopicPercent,
   markBossCleared,
+  markCaraMainSeen,
   markDone,
   markStepVisited,
   mergeFromServer,
   peekOutbox,
+  readingTopicPercent,
   setAvatar,
   setEventSyncHandler,
   setLast,
@@ -70,7 +86,7 @@ import {
   snapshot,
   vocabTopicPercent,
 } from './progress';
-import type { AppState, LevelKey, LevelMeta, NavKey, Screen, SkillKey } from './types';
+import type { AppState, BalloonDifficulty, LevelKey, LevelMeta, NavKey, OnDone, Screen, SkillKey, SkillMeta, WordMatchDifficulty } from './types';
 import { escapeHtml, qs } from './util';
 import { renderVoicePanel } from './voice-panel';
 
@@ -111,13 +127,16 @@ const XP_FREEPLAY = 3;
  * Navigasi berisi tujuan yang benar-benar ada di app ini: Beranda (ringkasan +
  * lanjutkan + Peta Level), Belajar (4 skill → materi → aktivitas → Tantangan
  * Bos), Game (main bebas/latihan, lihat renderGame — tidak menggerakkan
- * progres level), dan Pengaturan (suara/kecepatan + progres). 4 tujuan,
- * semuanya nyata — link ke fitur yang belum ada = navigasi bohong.
+ * progres level), Rapor (laporan progres lengkap: XP/streak/ketepatan + skor
+ * tiap skill, buat orang tua pantau — lihat renderRapor), dan Pengaturan
+ * (suara/kecepatan + akun). 5 tujuan, semuanya nyata — link ke fitur yang
+ * belum ada = navigasi bohong.
  */
 const NAV: { key: NavKey; label: string; screen: Screen; icon: string }[] = [
   { key: 'home', label: 'Beranda', screen: 'home', icon: ICON_HOME },
   { key: 'belajar', label: 'Belajar', screen: 'menu', icon: ICON_LEARN },
   { key: 'game', label: 'Game', screen: 'game', icon: ICON_GAME },
+  { key: 'rapor', label: 'Rapor', screen: 'rapor', icon: ICON_RAPOR },
   { key: 'settings', label: 'Pengaturan', screen: 'settings', icon: ICON_SETTINGS },
 ];
 
@@ -179,7 +198,15 @@ function totalTopicsForLevel(level: LevelKey): number {
   return SKILL_KEYS.reduce((n, key) => n + topicsForSkill(key, level).length, 0);
 }
 
-const state: AppState = { screen: 'home', skillKey: null, topicIndex: 0, step: 0, bossLevel: null, soonLevel: null, viewLevel: null };
+const state: AppState = {
+  screen: 'home',
+  skillKey: null,
+  topicIndex: 0,
+  step: 0,
+  bossLevel: null,
+  soonLevel: null,
+  viewLevel: null,
+};
 
 let root: HTMLElement;
 let crumbEl: HTMLElement;
@@ -329,14 +356,14 @@ export function initApp(): void {
   // kata) — supaya level/progres yang ditampilkan tidak pernah nge-hardcode
   // cache lama begitu ada data lebih baru dari server.
   if (isLoggedIn()) {
-    void Promise.all([refreshChildStatus(), hydrateProgressFromServer()]).then(() => {
+    void Promise.all([refreshChildStatus(), hydrateProgressFromServer(), refreshLeaderboard()]).then(() => {
       paintLevelChips();
       syncUnlocksFromAccount(); // level dari server bisa lebih baru dari cache lokal
       if (
         state.screen === 'menu' ||
         state.screen === 'settings' ||
         state.screen === 'home' ||
-        state.screen === 'levels' ||
+        state.screen === 'rapor' ||
         state.screen === 'topics' ||
         state.screen === 'activity'
       ) {
@@ -440,12 +467,14 @@ function paintLevelChips(): void {
 
 function activeNav(): NavKey {
   // 'levelSoon' (layar perhentian yang materinya belum ada) ikut Beranda —
-  // sama seperti Peta Level, karena dibuka DARI peta & isinya info perhentian,
-  // bukan kegiatan belajar (tanpa baris ini dia jatuh ke fallback 'belajar'
-  // dan tab Belajar nyala padahal anak sedang melihat peta).
-  if (state.screen === 'home' || state.screen === 'levels' || state.screen === 'levelSoon') return 'home';
+  // Peta Level SEKARANG bagian dari Beranda sendiri (bukan layar terpisah lagi),
+  // dan 'levelSoon' dibuka DARI situ, isinya info perhentian bukan kegiatan
+  // belajar (tanpa baris ini dia jatuh ke fallback 'belajar' dan tab Belajar
+  // nyala padahal anak sedang melihat peta).
+  if (state.screen === 'home' || state.screen === 'levelSoon') return 'home';
   if (state.screen === 'settings') return 'settings';
   if (state.screen === 'game') return 'game';
+  if (state.screen === 'rapor') return 'rapor';
   return 'belajar'; // menu, topics, activity, boss
 }
 
@@ -498,7 +527,7 @@ const SCREEN_TO_SLUG: Record<Screen, string> = {
   topics: 'materi',
   activity: 'aktivitas',
   settings: 'pengaturan',
-  levels: 'peta',
+  rapor: 'rapor',
   levelSoon: 'materi-segera',
   boss: 'bos',
   game: 'game',
@@ -643,9 +672,9 @@ function render(): void {
   setAccent(state.screen === 'topics' || state.screen === 'activity' ? state.skillKey : null);
 
   if (state.screen === 'home') return renderHome();
-  if (state.screen === 'levels') return renderLevels();
   if (state.screen === 'levelSoon') return renderLevelSoon();
   if (state.screen === 'settings') return renderSettings();
+  if (state.screen === 'rapor') return renderRapor();
   if (state.screen === 'menu') return renderMenu();
   if (state.screen === 'topics') return renderTopics();
   if (state.screen === 'game') return renderGame();
@@ -738,12 +767,16 @@ interface NextMateri {
  *    granular per-soal spt Vocab) → `vocabTopicPercent`/
  *    `listeningTopicPercent` (>=100), akurasi PER SOAL (bukan cuma "step
  *    ini pernah dituntaskan").
- *  - Listening FORMAT LAMA (Explorer/Adventurer) + Speaking/Grammar/
- *    Reading (SEMUA belum py section granular per-soal) → `isStepVisited`
- *    utk 'latihan' DAN 'tantangan' (Kenalan TETAP tidak dihitung, konsisten
- *    dgn Vocab) — lebih kasar drpd persen (cuma "pernah dituntaskan 1x",
- *    bukan per-soal), tapi TETAP benar menutup bug utama: step yang BELUM
- *    PERNAH disentuh sama sekali TIDAK akan lolos gate ini.
+ *  - Reading &amp; Grammar FORMAT KEDUA (`ReadingWordTopic`/
+ *    `GrammarPatternTopic`, py section granular) → `readingTopicPercent`/
+ *    `grammarTopicPercent` (>=100), sama pola dgn Listening format baru.
+ *  - Listening FORMAT LAMA (Explorer/Adventurer) + Speaking + Grammar
+ *    FORMAT LAMA + Reading FORMAT LAMA (SEMUA belum py section granular
+ *    per-soal) → `isStepVisited` utk 'latihan' DAN 'tantangan' (Kenalan
+ *    TETAP tidak dihitung, konsisten dgn Vocab) — lebih kasar drpd persen
+ *    (cuma "pernah dituntaskan 1x", bukan per-soal), tapi TETAP benar
+ *    menutup bug utama: step yang BELUM PERNAH disentuh sama sekali TIDAK
+ *    akan lolos gate ini.
  */
 function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): number {
   if (key === 'vocabulary') {
@@ -764,6 +797,34 @@ function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): 
             ? { section: 'tantangan-dialog', total: listeningTopic.inferenceQuestions.length }
             : undefined;
       return listeningTopicPercent(topicId, listeningTopic.items.length, tantangan);
+    }
+  }
+  if (key === 'reading') {
+    const readingTopic = readingTopicsForLevel(level).find((t) => t.id === topicId);
+    // Format KEDUA (`ReadingWordTopic`, "Baca Kata") & KETIGA
+    // (`ReadingCheckTopic`, "Baca & Nilai") py section granular sejak revisi
+    // feedback user — format LAMA (Adventurer/Achiever, `ReadingTopic`)
+    // TIDAK, tetap jatuh ke fallback `isStepVisited` di bawah.
+    if (readingTopic && 'items' in readingTopic) {
+      return readingTopicPercent(topicId, readingTopic.items.length, {
+        section: 'tantangan-baca',
+        total: Math.min(readingTopic.items.length, 10),
+      });
+    }
+    if (readingTopic && 'checks' in readingTopic) {
+      return readingTopicPercent(topicId, readingTopic.checks.length, {
+        section: 'tantangan-cek',
+        total: Math.min(readingTopic.checks.length, 10),
+      });
+    }
+  }
+  if (key === 'grammar') {
+    const grammarTopic = grammarTopicsForLevel(level).find((t) => t.id === topicId);
+    // Format KEDUA (`GrammarPatternTopic`, "Satu atau Banyak?") py section
+    // granular — format LAMA (Explorer/Adventurer, `GrammarTopic`) TIDAK,
+    // tetap jatuh ke fallback `isStepVisited` di bawah.
+    if (grammarTopic && 'items' in grammarTopic) {
+      return grammarTopicPercent(topicId, grammarTopic.items.length, Math.min(grammarTopic.items.length, 10));
     }
   }
   return isStepVisited(key, topicId, 'latihan') && isStepVisited(key, topicId, 'tantangan') ? 100 : 0;
@@ -801,13 +862,182 @@ function findNextMateri(level: LevelKey): NextMateri | null {
   return null;
 }
 
-function renderHome(): void {
+/**
+ * Panel "Progresmu" (level progress bar + XP/streak/ketepatan) — sumber
+ * kebenaran TUNGGAL dipakai Beranda (ringkasan cepat) DAN Rapor (laporan
+ * lengkap), supaya angkanya tidak pernah beda antar 2 layar. Dulu cuma ada
+ * di `renderHome`, diekstrak begitu tab Rapor ditambahkan.
+ */
+function buildProgressPanel(): string {
+  const mapUnlocked = levelUnlockMap(LEVELS);
+  const hereKey = currentStopKey(mapUnlocked);
+  const hereIdx = LEVELS.findIndex((l) => l.key === hereKey);
+  const hereLevel = hereIdx >= 0 ? LEVELS[hereIdx] : null;
+  const nextLevel = hereIdx >= 0 ? LEVELS[hereIdx + 1] : undefined;
+
+  // Progres menuju Tantangan Bos — murni informatif/positif — bukan skor
+  // benar-salah (PRD §4.5/§4.6: tanpa rasio benar/salah dalam bentuk apa pun
+  // dipakai untuk buka/kunci apa pun; "Ketepatan" di bawah cuma motivasi
+  // tampilan, tidak pernah menggerbang progres).
   const done = doneCount();
+  const totalTopics = totalTopicsForLevel(currentPlayableLevel().key);
+  const bossPct = totalTopics > 0 ? Math.round((done / totalTopics) * 100) : 0;
+
+  const xp = getXp();
+  const streakDays = getStreak();
+  const accuracy = getAccuracy();
+
+  // Terinspirasi strip stat + progress bar level di beranda kompetitor, tapi
+  // difilter kid-friendly (CLAUDE.md, PRD §4.6/§12.4):
+  //  - Tanpa coin/mata uang — tidak ada ekonomi untuk anak belanjakan apa pun.
+  //  - Tanpa "HP" yang bisa habis — cuma XP yang memang sudah ada & cuma naik.
+  //  - Streak dikasih 1 hari pelindung (progress.ts `getStreak`) supaya libur
+  //    sehari tidak langsung kebaca "putus" — beda dari streak kompetitor.
+  //  - Ketepatan dibingkai hangat & disembunyikan ("–") kalau belum ada
+  //    percobaan sama sekali, bukan ditampilkan sebagai "0%" (PRD §4.6).
+  const statTiles = `
+    <div class="stat-tile">
+      <span class="stat-ic" aria-hidden="true">⚡</span>
+      <div class="stat-value">${xp}</div>
+      <div class="stat-label">XP</div>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-ic" aria-hidden="true">🔥</span>
+      <div class="stat-value">${streakDays > 0 ? streakDays : '–'}</div>
+      <div class="stat-label">${streakDays > 0 ? 'hari beruntun' : 'yuk mulai!'}</div>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-ic" aria-hidden="true">🎯</span>
+      <div class="stat-value">${accuracy !== null ? `${accuracy}%` : '–'}</div>
+      <div class="stat-label">${accuracy !== null ? 'ketepatan' : 'belum ada data'}</div>
+    </div>`;
+
+  // Persentase SELALU tampil (termasuk 0%) — beda dari kartu lain yang memang
+  // disembunyikan saat kosong (§4.6): di sini progress-bar-nya sendiri LAH
+  // fitur yang diminta, jadi menyembunyikannya di 0% = fitur kelihatan tidak
+  // ada sama sekali di profil baru. Tetap non-punitive: 0% dibingkai sebagai
+  // ajakan ("ayo mulai"), bukan status kosong yang mencolok.
+  const levelProgressHead = `
+    <div class="level-progress-head">
+      <span class="level-progress-name">${hereLevel ? `${hereLevel.emoji} ${hereLevel.name}` : 'Level kamu'}</span>
+      <span class="level-progress-pct">${bossPct}% menuju ${nextLevel ? nextLevel.name : bossLabel(hereLevel)}</span>
+    </div>`;
+  const levelProgress = `
+    ${levelProgressHead}
+    <div class="progress-track" role="img" aria-label="${bossPct}% menuju ${bossLabel(hereLevel)}">
+      <div class="progress-fill" style="width:${bossPct}%"></div>
+    </div>
+    <p class="meta" style="margin-top:8px">${
+      done > 0
+        ? `${done} dari ${totalTopics} modul sudah kamu tuntaskan.`
+        : `Ayo mulai dari modul pertama!`
+    }</p>`;
+
+  return `
+    <div class="card progress-panel">
+      <span class="eyebrow">📈 Progresmu</span>
+      ${levelProgress}
+      <div class="stat-row">${statTiles}</div>
+    </div>`;
+}
+
+/** Strip 7 hari aktif belajar — beda dari angka streak di panel Progresmu
+ *  (yang punya aturan "berturut-turut" + 1 hari pelindung): strip ini murni
+ *  menunjukkan hari mana saja anak main minggu ini, tanpa aturan yang bisa
+ *  "putus". Dipakai Beranda & Rapor, sama alasan `buildProgressPanel`. */
+function buildDailyCard(): string {
+  const dayChips = getWeekActivity()
+    .map(
+      (d) =>
+        `<span class="day-chip ${d.active ? 'is-active' : ''} ${d.isToday ? 'is-today' : ''}">${d.label}</span>`
+    )
+    .join('');
+  return `
+    <div class="card">
+      <span class="eyebrow">Progres Harian</span>
+      <div class="day-row" style="margin-top:10px" aria-label="Hari kamu aktif belajar dalam 7 hari terakhir">${dayChips}</div>
+      <p class="meta" style="margin-top:10px">Ini hari-hari kamu sudah main minggu ini — libur sehari juga santai saja.</p>
+    </div>`;
+}
+
+/** Hasil First Placement Test — cuma tampil begitu ada hasil tersimpan.
+ *  Angka mentah (correct/total) SENGAJA tidak ditampilkan mentah ke anak
+ *  (CLAUDE.md poin 2 — hindari skor sebagai evaluasi) — diterjemahkan ke
+ *  bintang, pola reward yang sudah dipakai di seluruh app (PRD §4.6).
+ *  Dipakai Beranda & Rapor, sama alasan `buildProgressPanel`. */
+function buildPlacementResultCard(): string {
+  const { placementTestDone: ptDone, latestPlacementResult: ptResult } = getCachedChildStatus();
+  if (ptDone !== true || !ptResult) return '';
+  const ratio = ptResult.totalItems > 0 ? ptResult.totalCorrect / ptResult.totalItems : 0;
+  const stars = ratio >= 0.8 ? 3 : ratio >= 0.5 ? 2 : 1;
+  const starRow = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+  const levelLbl = placementGame.LEVEL_LABEL[ptResult.levelRecommended] ?? ptResult.levelRecommended;
+  return `
+    <div class="card">
+      <span class="eyebrow">🎈 Hasil Placement Test</span>
+      <div class="card-title" style="margin:4px 0 2px">${levelLbl}</div>
+      <div style="font-size:20px;letter-spacing:2px;margin:6px 0" aria-hidden="true">${starRow}</div>
+      <p class="meta">Titik mulai kamu di Jalur Petualangan — keren, sudah dicoba! 🎉</p>
+    </div>`;
+}
+
+/**
+ * Papan Peringkat XP — permintaan user, revisi dari keputusan lama PRD §4.6/
+ * §13 ("tanpa leaderboard") yang sekarang dibolehkan KHUSUS karena progres
+ * sudah tersimpan di database & login sudah jadi gerbang wajib (lihat
+ * `account.ts` `refreshLeaderboard`). Filter kid-friendly tetap berlaku
+ * penuh: dianonimkan total (cuma avatar hewan + XP, TANPA nama), TANPA
+ * highlight "posisi kamu" (angka peringkat eksplisit per anak sengaja tidak
+ * dihitung/ditampilkan — cuma daftar top 10, semacam "hall of fame" yang
+ * aspirasional, bukan pembanding langsung anak-vs-anak). Dipakai Beranda &
+ * Rapor, sama pola dgn `buildProgressPanel`/`buildDailyCard`.
+ *
+ * Disembunyikan total (return '') kalau belum ada data ATAU listnya kosong
+ * (belum ada anak lain yang mulai) — state kosong tidak ditampilkan
+ * mencolok (PRD §4.6), bukan kartu "papan peringkat kosong" yang aneh.
+ */
+function buildLeaderboardCard(): string {
+  const top = getCachedLeaderboard();
+  if (!top || top.length === 0) return '';
+
+  const medal = ['🥇', '🥈', '🥉'];
+  const rows = top
+    .map((entry, i) => {
+      const rankMark = medal[i] ?? `${i + 1}`;
+      return `
+        <div class="leaderboard-row">
+          <span class="leaderboard-rank" aria-hidden="true">${rankMark}</span>
+          <span class="leaderboard-avatar" aria-hidden="true">${entry.avatar}</span>
+          <span class="leaderboard-xp">${entry.xp} XP</span>
+        </div>`;
+    })
+    .join('');
+
+  return `
+    <div class="card">
+      <span class="eyebrow">🏆 Papan Peringkat</span>
+      <div class="leaderboard-list" style="margin-top:10px">${rows}</div>
+      <p class="meta" style="margin-top:8px">XP tertinggi dari anak-anak lain yang lagi main — dianonimkan, tanpa nama asli.</p>
+    </div>`;
+}
+
+/**
+ * Beranda = kartu "Main Lagi" + Peta Petualangan LENGKAP sekaligus (permintaan
+ * user) — dulu Peta Level (`renderLevels`) layar terpisah yang dibuka dari
+ * strip mini-trail di sini; sekarang peta penuh ITU SENDIRI isi utama Beranda,
+ * strip mini-trail & panel "Progresmu"/statistik (XP/streak/ketepatan/
+ * bintang/Progres Harian/Hasil Placement Test/Papan Peringkat) dihapus dari
+ * sini karena semuanya SUDAH ada lengkap di tab Rapor (`buildProgressPanel`
+ * dkk, `renderRapor`) — Beranda tidak perlu lagi menduplikasinya, cukup jadi
+ * titik "lanjut main" + "lihat & buka markas". Screen 'levels' sudah
+ * dihapus total (bukan lagi alias) — semua pemanggil lama sekarang `go('home')`.
+ */
+function renderHome(): void {
   const last = validLast();
 
   // Panorama kecil di balik kartu "lanjutkan" — langit, awan, dan siluet
-  // pantai yang sama dengan Peta Level, supaya Beranda terasa satu dunia dengan
-  // petanya (hiasan murni, aria-hidden, tidak menambah informasi baru).
+  // pantai yang sama dengan peta di bawahnya, supaya terasa satu dunia
+  // (hiasan murni, aria-hidden, tidak menambah informasi baru).
   const sky = `<span class="cloud c1" aria-hidden="true">${CLOUD}</span><span class="cloud c2" aria-hidden="true">${CLOUD}</span>${HILLS_SHORE}`;
 
   // Slim (permintaan user) — modifier `compact` KHUSUS instance Beranda,
@@ -835,159 +1065,135 @@ function renderHome(): void {
         <div class="spark-art" aria-hidden="true"><span class="mascot-idle">🦁</span></div>
       </article>`;
 
-  // Strip peta ringkas — versi mini dari Peta Level (renderLevels di bawah),
-  // ditonjolkan di Beranda supaya "sedang menjalani misi, taklukkan Bos,
-  // upgrade skill ala Solo Leveling" (PRD §12) terasa begitu app dibuka, bukan
-  // cuma waktu buka layar peta penuh. Tap di mana saja = buka peta penuh.
-  const mapUnlocked = levelUnlockMap(LEVELS);
-  const hereKey = currentStopKey(mapUnlocked);
+  // --- Peta Petualangan (dulu `renderLevels`, isi PERSIS sama) ---
+  const unlocked = levelUnlockMap(LEVELS);
+  const hereKey = currentStopKey(unlocked);
   const hereIdx = LEVELS.findIndex((l) => l.key === hereKey);
   const hereLevel = hereIdx >= 0 ? LEVELS[hereIdx] : null;
   const nextLevel = hereIdx >= 0 ? LEVELS[hereIdx + 1] : undefined;
 
-  const miniStops = LEVELS.map((lvl) => {
+  // Tantangan Bos sekarang SEQUENTIAL (revisi PRD §12.1/§16) — skip-ahead
+  // bebas ke level manapun dihapus. Cuma level terkunci PERTAMA (tepat
+  // setelah batas terbuka) yang boleh ditantang duluan; level setelahnya
+  // mati sampai yang di depannya ditaklukkan dulu.
+  const firstLockedIndex = LEVELS.findIndex((l) => !unlocked[l.key]);
+
+  const done = doneCount();
+  const mapTotalTopics = hereLevel ? totalTopicsForLevel(hereLevel.key) : 0;
+  const mapBossPct = mapTotalTopics > 0 ? Math.round((done / mapTotalTopics) * 100) : 0;
+  // Selalu tampil (termasuk 0%) selama sudah ada perhentian aktif — heading
+  // nama level + persentase besar di atas bar, supaya bar-nya jelas kebaca,
+  // bukan garis dekoratif.
+  const mapProgress = hereLevel
+    ? `
+        <div class="level-progress-head" style="max-width:44ch;position:relative;z-index:1">
+          <span class="level-progress-name">${hereLevel.emoji} ${hereLevel.name}</span>
+          <span class="level-progress-pct">${mapBossPct}% menuju ${nextLevel ? nextLevel.name : bossLabel(hereLevel)}</span>
+        </div>
+        <div class="progress-track" role="img" aria-label="${mapBossPct}% menuju ${bossLabel(hereLevel)}" style="margin-top:10px;max-width:44ch">
+          <div class="progress-fill" style="width:${mapBossPct}%"></div>
+        </div>
+        <p class="meta" style="margin-top:8px;position:relative;z-index:1">${
+          done > 0 ? `${done} dari ${mapTotalTopics} modul sudah kamu tuntaskan.` : `Ayo mulai dari modul pertama!`
+        }</p>`
+    : '';
+
+  const stops = LEVELS.map((lvl, i) => {
     const cleared = isBossCleared(lvl.key);
-    const isUnlocked = !!mapUnlocked[lvl.key];
+    const isUnlocked = !!unlocked[lvl.key];
     const here = lvl.key === hereKey;
+    const place = placeFor(lvl.key);
+    const cefrBadge = lvl.cefr ? `<span class="tag">${lvl.cefr}</span>` : '';
+
+    const statusChip = cleared
+      ? `<span class="tag ok">${ICON_CHECK} ${BOSS_NAME[lvl.key]} ditaklukkan</span>`
+      : isUnlocked && lvl.hasContent
+        ? `<span class="tag accent">Terbuka</span>`
+        : isUnlocked
+          ? `<span class="tag">Terbuka · materi segera hadir</span>`
+          : `<span class="tag">${ICON_LOCK} Terkunci</span>`;
+
+    let actions: string;
+    if (lvl.hasContent && isUnlocked) {
+      actions = `
+        <button class="primary-btn" type="button" data-action="openMenuFromLevels" data-payload="${lvl.key}">📋 Buka Menu Belajar</button>
+        <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} ${cleared ? 'Main Lagi' : 'Coba Tantangan'}</button>`;
+    } else if (isUnlocked) {
+      // Terbuka tapi materinya belum ada (`hasContent:false`). Dulu cuma teks
+      // polos tanpa tombol — kartunya kelihatan setengah jadi, padahal sejak
+      // `currentStopKey` berjangkar ke hasil placement test, perhentian
+      // seperti ini bisa jadi tempat "Kamu di sini" anak yang SEBENARNYA
+      // (mis. rekomendasi Adventurer). Tombolnya nyata & bisa di-tap, tapi
+      // mendaratnya di layar placeholder yang jujur (`renderLevelSoon`) —
+      // bukan materi palsu & bukan tombol mati (content.ts: "placeholder
+      // jujur, bukan link mati atau konten palsu"; CLAUDE.md: link ke fitur
+      // yang belum ada = navigasi bohong).
+      actions = `
+        <button class="ghost-btn" type="button" data-action="openSoonFromLevels" data-payload="${lvl.key}">🚧 Intip Markas Ini</button>
+        <p class="meta">Sudah terbuka! Materinya masih disiapkan, tunggu ya.</p>`;
+    } else if (i === firstLockedIndex) {
+      // Level terkunci PERTAMA (persis setelah batas terbuka) — satu-satunya
+      // yang boleh ditantang duluan. Bos di sini berfungsi sebagai uji
+      // kemampuan umum (mirip placement test) kalau level ini sendiri belum
+      // punya materi, jadi tetap bisa dicoba pakai soal dari materi yang ada.
+      actions = `
+        <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} Coba Tantangan Duluan</button>
+        <p class="meta">${
+          lvl.hasContent
+            ? 'Atau taklukkan dulu Raja level sebelumnya — otomatis kebuka.'
+            : `Materi lengkap level ini belum ada, tapi Tantangan ${BOSS_NAME[lvl.key]} tetap bisa dicoba sebagai uji kemampuan umum.`
+        }</p>`;
+    } else {
+      // Berurutan (PRD §12.1/§16, direvisi) — level lebih jauh dari batas
+      // terbuka tidak bisa dilompati, walau level di depannya bisa. Taklukkan
+      // dulu Bos level sebelumnya (atau placement test yang merekomendasikan
+      // sejauh ini, lihat §16) baru tombol ini hidup.
+      actions = `
+        <button class="ghost-btn" type="button" disabled aria-disabled="true">${ICON_LOCK} Raja Terkunci</button>
+        <p class="meta">Taklukkan dulu Raja level sebelumnya secara berurutan — atau coba Placement Test di Pengaturan.</p>`;
+    }
+
+    // Stempel di bahu medali: mango+centang kalau bos sudah ditaklukkan, pasir
+    // redup+gembok kalau masih tersegel, kosong kalau sedang terbuka.
     const stamp = cleared
       ? `<span class="trail-stamp" aria-hidden="true">${ICON_CHECK}</span>`
       : isUnlocked
         ? ''
         : `<span class="trail-stamp locked" aria-hidden="true">${ICON_LOCK}</span>`;
+
     const stateClass = [cleared ? 'is-cleared' : '', isUnlocked ? 'is-open' : 'is-locked', here ? 'is-here' : '']
       .filter(Boolean)
       .join(' ');
+
+    // Jejak kaki berkelok bergantian kiri-kanan supaya jalurnya terbaca sebagai
+    // rute yang berliku, bukan garis timeline lurus.
+    const bend = i % 2 === 0 ? TRAIL_BEND_RIGHT : TRAIL_BEND_LEFT;
+
     return `
-      <li class="mini-stop ${placeFor(lvl.key).cls} ${stateClass}" title="${lvl.name}">
-        <span class="mini-medallion" aria-hidden="true"><span>${lvl.emoji}</span>${stamp}</span>
-        ${here ? `<span class="mini-you mascot-idle" aria-hidden="true">🦁</span>` : ''}
-        ${lvl.cefr ? `<span class="mini-cefr">${lvl.cefr}</span>` : ''}
+      <li class="trail-stop ${place.cls} ${stateClass}">
+        <div class="trail-scene" aria-hidden="true">${place.hills}</div>
+        <div class="trail-rail">
+          ${bend}
+          <span class="trail-medallion" aria-hidden="true"><span>${lvl.emoji}</span>${stamp}</span>
+          ${here ? `<span class="trail-you mascot-idle" aria-hidden="true">🦁</span>` : ''}
+        </div>
+        <div class="trail-card">
+          <span class="trail-place">🏰 Markas ${BOSS_NAME[lvl.key]}</span>
+          <div class="trail-card-head">
+            <div class="trail-card-txt">
+              <h3>${lvl.name}${cefrBadge}${here ? ' <span class="tag accent">Kamu di sini</span>' : ''}</h3>
+              <div class="trail-meta"><span class="meta">${lvl.age}</span>${statusChip}</div>
+            </div>
+            <span class="trail-boss" aria-hidden="true">${BOSS_AVATAR[lvl.key]}</span>
+          </div>
+          <div class="trail-actions">${actions}</div>
+        </div>
       </li>`;
   }).join('');
 
-  // Perhentian yang materinya belum ada butuh kalimatnya sendiri: di stop
-  // seperti itu TIDAK ada Tantangan Bos yang bisa ditagih (lihat `stops` di
-  // renderLevels), dan perhentian berikutnya biasanya malah sudah ikut kebuka
-  // — jadi "taklukkan Bos untuk buka X" bakal jadi janji yang tidak ada
-  // tombolnya. Sejak "Kamu di sini" bisa mendarat persis di stop begini
-  // (hasil First Placement Test, lihat `currentStopKey`), ini bukan kasus
-  // pinggiran lagi.
-  // "Kamu di [level]" DIHAPUS dari sini (permintaan user) — info level anak
-  // sudah ada di chip header, tidak perlu diulang di caption strip peta ini.
-  const miniTrailCaption = hereLevel
-    ? !hereLevel.hasContent
-      ? `🗺️ Kegiatannya masih dibikin, mampir lagi nanti ya.`
-      : nextLevel
-        ? `🗺️ Taklukkan ${BOSS_NAME[hereLevel.key]} untuk buka <b>${nextLevel.name}</b>.`
-        : `🗺️ Markas terjauh yang sudah siap!`
-    : '🗺️ Peta petualanganmu menunggu di sini.';
-
-  const miniTrail = `
-    <div class="mini-trail" role="button" tabindex="0" data-action="openLevels" aria-label="Buka Peta Level">
-      <div class="mini-trail-head">
-        <p class="mini-trail-caption">${miniTrailCaption}</p>
-        <span class="mini-trail-link">Lihat peta ${ICON_CHEVRON}</span>
-      </div>
-      <ol class="mini-trail-row">${miniStops}</ol>
-    </div>`;
-
-  // Progres menuju Tantangan Bos — murni informatif/positif — bukan skor
-  // benar-salah (PRD §4.5/§4.6: tanpa rasio benar/salah dalam bentuk apa pun
-  // dipakai untuk buka/kunci apa pun; "Ketepatan" di panel Progresmu di bawah
-  // cuma motivasi tampilan, tidak pernah menggerbang progres).
-  const totalTopics = totalTopicsForLevel(currentPlayableLevel().key);
-  const bossPct = totalTopics > 0 ? Math.round((done / totalTopics) * 100) : 0;
-
-  const starCard =
-    done > 0
-      ? `
-      <div class="card">
-        <span class="eyebrow">Bintang kamu</span>
-        <div class="star-row" aria-label="${done} bintang">${'⭐'.repeat(Math.min(done, 6))}${done > 6 ? ` +${done - 6}` : ''}</div>
-        <p class="meta">Satu bintang untuk setiap modul yang selesai kamu coba.</p>
-      </div>`
-      : '';
-
-  const xp = getXp();
-  const streakDays = getStreak();
-  const accuracy = getAccuracy();
-
-  // Progresmu — terinspirasi strip stat + progress bar level di beranda
-  // kompetitor, tapi difilter kid-friendly (CLAUDE.md, PRD §4.6/§12.4):
-  //  - Tanpa coin/mata uang — tidak ada ekonomi untuk anak belanjakan apa pun.
-  //  - Tanpa "HP" yang bisa habis — cuma XP yang memang sudah ada & cuma naik.
-  //  - Streak dikasih 1 hari pelindung (progress.ts `getStreak`) supaya libur
-  //    sehari tidak langsung kebaca "putus" — beda dari streak kompetitor.
-  //  - Ketepatan dibingkai hangat & disembunyikan ("–") kalau belum ada
-  //    percobaan sama sekali, bukan ditampilkan sebagai "0%" (PRD §4.6).
-  const statTiles = `
-    <div class="stat-tile">
-      <span class="stat-ic" aria-hidden="true">⚡</span>
-      <div class="stat-value">${xp}</div>
-      <div class="stat-label">XP</div>
-    </div>
-    <div class="stat-tile">
-      <span class="stat-ic" aria-hidden="true">🔥</span>
-      <div class="stat-value">${streakDays > 0 ? streakDays : '–'}</div>
-      <div class="stat-label">${streakDays > 0 ? 'hari beruntun' : 'yuk mulai!'}</div>
-    </div>
-    <div class="stat-tile">
-      <span class="stat-ic" aria-hidden="true">🎯</span>
-      <div class="stat-value">${accuracy !== null ? `${accuracy}%` : '–'}</div>
-      <div class="stat-label">${accuracy !== null ? 'ketepatan' : 'belum ada data'}</div>
-    </div>`;
-
-  // Persentase SELALU tampil (termasuk 0%) — beda dari starCard/dailyCard
-  // yang memang disembunyikan saat kosong (§4.6): di sini progress-bar-nya
-  // sendiri LAH fitur yang diminta, jadi menyembunyikannya di 0% = fitur
-  // kelihatan tidak ada sama sekali di profil baru. Tetap non-punitive: 0%
-  // dibingkai sebagai ajakan ("ayo mulai"), bukan status kosong yang mencolok.
-  // Ditaruh sebagai heading tersendiri (nama level + persentase besar, ala
-  // baris "Level 1 ... 30% menuju Level 2" di kompetitor) supaya bar-nya
-  // jelas kebaca sebagai progress bar, bukan cuma garis dekoratif tipis.
-  const levelProgressHead = `
-    <div class="level-progress-head">
-      <span class="level-progress-name">${hereLevel ? `${hereLevel.emoji} ${hereLevel.name}` : 'Level kamu'}</span>
-      <span class="level-progress-pct">${bossPct}% menuju ${nextLevel ? nextLevel.name : bossLabel(hereLevel)}</span>
-    </div>`;
-  const levelProgress = `
-    ${levelProgressHead}
-    <div class="progress-track" role="img" aria-label="${bossPct}% menuju ${bossLabel(hereLevel)}">
-      <div class="progress-fill" style="width:${bossPct}%"></div>
-    </div>
-    <p class="meta" style="margin-top:8px">${
-      done > 0
-        ? `${done} dari ${totalTopics} modul sudah kamu tuntaskan.`
-        : `Ayo mulai dari modul pertama!`
-    }</p>`;
-
-  const progressPanel = `
-    <div class="card progress-panel">
-      <span class="eyebrow">📈 Progresmu</span>
-      ${levelProgress}
-      <div class="stat-row">${statTiles}</div>
-    </div>`;
-
-  // Progres harian — strip 7 hari, beda dari angka streak di atas (yang
-  // punya aturan "berturut-turut" + 1 hari pelindung): strip ini murni
-  // menunjukkan hari mana saja anak main minggu ini, tanpa aturan apa pun
-  // yang bisa "putus" — tetap dipertahankan sebagai tampilan pelengkap.
-  const dayChips = getWeekActivity()
-    .map(
-      (d) =>
-        `<span class="day-chip ${d.active ? 'is-active' : ''} ${d.isToday ? 'is-today' : ''}">${d.label}</span>`
-    )
-    .join('');
-  const dailyCard = `
-    <div class="card">
-      <span class="eyebrow">Progres Harian</span>
-      <div class="day-row" style="margin-top:10px" aria-label="Hari kamu aktif belajar dalam 7 hari terakhir">${dayChips}</div>
-      <p class="meta" style="margin-top:10px">Ini hari-hari kamu sudah main minggu ini — libur sehari juga santai saja.</p>
-    </div>`;
-
   // Nudge First Placement Test — sama syarat munculnya dgn Belajar (PRD §16):
   // cuma tampil kalau belum benar-benar selesai (termasuk sempat di-skip).
-  const { placementTestDone: ptDone, latestPlacementResult: ptResult } = getCachedChildStatus();
+  const ptDone = getCachedChildStatus().placementTestDone;
   const placementNudge =
     ptDone === false
       ? `
@@ -998,42 +1204,36 @@ function renderHome(): void {
     </div>`
       : '';
 
-  // Hasil placement test — kartu di bawah Progres Harian (permintaan user),
-  // cuma tampil begitu ada hasil tersimpan. Angka mentah (correct/total)
-  // SENGAJA tidak ditampilkan mentah ke anak (CLAUDE.md poin 2 — hindari
-  // skor sebagai evaluasi) — diterjemahkan ke bintang, pola reward yang
-  // sudah dipakai di seluruh app (PRD §4.6).
-  const placementResultCard = (() => {
-    if (ptDone !== true || !ptResult) return '';
-    const ratio = ptResult.totalItems > 0 ? ptResult.totalCorrect / ptResult.totalItems : 0;
-    const stars = ratio >= 0.8 ? 3 : ratio >= 0.5 ? 2 : 1;
-    const starRow = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
-    const levelLbl = placementGame.LEVEL_LABEL[ptResult.levelRecommended] ?? ptResult.levelRecommended;
-    return `
-    <div class="card">
-      <span class="eyebrow">🎈 Hasil Placement Test</span>
-      <div class="card-title" style="margin:4px 0 2px">${levelLbl}</div>
-      <div style="font-size:20px;letter-spacing:2px;margin:6px 0" aria-hidden="true">${starRow}</div>
-      <p class="meta">Titik mulai kamu di Jalur Petualangan — keren, sudah dicoba! 🎉</p>
-    </div>`;
-  })();
-
   root.innerHTML = `
-    <section class="two-col">
-      <div class="stack">
-        ${spark}
-        ${miniTrail}
-        ${progressPanel}
+    ${spark}
+
+    <section class="two-col" style="margin-top:var(--s5)">
+      <div class="map-board">
+        <div class="map-sky">
+          <span class="map-sun" aria-hidden="true"></span>
+          <span class="cloud c1" aria-hidden="true">${CLOUD}</span>
+          <span class="cloud c2" aria-hidden="true">${CLOUD}</span>
+          <h2>Jalur Petualangan</h2>
+          <p>Jalan santai, nggak ada batas waktu.</p>
+          ${mapProgress}
+        </div>
+        <ol class="trail">${stops}</ol>
       </div>
 
       <aside class="stack">
-        ${starCard}
-        ${dailyCard}
-        ${placementResultCard}
         ${placementNudge}
+        <div class="card">
+          <span class="eyebrow">Tanda di peta</span>
+          <ul class="map-legend" style="margin-top:12px">
+            <li><span class="legend-dot is-cleared" aria-hidden="true">${ICON_CHECK}</span>Raja-nya sudah kamu taklukkan</li>
+            <li><span class="legend-dot" aria-hidden="true">🧭</span>Terbuka — boleh dimainkan sekarang</li>
+            <li><span class="legend-dot is-locked" aria-hidden="true">${ICON_LOCK}</span>Masih tersegel</li>
+          </ul>
+          <p class="meta" style="margin-top:12px">Singa 🦁 menandai markasmu sekarang.</p>
+        </div>
         <div class="card note-card">
-          <div class="card-title">Untuk orang tua</div>
-          <p>Progres tersimpan di perangkat ini saja — tanpa akun, tanpa iklan, dan tanpa pembelian di dalam aplikasi.</p>
+          <div class="card-title">Mau lompat lebih jauh?</div>
+          <p>Tantangan Raja markas berikutnya (yang paling dekat) boleh langsung dicoba tanpa nunggu — tapi markas setelahnya tetap harus berurutan. Mau lompat lebih jauh lagi? Coba Placement Test di Pengaturan.</p>
         </div>
       </aside>
     </section>
@@ -1041,11 +1241,217 @@ function renderHome(): void {
 
   setHandlers({
     openMenu: () => go('menu', { viewLevel: null }),
-    openLevels: () => go('levels'),
     openPlacementTest: () => go('placementTest'),
     resume: () => {
       if (!last) return go('menu', { viewLevel: null });
       go('activity', { skillKey: last.skill, topicIndex: last.topicIndex, step: 0, viewLevel: null });
+    },
+    openMenuFromLevels: (payload) => go('menu', { viewLevel: payload as LevelKey }),
+    openBossFromLevels: (payload) => go('boss', { bossLevel: payload as LevelKey }),
+    openSoonFromLevels: (payload) => go('levelSoon', { soonLevel: payload as LevelKey }),
+  });
+}
+
+/* ------------------------------------------------------------------ rapor -- */
+
+/**
+ * Rapor — laporan progres LENGKAP buat orang tua (beda dari ringkasan cepat
+ * di Beranda): panel Progresmu yang SAMA (`buildProgressPanel`, satu sumber
+ * kebenaran, angkanya tidak pernah beda dari Beranda) + breakdown skor PER
+ * SKILL (baru, belum ada di Beranda) + Progres Harian + hasil Placement
+ * Test. Menepati janji homepage marketing ("📊 Progresmu (Rapor Ringkas)" —
+ * `LANDING_FEATURES`). Skor per skill dihitung dari `topicFinished()` yang
+ * sama dipakai badge "selesai" Menu Belajar (`renderMenu`), supaya angkanya
+ * konsisten di semua layar — TANPA rasio benar/salah mentah (CLAUDE.md poin
+ * 2), murni jumlah materi tuntas.
+ *
+ * Skor per skill ditampilkan sbg 1–5 BINTANG (`skillStarsHtml`), BUKAN %
+ * mentah — riset kompetitor/lembaga (Cambridge YLE: skor per skill jadi 1–5
+ * shield, TANPA angka pass/fail; Khan Academy Kids: fraksi+badge, bukan %)
+ * konsisten menghindari angka mentah sbg "nilai ujian" ke orang tua. Dipakai
+ * BINTANG (⭐/☆), bukan lencana/shield baru — supaya tetap 1 simbol reward
+ * yang sama dgn "Bintang kamu" Beranda & bintang Hasil Placement Test
+ * (CLAUDE.md/PRD §4.6: reward pakai bintang, satu bahasa visual, bukan
+ * menambah token baru yang bersaing makna). Menu Belajar (`renderMenu`
+ * `.skill-pct`) SENGAJA TIDAK ikut diubah — badge % di sana konteksnya
+ * navigasi/fungsional ("berapa lagi tersisa"), bukan laporan ke orang tua,
+ * jadi angka presisi masih lebih berguna di sana.
+ */
+function skillStarsHtml(skillPct: number): string {
+  const stars = Math.max(0, Math.min(5, Math.round(skillPct / 20)));
+  return '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+}
+
+/**
+ * 1 baris "materi + tombol aksi" dipakai KEDUA insight card di bawah
+ * (Kekuatan Sekarang/Misi Berikutnya) — reuse `.topic-card`/`.go` (CSS yang
+ * sama dgn daftar materi Menu Belajar, `renderTopics`), TAPI beda dari sana:
+ * di sini SELURUH div `.topic-card` SENGAJA BUKAN tombol (tanpa role/
+ * tabindex/data-action di kartunya) — cuma `<button class="go">` di dalamnya
+ * yang bisa diklik. Ini fix langsung dari keluhan user ("kenapa di rapor
+ * ketika di klik masuk tab belajar") thd versi SEBELUMNYA (kartu Skor Tiap
+ * Skill yg SELURUH kartunya jadi tombol navigasi) — Rapor sekarang defaultnya
+ * MURNI tampilan hasil, navigasi keluar cuma lewat tombol yg jelas labelnya.
+ * `kind` nentuin tujuan step: 'weak' → Latihan Inti (step 1, paling relevan
+ * buat "coba lagi"), 'strong' → Tantangan (step 2, tantangan asah biar tetap
+ * tajam) — dua tujuan step BEDA sesuai maksud kartunya, bukan asal sama.
+ */
+function insightTopicRowHtml(sig: TopicSignal, level: LevelKey, kind: 'weak' | 'strong'): string {
+  const list = topicsForSkill(sig.skill, level);
+  const idx = list.findIndex((t) => t.id === sig.topicId);
+  if (idx < 0) return ''; // topik dari level/skill yg sudah tidak ada lagi di sini — lewati diam-diam
+  const topic = list[idx];
+  const s = SKILL_META[sig.skill];
+  const action = kind === 'weak' ? 'practiceInsightTopic' : 'reviewInsightTopic';
+  const label = kind === 'weak' ? 'Latihan Yuk' : 'Uji Lagi';
+  const sub = kind === 'weak' ? `${s.label} · masih suka kepeleset di sini` : `${s.label} · sudah lancar, jaga terus!`;
+  return `
+    <div class="topic-card">
+      <div class="num" aria-hidden="true" style="background:${s.accentBg};color:${s.accent}">${s.emoji}</div>
+      <div class="info">
+        <b>${topic.title}</b>
+        <span>${sub}</span>
+      </div>
+      <button class="go" type="button" data-action="${action}" data-payload="${sig.skill}|${idx}">${label} →</button>
+    </div>`;
+}
+
+/**
+ * Rapor — laporan progres LENGKAP buat orang tua (beda dari ringkasan cepat
+ * di Beranda): panel Progresmu (`buildProgressPanel`) + Stats Singkat (soal
+ * dijawab/kata dikuasai — BARU, lebih konkret drpd XP/streak) + Skor Tiap
+ * Skill (bintang per skill) + **Kekuatan Sekarang** / **Misi Berikutnya**
+ * (BARU — topik SPESIFIK yg sudah mantap vs masih perlu dilatih, `computeInsights`
+ * di progress.ts, DERIVED dari `SlotState.n`/`w`/`ir` yg sudah dicatat tiap
+ * soal dijawab — bukan cuma "sudah dicoba/belum" spt Skor Tiap Skill, tapi
+ * "seberapa sering meleset") + Kata yang Masih Dilatih (kata/kalimat spesifik,
+ * BARU) + Progres Harian + Hasil Placement Test + Papan Peringkat.
+ *
+ * Permintaan user: "analisis isi rapor kompetitor... dikemas konsep
+ * petualangan... buat halaman rapor yang bagus dimana orang tua bisa tau
+ * performa anak, kelemahan anak, kelebihan anak, apa yang perlu ditingkatkan,
+ * apa yang perlu dipertahankan" — 4 pertanyaan itu dijawab literal: kelebihan
+ * = Kekuatan Sekarang, kelemahan/tingkatkan = Misi Berikutnya+Kata yang Masih
+ * Dilatih, pertahankan = framing "Uji Lagi" di kartu Kekuatan (bukan cuma
+ * dipajang lalu dilupakan). SEMUA non-punitive (CLAUDE.md poin 2) — istilah
+ * "kelemahan"/"salah"/"gagal" TIDAK PERNAH dipakai di teks yg tampil, diganti
+ * "masih suka kepeleset"/"perlu dilatih lagi", & threshold `computeInsights`
+ * sengaja tidak agresif (min 2-3 percobaan dulu) spy 1x kebetulan salah tidak
+ * langsung dilaporkan sbg "kelemahan" ke orang tua.
+ */
+function renderRapor(): void {
+  const level = currentPlayableLevel();
+  const insights = computeInsights();
+
+  const skillCards = visibleSkillKeys(level.key)
+    .map((key) => {
+      const s = SKILL_META[key];
+      const topics = topicsForSkill(key, level.key);
+      const doneHere = topics.filter((t) => topicFinished(key, t.id, level.key)).length;
+      const skillPct = topics.length > 0 ? Math.round((doneHere / topics.length) * 100) : 0;
+      return `
+        <div class="skill-card">
+          <span class="skill-pct stars${skillPct >= 100 ? ' done' : ''}" aria-label="${Math.round(skillPct / 20)} dari 5 bintang">${skillStarsHtml(skillPct)}</span>
+          <span class="ic" style="background:${s.accentBg};color:${s.accent}" aria-hidden="true">${s.emoji}</span>
+          <div class="body">
+            <h3>${s.label}</h3>
+            <p>${doneHere}/${topics.length} materi selesai</p>
+          </div>
+        </div>`;
+    })
+    .join('');
+
+  // List/baris (permintaan user, dibanding grid 3-tile sebelumnya) — pola
+  // ikon+label+angka per baris ala referensi kompetitor, TAPI visual bahasa
+  // TETAP punya (lingkaran gradien radial sama dgn `.stat-ic` Progresmu,
+  // bukan ikon flat kompetitor) supaya konsisten 1 keluarga tampilan dgn
+  // kartu lain, bukan tempelan gaya asing. List (bukan grid) juga membuka
+  // jalan nambah stat lain nanti tanpa kartu jadi padat/berdesakan.
+  const statRowsHtml = [
+    { ic: '📘', label: 'Modul tuntas', value: doneCount() },
+    { ic: '📝', label: 'Soal dijawab', value: insights.totalAnswered },
+    { ic: '🔤', label: 'Kata dikuasai', value: insights.masteredWords },
+    { ic: '🗓️', label: 'Hari aktif', value: getActiveDaysCount() },
+    { ic: '🔥', label: 'Rekor beruntun', value: getLongestStreak() },
+    { ic: '🏰', label: 'Markas ditaklukkan', value: getBossClearedCount() },
+  ]
+    .map((r) => `<li><span class="stat-list-ic" aria-hidden="true">${r.ic}</span><span class="stat-list-label">${r.label}</span><span class="stat-list-value">${r.value}</span></li>`)
+    .join('');
+
+  const statsSingkatCard = `
+    <div class="card">
+      <span class="eyebrow">📊 Stats Singkat</span>
+      <ul class="stat-list">${statRowsHtml}</ul>
+    </div>`;
+
+  const strongRows = insights.strongTopics.map((t) => insightTopicRowHtml(t, level.key, 'strong')).join('');
+  const weakRows = insights.weakTopics.map((t) => insightTopicRowHtml(t, level.key, 'weak')).join('');
+
+  // Kedua kartu disembunyikan total (bukan kartu "belum ada data" kosong,
+  // konsisten `buildPlacementResultCard`/`buildLeaderboardCard`) kalau belum
+  // cukup sinyal — anak baru mulai belum "punya kelemahan", itu wajar.
+  const strengthsCard = strongRows
+    ? `
+    <div class="card">
+      <span class="eyebrow">💪 Kekuatan Sekarang</span>
+      <p class="meta" style="margin-top:2px">Materi yang sudah dikuasai dengan mantap — sekali-sekali diuji lagi biar tetap tajam.</p>
+      <div class="topic-grid" style="margin-top:12px">${strongRows}</div>
+    </div>`
+    : '';
+
+  const missionCard = weakRows
+    ? `
+    <div class="card">
+      <span class="eyebrow">🗺️ Misi Berikutnya</span>
+      <p class="meta" style="margin-top:2px">Materi yang masih suka kepeleset — cocok buat dilatih sebentar lagi.</p>
+      <div class="topic-grid" style="margin-top:12px">${weakRows}</div>
+    </div>`
+    : '';
+
+  const wordsCard = insights.strugglingWords.length
+    ? `
+    <div class="card">
+      <span class="eyebrow">📝 Kata yang Masih Dilatih</span>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+        ${insights.strugglingWords.map((w) => `<span class="tag">${SKILL_META[w.skill].emoji} ${escapeHtml(w.ir)}</span>`).join('')}
+      </div>
+    </div>`
+    : '';
+
+  root.innerHTML = `
+    <section class="two-col">
+      <div class="stack">
+        ${buildProgressPanel()}
+        ${statsSingkatCard}
+        <div class="card">
+          <span class="eyebrow">🏅 Skor Tiap Skill</span>
+          <div class="skill-grid" style="margin-top:12px">${skillCards || '<p class="meta">Belum ada materi di level ini.</p>'}</div>
+        </div>
+        ${strengthsCard}
+        ${missionCard}
+        ${wordsCard}
+      </div>
+
+      <aside class="stack">
+        ${buildDailyCard()}
+        ${buildPlacementResultCard()}
+        ${buildLeaderboardCard()}
+        <div class="card note-card">
+          <div class="card-title">Untuk orang tua</div>
+          <p>Rapor ini murni progres & motivasi — bukan nilai ujian, tidak pernah dipakai menghukum atau mengunci apa pun. "Misi Berikutnya" cuma saran, boleh dilewati kapan saja.</p>
+        </div>
+      </aside>
+    </section>
+  `;
+
+  setHandlers({
+    practiceInsightTopic: (payload) => {
+      const [skill, idxStr] = (payload ?? '').split('|');
+      go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 1, viewLevel: null });
+    },
+    reviewInsightTopic: (payload) => {
+      const [skill, idxStr] = (payload ?? '').split('|');
+      go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 2, viewLevel: null });
     },
   });
 }
@@ -1340,9 +1746,72 @@ function wireTopicsCompactBar(): void {
 
 /* --------------------------------------------------------------- aktivitas -- */
 
+/**
+ * Kartu "Cara Main" (permintaan user) — muncul SEKALI SEUMUR HIDUP per topik,
+ * sebelum Kenalan pertama kali dibuka (gate di `renderActivity`, di bawah;
+ * penanda persisten `hasSeenCaraMain`/`markCaraMainSeen`, progress.ts).
+ * Menjelaskan alur 3 langkah SECARA GENERIK (Kenalan → Latihan Inti →
+ * Tantangan) — sengaja TIDAK spesifik ke mekanik soal per format (banyak
+ * format berbeda per skill/level, lihat CLAUDE.md "N Format Berdampingan"),
+ * karena URUTAN TAHAPnya sendiri SELALU sama di seluruh app apa pun
+ * formatnya, jadi 1 kartu generik ini cukup dipakai lintas skill/topik.
+ * Level ditampilkan sbg badge READ-ONLY, BUKAN pemilih tingkat kesulitan —
+ * app ini sudah punya sistem level/progres sendiri lewat Peta Level
+ * (Little Stars…Trailblazer), bukan dipilih ulang per-topik di sini.
+ */
+function renderCaraMain(key: SkillKey, topic: TopicRef, meta: SkillMeta, level: LevelMeta): void {
+  root.innerHTML = `
+    <div class="act-head">
+      <button class="iconbtn" type="button" data-action="backStep" aria-label="Kembali ke Daftar Materi">${ICON_BACK}</button>
+      <div class="txt">
+        <h1>${topic.title}</h1>
+        <div class="sub"><span class="tag accent">${meta.emoji} ${meta.label}</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:460px;margin:0 auto;text-align:center">
+      <span class="stage-badge">${meta.emoji} Cara Main</span>
+      <h2 class="h2" style="margin-bottom:6px">${meta.tagline}</h2>
+      <p class="lede" style="margin-bottom:18px">${topic.desc}</p>
+      <div class="cara-main-steps">
+        <div class="cara-main-step">
+          <span class="num" aria-hidden="true">1</span>
+          <p><b>🎈 Kenalan</b><span>Dengar &amp; coba dulu, santai aja — belum dinilai.</span></p>
+        </div>
+        <div class="cara-main-step">
+          <span class="num" aria-hidden="true">2</span>
+          <p><b>🎯 Latihan Inti</b><span>Jawab soalnya, boleh dicoba lagi kalau meleset.</span></p>
+        </div>
+        <div class="cara-main-step">
+          <span class="num" aria-hidden="true">3</span>
+          <p><b>👑 Tantangan</b><span>Asah kemampuanmu sampai tuntas.</span></p>
+        </div>
+      </div>
+      <span class="tag" style="margin-top:var(--s2)">${level.emoji} ${level.name}</span>
+      <button class="primary-btn pt-cta" type="button" data-action="startCaraMain" style="margin-top:var(--s4);width:100%">▶️ Yuk Mulai!</button>
+    </div>
+  `;
+
+  setHandlers({
+    backStep: () => go('topics'),
+    startCaraMain: () => {
+      markCaraMainSeen(key, topic.id);
+      render();
+    },
+  });
+}
+
 function renderActivity(): void {
   const key = state.skillKey as SkillKey;
   const meta = SKILL_META[key];
+  const level = browsingLevel();
+  const topic = topicsForSkill(key, level.key)[state.topicIndex];
+
+  if (topic && !hasSeenCaraMain(key, topic.id)) {
+    renderCaraMain(key, topic, meta, level);
+    return;
+  }
+
   // Panel kecepatan/suara cuma relevan kalau skill-nya benar-benar pakai TTS
   // (`speak()`)/mic di suatu titik (revisi user: sempat digerbang ke
   // listening/speaking saja, TAPI Vocabulary & Grammar juga pakai dengar 🔊/
@@ -1364,7 +1833,7 @@ function renderActivity(): void {
     <div class="act-head">
       <button class="iconbtn" type="button" data-action="backStep" aria-label="Kembali satu langkah">${ICON_BACK}</button>
       <div class="txt">
-        <h1>${topicTitle(key, state.topicIndex, browsingLevel().key)}</h1>
+        <h1>${topic.title}</h1>
         <div class="sub">
           <span class="tag accent">${meta.emoji} ${meta.label}</span>
           <span class="meta">Langkah ${state.step + 1} dari ${STEP_LABELS.length}</span>
@@ -1492,38 +1961,55 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
     }
     case 'speaking': {
       const topic = speakingTopicsForLevel(contentLevel)[state.topicIndex];
-      // `AnySpeakingTopic` — format lama (Explorer/Adventurer, `model`/
-      // `drill`/`roleplay` bebas) vs format baru "py `items`" (Little Stars,
-      // target tertutup 3-tangga recognize/imitate/recall), dibedakan
-      // runtime lewat `'items' in topic` (types.ts komentar
-      // `AnySpeakingTopic`), sama pola persis dgn `AnyListeningTopic`/
-      // `AnyReadingTopic`. JANGAN migrasi format lama ke sini tanpa arahan
-      // baru user.
+      // `AnySpeakingTopic` — format lama (Explorer/Adventurer/Achiever,
+      // `model`/`drill`/`roleplay` bebas) vs format KEDUA "py `items`"
+      // (Little Stars/Starter, target tertutup 3-tangga recognize/imitate/
+      // recall) vs format KETIGA "py `turns`" (Trailblazer, simulasi
+      // interview KET/PET) vs format KEEMPAT "py `stories`" (pilot Explorer,
+      // cerita mini + pertanyaan komprehensi dijawab lewat mic) — dibedakan
+      // runtime lewat `'items' in topic` (tingkat-1) lalu `'turns' in topic`
+      // lalu `'stories' in topic` (tingkat-2/3), sama pola persis dgn
+      // `AnyListeningTopic`/`AnyReadingTopic`. JANGAN migrasi format lama ke
+      // sini tanpa arahan baru user.
       if ('items' in topic) {
         if (state.step === 0) speakingGame.renderKenalanPhrase(stage, topic, nextStep, praiseLevel);
         else if (state.step === 1) speakingGame.runLatihanIntiPhrase(stage, topic, nextStep, praiseLevel);
         else speakingGame.runTantanganPhrase(stage, topic, nextStep, praiseLevel);
+      } else if ('turns' in topic) {
+        if (state.step === 0) speakingGame.renderKenalanInterview(stage, topic, nextStep);
+        else if (state.step === 1) speakingGame.runLatihanIntiInterview(stage, topic, nextStep, praiseLevel);
+        else speakingGame.runTantanganInterview(stage, topic, nextStep, praiseLevel);
+      } else if ('stories' in topic) {
+        if (state.step === 0) speakingGame.renderKenalanStory(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) speakingGame.runLatihanIntiStory(stage, topic, nextStep, praiseLevel);
+        else speakingGame.runTantanganStory(stage, topic, nextStep, praiseLevel);
       } else {
         if (state.step === 0) speakingGame.renderKenalan(stage, topic, nextStep);
-        else if (state.step === 1) speakingGame.runLatihanInti(stage, topic, nextStep);
-        else speakingGame.runTantangan(stage, topic, nextStep);
+        else if (state.step === 1) speakingGame.runLatihanInti(stage, topic, nextStep, praiseLevel);
+        else speakingGame.runTantangan(stage, topic, nextStep, praiseLevel);
       }
       return;
     }
     case 'reading': {
       const topic = readingTopicsForLevel(contentLevel)[state.topicIndex];
-      // `AnyReadingTopic` — format lama (Adventurer, `primer`/`drill`/`story`,
-      // baca kalimat/cerita) vs format baru "py `items`" (Little Stars, baca
-      // KATA tunggal ↔ gambar), dibedakan runtime lewat `'items' in topic`
-      // (types.ts komentar `AnyReadingTopic`), sama pola persis dgn
-      // `AnyListeningTopic`. JANGAN migrasi format lama ke sini tanpa arahan
-      // baru user.
+      // `AnyReadingTopic` — 3 format: format lama (Adventurer/Achiever,
+      // `primer`/`drill`/`story`, baca kalimat/cerita, silent) vs format
+      // KEDUA "py `items`" (Little Stars/Starter, baca KATA/FRASA ↔ gambar,
+      // TTS aktif) vs format KETIGA "py `checks`" (Explorer, 1 kalimat →
+      // Benar/Salah, silent) — dibedakan runtime BERTINGKAT lewat
+      // `'items' in topic` lalu `'checks' in topic` (types.ts komentar
+      // `AnyReadingTopic`), sama pola persis dgn `AnyListeningTopic`. JANGAN
+      // migrasi format lama ke sini tanpa arahan baru user.
       if ('items' in topic) {
         if (state.step === 0) readingGame.renderKenalanWord(stage, topic, nextStep, praiseLevel);
         else if (state.step === 1) readingGame.runLatihanIntiWord(stage, topic, nextStep, praiseLevel);
         else readingGame.runTantanganWord(stage, topic, nextStep, praiseLevel);
+      } else if ('checks' in topic) {
+        if (state.step === 0) readingGame.renderKenalanCheck(stage, topic, nextStep);
+        else if (state.step === 1) readingGame.runLatihanIntiCheck(stage, topic, nextStep, praiseLevel);
+        else readingGame.runTantanganCheck(stage, topic, nextStep, praiseLevel);
       } else {
-        if (state.step === 0) readingGame.renderKenalan(stage, topic, nextStep);
+        if (state.step === 0) readingGame.renderKenalan(stage, topic, nextStep, praiseLevel);
         else if (state.step === 1) readingGame.runLatihanInti(stage, topic, nextStep, praiseLevel);
         else readingGame.runTantangan(stage, topic, nextStep, praiseLevel);
       }
@@ -1531,9 +2017,27 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
     }
     case 'grammar': {
       const topic = grammarTopicsForLevel(contentLevel)[state.topicIndex];
-      if (state.step === 0) grammarGame.renderKenalan(stage, topic, nextStep);
-      else if (state.step === 1) grammarGame.runLatihanInti(stage, topic, nextStep);
-      else grammarGame.runTantangan(stage, topic, nextStep);
+      // `AnyGrammarTopic` — format LAMA (Explorer/Adventurer/Achiever,
+      // `examples`/`scramble`/`fill`, teks-first) vs format KEDUA "py
+      // `items`" (Little Stars/Starter, kontras 2-kalimat audio+gambar) vs
+      // format KETIGA "py `transforms`" (Trailblazer, transformasi kalimat
+      // MCQ), dibedakan runtime tingkat-1 `'items' in topic`, tingkat-2
+      // `'transforms' in topic` (types.ts komentar `AnyGrammarTopic`), sama
+      // pola persis dgn `AnySpeakingTopic`. JANGAN migrasi format lama ke
+      // sini tanpa arahan baru user.
+      if ('items' in topic) {
+        if (state.step === 0) grammarGame.renderKenalanPattern(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) grammarGame.runLatihanIntiPattern(stage, topic, nextStep, praiseLevel);
+        else grammarGame.runTantanganPattern(stage, topic, nextStep, praiseLevel);
+      } else if ('transforms' in topic) {
+        if (state.step === 0) grammarGame.renderKenalanTransform(stage, topic, nextStep);
+        else if (state.step === 1) grammarGame.runLatihanIntiTransform(stage, topic, nextStep, praiseLevel);
+        else grammarGame.runTantanganTransform(stage, topic, nextStep, praiseLevel);
+      } else {
+        if (state.step === 0) grammarGame.renderKenalan(stage, topic, nextStep);
+        else if (state.step === 1) grammarGame.runLatihanInti(stage, topic, nextStep);
+        else grammarGame.runTantangan(stage, topic, nextStep);
+      }
       return;
     }
   }
@@ -2001,7 +2505,6 @@ function renderPlacementTestScreen(): void {
         stage,
         levelRecommended,
         () => go('home'),
-        () => go('levels'),
         totalCorrect,
         totalItems
       );
@@ -2054,12 +2557,7 @@ function renderPlacementTestScreen(): void {
   const { level: cachedLevel, placementAttemptsRemaining } = getCachedChildStatus();
   if (placementAttemptsRemaining <= 0) {
     const stage = shell();
-    placementGame.renderPlacementLimitReached(
-      stage,
-      cachedLevel ?? undefined,
-      () => go('home'),
-      () => go('levels')
-    );
+    placementGame.renderPlacementLimitReached(stage, cachedLevel ?? undefined, () => go('home'));
     return;
   }
 
@@ -2079,7 +2577,7 @@ function renderPlacementTestScreen(): void {
  * REVISI (PRD §12.1/§16): skip-ahead sekarang SEQUENTIAL, bukan bebas ke
  * level manapun — cuma level terkunci PERTAMA (persis di depan batas
  * terbuka) yang boleh ditantang duluan, lihat `firstLockedIndex` di
- * `renderLevels`. Cara lain untuk melompat lebih jauh: Placement Test
+ * `renderHome`. Cara lain untuk melompat lebih jauh: Placement Test
  * (`renderPlacementTestScreen`/`unlockLevelsUpTo`) — hasilnya menandai Bos
  * semua level di bawah rekomendasi sebagai "ditaklukkan" sekaligus.
  */
@@ -2139,199 +2637,6 @@ function currentStopKey(unlocked: Record<string, boolean>): LevelKey | null {
   return lastOpen ? lastOpen.key : null;
 }
 
-function renderLevels(): void {
-  const unlocked = levelUnlockMap(LEVELS);
-  const hereKey = currentStopKey(unlocked);
-  const hereIdx = LEVELS.findIndex((l) => l.key === hereKey);
-  const hereLevel = hereIdx >= 0 ? LEVELS[hereIdx] : null;
-  const nextLevel = hereIdx >= 0 ? LEVELS[hereIdx + 1] : undefined;
-
-  // Tantangan Bos sekarang SEQUENTIAL (revisi PRD §12.1/§16) — skip-ahead
-  // bebas ke level manapun dihapus. Cuma level terkunci PERTAMA (tepat
-  // setelah batas terbuka) yang boleh ditantang duluan; level setelahnya
-  // mati sampai yang di depannya ditaklukkan dulu.
-  const firstLockedIndex = LEVELS.findIndex((l) => !unlocked[l.key]);
-
-  // Persentase yang sama dengan panel "Progresmu" di Beranda (bossPct di
-  // renderHome) — ditampilkan lagi di sini supaya begitu anak buka peta penuh,
-  // progresnya tetap kelihatan tanpa harus balik ke Beranda dulu.
-  const done = doneCount();
-  const mapTotalTopics = hereLevel ? totalTopicsForLevel(hereLevel.key) : 0;
-  const mapBossPct = mapTotalTopics > 0 ? Math.round((done / mapTotalTopics) * 100) : 0;
-  // Selalu tampil (termasuk 0%) selama sudah ada perhentian aktif — sama
-  // seperti levelProgress di renderHome (heading nama level + persentase
-  // besar di atas bar, supaya bar-nya jelas kebaca, bukan garis dekoratif).
-  const mapProgress = hereLevel
-    ? `
-        <div class="level-progress-head" style="max-width:44ch;position:relative;z-index:1">
-          <span class="level-progress-name">${hereLevel.emoji} ${hereLevel.name}</span>
-          <span class="level-progress-pct">${mapBossPct}% menuju ${nextLevel ? nextLevel.name : bossLabel(hereLevel)}</span>
-        </div>
-        <div class="progress-track" role="img" aria-label="${mapBossPct}% menuju ${bossLabel(hereLevel)}" style="margin-top:10px;max-width:44ch">
-          <div class="progress-fill" style="width:${mapBossPct}%"></div>
-        </div>
-        <p class="meta" style="margin-top:8px;position:relative;z-index:1">${
-          done > 0 ? `${done} dari ${mapTotalTopics} modul sudah kamu tuntaskan.` : `Ayo mulai dari modul pertama!`
-        }</p>`
-    : '';
-
-  // Badge Rank (permintaan user) — SATU badge global di judul peta, BUKAN
-  // diulang per-perhentian: level/Bos di tiap perhentian sudah menjawab
-  // "sedang di mana & Bos mana yang dihadapi" (progression, dari
-  // levelUnlockMap/isBossCleared), rank cuma menjawab pertanyaan BEDA
-  // ("seberapa jago keseluruhan dari First Placement Test terakhir") —
-  // taruh sekali di sini sudah cukup, mengulanginya di tiap trail-stop
-  // cuma bikin noise tanpa info baru. Rank-nya sendiri SEKARANG cuma
-  // restatement CEFR dari `levelRecommended` (lihat `pickRank` di
-  // games/placement.ts) — bukan skala S/A/B/C/D terpisah lagi, biar tidak
-  // bentrok dengan badge CEFR yang sudah dipakai per-perhentian di bawah.
-  const { latestPlacementResult: rankResult } = getCachedChildStatus();
-  const rank = rankResult ? placementGame.pickRank(rankResult.levelRecommended) : null;
-  const rankBadge = rank ? `<span class="tag accent">${rank.emoji} Rank ${rank.cefr}</span>` : '';
-
-  const stops = LEVELS.map((lvl, i) => {
-    const cleared = isBossCleared(lvl.key);
-    const isUnlocked = !!unlocked[lvl.key];
-    const here = lvl.key === hereKey;
-    const place = placeFor(lvl.key);
-    const cefrBadge = lvl.cefr ? `<span class="tag">${lvl.cefr}</span>` : '';
-
-    const statusChip = cleared
-      ? `<span class="tag ok">${ICON_CHECK} ${BOSS_NAME[lvl.key]} ditaklukkan</span>`
-      : isUnlocked && lvl.hasContent
-        ? `<span class="tag accent">Terbuka</span>`
-        : isUnlocked
-          ? `<span class="tag">Terbuka · materi segera hadir</span>`
-          : `<span class="tag">${ICON_LOCK} Terkunci</span>`;
-
-    let actions: string;
-    if (lvl.hasContent && isUnlocked) {
-      actions = `
-        <button class="primary-btn" type="button" data-action="openMenuFromLevels" data-payload="${lvl.key}">📋 Buka Menu Belajar</button>
-        <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} ${cleared ? `Main Lagi Lawan ${BOSS_NAME[lvl.key]}` : `Coba Tantangan ${BOSS_NAME[lvl.key]}`}</button>`;
-    } else if (isUnlocked) {
-      // Terbuka tapi materinya belum ada (`hasContent:false`). Dulu cuma teks
-      // polos tanpa tombol — kartunya kelihatan setengah jadi, padahal sejak
-      // `currentStopKey` berjangkar ke hasil placement test, perhentian
-      // seperti ini bisa jadi tempat "Kamu di sini" anak yang SEBENARNYA
-      // (mis. rekomendasi Adventurer). Tombolnya nyata & bisa di-tap, tapi
-      // mendaratnya di layar placeholder yang jujur (`renderLevelSoon`) —
-      // bukan materi palsu & bukan tombol mati (content.ts: "placeholder
-      // jujur, bukan link mati atau konten palsu"; CLAUDE.md: link ke fitur
-      // yang belum ada = navigasi bohong).
-      actions = `
-        <button class="ghost-btn" type="button" data-action="openSoonFromLevels" data-payload="${lvl.key}">🚧 Intip Markas Ini</button>
-        <p class="meta">Sudah terbuka! Materinya masih disiapkan, tunggu ya.</p>`;
-    } else if (i === firstLockedIndex) {
-      // Level terkunci PERTAMA (persis setelah batas terbuka) — satu-satunya
-      // yang boleh ditantang duluan. Bos di sini berfungsi sebagai uji
-      // kemampuan umum (mirip placement test) kalau level ini sendiri belum
-      // punya materi, jadi tetap bisa dicoba pakai soal dari materi yang ada.
-      actions = `
-        <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} Coba Tantangan ${BOSS_NAME[lvl.key]}, Buka Duluan</button>
-        <p class="meta">${
-          lvl.hasContent
-            ? 'Atau taklukkan dulu Raja level sebelumnya — otomatis kebuka.'
-            : `Materi lengkap level ini belum ada, tapi Tantangan ${BOSS_NAME[lvl.key]} tetap bisa dicoba sebagai uji kemampuan umum.`
-        }</p>`;
-    } else {
-      // Berurutan (PRD §12.1/§16, direvisi) — level lebih jauh dari batas
-      // terbuka tidak bisa dilompati, walau level di depannya bisa. Taklukkan
-      // dulu Bos level sebelumnya (atau placement test yang merekomendasikan
-      // sejauh ini, lihat §16) baru tombol ini hidup.
-      actions = `
-        <button class="ghost-btn" type="button" disabled aria-disabled="true">${ICON_LOCK} Raja Terkunci</button>
-        <p class="meta">Taklukkan dulu Raja level sebelumnya secara berurutan — atau coba Placement Test di Pengaturan.</p>`;
-    }
-
-    // Stempel di bahu medali: mango+centang kalau bos sudah ditaklukkan, pasir
-    // redup+gembok kalau masih tersegel, kosong kalau sedang terbuka.
-    const stamp = cleared
-      ? `<span class="trail-stamp" aria-hidden="true">${ICON_CHECK}</span>`
-      : isUnlocked
-        ? ''
-        : `<span class="trail-stamp locked" aria-hidden="true">${ICON_LOCK}</span>`;
-
-    const stateClass = [cleared ? 'is-cleared' : '', isUnlocked ? 'is-open' : 'is-locked', here ? 'is-here' : '']
-      .filter(Boolean)
-      .join(' ');
-
-    // Jejak kaki berkelok bergantian kiri-kanan supaya jalurnya terbaca sebagai
-    // rute yang berliku, bukan garis timeline lurus.
-    const bend = i % 2 === 0 ? TRAIL_BEND_RIGHT : TRAIL_BEND_LEFT;
-
-    return `
-      <li class="trail-stop ${place.cls} ${stateClass}">
-        <div class="trail-scene" aria-hidden="true">${place.hills}</div>
-        <div class="trail-rail">
-          ${bend}
-          <span class="trail-medallion" aria-hidden="true"><span>${lvl.emoji}</span>${stamp}</span>
-          ${here ? `<span class="trail-you mascot-idle" aria-hidden="true">🦁</span>` : ''}
-        </div>
-        <div class="trail-card">
-          <span class="trail-place">🏰 Markas ${i + 1} · ${place.name}</span>
-          <h3>${lvl.name}${here ? ' <span class="tag accent">Kamu di sini</span>' : ''}</h3>
-          <div class="trail-meta">${cefrBadge}<span class="meta">${lvl.age}</span>${statusChip}</div>
-          <div class="trail-actions">${actions}</div>
-        </div>
-      </li>`;
-  }).join('');
-
-  root.innerHTML = `
-    <div class="screen-head">
-      <button class="iconbtn" type="button" data-action="backToHome" aria-label="Kembali ke Beranda">${ICON_BACK}</button>
-      <div class="txt">
-        <h1>🗺️ Peta Level${rankBadge}</h1>
-        <p>Enam markas, satu jalur. Taklukkan Raja di markasmu untuk membuka yang berikutnya.</p>
-      </div>
-    </div>
-
-    <section class="two-col">
-      <div class="map-board">
-        <div class="map-sky">
-          <span class="map-sun" aria-hidden="true"></span>
-          <span class="cloud c1" aria-hidden="true">${CLOUD}</span>
-          <span class="cloud c2" aria-hidden="true">${CLOUD}</span>
-          <h2>Jalur Petualangan</h2>
-          <p>Jalannya lewat sini. Kamu boleh jalan pelan-pelan — tidak ada batas waktu, dan tidak ada yang hilang kalau diulang.</p>
-          ${mapProgress}
-        </div>
-        <ol class="trail">${stops}</ol>
-        <div class="trail-horizon">
-          <div class="trail-rail" aria-hidden="true">${TRAIL_BEND_RIGHT}</div>
-          <div class="trail-horizon-txt">
-            <b>Ujung jalur untuk sekarang</b>
-            <span>Markas berikutnya masih dibangun — materinya menyusul.</span>
-          </div>
-        </div>
-      </div>
-
-      <aside class="stack">
-        <div class="card">
-          <span class="eyebrow">Tanda di peta</span>
-          <ul class="map-legend" style="margin-top:12px">
-            <li><span class="legend-dot is-cleared" aria-hidden="true">${ICON_CHECK}</span>Raja-nya sudah kamu taklukkan</li>
-            <li><span class="legend-dot" aria-hidden="true">🧭</span>Terbuka — boleh dimainkan sekarang</li>
-            <li><span class="legend-dot is-locked" aria-hidden="true">${ICON_LOCK}</span>Masih tersegel</li>
-          </ul>
-          <p class="meta" style="margin-top:12px">Singa 🦁 menandai markasmu sekarang.</p>
-        </div>
-        <div class="card note-card">
-          <div class="card-title">Mau lompat lebih jauh?</div>
-          <p>Tantangan Raja markas berikutnya (yang paling dekat) boleh langsung dicoba tanpa nunggu — tapi markas setelahnya tetap harus berurutan. Mau lompat lebih jauh lagi? Coba Placement Test di Pengaturan.</p>
-        </div>
-      </aside>
-    </section>
-  `;
-
-  setHandlers({
-    backToHome: () => go('home'),
-    openMenuFromLevels: (payload) => go('menu', { viewLevel: payload as LevelKey }),
-    openBossFromLevels: (payload) => go('boss', { bossLevel: payload as LevelKey }),
-    openSoonFromLevels: (payload) => go('levelSoon', { soonLevel: payload as LevelKey }),
-  });
-}
-
 /* ------------------------------------------- perhentian: materi belum ada -- */
 /**
  * Layar perhentian yang SUDAH terbuka tapi materinya belum diauthoring
@@ -2363,7 +2668,7 @@ function renderLevelSoon(): void {
   // belum siap" untuk level yang sebenarnya sudah siap (bohong ke arah
   // sebaliknya).
   if (!level) {
-    go('levels');
+    go('home');
     return;
   }
   if (level.hasContent) {
@@ -2377,7 +2682,7 @@ function renderLevelSoon(): void {
 
   root.innerHTML = `
     <div class="screen-head">
-      <button class="iconbtn" type="button" data-action="backToLevels" aria-label="Kembali ke Peta Level">${ICON_BACK}</button>
+      <button class="iconbtn" type="button" data-action="backToHome" aria-label="Kembali ke Peta Level">${ICON_BACK}</button>
       <div class="txt">
         <h1>${level.emoji} ${level.name}</h1>
         <p>Markas ini sudah terbuka — kegiatan belajarnya masih disiapkan.</p>
@@ -2397,7 +2702,7 @@ function renderLevelSoon(): void {
               ? `<button class="primary-btn" type="button" data-action="soonOpenReady">${ready.emoji} Main di ${ready.name} Dulu</button>`
               : ''
           }
-          <button class="ghost-btn" type="button" data-action="backToLevels">🗺️ Balik ke Peta Level</button>
+          <button class="ghost-btn" type="button" data-action="backToHome">🗺️ Balik ke Peta Level</button>
         </div>
       </div>
 
@@ -2415,7 +2720,7 @@ function renderLevelSoon(): void {
   `;
 
   setHandlers({
-    backToLevels: () => go('levels'),
+    backToHome: () => go('home'),
     soonOpenReady: () => go('menu', { viewLevel: ready?.key ?? null }),
   });
 }
@@ -2431,10 +2736,10 @@ function renderBoss(): void {
     // karena tombol Tantangan Bos selalu dikirim dengan LevelKey asli dari Peta Level.
     root.innerHTML = `
       <div class="screen-head">
-        <button class="iconbtn" type="button" data-action="backToLevels" aria-label="Kembali ke Peta Level">${ICON_BACK}</button>
+        <button class="iconbtn" type="button" data-action="backToHome" aria-label="Kembali ke Peta Level">${ICON_BACK}</button>
         <div class="txt"><h1>Tantangan Raja</h1><p>Level ini tidak ditemukan — coba lewat Peta Level lagi ya.</p></div>
       </div>`;
-    setHandlers({ backToLevels: () => go('levels') });
+    setHandlers({ backToHome: () => go('home') });
     return;
   }
 
@@ -2479,7 +2784,7 @@ function renderBoss(): void {
     <div class="card boss-stage" id="stage"></div>
   `;
 
-  setHandlers({ exitBoss: () => go('levels') });
+  setHandlers({ exitBoss: () => go('home') });
 
   bossGame.runBoss(
     qs<HTMLDivElement>(root, '#stage'),
@@ -2528,12 +2833,10 @@ function renderBossWin(levelKey: LevelKey): void {
       <p class="done-sub">Kamu menang lawan ${BOSS_NAME[levelKey]}. <b>+${XP_BOSS} XP</b> ⚡</p>
       ${wonLine}
       ${nextLine}
-      <button class="primary-btn" type="button" data-action="backToLevels">Lihat Peta Level</button>
-      <button class="ghost-btn" type="button" data-action="backToHome">🏠 Beranda</button>
+      <button class="primary-btn" type="button" data-action="backToHome">🗺️ Lihat Peta Level</button>
     </div>
   `;
   setHandlers({
-    backToLevels: () => go('levels'),
     backToHome: () => go('home'),
   });
 }
@@ -2547,104 +2850,473 @@ function renderBossWin(levelKey: LevelKey): void {
  * menambah bintang & tidak pernah dihitung levelUnlockMap/bossCleared. Belajar
  * tetap satu-satunya jalur nyata untuk membuka level baru.
  */
+type RajaKey = 'kata' | 'balon' | 'susun' | 'kelompok' | 'ingatan';
+
+interface RajaDef {
+  key: RajaKey;
+  name: string;
+  sub: string;
+  color: string;
+  /** URL gambar ikon dominan (permintaan user) — kalau kosong, fallback ke
+   *  mascot SVG generik `rajaMascot()` (scenery.ts). Raja Kata
+   *  (`public/img/word_match.jpg`), Raja Balon (`public/img/balloon.jpg`) &
+   *  Sentence Puzzle (`public/img/sentence puzzle.jpeg`) punya art asli; 2
+   *  raja lain masih fallback mascot. */
+  icon?: string;
+}
+
+/**
+ * Roster "Raja" Game Hub (permintaan user, revisi total dari versi lama
+ * yang cuma daftar ULANG semua topik/skill sbg "main bebas"). Prinsip: (1)
+ * **BUKAN reskin skill** — nama di sini berbasis MEKANIK (cocokkan/susun
+ * kalimat/kelompokkan/cari-pasangan), bukan nama skill Vocab/Listening/dst
+ * — versi awal "Raja Kata/Dengar/Suara" sempat DITOLAK user ("game nya
+ * tidak perlu kata, dengar, suara") krn waktu itu isinya cuma kuis skill
+ * berbaju mahkota, bukan game beneran; (2) **"pure game"** — tiap mekanik
+ * di sini task-shape-nya genuinely permainan, bukan MCQ.
+ * 🔒 **"Raja Kata" SEKARANG ADA LAGI di sini, menggantikan posisi "Raja
+ * Ejaan"** (permintaan user langsung) — TAPI ini BUKAN comeback dari yang
+ * ditolak dulu: mekaniknya Word Match (`games/wordmatch.ts` — tap kata↔tap
+ * gambar, pasangan benar digambar garis penghubung SVG), genuinely game
+ * visual-matching tersendiri (beda task-shape dari 3 raja lain), bukan kuis
+ * skill Vocab berbaju mahkota. Awalnya dibangun sbg Boss berdiri sendiri di
+ * Peta Level (arena+menang sendiri, XP lebih besar), lalu user minta
+ * dipindah ke sini krn lebih pas sbg "main bebas" — sekarang XP-nya SAMA
+ * dgn 3 raja lain (`XP_FREEPLAY`, bukan lagi angka spesial), gate 3
+ * tingkat kesulitannya (Mudah/Sedang/Sulit) tetap ada tapi jadi langkah
+ * pilih-dulu di dalam `runRajaRound` (lihat `renderKataTierPicker`) — Raja
+ * Kata & Raja Balon (lihat catatan di bawah) SEKARANG SAMA-SAMA minta pilih
+ * varian dulu sebelum main (2 raja lain langsung random topik). Eja Kata (`runEjaKata`) TIDAK dihapus
+ * dari app — tetap dipakai Tantangan Vocab (`games/vocabulary.ts` tab "✏️
+ * Eja Kata"), cuma kehilangan entri berdiri-sendiri di Game Hub ini.
+ * (3) **Roster & warna SENDIRI** — beda karakter total dari 6 Raja Hewan
+ * Peta Level (permintaan user eksplisit, `scenery.ts` `rajaMascot`), warna
+ * pinjam token `--c-*` yang sudah ada (bukan makna skill-nya lagi, cuma
+ * hue pembeda antar-kartu).
+ * 🔒 **"Raja Balon" BARU** (permintaan user, terinspirasi referensi
+ * kompetitor "letupkan balon" — ditanya dulu soal timer/nyawa/badge
+ * kesulitan yang ada di referensi itu, SEMUA sengaja DIBUANG di sini krn
+ * dilarang keras CLAUDE.md/`materi/game.md` §5, cuma bentuk visualnya yang
+ * diadaptasi) — ditaruh TEPAT SETELAH Raja Kata di array ini (permintaan
+ * user "simpan di bawah game match word", urutan array = urutan render
+ * `renderGame`). Mekanik: `games/balloonpop.ts` — prompt Bahasa Indonesia
+ * di atas, balon berisi kata Inggris naik terus-menerus dari bawah ke atas
+ * (CSS animation loop), anak tap yang cocok. 🔒 **Revisi user lanjutan**
+ * ("kecepatan sama seperti game match word, ada level mudah/sedang/sulit"
+ * + "soalnya pun sesuaikan dengan level") — SEKARANG JUGA minta pilih
+ * varian dulu (`renderBalonTierPicker`, pola SAMA `renderKataTierPicker`),
+ * tiap tingkat py BANK KATA SENDIRI (mudah=kata pendek, sulit=kata
+ * panjang, pola sama 3 bank Raja Kata) SEKALIGUS kecepatan naik-turun balon
+ * beda (`DIFFICULTY_META.durMin/durMax`, mudah=paling lambat).
+ * 🔒 **"Raja Susun" DIGANTI TOTAL jadi "Sentence Puzzle"** (permintaan
+ * user, screenshot referensi kompetitor: gambar di atas + kata dalam
+ * gelembung tersusun piramida termasuk kata pengecoh + bar jawaban emas +
+ * tombol Hint) — user eksplisit pilih GANTI (bukan tambah entri ke-6),
+ * `key` TETAP `'susun'` (XP/progress lama anak via `getGameXp`/
+ * `addGameXp` tidak hilang), cuma `name` & mekanik di baliknya yang
+ * berubah — posisi TETAP persis di bawah Raja Balon. Vocab Tantangan "🔤
+ * Susun Kalimat" (`vocabularyGame.runSusunKalimat`) SAMA SEKALI TIDAK
+ * disentuh, tetap dipakai persis seperti sebelumnya di luar Game Hub ini.
+ * Detail mekanik: `games/sentencepuzzle.ts`.
+ */
+const RAJA_LIST: RajaDef[] = [
+  { key: 'kata', name: 'Raja Kata', sub: 'Cocokkan kata & gambar', color: 'var(--c-vocab)', icon: '/img/word_match.jpg' },
+  { key: 'balon', name: 'Raja Balon', sub: 'Letupkan balon yang cocok', color: 'var(--sun-500)', icon: '/img/balloon.jpg' },
+  { key: 'susun', name: 'Sentence Puzzle', sub: 'Susun kalimat dari gelembung kata', color: 'var(--c-gram)', icon: '/img/sentence puzzle.jpeg' },
+  { key: 'kelompok', name: 'Raja Kelompok', sub: 'Kelompokkan gambarnya', color: 'var(--c-listen)' },
+  { key: 'ingatan', name: 'Raja Ingatan', sub: 'Cari pasangan katanya', color: 'var(--c-speak)' },
+];
+
+/**
+ * Game Hub — jalur petualangan mini (permintaan user: "mirip seperti halaman
+ * peta petualang", "berikan edge dan garis putus-putus yang merupakan jalur
+ * petualang"). Reuse `.trail`/`.trail-card` dasar yang sama dgn Peta Level
+ * (`renderLevels`) TANPA `.trail-scene` (siluet medan)/status locked-cleared
+ * (Game Hub tidak py progres sekuensial, PRD §12.3), TAPI rail+medali kecil
+ * (`.trail-rail`/`.trail-medallion`) yang dulu dipakai di sini SEKARANG
+ * DIGANTI TOTAL (permintaan user: "icon lebih dominan... raja kata icon di
+ * kiri, game selanjutnya icon di kanan, selang seling... tetap berpetualang
+ * jd saling terhubung") — ikon per-Raja (gambar asli utk Raja Kata,
+ * `public/img/word_match.jpg`; mascot SVG generik `rajaMascot()` utk 3 raja
+ * lain yang belum py art sendiri) sekarang JAUH lebih besar & jadi bagian
+ * kartu itu sendiri (`.raja-stop-inner`, flex row), sisi kiri/kanan
+ * BERGANTIAN per index (`icon-right` tiap index ganjil) — bukan lagi selalu
+ * di rail sempit sebelah kiri. "Terhubung antar game" sekarang berupa 1
+ * garis putus-putus vertikal di celah antar kartu (`.raja-trail
+ * .trail-stop::after`), bukan lagi bend-path SVG per-rail (yg didesain utk
+ * medali KECIL, tidak cocok lagi dgn ikon besar+selang-seling ini). Warna
+ * tiap kartu tetap lewat `--band-deep` inline, cuma sekarang dibaca ikon
+ * fallback (`rajaMascot`) & border ikon, bukan lagi bend/medallion lama.
+ */
 function renderGame(): void {
   const level = currentPlayableLevel().key;
-  const cards = SKILL_KEYS.flatMap((key) => {
-    const meta = SKILL_META[key];
-    return topicsForSkill(key, level).map(
-      (t, i) => `
-      <div class="skill-card" role="button" tabindex="0" data-action="playFree" data-payload="${key}:${i}">
-        <span class="ic" style="background:${meta.accentBg};color:${meta.accent}" aria-hidden="true">${meta.emoji}</span>
-        <div class="body">
-          <h3>${t.title}</h3>
-          <p>${meta.label} · main bebas</p>
+  const sortableCount = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic).length;
+  // Raja Kelompok cuma tampil kalau level ini punya ≥1 topik `sortBaskets`
+  // (baru pilot 1 topik, `bentuk`/Little Stars, materi/game.md §7) — pola
+  // sama `visibleSkillKeys()`, sembunyikan diam-diam drpd kartu mati.
+  const roster = RAJA_LIST.filter((r) => r.key !== 'kelompok' || sortableCount > 0);
+
+  const stops = roster
+    .map((r, i) => {
+      const xp = getGameXp(r.key);
+      const badge = xp > 0 ? `<span class="tag">🏆 ${xp} XP</span>` : `<span class="tag ok">Baru</span>`;
+      const iconInner = r.icon ? `<img src="${r.icon}" alt="" loading="lazy">` : rajaMascot(r.key, r.color);
+      return `
+      <li class="trail-stop ${i % 2 === 1 ? 'icon-right' : ''}" style="--band-deep:${r.color}">
+        <div class="raja-stop-inner">
+          <span class="raja-icon" aria-hidden="true">${iconInner}</span>
+          <div class="trail-card">
+            <span class="trail-place">🎮 Raja Game Hub</span>
+            <h3>${r.name}</h3>
+            <div class="trail-meta"><span class="meta">${r.sub}</span>${badge}</div>
+            <div class="trail-actions">
+              <button class="primary-btn" type="button" data-action="playRaja" data-payload="${r.key}">▶️ Main</button>
+            </div>
+          </div>
         </div>
-        <span class="chev" aria-hidden="true">${ICON_CHEVRON}</span>
-      </div>`
-    );
-  }).join('');
+      </li>`;
+    })
+    .join('');
+
+  const doorXp = getGameXp('pintu');
+  const doorBadge = doorXp > 0 ? `🏆 ${doorXp} XP` : 'Baru';
 
   root.innerHTML = `
     <div class="greet">
       <h1 class="display">Game</h1>
-      <p class="lede">Main bebas kapan saja — ulang kegiatan yang sudah kamu buka di Explorer. Tetap dapat XP tiap main, tapi tidak menambah bintang dan tidak dihitung untuk buka level baru — bintang &amp; Tantangan Raja tetap dari Menu Belajar.</p>
+      <p class="lede">Main bebas kapan saja — jalur Raja menanti tantangan santaimu. Tetap dapat XP tiap main, tapi tidak menambah bintang dan tidak dihitung untuk buka level baru — bintang &amp; Tantangan Raja Hewan tetap dari Menu Belajar.</p>
     </div>
-    <div class="skill-grid game-grid">${cards}</div>
+    <div class="door-hero">
+      <div class="door-hero-ico" aria-hidden="true">🏰🚪</div>
+      <h2>Buka Pintu Kastil</h2>
+      <p>5 pintu, 5 tantangan seru — temui Raja di ujung lorong! <span class="tag">${doorBadge}</span></p>
+      <button class="primary-btn" type="button" data-action="playOpenDoor">▶️ Mulai Petualangan</button>
+    </div>
+    <ol class="trail raja-trail">${stops}</ol>
   `;
 
   setHandlers({
-    playFree: (payload) => {
-      const [key, idx] = (payload as string).split(':');
-      openFreePlay(key as SkillKey, Number(idx));
-    },
+    playRaja: (payload) => openRajaGame(payload as RajaKey),
+    playOpenDoor: () => openDoorGame(),
   });
 }
 
-function openFreePlay(key: SkillKey, index: number): void {
-  setAccent(key);
-  const meta = SKILL_META[key];
+/** Layar main 1 Raja Game Hub (Kata/Balon/Susun/Kelompok/Ingatan) —
+ *  🔒 permintaan user ("pastikan ketika keluar ada pop up keluar atau
+ *  lanjut", laporan tabbar bawah tidak kelihatan di layar ini) — tombol
+ *  balik SEKARANG SELALU lewat konfirmasi dulu (`placementGame.
+ *  renderExitConfirm`, REUSE PERSIS overlay First Placement Test — pola
+ *  sama `confirmExit` di `renderPlacementTestScreen`, BUKAN duplikat baru)
+ *  supaya SELALU ada jalan keluar eksplisit & disengaja dari layar ini,
+ *  terlepas dari tabbar ambient kelihatan/tidak di perangkat anak. */
+function openRajaGame(key: RajaKey): void {
+  const raja = RAJA_LIST.find((r) => r.key === key)!;
   root.innerHTML = `
     <div class="act-head">
       <button class="iconbtn" type="button" data-action="backToGame" aria-label="Kembali ke Game">${ICON_BACK}</button>
       <div class="txt">
-        <h1>${topicTitle(key, index, currentPlayableLevel().key)}</h1>
-        <div class="sub"><span class="tag accent">${meta.emoji} Main Bebas</span></div>
+        <h1>${raja.name}</h1>
+        <div class="sub"><span class="tag accent">🎮 ${raja.sub}</span></div>
       </div>
     </div>
-    <div class="card" id="freeStage"></div>
+    <div class="card raja-stage" id="rajaStage" style="--k:${raja.color}"></div>
   `;
-  setHandlers({ backToGame: () => go('game') });
-  runFreePlayRound(key, index);
+  setHandlers({
+    backToGame: () =>
+      placementGame.renderExitConfirm(
+        () => {
+          /* "Yuk Lanjut" — overlay sudah menutup dirinya sendiri, tidak perlu apa-apa lagi di sini */
+        },
+        () => go('game')
+      ),
+  });
+  runRajaRound(key);
 }
 
-function runFreePlayRound(key: SkillKey, index: number): void {
-  const stage = qs<HTMLDivElement>(root, '#freeStage');
-  const contentLevel = currentPlayableLevel().key;
+/** Topik dipilih ACAK tiap "Main" (bukan daftar-lalu-pilih) — permintaan
+ *  user "ini game bukan materi": langsung main, bukan browsing materi dulu.
+ *  Raja Kelompok wajib dari pool topik `sortBaskets` (`isSortableTopic`);
+ *  Raja Kata py bank kata sendiri (games/wordmatch.ts, TIDAK dari
+ *  vocabTopicsForLevel — lihat renderKataTierPicker); Raja Balon jg py bank
+ *  kata sendiri PER TINGKAT KESULITAN (games/balloonpop.ts, TIDAK terikat
+ *  level/topik apa pun — lihat renderBalonTierPicker); Sentence Puzzle
+ *  ('susun') & Raja Ingatan bebas dari topik Vocab manapun di level ini
+ *  (generik lintas topik Vocab) — Sentence Puzzle butuh SELURUH `topics`
+ *  (bukan 1 topik acak spt Raja Ingatan) krn tiap ronde memilih topik+kata
+ *  pengecoh sibling sendiri secara internal (`games/sentencepuzzle.ts`). */
+function runRajaRound(key: RajaKey): void {
+  const stage = qs<HTMLDivElement>(root, '#rajaStage');
+  const level = currentPlayableLevel().key;
   const praiseLevel = currentLevelMeta().key;
   const onRoundDone = () => {
     addXp(XP_FREEPLAY);
-    showFreePlayDone(key, index);
+    addGameXp(key, XP_FREEPLAY);
+    showRajaDone(key);
   };
-  switch (key) {
-    case 'vocabulary':
-      vocabularyGame.runLatihanInti(stage, vocabTopicsForLevel(contentLevel)[index], onRoundDone, praiseLevel);
-      return;
-    case 'listening': {
-      const topic = listeningTopicsForLevel(contentLevel)[index];
-      if ('items' in topic) listeningGame.runLatihanIntiSentence(stage, topic, onRoundDone, praiseLevel);
-      else listeningGame.runLatihanInti(stage, topic, onRoundDone);
-      return;
-    }
-    case 'speaking': {
-      const topic = speakingTopicsForLevel(contentLevel)[index];
-      if ('items' in topic) speakingGame.runLatihanIntiPhrase(stage, topic, onRoundDone, praiseLevel);
-      else speakingGame.runLatihanInti(stage, topic, onRoundDone);
-      return;
-    }
-    case 'grammar':
-      grammarGame.runLatihanInti(stage, grammarTopicsForLevel(contentLevel)[index], onRoundDone);
-      return;
-    case 'reading': {
-      const topic = readingTopicsForLevel(contentLevel)[index];
-      if ('items' in topic) readingGame.runLatihanIntiWord(stage, topic, onRoundDone, praiseLevel);
-      else readingGame.runLatihanInti(stage, topic, onRoundDone, praiseLevel);
-      return;
-    }
+
+  if (key === 'kelompok') {
+    const pool = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic);
+    const topic = pool[Math.floor(Math.random() * pool.length)];
+    vocabularyGame.runKelompokkan(stage, topic.id, topic.items, topic.sortBaskets, onRoundDone, praiseLevel);
+    return;
   }
+
+  if (key === 'kata') {
+    renderKataTierPicker(stage, praiseLevel, onRoundDone);
+    return;
+  }
+
+  if (key === 'balon') {
+    renderBalonTierPicker(stage, praiseLevel, onRoundDone);
+    return;
+  }
+
+  const topics = vocabTopicsForLevel(level);
+  if (key === 'susun') {
+    sentencePuzzleGame.runSentencePuzzle(stage, topics, onRoundDone, praiseLevel);
+    return;
+  }
+
+  const topic = topics[Math.floor(Math.random() * topics.length)];
+  vocabularyGame.runMemoryMatch(stage, topic, onRoundDone, praiseLevel);
 }
 
-function showFreePlayDone(key: SkillKey, index: number): void {
-  const stage = qs<HTMLDivElement>(root, '#freeStage');
+/** Raja Kata & Raja Balon (di bawah) — DUA Raja Game Hub yang minta pilih
+ *  varian dulu sebelum main (tingkat kesulitan Mudah/Sedang/Sulit — bagian
+ *  inti mekaniknya, bukan sekadar variasi topik spt 3 raja lain). Reuse
+ *  `.wm-tier-grid`/`.wm-tier-btn` (CSS sudah ada dari `games/wordmatch.ts`). */
+function renderKataTierPicker(stage: HTMLDivElement, praiseLevel: LevelKey, onRoundDone: OnDone): void {
+  const tiers: WordMatchDifficulty[] = ['mudah', 'sedang', 'sulit'];
+  const cards = tiers
+    .map((d) => {
+      const meta = wordMatchGame.DIFFICULTY_META[d];
+      return `
+        <button class="opt-btn wm-tier-btn" type="button" data-action="pickKataTier" data-payload="${d}">
+          <span class="wm-tier-label">${meta.label}</span>
+          <span class="wm-tier-sub">${meta.sub}</span>
+        </button>`;
+    })
+    .join('');
+  stage.innerHTML = `
+    <p class="meta" style="margin-bottom:var(--s3)">Pilih tingkat kesulitan dulu, yuk!</p>
+    <div class="wm-tier-grid">${cards}</div>
+  `;
+  setHandlers({
+    pickKataTier: (payload) => wordMatchGame.runWordMatch(stage, payload as WordMatchDifficulty, onRoundDone, praiseLevel),
+  });
+}
+
+/** Pola SAMA PERSIS `renderKataTierPicker` di atas (permintaan user
+ *  "kecepatan [balon] sama seperti game match word, ada level mudah/sedang/
+ *  sulit") — tingkat kesulitan di sini mengatur KECEPATAN naik balon
+ *  (`DIFFICULTY_META.durMin/durMax`, mudah=paling lambat) SEKALIGUS bank
+ *  kata (`materi soal pun disesuaikan dengan level` — mudah=kata pendek,
+ *  sulit=kata panjang, lihat `games/balloonpop.ts`). */
+function renderBalonTierPicker(stage: HTMLDivElement, praiseLevel: LevelKey, onRoundDone: OnDone): void {
+  const tiers: BalloonDifficulty[] = ['mudah', 'sedang', 'sulit'];
+  const cards = tiers
+    .map((d) => {
+      const meta = balloonPopGame.DIFFICULTY_META[d];
+      return `
+        <button class="opt-btn wm-tier-btn" type="button" data-action="pickBalonTier" data-payload="${d}">
+          <span class="wm-tier-label">${meta.label}</span>
+          <span class="wm-tier-sub">${meta.sub}</span>
+        </button>`;
+    })
+    .join('');
+  stage.innerHTML = `
+    <p class="meta" style="margin-bottom:var(--s3)">Pilih tingkat kesulitan dulu, yuk!</p>
+    <div class="wm-tier-grid">${cards}</div>
+  `;
+  setHandlers({
+    pickBalonTier: (payload) => balloonPopGame.runBalloonPop(stage, payload as BalloonDifficulty, onRoundDone, praiseLevel),
+  });
+}
+
+function showRajaDone(key: RajaKey): void {
+  const stage = qs<HTMLDivElement>(root, '#rajaStage');
   stage.innerHTML = `
     <div class="done-wrap">
-      <div class="done-mascot mascot-pop" aria-hidden="true">🦁🎉</div>
-      <p class="done-sub">Seru! <b>+${XP_FREEPLAY} XP</b> ⚡ Main lagi atau pilih kegiatan lain?</p>
-      <button class="primary-btn" type="button" data-action="replayFree">🔁 Main Lagi</button>
-      <button class="ghost-btn" type="button" data-action="toGame">📋 Pilih Lainnya</button>
+      <div class="done-mascot mascot-pop" aria-hidden="true">👑🎉</div>
+      <p class="done-sub">Seru! <b>+${XP_FREEPLAY} XP</b> ⚡ Main lagi atau pilih Raja lain?</p>
+      <button class="primary-btn" type="button" data-action="replayRaja">🔁 Main Lagi</button>
+      <button class="ghost-btn" type="button" data-action="toGame">📋 Pilih Raja Lain</button>
     </div>
   `;
   setHandlers({
-    replayFree: () => runFreePlayRound(key, index),
+    replayRaja: () => runRajaRound(key),
+    toGame: () => go('game'),
+  });
+}
+
+/**
+ * 🚪 Open the Door — kartu hero PALING ATAS layar Game (di atas trail Raja
+ * Game Hub, permintaan user eksplisit "posisinya paling atas"). Rangkaian
+ * 5 "pintu" yang SENGAJA reuse 5 mekanik Raja yang SUDAH ADA (Kata→Balon→
+ * Susun→Kelompok→Ingatan) apa adanya, BUKAN 5 quiz per-skill baru —
+ * proposal awal user (pintu = Vocabulary/Listening/Grammar/Reading/Speaking
+ * MCQ, referensi spec luar) dianalisis dulu & DITOLAK SENDIRI oleh user
+ * setelah ketahuan 2 masalah: (1) persis mengulang pola "kuis skill
+ * berbaju mahkota" yang sudah ditolak dulu utk RAJA_LIST (lihat komentar
+ * di atas RAJA_LIST — versi awal "Raja Kata/Dengar/Suara"), krn tiap pintu
+ * cuma MCQ bernama skill, bukan mekanik game beneran; (2) versi Speaking-
+ * nya simulasi ("record lalu tunggu 2 detik, tanpa skor asli") melanggar
+ * Aturan Wajib Speaking CLAUDE.md. User pilih arah "Gauntlet 5-Raja" —
+ * bungkus 5 mekanik yang sudah lolos semua aturan itu jadi 1 pengalaman
+ * bertema lorong kastil, ketemu Raja di pintu terakhir. Reward TETAP flat
+ * XP per pintu (`XP_FREEPLAY`, sama persis 1 Raja individual), TIDAK ADA
+ * bintang tambahan — konsisten aturan Game Hub ("tidak menambah bintang").
+ */
+const DOOR_ORDER: RajaKey[] = ['kata', 'balon', 'susun', 'kelompok', 'ingatan'];
+
+const DOOR_META: Record<RajaKey, { emoji: string; label: string }> = {
+  kata: { emoji: '🧩', label: 'Raja Kata' },
+  balon: { emoji: '🎈', label: 'Raja Balon' },
+  susun: { emoji: '📜', label: 'Sentence Puzzle' },
+  kelompok: { emoji: '🗂️', label: 'Raja Kelompok' },
+  ingatan: { emoji: '🧠', label: 'Raja Ingatan' },
+};
+
+/** Sama filter dgn `roster` di `renderGame()` — Raja Kelompok cuma ikut
+ *  rangkaian pintu kalau level ini punya ≥1 topik `sortBaskets`. */
+function doorKeysFor(level: LevelKey): RajaKey[] {
+  const sortableCount = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic).length;
+  return DOOR_ORDER.filter((k) => k !== 'kelompok' || sortableCount > 0);
+}
+
+function doorDotsHtml(keys: RajaKey[], activeIndex: number): string {
+  const dots = keys
+    .map((_, i) => {
+      const cls = [i === activeIndex ? 'current' : '', i < activeIndex ? 'done' : ''].filter(Boolean).join(' ');
+      return `<span class="door-dot ${cls}" aria-hidden="true">${i < activeIndex ? '🚪' : i + 1}</span>`;
+    })
+    .join('');
+  return `<div class="door-dots">${dots}</div>`;
+}
+
+/** Layar masuk gauntlet — header+exit-confirm pola SAMA PERSIS `openRajaGame`
+ *  (`placementGame.renderExitConfirm`, supaya tombol balik selalu lewat
+ *  konfirmasi dulu, konsisten seluruh layar main Game Hub). */
+function openDoorGame(): void {
+  root.innerHTML = `
+    <div class="act-head">
+      <button class="iconbtn" type="button" data-action="backToGame" aria-label="Kembali ke Game">${ICON_BACK}</button>
+      <div class="txt">
+        <h1>🚪 Buka Pintu Kastil</h1>
+        <div class="sub"><span class="tag accent">🏰 5 pintu menuju Raja</span></div>
+      </div>
+    </div>
+    <div class="card raja-stage" id="doorStage" style="--k:var(--sun-500)"></div>
+  `;
+  setHandlers({
+    backToGame: () =>
+      placementGame.renderExitConfirm(
+        () => {
+          /* "Yuk Lanjut" — overlay sudah menutup dirinya sendiri */
+        },
+        () => go('game')
+      ),
+  });
+  const level = currentPlayableLevel().key;
+  runDoorFlow(qs<HTMLDivElement>(root, '#doorStage'), doorKeysFor(level), 0, 0);
+}
+
+/** Mesin gauntlet: kartu pintu tertutup → tap ketuk → mekanik Raja aslinya
+ *  jalan LANGSUNG di stage yang sama (0 duplikasi logic dari `runRajaRound`)
+ *  → begitu mekanik itu selesai (`onDone`-nya sendiri, tombol "Selesai ✅"
+ *  di dalamnya), tampilkan transisi "pintu terbuka" singkat lalu lanjut ke
+ *  pintu berikutnya — sampai `index` melebihi jumlah pintu, baru ketemu
+ *  Raja. Kata/Balon dikunci ke tingkat 'sedang' (skip layar pilih-tingkat
+ *  supaya lorong tetap terasa mengalir, bukan berhenti tiap pintu). */
+function runDoorFlow(stage: HTMLDivElement, keys: RajaKey[], index: number, xpSoFar: number): void {
+  if (index >= keys.length) {
+    showKingReward(stage, xpSoFar);
+    return;
+  }
+  const key = keys[index]!;
+  const meta = DOOR_META[key];
+  const level = currentPlayableLevel().key;
+  const praiseLevel = currentLevelMeta().key;
+
+  function openDoorCard(): void {
+    stage.innerHTML = `
+      ${doorDotsHtml(keys, index)}
+      <div class="door-card">
+        <div class="door-illustration" id="doorIllus" aria-hidden="true">🚪</div>
+        <h3>Pintu ${index + 1}</h3>
+        <p class="meta">${meta.emoji} ${meta.label}</p>
+        <button class="primary-btn" type="button" data-action="knockDoor">🔓 Ketuk & Buka!</button>
+      </div>
+    `;
+    setHandlers({
+      knockDoor: () => {
+        qs<HTMLDivElement>(stage, '#doorIllus').classList.add('shake');
+        setTimeout(startMechanic, 380);
+      },
+    });
+  }
+
+  function startMechanic(): void {
+    const onMechanicDone = () => {
+      addXp(XP_FREEPLAY);
+      addGameXp('pintu', XP_FREEPLAY);
+      showDoorOpenTransition();
+    };
+    switch (key) {
+      case 'kata':
+        wordMatchGame.runWordMatch(stage, 'sedang', onMechanicDone, praiseLevel);
+        return;
+      case 'balon':
+        balloonPopGame.runBalloonPop(stage, 'sedang', onMechanicDone, praiseLevel);
+        return;
+      case 'susun':
+        sentencePuzzleGame.runSentencePuzzle(stage, vocabTopicsForLevel(level), onMechanicDone, praiseLevel);
+        return;
+      case 'kelompok': {
+        const pool = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic);
+        const topic = pool[Math.floor(Math.random() * pool.length)]!;
+        vocabularyGame.runKelompokkan(stage, topic.id, topic.items, topic.sortBaskets, onMechanicDone, praiseLevel);
+        return;
+      }
+      case 'ingatan': {
+        const topics = vocabTopicsForLevel(level);
+        const topic = topics[Math.floor(Math.random() * topics.length)]!;
+        vocabularyGame.runMemoryMatch(stage, topic, onMechanicDone, praiseLevel);
+        return;
+      }
+    }
+  }
+
+  function showDoorOpenTransition(): void {
+    stage.innerHTML = `
+      ${doorDotsHtml(keys, index + 1)}
+      <div class="door-card">
+        <div class="door-illustration opening" aria-hidden="true">🚪✨</div>
+        <p class="meta">Pintu ${index + 1} terbuka!</p>
+      </div>
+    `;
+    setTimeout(() => runDoorFlow(stage, keys, index + 1, xpSoFar + XP_FREEPLAY), 500);
+  }
+
+  openDoorCard();
+}
+
+/** Layar ketemu Raja di ujung lorong — reuse PERSIS bahasa visual
+ *  `renderBossWin` (`.done-wrap.win`/`.sunburst.lg.mascot-pop`/`.stars-pop`/
+ *  `.win-banner`), TANPA bintang (Game Hub tidak pernah kasih bintang). */
+function showKingReward(stage: HTMLDivElement, xpEarned: number): void {
+  stage.innerHTML = `
+    <div class="done-wrap win">
+      <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">🤴</span><span class="crown">👑</span></div>
+      <h2 class="win-banner">Kamu Berhasil!</h2>
+      <p class="done-sub">"Hebaaat! Kamu sudah membuka semua pintu di kastilku." — Raja Kastil</p>
+      <p class="done-sub"><b>+${xpEarned} XP</b> ⚡ terkumpul dari petualangan ini</p>
+      <button class="primary-btn" type="button" data-action="replayDoor">🔁 Main Lagi</button>
+      <button class="ghost-btn" type="button" data-action="toGame">📋 Kembali ke Game</button>
+    </div>
+  `;
+  setHandlers({
+    replayDoor: () => runDoorFlow(stage, doorKeysFor(currentPlayableLevel().key), 0, 0),
     toGame: () => go('game'),
   });
 }

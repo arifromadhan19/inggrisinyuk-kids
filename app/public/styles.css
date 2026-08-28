@@ -537,6 +537,10 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   background:var(--muted); color:var(--ink-3);
 }
 .skill-pct.done{ background:var(--ok-bg); color:var(--ok); }
+/* Skor Tiap Skill di Rapor (1–5 bintang, bukan %) — pill sama posisinya
+   dgn .skill-pct polos, cuma font lebih besar & padding lebih lega supaya
+   5 karakter bintang tidak sesak (beda dari angka "80%" yang cuma 3-4 char). */
+.skill-pct.stars{ font-size:13px; letter-spacing:1px; padding:4px 9px; }
 .skill-card .ic{
   width:54px; height:54px; border-radius:17px; flex:none;
   display:grid; place-items:center; font-size:26px;
@@ -725,7 +729,7 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 /* Kepala peta: langit + matahari + awan, sekaligus tempat legenda status. */
 .map-sky{
   position:relative; overflow:hidden;
-  padding:var(--s5) var(--s4) var(--s6);
+  padding:var(--s5) var(--s4) var(--s4);
   background:linear-gradient(180deg,#BDEDE5 0%, #DFF6F0 46%, var(--t1-soft) 100%);
 }
 .map-sky h2{ position:relative; z-index:1; font-family:var(--font-head); font-size:var(--fs-h2); }
@@ -815,16 +819,35 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   border-radius:var(--r-lg); padding:var(--s4);
   box-shadow:var(--sh-lift), 0 0 0 1px rgba(255,255,255,.7) inset;
 }
+/* Kepala kartu: teks di kiri, avatar Raja besar di kanan — supaya markas
+   punya wajah yang langsung dikenali anak, bukan cuma judul teks. */
+.trail-card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:var(--s3); }
+.trail-card-txt{ min-width:0; flex:1; }
+.trail-boss{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  display:grid; place-items:center; font-size:26px; line-height:1;
+  background:radial-gradient(circle at 34% 30%, var(--surface) 0%, var(--surface-2) 100%);
+  border:3px solid var(--band-deep); box-shadow:var(--sh-1);
+}
 .trail-place{
   display:block; font-size:.625rem; font-weight:800; letter-spacing:.13em;
   text-transform:uppercase; color:var(--ink-sand);
 }
-.trail-card h3{ font-family:var(--font-head); font-size:1.125rem; margin-top:2px; }
+.trail-card h3{
+  font-family:var(--font-head); font-size:1.125rem; margin-top:2px;
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+}
 .trail-meta{ display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
-.trail-actions{ margin-top:var(--s3); display:flex; flex-direction:column; gap:8px; }
+/* Tombol aksi dibuat mungil & berdampingan (pil, bukan blok selebar layar) —
+   supaya tidak mendominasi kartu & menyisakan ruang buat avatar Raja. */
+.trail-actions{ margin-top:var(--s3); display:flex; flex-direction:row; flex-wrap:wrap; gap:8px; }
 .trail-actions .primary-btn,
-.trail-actions .ghost-btn{ margin-top:0; }
-.trail-actions .meta{ margin-top:2px; }
+.trail-actions .ghost-btn{
+  width:auto; flex:1 1 140px; margin-top:0;
+  padding:10px 14px; font-size:.8125rem; border-radius:var(--r-pill);
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+}
+.trail-actions .meta{ margin-top:2px; flex-basis:100%; }
 
 .trail-stop.is-cleared .trail-medallion{ border-color:var(--sun-500); }
 .trail-stop.is-locked .trail-scene{ filter:saturate(.3); }
@@ -840,18 +863,6 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   100%{ box-shadow:var(--sh-lift), 0 0 0 0 rgba(255,181,61,0); }
 }
 .trail-stop.is-here .trail-medallion{ border-color:var(--sun-500); animation:hereHalo 2.4s ease-out infinite; }
-
-/* Kaki peta: jalur memudar ke kejauhan — memberi rasa "masih ada lanjutannya"
-   secara jujur (level berikutnya memang belum ada materinya, PRD §9), tanpa
-   kalender hadiah/janji imbalan apa pun. */
-.trail-horizon{
-  position:relative; display:grid; grid-template-columns:64px minmax(0,1fr); gap:var(--s3);
-  padding:var(--s5) var(--s4) var(--s6);
-  background:linear-gradient(180deg,var(--t6-soft) 0%, var(--paper) 100%);
-}
-.trail-horizon .trail-path{ color:var(--t6-deep); opacity:.35; height:52px; }
-.trail-horizon-txt b{ display:block; font-family:var(--font-head); font-size:1rem; color:var(--ink-2); }
-.trail-horizon-txt span{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-3); }
 
 /* ---------------------------------------------------- mini-peta (Beranda) --
    Versi ringkas & horizontal dari Peta Level (§ trail-* di atas) — dipasang
@@ -938,6 +949,36 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 }
 .stat-value{ font-family:var(--font-head); font-size:1.0625rem; color:var(--ink); }
 .stat-label{ font-size:.6875rem; font-weight:800; color:var(--ink-3); letter-spacing:.01em; }
+
+/* Stats Singkat Rapor — list/baris (permintaan user, ganti dari grid 3-tile
+   `.stat-row`/`.stat-tile` di atas) — ikon+label+angka per baris ala
+   referensi kompetitor, TAPI lingkaran ikon tetap gradien radial yang sama
+   dgn `.stat-ic` (bukan ikon flat kompetitor) supaya masih 1 keluarga
+   visual dgn kartu lain, bukan tempelan gaya asing. */
+.stat-list{ list-style:none; margin:12px 0 0; padding:0; }
+.stat-list li{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 0; border-top:1px solid var(--line);
+}
+.stat-list li:first-child{ border-top:none; }
+.stat-list-ic{
+  width:34px; height:34px; border-radius:50%; flex:none;
+  display:grid; place-items:center; font-size:16px;
+  background:radial-gradient(circle at 34% 26%, var(--brand-300) 0%, var(--brand-500) 100%);
+  box-shadow:0 6px 14px -8px rgba(6,51,58,.5), inset 0 0 0 2px rgba(255,255,255,.35);
+}
+/* Siklus 3 warna (bukan cuma baris 1/2 spt `.stat-tile`) — daftar ini
+   sekarang bisa 6+ baris, siklus berulang supaya tidak monoton biru semua
+   dari baris ke-3 dst. */
+.stat-list li:nth-child(3n+1) .stat-list-ic{
+  background:radial-gradient(circle at 34% 26%, var(--sun-400) 0%, var(--sun-500) 68%, #EFA22C 100%);
+}
+.stat-list li:nth-child(3n+2) .stat-list-ic{
+  background:radial-gradient(circle at 34% 26%, var(--t5) 0%, var(--t5-deep) 100%);
+}
+.stat-list-label{ flex:1; font-size:var(--fs-meta); font-weight:700; color:var(--ink-2); }
+.stat-list-value{ font-family:var(--font-head); font-weight:800; font-size:1.0625rem; color:var(--ink); }
+
 /* Progresmu dibuat lebih ringkas/slim (permintaan user) — jarak antar-baris
    & ukuran stat-tile dikecilkan, TANPA membuang info apa pun (masih level+%,
    bar, keterangan modul, 3 stat). Cuma padding & spacing yang dirapatkan. */
@@ -950,6 +991,267 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .progress-panel .stat-ic{ width:28px; height:28px; font-size:14px; }
 .progress-panel .stat-value{ font-size:.9375rem; }
 .progress-panel .stat-label{ font-size:.625rem; }
+
+/* Papan Peringkat XP (Beranda/Rapor) — dianonimkan total (avatar hewan + XP
+   saja, TANPA nama/ranking eksplisit per anak, lihat buildLeaderboardCard di
+   app.ts) — baris polos, medali cuma dekorasi utk 3 besar, bukan skor. */
+.leaderboard-list{ display:flex; flex-direction:column; gap:6px; }
+.leaderboard-row{
+  display:flex; align-items:center; gap:var(--s2);
+  padding:6px var(--s2); border-radius:var(--r-md); background:var(--surface);
+}
+.leaderboard-rank{ width:22px; flex:none; text-align:center; font-size:.8125rem; font-weight:800; color:var(--ink-3); }
+.leaderboard-avatar{ font-size:1.25rem; flex:none; }
+.leaderboard-xp{ margin-left:auto; font-family:var(--font-head); font-size:.875rem; color:var(--ink); }
+
+/* Jalur "Raja" Game Hub (app.ts renderGame) — dulu reuse PERSIS .trail-rail/
+   .trail-medallion (medali kecil 60px) Peta Level. SEKARANG DIGANTI
+   (permintaan user: "icon lebih dominan... raja kata icon di kiri, game
+   selanjutnya icon di kanan, selang seling... tetap berpetualang jd saling
+   terhubung"): ikon per-kartu jauh lebih besar & jadi bagian kartu itu
+   sendiri (`.raja-stop-inner`, flex row), sisi kiri/kanan bergantian per
+   index (`.icon-right`), disambung 1 garis putus-putus vertikal di celah
+   antar kartu (bukan lagi bend-path SVG per-rail — itu didesain utk medali
+   kecil, tidak cocok lagi dgn ikon sebesar ini). Scoped ke `.raja-trail`
+   SAJA, TIDAK menyentuh `.trail-stop`/`.trail-rail`/`.trail-medallion` dasar
+   (tetap dipakai Peta Level apa adanya). */
+.raja-trail .trail-stop{
+  position:relative; display:block; padding:0; background:none; margin-bottom:var(--s6);
+}
+.raja-trail .trail-stop:not(:last-child)::after{
+  content:''; position:absolute; left:50%; bottom:calc(-1 * var(--s6) + 2px);
+  width:0; height:calc(var(--s6) - 4px); border-left:3px dashed var(--line); transform:translateX(-50%);
+}
+.raja-stop-inner{
+  position:relative; z-index:1; display:flex; align-items:center; gap:var(--s4);
+}
+.raja-trail .trail-stop.icon-right .raja-stop-inner{ flex-direction:row-reverse; }
+.raja-trail .trail-card{ flex:1; min-width:0; }
+.raja-icon{
+  flex:none; width:104px; height:104px; border-radius:var(--r-lg); overflow:hidden;
+  display:grid; place-items:center; background:var(--surface); border:4px solid var(--band-deep);
+  box-shadow:var(--sh-lift);
+}
+.raja-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+.raja-icon svg{ width:64px; height:64px; display:block; }
+@media (min-width:560px){
+  .raja-icon{ width:132px; height:132px; }
+  .raja-icon svg{ width:80px; height:80px; }
+}
+
+/* Skin "arcade" utk stage main Raja (permintaan user: "jangan kaku, ini game
+   bukan materi") — CSS-ONLY, reuse fungsi generik yang sama persis (Eja Kata/
+   Susun Kalimat/Kelompokkan) TANPA fork logic apa pun: cuma restyle chrome
+   quiz (stage-badge/quiz-dot) dari label datar jadi lebih "game", warna ikut
+   --k (warna Raja itu, diisi inline app.ts). */
+.raja-stage .stage-badge{ background:var(--k); color:#fff; box-shadow:var(--sh-1); }
+.raja-stage .quiz-dot.current{ box-shadow:0 0 0 3px color-mix(in srgb, var(--k) 25%, transparent), inset 0 0 0 1.5px var(--k); color:var(--k); }
+
+/* 🚪 Open the Door — kartu hero PALING ATAS layar Game (app.ts openDoorGame/
+   renderGame) + rangkaian pintu di dalamnya. Warna ungu kastil sengaja beda
+   dari kartu Raja lain di bawahnya (bukan salah satu warna --c-*) supaya
+   kartu ini kebaca sbg "featured", bukan raja ke-6 yang menyatu di list. */
+.door-hero{
+  background:linear-gradient(160deg,#3E2465,#7A46B8); color:#fff;
+  border-radius:var(--r-lg); padding:var(--s4); text-align:center;
+  margin-bottom:var(--s5); box-shadow:var(--sh-lift);
+}
+.door-hero-ico{ font-size:clamp(46px,13vw,60px); line-height:1; }
+.door-hero h2{ font-family:var(--font-head); margin:6px 0 2px; font-size:1.25rem; }
+.door-hero p{ margin:0 0 var(--s3); opacity:.92; font-size:var(--fs-meta); }
+.door-hero .tag{ background:rgba(255,255,255,.18); color:#fff; }
+.door-hero .primary-btn{ background:var(--sun-500); color:var(--brand-900); box-shadow:none; }
+
+.door-dots{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:var(--s4); }
+.door-dot{
+  width:36px; height:36px; border-radius:50%; flex:none;
+  display:grid; place-items:center; font-size:1.05rem; font-weight:800;
+  background:var(--surface); color:var(--ink-3); box-shadow:inset 0 0 0 1.5px var(--line);
+}
+.door-dot.current{ box-shadow:0 0 0 3px var(--sun-100), inset 0 0 0 2px var(--sun-500); }
+.door-dot.done{ background:var(--sun-500); color:var(--brand-900); box-shadow:none; }
+
+.door-card{ text-align:center; padding:var(--s4) 0; }
+.door-illustration{ font-size:clamp(64px,20vw,92px); line-height:1; display:inline-block; }
+.door-illustration.shake{ animation:doorShake .4s ease; }
+.door-illustration.opening{ animation:doorOpen .45s ease both; }
+@keyframes doorShake{ 0%,100%{transform:rotate(0);} 25%{transform:rotate(-5deg);} 75%{transform:rotate(5deg);} }
+@keyframes doorOpen{ 0%{transform:scale(1);} 60%{transform:scale(1.15) rotate(-3deg);} 100%{transform:scale(1.25); opacity:0;} }
+
+/* Memory Match — grid kartu tertutup (permintaan user, contoh referensi
+   "Memory Match"): flip 2 kartu/giliran, cari pasangan id↔en 1 VocabItem
+   (games/vocabulary.ts runMemoryMatch) — TANPA data baru. */
+.mm-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--s3); }
+.mm-score{ font-family:var(--font-head); font-size:.9375rem; color:var(--ink-2); }
+.mm-score b{ color:var(--ink); font-size:1.375rem; }
+.mm-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.mm-card{
+  aspect-ratio:1/1; border-radius:var(--r-md); border:2px solid var(--line);
+  background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; padding:8px; transition:transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.mm-card:not(:disabled):hover{ transform:translateY(-2px); border-color:var(--k, var(--brand-500)); }
+.mm-card:disabled{ cursor:default; }
+.mm-card.is-open{ background:color-mix(in srgb, var(--k, var(--brand-500)) 10%, var(--surface)); border-color:var(--k, var(--brand-300)); }
+.mm-card.is-matched{ background:var(--ok-bg); border-color:var(--ok); position:relative; }
+.mm-mark{
+  width:40px; height:40px; border-radius:50%; background:var(--k, var(--brand-700)); color:#fff;
+  display:grid; place-items:center; font-size:18px; font-weight:800;
+}
+.mm-emoji{ font-size:1.625rem; line-height:1; }
+.mm-text{ font-family:var(--font-head); font-weight:800; font-size:.875rem; color:var(--ink); text-align:center; }
+.mm-check{ position:absolute; top:6px; right:6px; width:20px; height:20px; border-radius:50%; background:var(--ok); color:#fff; display:grid; place-items:center; font-size:11px; }
+
+/* Raja Kata — Word Match (games/wordmatch.ts): dua baris kartu terlihat
+   sekaligus (kata di atas, gambar di bawah, diacak independen) — anak tap
+   satu kata lalu satu gambar (atau sebaliknya); pasangan benar digambar garis
+   penghubung SVG (overlay .wm-lines di atas .wm-board), bukan drag beneran. */
+.wm-head{ display:flex; align-items:center; justify-content:flex-end; margin-bottom:var(--s3); }
+.wm-board{ position:relative; }
+.wm-lines{ position:absolute; inset:0; pointer-events:none; overflow:visible; }
+.wm-row{ position:relative; z-index:1; display:flex; flex-wrap:wrap; justify-content:center; gap:var(--s3); }
+.wm-row + .wm-row{ margin-top:var(--s5); }
+.wm-card{
+  position:relative; z-index:1; min-width:88px; border-radius:var(--r-md); border:2px solid var(--line);
+  background:var(--surface); padding:14px 16px; display:flex; align-items:center; justify-content:center;
+  transition:transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.wm-card:not(:disabled):hover{ transform:translateY(-2px); border-color:var(--brand-500); }
+.wm-card:disabled{ cursor:default; }
+.wm-card.is-selected{ border-color:var(--accent); background:var(--accent-bg); }
+.wm-card.is-matched{ border-color:var(--ok); background:var(--ok-bg); opacity:.85; }
+.wm-card.is-wrong{ animation:shake .3s ease; border-color:var(--try); }
+.wm-word-text{ font-family:var(--font-head); font-weight:800; font-size:1.0625rem; color:var(--ink); }
+.wm-emoji{ font-size:2rem; line-height:1; }
+.wm-line{ stroke:var(--ok); stroke-width:3; stroke-linecap:round; }
+.wm-line-new{ stroke-dasharray:1; stroke-dashoffset:1; animation:wmLineDraw .35s ease forwards; }
+@keyframes wmLineDraw{ to{ stroke-dashoffset:0; } }
+@media (prefers-reduced-motion: reduce){
+  .wm-card.is-wrong{ animation:none; }
+  .wm-line-new{ animation:none; stroke-dashoffset:0; }
+}
+
+/* Perhentian "Selalu Terbuka" Raja Kata di Peta Level (app.ts buildRajaKataStop)
+   — kartu polos spt .raja-trail (TANPA .trail-scene medan), bukan bagian
+   tangga LEVELS jadi tidak butuh status locked/cleared apa pun. */
+.raja-kata-stop{ background:var(--surface-2); border-radius:var(--r-lg); margin-bottom:var(--s3); }
+
+/* Pemilih tingkat Mudah/Sedang/Sulit (renderRajaKataPicker) — co-class dgn
+   .opt-btn (pola sama .opt-btn.answer-card) supaya border/hover ikut gratis,
+   cuma layout+tipografinya yang beda (label+sub teks, bukan emoji raksasa). */
+.wm-tier-grid{ display:grid; gap:var(--s3); margin-top:var(--s4); }
+@media (min-width:560px){ .wm-tier-grid{ grid-template-columns:repeat(3,1fr); } }
+.opt-btn.wm-tier-btn{
+  font-size:inherit; display:flex; flex-direction:column; align-items:center; gap:4px; padding:var(--s4);
+}
+.wm-tier-label{ font-family:var(--font-head); font-weight:800; font-size:1.25rem; color:var(--ink); }
+.wm-tier-sub{ font-size:.8125rem; font-weight:700; color:var(--ink-3); }
+
+/* Raja Balon — Balloon Pop (games/balloonpop.ts): prompt Bahasa Indonesia
+   di atas, balon berisi kata Inggris naik terus-menerus dari bawah ke atas
+   (CSS animation loop, TANPA JS per-frame). TIDAK ADA timer/nyawa/badge
+   kesulitan (dibuang dari referensi kompetitor, CLAUDE.md kid-friendly
+   wajib) — salah tap cuma goyang halus, balon TETAP naik & bisa ditap lagi.
+   `.bp-balloon` (posisi+animasi rise/sway) & `.bp-balloon-body` (bentuk
+   visual+shake salah) SENGAJA elemen terpisah supaya animasi rise/sway
+   tidak pernah terhenti oleh shake salah tap.
+   🔒 Revisi user: (1) papan "diperbesar, maksimalkan di mobile" — tinggi
+   sekarang proporsional viewport (`min(vh,px)`, bukan angka tetap kecil);
+   (2) balon WAJIB selalu muncul dari bawah + lebih lambat — `animation-
+   delay` POSITIF bertingkat (`i*0.35s`, dari games/balloonpop.ts, BUKAN lagi
+   delay negatif acak) + `animation-fill-mode:backwards` supaya selama jeda
+   itu balon "menunggu" tersembunyi di keyframe 0% (bottom:-22%, di luar
+   papan) — begitu delay habis baru kelihatan naik dari tepi bawah papan;
+   loop berikutnya (`infinite`) otomatis "dari bawah" lagi tiap siklus. */
+.bp-head{ display:flex; justify-content:space-between; gap:8px; margin-bottom:var(--s2); }
+.bp-prompt{
+  background:var(--sun-100); color:var(--sun-600); border-radius:var(--r-pill);
+  padding:12px var(--s5); text-align:center; font-family:var(--font-head);
+  font-weight:800; font-size:1.0625rem; margin:0 0 var(--s4);
+}
+.bp-prompt b{ color:var(--ink); }
+.bp-board{
+  position:relative; overflow:hidden;
+  height:min(58vh, 520px); min-height:360px;
+  border-radius:var(--r-xl); border:1px solid var(--line);
+  background:linear-gradient(180deg, var(--c-listen-bg), var(--surface) 88%);
+}
+@media (min-width:560px){ .bp-board{ height:min(64vh, 620px); } }
+.bp-balloon{
+  position:absolute; bottom:6%; left:var(--x,10%); margin-left:0; opacity:1;
+  /* Lebar RESPONSIF (bukan fixed 100px) — 4 lane @~24% papan gampang
+     bertabrakan di layar sempit kalau lebar balon tetap; clamp ini jaga
+     jarak aman di mobile TANPA balon jadi kekecilan di layar lebar. */
+  width:clamp(58px, 18vw, 100px); padding:0; transform:translateX(-50%);
+  animation:bpRise var(--dur,8s) linear infinite, bpSway var(--sway,2.6s) ease-in-out infinite;
+  animation-delay:var(--delay,0s), var(--delay,0s);
+  animation-fill-mode:backwards;
+  filter:drop-shadow(0 6px 10px rgba(15,46,56,.2));
+}
+.bp-balloon:disabled{ cursor:default; }
+.bp-balloon.is-pop{ animation:bpPop .38s ease forwards; pointer-events:none; }
+.bp-balloon-body{
+  position:relative; display:flex; align-items:center; justify-content:center;
+  width:100%; aspect-ratio:5/6; padding:8px;
+  background:var(--bg,var(--brand-500)); border-radius:50% 50% 50% 50% / 58% 58% 42% 42%;
+}
+.bp-balloon.is-wrong .bp-balloon-body{ animation:shake .32s ease; }
+.bp-balloon-body::before{
+  content:''; position:absolute; top:16%; left:22%; width:26%; height:16%;
+  background:rgba(255,255,255,.55); border-radius:50%; transform:rotate(-18deg);
+}
+.bp-balloon-string{ display:block; width:2px; height:22px; margin:0 auto; background:var(--ink-3); opacity:.55; }
+.bp-balloon-text{
+  font-family:var(--font-head); font-weight:800; font-size:clamp(.6875rem, 2.6vw, .8125rem); color:#fff;
+  text-align:center; line-height:1.15; text-shadow:0 1px 2px rgba(0,0,0,.2);
+}
+@keyframes bpRise{
+  0%{ bottom:-22%; opacity:1; }
+  85%{ opacity:1; }
+  100%{ bottom:118%; opacity:0; }
+}
+@keyframes bpSway{ 0%,100%{ margin-left:-12px; } 50%{ margin-left:12px; } }
+@keyframes bpPop{
+  0%{ transform:translateX(-50%) scale(1); opacity:1; }
+  60%{ transform:translateX(-50%) scale(1.28); opacity:.7; }
+  100%{ transform:translateX(-50%) scale(.2); opacity:0; }
+}
+
+/* Raja Susun — Sentence Puzzle (games/sentencepuzzle.ts), reskin "bubble
+   piramida" ala referensi kompetitor (gambar+gelembung kata pengecoh+bar
+   jawaban emas). Bubble sengaja PILL bulat penuh (bukan lingkaran kaku spt
+   referensi) supaya kata Vocab apa pun (pendek/panjang) tetap terbaca. */
+.sp-head{ display:flex; justify-content:flex-end; margin-bottom:var(--s2); }
+.sp-sky{ position:relative; height:22px; margin-bottom:-2px; }
+.sp-moon{ position:absolute; right:6%; top:-6px; font-size:1.375rem; opacity:.8; }
+.sp-bird{ position:absolute; right:22%; top:4px; font-size:.875rem; opacity:.5; }
+.sp-bird2{ right:29%; top:12px; font-size:.6875rem; opacity:.35; }
+.sp-picture{
+  background:linear-gradient(180deg, var(--c-listen-bg), var(--surface) 88%);
+  border:1px solid var(--line); border-radius:var(--r-xl);
+  padding:16px; text-align:center; max-width:220px; margin:0 auto var(--s3);
+}
+.sp-picture .big-emoji{ font-size:clamp(44px,11vw,60px); }
+.sp-pyramid{ display:flex; flex-direction:column; gap:10px; align-items:center; margin:var(--s4) 0; }
+.sp-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+.sp-bubble{
+  background:radial-gradient(circle at 30% 26%, color-mix(in srgb, var(--k,var(--accent)) 16%, #fff), color-mix(in srgb, var(--k,var(--accent)) 9%, var(--surface)));
+  border:2px solid color-mix(in srgb, var(--k,var(--accent)) 38%, transparent);
+  color:var(--ink); border-radius:var(--r-pill);
+  min-width:52px; padding:11px 16px; text-align:center;
+  font-family:var(--font-head); font-weight:800; font-size:.9375rem; line-height:1.1;
+  cursor:pointer; box-shadow:var(--sh-1); transition:transform .12s ease, opacity .15s ease;
+}
+.sp-bubble:active:not(:disabled){ transform:scale(.93); }
+.sp-bubble.is-used{ opacity:.38; background:var(--muted); border-color:var(--line); box-shadow:none; cursor:default; }
+.sp-bubble:disabled{ cursor:default; }
+.sp-answer-bar{
+  background:var(--sun-100); color:var(--sun-600); border:2px solid var(--sun-300);
+  border-radius:var(--r-pill); padding:14px var(--s5); text-align:center;
+  font-family:var(--font-head); font-weight:800; font-size:1.1875rem;
+  margin:var(--s3) auto; max-width:520px;
+}
+.sp-answer-bar.empty{ color:var(--ink-3); font-size:.9375rem; font-weight:700; }
 
 /* -------------------------------------------------------------- aktivitas */
 .act-head{ display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s4); }
@@ -1083,6 +1385,20 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
    yang menang adalah aturan yang ditulis belakangan (spesifisitasnya sama). */
 .stage-badge.boss-badge{ background:linear-gradient(180deg,var(--sun-100),#FFE7BE); color:var(--sun-600); }
 .big-emoji{ font-size:clamp(56px,14vw,76px); text-align:center; margin:var(--s2) 0 var(--s3); line-height:1; }
+
+/* Kartu "Cara Main" (permintaan user, app.ts `renderCaraMain`) — badge
+   nomor REUSE gaya `.topic-card .num` (rounded-square, warna --accent yang
+   sudah di-set per-skill oleh `setAccent()`), bukan token baru. */
+.cara-main-steps{ display:flex; flex-direction:column; gap:var(--s3); margin:var(--s4) 0; text-align:left; }
+.cara-main-step{ display:flex; align-items:flex-start; gap:var(--s3); }
+.cara-main-step .num{
+  width:32px; height:32px; border-radius:10px; flex:none;
+  display:grid; place-items:center; font-family:var(--font-head); font-weight:700; font-size:.9375rem;
+  background:var(--accent-bg); color:var(--accent);
+}
+.cara-main-step p{ margin:0; }
+.cara-main-step p b{ display:block; font-family:var(--font-head); font-size:var(--fs-h3); color:var(--ink); }
+.cara-main-step p span{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
 .en-text{ font-family:var(--font-head); font-weight:700; font-size:clamp(1.25rem,1.05rem + .9vw,1.625rem); text-align:center; }
 .id-text{ text-align:center; color:var(--ink-3); font-weight:700; font-size:var(--fs-meta); margin-top:3px; }
 
@@ -1225,6 +1541,11 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 }
 .opt-btn.correct{ border-color:var(--ok); background:var(--ok-bg); animation:pop .3s ease; }
 .opt-btn.wrong{ border-color:var(--try); animation:shake .3s ease; }
+/* Dipilih tapi BELUM dikonfirmi (Grammar Tantangan "Lihat & Dengar, Pilih
+   yang Pas" — dengar dulu boleh berkali-kali/ganti pilihan, baru commit lewat
+   tombol terpisah "Pilih Jawaban Ini") — beda dari .correct/.wrong yang
+   sudah final/terkunci. */
+.opt-btn.selected{ border-color:var(--accent); background:var(--accent-bg); }
 /* Terkunci setelah dijawab (permintaan user: tombol Coba Lagi/Lanjut di
    bawah yang jadi jalan lanjut, bukan tap opsi lain) & opsi yang dimatikan
    hint 50/50 — dua kasus beda TAPI visualnya sama: redup, tidak bisa ditap. */
@@ -1804,20 +2125,18 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 
   /* Peta Level: perhentian jadi lebih lapang & medalinya membesar — di layar
      lebar peta boleh benar-benar terasa seperti pemandangan, bukan daftar. */
-  .map-sky{ padding:var(--s6) var(--s5) var(--s7); }
+  .map-sky{ padding:var(--s6) var(--s5) var(--s5); }
   .map-sun{ width:130px; height:130px; right:26px; top:-32px; }
-  .trail-stop,
-  .trail-horizon{ grid-template-columns:92px minmax(0,1fr); gap:var(--s4); padding:var(--s6) var(--s5); }
+  .trail-stop{ grid-template-columns:92px minmax(0,1fr); gap:var(--s4); padding:var(--s6) var(--s5); }
   .trail-path{ top:calc(-1 * var(--s6)); height:calc(100% + var(--s6) * 2); }
   .trail-medallion{ width:78px; height:78px; font-size:38px; border-width:5px; }
   .trail-you{ left:52px; top:-18px; font-size:30px; }
   .trail-hills{ height:72px; }
   .trail-card{ padding:var(--s5); }
   .trail-card h3{ font-size:1.25rem; }
-  .trail-actions{ flex-direction:row; flex-wrap:wrap; }
+  .trail-boss{ width:64px; height:64px; font-size:32px; }
   .trail-actions .primary-btn,
-  .trail-actions .ghost-btn{ width:auto; flex:1 1 200px; }
-  .trail-actions .meta{ flex-basis:100%; }
+  .trail-actions .ghost-btn{ flex:1 1 200px; }
   .boss-arena{ padding:var(--s6) var(--s5) calc(var(--s5) + 14px); }
 }
 
