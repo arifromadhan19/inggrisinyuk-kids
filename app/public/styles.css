@@ -52,7 +52,13 @@
   --ink-2:#3C5C66;
   --ink-3:#6A868E;
   --ink-sand:#7A5A2E;     /* teks kecil di atas latar pasir/tanah peta */
-  --paper:#FCF4E6;
+  /* Permintaan user: cream muda-cerah (referensi warna dari luar app),
+     dipakai utk background app (.viewport) & navbar (.tabbar). --nav-cream
+     sengaja sedikit lebih dalam dari --paper (bukan token sama persis)
+     supaya kartu navbar yang melayang tetap kebaca terpisah dari halaman
+     di baliknya, walau keduanya 1 keluarga cream yang sama. */
+  --paper:#FDF8ED;
+  --nav-cream:#F8F1DF;
   --surface:#FFFFFF;
   --surface-2:#FFFBF3;    /* dasar kartu — putih hangat, bukan putih layar */
   --line:#EBDCC4;
@@ -145,6 +151,10 @@ svg.ico-sm{ width:18px; height:18px; }
   display:inline-block; font-size:var(--fs-eyebrow); font-weight:800;
   letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
 }
+/* Sub-judul di DALAM 1 kartu (Rapor: "Skor Belajar & Game" digabung dari 2
+   kartu terpisah, permintaan user — kurangi jumlah kartu biar rapor tidak
+   kepanjangan discroll, tapi grup "Skill Belajar"/"Game" tetap kebeda). */
+.eyebrow.sub{ display:block; font-size:.6875rem; }
 .meta{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
 
 .hidden{ display:none !important; }
@@ -177,7 +187,7 @@ svg.ico-sm{ width:18px; height:18px; }
 
 .main{
   flex:1; width:100%; max-width:1180px; margin:0 auto;
-  padding:var(--s4) var(--s4) 108px;
+  padding:var(--s4) var(--s4) 122px;
 }
 .main:focus{ outline:none; }
 
@@ -212,6 +222,44 @@ body.is-placement-test .tabbar{ display:none; }
 body.is-game-play .topline,
 body.is-game-play .rail,
 body.is-game-play .tabbar{ display:none; }
+
+/* 🔒 Latar kelap-kelip bintang Map Kerajaan tiap Raja (`GAME_STAR_FIELD`,
+   scenery.ts) — permintaan user "analisis /game/raja-kata... background
+   nya ditambahkan bintang, emot lucu... yang menarik anak". **Koreksi**:
+   awalnya disisipkan di `app.ts renderGamePlay()` SEBELUM `.raja-stage`,
+   TAPI `.raja-stage`/`#rajaStage` adalah `.card` OPAQUE yang membungkus
+   SEMUA isi Map Kerajaan (note-card+grid+footer) — bintang di luar kartu
+   itu ketutup total, TIDAK PERNAH kelihatan. SEKARANG disisipkan DI DALAM
+   `renderMap()` tiap `games/*.ts`, dibungkus `<div class="raja-map-wrap">`
+   BARU (bukan `.raja-stage` langsung, lihat alasan di bawah) supaya
+   `.game-star-field`'s `inset:0` sizing pas ke area Map SAJA. Konten asli
+   (note-card/grid/footer) dikasih `z-index:1` eksplisit supaya SELALU di
+   atas bintang (pola SAMA `.trail-scene`+`.raja-stop-inner` di tempat lain
+   — elemen positioned TANPA z-index eksplisit tetap kelukis DI ATAS elemen
+   non-positioned biasa walau urutan DOM-nya lebih dulu, jadi z-index:1
+   wajib bukan opsional). */
+/* `.raja-map-wrap` (BUKAN `.raja-stage` langsung — `.raja-stage`/#rajaStage
+   dipakai lintas SEMUA state game termasuk ronde main aktif, sengaja TIDAK
+   disentuh sama sekali biar 0 risiko ke layar lain) — wrapper lokal SEKALI
+   PAKAI, cuma ada selama `renderMap()` sedang dirender. */
+.raja-map-wrap{ position:relative; }
+.raja-map-wrap > .game-progress-card,
+.raja-map-wrap > .raja-grid,
+.raja-map-wrap > .game-howto-title,
+.raja-map-wrap > .game-howto-card{ position:relative; z-index:1; }
+.game-star-field{
+  position:absolute; inset:0; overflow:hidden; border-radius:var(--r-lg);
+  z-index:0; pointer-events:none;
+}
+.game-star{
+  position:absolute; display:block; opacity:.4;
+  animation:starTwinkle 2.6s ease-in-out infinite;
+}
+.game-star svg{ width:100%; height:100%; display:block; }
+@keyframes starTwinkle{
+  0%,100%{ transform:scale(.8) rotate(-6deg); opacity:.28; }
+  50%{ transform:scale(1.15) rotate(6deg); opacity:.75; }
+}
 
 /* --------------------------------------------------------- brand mark ---- */
 .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
@@ -255,38 +303,41 @@ body.is-game-play .tabbar{ display:none; }
   background:rgba(255,255,255,.08);
   transition:background .15s ease, color .15s ease, transform .18s ease;
 }
+/* Ikon navigasi dibesarkan dikit dari ukuran viewBox asli 24px (permintaan
+   user) — di-scope ke dalam badge nav SAJA (bukan svg.ico global) supaya
+   ikon utility lain (back/chevron/check/dst) tidak ikut membesar. */
+.nav-ico svg.ico{ width:28px; height:28px; }
 .nav-item[aria-current="page"]{ background:rgba(255,255,255,.12); color:#fff; }
-/* Pill mango + ikon sedikit "membesar" saat aktif — versi kid-friendly dari
-   indikator aktif polos: kombinasi pill + pop + ikon yang ikut terisi
-   (.ico-accent, lihat icons.ts) terasa lebih hidup daripada cuma ganti warna. */
-.nav-item[aria-current="page"] .nav-ico{ background:var(--sun-500); color:var(--brand-900); transform:scale(1.08); }
-
-/* Sub-path "ico-accent" (lihat icons.ts) transparan sampai ikonnya aktif —
-   supaya nav aktif terasa "penuh"/hangat tanpa perlu 2 set SVG terpisah. */
-svg.ico .ico-accent{ transition:fill .15s ease; }
-[aria-current="page"] .ico-accent{ fill:currentColor; }
+/* Ikon nav sekarang berwarna tetap (lihat icons.ts) — badge di belakangnya
+   cuma "pop" halus (bukan lagi ganti warna) saat item aktif. */
+.nav-item[aria-current="page"] .nav-ico{ background:rgba(255,255,255,.22); transform:scale(1.08); }
 
 /* ------------------------------------------------- tabbar (mobile) ------- */
+/* Kartu navigasi melayang, beige (permintaan user, referensi navbar app
+   kompetitor) — TAPI pill aktifnya mango (--sun-100/600), BUKAN ungu/lavender
+   spt referensi, biar tetap sesuai identitas warna app ini (lihat rationale
+   di atas file ini). */
 .tabbar{
-  position:fixed; left:0; right:0; bottom:0; z-index:30;
-  display:flex; gap:4px;
-  padding:8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
-  background:linear-gradient(170deg,var(--brand-800),var(--brand-900));
-  border-radius:22px 22px 0 0;
-  box-shadow:0 -8px 28px -14px rgba(6,51,58,.7);
+  position:fixed; left:12px; right:12px; bottom:calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index:30;
+  display:flex; gap:2px;
+  padding:7px; border-radius:24px;
+  background:var(--nav-cream);
+  border:1px solid var(--line);
+  box-shadow:var(--sh-2);
 }
 .tab{
-  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
-  padding:6px 4px 4px; border-radius:var(--r-md);
-  color:#9FD1CC; font-size:.6875rem; font-weight:800; letter-spacing:.01em;
-}
-.tab .nav-ico{
-  width:46px; height:28px; border-radius:var(--r-pill);
-  display:grid; place-items:center;
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:7px 4px 6px; border-radius:17px;
+  color:var(--ink-3); font-size:.625rem; font-weight:800; letter-spacing:.01em;
   transition:background .15s ease, color .15s ease;
 }
-.tab[aria-current="page"]{ color:#fff; }
-.tab[aria-current="page"] .nav-ico{ background:var(--sun-500); color:var(--brand-900); }
+.tab .nav-ico{
+  width:33px; height:33px; display:grid; place-items:center;
+  transition:transform .15s ease;
+}
+.tab[aria-current="page"]{ background:var(--sun-100); color:var(--sun-600); }
+.tab[aria-current="page"] .nav-ico{ transform:scale(1.1); }
 
 /* ---------------------------------------------------------- breadcrumb --- */
 .crumb{
@@ -337,6 +388,12 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 
 .card-head{ display:flex; align-items:center; gap:10px; margin-bottom:var(--s3); }
 .card-title{ font-family:var(--font-head); font-size:var(--fs-h3); }
+
+/* Baris label+nilai kartu "Informasi Akun" (Pengaturan) — pola sama dgn
+   eyebrow+judul kartu lain, cuma diulang 2x kecil dalam 1 kartu. */
+.acc-info-row{ font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; }
+.acc-info-row + .acc-info-row{ margin-top:6px; }
+.acc-info-row b{ color:var(--ink); font-weight:800; }
 
 .stack{ display:flex; flex-direction:column; gap:var(--s4); }
 .two-col{ display:grid; gap:var(--s4); align-items:start; }
@@ -450,7 +507,20 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .spark.compact .spark-title{ font-size:1.1875rem; margin:0 0 3px; }
 .spark.compact .spark-sub{ margin-bottom:var(--s3); }
 .spark.compact .cta{ padding:10px 20px; font-size:.9375rem; }
-.spark.compact .spark-art{ width:60px; height:60px; font-size:28px; box-shadow:0 0 0 4px rgba(255,255,255,.14), 0 10px 20px -10px rgba(6,51,58,.85); }
+/* Dibesarkan (permintaan user, samakan dgn icon hero Game Hub) — awalnya
+   60px/28px cuma di-scope `.game-hero` (Game Hub), TAPI user lanjut minta
+   Beranda & Menu Belajar (yang sama-sama reuse `.spark.compact` polos ini)
+   ikut dibesarkan juga — jadi sekarang base rule-nya langsung, `.game-hero`
+   di markup (`renderGame()`) jadi tidak perlu override lagi (boleh dibiarkan
+   nempel di class list, harmless, tapi CSS-nya dihapus krn sudah redundan). */
+.spark.compact .spark-art{ width:76px; height:76px; font-size:36px; box-shadow:0 0 0 4px rgba(255,255,255,.14), 0 10px 20px -10px rgba(6,51,58,.85); }
+
+/* Jarak ke daftar Raja di bawahnya (permintaan user) — `.spark` sendiri
+   TIDAK punya margin-bottom (dipakai jg di Beranda/Menu Belajar yang
+   spacing-nya sudah pas lewat `.stack`/gap induk lain), jadi digantung di
+   grid Game Hub SAJA (`.game-hub-grid`, bukan `.raja-grid` polos — dipakai
+   jg di dalam Map Kerajaan tiap game yang tidak butuh margin ini). */
+.game-hub-grid{ margin-top:var(--s4); }
 
 .jump-grid{ display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); }
 .jump{
@@ -664,7 +734,38 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   margin:calc(-1 * var(--s4)) calc(-1 * var(--s4)) var(--s4);
   padding:var(--s4) var(--s4) var(--s3);
   border-bottom:1px solid var(--line);
+  /* Override `align-items:center` bawaan `.screen-head` — dgn tombol Cara
+     Main sekarang jadi flex child ke-3 (lihat `.topics-head .cara-main-btn`
+     di bawah), tombol kembali WAJIB ikut nempel di ATAS jg, bukan lagi
+     ditengahkan relatif ke tinggi `.txt` (yang bisa berubah-ubah tergantung
+     panjang tagline/apakah badge "N materi" wrap ke baris baru). */
+  align-items:flex-start;
 }
+
+/* Tombol "Cara Main" digabung ke header (permintaan user: "posisinya kanan
+   atas sejajar dengan Vocabulary 10 materi") — flex child KETIGA di
+   `.topics-head` (setelah tombol kembali & `.txt`); `align-self:flex-start`
+   supaya nempel di baris ATAS (sejajar judul h1), BUKAN ikut
+   `align-items:center` bawaan `.screen-head` yang akan menengahkannya ke
+   seluruh tinggi blok (termasuk progress bar di bawah judul). `.txt` sudah
+   `flex:1` (isi semua sisa ruang), jadi tombol ini otomatis mepet ke kanan
+   tanpa perlu `margin-left:auto`. Ukuran tetap ramping (permintaan user
+   sebelumnya: "slim dan rapat tapi tetap elegan"). */
+.topics-head .cara-main-btn{
+  align-self:flex-start; flex:none;
+  display:inline-flex; align-items:center; gap:5px;
+  width:auto; margin-top:0; white-space:nowrap;
+  padding:7px 14px; font-size:var(--fs-meta);
+}
+
+/* Dropdown level sendirian di bawah header (Cara Main sudah pindah ke atas,
+   lihat `.topics-head .cara-main-btn`) — kalau `renderLevelSwitcher()`
+   balikin string kosong (cuma 1 level yang bisa dijelajahi), `app.ts` SAMA
+   SEKALI TIDAK merender div ini, jadi tidak ada baris kosong yang makan
+   `margin-bottom` tanpa isi. Padding pill-nya sendiri SEKARANG di base rule
+   `.level-select-wrap` (bukan di-scope ke sini lagi) — permintaan user:
+   dropdown Menu Belajar disamakan persis dgn yang di sini. */
+.topics-toolbar{ margin-bottom:var(--s3); }
 
 /* Bar ringkas (permintaan user: "jadi slim/collapse pas discroll", pola
    dari app/dashboard/[module]/page.tsx project inggrisinyuk) — fixed,
@@ -837,8 +938,8 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .trail-card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:var(--s3); }
 .trail-card-txt{ min-width:0; flex:1; }
 .trail-boss{
-  flex:none; width:52px; height:52px; border-radius:50%;
-  display:grid; place-items:center; font-size:26px; line-height:1;
+  flex:none; width:64px; height:64px; border-radius:50%;
+  display:grid; place-items:center; font-size:32px; line-height:1;
   background:radial-gradient(circle at 34% 30%, var(--surface) 0%, var(--surface-2) 100%);
   border:3px solid var(--band-deep); box-shadow:var(--sh-1);
 }
@@ -1017,71 +1118,35 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .leaderboard-avatar{ font-size:1.25rem; flex:none; }
 .leaderboard-xp{ margin-left:auto; font-family:var(--font-head); font-size:.875rem; color:var(--ink); }
 
-/* Jalur "Raja" (`.raja-trail`/`.raja-icon`/`.raja-stop-inner`) — dulu dipakai
-   Game Hub ITU SENDIRI (`app.ts renderGame()`), SEKARANG DIGANTI TOTAL di
-   sana oleh grid `.raja-grid`/`.raja-card` (lihat blok di bawah) — permintaan
-   user "buat tampilan game nya mencari card seperti contoh gambar" (referensi
-   grid 2-kolom kompetitor). Class di bawah ini TIDAK DIHAPUS krn MASIH
-   DIPAKAI PERSIS APA ADANYA oleh 3 layar Map Kerajaan/Hutan Ajaib INTERNAL
-   tiap game (`games/wordmatch.ts`/`games/balloonpop.ts`/`games/soundhunt.ts`,
-   semua komentarnya eksplisit bilang "reuse PERSIS `.trail.raja-trail`") —
-   JANGAN diubah/dihapus tanpa mengecek ketiga file itu dulu. Scoped ke
-   `.raja-trail` SAJA, TIDAK menyentuh `.trail-stop`/`.trail-rail`/
-   `.trail-medallion` dasar (tetap dipakai Peta Level apa adanya). */
-.raja-trail .trail-stop{
-  position:relative; display:block; padding:0; background:none; margin-bottom:var(--s6);
-}
-.raja-trail .trail-stop:not(:last-child)::after{
-  content:''; position:absolute; left:50%; bottom:calc(-1 * var(--s6) + 2px);
-  width:0; height:calc(var(--s6) - 4px); border-left:3px dashed var(--line); transform:translateX(-50%);
-}
-.raja-stop-inner{
-  position:relative; z-index:1; display:flex; align-items:center; gap:var(--s4);
-}
-.raja-trail .trail-stop.icon-right .raja-stop-inner{ flex-direction:row-reverse; }
-.raja-trail .trail-card{ flex:1; min-width:0; }
-/* 🔒 Ukuran dinaikkan (permintaan user, task 5: "list game setelah masuk
-   icon nya seperti konsep petualang, mirip peta petualang tapi bedakan
-   dimana icon nya lebih dominan" — dikonfirmasi scope-nya Map Kerajaan/
-   Hutan Ajaib INTERNAL tiap game, bukan roster /game) — dari 104/132px jadi
-   148/176px, MASIH konsep trail petualang yang sama (dashed path, markas
-   selang-seling, `.trail-card` teks di sebelahnya TIDAK diubah struktur),
-   cuma ikon markas-nya sendiri yang dibuat lebih dominan/menonjol drpd
-   sebelumnya (& drpd `.trail-medallion` 60-78px Peta Level yang jauh lebih
-   kecil). Font-size emoji markas (`clamp(...)`) ikut dinaikkan inline di
-   3 pemanggil (`games/wordmatch.ts`/`games/balloonpop.ts`/`games/
-   soundhunt.ts`) — TIDAK dipusatkan di sini krn emoji-nya sendiri (bukan
-   ukuran kotak) yang diset per-baris lewat `style=`. */
-.raja-icon{
-  flex:none; width:148px; height:148px; border-radius:var(--r-lg); overflow:hidden;
-  display:grid; place-items:center; background:var(--surface); border:4px solid var(--band-deep);
-  box-shadow:var(--sh-lift);
-}
-.raja-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
-.raja-icon svg{ width:92px; height:92px; display:block; }
-@media (min-width:560px){
-  .raja-icon{ width:176px; height:176px; }
-  .raja-icon svg{ width:108px; height:108px; }
-}
-
-/* Grid "Pilih Game" — Game Hub (app.ts renderGame()), permintaan user "buat
-   tampilan game nya mencari card seperti contoh gambar tapi dengan ciri khas
-   inggrisin yuk kids": 2 kolom kartu kotak berdiri sendiri (bukan lagi jalur
-   trail selang-seling di atas), tiap kartu SELURUHNYA 1 tombol tap (bukan
-   ikon+judul+tombol "▶️ Main" terpisah lagi) — ikon besar di atas, judul,
-   badge XP/Baru di bawahnya, pola PERSIS referensi. "Ciri khas" InggrisinYuk
-   Kids: warna & badge TETAP pakai token sendiri (`--band-deep` per-Raja,
-   `.tag`/`.tag.ok` yang sudah dipakai lintas app — BUKAN warna hijau/ungu
-   flat referensi), ikon dapat latar tint lembut dari warna Raja-nya sendiri
-   (`.raja-card-icon`, `color-mix`) biar kartu kerasa "hidup", bukan kartu
-   putih polos. Subtitle (`RajaDef.sub`) SENGAJA tidak ikut dirender di sini
-   (CLAUDE.md "Teks Singkat" — ikon+judul sudah cukup di hub, deskripsi
-   lengkap tetap muncul begitu anak masuk ke `renderGamePlay()`).
-   Class BARU, SENGAJA TIDAK reuse `.raja-trail`/`.raja-icon` di atas — lihat
-   catatan di situ kenapa. */
+/* 🔒 Grid "Pilih Game" — SEKARANG dipakai DUA tempat: roster Game Hub
+   (`app.ts renderGame()`, permintaan user awal "buat tampilan game nya
+   mencari card seperti contoh gambar") DAN Map Kerajaan/Hutan Ajaib INTERNAL
+   tiap game (`games/wordmatch.ts`/`games/balloonpop.ts`/`games/
+   soundhunt.ts`, permintaan user "jadikan 1 card an seperti di halaman game
+   dimana 1 row jadi 2 card"). Riwayat singkat Map Kerajaan: jalur vertikal
+   trail selang-seling (`.raja-trail`/`.raja-icon`/`.raja-stop-inner`, SUDAH
+   DIHAPUS TOTAL) → sempat direvisi jadi "1 kartu lebar dgn pemandangan
+   terrain" (analisis Giggle Academy, JUGA SUDAH DIGANTI) → SEKARANG reuse
+   PERSIS grid 2-kolom ini, TIDAK ada CSS terpisah lagi utk Map Kerajaan.
+   Tiap kartu SELURUHNYA 1 tombol tap — ikon besar di atas (tint lembut warna
+   Raja, `color-mix`), judul, badge kecil (XP/Baru di roster; persentase
+   0%/100% di Map Kerajaan via `.skill-pct` yang SAMA — lihat komentar
+   `is-locked`/`is-cleared` di bawah). */
 .raja-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--s4); }
 @media (min-width:640px){ .raja-grid{ grid-template-columns:repeat(3,1fr); } }
-@media (min-width:960px){ .raja-grid{ grid-template-columns:repeat(4,1fr); } }
+/* 🔒 SENGAJA TIDAK ADA breakpoint ≥960px lagi (dulu naik ke 4 kolom, lalu
+   sempat 3-kolom-dipaksa KHUSUS Map Kerajaan via `.raja-map-wrap .raja-grid`
+   — override itu SEKARANG DIHAPUS, sudah tidak perlu) — permintaan user
+   "untuk http://127.0.0.1:8200/game... di web desktop version buat 3 card
+   dalam 1 row" (roster `/game`) + CLAUDE.md "Desain Harus Bagus di Mobile
+   MAUPUN Desktop": 3 kolom TETAP dari 640px sampai lebar berapa pun. Base
+   rule ini SEKARANG SUDAH PAS utk KEDUA konteks pemakainya (roster `/game`
+   6-7 kartu, DAN Map Kerajaan tiap game — SELALU 6 markas, di dalam
+   `.raja-map-wrap`) — keduanya kebetulan sama-sama ingin 3 kolom di
+   desktop, jadi TIDAK perlu override per-konteks lagi. Kalau nanti ada
+   konteks BARU yang butuh jumlah kolom BEDA (mis. daftar >9 kartu), scope
+   breakpoint-nya sendiri (pola CLAUDE.md poin 2 "Desain Harus Bagus..."),
+   jangan ubah base rule ini lagi begitu saja. */
 .raja-card{
   position:relative;
   display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;
@@ -1108,6 +1173,104 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   .raja-card-icon{ width:108px; height:108px; }
   .raja-card-icon svg{ width:64px; height:64px; }
   .raja-card h3{ font-size:1.0625rem; }
+}
+
+/* Status markas Map Kerajaan (`is-locked`/`is-cleared`/`is-open`) — KHUSUS
+   dipakai Map Kerajaan, roster `/game` TIDAK PERNAH set class ini (semua
+   game roster selalu "terbuka"), jadi aman ditaruh bare tanpa scoping
+   tambahan. Markas terkunci TANPA tombol "🔒 Terkunci" berulang lagi (kerasa
+   spt disabled form) — kartunya sendiri jadi `disabled`, cukup redup.
+   Markas berikutnya yang boleh dijelajah dapat halo denyut mango
+   (`hereHalo`, REUSE PERSIS animasi "kamu di sini" Peta Level) di ikonnya —
+   SATU titik fokus jelas, tanpa perlu teks "▶️ Jelajahi".
+   🔒 Badge pojok-kanan-atas dulu ikon gembok/centang custom (`.raja-card-
+   badge`, SUDAH DIHAPUS) — permintaan user "tambahkan percentage di setiap
+   card" GANTI jadi persentase 0%/100% via `.skill-pct` yang SAMA PERSIS
+   dgn roster `/game`/Menu Belajar (bukan CSS baru, lihat komentar
+   `.skill-pct` sendiri) — status terkunci TETAP kebaca dari kartu yang
+   diredupkan+`disabled` di atas, bukan lagi dari ikon terpisah. */
+.raja-card.is-locked{ opacity:.6; cursor:default; }
+.raja-card.is-locked .raja-card-icon{ filter:grayscale(.55); }
+.raja-card.is-open .raja-card-icon{ animation:hereHalo 2.2s ease-out infinite; }
+
+/* 🔒 `.map-card` — permintaan user "kasih UI lebih kids friendly seperti
+   sebelumnya, dari hasil analisis giggleacademy.com/learning-course": grid
+   2-kolom (`.raja-grid`/`.raja-card`) DIKONFIRMASI sudah tepat, cuma kartu
+   Map Kerajaan-nya sendiri kerasa terlalu datar/putih polos (versi grid ini
+   awalnya 1:1 ikut gaya kartu roster `/game`, yang MEMANG sengaja netral).
+   Modifier BARU, HANYA ditempel kartu Map Kerajaan (roster `/game` TETAP
+   putih/krem polos apa adanya, tidak ikut berubah) — kartu dapat rona warna
+   Raja-nya sendiri yang LEMBUT (`color-mix` low-%, bukan latar saturasi
+   penuh spt versi terrain SEBELUMNYA yang sudah dicabut — temuan riset
+   sendiri: Giggle Academy dominan putih/krem, warna cuma AKSEN, bukan latar
+   utama), ikon dapat tint sedikit lebih pekat drpd roster biar tetap
+   menonjol di atas kartu yang sekarang tidak polos putih lagi. */
+.raja-card.map-card{
+  background:linear-gradient(180deg, color-mix(in srgb, var(--band-deep) 14%, var(--surface)) 0%, color-mix(in srgb, var(--band-deep) 6%, var(--surface-2)) 100%);
+  border-color:color-mix(in srgb, var(--band-deep) 30%, var(--line));
+}
+.raja-card.map-card .raja-card-icon{ background:color-mix(in srgb, var(--band-deep) 26%, var(--surface)); }
+.raja-card.map-card.is-locked{ background:linear-gradient(180deg,#FFFDF9,#F8F3EA); border-color:var(--line); }
+
+/* Tag tingkat kesulitan berwarna (permintaan user "lebih kids friendly" —
+   sebelumnya SEMUA tingkat pakai `.tag` netral abu-abu yang sama, kurang
+   terasa "naik tangga"). REUSE token warna yang SUDAH ADA (bukan palet
+   baru) — pemanasan=merah muda "read", mudah=hijau "ok" (sama arti
+   "aman/gampang" dgn dipakai lintas app), sedang=biru listen, sulit=oranye
+   grammar, jago=ungu vocab, legendaris=mango — 6 warna yang sudah py makna
+   sendiri di app ini, dipinjam murni sbg pembeda visual tingkat, bukan
+   makna skill aslinya. 🔒 `diff-pemanasan` BARU (permintaan user "tambahkan
+   1 sehingga ada 6... levelnya ada pemanasan, mudah, sedang, sulit, jago,
+   legendaris") — dipakai SEMUA game bertingkat (Kata/Balon/Susun/Ingatan/
+   Sound Hunt), bukan cuma 1 game. */
+.tag.diff-pemanasan{ background:var(--c-read-bg); color:var(--c-read); }
+.tag.diff-mudah{ background:var(--ok-bg); color:var(--ok); }
+.tag.diff-sedang{ background:var(--c-listen-bg); color:var(--c-listen); }
+.tag.diff-sulit{ background:var(--c-gram-bg); color:var(--c-gram); }
+.tag.diff-jago{ background:var(--c-vocab-bg); color:var(--c-vocab); }
+.tag.diff-legendaris{ background:var(--sun-100); color:var(--sun-600); }
+
+/* 🔒 Kartu ringkasan puncak Map Kerajaan (`.game-progress-card`) — GANTIKAN
+   `.card.note-card` polos sebelumnya (permintaan user, referensi screenshot
+   "Tantangan Harian": ikon+label kecil di atas, judul singkat, baris titik
+   progres + "Selesai X dari Y" — "buat sesimple mungkin secara text").
+   Diadaptasi, BUKAN ditiru 100%: baris "Bonus koin/XP" & tombol CTA besar
+   di referensi SENGAJA tidak diambil — app ini tidak pernah py coin (PRD
+   §11), dan CTA terpisah jadi mubazir krn kartu markas di bawahnya SUDAH
+   1 tombol tap langsung. Titik progres (`.game-progress-dot`) reuse warna
+   "ok" hijau yang sama dgn status selesai di seluruh app (BUKAN ikon
+   custom baru). 🔒 Baris ikon+eyebrow ("🧩 Kerajaan Kata" dst, `.game-
+   progress-head`/`.game-progress-ic`) SUDAH DIHAPUS TOTAL (permintaan user
+   "remove text '🧩Kerajaan Kata'" — nama kerajaan sudah kebaca dari `.act-
+   head`/judul Raja di puncak layar, redundan diulang di sini). */
+.game-progress-card{ margin-bottom:var(--s5); }
+.game-progress-card h2{ font-family:var(--font-head); font-size:1.0625rem; margin:0 0 var(--s3); }
+.game-progress-dots{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.game-progress-dot{
+  width:28px; height:28px; flex:none; border-radius:50%; display:grid; place-items:center;
+  background:var(--muted); color:transparent; font-weight:800; font-size:.8125rem;
+}
+.game-progress-dot.done{ background:var(--ok-bg); color:var(--ok); }
+.game-progress-label{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-3); margin-left:4px; }
+
+/* 🔒 "Cara Main" (permintaan user, referensi screenshot: judul tengah +
+   kartu daftar bernomor) — GANTIKAN pesan penutup custom "Itu semua
+   markas..." (`gameMapFooterHtml()`, SUDAH DIHAPUS dari `games/*.ts`) krn
+   footer brand yang SEBENARNYA sekarang ditaruh sekali di level screen
+   (`.standalone-footer`, app.ts `renderGamePlay()`). Isi langkah BEDA tiap
+   game (mekanik beda-beda — match/pop/dengar), diteruskan sbg parameter ke
+   helper lokal `gameHowToHtml()`. Angka bulat reuse warna Raja (`var(--k)`,
+   custom property yang SUDAH diisi `.raja-stage` induknya — ikut tema
+   halaman, bukan warna generik). */
+.game-howto-title{ font-family:var(--font-head); font-size:1.0625rem; text-align:center; margin:var(--s6) 0 var(--s4); }
+.game-howto-card{ margin-bottom:0; }
+.game-howto-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--s4); }
+.game-howto-list li{ display:flex; align-items:center; gap:var(--s3); font-weight:700; }
+.game-howto-num{
+  flex:none; width:30px; height:30px; border-radius:50%;
+  display:grid; place-items:center; font-family:var(--font-head); font-weight:800; font-size:.9375rem;
+  background:color-mix(in srgb, var(--k, var(--brand-700)) 16%, var(--surface-2));
+  color:var(--k, var(--brand-700));
 }
 
 /* Skin "arcade" utk stage main Raja (permintaan user: "jangan kaku, ini game
@@ -1404,13 +1567,23 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 /* Menu Belajar — pemilih markas lain yang sudah terbuka (permintaan user:
    "gimana di menu belajar bisa pilih materi per level"), SATU baris ringkas
    (dropdown, bukan pill row 2 baris — revisi user: pill row "boros" & bikin
-   konten belajar ketutup turun) sebelum kartu materi, konsisten dengan
-   design awal yang tanpa header sama sekali kalau cuma 1 level tersedia. */
-.menu-level-head{ margin-bottom:12px; }
+   konten belajar ketutup turun), konsisten dengan design awal yang tanpa
+   header sama sekali kalau cuma 1 level tersedia. Ditaruh LANGSUNG sbg flex
+   child `.stack` (di antara kartu "Lanjutin Yuk" & daftar skill, permintaan
+   user — dulu di paling atas sebelum kartu itu) — TANPA div pembungkus/
+   margin sendiri, `.stack{gap}` induknya sudah cukup ngurus jaraknya. */
 .level-select-wrap{
   display:inline-flex; align-items:center; gap:6px;
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-pill);
-  padding:6px 12px 6px 14px;
+  padding:4px 10px 4px 12px;
+  /* Bug: di Menu Belajar pill ini sekarang jadi flex child LANGSUNG `.stack`
+     (dulu dibungkus div block biasa) — `.stack` column-flex nge-stretch
+     children ke lebar penuh secara default, jadi melebar sepanjang kartu
+     (permintaan user: "terlalu panjang, samakan dgn list materi"). `align-
+     self:flex-start` no-op kalau parent-nya bukan flex (mis. `.topics-
+     toolbar`, block biasa) — aman dipasang di base rule, bukan cuma override
+     khusus 1 halaman. */
+  align-self:flex-start;
 }
 .level-select{
   border:none; background:transparent; color:var(--ink); font-weight:800;
@@ -1816,8 +1989,18 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 
 /* Tantangan "📝 Lengkapi Catatan" (Achiever, note completion) —
    games/listening.ts runTantanganNote. Kartu ala kertas catatan, blank
-   digarisbawahi putus-putus sampai terisi (solid + aksen sesudahnya). */
-.note-card{
+   digarisbawahi putus-putus sampai terisi (solid + aksen sesudahnya).
+   🔒 Diberi nama `.listen-note-card` (BUKAN `.note-card` polos lagi) —
+   permintaan user "section orang tua di Pengaturan dibuat sama lebarnya
+   dengan section lain": ketauan `.note-card` di sini TABRAKAN nama dgn
+   `.card.note-card` (pola "kartu tips" umum, dipakai 8+ tempat lain di
+   app.ts/placement.ts, mis. "Untuk orang tua" Pengaturan) — rule INI
+   (`max-width:480px`) belakangan di CSS jadi MENANG cascade & ikut
+   membatasi lebar kartu "Untuk orang tua" padahal seharusnya selebar kartu
+   Pengaturan lain. Class di-rename SUPAYA TERPISAH TOTAL dari `.card.
+   note-card`, bukan cuma diubah `max-width`-nya — nama lama BUKAN dipakai
+   di mana pun lagi, aman diganti bersih. */
+.listen-note-card{
   background:var(--surface); border:2px dashed var(--accent);
   border-radius:var(--r-md); padding:var(--s3) var(--s4);
   max-width:480px; margin:var(--s3) auto; text-align:left;
@@ -1833,7 +2016,7 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 
 /* Tantangan "🧩 Dengar & Simpulkan" (Trailblazer, gist/inference) —
    games/listening.ts runTantanganDialogue. Transkrip percakapan pakai
-   `.note-card` yg sama (kartu kertas), baris per tokoh dibedakan warna nama. */
+   `.listen-note-card` yg sama (kartu kertas), baris per tokoh dibedakan warna nama. */
 .dialogue-line{ margin-bottom:2px; }
 .dialogue-speaker{ font-weight:800; color:var(--accent); margin-right:4px; }
 
@@ -2135,15 +2318,29 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .text-input:focus-visible{ outline:3px solid var(--brand-500); outline-offset:1px; border-color:var(--brand-500); }
 
 /* Avatar hewan (Pengaturan → Nama panggilan) — grid tap-besar, sama filosofi
-   dgn opt-btn di game (target tap besar utk anak, PRD §4.6). */
-.avatar-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+   dgn opt-btn di game (target tap besar utk anak, PRD §4.6). 3 kolom x 3
+   baris tetap (9 avatar, lihat ANIMAL_AVATARS di progress.ts). Kartu ala
+   kompetitor (permintaan user, referensi screenshot "Pilih Maskot"): ikon +
+   nama Inggris (ANIMAL_AVATAR_NAMES) berdampingan vertikal dalam 1 kartu
+   rounded-rect, bukan cuma emoji polos di kotak kecil — pill mango dari versi
+   lama diganti border navy + badge centang hijau (--ok) begitu aktif, pola
+   sama persis referensi. */
+.avatar-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
 .avatar-opt{
-  aspect-ratio:1; font-size:22px; border-radius:var(--r-md);
+  position:relative;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  padding:16px 6px; border-radius:var(--r-lg);
   background:var(--surface); border:2px solid var(--line);
-  display:grid; place-items:center; cursor:pointer;
+  cursor:pointer;
 }
-.avatar-opt.is-active{ border-color:var(--sun-500); background:var(--sun-100); }
-@media (max-width:420px){ .avatar-grid{ grid-template-columns:repeat(4,1fr); } }
+.avatar-opt-emoji{ font-size:34px; line-height:1; }
+.avatar-opt-name{ font-size:.75rem; font-weight:800; color:var(--ink); letter-spacing:.01em; }
+.avatar-opt.is-active{ border-color:var(--ink); border-width:2.5px; }
+.avatar-opt-check{
+  position:absolute; top:8px; right:8px; width:20px; height:20px; border-radius:50%;
+  display:grid; place-items:center; background:var(--ok); color:#fff;
+}
+.avatar-opt-check svg.ico{ width:11px; height:11px; stroke-width:3.4; }
 
 /* ============================ RESPONSIVE ================================== */
 
@@ -2181,7 +2378,7 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   .rail .brand-word{ display:none; }
   .rail-nav{ gap:8px; }
   .nav-item{ flex-direction:column; gap:5px; padding:8px 4px; font-size:.625rem; text-align:center; letter-spacing:.02em; }
-  .nav-item .nav-ico{ width:44px; height:36px; border-radius:14px; }
+  .nav-item .nav-ico{ width:46px; height:40px; border-radius:14px; }
   .rail-foot{ margin-top:auto; }
   .rail-foot .rail-level{
     text-align:center; color:#B6DED9; font-size:.625rem; font-weight:800;
@@ -2203,7 +2400,20 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   /* Game (renderGame) tidak duduk di dalam .two-col seperti Menu Belajar —
      seluruh lebar layar kepakai, jadi grid-nya boleh tetap 2 kolom di sini. */
   .skill-grid.game-grid{ grid-template-columns:1fr 1fr; }
-  .set-grid{ grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); }
+  /* 🔒 Permintaan user: "/pengaturan... UI versi desktop web nya kurang
+     bagus tapi versi mobile sudah bagus". Percobaan PERTAMA (2-kolom CSS
+     Grid) bikin kartu pendek ("Untuk orang tua"/tombol "Keluar") diregangkan
+     `align-items:stretch` jadi kotak putih kosong raksasa. Percobaan KEDUA
+     (multi-column "masonry", `column-count:2`) SUDAH DIGANTI TOTAL lagi —
+     user tegaskan "masih kurang bagus", minta TETAP 1 kolom penuh, bukan 2
+     kartu berdampingan sama sekali dalam bentuk apa pun. SEKARANG: `.set-
+     grid` TETAP `display:grid` 1-kolom implisit persis base rule mobile
+     (TIDAK ada `grid-template-columns`/`column-count` apa pun lagi di
+     breakpoint manapun) — bedanya CUMA lebar dibatasi & ditengahkan
+     (`max-width`+`margin:auto`, pola SAMA `.act-stage > .card` di bawah)
+     supaya di layar lebar kartu tidak melebar mentah edge-to-edge (input
+     nama/tombol jadi janggal kepanjangan) TANPA membuka kolom kedua. */
+  .set-grid{ max-width:700px; margin-left:auto; margin-right:auto; }
   .spark{ padding:var(--s5) var(--s5) calc(var(--s5) + 14px); }
   .spark-art{ width:100px; height:100px; font-size:50px; }
   .spark .trail-hills{ height:66px; }
@@ -2219,7 +2429,7 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   .trail-hills{ height:72px; }
   .trail-card{ padding:var(--s5); }
   .trail-card h3{ font-size:1.25rem; }
-  .trail-boss{ width:64px; height:64px; font-size:32px; }
+  .trail-boss{ width:78px; height:78px; font-size:39px; }
   .trail-actions .primary-btn,
   .trail-actions .ghost-btn{ flex:1 1 200px; }
   .boss-arena{ padding:var(--s6) var(--s5) calc(var(--s5) + 14px); }
@@ -2231,7 +2441,7 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   .rail .brand{ justify-content:flex-start; padding:0 6px; }
   .rail .brand-word{ display:block; color:#fff; }
   .nav-item{ flex-direction:row; gap:12px; padding:11px 12px; font-size:.9375rem; text-align:left; }
-  .nav-item .nav-ico{ width:36px; height:36px; border-radius:12px; }
+  .nav-item .nav-ico{ width:40px; height:40px; border-radius:12px; }
   .rail-foot .rail-level{ text-align:left; padding:12px 14px; font-size:.6875rem; }
   .rail-foot .rail-level b{ font-size:1rem; }
   .rail-foot .rail-level .cefr{ display:block; opacity:.8; }
@@ -2241,7 +2451,8 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   .jump-grid{ grid-template-columns:1fr 1fr; }
   .skill-grid{ grid-template-columns:1fr; }
   .skill-grid.game-grid{ grid-template-columns:repeat(3,1fr); }
-  .set-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  /* `.set-grid` TETAP 1 kolom (max-width dibatasi sejak ≥640px, lihat
+     komentar lengkap di sana) — TIDAK perlu override lagi di sini. */
   .act-body{ grid-template-columns:minmax(0,1fr) 264px; gap:var(--s5); }
   .act-side{
     order:2; align-self:start; position:sticky; top:var(--s5);

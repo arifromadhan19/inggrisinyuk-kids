@@ -75,6 +75,47 @@ export const HILLS_RIDGE = HILLS_DUNES;
 export const CLOUD = `<svg class="cloud-art" viewBox="0 0 90 34" aria-hidden="true" focusable="false"><g fill="currentColor"><ellipse cx="30" cy="20" rx="22" ry="12"/><ellipse cx="53" cy="16" rx="17" ry="14"/><ellipse cx="68" cy="22" rx="16" ry="10"/></g></svg>`;
 
 /**
+ * Kelap-kelip bintang latar layar "main 1 Raja" (`app.ts renderGamePlay()`,
+ * dipakai `body.is-game-play`) — permintaan user "analisis /game/raja-kata,
+ * background nya ditambahkan bintang, emot lucu... yang menarik anak". SVG
+ * tangan sederhana (pola SAMA file ini — bukan emoji sistem, biar warnanya
+ * bisa dipinjam token brand apa pun via `currentColor`, konsisten lintas
+ * perangkat), MURNI dekorasi (`aria-hidden`), posisi & warna TETAP (bukan
+ * acak tiap render) supaya tidak "meloncat" tiap kali layar digambar ulang.
+ * SENGAJA dijauhkan dari 18% teratas (zona judul `.act-head`, latarnya
+ * transparan — bintang di situ akan kelihatan menembus teks, ganggu
+ * keterbacaan) & warna dipilih low-opacity + `.card`/`.raja-card` di
+ * depannya OPAQUE, jadi kelap-kelip ini murni ngisi celah antar-kartu,
+ * tidak pernah menutupi konten interaktif.
+ */
+interface SparkleSpot {
+  top: string;
+  left: string;
+  size: number;
+  color: string;
+  delay: number;
+}
+
+const GAME_SPARKLES: SparkleSpot[] = [
+  { top: '20%', left: '6%', size: 20, color: 'var(--sun-400)', delay: 0 },
+  { top: '16%', left: '90%', size: 16, color: 'var(--brand-300)', delay: 0.7 },
+  { top: '38%', left: '94%', size: 24, color: 'var(--c-vocab)', delay: 1.3 },
+  { top: '46%', left: '3%', size: 18, color: 'var(--sun-500)', delay: 0.3 },
+  { top: '64%', left: '92%', size: 20, color: 'var(--brand-300)', delay: 1.8 },
+  { top: '70%', left: '5%', size: 16, color: 'var(--c-read)', delay: 1 },
+  { top: '86%', left: '90%', size: 22, color: 'var(--sun-400)', delay: 2.1 },
+  { top: '92%', left: '8%', size: 18, color: 'var(--c-vocab)', delay: 0.5 },
+];
+
+const SPARKLE_SHAPE =
+  '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2 14.3 9.7 22 12 14.3 14.3 12 22 9.7 14.3 2 12 9.7 9.7Z" fill="currentColor"/></svg>';
+
+export const GAME_STAR_FIELD = `<div class="game-star-field" aria-hidden="true">${GAME_SPARKLES.map(
+  (s) =>
+    `<span class="game-star" style="top:${s.top};left:${s.left};width:${s.size}px;height:${s.size}px;color:${s.color};animation-delay:${s.delay}s">${SPARKLE_SHAPE}</span>`
+).join('')}</div>`;
+
+/**
  * Maskot "Raja" Game Hub (`app.ts` `RAJA_LIST`, `materi/game.md` §7) — roster
  * KHUSUS Game Hub, beda karakter total dari 6 Raja Hewan Peta Level
  * (permintaan user eksplisit). Dibangun tangan dari bentuk SVG sederhana

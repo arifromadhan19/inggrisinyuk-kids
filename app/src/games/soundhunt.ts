@@ -3,12 +3,24 @@
  * ditaruh persis di bawah Raja Ingatan — permintaan user), fokus MURNI
  * Listening: dengar 1 instruksi Bahasa Inggris lalu tunjuk gambar yang
  * cocok dari 4 kartu. Dibungkus tema "petualangan cari Sound Crystal di
- * Hutan Ajaib" (Forest Map dgn 5 markas berurutan, tiap markas = 1 level)
+ * Hutan Ajaib" (Forest Map dgn 6 markas berurutan, tiap markas = 1 level)
  * supaya terasa game, bukan kuis — pola SAMA PERSIS raja lain
  * (`games/wordmatch.ts`/`games/balloonpop.ts`/`games/memorymatch.ts`): 1
  * file berdiri sendiri, bank soal DATA-DRIVEN sendiri (`SOUND_HUNT_LEVELS`
  * di bawah, tambah level baru = tambah 1 entri array, TANPA sentuh logic),
  * TIDAK terikat topik/level Vocab manapun (generik lintas level app).
+ *
+ * 🔒 **Revisi (permintaan user "tambahkan 1 sehingga ada 6... levelnya ada
+ * pemanasan, mudah, sedang, sulit, jago, legendaris")** — dulu Sound Hunt
+ * SATU-SATUNYA raja bertingkat yang TIDAK py tag kesulitan sama sekali
+ * (5 markas polos, cuma nama tempat). Sekarang `SoundHuntLevel` dapat field
+ * BARU `difficulty: WordMatchDifficulty` (reuse union yang SAMA dgn Raja
+ * Kata/Balon/Susun/Ingatan, BUKAN bikin tipe baru) supaya penamaan tingkat
+ * konsisten lintas Game Hub — 5 markas lama TETAP APA ADANYA kontennya,
+ * cuma diberi label `mudah`→`legendaris` sesuai urutan progres yang SUDAH
+ * ada (guideLine-nya sendiri sudah menaik dari "gerbang hutan" ke "hampir
+ * sampai istana"); markas ke-0 BARU `pemanasan`/"Village Edge" ditambah
+ * PALING DEPAN, instruksi paling sederhana (1 kata benda umum).
  *
  * Audio: SELALU lewat `speak()` (speech.ts, Web Speech API) — TIDAK ada
  * file audio terpisah, konsisten SELURUH app ini (bukan cuma game ini).
@@ -24,12 +36,30 @@
  * tapi jawaban salah TIDAK PERNAH mengunci/menahan anak di 1 markas.
  */
 import { isDevTestAccount } from '../account';
-import { setHandlers } from '../interaction';
+import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
 import { speak, speakLocalized, playCorrectTone, playTryAgainTone } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
-import type { LevelKey, OnDone } from '../types';
+import { GAME_STAR_FIELD } from '../scenery';
+import type { LevelKey, OnDone, WordMatchDifficulty } from '../types';
+
+/** `RajaKey` game ini — dikirim ke `recordAttempt()`, lihat komentar
+ *  `GAME_KEY` `games/wordmatch.ts`. */
+const GAME_KEY = 'soundhunt';
+
+/** Label tag kesulitan (`.tag.diff-*`, `public/styles.css`) — duplikat
+ *  lokal ringan (cuma label, bukan bank/pairCount penuh spt
+ *  `DIFFICULTY_META` game lain, krn Sound Hunt kontennya per-markas
+ *  data-driven sendiri, bukan digenerate dari 1 bank+meta). */
+const DIFFICULTY_LABEL: Record<WordMatchDifficulty, string> = {
+  pemanasan: 'Pemanasan',
+  mudah: 'Mudah',
+  sedang: 'Sedang',
+  sulit: 'Sulit',
+  jago: 'Jago',
+  legendaris: 'Legendaris',
+};
 
 export interface SoundHuntOption {
   id: string;
@@ -48,6 +78,12 @@ export interface SoundHuntOption {
 export interface SoundHuntLevel {
   node: string;
   nodeEmoji: string;
+  /** Tag kesulitan markas ini (BARU, lihat komentar puncak file) — SATU-
+   *  SATUNYA pemakaian union `WordMatchDifficulty` di luar game bank+meta,
+   *  murni label tampilan (`DIFFICULTY_LABEL`), tidak mengatur bank/skala
+   *  apa pun spt di game lain krn tiap markas di sini SUDAH ditulis manual
+   *  1-1 (bukan digenerate). */
+  difficulty: WordMatchDifficulty;
   /** Kalimat instruksi Inggris — diputar via TTS, TIDAK PERNAH ditampilkan
    *  sbg teks kecuali anak tap 💡 Petunjuk (audio jadi sumber utama). */
   instruction: string;
@@ -56,12 +92,28 @@ export interface SoundHuntLevel {
   options: SoundHuntOption[];
 }
 
-/** 5 markas Hutan Ajaib (MVP, CEFR A1). Data-driven: tambah level baru =
- *  tambah 1 entri di sini. */
+/** 6 markas Hutan Ajaib (MVP, CEFR A1 — markas ke-0 `pemanasan` BARU,
+ *  permintaan user "tambahkan 1 sehingga ada 6"). Data-driven: tambah
+ *  level baru = tambah 1 entri di sini. */
 export const SOUND_HUNT_LEVELS: SoundHuntLevel[] = [
+  {
+    node: 'Village Edge',
+    nodeEmoji: '🏡',
+    difficulty: 'pemanasan',
+    instruction: 'Find the dog.',
+    instructionId: 'Temukan anjingnya.',
+    guideLine: 'Yuk pemanasan dulu di tepi desa sebelum masuk hutan!',
+    options: [
+      { id: 'dog', emoji: '🐶', label: 'Dog', correct: true },
+      { id: 'cat', emoji: '🐱', label: 'Cat', correct: false },
+      { id: 'bird', emoji: '🐦', label: 'Bird', correct: false },
+      { id: 'fish', emoji: '🐟', label: 'Fish', correct: false },
+    ],
+  },
   {
     node: 'Forest Entrance',
     nodeEmoji: '🌲',
+    difficulty: 'mudah',
     instruction: 'Find the elephant.',
     instructionId: 'Temukan gajahnya.',
     guideLine: 'Selamat datang di gerbang hutan! Dengarkan baik-baik, ya.',
@@ -75,6 +127,7 @@ export const SOUND_HUNT_LEVELS: SoundHuntLevel[] = [
   {
     node: 'Whispering Woods',
     nodeEmoji: '🌳',
+    difficulty: 'sedang',
     instruction: 'Find the red apple.',
     instructionId: 'Temukan apel merahnya.',
     guideLine: 'Pohon-pohon di sini suka berbisik... coba dengar apa katanya!',
@@ -88,6 +141,7 @@ export const SOUND_HUNT_LEVELS: SoundHuntLevel[] = [
   {
     node: 'Mushroom Garden',
     nodeEmoji: '🍄',
+    difficulty: 'sulit',
     instruction: 'Touch the blue star.',
     instructionId: 'Sentuh bintang birunya.',
     guideLine: 'Taman jamur ini penuh warna-warni ajaib, lho!',
@@ -101,6 +155,7 @@ export const SOUND_HUNT_LEVELS: SoundHuntLevel[] = [
   {
     node: 'Crystal Cave',
     nodeEmoji: '💎',
+    difficulty: 'jago',
     instruction: 'Find the small cat.',
     instructionId: 'Temukan kucing kecilnya.',
     guideLine: 'Gua ini gelap berkilau... awas, banyak hewan lucu bersembunyi!',
@@ -114,6 +169,7 @@ export const SOUND_HUNT_LEVELS: SoundHuntLevel[] = [
   {
     node: 'Castle Gate',
     nodeEmoji: '🏰',
+    difficulty: 'legendaris',
     instruction: 'Find the rabbit.',
     instructionId: 'Temukan kelincinya.',
     guideLine: 'Hampir sampai gerbang istana Raja! Satu Sound Crystal lagi...',
@@ -133,6 +189,19 @@ function roundActionsHtml(isLast: boolean): string {
     <div class="round-actions">
       <button class="ghost-btn" type="button" data-action="tryAgainRound">🔁 Coba Lagi</button>
       <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Lanjut ➡️'}</button>
+    </div>`;
+}
+
+/** "Cara Main" — duplikat lokal, lihat komentar lengkap `gameHowToHtml`
+ *  `games/wordmatch.ts` (permintaan user, referensi screenshot + "footer
+ *  tambahkan seperti original footer... seperti di halaman yang lain"). */
+function gameHowToHtml(steps: string[]): string {
+  return `
+    <h2 class="game-howto-title">Cara Main</h2>
+    <div class="card game-howto-card">
+      <ol class="game-howto-list">
+        ${steps.map((s, i) => `<li><span class="game-howto-num" aria-hidden="true">${i + 1}</span><span>${s}</span></li>`).join('')}
+      </ol>
     </div>`;
 }
 
@@ -175,55 +244,75 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
   const visited = new Set<number>();
   const crystals = new Set<number>();
 
-  function renderWelcome(): void {
-    container.innerHTML = `
-      <div class="done-wrap">
-        <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">🧙‍♂️</span><span class="crown">💎</span></div>
-        <h2>🎧 Sound Hunt</h2>
-        <p class="done-sub">Misi Pemburu Suara</p>
-        <p class="meta">Sound Crystals hilang di Hutan Ajaib. Dengarkan suara hutan baik-baik, bantu temukan semuanya, yuk!</p>
-        <button class="primary-btn" type="button" data-action="start">🚀 Mulai Petualangan</button>
-      </div>`;
-    setHandlers({ start: () => renderMap() });
-  }
-
-  /** Forest Map — reuse PERSIS `.trail.raja-trail` (app.ts renderGame, ikon
-   *  besar+kartu selang-seling), TANPA CSS baru. Markas ke-i cuma bisa
-   *  dijelajah kalau markas ke-(i-1) sudah PERNAH dikunjungi (bukan harus
-   *  benar — non-punitive), markas yang belum terjangkau tampil terkunci. */
+  /** Forest Map — grid `.raja-grid`/`.raja-card`, SAMA PERSIS roster `/game`
+   *  (permintaan user "jadikan 1 card an seperti di halaman game dimana 1
+   *  row jadi 2 card" — riwayat desain lengkap: komentar `renderMap()`
+   *  `games/wordmatch.ts`). 🔒 SEKARANG layar PERTAMA yang tampil (Welcome
+   *  screen "🚀 Mulai Petualangan", `renderWelcome()`, SUDAH DIHAPUS TOTAL —
+   *  permintaan user "hilangkan halaman mulai petualang... langsung sub
+   *  list game per level", pola SAMA `games/wordmatch.ts` yang jg TANPA
+   *  Welcome screen terpisah). Markas ke-i cuma bisa dijelajah kalau markas
+   *  ke-(i-1) sudah PERNAH dikunjungi (bukan harus benar — non-punitive),
+   *  markas yang belum terjangkau tampil terkunci (`disabled`+redup). Beda
+   *  dari Kata/Balon: badge di sini pakai `cleared` (crystal DIDAPAT), BUKAN
+   *  `wasVisited` (pernah dikunjungi TANPA dapat crystal-nya — jawaban salah
+   *  tetap boleh lanjut, non-punitive) — markas yang pernah dikunjungi tapi
+   *  belum dapat crystal TETAP dianggap "is-open" (dapat halo, boleh
+   *  diulang), bukan "is-cleared". 🔒 Kartu jg dapat `map-card` ("lebih kids
+   *  friendly seperti sebelumnya", analisis giggleacademy.com/learning-course
+   *  — rona warna Raja lembut GANTI putih polos, lihat komentar `.map-card`
+   *  `public/styles.css`); 🔒 SEKARANG jg py tag kesulitan (`diff-${lvl.
+   *  difficulty}`, permintaan user "levelnya ada pemanasan, mudah, sedang,
+   *  sulit, jago, legendaris" — dulu Sound Hunt SATU-SATUNYA raja
+   *  bertingkat tanpa tag ini, lihat komentar puncak file). */
   function renderMap(): void {
+    // 🔒 Back dari layar Map TIDAK perlu pop up konfirmasi lagi (permintaan
+    // user) — lihat komentar `isGameRoundActive` `interaction.ts`.
+    setGameRoundActive(false);
     const stops = SOUND_HUNT_LEVELS.map((lvl, i) => {
       const cleared = crystals.has(i);
-      const wasVisited = visited.has(i);
       // Akun tes dev ("124") lihat SEMUA markas terbuka — lihat account.ts isDevTestAccount().
       const unlocked = isDevTestAccount() || i === 0 || visited.has(i - 1);
-      const action = unlocked
-        ? `<button class="primary-btn" type="button" data-action="enterNode" data-payload="${i}">${wasVisited ? '🔁 Jelajahi Lagi' : '▶️ Jelajahi'}</button>`
-        : `<button class="ghost-btn" type="button" disabled aria-disabled="true">🔒 Terkunci</button>`;
-      const statusText = cleared ? 'Sound Crystal ditemukan 💎' : unlocked ? 'Menunggu dijelajahi' : 'Masih tersegel';
+      const stateClass = cleared ? 'is-cleared' : unlocked ? 'is-open' : 'is-locked';
+      // 🔒 Badge kunci/centang (ikon) DIGANTI persentase — pola SAMA PERSIS
+      // `games/wordmatch.ts` `renderMap()` (permintaan user "tambahkan
+      // percentage di setiap card"), lihat komentar lengkap di sana.
+      const pct = cleared ? 100 : 0;
+      const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
       return `
-      <li class="trail-stop ${i % 2 === 1 ? 'icon-right' : ''}" style="--band-deep:var(--c-read)">
-        <div class="raja-stop-inner">
-          <span class="raja-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(68px,17vw,92px);animation-delay:${(i * 0.15).toFixed(2)}s">${lvl.nodeEmoji}</span></span>
-          <div class="trail-card">
-            <span class="trail-place">🗺️ Hutan Ajaib</span>
-            <h3>${lvl.node}</h3>
-            <div class="trail-meta"><span class="meta">${statusText}</span></div>
-            <div class="trail-actions">${action}</div>
-          </div>
-        </div>
-      </li>`;
+      <button class="raja-card map-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-read)">
+        ${badge}
+        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${lvl.nodeEmoji}</span></span>
+        <h3>${lvl.node}</h3>
+        <span class="tag diff-${lvl.difficulty}">${DIFFICULTY_LABEL[lvl.difficulty]}</span>
+      </button>`;
+    }).join('');
+
+    const dots = SOUND_HUNT_LEVELS.map((_, i) => {
+      const done = crystals.has(i);
+      return `<span class="game-progress-dot${done ? ' done' : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
     }).join('');
 
     container.innerHTML = `
-      <div class="greet">
-        <p class="lede">💎 <b>${crystals.size} / ${total}</b> Sound Crystals ditemukan</p>
-      </div>
-      <ol class="trail raja-trail">${stops}</ol>`;
+      <div class="raja-map-wrap">
+        ${GAME_STAR_FIELD}
+        <div class="card game-progress-card">
+          <h2>Taklukkan markas satu per satu, ya!</h2>
+          <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${crystals.size} dari ${total}</span></div>
+        </div>
+        <div class="raja-grid">${stops}</div>
+        ${gameHowToHtml([
+          'Dengar instruksi Bahasa Inggrisnya',
+          'Tap gambar yang sesuai',
+          'Sound Crystal muncul kalau jawabannya tepat',
+          'Taklukkan markas satu per satu sampai tuntas!',
+        ])}
+      </div>`;
     setHandlers({ enterNode: (payload) => drawLevel(Number(payload)) });
   }
 
   function drawLevel(idx: number): void {
+    setGameRoundActive(true); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi
     const lvl = SOUND_HUNT_LEVELS[idx];
     let revealed = false;
     const play = () => speak(lvl.instruction);
@@ -259,7 +348,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
       const btn = container.querySelectorAll<HTMLButtonElement>('.opt-btn')[i];
       const fb = container.querySelector<HTMLElement>('#fb')!;
       lockOptionButtons(container);
-      recordAttempt(opt.correct);
+      recordAttempt(opt.correct, GAME_KEY);
 
       if (opt.correct) {
         btn.classList.add('correct', 'win-burst');
@@ -297,6 +386,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
   }
 
   function renderMissionComplete(): void {
+    setGameRoundActive(false); // layar selesai, tidak ada progres yang bisa hilang
     container.innerHTML = `
       <div class="done-wrap win">
         <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">💎</span><span class="crown">✨</span></div>
@@ -308,5 +398,5 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
     setHandlers({ continueAdventure: () => onDone() });
   }
 
-  renderWelcome();
+  renderMap();
 }

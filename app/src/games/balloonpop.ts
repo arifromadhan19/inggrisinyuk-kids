@@ -35,29 +35,37 @@
  *
  * 🔒 **Revisi user (sesi 3) — "remove tingkat kesulitan jadikan konsepnya
  * seperti Raja Kata"**: picker tingkat kesulitan di depan (`renderBalonTierPicker`,
- * app.ts, SUDAH DIHAPUS TOTAL) diganti **Map Kerajaan Balon 5-markas**, pola
+ * app.ts, SUDAH DIHAPUS TOTAL) diganti **Map Kerajaan Balon 6-markas**, pola
  * SAMA PERSIS `games/wordmatch.ts` `runWordMatch()`/`JOURNEY_NODES` — anak
  * TIDAK lagi memilih tingkat sendiri, langsung disambut Map (`renderMap()`)
  * begitu Raja Balon dibuka. Markas ke-i cuma bisa dijelajah kalau markas
  * ke-(i-1) sudah PERNAH dikunjungi (non-punitive — cukup pernah dicoba,
- * bukan harus menang). `DIFFICULTY_META`/`BANK_BY_DIFFICULTY` (mudah→
- * legendaris) TIDAK dihapus — 5 tingkat kesulitan lama SEKARANG jadi isi
- * 5 markas Map (`JOURNEY_NODES`), digenapkan 3→5 (`jago`/`legendaris` baru,
- * `BalloonDifficulty` di types.ts ikut diperluas) supaya jumlah markasnya
- * PERSIS sama dgn Kerajaan Kata. Mesin 1-markas/1-tingkat LAMA (dulu
- * `runBalloonPop`, dipanggil picker) TIDAK dihapus, cuma direname
- * `runBalloonPopRound()` & jadi fungsi INTERNAL yang dipakai orkestrator
- * `runBalloonPop()` (nama BARU, exported, dipanggil app.ts — signature
- * BARU TANPA parameter `difficulty` lagi, sama persis pola `runWordMatch`).
+ * bukan harus menang). `DIFFICULTY_META`/`BANK_BY_DIFFICULTY` (pemanasan→
+ * legendaris) TIDAK dihapus — tingkat kesulitan lama SEKARANG jadi isi
+ * markas Map (`JOURNEY_NODES`), digenapkan 3→5 (`jago`/`legendaris` baru)
+ * lalu 5→6 (`pemanasan` baru, permintaan user "tambahkan 1 sehingga ada
+ * 6... levelnya ada pemanasan, mudah, sedang, sulit, jago, legendaris",
+ * `BalloonDifficulty` di types.ts ikut diperluas tiap kali) supaya jumlah
+ * markasnya PERSIS sama dgn Kerajaan Kata/Kalimat/Ingatan/Sound Hunt.
+ * Mesin 1-markas/1-tingkat LAMA (dulu `runBalloonPop`, dipanggil picker)
+ * TIDAK dihapus, cuma direname `runBalloonPopRound()` & jadi fungsi
+ * INTERNAL yang dipakai orkestrator `runBalloonPop()` (nama BARU, exported,
+ * dipanggil app.ts — signature BARU TANPA parameter `difficulty` lagi, sama
+ * persis pola `runWordMatch`).
  */
 import { isDevTestAccount } from '../account';
-import { setHandlers } from '../interaction';
+import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
 import { playCorrectTone, playTryAgainTone } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
+import { GAME_STAR_FIELD } from '../scenery';
 import { shuffle } from '../util';
 import type { BalloonDifficulty, LevelKey, OnDone } from '../types';
+
+/** `RajaKey` game ini — dikirim ke `recordAttempt()`, lihat komentar
+ *  `GAME_KEY` `games/wordmatch.ts`. */
+const GAME_KEY = 'balon';
 
 interface BalloonWord {
   id: string;
@@ -68,6 +76,23 @@ interface BalloonWord {
  *  sama Raja Kata `games/wordmatch.ts` BANK_MUDAH/SEDANG/SULIT), kata makin
  *  panjang/jarang seiring naik tingkat supaya "soalnya pun sesuaikan dengan
  *  level" (permintaan user), bukan cuma kecepatan yang beda. */
+/** Tingkat PEMANASAN (BARU, permintaan user "tambahkan 1 sehingga ada 6...
+ *  levelnya ada pemanasan, mudah, sedang, sulit, jago, legendaris") — kata
+ *  sesederhana BANK_MUDAH, balon paling lambat (lihat DIFFICULTY_META).
+ *  TIDAK ada kata yang tumpang tindih dgn bank lain. */
+const BANK_PEMANASAN: BalloonWord[] = [
+  { id: 'Bola', en: 'Ball' },
+  { id: 'Topi', en: 'Hat' },
+  { id: 'Cangkir', en: 'Cup' },
+  { id: 'Kotak', en: 'Box' },
+  { id: 'Tempat Tidur', en: 'Bed' },
+  { id: 'Sapi', en: 'Cow' },
+  { id: 'Babi', en: 'Pig' },
+  { id: 'Ayam Betina', en: 'Hen' },
+  { id: 'Bus', en: 'Bus' },
+  { id: 'Pena', en: 'Pen' },
+];
+
 const BANK_MUDAH: BalloonWord[] = [
   { id: 'Kucing', en: 'Cat' },
   { id: 'Anjing', en: 'Dog' },
@@ -154,6 +179,7 @@ export interface DifficultyMeta {
 }
 
 export const DIFFICULTY_META: Record<BalloonDifficulty, DifficultyMeta> = {
+  pemanasan: { label: 'Pemanasan', sub: 'Balon paling pelan, kata terpendek', durMin: 16, durMax: 20, swayMin: 3.8, swayMax: 4.8 },
   mudah: { label: 'Mudah', sub: 'Balon pelan, kata pendek', durMin: 13, durMax: 17, swayMin: 3.2, swayMax: 4.2 },
   sedang: { label: 'Sedang', sub: 'Balon sedang, kata menengah', durMin: 10, durMax: 13, swayMin: 2.6, swayMax: 3.4 },
   sulit: { label: 'Sulit', sub: 'Balon lebih cepat, kata panjang', durMin: 7.5, durMax: 9.5, swayMin: 2, swayMax: 2.6 },
@@ -162,6 +188,7 @@ export const DIFFICULTY_META: Record<BalloonDifficulty, DifficultyMeta> = {
 };
 
 const BANK_BY_DIFFICULTY: Record<BalloonDifficulty, BalloonWord[]> = {
+  pemanasan: BANK_PEMANASAN,
   mudah: BANK_MUDAH,
   sedang: BANK_SEDANG,
   sulit: BANK_SULIT,
@@ -189,6 +216,19 @@ function roundActionsHtml(isLast: boolean): string {
     <div class="round-actions">
       <button class="ghost-btn" type="button" data-action="tryAgainRound">🔁 Coba Lagi</button>
       <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Lanjut ➡️'}</button>
+    </div>`;
+}
+
+/** "Cara Main" — duplikat lokal, lihat komentar lengkap `gameHowToHtml`
+ *  `games/wordmatch.ts` (permintaan user, referensi screenshot + "footer
+ *  tambahkan seperti original footer... seperti di halaman yang lain"). */
+function gameHowToHtml(steps: string[]): string {
+  return `
+    <h2 class="game-howto-title">Cara Main</h2>
+    <div class="card game-howto-card">
+      <ol class="game-howto-list">
+        ${steps.map((s, i) => `<li><span class="game-howto-num" aria-hidden="true">${i + 1}</span><span>${s}</span></li>`).join('')}
+      </ol>
     </div>`;
 }
 
@@ -263,7 +303,7 @@ function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficult
       busy = true;
       btn?.classList.add('is-pop');
       btn?.setAttribute('disabled', 'true');
-      recordAttempt(true);
+      recordAttempt(true, GAME_KEY);
       playCorrectTone();
       fireConfetti();
       if (fb) {
@@ -291,7 +331,7 @@ function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficult
         }
       }, 420);
     } else {
-      recordAttempt(false);
+      recordAttempt(false, GAME_KEY);
       playTryAgainTone();
       btn?.classList.add('is-wrong');
       setTimeout(() => btn?.classList.remove('is-wrong'), 380);
@@ -314,14 +354,18 @@ interface JourneyNode {
   guideLine: string;
 }
 
-/** 5 markas Map Kerajaan Balon ("jadikan konsepnya seperti Raja Kata"), urut
- *  Mudah→Sedang→Sulit→Jago→Legendaris — nama tempat cuma bungkus tema,
- *  `difficulty` di baliknya TETAP `BalloonDifficulty` asli (bank kata &
- *  kecepatan sama persis `DIFFICULTY_META`, tidak diduplikasi di sini). Nama
- *  SENGAJA beda dari `JOURNEY_NODES` Kerajaan Kata (Gerbang/Istana/
- *  Balairung/Menara/Ruang Harta) biar 2 game Raja tidak terasa ketuker di
- *  kepala anak, pola sama alasan "Balairung" vs "Throne Room". */
+/** 6 markas Map Kerajaan Balon ("jadikan konsepnya seperti Raja Kata", lalu
+ *  "tambahkan 1 sehingga ada 6... levelnya ada pemanasan, mudah, sedang,
+ *  sulit, jago, legendaris" — markas ke-0 `pemanasan` BARU ditambah PALING
+ *  DEPAN), urut Pemanasan→Mudah→Sedang→Sulit→Jago→Legendaris — nama tempat
+ *  cuma bungkus tema, `difficulty` di baliknya TETAP `BalloonDifficulty`
+ *  asli (bank kata & kecepatan sama persis `DIFFICULTY_META`, tidak
+ *  diduplikasi di sini). Nama SENGAJA beda dari `JOURNEY_NODES` Kerajaan
+ *  Kata (Desa/Gerbang/Istana/Balairung/Menara/Ruang Harta) biar 2 game Raja
+ *  tidak terasa ketuker di kepala anak, pola sama alasan "Balairung" vs
+ *  "Throne Room". */
 const JOURNEY_NODES: JourneyNode[] = [
+  { difficulty: 'pemanasan', place: 'Halaman Balon', emoji: '🏡', guideLine: 'Yuk pemanasan dulu di Halaman Balon sebelum masuk taman!' },
   { difficulty: 'mudah', place: 'Taman Balon', emoji: '🎈', guideLine: 'Selamat datang di Taman Balon! Ayo letupkan balon kata pertama ini.' },
   { difficulty: 'sedang', place: 'Pasar Balon', emoji: '🎪', guideLine: 'Balonnya makin ramai di pasar ini! Cari kata yang pas sebelum melayang jauh.' },
   { difficulty: 'sulit', place: 'Awan Balon', emoji: '☁️', guideLine: 'Wah, sudah setinggi awan! Balonnya melaju lebih cepat dari sebelumnya.' },
@@ -345,54 +389,74 @@ function nodeHeaderHtml(node: JourneyNode, foundCount: number, total: number): s
  * (dipanggil app.ts `runRajaRound`, TANPA picker tingkat kesulitan lagi —
  * lihat komentar di puncak file). **Konsep petualangan ala `games/
  * wordmatch.ts` `runWordMatch()`**: langsung buka **Map Kerajaan Balon**
- * (`renderMap()`, reuse PERSIS `.trail.raja-trail` — 5 markas besar berikon,
- * selang-seling kiri/kanan, markas ke-i cuma bisa dijelajah kalau markas
- * ke-(i-1) sudah PERNAH dikunjungi, non-punitive: BUKAN harus benar, cukup
- * pernah dicoba) → tap markas → 1 ronde `runBalloonPopRound()` di markas
- * itu → balik ke Map → markas berikutnya kebuka → markas ke-5 tuntas →
- * "Semua Balon Ditemukan!" → `onDone()`. State `visited` cuma hidup di
- * closure ini, TIDAK disimpan progress.ts/localStorage, konsisten semua
- * raja Game Hub lain.
+ * (`renderMap()`, grid `.raja-grid`/`.raja-card` — lihat riwayat desain
+ * lengkap di komentar `renderMap()`, markas ke-i cuma bisa dijelajah kalau
+ * markas ke-(i-1) sudah PERNAH dikunjungi, non-punitive: BUKAN harus benar,
+ * cukup pernah dicoba) → tap markas → 1 ronde `runBalloonPopRound()` di
+ * markas itu → balik ke Map → markas berikutnya kebuka → markas ke-6
+ * tuntas → "Semua Balon Ditemukan!" → `onDone()`. State `visited` cuma
+ * hidup di closure ini, TIDAK disimpan progress.ts/localStorage, konsisten
+ * semua raja Game Hub lain.
  */
 export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: LevelKey): void {
   const total = JOURNEY_NODES.length;
   const visited = new Set<number>();
 
+  /** 🔒 Pola SAMA PERSIS `games/wordmatch.ts` `renderMap()` (permintaan user
+   *  "jadikan 1 card an seperti di halaman game dimana 1 row jadi 2 card",
+   *  lalu "lebih kids friendly seperti sebelumnya" — kartu dapat rona warna
+   *  Raja sendiri via `map-card` + tag kesulitan berwarna via `diff-*`) —
+   *  reuse grid `.raja-grid`/`.raja-card` roster `/game`. Detail lengkap
+   *  riwayat desain: komentar `renderMap()` `games/wordmatch.ts`. */
   function renderMap(): void {
+    // 🔒 Back dari layar Map TIDAK perlu pop up konfirmasi lagi (permintaan
+    // user) — lihat komentar `isGameRoundActive` `interaction.ts`.
+    setGameRoundActive(false);
     const stops = JOURNEY_NODES.map((node, i) => {
       const cleared = visited.has(i);
       // Akun tes dev ("124") lihat SEMUA markas terbuka — lihat account.ts isDevTestAccount().
       const unlocked = isDevTestAccount() || i === 0 || visited.has(i - 1);
-      const action = unlocked
-        ? `<button class="primary-btn" type="button" data-action="enterNode" data-payload="${i}">${cleared ? '🔁 Main Lagi' : '▶️ Jelajahi'}</button>`
-        : `<button class="ghost-btn" type="button" disabled aria-disabled="true">🔒 Terkunci</button>`;
-      const statusText = cleared ? 'Balon ditemukan 🎈' : unlocked ? 'Menunggu dijelajahi' : 'Masih tersegel';
+      const stateClass = cleared ? 'is-cleared' : unlocked ? 'is-open' : 'is-locked';
+      // 🔒 Badge kunci/centang (ikon) DIGANTI persentase — pola SAMA PERSIS
+      // `games/wordmatch.ts` `renderMap()` (permintaan user "tambahkan
+      // percentage di setiap card"), lihat komentar lengkap di sana.
+      const pct = cleared ? 100 : 0;
+      const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
       const meta = DIFFICULTY_META[node.difficulty];
       return `
-      <li class="trail-stop ${i % 2 === 1 ? 'icon-right' : ''}" style="--band-deep:var(--sun-500)">
-        <div class="raja-stop-inner">
-          <span class="raja-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(68px,17vw,92px);animation-delay:${(i * 0.15).toFixed(2)}s">${node.emoji}</span></span>
-          <div class="trail-card">
-            <span class="trail-place">🗺️ Kerajaan Balon</span>
-            <h3>${node.place}</h3>
-            <div class="trail-meta"><span class="meta">${meta.label} · ${meta.sub}</span></div>
-            <div class="trail-meta"><span class="meta">${statusText}</span></div>
-            <div class="trail-actions">${action}</div>
-          </div>
-        </div>
-      </li>`;
+      <button class="raja-card map-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--sun-500)">
+        ${badge}
+        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${node.emoji}</span></span>
+        <h3>${node.place}</h3>
+        <span class="tag diff-${node.difficulty}">${meta.label}</span>
+      </button>`;
+    }).join('');
+
+    const dots = JOURNEY_NODES.map((_, i) => {
+      const done = visited.has(i);
+      return `<span class="game-progress-dot${done ? ' done' : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
     }).join('');
 
     container.innerHTML = `
-      <div class="greet">
-        <p class="lede">🔒 Selesaikan satu kerajaan dulu sebelum kerajaan berikutnya terbuka!</p>
-        <p class="lede">🎈 <b>${visited.size} / ${total}</b> Balon ditemukan</p>
-      </div>
-      <ol class="trail raja-trail">${stops}</ol>`;
+      <div class="raja-map-wrap">
+        ${GAME_STAR_FIELD}
+        <div class="card game-progress-card">
+          <h2>Taklukkan markas satu per satu, ya!</h2>
+          <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${visited.size} dari ${total}</span></div>
+        </div>
+        <div class="raja-grid">${stops}</div>
+        ${gameHowToHtml([
+          'Baca/dengar kata yang diminta',
+          'Tap balon yang jawabannya cocok',
+          'Balon meletup kalau jawabannya tepat',
+          'Taklukkan markas satu per satu sampai tuntas!',
+        ])}
+      </div>`;
     setHandlers({ enterNode: (payload) => playStage(Number(payload)) });
   }
 
   function playStage(idx: number): void {
+    setGameRoundActive(true); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runBalloonPopRound(
@@ -409,6 +473,7 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
   }
 
   function renderMissionComplete(): void {
+    setGameRoundActive(false); // layar selesai, tidak ada progres yang bisa hilang
     container.innerHTML = `
       <div class="done-wrap win">
         <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">🎈</span><span class="crown">🏆</span></div>

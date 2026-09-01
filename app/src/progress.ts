@@ -22,8 +22,31 @@ import type { LevelKey, LevelMeta, SkillKey } from './types';
 const KEY = 'inggrisinyuk-kids.progress.v1';
 
 /** Set tetap avatar hewan — dipilih tap, bukan upload foto (PRD: ramah anak,
- *  privasi). Singa duluan karena sudah jadi maskot app di mana-mana. */
-export const ANIMAL_AVATARS = ['🦁', '🐯', '🐰', '🐶', '🐱', '🐼', '🦊', '🐨', '🐸', '🐵', '🦄', '🐧'] as const;
+ *  privasi). Singa duluan karena sudah jadi maskot app di mana-mana.
+ *  9 avatar (permintaan user, dipangkas dari 12 — Monyet/Unicorn/Pinguin
+ *  dihapus) supaya muat rapi 3x3 di grid pemilihan yang sekarang dibesarkan
+ *  (lihat .avatar-grid di styles.css). Avatar lokal anak yang kebetulan
+ *  masih tersimpan salah satu dari 3 yang dihapus otomatis jatuh balik ke
+ *  ANIMAL_AVATARS[0] (Singa) — sudah ditangani `loadStore()` di bawah, TIDAK
+ *  butuh migrasi manual. */
+export const ANIMAL_AVATARS = ['🦁', '🐯', '🐰', '🐶', '🐱', '🐼', '🦊', '🐨', '🐸'] as const;
+
+/** Label nama tiap avatar — SENGAJA Inggris (permintaan user, kartu Pilih
+ *  Maskot di Pengaturan), bukan Indonesia, beda dari kebanyakan teks anak
+ *  lain di app ini yang ikut level (`praise.ts`) — di sini murni label kartu
+ *  pilihan, bukan feedback belajar, jadi tidak perlu ikut aturan bahasa
+ *  per-level itu. */
+export const ANIMAL_AVATAR_NAMES: Record<(typeof ANIMAL_AVATARS)[number], string> = {
+  '🦁': 'Lion',
+  '🐯': 'Tiger',
+  '🐰': 'Rabbit',
+  '🐶': 'Dog',
+  '🐱': 'Cat',
+  '🐼': 'Panda',
+  '🦊': 'Fox',
+  '🐨': 'Koala',
+  '🐸': 'Frog',
+};
 
 export interface LastSpot {
   skill: SkillKey;
@@ -79,6 +102,28 @@ export interface Store {
    *  SAMA PERSIS `last`/`setLast` di atas utk materi Belajar). TIDAK
    *  disinkron ke server (lokal murni, alasan sama `gameXp`). */
   lastGame: string | null;
+  /** Tepat/total percobaan PER "Raja" Game Hub (`RajaKey`) — pelengkap
+   *  `gameXp` (yang cuma XP KOSMETIK, tidak merefleksikan seberapa tepat
+   *  jawabannya) supaya Rapor bisa tampilkan "nilai" konkret dari hasil
+   *  main game (permintaan user "update rapor dimana masukan nilai dari
+   *  hasil main game"), bukan cuma status biner "sudah main/belum". Diisi
+   *  `recordAttempt()`'s parameter KEDUA opsional (`gameKey`) — dipanggil
+   *  dari `games/wordmatch.ts`/`balloonpop.ts`/`sentencepuzzle.ts`/
+   *  `memorymatch.ts`/`soundhunt.ts`/`storyquest.ts` & `runKelompokkan()`
+   *  (`games/vocabulary.ts`, khusus Raja Kelompok — fungsi lain di file itu
+   *  TIDAK pakai param ini, bukan bagian Game Hub). TIDAK disinkron ke
+   *  server (lokal murni, alasan sama `gameXp`/`lastGame`). */
+  gameStats: Record<string, { correct: number; total: number }>;
+  /** Level yang TERAKHIR dipilih lewat pemilih level Menu Belajar
+   *  (`#menuLevelSelect`/tombol per-level Peta Level, `app.ts`
+   *  `browsingLevel()`) — permintaan user: begitu anak/orang tua pilih mis.
+   *  Little Stars, itu "nempel" jadi default Menu Belajar sampai dipilih
+   *  level lain, bukan balik ke level asli anak tiap buka tab Belajar lagi.
+   *  TIDAK disinkron ke server (lokal murni, alasan sama `lastGame`) —
+   *  murni preferensi tampilan perangkat ini, bukan progres. Divalidasi
+   *  ulang (hasContent + terbuka) tiap dipakai oleh `browsingLevel()`, jadi
+   *  nilai basi/tidak valid otomatis diabaikan, bukan bikin layar rusak. */
+  browseLevel: LevelKey | null;
 }
 
 /** `kind` soal Latihan Inti (`games/vocabulary.ts` `LatihanQuestion`) — cuma
@@ -158,6 +203,23 @@ export interface LearningEventInput {
   detail?: Record<string, unknown>;
 }
 
+/** Sanitasi `Store.gameStats` dari localStorage mentah — pola sama filter
+ *  `gameXp` di `read()` di bawah, cuma bentuknya objek bersarang jadi butuh
+ *  helper terpisah (dibagikan `num()` dari `read()` supaya aturan "angka
+ *  valid" persis sama). Entri yang `correct > total` (data korup) dibuang. */
+function sanitizeGameStats(v: unknown, num: (x: unknown) => number): Record<string, { correct: number; total: number }> {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return {};
+  const out: Record<string, { correct: number; total: number }> = {};
+  for (const [key, val] of Object.entries(v as Record<string, unknown>)) {
+    if (!val || typeof val !== 'object') continue;
+    const correct = num((val as { correct?: unknown }).correct);
+    const total = num((val as { total?: unknown }).total);
+    if (correct > total) continue;
+    out[key] = { correct, total };
+  }
+  return out;
+}
+
 const EMPTY: Store = {
   done: [],
   last: null,
@@ -172,6 +234,8 @@ const EMPTY: Store = {
   sections: {},
   gameXp: {},
   lastGame: null,
+  gameStats: {},
+  browseLevel: null,
 };
 
 function read(): Store {
@@ -205,6 +269,8 @@ function read(): Store {
           ? Object.fromEntries(Object.entries(parsed.gameXp).filter(([, v]) => num(v) === v))
           : {},
       lastGame: typeof parsed.lastGame === 'string' ? parsed.lastGame : null,
+      gameStats: sanitizeGameStats(parsed.gameStats, num),
+      browseLevel: typeof parsed.browseLevel === 'string' ? (parsed.browseLevel as LevelKey) : null,
     };
   } catch {
     // Storage bisa diblokir (mode privat). App tetap jalan, cuma tanpa progres.
@@ -437,22 +503,6 @@ export function markStepVisited(skill: SkillKey, topicId: string, step: 'latihan
 
 export function isStepVisited(skill: SkillKey, topicId: string, step: 'latihan' | 'tantangan'): boolean {
   return getSlot(skill, topicId, `${step}-visited`, 0)?.st === 2;
-}
-
-/**
- * Penanda "kartu Cara Main topik ini sudah pernah dilihat" (permintaan user)
- * — gate SEKALI SEUMUR HIDUP topik sebelum Kenalan pertama kali dibuka
- * (`renderActivity`, app.ts). Pola SAMA PERSIS `markStepVisited`/
- * `isStepVisited` di atas: reuse `markSlotAnswered`/`getSlot` (slot 0 sbg
- * satu-satunya slot, section khusus) — supaya TIDAK perlu field `Store`
- * baru/migrasi skema sync ke `portal/`.
- */
-export function markCaraMainSeen(skill: SkillKey, topicId: string): void {
-  markSlotAnswered(skill, topicId, 'caramain-visited', 0, true);
-}
-
-export function hasSeenCaraMain(skill: SkillKey, topicId: string): boolean {
-  return getSlot(skill, topicId, 'caramain-visited', 0)?.st === 2;
 }
 
 /** Tap tombol Kenalan (🔊 listen / 🎤 mic / 🎮 game) — dipanggil dari
@@ -795,6 +845,17 @@ export function getLastGame(): string | null {
   return read().lastGame;
 }
 
+/** Level Menu Belajar yang "nempel" — lihat komentar `Store.browseLevel`. */
+export function setBrowseLevel(level: LevelKey | null): void {
+  const store = read();
+  store.browseLevel = level;
+  write(store);
+}
+
+export function getBrowseLevel(): LevelKey | null {
+  return read().browseLevel;
+}
+
 /** Berapa banyak "Raja" Game Hub yang PERNAH dimainkan (`gameXp[key] > 0`)
  *  dari total `keys` yang tersedia di level ini — dasar progress bar "Yuk
  *  Mulai/Lanjutkan" Game Hub (permintaan user: "progress game secara umum
@@ -952,11 +1013,24 @@ export function getBossClearedCount(): number {
  * (`recordAttempt`, dipanggil dari games/*.ts). `null` kalau belum ada
  * percobaan sama sekali — dipakai UI untuk menyembunyikan angka kosong
  * daripada menampilkan "0%" yang terkesan seperti nilai jelek (PRD §4.6).
+ *
+ * Parameter KEDUA opsional `gameKey` (`RajaKey` Game Hub, `app.ts`) — kalau
+ * diisi, percobaan ini JUGA dicatat ke `Store.gameStats[gameKey]` (lihat
+ * komentar field itu) supaya Rapor bisa tampilkan nilai PER GAME, bukan
+ * cuma akurasi global. Dibiarkan `undefined` di SEMUA pemanggil non-Game-Hub
+ * (Vocab/Listening/Reading/Grammar/Speaking) — percobaan mereka tetap masuk
+ * akurasi global seperti biasa, cuma tidak ikut breakdown per-game.
  */
-export function recordAttempt(correct: boolean): void {
+export function recordAttempt(correct: boolean, gameKey?: string): void {
   const store = read();
   store.totalAttempts += 1;
   if (correct) store.correctAttempts += 1;
+  if (gameKey) {
+    const g = store.gameStats[gameKey] ?? { correct: 0, total: 0 };
+    g.total += 1;
+    if (correct) g.correct += 1;
+    store.gameStats[gameKey] = g;
+  }
   write(store);
 }
 
@@ -964,6 +1038,23 @@ export function getAccuracy(): number | null {
   const { correctAttempts, totalAttempts } = read();
   if (totalAttempts === 0) return null;
   return Math.round((correctAttempts / totalAttempts) * 100);
+}
+
+/** Akurasi 1 "Raja" Game Hub (0..100), `null` kalau belum pernah dicoba
+ *  sama sekali — pola SAMA `getAccuracy()` global, dipakai Rapor "🎮 Hasil
+ *  Main Game". */
+export function getGameAccuracy(key: string): number | null {
+  const g = read().gameStats[key];
+  if (!g || g.total === 0) return null;
+  return Math.round((g.correct / g.total) * 100);
+}
+
+/** Hitungan mentah tepat/total 1 "Raja" Game Hub — pelengkap
+ *  `getGameAccuracy()` (yang cuma % ringkas) buat teks konkret Rapor
+ *  ("8/10 jawaban tepat"), `{correct:0, total:0}` kalau belum pernah main. */
+export function getGameStats(key: string): { correct: number; total: number } {
+  const g = read().gameStats[key];
+  return g ? { correct: g.correct, total: g.total } : { correct: 0, total: 0 };
 }
 
 /* -------------------------------------------------------------- insight -- */
@@ -1232,6 +1323,8 @@ export function mergeFromServer(remote: Partial<Store> | null | undefined): void
     sections: mergeSections(local.sections, remote.sections),
     gameXp: local.gameXp,
     lastGame: local.lastGame,
+    gameStats: local.gameStats,
+    browseLevel: local.browseLevel,
   });
 }
 

@@ -1100,7 +1100,7 @@ export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTop
    *  gap LAIN yang sudah lewat tetap tampil terisi apa adanya. */
   function noteCardHtml(activeUnanswered: boolean): string {
     return `
-      <div class="note-card">
+      <div class="listen-note-card">
         <div class="note-heading">${topic.noteHeading}</div>
         ${gaps
           .map((g, i) => {
@@ -1255,7 +1255,7 @@ export function runTantanganDialogue(container: HTMLElement, topic: ListeningDia
 
   function transcriptHtml(): string {
     return `
-      <div class="note-card">
+      <div class="listen-note-card">
         <div class="note-heading">🗨️ ${topic.dialogueHeading}</div>
         ${topic.dialogueLines
           .map(

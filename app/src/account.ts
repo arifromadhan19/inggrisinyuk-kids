@@ -51,6 +51,12 @@ interface AccountStore {
    *  disegarkan (kartu Papan Peringkat disembunyikan, bukan tampil kosong,
    *  PRD §4.6). Disegarkan di background saat app dibuka (`refreshLeaderboard`). */
   leaderboardTop: LeaderboardEntry[] | null;
+  /** Email/createdAt akun orang tua — kartu "Informasi Akun" di Pengaturan
+   *  (permintaan user). `null` sampai `/api/me` pertama kali sukses (lihat
+   *  `refreshChildStatus`) — `identifier` (di-set langsung saat login, tanpa
+   *  perlu fetch) dipakai sbg fallback tampilan biar tidak kosong sesaat. */
+  parentEmail: string | null;
+  parentCreatedAt: string | null;
 }
 
 const EMPTY: AccountStore = {
@@ -61,6 +67,8 @@ const EMPTY: AccountStore = {
   placementAttemptsUsed: 0,
   latestPlacementResult: null,
   leaderboardTop: null,
+  parentEmail: null,
+  parentCreatedAt: null,
 };
 
 function read(): AccountStore {
@@ -81,6 +89,8 @@ function read(): AccountStore {
               !!e && typeof e === 'object' && typeof e.avatar === 'string' && typeof e.xp === 'number'
           )
         : null,
+      parentEmail: typeof parsed.parentEmail === 'string' ? parsed.parentEmail : null,
+      parentCreatedAt: typeof parsed.parentCreatedAt === 'string' ? parsed.parentCreatedAt : null,
     };
   } catch {
     return { ...EMPTY };
@@ -101,6 +111,14 @@ export function getToken(): string | null {
 
 export function getIdentifier(): string | null {
   return read().identifier;
+}
+
+/** Kartu "Informasi Akun" di Pengaturan — email fallback ke `identifier`
+ *  (no HP/email yang dipakai login) kalau `/api/me` belum sempat disegarkan
+ *  (lihat komentar `parentEmail` di `AccountStore`), biar tidak kosong. */
+export function getAccountInfo(): { email: string | null; createdAt: string | null } {
+  const store = read();
+  return { email: store.parentEmail ?? store.identifier, createdAt: store.parentCreatedAt };
 }
 
 export function isLoggedIn(): boolean {
@@ -131,6 +149,13 @@ export function cacheChildStatus(
   store.placementTestDone = placementTestDone;
   store.placementAttemptsUsed = placementAttemptsUsed;
   store.latestPlacementResult = latestPlacementResult;
+  write(store);
+}
+
+function cacheParentInfo(email: string | null, createdAt: string | null): void {
+  const store = read();
+  store.parentEmail = email;
+  store.parentCreatedAt = createdAt;
   write(store);
 }
 
@@ -221,6 +246,8 @@ export async function login(identifier: string): Promise<void> {
     placementAttemptsUsed: 0,
     latestPlacementResult: null,
     leaderboardTop: null,
+    parentEmail: null,
+    parentCreatedAt: null,
   });
 }
 
@@ -236,7 +263,7 @@ export interface ChildInfo {
 }
 
 export interface MeResult {
-  parent: { id: string; phone: string | null; email: string | null };
+  parent: { id: string; phone: string | null; email: string | null; createdAt: string };
   child: ChildInfo | null;
 }
 
@@ -253,6 +280,7 @@ export async function refreshChildStatus(): Promise<void> {
       data.child?.placementAttemptsUsed ?? 0,
       data.child?.latestPlacementResult ?? null
     );
+    cacheParentInfo(data.parent.email, data.parent.createdAt);
   } catch (err) {
     if (err instanceof ApiRequestError && err.status === 401) {
       write({ ...EMPTY });

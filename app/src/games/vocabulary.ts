@@ -1469,15 +1469,18 @@ export function runKelompokkan(
     lockOptionButtons(container);
     const fb = container.querySelector<HTMLElement>('#fb')!;
     const it = items[round];
+    // 'kelompok' — SATU-SATUNYA `recordAttempt` di file ini yang kirim
+    // `gameKey` (fungsi lain di sini murni Vocab skill, bukan Game Hub) —
+    // lihat komentar `GAME_KEY` `games/wordmatch.ts`.
     if (correct) {
-      recordAttempt(true);
+      recordAttempt(true, 'kelompok');
       btn.classList.add('correct', 'win-burst');
       playCorrectTone();
       fireConfetti();
       fb.textContent = pickPraise(level);
       fb.className = 'feedback good';
     } else {
-      recordAttempt(false);
+      recordAttempt(false, 'kelompok');
       btn.classList.add('wrong');
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';

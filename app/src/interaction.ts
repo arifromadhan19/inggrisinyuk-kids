@@ -16,6 +16,29 @@ export function clearHandlers(): void {
   handlers = {};
 }
 
+/**
+ * 🔒 Flag state Game Hub (permintaan user: "back dari halaman list markas
+ * TIDAK perlu pop up 'Yuk Lanjut'/'Keluar', cuma ketika sudah masuk
+ * halaman mengerjakan") — dibaca `app.ts` `renderGamePlay()`'s tombol
+ * balik, ditulis tiap `games/*.ts` orkestrator ("Raja" bertingkat) begitu
+ * pindah antara layar Map Kerajaan (list markas, `false`) vs 1 markas yang
+ * sedang dikerjakan (`true`). Default `true` (app.ts set sebelum
+ * `runRajaRound()` dipanggil) — game TANPA layar Map (Raja Kelompok,
+ * Story Quest) sengaja TIDAK PERNAH menyentuh flag ini, jadi tetap `true`
+ * selamanya (popup SELALU tampil, konsisten krn layar SATU-SATUNYA di
+ * game itu MEMANG langsung "halaman mengerjakan"). Lihat CLAUDE.md §
+ * "Pop Up Konfirmasi Keluar Game" utk aturan lengkapnya.
+ */
+let gameRoundActive = true;
+
+export function setGameRoundActive(active: boolean): void {
+  gameRoundActive = active;
+}
+
+export function isGameRoundActive(): boolean {
+  return gameRoundActive;
+}
+
 export function bindDelegatedClicks(root: HTMLElement): void {
   root.addEventListener('click', (event) => {
     const target = (event.target as HTMLElement).closest<HTMLElement>('[data-action]');

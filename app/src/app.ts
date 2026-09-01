@@ -12,6 +12,7 @@ import {
 import {
   ApiRequestError,
   cacheChildStatus,
+  getAccountInfo,
   getCachedChildStatus,
   getCachedLeaderboard,
   getProgress,
@@ -47,12 +48,13 @@ import {
   ICON_RAPOR,
   ICON_SETTINGS,
 } from './icons';
-import { bindDelegatedClicks, clearHandlers, setHandlers } from './interaction';
+import { bindDelegatedClicks, clearHandlers, isGameRoundActive, setGameRoundActive, setHandlers } from './interaction';
 import { CLOUD, HILLS_RIDGE, HILLS_SHORE, rajaMascot, TRAIL_BEND_LEFT, TRAIL_BEND_RIGHT, placeFor } from './scenery';
 import type { LastSpot, Store, TopicSignal } from './progress';
 import {
   addGameXp,
   addXp,
+  ANIMAL_AVATAR_NAMES,
   ANIMAL_AVATARS,
   clearOutboxIds,
   computeInsights,
@@ -61,7 +63,10 @@ import {
   getActiveDaysCount,
   getAvatar,
   getBossClearedCount,
+  getBrowseLevel,
   gamesPlayedCount,
+  getGameAccuracy,
+  getGameStats,
   getGameXp,
   getLast,
   getLastGame,
@@ -71,19 +76,18 @@ import {
   getWeekActivity,
   getXp,
   grammarTopicPercent,
-  hasSeenCaraMain,
   isBossCleared,
   isStepVisited,
   levelUnlockMap,
   listeningTopicPercent,
   markBossCleared,
-  markCaraMainSeen,
   markDone,
   markStepVisited,
   mergeFromServer,
   peekOutbox,
   readingTopicPercent,
   setAvatar,
+  setBrowseLevel,
   setEventSyncHandler,
   setLast,
   setLastGame,
@@ -436,19 +440,34 @@ function currentPlayableLevel(): LevelMeta {
  * aktivitas) — beda dari `currentPlayableLevel()` (level asli anak, tanpa
  * override). Semua markas yang SUDAH terbuka di Peta Level boleh dibuka
  * Menu Belajar-nya sendiri (`state.viewLevel`, diisi `openMenuFromLevels`
- * atau pemilih level di `renderMenu`) buat lihat/ulang materinya, TANPA
- * mengubah level asli anak. Divalidasi ulang di sini (bukan cuma dipercaya
- * dari state) — `hasContent` & benar-benar terbuka (`levelUnlockMap`) —
- * supaya URL yang diketik manual tidak bisa mengintip markas yang belum
- * ditaklukkan; kalau tidak valid, jatuh ke `currentPlayableLevel()` seperti
- * biasa (perilaku default/lama, bukan layar rusak).
+ * atau pemilih level di `renderMenu`/`renderTopics`) buat lihat/ulang
+ * materinya, TANPA mengubah level asli anak.
+ *
+ * 🔒 Prioritas 3 lapis (permintaan user: "ketika user pilih Little Stars akan
+ * terus di level tersebut sampai user pilih yang lain"): (1) `state.viewLevel`
+ * eksplisit kalau ada (dari URL `?level=`/navigasi barusan) — SELALU menang,
+ * termasuk `null` yang SENGAJA dipasang di titik yang topicIndex-nya terikat
+ * ke level ASLI anak (`resume`/`practiceInsightTopic`/`reviewInsightTopic` —
+ * itu makanya titik2 itu skrg mengisi `currentPlayableLevel().key` eksplisit,
+ * BUKAN `null` polos lagi, supaya tetap "menang" di lapis 1, bukan jatuh ke
+ * lapis 2 di bawah); (2) `getBrowseLevel()` — cache "nempel" (`Store.
+ * browseLevel`), dipakai kalau TIDAK ada override eksplisit (mis. reload
+ * langsung ke `/materi` tanpa `?level=`, klik nav rail/tab bar "Belajar",
+ * dst) — SATU sumber kebenaran ini yang bikin dropdown level "nempel" lintas
+ * reload/nav, bukan disebar cek cache di tiap pemanggil `go()`; (3) fallback
+ * akhir `currentPlayableLevel()` kalau belum pernah pilih apa pun.
+ * Divalidasi ulang di SETIAP lapis (bukan cuma dipercaya dari storage) —
+ * `hasContent` & benar-benar terbuka (`levelUnlockMap`) — supaya URL yang
+ * diketik manual/cache basi tidak bisa mengintip markas yang belum
+ * ditaklukkan; kalau tidak valid, turun ke lapis berikutnya, bukan layar rusak.
  */
 function browsingLevel(): LevelMeta {
-  if (state.viewLevel) {
-    const lvl = LEVELS.find((l) => l.key === state.viewLevel);
-    if (lvl?.hasContent && levelUnlockMap(LEVELS)[lvl.key]) return lvl;
-  }
-  return currentPlayableLevel();
+  const valid = (key: LevelKey | null): LevelMeta | null => {
+    if (!key) return null;
+    const lvl = LEVELS.find((l) => l.key === key);
+    return lvl?.hasContent && levelUnlockMap(LEVELS)[lvl.key] ? lvl : null;
+  };
+  return valid(state.viewLevel) ?? valid(getBrowseLevel()) ?? currentPlayableLevel();
 }
 
 function paintLevelChips(): void {
@@ -658,8 +677,10 @@ function render(): void {
   setHandlers({
     navigate: (payload) => {
       const item = NAV.find((n) => n.key === payload);
-      // Nav rail/tab bar selalu masuk "segar" — jangan bawa `viewLevel`
-      // nyangkut dari sesi jelajah level sebelumnya di Menu Belajar.
+      // `viewLevel` sengaja `null` polos di sini — `browsingLevel()` sendiri
+      // yang jatuh ke `getBrowseLevel()` (cache "nempel") kalau tidak ada
+      // override eksplisit, jadi tab "Belajar" otomatis kebuka di level
+      // terakhir dipilih TANPA perlu titik ini tahu soal cache sama sekali.
       if (item) go(item.screen, { viewLevel: null });
     },
   });
@@ -1157,7 +1178,7 @@ function renderHome(): void {
     let actions: string;
     if (lvl.hasContent && isUnlocked) {
       actions = `
-        <button class="primary-btn" type="button" data-action="openMenuFromLevels" data-payload="${lvl.key}">📋 Buka Menu Belajar</button>
+        <button class="primary-btn" type="button" data-action="openMenuFromLevels" data-payload="${lvl.key}">📋 Yuk Belajar</button>
         <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} ${cleared ? 'Main Lagi' : 'Coba Tantangan'}</button>`;
     } else if (isUnlocked) {
       // Terbuka tapi materinya belum ada (`hasContent:false`). Dulu cuma teks
@@ -1285,9 +1306,17 @@ function renderHome(): void {
     openPlacementTest: () => go('placementTest'),
     resume: () => {
       if (!last) return go('menu', { viewLevel: null });
-      go('activity', { skillKey: last.skill, topicIndex: last.topicIndex, step: 0, viewLevel: null });
+      // 🔒 `viewLevel` DIPIN eksplisit ke level ASLI anak (BUKAN `null` lagi)
+      // — `topicIndex` di sini terikat ke array topik `currentPlayableLevel()`
+      // (lihat `getLast()`/`setLast()`), jadi HARUS menang di atas cache
+      // "nempel" (`browsingLevel()` lapis 1 vs 2) — kalau jatuh ke level lain
+      // yang lagi di-browse, topicIndex bisa nunjuk topik yang SALAH.
+      go('activity', { skillKey: last.skill, topicIndex: last.topicIndex, step: 0, viewLevel: currentPlayableLevel().key });
     },
-    openMenuFromLevels: (payload) => go('menu', { viewLevel: payload as LevelKey }),
+    openMenuFromLevels: (payload) => {
+      setBrowseLevel(payload as LevelKey);
+      go('menu', { viewLevel: payload as LevelKey });
+    },
     openBossFromLevels: (payload) => go('boss', { bossLevel: payload as LevelKey }),
     openSoonFromLevels: (payload) => go('levelSoon', { soonLevel: payload as LevelKey }),
   });
@@ -1402,6 +1431,39 @@ function renderRapor(): void {
     })
     .join('');
 
+  // 🔒 "Hasil Main Game" (permintaan user "update rapor dimana masukan
+  // nilai dari hasil main game") — dulu Game Hub ("Raja" Kata/Balon/Susun/
+  // Kelompok/Ingatan/Sound Hunt/Story Quest) SAMA SEKALI TIDAK muncul di
+  // Rapor (`gameXp`/`recordAttempt` tercatat tapi tidak pernah dibaca di
+  // sini) — sekarang tiap Raja dapat kartu SAMA PERSIS pola "Skor Tiap
+  // Skill" di atas (`.skill-grid`/`.skill-card`/`skillStarsHtml`, komponen
+  // yang SAMA, bukan bikin baru) supaya 2 kartu breakdown ini terasa 1
+  // keluarga visual. Bintang dari `getGameAccuracy()` (`Store.gameStats`,
+  // diisi `recordAttempt(correct, gameKey)` — lihat komentar `GAME_KEY`
+  // `games/wordmatch.ts`), BUKAN dari `gameXp` (itu cuma kosmetik biner
+  // main/belum, tidak merefleksikan SEBERAPA TEPAT jawabannya). Roster
+  // difilter SAMA PERSIS `renderGame()` (Raja Kelompok cuma tampil kalau
+  // level ini punya topik `sortBaskets`) — jangan sampai Rapor menyebut
+  // game yang anak sendiri tidak bisa akses dari Game Hub-nya.
+  const gameRosterForRapor = RAJA_LIST.filter((r) => r.key !== 'kelompok' || vocabTopicsForLevel(level.key).filter(vocabularyGame.isSortableTopic).length > 0);
+  const gameCards = gameRosterForRapor
+    .map((r) => {
+      const acc = getGameAccuracy(r.key);
+      const stats = getGameStats(r.key);
+      const pct = acc ?? 0;
+      const sub = acc === null ? 'Belum dimainkan' : `${stats.correct}/${stats.total} jawaban tepat`;
+      return `
+        <div class="skill-card">
+          <span class="skill-pct stars${pct >= 100 ? ' done' : ''}" aria-label="${Math.round(pct / 20)} dari 5 bintang">${skillStarsHtml(pct)}</span>
+          <span class="ic" style="background:color-mix(in srgb, ${r.color} 20%, var(--surface-2));color:${r.color}" aria-hidden="true">${RAJA_ICON_EMOJI[r.key]}</span>
+          <div class="body">
+            <h3>${r.name}</h3>
+            <p>${sub}</p>
+          </div>
+        </div>`;
+    })
+    .join('');
+
   // List/baris (permintaan user, dibanding grid 3-tile sebelumnya) — pola
   // ikon+label+angka per baris ala referensi kompetitor, TAPI visual bahasa
   // TETAP punya (lingkaran gradien radial sama dgn `.stat-ic` Progresmu,
@@ -1465,8 +1527,11 @@ function renderRapor(): void {
         ${buildProgressPanel()}
         ${statsSingkatCard}
         <div class="card">
-          <span class="eyebrow">🏅 Skor Tiap Skill</span>
-          <div class="skill-grid" style="margin-top:12px">${skillCards || '<p class="meta">Belum ada materi di level ini.</p>'}</div>
+          <span class="eyebrow">🏅 Skor Belajar &amp; Game</span>
+          <span class="eyebrow sub" style="margin-top:12px">📘 Skill Belajar</span>
+          <div class="skill-grid" style="margin-top:8px">${skillCards || '<p class="meta">Belum ada materi di level ini.</p>'}</div>
+          <span class="eyebrow sub" style="margin-top:16px">🎮 Game</span>
+          <div class="skill-grid" style="margin-top:8px">${gameCards || '<p class="meta">Belum ada game di level ini.</p>'}</div>
         </div>
         ${strengthsCard}
         ${missionCard}
@@ -1485,15 +1550,56 @@ function renderRapor(): void {
     </section>
   `;
 
+  // 🔒 `viewLevel` DIPIN eksplisit ke `currentPlayableLevel()` di KEDUA
+  // handler di bawah (BUKAN `null`) — `topicIndex`-nya dihitung `computeInsights()`
+  // thd topik `level` (level ASLI anak) di atas, jadi harus menang di atas
+  // cache "nempel" `browsingLevel()`, sama alasan `resume` (app.ts).
   setHandlers({
     practiceInsightTopic: (payload) => {
       const [skill, idxStr] = (payload ?? '').split('|');
-      go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 1, viewLevel: null });
+      go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 1, viewLevel: level.key });
     },
     reviewInsightTopic: (payload) => {
       const [skill, idxStr] = (payload ?? '').split('|');
-      go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 2, viewLevel: null });
+      go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 2, viewLevel: level.key });
     },
+  });
+}
+
+/**
+ * Dropdown pemilih level "nempel" — SATU logic dipakai `renderMenu()` DAN
+ * `renderTopics()` (permintaan user: "jadikan satu logic dropdown di halaman
+ * belajar dan list materi... biar sync" — dulu 2 salinan nyaris identik yang
+ * gampang ketinggalan sinkron kalau salah satu diubah tanpa yang lain).
+ * `renderLevelSwitcher()` bikin markup-nya (string kosong kalau cuma 1 markas
+ * yang bisa dijelajahi — tidak perlu kontrol apa pun, sama spt sebelumnya).
+ * `wireLevelSwitcher()` pasang event `change`-nya SEKALI setelah
+ * `root.innerHTML` di-set (pola sama `wireTopicsCompactBar`) — `screen`
+ * (parameter) nentuin `go()` balik ke layar mana, plus `setBrowseLevel()`
+ * supaya pilihan "nempel" lintas navigasi (lihat `browsingLevel()`).
+ */
+function renderLevelSwitcher(currentLevel: LevelKey, ariaLabel: string): string {
+  const unlockedMap = levelUnlockMap(LEVELS);
+  const browsable = LEVELS.filter((l) => l.hasContent && unlockedMap[l.key]);
+  if (browsable.length <= 1) return '';
+  return `
+    <label class="level-select-wrap">
+      <span aria-hidden="true">📋</span>
+      <select class="level-select" id="levelSwitchSelect" aria-label="${ariaLabel}">
+        ${browsable
+          .map((l) => `<option value="${l.key}" ${l.key === currentLevel ? 'selected' : ''}>${l.emoji} ${l.name}</option>`)
+          .join('')}
+      </select>
+    </label>`;
+}
+
+function wireLevelSwitcher(screen: 'menu' | 'topics'): void {
+  const select = root.querySelector<HTMLSelectElement>('#levelSwitchSelect');
+  if (!select) return;
+  select.addEventListener('change', (e) => {
+    const picked = (e.target as HTMLSelectElement).value as LevelKey;
+    setBrowseLevel(picked);
+    go(screen, { viewLevel: picked });
   });
 }
 
@@ -1501,29 +1607,11 @@ function renderRapor(): void {
 
 function renderMenu(): void {
   const level = browsingLevel();
-  // Markas lain yang boleh dijelajahi Menu Belajar-nya dari sini langsung
-  // (permintaan user: "gimana di menu belajar bisa pilih materi per
-  // level") — hanya yang sudah terbuka & punya materi, konsisten dengan
-  // tombol "Buka Menu Belajar" di Peta Level (`renderLevels`).
-  const unlockedMap = levelUnlockMap(LEVELS);
-  const browsableLevels = LEVELS.filter((l) => l.hasContent && unlockedMap[l.key]);
   // Dropdown 1 baris (permintaan user: pill row 2 baris "boros" & mendorong
   // konten belajar turun) — muncul cuma kalau ada lebih dari 1 markas yang
-  // bisa dijelajahi; kalau cuma 1, tidak perlu kontrol apa pun (design awal).
-  const menuLevelHead =
-    browsableLevels.length > 1
-      ? `
-    <div class="menu-level-head">
-      <label class="level-select-wrap">
-        <span aria-hidden="true">📋</span>
-        <select class="level-select" id="menuLevelSelect" aria-label="Pilih level Menu Belajar">
-          ${browsableLevels
-            .map((l) => `<option value="${l.key}" ${l.key === level.key ? 'selected' : ''}>${l.emoji} ${l.name}</option>`)
-            .join('')}
-        </select>
-      </label>
-    </div>`
-      : '';
+  // bisa dijelajahi (`renderLevelSwitcher`), konsisten dgn tombol "Buka Menu
+  // Belajar" per-level di Peta Level (`renderLevels`).
+  const menuLevelHead = renderLevelSwitcher(level.key, 'Pilih level Menu Belajar');
   // Progres keseluruhan lintas SEMUA modul di level ini (permintaan user) —
   // formula SAMA dgn levelProgress Beranda/mapProgress Peta Level
   // (doneCount() global ÷ totalTopicsForLevel level ini), supaya angkanya
@@ -1616,10 +1704,10 @@ function renderMenu(): void {
       : '';
 
   root.innerHTML = `
-    ${menuLevelHead}
     <section class="two-col">
       <div class="stack">
         ${nextCard}
+        ${menuLevelHead}
         <div class="skill-grid">${cards}</div>
 
         <article class="boss-teaser">
@@ -1664,14 +1752,7 @@ function renderMenu(): void {
     },
   });
 
-  // <select> pakai event `change`, di luar delegasi klik data-action biasa
-  // (pola sama dengan `wireTopicsCompactBar` — wiring langsung sekali pas
-  // render, self-contained di fungsi ini).
-  if (browsableLevels.length > 1) {
-    qs<HTMLSelectElement>(root, '#menuLevelSelect').addEventListener('change', (e) => {
-      go('menu', { viewLevel: (e.target as HTMLSelectElement).value as LevelKey });
-    });
-  }
+  wireLevelSwitcher('menu');
 }
 
 /* ---------------------------------------------------------- daftar materi -- */
@@ -1679,8 +1760,16 @@ function renderMenu(): void {
 function renderTopics(): void {
   const key = state.skillKey as SkillKey;
   const meta = SKILL_META[key];
-  const level = browsingLevel().key;
+  const levelMeta = browsingLevel();
+  const level = levelMeta.key;
   const items = topicsForSkill(key, level);
+
+  // Pemilih level (permintaan user: "tambahkan list dropdown level di list
+  // materi", ditaruh berdampingan dgn tombol Cara Main di bawah, BUKAN
+  // sendirian) — `renderLevelSwitcher()` SAMA PERSIS yang dipakai
+  // `renderMenu()`, jadi level yang dipilih di sini JUGA "nempel" lintas
+  // navigasi (satu logic, lihat komentar lengkap di definisinya).
+  const topicsLevelDropdown = renderLevelSwitcher(level, `Pilih level ${meta.label}`);
 
   // "Selesai" (checkmark, warna, teks "Sudah selesai") WAJIB ikut
   // `topicFinished()`/`topicProgressPercent()` (pct>=100), bukan `isDone()`
@@ -1735,7 +1824,10 @@ function renderTopics(): void {
         </div>
         <p class="meta" style="margin-top:6px">${doneHere} dari ${items.length} materi (${topicPct}%)${doneHere > 0 ? ' · Boleh diulang kapan saja.' : ''}</p>
       </div>
+      <button class="ghost-btn cara-main-btn" type="button" data-action="openCaraMain">❓ Cara Main</button>
     </div>
+
+    ${topicsLevelDropdown ? `<div class="topics-toolbar">${topicsLevelDropdown}</div>` : ''}
 
     <section class="two-col">
       <div class="topic-grid">${cards}</div>
@@ -1762,8 +1854,10 @@ function renderTopics(): void {
       setLast({ skill: key, topicIndex: index });
       go('activity', { topicIndex: index, step: 0 });
     },
+    openCaraMain: () => renderCaraMain(meta, levelMeta),
   });
 
+  wireLevelSwitcher('topics');
   wireTopicsCompactBar();
 }
 
@@ -1788,9 +1882,14 @@ function wireTopicsCompactBar(): void {
 /* --------------------------------------------------------------- aktivitas -- */
 
 /**
- * Kartu "Cara Main" (permintaan user) — muncul SEKALI SEUMUR HIDUP per topik,
- * sebelum Kenalan pertama kali dibuka (gate di `renderActivity`, di bawah;
- * penanda persisten `hasSeenCaraMain`/`markCaraMainSeen`, progress.ts).
+ * Kartu "Cara Main" — DULU gate otomatis SEKALI SEUMUR HIDUP per topik
+ * sebelum Kenalan pertama kali dibuka; permintaan user: dipindah jadi tombol
+ * opt-in di atas daftar materi (`renderTopics`) supaya tidak lagi memotong
+ * alur tiap kali topik baru dipilih. Sekarang GENERIK per-SKILL (bukan per-
+ * topik lagi — tidak ada topik spesifik yang dipilih saat tombolnya ditekan
+ * dari daftar materi), makanya parameter `topic`/penanda "sudah pernah
+ * dilihat" (`hasSeenCaraMain`/`markCaraMainSeen`) dihapus total, bukan lagi
+ * relevan buat tombol yang boleh ditekan berkali-kali kapan saja.
  * Menjelaskan alur 3 langkah SECARA GENERIK (Kenalan → Latihan Inti →
  * Tantangan) — sengaja TIDAK spesifik ke mekanik soal per format (banyak
  * format berbeda per skill/level, lihat CLAUDE.md "N Format Berdampingan"),
@@ -1800,20 +1899,20 @@ function wireTopicsCompactBar(): void {
  * app ini sudah punya sistem level/progres sendiri lewat Peta Level
  * (Little Stars…Trailblazer), bukan dipilih ulang per-topik di sini.
  */
-function renderCaraMain(key: SkillKey, topic: TopicRef, meta: SkillMeta, level: LevelMeta): void {
+function renderCaraMain(meta: SkillMeta, level: LevelMeta): void {
   root.innerHTML = `
     <div class="act-head">
       <button class="iconbtn" type="button" data-action="backStep" aria-label="Kembali ke Daftar Materi">${ICON_BACK}</button>
       <div class="txt">
-        <h1>${topic.title}</h1>
-        <div class="sub"><span class="tag accent">${meta.emoji} ${meta.label}</span></div>
+        <h1>${meta.emoji} ${meta.label}</h1>
+        <div class="sub"><span class="tag accent">Cara Main</span></div>
       </div>
     </div>
 
     <div class="card" style="max-width:460px;margin:0 auto;text-align:center">
       <span class="stage-badge">${meta.emoji} Cara Main</span>
       <h2 class="h2" style="margin-bottom:6px">${meta.tagline}</h2>
-      <p class="lede" style="margin-bottom:18px">${topic.desc}</p>
+      <p class="lede" style="margin-bottom:18px">Begini alur tiap materi ${meta.label}, dari kenalan santai sampai tantangan seru.</p>
       <div class="cara-main-steps">
         <div class="cara-main-step">
           <span class="num" aria-hidden="true">1</span>
@@ -1829,16 +1928,12 @@ function renderCaraMain(key: SkillKey, topic: TopicRef, meta: SkillMeta, level: 
         </div>
       </div>
       <span class="tag" style="margin-top:var(--s2)">${level.emoji} ${level.name}</span>
-      <button class="primary-btn pt-cta" type="button" data-action="startCaraMain" style="margin-top:var(--s4);width:100%">▶️ Yuk Mulai!</button>
+      <button class="primary-btn pt-cta" type="button" data-action="backStep" style="margin-top:var(--s4);width:100%">✅ Oke, Mengerti!</button>
     </div>
   `;
 
   setHandlers({
     backStep: () => go('topics'),
-    startCaraMain: () => {
-      markCaraMainSeen(key, topic.id);
-      render();
-    },
   });
 }
 
@@ -1847,11 +1942,6 @@ function renderActivity(): void {
   const meta = SKILL_META[key];
   const level = browsingLevel();
   const topic = topicsForSkill(key, level.key)[state.topicIndex];
-
-  if (topic && !hasSeenCaraMain(key, topic.id)) {
-    renderCaraMain(key, topic, meta, level);
-    return;
-  }
 
   // Panel kecepatan/suara cuma relevan kalau skill-nya benar-benar pakai TTS
   // (`speak()`)/mic di suatu titik (revisi user: sempat digerbang ke
@@ -2110,13 +2200,49 @@ function renderSelesai(): void {
 
 /* -------------------------------------------------------------- pengaturan -- */
 
+/**
+ * 🔒 Kartu "Level" (permintaan user "buat section ini lebih simple dan
+ * tidak banyak text") — dulu py 2 kalimat penjelas di bawah badge (badge
+ * CEFR sekunder utk anak, naik level berbasis modul bukan skor/waktu),
+ * SUDAH DIHAPUS — cukup nama+emoji level & badge CEFR·usia yang sudah
+ * kebaca dari tata letaknya sendiri (CLAUDE.md "Teks Singkat, Padat,
+ * Jelas": kalau dihapus & masih paham dari elemen visual yang ada, jangan
+ * ditambahkan).
+ *
+ * 🔒 **Revisi (permintaan user "tambahkan text catatan: level ini
+ * berdasarkan {cambridge}, sesuaikan kata di dalam kurung kurawa")** —
+ * 1 baris catatan kecil (`.meta`, sama gaya baris kecil lain di kartu ini)
+ * DITAMBAHKAN LAGI, TAPI beda dari 2 kalimat lama yang dihapus di atas: ini
+ * SATU baris pendek, isinya sumber acuan bukan penjelasan mekanisme.
+ * `LEVEL_CAMBRIDGE_REF` (di bawah) memetakan tiap level ke frasa tingkat
+ * Cambridge yang SESUAI (bukan teks generik sama utk semua level) — PRD.md
+ * §3 "Sistem Level" kolom "Cambridge YLE/Schools terdekat" adalah sumbernya
+ * (lihat juga jawaban sesi sebelumnya soal referensi ini). Little Stars
+ * SENGAJA TANPA entri (PRD §3 kolomnya "—" utk level itu, CEFR/Cambridge
+ * genuinely tidak berlaku usia 3–5 th) — catatan TIDAK ditampilkan sama
+ * sekali utk level itu, bukan dipaksa isi referensi yang tidak ada.
+ */
+const LEVEL_CAMBRIDGE_REF: Partial<Record<LevelKey, string>> = {
+  starter: 'Cambridge Pre A1 Starters (tahap awal)',
+  explorer: 'Cambridge Pre A1 Starters',
+  adventurer: 'Cambridge A1 Movers',
+  achiever: 'Cambridge A2 Flyers',
+  trailblazer: 'Cambridge A2 Key & B1 Preliminary for Schools',
+};
+
 function renderSettings(): void {
   const avatar = getAvatar();
   const level = currentLevelMeta();
-  const avatarGrid = ANIMAL_AVATARS.map(
-    (a) =>
-      `<button class="avatar-opt ${a === avatar ? 'is-active' : ''}" type="button" data-action="pickAvatar" data-payload="${a}" aria-label="Pilih avatar ${a}">${a}</button>`
-  ).join('');
+  const avatarGrid = ANIMAL_AVATARS.map((a) => {
+    const name = ANIMAL_AVATAR_NAMES[a];
+    const active = a === avatar;
+    return `
+      <button class="avatar-opt ${active ? 'is-active' : ''}" type="button" data-action="pickAvatar" data-payload="${a}" aria-label="Pilih avatar ${name}">
+        ${active ? `<span class="avatar-opt-check" aria-hidden="true">${ICON_CHECK}</span>` : ''}
+        <span class="avatar-opt-emoji" aria-hidden="true">${a}</span>
+        <span class="avatar-opt-name">${name}</span>
+      </button>`;
+  }).join('');
 
   // Retest ditaruh dekat Keluar (feedback user, pola sama dgn inggrisinyuk
   // dewasa — retest ada di deretan pengaturan akun, bukan di atas sendiri).
@@ -2132,6 +2258,20 @@ function renderSettings(): void {
         <button class="ghost-btn" type="button" data-action="openPlacementTestFromSettings" ${placementAttemptsRemaining <= 0 ? 'disabled' : ''}>🔁 Main Lagi</button>
       </section>`;
 
+  // Email fallback ke `identifier` (getAccountInfo) — belum kosong walau
+  // `/api/me` belum sempat disegarkan sejak login (lihat komentar
+  // `parentEmail` di account.ts). `createdAt` beneran perlu fetch itu.
+  const { email: accountEmail, createdAt: accountCreatedAt } = getAccountInfo();
+  const accountCreatedLabel = accountCreatedAt
+    ? new Date(accountCreatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '—';
+  const accountInfoCard = `
+      <section class="card">
+        <span class="eyebrow">Informasi Akun</span>
+        <div class="acc-info-row" style="margin-top:10px">📧 <b>Akun Login</b> : ${escapeHtml(accountEmail ?? '—')}</div>
+        <div class="acc-info-row">🗓️ <b>Akun dibuat</b> : ${accountCreatedLabel}</div>
+      </section>`;
+
   root.innerHTML = `
     <div class="set-grid">
       <section class="card">
@@ -2142,7 +2282,6 @@ function renderSettings(): void {
       </section>
 
       <section class="card voice-flush">
-        <span class="eyebrow">Suara pembaca</span>
         <div class="card-title" style="margin:4px 0 12px">Kecepatan &amp; jenis suara</div>
         <div id="voicePanelMount"></div>
         <p class="meta" style="margin-top:12px">Pelankan suara kalau anak baru mulai — 0.5x–0.75x biasanya paling enak diikuti.</p>
@@ -2152,18 +2291,12 @@ function renderSettings(): void {
         <span class="eyebrow">Level</span>
         <div class="lvl-name" style="margin:4px 0 2px">${level.emoji} ${level.name}</div>
         <div class="lvl-meta">${level.cefr} · ${level.age}</div>
-        <ul class="set-list">
-          <li><span>Badge CEFR ditampilkan kecil untuk orang tua; anak cukup lihat nama levelnya.</span></li>
-          <li><span>Naik level berbasis modul yang selesai, bukan nilai atau lamanya belajar.</span></li>
-        </ul>
-      </section>
-
-      <section class="card note-card">
-        <div class="card-title">Untuk orang tua</div>
-        <p>Progres anak tersimpan di perangkat ini — tanpa iklan, tanpa pembelian dalam aplikasi. Fitur bicara memakai mikrofon hanya saat tombol 🎤 ditekan.</p>
+        ${LEVEL_CAMBRIDGE_REF[level.key] ? `<p class="meta" style="margin-top:8px">Catatan: level ini berdasarkan ${LEVEL_CAMBRIDGE_REF[level.key]}.</p>` : ''}
       </section>
 
       ${placementTestCard}
+
+      ${accountInfoCard}
 
       <button class="ghost-btn" type="button" data-action="logoutAccount">👋 Keluar</button>
     </div>
@@ -3002,12 +3135,17 @@ interface RajaDef {
  * 🔒 **"Story Quest" BARU** (permintaan user, ditaruh TEPAT DI BAWAH Sound
  * Hunt — "simpan di bawah game sound hunt", urutan array = urutan render)
  * — fokus MURNI Reading comprehension: baca 1 halaman cerita pendek lalu
- * jawab 1 pertanyaan, dibungkus tema "buku ajaib" (Magic Library) supaya
- * terasa interactive storybook, BUKAN kuis 10-soal-sekaligus spt raja lain.
- * Mekanik+data: `games/storyquest.ts`. Sama seperti Sound Hunt, SENGAJA
- * dulu tidak ikut Open the Door "Buka Pintu Kastil" (fitur itu SUDAH
- * DIHAPUS TOTAL, permintaan user) — sudah 1 mini-petualangan multi-halaman
- * sendiri, beda ritme dari gauntlet cepat.
+ * jawab 1 pertanyaan. Mekanik+data: `games/storyquest.ts`. Sama seperti
+ * Sound Hunt, SENGAJA dulu tidak ikut Open the Door "Buka Pintu Kastil"
+ * (fitur itu SUDAH DIHAPUS TOTAL, permintaan user) — sudah 1 mini-
+ * petualangan multi-halaman sendiri, beda ritme dari gauntlet cepat.
+ * 🔒 **Revisi (permintaan user "update story quest dengan konsep yang sama
+ * dengan game lain... sub list game, pemanasan, mudah dan seterusnya")** —
+ * tema "buku ajaib" (Magic Library, 1 cerita + rak buku "Segera Hadir")
+ * SUDAH DIGANTI TOTAL jadi Map Kerajaan Cerita 6-markas, pola SAMA PERSIS
+ * `games/wordmatch.ts` — 6 cerita BERDIRI SENDIRI (Pemanasan→Legendaris,
+ * bukan lagi 1 cerita 5-halaman + rak "Segera Hadir"), tiap cerita = 1
+ * markas. Detail: `games/storyquest.ts`.
  * 🔒 **"Talk to the King" SUDAH DIHAPUS TOTAL** (permintaan user) — dulu
  * raja PERTAMA di Game Hub ini yang 100% Speaking (tema "audiensi dgn
  * Raja", Royal Map → Throne Room, `games/talktotheking.ts`), sekarang
@@ -3023,6 +3161,23 @@ const RAJA_LIST: RajaDef[] = [
   { key: 'soundhunt', name: 'Sound Hunt', sub: 'Dengar & temukan Sound Crystal', color: 'var(--c-read)', icon: '/img/sound_hunt.png' },
   { key: 'storyquest', name: 'Story Quest', sub: 'Baca cerita, jawab, lanjut petualang', color: 'var(--brand-500)', icon: '/img/story_quest.png' },
 ];
+
+/** Emoji ikon kecil per Raja — dipakai kartu "🎮 Hasil Main Game" Rapor
+ *  (`renderRapor`), BUKAN `RajaDef.icon` (gambar penuh, cocok utk kartu
+ *  besar Game Hub, terlalu berat utk lingkaran kecil `.skill-card .ic` —
+ *  pola SAMA `SKILL_META[key].emoji` yang dipakai kartu "Skor Tiap Skill"
+ *  di sebelahnya). Beda dari emoji "wajah" `renderMissionComplete()` tiap
+ *  game (bisa sama persis dgn game lain, mis. Kata & Susun sama-sama 🧩) —
+ *  di sini SENGAJA semua beda biar 7 baris berdampingan mudah dibedakan. */
+const RAJA_ICON_EMOJI: Record<RajaKey, string> = {
+  kata: '🔤',
+  balon: '🎈',
+  susun: '🧩',
+  kelompok: '🧺',
+  ingatan: '🧠',
+  soundhunt: '🎧',
+  storyquest: '📖',
+};
 
 /** Slug URL per Raja (screen 'gamePlay', `/game/<slug>` — permintaan user
  *  "ketika klik icon game maka ke halaman baru misal game/raja-kata")—
@@ -3053,9 +3208,14 @@ const SLUG_TO_RAJA: Record<string, RajaKey> = Object.fromEntries(
  * dirender di kartu hub (CLAUDE.md "Teks Singkat" — ikon+judul cukup,
  * deskripsi lengkap tetap muncul begitu anak masuk ke `renderGamePlay()`).
  * Class BARU (`.raja-grid`/`.raja-card`/`.raja-card-icon`,
- * `public/styles.css`) — SENGAJA TIDAK reuse `.raja-trail`/`.raja-icon`
- * (desain trail lama) krn 3 game (Raja Kata/Balon, Sound Hunt) masih pakai
- * PERSIS class itu utk Map Kerajaan/Hutan Ajaib INTERNAL mereka sendiri.
+ * `public/styles.css`) — AWALNYA SENGAJA TIDAK reuse `.raja-trail`/
+ * `.raja-icon` (desain trail lama) krn 3 game (Raja Kata/Balon, Sound Hunt)
+ * masih pakai PERSIS class itu utk Map Kerajaan/Hutan Ajaib INTERNAL mereka
+ * sendiri. **🔒 Koreksi (sesi lanjutan, permintaan user "jadikan 1 card an
+ * seperti di halaman game dimana 1 row jadi 2 card")** — Map Kerajaan
+ * SEKARANG JUSTRU reuse PERSIS grid ini juga, `.raja-trail`/`.raja-icon`
+ * DIHAPUS TOTAL dari codebase (lihat komentar `renderMap()` `games/
+ * wordmatch.ts` utk riwayat lengkap perubahannya).
  *
  * 🔒 **Revisi user lanjutan** ("di atas list game buat seperti ini [ref
  * screenshot 'Tantangan Harian'] dimana mirip dengan di beranda dan belajar
@@ -3108,10 +3268,11 @@ const SLUG_TO_RAJA: Record<string, RajaKey> = Object.fromEntries(
  *    `mascotIdle`, SUDAH ADA `public/styles.css`, dipakai badge XP/kartu
  *    Bos) ditempel ke `.raja-card-icon` (roster grid, `animation-delay`
  *    bertingkat per kartu `i*0.15s` biar tidak bobbing bareng-bareng
- *    serempak) DAN `.raja-icon` (markas Map Kerajaan/Hutan Ajaib internal
- *    tiap game — `games/wordmatch.ts`/`games/balloonpop.ts`/`games/
- *    soundhunt.ts`, lihat komentar masing-masing) — TANPA keyframe baru,
- *    `.spark-art`'s icon (hero) SUDAH pakai `mascot-idle` sejak awal.
+ *    serempak) — TANPA keyframe baru, `.spark-art`'s icon (hero) SUDAH pakai
+ *    `mascot-idle` sejak awal. (Map Kerajaan/Hutan Ajaib py `.raja-icon`
+ *    SENDIRI saat itu, JUGA ditempel `mascot-idle` — class itu sekarang
+ *    SUDAH DIHAPUS TOTAL, Map Kerajaan reuse `.raja-card-icon` yang SAMA
+ *    persis roster grid ini, lihat koreksi di komentar `renderGame()`.)
  * 3. **Kartu hero "tema berpetualang"** — eyebrow BARU "🧭 Petualangan Game
  *    Hub" di atas judul (`.eyebrow`, class generik yang sudah dipakai kartu
  *    spark lain, mis. "Semua materi tuntas!"), progress bar labelnya diganti
@@ -3150,7 +3311,7 @@ function renderGame(): void {
   const heroIcon = next?.icon ? `<img src="${next.icon}" alt="" loading="lazy">` : next ? rajaMascot(next.key, next.color) : '';
   const heroCard = next
     ? `
-    <article class="spark compact" style="--spark-accent:${next.color}">
+    <article class="spark compact game-hero" style="--spark-accent:${next.color}">
       ${sky}
       <div class="spark-body">
         <span class="eyebrow">🧭 Petualangan Game Hub</span>
@@ -3181,7 +3342,7 @@ function renderGame(): void {
 
   root.innerHTML = `
     ${heroCard}
-    <div class="raja-grid">${cards}</div>
+    <div class="raja-grid game-hub-grid">${cards}</div>
   `;
 
   setHandlers({
@@ -3200,10 +3361,45 @@ function renderGame(): void {
  *  tersendiri, tabbar hilang total lewat CSS, bukan cuma diakali popup.
  *  🔒 Pop up konfirmasi keluar (permintaan user sesi sebelumnya, "pastikan
  *  ketika keluar ada pop up keluar atau lanjut") TETAP dipertahankan —
- *  tombol balik SELALU lewat konfirmasi dulu (`placementGame.
- *  renderExitConfirm`, REUSE PERSIS overlay First Placement Test) supaya
- *  SELALU ada jalan keluar eksplisit & disengaja, bukan cuma karena tabbar
- *  sekarang hilang jadi popup-nya jadi tidak perlu lagi. */
+ *  tombol balik lewat konfirmasi dulu (`placementGame.renderExitConfirm`,
+ *  REUSE PERSIS overlay First Placement Test) supaya SELALU ada jalan
+ *  keluar eksplisit & disengaja saat ada progres yang bisa hilang, bukan
+ *  cuma karena tabbar sekarang hilang jadi popup-nya jadi tidak perlu lagi.
+ *
+ *  🔒 **Revisi (permintaan user "ketika di halaman /game/raja-kata dan back
+ *  maka tidak perlu keluarkan pop up... hanya ketika sudah masuk proses
+ *  mengerjakan")** — popup SEKARANG cuma tampil kalau `isGameRoundActive()`
+ *  true (`interaction.ts`, ditulis tiap `games/*.ts` orkestrator "Raja"
+ *  bertingkat begitu pindah Map Kerajaan↔markas aktif). Back dari layar Map
+ *  (list markas, belum masuk 1 markas manapun) langsung `go('game')` TANPA
+ *  konfirmasi — anak belum kehilangan progres apa pun di situ (progres
+ *  markas cuma hidup per-sesi, direset tiap buka game lagi). Detail aturan
+ *  lengkap: CLAUDE.md § "Pop Up Konfirmasi Keluar Game".
+ *
+ *  🔒 **Latar kelap-kelip bintang** (permintaan user "analisis /game/
+ *  raja-kata... background nya ditambahkan bintang, emot lucu... yang
+ *  menarik anak") — `GAME_STAR_FIELD` (scenery.ts) DISISIPKAN DI SINI dulu
+ *  (sebelum `.raja-stage`), TAPI ternyata tidak pernah kelihatan sama sekali
+ *  — `.raja-stage`/`#rajaStage` adalah `.card` OPAQUE yang membungkus SEMUA
+ *  isi Map Kerajaan (note-card+grid+footer), jadi bintang di root level ini
+ *  ketutup total oleh background kartu itu. **Koreksi**: bintang SEKARANG
+ *  disisipkan DI DALAM `renderMap()` tiap `games/*.ts` (child PERTAMA
+ *  `container.innerHTML`, jadi di BALIK note-card/grid/footer dalam kartu
+ *  yang SAMA, bukan ketutup dari luar) — lihat komentar `.game-star-field`
+ *  `public/styles.css` & `renderMap()` `games/wordmatch.ts` utk detail.
+ *
+ *  🔒 **Footer standar** (permintaan user "untuk footer tambahkan seperti
+ *  original footer Kids-Inggrisin-Yuk seperti di halaman yang lain") —
+ *  `.standalone-footer` (© tahun InggrisinYuk Kids) SAMA PERSIS yang sudah
+ *  dipakai `renderAccount()`/First Placement Test (screen 'gamePlay' ini
+ *  JUGA "halaman berdiri sendiri" tanpa rail/topline/tabbar, komentar CSS
+ *  aslinya sendiri sudah bilang "login DAN First Placement Test" — sekarang
+ *  jadi 3). Ditaruh SEKALI di sini (level screen, bukan per-map di
+ *  `renderMap()`) krn footer brand seharusnya konsisten scr keseluruhan
+ *  layar, bukan berulang tiap ganti markas/game — GANTIKAN pesan penutup
+ *  custom "Itu semua markas..." yang lama (`gameMapFooterHtml()`, SUDAH
+ *  DIHAPUS dari `games/*.ts`, diganti section "Cara Main" — lihat komentar
+ *  `renderMap()` masing-masing). */
 function renderGamePlay(): void {
   const key = state.gameKey;
   const raja = key ? RAJA_LIST.find((r) => r.key === key) : undefined;
@@ -3213,6 +3409,13 @@ function renderGamePlay(): void {
   if (!raja) return go('game');
 
   setLastGame(raja.key);
+  // Default AMAN sebelum orkestrator game manapun sempat jalan (lihat
+  // komentar `isGameRoundActive` `interaction.ts`) — game TANPA layar Map
+  // (Kelompok/Story Quest) sengaja TIDAK PERNAH mengubah ini lagi, jadi
+  // popup TETAP tampil (perilaku lama, tidak berubah utk 2 game itu). Game
+  // ber-Map langsung menimpanya `false` synchronous di `renderMap()`
+  // (dipanggil `runRajaRound` di bawah, sebelum anak sempat interaksi).
+  setGameRoundActive(true);
   root.innerHTML = `
     <div class="act-head">
       <button class="iconbtn" type="button" data-action="backToGame" aria-label="Kembali ke Game">${ICON_BACK}</button>
@@ -3222,15 +3425,23 @@ function renderGamePlay(): void {
       </div>
     </div>
     <div class="card raja-stage" id="rajaStage" style="--k:${raja.color}"></div>
+    <footer class="standalone-footer">
+      <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
+    </footer>
   `;
   setHandlers({
-    backToGame: () =>
+    backToGame: () => {
+      if (!isGameRoundActive()) {
+        go('game');
+        return;
+      }
       placementGame.renderExitConfirm(
         () => {
           /* "Yuk Lanjut" — overlay sudah menutup dirinya sendiri, tidak perlu apa-apa lagi di sini */
         },
         () => go('game')
-      ),
+      );
+    },
   });
   runRajaRound(raja.key);
 }
@@ -3302,8 +3513,9 @@ function runRajaRound(key: RajaKey): void {
     return;
   }
 
-  // 'storyquest' — Story Quest: Reading comprehension murni, cerita & Magic
-  // Library sendiri (games/storyquest.ts), generik lintas level sama raja lain.
+  // 'storyquest' — Story Quest: Reading comprehension murni, Map Kerajaan
+  // Cerita 6-markas sendiri (games/storyquest.ts), generik lintas level
+  // sama raja lain.
   storyQuestGame.runStoryQuest(stage, onRoundDone, praiseLevel);
 }
 

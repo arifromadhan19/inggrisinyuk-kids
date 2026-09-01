@@ -701,21 +701,25 @@ export interface SkillMeta {
 /** 6 level di tangga PRD §3 — Little Stars, Starter, Explorer, Adventurer, Achiever, Trailblazer. */
 export type LevelKey = 'little-stars' | 'starter' | 'explorer' | 'adventurer' | 'achiever' | 'trailblazer';
 
-/** 5 tingkat kesulitan Raja Kata (Word Match, `games/wordmatch.ts`) —
+/** 6 tingkat kesulitan Raja Kata (Word Match, `games/wordmatch.ts`) —
  *  terpisah total dari LevelKey anak, murni memilih jumlah pasangan &
- *  kompleksitas kata. 5 tingkat (bukan 3) sejak permintaan user "untuk raja
- *  kata minimal 5 kerajaan" — tiap tingkat = 1 kerajaan/markas di Map
- *  Kerajaan Kata (`JOURNEY_NODES`, games/wordmatch.ts), makin ke belakang
- *  makin banyak pasangan & makin jarang katanya. */
-export type WordMatchDifficulty = 'mudah' | 'sedang' | 'sulit' | 'jago' | 'legendaris';
+ *  kompleksitas kata. Tiap tingkat = 1 kerajaan/markas di Map Kerajaan Kata
+ *  (`JOURNEY_NODES`, games/wordmatch.ts), makin ke belakang makin banyak
+ *  pasangan & makin jarang katanya. 🔒 **6 tingkat (dulu 5, `'pemanasan'`
+ *  DITAMBAHKAN sebagai markas PERTAMA)** — permintaan user "tambahkan 1
+ *  sehingga ada 6... levelnya ada pemanasan, mudah, sedang, sulit, jago,
+ *  legendaris", diterapkan SERAGAM ke SEMUA game bertingkat (Kata/Balon/
+ *  Susun/Ingatan — lihat `BalloonDifficulty` & komentar `JOURNEY_NODES`
+ *  tiap file game) supaya kosakata tingkat konsisten lintas game. */
+export type WordMatchDifficulty = 'pemanasan' | 'mudah' | 'sedang' | 'sulit' | 'jago' | 'legendaris';
 
-/** 5 tingkat kesulitan Raja Balon (Balloon Pop, `games/balloonpop.ts`) — pola
- *  SAMA PERSIS `WordMatchDifficulty` (5 tingkat = 5 markas Map Kerajaan
- *  Balon, `JOURNEY_NODES` di `games/balloonpop.ts`, sejak "jadikan konsepnya
- *  seperti Raja Kata"), di sini mengatur KECEPATAN naik balon (mudah=paling
- *  lambat) SEKALIGUS bank kata (mudah=kata pendek, legendaris=kata paling
- *  panjang/jarang) — bukan jumlah pasangan spt Word Match. */
-export type BalloonDifficulty = 'mudah' | 'sedang' | 'sulit' | 'jago' | 'legendaris';
+/** 6 tingkat kesulitan Raja Balon (Balloon Pop, `games/balloonpop.ts`) — pola
+ *  SAMA PERSIS `WordMatchDifficulty` (6 markas Map Kerajaan Balon,
+ *  `JOURNEY_NODES` di `games/balloonpop.ts`), di sini mengatur KECEPATAN
+ *  naik balon (pemanasan=paling lambat) SEKALIGUS bank kata
+ *  (pemanasan=kata terpendek, legendaris=kata paling panjang/jarang) —
+ *  bukan jumlah pasangan spt Word Match. */
+export type BalloonDifficulty = 'pemanasan' | 'mudah' | 'sedang' | 'sulit' | 'jago' | 'legendaris';
 
 /** Satu entri di tangga level. `hasContent` membedakan level yang sudah punya
  *  materi nyata (v1: cuma Explorer) dari yang masih placeholder di Peta Level —
