@@ -1,18 +1,23 @@
 import type {
+  AnyGrammarTopic,
   AnyListeningTopic,
   AnyReadingTopic,
   AnySpeakingTopic,
+  GrammarPatternTopic,
   GrammarTopic,
+  GrammarTransformTopic,
   LevelKey,
   LevelMeta,
   ListeningDialogueTopic,
   ListeningNoteTopic,
   ListeningSentenceTopic,
   ListeningTopic,
+  ReadingCheckTopic,
   ReadingTopic,
   ReadingWordTopic,
   SkillKey,
   SkillMeta,
+  SpeakingInterviewTopic,
   SpeakingPhraseTopic,
   SpeakingTopic,
   VocabTopic,
@@ -439,7 +444,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       { en: 'The elephant is big.', opts: [{ emoji: '🐘', ok: true }, { emoji: '🐭' }] },
       { en: 'The turtle is slow.', opts: [{ emoji: '🐢', ok: true }, { emoji: '🐆' }] },
     ],
-    story: ['Dimas sees a turtle first.', 'The turtle is slow.', 'Then he sees a cheetah, and it is fast.'],
+    story: ['Dimas sees a turtle first.', 'It moves very slowly.', 'Then he sees a cheetah, and it is fast.'],
     question: { en: 'Which animal is fast?', opts: [{ emoji: '🐆', lbl: 'Cheetah', ok: true }, { emoji: '🐢', lbl: 'Turtle' }] },
   },
   {
@@ -521,7 +526,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
   },
 ];
 
-export const SPEAKING_TOPICS: SpeakingTopic[] = [
+export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
   {
     id: 'kenalan-teman',
     title: 'Kenalan dengan Teman',
@@ -546,6 +551,154 @@ export const SPEAKING_TOPICS: SpeakingTopic[] = [
     drill: ['I am fine, thank you.'],
     roleplay: ['How are you today?', 'Are you happy?'],
   },
+  /**
+   * 7 topik tambahan (sesi ini) — menggenapkan Speaking Explorer dari 3 jadi
+   * 10 topik (target CLAUDE.md ≥10 topik/skill). Riset & rasional lengkap:
+   * `materi/speaking.md` §12 — format LAMA `SpeakingTopic` (model/drill/
+   * roleplay) dikonfirmasi ULANG cocok utk level ini (LIA GEYL usia 6-12
+   * eksplisit menyebut "role play" sbg metode inti, EF Indonesia High
+   * Flyers 7-9 "dialog situasional & role-play"), jadi TIDAK didesain ulang
+   * — murni data baru. Tiap topik dipetakan ke 1 domain `VOCAB_TOPICS`
+   * (Explorer) yang belum disentuh Speaking, SAMA 7 domain yang sudah
+   * dipetakan Listening Explorer (`klinik`/`kebun-binatang`/`di-kasir`/
+   * `jadwal-harian`/`dari-mana`/`pesta-ulang-tahun`/`di-dapur`) — sengaja
+   * domain yang SAMA (bukan domain lain) supaya anak me-review kosakata yang
+   * sama lewat 2 modalitas berbeda (dengar vs ucap), id topik BEDA dari
+   * Listening-nya (konvensi sama Little Stars/Starter) walau aman dari
+   * tabrakan progres krn key `${skill}:${topicId}:${section}` sudah py
+   * awalan skill. `drill`/`roleplay` ditulis ULANG baru (bukan disalin dari
+   * `VOCAB_TOPICS`/`LISTENING_TOPICS`), diperkaya jadi 3 item drill + 3
+   * roleplay tiap topik (LEBIH BANYAK dari 3 topik lama yg cuma 1-2/2-3 —
+   * konsisten arah "dekatkan ke 10" CLAUDE.md walau format lama ini sendiri
+   * tidak py struktur 10-item spt Vocab).
+   */
+  {
+    id: 'sakit-apa',
+    title: 'Sakit Apa? (What\'s Wrong?)',
+    desc: '3 latihan bicara',
+    model: ['I have a headache.', 'I need medicine.'],
+    drill: ['I have a fever.', 'My tummy hurts.', 'I need to rest.'],
+    roleplay: ['What is wrong with you?', 'Do you have a fever?', 'Where does it hurt?'],
+  },
+  {
+    id: 'lawan-kata',
+    title: 'Lawan Kata (Opposites)',
+    desc: '3 latihan bicara',
+    model: ['The elephant is big.', 'The mouse is small.'],
+    drill: ['The cheetah is fast.', 'The turtle is slow.', 'The snake is long.'],
+    roleplay: ['Is the elephant big or small?', 'Which is faster, a cheetah or a turtle?', 'What is the opposite of heavy?'],
+  },
+  {
+    id: 'bayar-di-kasir',
+    title: 'Bayar di Kasir (Pay at the Cashier)',
+    desc: '3 latihan bicara',
+    model: ['How much is the price?', 'Here is your receipt.'],
+    drill: ['I have five coins.', 'This is expensive.', 'I keep my money in my wallet.'],
+    roleplay: ['How much money do you have?', 'Can I pay with a coin?', 'Do you want a receipt?'],
+  },
+  {
+    id: 'jadwal-hariku',
+    title: 'Jadwalku Hari Ini (My Daily Schedule)',
+    desc: '3 latihan bicara',
+    model: ['I wake up in the morning.', 'I sleep at night.'],
+    drill: ['I eat lunch in the afternoon.', 'I play in the evening.', 'I go to school every week.'],
+    roleplay: ['What do you do in the morning?', 'What time do you sleep at night?', 'What do you do every week?'],
+  },
+  {
+    id: 'kamu-dari-mana',
+    title: 'Kamu dari Mana? (Where Are You From?)',
+    desc: '3 latihan bicara',
+    model: ['I am from Indonesia.', 'Where are you from?'],
+    drill: ['I live in Indonesia.', 'I want to visit Japan.', 'She is from England.'],
+    roleplay: ['Can you tell me where you are from?', 'Which country do you want to visit?', 'Do you know someone from another country?'],
+  },
+  {
+    id: 'pesta-ulang-tahunku',
+    title: 'Pesta Ulang Tahunku (My Birthday Party)',
+    desc: '3 latihan bicara',
+    model: ['Happy birthday!', 'I blow the candle.'],
+    drill: ['I open my present.', 'I invite my friends.', 'We have a celebration.'],
+    roleplay: ['When is your birthday?', 'What present do you want?', 'Who do you want to invite?'],
+  },
+  {
+    id: 'masak-yuk',
+    title: 'Masak Yuk! (Let\'s Cook!)',
+    desc: '3 latihan bicara',
+    model: ['I eat with a spoon.', 'Mom cooks in the pot.'],
+    drill: ['I need a fork.', 'Dad fries eggs in the pan.', 'I drink from a cup.'],
+    roleplay: ['What do you use to eat soup?', 'Can you help me cook?', 'What is your favorite food to cook?'],
+  },
+  /**
+   * Topik ke-11 (PILOT) — format KEEMPAT `SpeakingStoryTopic` (types.ts).
+   * Audit user: "'main', 'core practice', dan 'challenge' speaking section...
+   * exercises are all basically the same" — 3 topik `model`/`drill`/`roleplay`
+   * di atas SEMUANYA murni produksi tanpa lapisan KOMPREHENSI (anak tidak
+   * pernah memilah beberapa fakta dulu sebelum bicara). Ide konkret dari user
+   * sendiri (contoh persis dipakai): "simple stories... accompanied by
+   * questions" ("Andi likes dogs, and Andi has a cat. — What does Andi
+   * have?"). REUSE pola "cerita mini + 1 fakta pengecoh + pertanyaan" yang
+   * SUDAH terbukti di `LISTENING_TOPICS`/`READING_TOPICS_ADVENTURER` (`story`
+   * + `question`, lihat topik `pesta-ulang-tahun`/`di-dapur` di atas) — BEDA
+   * krusial: jawabannya WAJIB DIUCAPKAN via mic (skor proporsional
+   * `wordMatchDetail`), bukan tap gambar. Dicampur LANGSUNG ke array
+   * `SPEAKING_TOPICS` yang sama (bukan array terpisah) — dispatch selalu
+   * per-topik (`'stories' in topic`), bukan per-level, jadi 1 level boleh
+   * campur format lama & format ini (arsitektur SUDAH mendukung ini sejak
+   * awal, baru sesi ini benar-benar dipakai). Pilot 5 cerita, kalau
+   * feedback-nya positif baru diperluas ke level lain / topik lain.
+   */
+  {
+    id: 'cerita-dan-jawab',
+    title: 'Cerita & Jawab (Story & Answer)',
+    desc: '5 cerita mini',
+    stories: [
+      {
+        emoji: '🐱',
+        lines: [
+          { en: 'Andi likes dogs.', id: 'Andi suka anjing.' },
+          { en: 'Andi has a cat.', id: 'Andi punya kucing.' },
+        ],
+        question: { en: 'What does Andi have?', id: 'Andi punya apa?' },
+        answer: { en: 'The pet is a cat.', id: 'Peliharaannya kucing.' },
+      },
+      {
+        emoji: '🎒',
+        lines: [
+          { en: 'Rani wants a red bag.', id: 'Rani mau tas merah.' },
+          { en: 'Rani buys a blue bag.', id: 'Rani membeli tas biru.' },
+        ],
+        question: { en: 'What color is the bag Rani buys?', id: 'Apa warna tas yang Rani beli?' },
+        answer: { en: 'The bag is blue.', id: 'Tasnya biru.' },
+      },
+      {
+        emoji: '🦒',
+        lines: [
+          { en: 'Budi sees a lion at the zoo.', id: 'Budi melihat singa di kebun binatang.' },
+          { en: 'Budi feeds a giraffe.', id: 'Budi memberi makan jerapah.' },
+        ],
+        question: { en: 'What does Budi feed?', id: 'Budi memberi makan apa?' },
+        answer: { en: 'The animal is a giraffe.', id: 'Hewannya jerapah.' },
+      },
+      {
+        emoji: '🏀',
+        lines: [
+          { en: 'Sari’s brother plays football.', id: 'Kakak Sari bermain sepak bola.' },
+          { en: 'Sari plays basketball.', id: 'Sari bermain basket.' },
+        ],
+        question: { en: 'What sport does Sari play?', id: 'Sari bermain olahraga apa?' },
+        answer: { en: 'The sport is basketball.', id: 'Olahraganya basket.' },
+      },
+      {
+        emoji: '🍚',
+        lines: [
+          { en: 'Dimas eats a sandwich for breakfast.', id: 'Dimas makan sandwich saat sarapan.' },
+          { en: 'Dimas eats rice for dinner.', id: 'Dimas makan nasi saat makan malam.' },
+        ],
+        question: { en: 'What does Dimas eat for dinner?', id: 'Dimas makan apa saat makan malam?' },
+        answer: { en: 'The dinner food is rice.', id: 'Makan malamnya nasi.' },
+      },
+    ],
+  },
 ];
 
 export const GRAMMAR_TOPICS: GrammarTopic[] = [
@@ -555,7 +708,7 @@ export const GRAMMAR_TOPICS: GrammarTopic[] = [
     desc: 'To be — perkenalan',
     examples: [{ en: 'This is a cat.', emoji: '🐱' }, { en: 'This is a dog.', emoji: '🐶' }],
     scramble: [
-      { emoji: '🐱', target: ['This', 'is', 'a', 'cat'] },
+      { emoji: '🐦', target: ['This', 'is', 'a', 'bird'] },
       { emoji: '⚽', target: ['This', 'is', 'a', 'ball'] },
     ],
     fill: {
@@ -569,7 +722,7 @@ export const GRAMMAR_TOPICS: GrammarTopic[] = [
     title: 'There is / There are',
     desc: 'Menyebut benda',
     examples: [{ en: 'There is a ball.', emoji: '⚽' }, { en: 'There are two cats.', emoji: '🐱🐱' }],
-    scramble: [{ emoji: '⚽', target: ['There', 'is', 'a', 'ball'] }],
+    scramble: [{ emoji: '📦', target: ['There', 'is', 'a', 'box'] }],
     fill: {
       before: ['There', 'is', 'a'],
       after: [],
@@ -581,11 +734,265 @@ export const GRAMMAR_TOPICS: GrammarTopic[] = [
     title: 'Kata Ganti Orang',
     desc: 'I / You / He / She',
     examples: [{ en: 'I am happy.', emoji: '😊' }, { en: 'She is my sister.', emoji: '👧' }],
-    scramble: [{ emoji: '😊', target: ['I', 'am', 'happy'] }],
+    scramble: [{ emoji: '😴', target: ['He', 'is', 'tired'] }],
     fill: {
       before: ['I', 'like'],
       after: [],
       options: [{ word: 'apples', emoji: '🍎' }, { word: 'blue', emoji: '🔵' }, { word: 'football', emoji: '⚽' }],
+    },
+  },
+  /**
+   * Topik ke-4 (permintaan riset per-level, `materi/grammar.md` §9) —
+   * "Prepositions of Place" (in/on/under) — struktur Cambridge YLE Starters
+   * yang belum diklaim topik Explorer manapun (`this-is`/`there-is`/
+   * `pronouns`). Dipetakan dari `VOCAB_TOPICS` `peralatan-dapur` (Kitchen
+   * Tools) — benda dapur naturally duduk "in the bowl"/"on the table"/"under
+   * the shelf", validasi kuat EF Indonesia High Flyers (7–9 th) "grammar
+   * sistematis dalam bentuk kalimat" & LearnEnglish Kids yang py kartu
+   * referensi + game preposisi eksplisit di usia ini. Emoji opsi `fill`
+   * (⬆️/📦/⬇️) proxy VISUAL preposisinya sendiri (bukan kata benda konkret,
+   * beda dari 3 topik di atas) krn preposisi tidak py "benda"-nya sendiri.
+   */
+  {
+    id: 'prepositions-of-place',
+    title: 'Preposisi Tempat (In, On, Under)',
+    desc: 'In / On / Under',
+    examples: [
+      { en: 'The spoon is in the bowl.', emoji: '🥄' },
+      { en: 'The cup is on the table.', emoji: '☕' },
+      { en: 'The pan is under the shelf.', emoji: '🍳' },
+    ],
+    scramble: [
+      { emoji: '🔑', target: ['The', 'key', 'is', 'in', 'the', 'drawer'] },
+      { emoji: '💡', target: ['The', 'lamp', 'is', 'on', 'the', 'desk'] },
+    ],
+    fill: {
+      before: ['The', 'fork', 'is'],
+      after: ['the', 'plate'],
+      options: [
+        { word: 'on', emoji: '⬆️' },
+        { word: 'in', emoji: '📦' },
+        { word: 'under', emoji: '⬇️' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-5 (riset per-level lanjutan, `materi/grammar.md` §15) —
+   * "Present Continuous" (Cambridge Pre-A1 Starters kategori #6, "What are
+   * you doing? / The cat's sleeping.", dikonfirmasi jg Kurikulum Merdeka
+   * Fase B kelas 3-4 SD & British Council LearnEnglish Kids yg py kategori
+   * "Grammar: present progressive" berdiri sendiri persis di usia ini).
+   * BUKAN duplikat kontras `continuous-vs-simple` Achiever — itu KONTRAS
+   * continuous VS simple, ini pengenalan continuous POLOS (tangga di
+   * BAWAHNYA, genuinely unclaimed struktur). Dipetakan dari domain Vocab
+   * `waktu-harian` (Times of Day) — scene aktivitas harian di waktu
+   * tertentu (pagi/sore/malam), REUSE domain+emoji yg SAMA PERSIS dgn item
+   * Vocab-nya (🌅/🌇/🌃), bukan kata baru.
+   */
+  {
+    id: 'present-continuous',
+    title: 'Sedang Terjadi (Present Continuous)',
+    desc: 'Sedang Apa Sekarang?',
+    examples: [
+      { en: 'She is eating breakfast in the morning.', emoji: '🌅' },
+      { en: 'He is doing homework in the evening.', emoji: '🌇' },
+      { en: 'They are sleeping at night.', emoji: '🌃' },
+    ],
+    scramble: [
+      { emoji: '🌅', target: ['She', 'is', 'eating', 'breakfast'] },
+      { emoji: '🌃', target: ['They', 'are', 'sleeping'] },
+    ],
+    fill: {
+      before: ['She', 'is'],
+      after: [],
+      options: [
+        { word: 'sleeping', emoji: '😴' },
+        { word: 'eating', emoji: '🍽️' },
+        { word: 'playing', emoji: '⚽' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-6 — "Question Words" (Starters kategori #13, "Who is that
+   * man? / Where is Alex?") — kategori yg SEBELUMNYA dicatat sesi Little
+   * Stars (§13) butuh format teks-first (bukan mekanik kontras biner),
+   * sekarang genap terisi di sini. Dipetakan dari domain Vocab `keluarga`
+   * (Family) — pola tanya "Siapa dia?/Di mana dia?" paling natural
+   * ditanyakan TENTANG anggota keluarga, emoji jawaban REUSE PERSIS dari
+   * item Vocab-nya (👧 Sister/👵 Grandmother/🧑 Cousin/👩‍🦱 Aunt).
+   *
+   * `fill` (Tantangan) SENGAJA menguji separuh JAWABAN ("She is my ___"),
+   * BUKAN kata tanya itu sendiri — batasan struktural `runTantangan` yg
+   * SELALU menambah "." di akhir kalimat (lihat `sentence + '.'` di kode),
+   * jadi template ber-"?" akan menghasilkan tanda baca ganda yg janggal
+   * ("...girl? ."). Kata tanya-nya sendiri TETAP dilatih penuh lewat
+   * `examples` (tampil apa adanya, tanda baca bebas krn cuma teks statis)
+   * & `scramble` (susun urutan kata tanya — tidak butuh tanda baca sama
+   * sekali krn dicek kata-per-kata, bukan kalimat jadi).
+   */
+  {
+    id: 'question-words',
+    title: 'Kata Tanya Who, Where, What (Question Words)',
+    desc: 'Siapa, Di Mana, Apa',
+    examples: [
+      { en: 'Who is that girl? She is my sister.', emoji: '👧' },
+      { en: 'Where is your grandmother? She is in the garden.', emoji: '👵' },
+      { en: 'What is his name? His name is Kevin.', emoji: '👦' },
+    ],
+    scramble: [
+      { emoji: '👧', target: ['Who', 'is', 'that', 'girl'] },
+      { emoji: '👵', target: ['Where', 'is', 'your', 'grandmother'] },
+    ],
+    fill: {
+      before: ['She', 'is', 'my'],
+      after: [],
+      options: [
+        { word: 'sister', emoji: '👧' },
+        { word: 'aunt', emoji: '👩‍🦱' },
+        { word: 'cousin', emoji: '🧑' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-7 — "Would Like + Noun" (Starters kategori #20, "I would like
+   * some grapes. / Would you like to colour that ball?") — register
+   * permintaan SOPAN, beda dari `suka-tidak-suka` Starter (present simple
+   * OPINI "I like painting", bukan permintaan). Dipetakan dari domain
+   * Vocab `belanja-uang` (Shopping & Money) — konteks toko/kasir adalah
+   * panggung paling natural utk "would like" dlm bahasa Inggris anak
+   * (dialog klasik "May I help you? I would like..."), walau kata benda
+   * yg diminta (apel/roti/jus) bukan item vocab domain itu sendiri — pola
+   * yg SAMA dgn `prepositions-of-place` di atas (domain jadi PANGGUNG,
+   * bukan sumber kata harfiah). Kata benda dipilih TAK-TERHITUNG ("some
+   * X") di `fill` supaya opsi tidak perlu mengurus beda artikel a/an.
+   */
+  {
+    id: 'would-like',
+    title: 'Meminta dengan Sopan (Would Like)',
+    desc: 'I Would Like...',
+    examples: [
+      { en: 'I would like an apple, please.', emoji: '🍎' },
+      { en: 'She would like some bread.', emoji: '🍞' },
+      { en: 'Would you like some juice?', emoji: '🧃' },
+    ],
+    scramble: [
+      { emoji: '🍎', target: ['I', 'would', 'like', 'an', 'apple'] },
+      { emoji: '🍰', target: ['He', 'would', 'like', 'some', 'cake'] },
+    ],
+    fill: {
+      before: ['I', 'would', 'like', 'some'],
+      after: [],
+      options: [
+        { word: 'juice', emoji: '🧃' },
+        { word: 'bread', emoji: '🍞' },
+        { word: 'rice', emoji: '🍚' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-8 — "Let's..." (Starters kategori #17, "Let's go to the
+   * zoo!") — pola ajakan frekuensi tinggi, dipetakan dari domain Vocab
+   * `pesta-perayaan` (Celebrations) krn ajakan bersama paling natural
+   * muncul di konteks perayaan/pesta. `fill` SENGAJA berhenti di kata
+   * kerja polos ("Let's ___.") tanpa objek/tanda seru — alasan sama dgn
+   * `question-words` di atas: `runTantangan` selalu menambah "." di
+   * akhir, jadi template dijaga selalu berakhir wajar sbg pernyataan,
+   * bukan seruan bertanda ganda.
+   */
+  {
+    id: 'lets-suggestion',
+    title: "Ayo... (Let's...)",
+    desc: 'Mengajak Bersama',
+    examples: [
+      { en: "Let's sing a song!", emoji: '🎤' },
+      { en: "Let's eat the cake!", emoji: '🎂' },
+      { en: "Let's play a game!", emoji: '🎮' },
+    ],
+    scramble: [
+      { emoji: '📖', target: ["Let's", 'read', 'a', 'book'] },
+      { emoji: '🎨', target: ["Let's", 'draw', 'a', 'picture'] },
+    ],
+    fill: {
+      before: ["Let's"],
+      after: [],
+      options: [
+        { word: 'sing', emoji: '🎤' },
+        { word: 'dance', emoji: '💃' },
+        { word: 'run', emoji: '🏃' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-9 (riset per-level lanjutan, `materi/grammar.md` §16) — "Can
+   * for Requests/Permission" (Cambridge Pre-A1 Starters kategori #8, kategori
+   * TERPISAH dari "Can for ability" kategori #7 yg sudah diklaim Little
+   * Stars `bisa-tidak-bisa` — fungsi pragmatiknya beda: MINTA IZIN, bukan
+   * menyatakan KEMAMPUAN, jadi genuinely bukan duplikat). Dipetakan dari
+   * domain Vocab `pesta-perayaan` (Celebrations) — konteks pesta paling
+   * natural utk minta izin ("Can I have some cake?", contoh resmi Cambridge
+   * sendiri). `fill` menguji separuh JAWABAN pemberian izin ("Yes, you can
+   * have a ___"), BUKAN pertanyaannya sendiri — pola sama `question-words`/
+   * `lets-suggestion` di atas krn `runTantangan` selalu menambah "." di
+   * akhir (kalimat tanya "Can I...?" tidak bisa jadi template fill tanpa
+   * tanda baca ganda). Pertanyaannya sendiri tetap dilatih penuh lewat
+   * `examples` (teks statis) & `scramble` (susun kata, tanpa tanda baca).
+   */
+  {
+    id: 'can-requests',
+    title: 'Minta Izin dengan Sopan (Can I...?)',
+    desc: 'Can I...? / Boleh Aku...?',
+    examples: [
+      { en: 'Can I have a balloon, please?', emoji: '🎈' },
+      { en: 'Can I play with the ball?', emoji: '⚽' },
+      { en: 'Can I have some cake, please?', emoji: '🎂' },
+    ],
+    scramble: [
+      { emoji: '🪟', target: ['Can', 'I', 'open', 'the', 'window'] },
+      { emoji: '🐶', target: ['Can', 'I', 'hold', 'the', 'puppy'] },
+    ],
+    fill: {
+      before: ['Yes,', 'you', 'can', 'have', 'a'],
+      after: [],
+      options: [
+        { word: 'balloon', emoji: '🎈' },
+        { word: 'cookie', emoji: '🍪' },
+        { word: 'present', emoji: '🎁' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-10 — "Prepositions of Time" (Cambridge Pre-A1 Starters kategori
+   * #12, separuh WAKTU dari kategori yg sama dgn `prepositions-of-place`
+   * (separuh TEMPAT) di atas — Cambridge sendiri mendaftar keduanya sbg 1
+   * kategori, tapi app ini sudah pisah jadi 2 topik krn muatannya beda
+   * total (posisi statis benda vs waktu kejadian). Dipetakan dari domain
+   * Vocab `waktu-harian` (Times of Day, REUSE dari `present-continuous` di
+   * atas — emoji sama 🌅/🌇/🌙) — British Council LearnEnglish Kids py unit
+   * "Prepositions of time" berdiri sendiri persis dgn contoh "in the
+   * morning/evening"+"at night" yg sama, mengonfirmasi kategori ini genuinely
+   * dilatih terpisah dari preposisi tempat di usia ini.
+   */
+  {
+    id: 'prepositions-of-time',
+    title: 'Preposisi Waktu (In, At)',
+    desc: 'In the Morning / At Night',
+    examples: [
+      { en: 'We go to school in the morning.', emoji: '🌅' },
+      { en: 'I do my homework in the evening.', emoji: '🌇' },
+      { en: 'They go to sleep at night.', emoji: '🌙' },
+    ],
+    scramble: [
+      { emoji: '🍳', target: ['She', 'eats', 'breakfast', 'in', 'the', 'morning'] },
+      { emoji: '📺', target: ['He', 'watches', 'TV', 'in', 'the', 'evening'] },
+    ],
+    fill: {
+      before: ['I', 'like', 'to', 'read', 'books'],
+      after: [],
+      options: [
+        { word: 'in the morning', emoji: '🌅' },
+        { word: 'in the evening', emoji: '🌇' },
+        { word: 'at night', emoji: '🌙' },
+      ],
     },
   },
 ];
@@ -948,7 +1355,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     scene: '⛅',
     desc: 'Cerita cuaca',
     primer: [
-      { en: 'What is the weather like today?', id: 'Bagaimana cuaca hari ini?' },
+      { en: 'How is the weather today?', id: 'Bagaimana cuaca hari ini?' },
       { en: 'It is sunny and hot.', id: 'Cuacanya cerah dan panas.' },
     ],
     drill: [
@@ -2742,6 +3149,28 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
   },
 ];
 
+/**
+ * 9 topik tambahan (sesi ini) — menggenapkan Speaking Adventurer dari 1 jadi
+ * 10 topik (target CLAUDE.md ≥10 topik/skill). Riset & rasional lengkap:
+ * `materi/speaking.md` §13. Beda dari genapkan Explorer (sesi sebelumnya,
+ * murni tambah topik dgn kompleksitas SAMA): riset (Cambridge A1 Movers
+ * Speaking test "describe 4 differences + give a reason" DAN Kurikulum
+ * Merdeka Fase C kelas 5-6 SD — "guru memberikan instruksi... mengatakan
+ * tentang gambar dengan menggunakan ADJECTIVE... Is the elephant big or
+ * small?") SAMA-SAMA menunjukkan Adventurer WAJIB mulai py kalimat
+ * DESKRIPTIF (kata sifat) + ALASAN ("because"), bukan cuma pertukaran
+ * kalimat pendek spt Explorer — kalau tidak, level ini jadi cuma "Explorer
+ * dgn kalimat lebih panjang", bukan genuinely lebih maju. SEMUA 9 topik di
+ * bawah WAJIB py minimal 1 kalimat deskriptif (kata sifat) & 1 pertanyaan
+ * "why"/alasan di `roleplay` — pembeda konkret dari Explorer. Domain
+ * dipetakan ke 9 dari 13 domain `VOCAB_TOPICS_ADVENTURER` yg SAMA dgn 9
+ * domain yg Listening Adventurer sudah pakai (`pekerjaan`/`binatang`/
+ * `makanan`/`alat-sekolah`/`cuaca`/`anggota-tubuh`/`transportasi`/
+ * `olahraga`/`rumah` — `perasaan`/`bahan-material`/`kata-kerja-harian`/
+ * `alam-lingkungan` sengaja dilewati, sama alasan Listening: representasi
+ * cukup di level lain), pola sama Explorer (id topik Speaking BEDA dari id
+ * Listening biar tidak rancu baca kode, walau aman dari tabrakan progres).
+ */
 export const SPEAKING_TOPICS_ADVENTURER: SpeakingTopic[] = [
   {
     id: 'membuat-janji',
@@ -2750,6 +3179,78 @@ export const SPEAKING_TOPICS_ADVENTURER: SpeakingTopic[] = [
     model: ['Do you want to play together?', 'What time should we meet?'],
     drill: ['Let’s meet at the park.', 'I will see you tomorrow.'],
     roleplay: ['What are you doing this weekend?', 'Do you want to come to my house?', 'What time works for you?'],
+  },
+  {
+    id: 'jadi-apa-nanti',
+    title: 'Jadi Apa Nanti? (What Do You Want to Be?)',
+    desc: '3 latihan bicara',
+    model: ['A doctor helps sick people.', 'I want to be a teacher because I like helping others.'],
+    drill: ['A firefighter is very brave.', 'A chef cooks delicious food.', 'A pilot flies an airplane.'],
+    roleplay: ['What job do you want to have?', 'Why do you want that job?', 'What does a doctor do?'],
+  },
+  {
+    id: 'deskripsi-hewan',
+    title: 'Deskripsi Hewan (Describe the Animal)',
+    desc: '3 latihan bicara',
+    model: ['The giraffe has a long neck.', 'The elephant is bigger than the cat.'],
+    drill: ['The lion is very strong.', 'The monkey is playful and funny.', 'The tortoise is slower than the rabbit.'],
+    roleplay: ['What does a giraffe look like?', 'Which is bigger, an elephant or a mouse?', 'Why do you like your favorite animal?'],
+  },
+  {
+    id: 'rasanya-gimana',
+    title: 'Rasanya Gimana? (How Does It Taste?)',
+    desc: '3 latihan bicara',
+    model: ['This soup tastes spicy.', 'I like noodles because they are delicious.'],
+    drill: ['The cake is sweet and soft.', 'The lemon tastes very sour.', 'This rice is warm and fluffy.'],
+    roleplay: ['What is your favorite food?', 'Why do you like it?', 'How does it taste?'],
+  },
+  {
+    id: 'di-tas-sekolahku',
+    title: 'Di Tas Sekolahku (In My School Bag)',
+    desc: '3 latihan bicara',
+    model: ['I need a ruler to draw a straight line.', 'This eraser is small but useful.'],
+    drill: ['I use a sharpener to sharpen my pencil.', 'My backpack is heavy today.', 'This notebook has many pages.'],
+    roleplay: ['What is in your school bag?', 'Why do you need a ruler?', 'Which school supply is your favorite?'],
+  },
+  {
+    id: 'cuaca-hari-ini',
+    title: 'Cuaca Hari Ini (Today\'s Weather)',
+    desc: '3 latihan bicara',
+    model: ['It is sunny and hot today.', 'I bring an umbrella because it is rainy.'],
+    drill: ['The wind is blowing strongly.', 'It is cold and cloudy outside.', 'I wear a jacket because it is windy.'],
+    roleplay: ['What is the weather like today?', 'What do you wear when it is cold?', 'Do you like rainy days? Why?'],
+  },
+  {
+    id: 'apa-fungsinya',
+    title: 'Apa Fungsinya? (What\'s It For?)',
+    desc: '3 latihan bicara',
+    model: ['I use my eyes to see.', 'I use my legs to run fast.'],
+    drill: ['I use my ears to hear music.', 'I use my hands to write.', 'I use my nose to smell flowers.'],
+    roleplay: ['What do you use your eyes for?', 'Why are your legs important?', 'Which body part do you use the most?'],
+  },
+  {
+    id: 'naik-apa-ke-sekolah',
+    title: 'Naik Apa ke Sekolah? (How Do You Get to School?)',
+    desc: '3 latihan bicara',
+    model: ['I go to school by bus.', 'I like riding a bike because it is fun.'],
+    drill: ['The train is faster than the bus.', 'A bicycle does not need fuel.', 'An airplane can fly very high.'],
+    roleplay: ['How do you go to school?', 'Which transportation do you like best?', 'Why is a bicycle good for the environment?'],
+  },
+  {
+    id: 'olahraga-favoritku',
+    title: 'Olahraga Favoritku (My Favorite Sport)',
+    desc: '3 latihan bicara',
+    model: ['I play football with my friends.', 'I like swimming because it is relaxing.'],
+    drill: ['Basketball needs a big ball.', 'Badminton is played with a racket.', 'Running makes me strong and healthy.'],
+    roleplay: ['What sport do you like?', 'Why do you enjoy it?', 'What do you need to play badminton?'],
+  },
+  {
+    id: 'ruangan-favoritku',
+    title: 'Ruangan Favoritku (My Favorite Room)',
+    desc: '3 latihan bicara',
+    model: ['My bedroom is small but cozy.', 'I like the kitchen because it smells good.'],
+    drill: ['The living room has a big sofa.', 'The bathroom is clean and bright.', 'The garden has many flowers.'],
+    roleplay: ['What is your favorite room?', 'Why do you like it?', 'What do you do in the living room?'],
   },
 ];
 
@@ -2764,14 +3265,301 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
       { en: 'We visited grandma.', emoji: '👵' },
     ],
     scramble: [
-      { emoji: '⚽', target: ['I', 'played', 'football', 'yesterday'] },
-      { emoji: '🎬', target: ['She', 'watched', 'a', 'movie'] },
-      { emoji: '👵', target: ['We', 'visited', 'grandma'] },
+      { emoji: '🧹', target: ['He', 'cleaned', 'his', 'room'] },
+      { emoji: '🍲', target: ['They', 'cooked', 'dinner'] },
+      { emoji: '🎨', target: ['You', 'painted', 'a', 'picture'] },
     ],
     fill: {
       before: ['Yesterday,', 'I'],
       after: [],
       options: [{ word: 'played', emoji: '⚽' }, { word: 'walked', emoji: '🚶' }, { word: 'cooked', emoji: '🍳' }],
+    },
+  },
+  /**
+   * Topik ke-2 (permintaan riset per-level, `materi/grammar.md` §9) —
+   * "Comparatives" (bigger/smaller/taller than) — struktur TERBESAR yang
+   * ditambahkan Cambridge A1 Movers di atas Starters (dikonfirmasi riset:
+   * Movers py comparative/superlative, have got/had to, past simple —
+   * `simple-past` di atas sudah menutup satu, ini menutup yang lain).
+   * Dipetakan dari `VOCAB_TOPICS_ADVENTURER` `binatang` (Animals) — ukuran
+   * hewan adalah domain comparative KLASIK yang dipakai Cambridge Movers
+   * sendiri di soal officialnya ("The elephant is bigger than the cat.").
+   */
+  {
+    id: 'comparatives',
+    title: 'Kata Sifat Perbandingan (Comparatives)',
+    desc: 'Bigger / Smaller / Taller Than',
+    examples: [
+      { en: 'The elephant is bigger than the monkey.', emoji: '🐘' },
+      { en: 'The giraffe is taller than the zebra.', emoji: '🦒' },
+      { en: 'The monkey is smaller than the lion.', emoji: '🐒' },
+    ],
+    scramble: [
+      { emoji: '🦁', target: ['The', 'lion', 'is', 'bigger', 'than', 'the', 'monkey'] },
+      { emoji: '🐻', target: ['The', 'bear', 'is', 'bigger', 'than', 'the', 'panda'] },
+    ],
+    fill: {
+      before: ['The', 'elephant', 'is', 'bigger', 'than', 'the'],
+      after: [],
+      options: [
+        { word: 'zebra', emoji: '🦓' },
+        { word: 'panda', emoji: '🐼' },
+        { word: 'penguin', emoji: '🐧' },
+      ],
+    },
+  },
+  /**
+   * 8 topik lanjutan (riset per-level, `materi/grammar.md` §17) — struktur
+   * Cambridge A1 Movers (Handbook for Teachers) di ATAS `simple-past`/
+   * `comparatives` yg sudah ada, dikonfirmasi Kurikulum Merdeka Fase C
+   * (kelas 5-6 SD, ≈usia Adventurer) yg secara eksplisit menyebut nama
+   * "Simple Past Tense" & "adjektiva komparatif DAN SUPERLATIF" sbg CP
+   * fase ini — superlative & irregular past jadi prioritas krn keduanya
+   * separuh struktur yg BELUM ditutup 2 topik lama (`simple-past` cuma
+   * verb reguler, `comparatives` cuma comparative). Modal `can` (ability)
+   * sudah diklaim Little Stars — modal Movers LAIN (`must`/`mustn't`,
+   * `could` bentuk lampau) genuinely struktur baru, dikonfirmasi British
+   * Council LearnEnglish Kids py unit "Modals: must and mustn't" berdiri
+   * sendiri di usia ini. `prepositions-of-movement` beda dari
+   * `prepositions-of-place`/`prepositions-of-time` Explorer (posisi/waktu
+   * STATIS) — Movers resmi menambah preposisi GERAKAN (into/over/across/
+   * through/dst) sbg kategori terpisah. Semua 8 dipetakan ke domain Vocab
+   * Adventurer yg BELUM dipakai topik Grammar lain (`binatang` REUSE dari
+   * `comparatives` sengaja, kelanjutan langsung; sisanya domain baru).
+   */
+  /**
+   * Topik ke-3 — "Superlatives" (Cambridge Movers, "Anna is my best
+   * friend.") — separuh SUPERLATIF dari kategori yg sama dgn
+   * `comparatives` (Cambridge sendiri mendaftar comparative+superlative
+   * sbg 1 kategori, app ini pisah jadi 2 topik krn muatannya beda cukup
+   * jauh utk anak). Dari domain `binatang`, REUSE PERSIS domain
+   * `comparatives` (kelanjutan langsung, bukan topik baru tanpa konteks).
+   */
+  {
+    id: 'superlatives',
+    title: 'Kata Sifat Superlatif (Superlatives)',
+    desc: 'The Biggest / The Fastest',
+    examples: [
+      { en: 'The elephant is the biggest animal.', emoji: '🐘' },
+      { en: 'The cheetah is the fastest animal.', emoji: '🐆' },
+      { en: 'The snail is the slowest animal.', emoji: '🐌' },
+    ],
+    scramble: [
+      { emoji: '🦒', target: ['The', 'giraffe', 'is', 'the', 'tallest', 'animal'] },
+      { emoji: '🐜', target: ['The', 'ant', 'is', 'the', 'smallest', 'animal'] },
+    ],
+    fill: {
+      before: ['The', 'giraffe', 'is', 'the'],
+      after: ['animal', 'in', 'the', 'zoo'],
+      options: [
+        { word: 'tallest', emoji: '🦒' },
+        { word: 'biggest', emoji: '🐘' },
+        { word: 'smallest', emoji: '🐭' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-4 — "Irregular Past Simple" (Cambridge Movers, "past simple
+   * regular AND IRREGULAR forms") — separuh IRREGULAR yg belum ditutup
+   * `simple-past` (cuma verb reguler: played/watched/visited). Dari domain
+   * `kata-kerja-harian` — kata kerja umum sehari-hari natural memunculkan
+   * bentuk lampau tak-beraturan (go→went, eat→ate, see→saw, write→wrote).
+   */
+  {
+    id: 'past-simple-irregular',
+    title: 'Kata Kerja Lampau Tidak Beraturan (Irregular Past Simple)',
+    desc: 'Went, Ate, Saw, Wrote...',
+    examples: [
+      { en: 'I went to school yesterday.', emoji: '🚶' },
+      { en: 'She ate breakfast this morning.', emoji: '🍳' },
+      { en: 'He saw a bird in the tree.', emoji: '🐦' },
+    ],
+    scramble: [
+      { emoji: '✍️', target: ['She', 'wrote', 'a', 'letter', 'to', 'her', 'friend'] },
+      { emoji: '🏃', target: ['They', 'ran', 'to', 'the', 'park'] },
+    ],
+    fill: {
+      before: ['Yesterday,', 'I'],
+      after: ['a', 'letter', 'to', 'my', 'grandma'],
+      options: [
+        { word: 'wrote', emoji: '✍️' },
+        { word: 'sent', emoji: '📮' },
+        { word: 'read', emoji: '📖' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-5 — "Could" (Cambridge Movers, modal lampau — "I could see
+   * some birds in the tree.") — perpanjangan bentuk LAMPAU dari `can`
+   * (kemampuan present, sudah diklaim Little Stars `bisa-tidak-bisa`),
+   * genuinely struktur baru bukan re-skin. Dari domain `olahraga`.
+   */
+  {
+    id: 'past-ability-could',
+    title: 'Bisa di Masa Lalu (Could)',
+    desc: 'Dulu Aku Bisa...',
+    examples: [
+      { en: 'I could swim when I was five.', emoji: '🏊' },
+      { en: 'She could run fast last year.', emoji: '🏃' },
+      { en: 'He could catch the ball yesterday.', emoji: '⚾' },
+    ],
+    scramble: [
+      { emoji: '🎤', target: ['He', 'could', 'sing', 'very', 'well'] },
+      { emoji: '🤸', target: ['They', 'could', 'jump', 'high', 'last', 'summer'] },
+    ],
+    fill: {
+      before: ['Last', 'year', 'I', 'could'],
+      after: ['every', 'morning'],
+      options: [
+        { word: 'swim', emoji: '🏊' },
+        { word: 'run', emoji: '🏃' },
+        { word: 'jump', emoji: '🤸' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-6 — "Must / Mustn't" (Cambridge Movers modal — "He must do
+   * his homework." / "You mustn't give the rabbit cheese.") — modal yg
+   * BELUM ada di curriculum manapun (Little Stars/Starter cuma py `can`).
+   * Dari domain `alat-sekolah`, dibingkai aturan kelas.
+   */
+  {
+    id: 'must-mustnt',
+    title: "Harus & Tidak Boleh (Must / Mustn't)",
+    desc: 'Aturan di Kelas',
+    examples: [
+      { en: 'You must bring your pencil case.', emoji: '✏️' },
+      { en: 'You must bring your book to class.', emoji: '📚' },
+      { en: "You mustn't forget your ruler.", emoji: '📏' },
+    ],
+    scramble: [
+      { emoji: '👕', target: ['You', 'must', 'wear', 'your', 'uniform'] },
+      { emoji: '🏃', target: ["You", "mustn't", 'run', 'in', 'the', 'hallway'] },
+    ],
+    fill: {
+      before: ['In', 'class,', 'you', 'must', 'bring', 'your'],
+      after: [],
+      options: [
+        { word: 'pencil', emoji: '✏️' },
+        { word: 'ruler', emoji: '📏' },
+        { word: 'eraser', emoji: '🧽' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-7 — "Go + -ing" (Cambridge Movers, "I went riding on
+   * Saturday.") — pola idiomatik TERPISAH dari `like + -ing` (opini,
+   * sudah diklaim Starter `suka-tidak-suka`) — ini konstruksi tetap
+   * "pergi lalu beraktivitas". Dari domain `alam-lingkungan`.
+   */
+  {
+    id: 'go-plus-ing',
+    title: 'Pergi Beraktivitas (Go + -ing)',
+    desc: 'Go Camping, Go Fishing',
+    examples: [
+      { en: 'We went camping in the mountains.', emoji: '⛺' },
+      { en: 'They went fishing by the river.', emoji: '🎣' },
+      { en: 'I went hiking in the forest.', emoji: '🥾' },
+    ],
+    scramble: [
+      { emoji: '⛸️', target: ['He', 'went', 'skating', 'at', 'the', 'park'] },
+      { emoji: '🏊', target: ['She', 'went', 'swimming', 'at', 'the', 'beach'] },
+    ],
+    fill: {
+      before: ['Last', 'weekend,', 'we', 'went'],
+      after: ['near', 'the', 'lake'],
+      options: [
+        { word: 'fishing', emoji: '🎣' },
+        { word: 'swimming', emoji: '🏊' },
+        { word: 'camping', emoji: '⛺' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-8 — "Prepositions of Movement" (Cambridge Movers, kategori
+   * TERPISAH dari preposisi statis Starters — into/out of/over/across/
+   * through/dst) — beda total dari `prepositions-of-place`/`prepositions-
+   * of-time` Explorer (posisi/waktu STATIS). Dari domain `transportasi`.
+   */
+  {
+    id: 'prepositions-of-movement',
+    title: 'Preposisi Gerakan (Prepositions of Movement)',
+    desc: 'Over / Under / Across / Through',
+    examples: [
+      { en: 'The car drove under the bridge.', emoji: '🚗' },
+      { en: 'The plane flew over the mountain.', emoji: '✈️' },
+      { en: 'The train went through the tunnel.', emoji: '🚆' },
+    ],
+    scramble: [
+      { emoji: '⚽', target: ['The', 'ball', 'rolled', 'along', 'the', 'street'] },
+      { emoji: '🐦', target: ['The', 'bird', 'flew', 'across', 'the', 'sky'] },
+    ],
+    fill: {
+      before: ['The', 'boat', 'sailed'],
+      after: ['the', 'river'],
+      options: [
+        { word: 'across', emoji: '↔️' },
+        { word: 'along', emoji: '➡️' },
+        { word: 'down', emoji: '🔽' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-9 — "Adverbs of Manner" (Cambridge Movers kategori Adverbs,
+   * "He sang loudly.") — kelas struktur yg BELUM ada sama sekali di
+   * curriculum (bukan cuma belum di Adventurer). Dari domain `perasaan`
+   * (kata sifat perasaan → bentuk adverbianya: happy→happily, sad→sadly).
+   */
+  {
+    id: 'adverbs-of-manner',
+    title: 'Kata Keterangan Cara (Adverbs of Manner)',
+    desc: 'Happily, Slowly, Loudly',
+    examples: [
+      { en: 'She smiled happily.', emoji: '😊' },
+      { en: 'He shouted angrily.', emoji: '😠' },
+      { en: 'The boy cried sadly.', emoji: '😢' },
+    ],
+    scramble: [
+      { emoji: '🐱', target: ['The', 'cat', 'walked', 'quietly'] },
+      { emoji: '📢', target: ['The', 'girl', 'sang', 'loudly'] },
+    ],
+    fill: {
+      before: ['The', 'kitten', 'walked'],
+      after: ['across', 'the', 'room'],
+      options: [
+        { word: 'quietly', emoji: '🤫' },
+        { word: 'slowly', emoji: '🐢' },
+        { word: 'happily', emoji: '😊' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-10 — "Because" (Cambridge Movers kategori Conjunctions —
+   * because/so/but/or) — struktur penghubung sebab-akibat yg BELUM ada
+   * sama sekali di curriculum. Dari domain `cuaca` — pasangan sebab-akibat
+   * pakaian/tindakan↔cuaca paling natural utk anak.
+   */
+  {
+    id: 'because-reasons',
+    title: 'Memberi Alasan (Because)',
+    desc: 'Karena Cuacanya...',
+    examples: [
+      { en: 'I wear a coat because it is cold.', emoji: '🧥' },
+      { en: 'We stay inside because it is raining.', emoji: '☔' },
+      { en: 'She wears sunglasses because it is sunny.', emoji: '🕶️' },
+    ],
+    scramble: [
+      { emoji: '🌡️', target: ['He', 'turns', 'on', 'the', 'fan', 'because', 'it', 'is', 'hot'] },
+      { emoji: '🌬️', target: ['He', 'closes', 'the', 'window', 'because', 'it', 'is', 'windy'] },
+    ],
+    fill: {
+      before: ['I', 'carry', 'an', 'umbrella', 'because', 'it', 'is'],
+      after: [],
+      options: [
+        { word: 'rainy', emoji: '🌧️' },
+        { word: 'cloudy', emoji: '☁️' },
+        { word: 'windy', emoji: '🌬️' },
+      ],
     },
   },
 ];
@@ -2805,18 +3593,24 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
     drill: [
       {
         passage: ['Zoe brings an apple for a snack.', 'The giraffe eats leaves from a tree.'],
+        id: 'Zoe membawa apel untuk cemilan. Jerapah itu makan daun dari pohon.',
         question: 'What does the giraffe eat?',
+        questionId: 'Apa yang dimakan jerapah itu?',
         opts: [{ emoji: '🍃', lbl: 'Leaves', ok: true }, { emoji: '🍎', lbl: 'Apple' }, { emoji: '🐟', lbl: 'Fish' }],
       },
       {
         passage: ['The lion is sleeping under a tree.', 'The monkey jumps from branch to branch.'],
+        id: 'Singanya sedang tidur di bawah pohon. Monyet itu melompat dari dahan ke dahan.',
         question: 'What is the monkey doing?',
+        questionId: 'Apa yang sedang dilakukan monyet itu?',
         opts: [{ emoji: '🐒', lbl: 'Jumping', ok: true }, { emoji: '😴', lbl: 'Sleeping' }, { emoji: '🍽️', lbl: 'Eating' }],
       },
     ],
     story: ['Zoe and her family go to the zoo.', 'They see elephants, lions, and monkeys.', 'Her favorite animal is the panda.'],
+    storyId: 'Zoe dan keluarganya pergi ke kebun binatang. Mereka melihat gajah, singa, dan monyet. Hewan favoritnya adalah panda.',
     question: {
       text: 'What is Zoe’s favorite animal?',
+      id: 'Apa hewan favorit Zoe?',
       opts: [{ emoji: '🐼', lbl: 'Panda', ok: true }, { emoji: '🦁', lbl: 'Lion' }, { emoji: '🐘', lbl: 'Elephant' }],
     },
   },
@@ -2835,19 +3629,295 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
     drill: [
       {
         passage: ['Rio wears a blue shirt.', 'He builds a sandcastle with a red bucket.'],
+        id: 'Rio memakai kaos biru. Dia membuat istana pasir dengan ember merah.',
         question: 'What color is the bucket?',
+        questionId: 'Apa warna embernya?',
         opts: [{ emoji: '🔴', lbl: 'Red', ok: true }, { emoji: '🔵', lbl: 'Blue' }, { emoji: '🟢', lbl: 'Green' }],
       },
       {
         passage: ['Rio takes a shower before lunch.', 'Then he swims in the sea.'],
+        id: 'Rio mandi sebelum makan siang. Lalu dia berenang di laut.',
         question: 'Where does Rio swim?',
+        questionId: 'Di mana Rio berenang?',
         opts: [{ emoji: '🌊', lbl: 'Sea', ok: true }, { emoji: '🏊', lbl: 'Pool' }, { emoji: '🚿', lbl: 'Shower' }],
       },
     ],
     story: ['Rio and his family go to the beach.', 'His sister has strawberry ice cream.', 'Rio has chocolate ice cream.'],
+    storyId: 'Rio dan keluarganya pergi ke pantai. Kakaknya makan es krim stroberi. Rio makan es krim cokelat.',
     question: {
       text: 'What flavor ice cream does Rio have?',
+      id: 'Rasa es krim apa yang dimakan Rio?',
       opts: [{ emoji: '🍫', lbl: 'Chocolate', ok: true }, { emoji: '🍓', lbl: 'Strawberry' }, { emoji: '🍋', lbl: 'Lemon' }],
+    },
+  },
+  // 8 topik BARU (genapkan dari 2 ke 10, target CLAUDE.md ≥10 topik/skill,
+  // `materi/reading.md` §9.3 — format TERVALIDASI ULANG oleh riset, murni
+  // kerja data, TIDAK ada perubahan mekanik) — skenario keseharian anak
+  // 9-11 th, pola anti-tebak yang sama (distraktor `drill` disebut di teks
+  // tapi dilekatkan ke hal LAIN, opsi `story` akhir semuanya disebut di teks
+  // spy anak wajib baca semua baris, bukan cuma cocok-gambar).
+  {
+    id: 'hari-sekolah',
+    title: 'Hari Sekolah (School Day)',
+    scene: '🎒',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Zara wakes up early for school.', 'She wears her blue uniform.'], id: 'Zara bangun pagi untuk sekolah. Dia memakai seragam birunya.' },
+      { passage: ['She packs her bag with books and pencils.', 'Then she eats breakfast quickly.'], id: 'Dia mengemas tasnya dengan buku dan pensil. Lalu dia sarapan dengan cepat.' },
+    ],
+    drill: [
+      {
+        passage: ['Zara puts a red apple and a sandwich in her lunch box.', 'Her friend Dini brings a banana and some crackers.'],
+        id: 'Zara menaruh apel merah dan sandwich di kotak makannya. Temannya Dini membawa pisang dan beberapa biskuit.',
+        question: 'What does Zara bring for lunch?',
+        questionId: 'Apa yang dibawa Zara untuk makan siang?',
+        opts: [{ emoji: '🍎', lbl: 'Apple and sandwich', ok: true }, { emoji: '🍌', lbl: 'Banana and crackers' }, { emoji: '🍬', lbl: 'Candy' }],
+      },
+      {
+        passage: ['The math class starts first, then art class.', 'Zara loves art class the most.'],
+        id: 'Kelas matematika dimulai duluan, lalu kelas seni. Zara paling suka kelas seni.',
+        question: 'Which class starts first?',
+        questionId: 'Kelas apa yang dimulai duluan?',
+        opts: [{ emoji: '🔢', lbl: 'Math', ok: true }, { emoji: '🎨', lbl: 'Art' }, { emoji: '🎵', lbl: 'Music' }],
+      },
+    ],
+    story: ['Zara and her classmates go to the library after lunch.', 'They read books about animals, space, and dinosaurs.', 'Zara says the book about the moon is her favorite.'],
+    storyId: 'Zara dan teman-teman sekelasnya pergi ke perpustakaan setelah makan siang. Mereka membaca buku tentang hewan, luar angkasa, dan dinosaurus. Zara bilang buku tentang bulan adalah favoritnya.',
+    question: {
+      text: 'What is Zara’s favorite book about?',
+      id: 'Buku tentang apa yang jadi favorit Zara?',
+      opts: [{ emoji: '🌙', lbl: 'The moon', ok: true }, { emoji: '🦕', lbl: 'Dinosaurs' }, { emoji: '🐘', lbl: 'Animals' }],
+    },
+  },
+  {
+    id: 'pesta-ulang-tahun',
+    title: 'Pesta Ulang Tahun (Birthday Party)',
+    scene: '🎂',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Toni is having a birthday party today.', 'His mom bakes a chocolate cake.'], id: 'Toni sedang mengadakan pesta ulang tahun hari ini. Ibunya memanggang kue cokelat.' },
+      { passage: ['Toni invites his friends from school.', 'They bring balloons and gifts.'], id: 'Toni mengundang teman-temannya dari sekolah. Mereka membawa balon dan hadiah.' },
+    ],
+    drill: [
+      {
+        passage: ['Toni’s friends bring a red balloon and a blue balloon.', 'Toni ties the red balloon to his chair.'],
+        id: 'Teman-teman Toni membawa balon merah dan balon biru. Toni mengikat balon merah ke kursinya.',
+        question: 'Which balloon does Toni tie to his chair?',
+        questionId: 'Balon mana yang diikat Toni ke kursinya?',
+        opts: [{ emoji: '🔴', lbl: 'Red', ok: true }, { emoji: '🔵', lbl: 'Blue' }, { emoji: '🟡', lbl: 'Yellow' }],
+      },
+      {
+        passage: ['Dini gives Toni a storybook, and Budi gives him a toy car.', 'Toni says the toy car is his favorite gift.'],
+        id: 'Dini memberi Toni buku cerita, dan Budi memberinya mobil mainan. Toni bilang mobil mainan itu hadiah favoritnya.',
+        question: 'What is Toni’s favorite gift?',
+        questionId: 'Apa hadiah favorit Toni?',
+        opts: [{ emoji: '🚗', lbl: 'Toy car', ok: true }, { emoji: '📖', lbl: 'Storybook' }, { emoji: '🎈', lbl: 'Balloon' }],
+      },
+    ],
+    story: ['All the friends sing a happy birthday song for Toni.', 'Toni closes his eyes and blows out the candles.', 'Everyone claps and eats chocolate cake together.'],
+    storyId: 'Semua teman menyanyikan lagu ulang tahun untuk Toni. Toni menutup matanya dan meniup lilinnya. Semua orang bertepuk tangan dan makan kue cokelat bersama.',
+    question: {
+      text: 'What does Toni do after he closes his eyes?',
+      id: 'Apa yang dilakukan Toni setelah menutup matanya?',
+      opts: [{ emoji: '🕯️', lbl: 'Blows out the candles', ok: true }, { emoji: '👏', lbl: 'Claps his hands' }, { emoji: '🎂', lbl: 'Eats the cake' }],
+    },
+  },
+  {
+    id: 'belanja-di-pasar',
+    title: 'Belanja di Pasar (Shopping at the Market)',
+    scene: '🛒',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Mother goes to the market on Saturday.', 'She brings a big shopping bag.'], id: 'Ibu pergi ke pasar hari Sabtu. Dia membawa tas belanja besar.' },
+      { passage: ['She buys fresh vegetables and fruits.', 'The market is busy and colorful.'], id: 'Dia membeli sayur dan buah segar. Pasarnya ramai dan berwarna-warni.' },
+    ],
+    drill: [
+      {
+        passage: ['Mother buys three tomatoes and two carrots.', 'She also buys a bag of rice.'],
+        id: 'Ibu membeli tiga tomat dan dua wortel. Dia juga membeli sekantong beras.',
+        question: 'How many tomatoes does mother buy?',
+        questionId: 'Berapa banyak tomat yang dibeli ibu?',
+        opts: [{ emoji: '3️⃣', lbl: 'Three', ok: true }, { emoji: '2️⃣', lbl: 'Two' }, { emoji: '1️⃣', lbl: 'One' }],
+      },
+      {
+        passage: ['The fruit seller offers mangoes and grapes.', 'Mother chooses the sweet mangoes for dessert.'],
+        id: 'Penjual buah menawarkan mangga dan anggur. Ibu memilih mangga manis untuk pencuci mulut.',
+        question: 'What fruit does mother choose?',
+        questionId: 'Buah apa yang dipilih ibu?',
+        opts: [{ emoji: '🥭', lbl: 'Mangoes', ok: true }, { emoji: '🍇', lbl: 'Grapes' }, { emoji: '🍌', lbl: 'Bananas' }],
+      },
+    ],
+    story: ['At the market, mother meets her friend Mrs. Sari.', 'They talk while looking at fresh fish and eggs.', 'Mother decides to buy eggs, but not fish, because they already have fish at home.'],
+    storyId: 'Di pasar, ibu bertemu temannya, Bu Sari. Mereka mengobrol sambil melihat ikan dan telur segar. Ibu memutuskan membeli telur, tapi tidak ikan, karena mereka sudah punya ikan di rumah.',
+    question: {
+      text: 'Why does mother not buy fish?',
+      id: 'Kenapa ibu tidak membeli ikan?',
+      opts: [{ emoji: '🏠', lbl: 'They already have fish at home', ok: true }, { emoji: '💰', lbl: 'It is too expensive' }, { emoji: '🐟', lbl: 'It is not fresh' }],
+    },
+  },
+  {
+    id: 'hari-hujan',
+    title: 'Hari Hujan (Rainy Day)',
+    scene: '🌧️',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['It is raining outside today.', 'Dito wears his yellow raincoat.'], id: 'Hari ini hujan di luar. Dito memakai jas hujan kuningnya.' },
+      { passage: ['He carries a blue umbrella too.', 'The streets are wet and shiny.'], id: 'Dia juga membawa payung biru. Jalanan basah dan berkilau.' },
+    ],
+    drill: [
+      {
+        passage: ['Dito jumps over a big puddle near the school gate.', 'His sister walks around a small puddle instead.'],
+        id: 'Dito melompati genangan air besar dekat gerbang sekolah. Kakaknya malah berjalan mengitari genangan air kecil.',
+        question: 'What does Dito do at the puddle?',
+        questionId: 'Apa yang dilakukan Dito di genangan air itu?',
+        opts: [{ emoji: '🦘', lbl: 'Jumps over it', ok: true }, { emoji: '🚶', lbl: 'Walks around it' }, { emoji: '🛑', lbl: 'Stops there' }],
+      },
+      {
+        passage: ['Thunder booms loudly, and Dito’s little brother feels scared.', 'Dito hugs his brother and says it is okay.'],
+        id: 'Petir menggelegar keras, dan adik Dito merasa takut. Dito memeluk adiknya dan bilang tidak apa-apa.',
+        question: 'How does Dito’s brother feel?',
+        questionId: 'Bagaimana perasaan adik Dito?',
+        opts: [{ emoji: '😨', lbl: 'Scared', ok: true }, { emoji: '😊', lbl: 'Happy' }, { emoji: '😴', lbl: 'Sleepy' }],
+      },
+    ],
+    story: ['After school, the rain stops and the sun comes out.', 'Dito sees a beautiful rainbow in the sky.', 'He counts the colors and finds seven of them.'],
+    storyId: 'Setelah sekolah, hujan berhenti dan matahari muncul. Dito melihat pelangi indah di langit. Dia menghitung warnanya dan menemukan tujuh warna.',
+    question: {
+      text: 'What does Dito see in the sky?',
+      id: 'Apa yang dilihat Dito di langit?',
+      opts: [{ emoji: '🌈', lbl: 'A rainbow', ok: true }, { emoji: '☀️', lbl: 'The sun' }, { emoji: '🌧️', lbl: 'The rain' }],
+    },
+  },
+  {
+    id: 'hari-olahraga',
+    title: 'Hari Olahraga (Sports Day)',
+    scene: '⚽',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Today is Sports Day at school.', 'All students wear their sports uniform.'], id: 'Hari ini Hari Olahraga di sekolah. Semua murid memakai seragam olahraga.' },
+      { passage: ['Students can join running or jumping games.', 'Everyone is excited and cheering.'], id: 'Murid-murid bisa ikut lomba lari atau lompat. Semuanya bersemangat dan bersorak.' },
+    ],
+    drill: [
+      {
+        passage: ['Rian joins the running race, and his friend Budi joins the jumping game.', 'Rian finishes the race in second place.'],
+        id: 'Rian ikut lomba lari, dan temannya Budi ikut lomba lompat. Rian menyelesaikan lomba di posisi kedua.',
+        question: 'What race does Rian join?',
+        questionId: 'Lomba apa yang diikuti Rian?',
+        opts: [{ emoji: '🏃', lbl: 'Running', ok: true }, { emoji: '🤸', lbl: 'Jumping' }, { emoji: '🏊', lbl: 'Swimming' }],
+      },
+      {
+        passage: ['The red team scores two points, and the blue team scores three points.', 'The blue team wins the game.'],
+        id: 'Tim merah mendapat dua poin, dan tim biru mendapat tiga poin. Tim biru memenangkan pertandingan.',
+        question: 'Which team wins the game?',
+        questionId: 'Tim mana yang memenangkan pertandingan?',
+        opts: [{ emoji: '🔵', lbl: 'Blue team', ok: true }, { emoji: '🔴', lbl: 'Red team' }, { emoji: '🟢', lbl: 'Green team' }],
+      },
+    ],
+    story: ['At the end of the day, the teacher gives out medals.', 'Rian gets a silver medal for second place.', 'His friend Budi gets a gold medal for first place in jumping.'],
+    storyId: 'Di akhir hari, gurunya membagikan medali. Rian mendapat medali perak untuk posisi kedua. Temannya Budi mendapat medali emas untuk posisi pertama di lomba lompat.',
+    question: {
+      text: 'What medal does Budi get?',
+      id: 'Medali apa yang didapat Budi?',
+      opts: [{ emoji: '🥇', lbl: 'Gold medal', ok: true }, { emoji: '🥈', lbl: 'Silver medal' }, { emoji: '🥉', lbl: 'Bronze medal' }],
+    },
+  },
+  {
+    id: 'memasak-di-dapur',
+    title: 'Memasak di Dapur (Cooking in the Kitchen)',
+    scene: '🍳',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Grandma cooks fried rice in the kitchen.', 'She uses eggs, rice, and vegetables.'], id: 'Nenek memasak nasi goreng di dapur. Dia memakai telur, nasi, dan sayuran.' },
+      { passage: ['The kitchen smells delicious.', 'Everyone comes to see what is cooking.'], id: 'Dapurnya berbau lezat. Semua orang datang untuk melihat apa yang sedang dimasak.' },
+    ],
+    drill: [
+      {
+        passage: ['Grandma cracks two eggs into the pan.', 'She saves one egg for breakfast tomorrow.'],
+        id: 'Nenek memecahkan dua telur ke wajan. Dia menyimpan satu telur untuk sarapan besok.',
+        question: 'How many eggs does grandma cook now?',
+        questionId: 'Berapa banyak telur yang dimasak nenek sekarang?',
+        opts: [{ emoji: '2️⃣', lbl: 'Two', ok: true }, { emoji: '1️⃣', lbl: 'One' }, { emoji: '3️⃣', lbl: 'Three' }],
+      },
+      {
+        passage: ['Grandma adds carrots and peas to the rice.', 'She does not add corn because nobody likes it.'],
+        id: 'Nenek menambahkan wortel dan kacang polong ke nasinya. Dia tidak menambahkan jagung karena tidak ada yang suka.',
+        question: 'What vegetable does grandma NOT add?',
+        questionId: 'Sayuran apa yang TIDAK ditambahkan nenek?',
+        opts: [{ emoji: '🌽', lbl: 'Corn', ok: true }, { emoji: '🥕', lbl: 'Carrots' }, { emoji: '🫛', lbl: 'Peas' }],
+      },
+    ],
+    story: ['When the fried rice is ready, grandma calls everyone to the table.', 'She also makes a plate of sliced cucumbers and tomatoes.', 'Dito eats two plates because it tastes so good.'],
+    storyId: 'Ketika nasi gorengnya siap, nenek memanggil semua orang ke meja. Dia juga membuat satu piring irisan timun dan tomat. Dito makan dua piring karena rasanya sangat enak.',
+    question: {
+      text: 'How many plates does Dito eat?',
+      id: 'Berapa piring yang dimakan Dito?',
+      opts: [{ emoji: '2️⃣', lbl: 'Two plates', ok: true }, { emoji: '1️⃣', lbl: 'One plate' }, { emoji: '3️⃣', lbl: 'Three plates' }],
+    },
+  },
+  {
+    id: 'taman-bermain',
+    title: 'Di Taman Bermain (At the Playground)',
+    scene: '🛝',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Maya goes to the playground after school.', 'She wants to play on the slide.'], id: 'Maya pergi ke taman bermain setelah sekolah. Dia ingin main perosotan.' },
+      { passage: ['Her brother prefers the swing.', 'They play together happily.'], id: 'Kakaknya lebih suka ayunan. Mereka bermain bersama dengan senang.' },
+    ],
+    drill: [
+      {
+        passage: ['Maya climbs up the ladder and slides down fast.', 'Her brother pushes the swing higher and higher.'],
+        id: 'Maya memanjat tangga dan meluncur turun dengan cepat. Kakaknya mendorong ayunan makin tinggi.',
+        question: 'What does Maya slide down?',
+        questionId: 'Apa yang diluncuri Maya?',
+        opts: [{ emoji: '🛝', lbl: 'The slide', ok: true }, { emoji: '🎢', lbl: 'A roller coaster' }, { emoji: '🪜', lbl: 'A ladder' }],
+      },
+      {
+        passage: ['Three kids wait in line for the seesaw.', 'Maya and her brother wait for the monkey bars instead.'],
+        id: 'Tiga anak antre untuk jungkat-jungkit. Maya dan kakaknya malah menunggu giliran panjatan monyet.',
+        question: 'What do Maya and her brother wait for?',
+        questionId: 'Apa yang ditunggu Maya dan kakaknya?',
+        opts: [{ emoji: '🐒', lbl: 'The monkey bars', ok: true }, { emoji: '⚖️', lbl: 'The seesaw' }, { emoji: '🛝', lbl: 'The slide' }],
+      },
+    ],
+    story: ['After playing for an hour, Maya feels thirsty.', 'She asks her brother to share his water bottle.', 'They sit on a bench and rest before going home.'],
+    storyId: 'Setelah bermain satu jam, Maya merasa haus. Dia meminta kakaknya berbagi botol minumnya. Mereka duduk di bangku dan beristirahat sebelum pulang.',
+    question: {
+      text: 'Where do Maya and her brother rest?',
+      id: 'Di mana Maya dan kakaknya beristirahat?',
+      opts: [{ emoji: '🪑', lbl: 'On a bench', ok: true }, { emoji: '🌱', lbl: 'On the grass' }, { emoji: '🛝', lbl: 'On the slide' }],
+    },
+  },
+  {
+    id: 'perjalanan-kereta',
+    title: 'Perjalanan Kereta (Train Trip)',
+    scene: '🚆',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Fajar takes a train to visit his grandpa.', 'He sits by the window.'], id: 'Fajar naik kereta untuk mengunjungi kakeknya. Dia duduk dekat jendela.' },
+      { passage: ['The train passes rice fields and rivers.', 'Fajar watches everything with excitement.'], id: 'Kereta melewati sawah dan sungai. Fajar mengamati semuanya dengan senang.' },
+    ],
+    drill: [
+      {
+        passage: ['The train stops at two small stations before the big city.', 'Fajar counts the stations on his fingers.'],
+        id: 'Kereta berhenti di dua stasiun kecil sebelum kota besar. Fajar menghitung stasiunnya dengan jari.',
+        question: 'How many small stations does the train stop at?',
+        questionId: 'Berapa stasiun kecil yang disinggahi kereta?',
+        opts: [{ emoji: '2️⃣', lbl: 'Two', ok: true }, { emoji: '1️⃣', lbl: 'One' }, { emoji: '3️⃣', lbl: 'Three' }],
+      },
+      {
+        passage: ['Fajar buys a snack from the train seller.', 'He chooses crackers instead of candy.'],
+        id: 'Fajar membeli camilan dari penjual di kereta. Dia memilih biskuit, bukan permen.',
+        question: 'What snack does Fajar choose?',
+        questionId: 'Camilan apa yang dipilih Fajar?',
+        opts: [{ emoji: '🍪', lbl: 'Crackers', ok: true }, { emoji: '🍬', lbl: 'Candy' }, { emoji: '🍫', lbl: 'Chocolate' }],
+      },
+    ],
+    story: ['When the train arrives, grandpa is waiting at the station.', 'He is holding a bunch of yellow bananas for Fajar.', 'Fajar runs and gives grandpa a big hug.'],
+    storyId: 'Ketika kereta tiba, kakek sudah menunggu di stasiun. Dia membawa sesisir pisang kuning untuk Fajar. Fajar berlari dan memeluk kakek erat-erat.',
+    question: {
+      text: 'What is grandpa holding at the station?',
+      id: 'Apa yang dibawa kakek di stasiun?',
+      opts: [{ emoji: '🍌', lbl: 'Bananas', ok: true }, { emoji: '🎈', lbl: 'Balloons' }, { emoji: '📷', lbl: 'A camera' }],
     },
   },
 ];
@@ -2952,17 +4022,23 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
     id: 'bentuk',
     title: 'Bentuk (Shapes)',
     desc: '10 kata',
+    // Pilot mini-game "Kelompokkan" (`materi/game.md` §7 kandidat #1,
+    // CLAUDE.md "Format Wajib Materi Vocabulary" poin 1) — dipilih topik ini
+    // krn kategorisasinya genuinely melekat di SUBJEK topiknya sendiri
+    // (bentuk bulat vs bentuk bersudut), bukan dimensi lain yang dipaksakan
+    // (mis. warna/fungsi) yang bisa terasa arbitrer buat anak 3-5 th.
+    sortBaskets: { a: { label: 'Bundar', emoji: '⚪' }, b: { label: 'Bersudut', emoji: '🔺' } },
     items: [
-      { en: 'Circle', id: 'Lingkaran', emoji: '⚪', example: { en: 'This is a circle.', id: 'Ini lingkaran.', emoji: '⚪' } },
-      { en: 'Square', id: 'Persegi', emoji: '⬜', example: { en: 'This is a square.', id: 'Ini persegi.', emoji: '⬜' } },
-      { en: 'Triangle', id: 'Segitiga', emoji: '🔺', example: { en: 'This is a triangle.', id: 'Ini segitiga.', emoji: '🔺' } },
-      { en: 'Star', id: 'Bintang', emoji: '⭐', example: { en: 'This is a star.', id: 'Ini bintang.', emoji: '⭐' } },
-      { en: 'Heart', id: 'Hati', emoji: '❤️', example: { en: 'This is a heart.', id: 'Ini hati.', emoji: '❤️' } },
-      { en: 'Diamond', id: 'Berlian', emoji: '🔷', example: { en: 'This is a diamond.', id: 'Ini berlian.', emoji: '🔷' } },
-      { en: 'Oval', id: 'Oval', emoji: '🥚', example: { en: 'This is an oval.', id: 'Ini bentuk oval.', emoji: '🥚' } },
-      { en: 'Cross', id: 'Silang', emoji: '➕', example: { en: 'This is a cross.', id: 'Ini tanda silang.', emoji: '➕' } },
-      { en: 'Arrow', id: 'Panah', emoji: '➡️', example: { en: 'This is an arrow.', id: 'Ini panah.', emoji: '➡️' } },
-      { en: 'Moon', id: 'Bulan', emoji: '🌙', example: { en: 'This is the moon.', id: 'Ini bulan.', emoji: '🌙' } },
+      { en: 'Circle', id: 'Lingkaran', emoji: '⚪', example: { en: 'This is a circle.', id: 'Ini lingkaran.', emoji: '⚪' }, group: 'a' },
+      { en: 'Square', id: 'Persegi', emoji: '⬜', example: { en: 'This is a square.', id: 'Ini persegi.', emoji: '⬜' }, group: 'b' },
+      { en: 'Triangle', id: 'Segitiga', emoji: '🔺', example: { en: 'This is a triangle.', id: 'Ini segitiga.', emoji: '🔺' }, group: 'b' },
+      { en: 'Star', id: 'Bintang', emoji: '⭐', example: { en: 'This is a star.', id: 'Ini bintang.', emoji: '⭐' }, group: 'b' },
+      { en: 'Heart', id: 'Hati', emoji: '❤️', example: { en: 'This is a heart.', id: 'Ini hati.', emoji: '❤️' }, group: 'a' },
+      { en: 'Diamond', id: 'Berlian', emoji: '🔷', example: { en: 'This is a diamond.', id: 'Ini berlian.', emoji: '🔷' }, group: 'b' },
+      { en: 'Oval', id: 'Oval', emoji: '🥚', example: { en: 'This is an oval.', id: 'Ini bentuk oval.', emoji: '🥚' }, group: 'a' },
+      { en: 'Cross', id: 'Silang', emoji: '➕', example: { en: 'This is a cross.', id: 'Ini tanda silang.', emoji: '➕' }, group: 'b' },
+      { en: 'Arrow', id: 'Panah', emoji: '➡️', example: { en: 'This is an arrow.', id: 'Ini panah.', emoji: '➡️' }, group: 'b' },
+      { en: 'Moon', id: 'Bulan', emoji: '🌙', example: { en: 'This is the moon.', id: 'Ini bulan.', emoji: '🌙' }, group: 'a' },
     ],
   },
   {
@@ -3503,17 +4579,20 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
 ];
 
 /**
- * Konten Trailblazer (≈B1, "jalur lanjutan", 12+ th) — level TERAKHIR/keenam
- * yang diauthoring (5 level lain sudah lebih dulu, materi/vocab.md
- * §3A–§3E). SENGAJA CUMA 2 TOPIK, bukan 10 seperti level lain — PRD §9
- * SUDAH mengunci Trailblazer sbg "Next phase (low-effort, 1–2 modul
- * preview)" sejak sebelum inisiatif Vocabulary ini dimulai; itu keputusan
- * scope yang sengaja, BUKAN gap yang perlu ditutup ke ≥10 topik spt level
- * lain (target CLAUDE.md ≥10 topik/skill sengaja TIDAK dipaksakan di sini —
- * dicatat eksplisit sbg pengecualian yang disahkan, bukan kelalaian).
- * 2 topik dipilih dari kategori Cambridge **B1 Preliminary for Schools
- * (PET)** yang genuinely BARU (belum tercakup 5 level di bawahnya) — riset
- * lengkap: materi/vocab.md §3F.
+ * Konten Trailblazer (≈B1, "jalur lanjutan", 12+ th). PRD §9 mengunci level
+ * ini sbg "low-effort, 1–2 modul preview" — 2 topik pertama (`perjalanan-
+ * wisata`/`bahasa-komunikasi`) dipetakan dari situ, riset lengkap materi/
+ * vocab.md §3F. **Target itu DINAIKKAN** (CLAUDE.md "Target Kelengkapan
+ * Konten per Modul" poin 1, revisi user) — Trailblazer TETAP jalur bonus
+ * yang lebih ringan drpd 5 level lain (bukan disamakan ke ≥10), TAPI
+ * minimal ≥5 topik/skill, bukan 1-2 lagi. 3 topik BARU (`pendidikan-
+ * akademik`/`pendapat-pengalaman`/`hiburan-media`) menggenapkan 2→5 —
+ * riset ulang eksplisit ke lembaga Indonesia (Kurikulum Merdeka Fase E/F,
+ * LIA, EF Trailblazers) sbg konfirmasi ARAH (akademik/reflektif/critical-
+ * thinking), 3 TEMA dipilih dari residual Cambridge **B1 Preliminary (PET)**
+ * yang genuinely belum tersentuh 5 level bawah (materi/vocab.md §3F.2 sudah
+ * riset 20 tema PET, tinggal dipetakan) — riset lengkap materi/vocab.md
+ * §3F.4/§3F.5.
  */
 export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
   {
@@ -3548,6 +4627,142 @@ export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
       { en: 'Bilingual', id: 'Dwibahasa', emoji: '🌍', example: { en: 'She is bilingual.', id: 'Dia dwibahasa.', emoji: '🌍' } },
       { en: 'Grammar', id: 'Tata Bahasa', emoji: '✏️', example: { en: 'I study grammar.', id: 'Aku belajar tata bahasa.', emoji: '✏️' } },
       { en: 'Native Speaker', id: 'Penutur Asli', emoji: '🎙️', example: { en: 'I talk to a native speaker.', id: 'Aku bicara dengan penutur asli.', emoji: '🎙️' } },
+    ],
+  },
+  {
+    id: 'pendidikan-akademik',
+    title: 'Pendidikan & Kehidupan Akademik (Education & Academic Life)',
+    desc: '10 kata',
+    items: [
+      { en: 'Campus', id: 'Kampus', emoji: '🏫', example: { en: 'I study at a big campus.', id: 'Aku belajar di kampus yang besar.', emoji: '🏫' } },
+      { en: 'Degree', id: 'Gelar', emoji: '🎓', example: { en: 'She earned a degree in science.', id: 'Dia mendapatkan gelar di bidang sains.', emoji: '🎓' } },
+      { en: 'Scholarship', id: 'Beasiswa', emoji: '💰', example: { en: 'He won a scholarship for university.', id: 'Dia memenangkan beasiswa untuk kuliah.', emoji: '💰' } },
+      { en: 'Lecture', id: 'Kuliah', emoji: '🧑‍🏫', example: { en: 'We listened to an interesting lecture.', id: 'Kami mendengarkan kuliah yang menarik.', emoji: '🧑‍🏫' } },
+      { en: 'Essay', id: 'Esai', emoji: '📝', example: { en: 'I wrote an essay about my future.', id: 'Aku menulis esai tentang masa depanku.', emoji: '📝' } },
+      { en: 'Exam', id: 'Ujian', emoji: '📄', example: { en: 'I studied hard for the exam.', id: 'Aku belajar keras untuk ujian itu.', emoji: '📄' } },
+      { en: 'Library', id: 'Perpustakaan', emoji: '📚', example: { en: 'I borrow books from the library.', id: 'Aku meminjam buku dari perpustakaan.', emoji: '📚' } },
+      { en: 'Graduate', id: 'Lulus', emoji: '🎉', example: { en: 'She will graduate next year.', id: 'Dia akan lulus tahun depan.', emoji: '🎉' } },
+      { en: 'Curriculum', id: 'Kurikulum', emoji: '📋', example: { en: 'Our curriculum includes many subjects.', id: 'Kurikulum kami mencakup banyak mata pelajaran.', emoji: '📋' } },
+      { en: 'Knowledge', id: 'Pengetahuan', emoji: '🧠', example: { en: 'Reading gives you more knowledge.', id: 'Membaca memberimu lebih banyak pengetahuan.', emoji: '🧠' } },
+    ],
+  },
+  {
+    id: 'pendapat-pengalaman',
+    title: 'Pendapat & Pengalaman (Opinions & Experiences)',
+    desc: '10 kata',
+    items: [
+      { en: 'Opinion', id: 'Pendapat', emoji: '💭', example: { en: 'I have an opinion about this movie.', id: 'Aku punya pendapat tentang film ini.', emoji: '💭' } },
+      { en: 'Experience', id: 'Pengalaman', emoji: '🌟', example: { en: 'Traveling was a great experience.', id: 'Bepergian adalah pengalaman yang seru.', emoji: '🌟' } },
+      { en: 'Achievement', id: 'Prestasi', emoji: '🏆', example: { en: 'Winning the contest was my achievement.', id: 'Menang lomba itu adalah prestasiku.', emoji: '🏆' } },
+      { en: 'Curious', id: 'Penasaran', emoji: '🤔', example: { en: 'I am curious about space.', id: 'Aku penasaran tentang luar angkasa.', emoji: '🤔' } },
+      { en: 'Memorable', id: 'Berkesan', emoji: '📸', example: { en: 'It was a memorable day.', id: 'Itu adalah hari yang berkesan.', emoji: '📸' } },
+      { en: 'Disagree', id: 'Tidak Setuju', emoji: '🙅', example: { en: 'I disagree with that idea.', id: 'Aku tidak setuju dengan ide itu.', emoji: '🙅' } },
+      { en: 'Agree', id: 'Setuju', emoji: '🙆', example: { en: 'I agree with your plan.', id: 'Aku setuju dengan rencanamu.', emoji: '🙆' } },
+      { en: 'Impressed', id: 'Terkesan', emoji: '😲', example: { en: 'I am impressed by her talent.', id: 'Aku terkesan dengan talentanya.', emoji: '😲' } },
+      { en: 'Prefer', id: 'Lebih Suka', emoji: '❤️', example: { en: 'I prefer tea over coffee.', id: 'Aku lebih suka teh daripada kopi.', emoji: '❤️' } },
+      { en: 'Suggest', id: 'Menyarankan', emoji: '💡', example: { en: 'I suggest we try this game.', id: 'Aku menyarankan kita coba permainan ini.', emoji: '💡' } },
+    ],
+  },
+  {
+    id: 'hiburan-media',
+    title: 'Hiburan & Media (Entertainment & Media)',
+    desc: '10 kata',
+    items: [
+      { en: 'Documentary', id: 'Dokumenter', emoji: '🎥', example: { en: 'I watched a documentary about animals.', id: 'Aku menonton dokumenter tentang hewan.', emoji: '🎥' } },
+      { en: 'Headline', id: 'Judul Berita', emoji: '📰', example: { en: 'The headline caught my attention.', id: 'Judul berita itu menarik perhatianku.', emoji: '📰' } },
+      { en: 'Broadcast', id: 'Siaran', emoji: '📡', example: { en: 'The news broadcast starts at seven.', id: 'Siaran berita dimulai pukul tujuh.', emoji: '📡' } },
+      { en: 'Review', id: 'Ulasan', emoji: '⭐', example: { en: 'I read a review before watching it.', id: 'Aku membaca ulasan sebelum menontonnya.', emoji: '⭐' } },
+      { en: 'Subscribe', id: 'Berlangganan', emoji: '🔔', example: { en: 'I subscribe to my favorite channel.', id: 'Aku berlangganan kanal favoritku.', emoji: '🔔' } },
+      { en: 'Streaming', id: 'Streaming', emoji: '📱', example: { en: 'We enjoy streaming movies at home.', id: 'Kami suka streaming film di rumah.', emoji: '📱' } },
+      { en: 'Episode', id: 'Episode', emoji: '🎬', example: { en: 'This episode was really exciting.', id: 'Episode ini sangat mengasyikkan.', emoji: '🎬' } },
+      { en: 'Interview', id: 'Wawancara', emoji: '🎤', example: { en: 'The reporter did an interview with the actor.', id: 'Reporter itu mewawancarai aktor itu.', emoji: '🎤' } },
+      { en: 'Animation', id: 'Animasi', emoji: '🎨', example: { en: 'I love watching animation movies.', id: 'Aku suka menonton film animasi.', emoji: '🎨' } },
+      { en: 'Audience', id: 'Penonton', emoji: '👥', example: { en: 'The audience clapped loudly.', id: 'Penonton bertepuk tangan dengan keras.', emoji: '👥' } },
+    ],
+  },
+  {
+    id: 'layanan-masyarakat',
+    title: 'Layanan Masyarakat (Public Services)',
+    desc: '10 kata',
+    items: [
+      { en: 'Pharmacy', id: 'Apotek', emoji: '💊', example: { en: 'I buy medicine at the pharmacy.', id: 'Aku membeli obat di apotek.', emoji: '💊' } },
+      { en: 'Hairdresser', id: 'Tukang Cukur', emoji: '💇', example: { en: 'I get a haircut at the hairdresser.', id: 'Aku potong rambut di tukang cukur.', emoji: '💇' } },
+      { en: 'Dentist', id: 'Dokter Gigi', emoji: '🦷', example: { en: 'I visit the dentist every year.', id: 'Aku mengunjungi dokter gigi setiap tahun.', emoji: '🦷' } },
+      { en: 'Mechanic', id: 'Montir', emoji: '🔧', example: { en: 'The mechanic fixes our car.', id: 'Montir itu memperbaiki mobil kami.', emoji: '🔧' } },
+      { en: 'Laundry', id: 'Laundry', emoji: '🧺', example: { en: 'I take my clothes to the laundry.', id: 'Aku membawa bajuku ke laundry.', emoji: '🧺' } },
+      { en: 'Petrol Station', id: 'Pom Bensin', emoji: '⛽', example: { en: 'We stop at the petrol station.', id: 'Kami berhenti di pom bensin.', emoji: '⛽' } },
+      { en: 'Fire Station', id: 'Pos Pemadam Kebakaran', emoji: '🚒', example: { en: 'The fire station is close to my house.', id: 'Pos pemadam kebakaran itu dekat rumahku.', emoji: '🚒' } },
+      { en: 'Vet', id: 'Dokter Hewan', emoji: '🐾', example: { en: 'I take my cat to the vet.', id: 'Aku membawa kucingku ke dokter hewan.', emoji: '🐾' } },
+      { en: 'Optician', id: 'Toko Kacamata', emoji: '👓', example: { en: 'I get new glasses at the optician.', id: 'Aku membeli kacamata baru di toko kacamata.', emoji: '👓' } },
+      { en: 'Tailor', id: 'Penjahit', emoji: '✂️', example: { en: 'The tailor makes my school uniform.', id: 'Penjahit itu membuat seragam sekolahku.', emoji: '✂️' } },
+    ],
+  },
+  {
+    id: 'peralatan-elektronik',
+    title: 'Peralatan Elektronik Rumah (Home Appliances)',
+    desc: '10 kata',
+    items: [
+      { en: 'Washing Machine', id: 'Mesin Cuci', emoji: '🫧', example: { en: 'Mom washes clothes in the washing machine.', id: 'Ibu mencuci baju di mesin cuci.', emoji: '🫧' } },
+      { en: 'Air Conditioner', id: 'AC', emoji: '❄️', example: { en: 'The air conditioner keeps the room cool.', id: 'AC itu membuat ruangan sejuk.', emoji: '❄️' } },
+      { en: 'Printer', id: 'Printer', emoji: '🖨️', example: { en: 'I print my homework with the printer.', id: 'Aku mencetak PR-ku dengan printer.', emoji: '🖨️' } },
+      { en: 'Radio', id: 'Radio', emoji: '📻', example: { en: 'Dad listens to the radio every morning.', id: 'Ayah mendengarkan radio setiap pagi.', emoji: '📻' } },
+      { en: 'Rice Cooker', id: 'Penanak Nasi', emoji: '🍚', example: { en: 'The rice cooker makes rice every day.', id: 'Penanak nasi itu memasak nasi setiap hari.', emoji: '🍚' } },
+      { en: 'Electric Fan', id: 'Kipas Angin', emoji: '🌀', example: { en: 'The electric fan cools the room.', id: 'Kipas angin itu menyejukkan ruangan.', emoji: '🌀' } },
+      { en: 'Water Heater', id: 'Pemanas Air', emoji: '🚿', example: { en: 'The water heater warms my shower.', id: 'Pemanas air itu menghangatkan air mandiku.', emoji: '🚿' } },
+      { en: 'Speaker', id: 'Speaker', emoji: '🔊', example: { en: 'We play music on the speaker.', id: 'Kami memutar musik di speaker.', emoji: '🔊' } },
+      { en: 'Charger', id: 'Charger', emoji: '🔌', example: { en: 'I plug in the charger at night.', id: 'Aku mencolokkan charger di malam hari.', emoji: '🔌' } },
+      { en: 'Doorbell', id: 'Bel Pintu', emoji: '🔔', example: { en: 'The doorbell rings when a guest arrives.', id: 'Bel pintu berbunyi ketika tamu datang.', emoji: '🔔' } },
+    ],
+  },
+  {
+    id: 'bangunan-sekitar',
+    title: 'Bangunan di Sekitar Kita (Buildings Around Us)',
+    desc: '10 kata',
+    items: [
+      { en: 'Castle', id: 'Kastil', emoji: '🏰', example: { en: 'The princess lives in a castle.', id: 'Sang putri tinggal di kastil.', emoji: '🏰' } },
+      { en: 'Palace', id: 'Istana', emoji: '🏯', example: { en: 'The king lives in a palace.', id: 'Sang raja tinggal di istana.', emoji: '🏯' } },
+      { en: 'Tower', id: 'Menara', emoji: '🗼', example: { en: 'We climb the tall tower.', id: 'Kami menaiki menara yang tinggi.', emoji: '🗼' } },
+      { en: 'Skyscraper', id: 'Gedung Pencakar Langit', emoji: '🏙️', example: { en: 'The skyscraper is very tall.', id: 'Gedung pencakar langit itu sangat tinggi.', emoji: '🏙️' } },
+      { en: 'Apartment', id: 'Apartemen', emoji: '🏢', example: { en: 'My cousin lives in an apartment.', id: 'Sepupuku tinggal di apartemen.', emoji: '🏢' } },
+      { en: 'Factory', id: 'Pabrik', emoji: '🏭', example: { en: 'Dad works at a factory.', id: 'Ayah bekerja di pabrik.', emoji: '🏭' } },
+      { en: 'Church', id: 'Gereja', emoji: '⛪', example: { en: 'They go to church on Sunday.', id: 'Mereka pergi ke gereja pada hari Minggu.', emoji: '⛪' } },
+      { en: 'Mosque', id: 'Masjid', emoji: '🕌', example: { en: 'We pray at the mosque.', id: 'Kami salat di masjid.', emoji: '🕌' } },
+      { en: 'Temple', id: 'Pura', emoji: '🛕', example: { en: 'They visit the temple together.', id: 'Mereka mengunjungi pura bersama.', emoji: '🛕' } },
+      { en: 'Cottage', id: 'Pondok', emoji: '🏡', example: { en: 'We stay in a cozy cottage.', id: 'Kami menginap di pondok yang nyaman.', emoji: '🏡' } },
+    ],
+  },
+  {
+    id: 'pedesaan',
+    title: 'Pedesaan (Countryside)',
+    desc: '10 kata',
+    items: [
+      { en: 'Village', id: 'Desa', emoji: '🏘️', example: { en: 'My grandmother lives in a small village.', id: 'Nenekku tinggal di desa kecil.', emoji: '🏘️' } },
+      { en: 'Field', id: 'Sawah', emoji: '🌾', example: { en: 'The farmer plants rice in the field.', id: 'Petani menanam padi di sawah.', emoji: '🌾' } },
+      { en: 'Hill', id: 'Bukit', emoji: '⛰️', example: { en: 'We climb the green hill.', id: 'Kami mendaki bukit yang hijau.', emoji: '⛰️' } },
+      { en: 'Meadow', id: 'Padang Rumput', emoji: '🌼', example: { en: 'Cows eat grass in the meadow.', id: 'Sapi makan rumput di padang rumput.', emoji: '🌼' } },
+      { en: 'Barn', id: 'Kandang', emoji: '🛖', example: { en: 'The farmer keeps cows in the barn.', id: 'Petani menyimpan sapi di kandang.', emoji: '🛖' } },
+      { en: 'Path', id: 'Jalan Setapak', emoji: '🥾', example: { en: 'We walk on a narrow path.', id: 'Kami berjalan di jalan setapak yang sempit.', emoji: '🥾' } },
+      { en: 'Pond', id: 'Kolam', emoji: '🦆', example: { en: 'Ducks swim in the pond.', id: 'Bebek berenang di kolam.', emoji: '🦆' } },
+      { en: 'Orchard', id: 'Kebun Buah', emoji: '🥭', example: { en: 'We pick mangoes in the orchard.', id: 'Kami memetik mangga di kebun buah.', emoji: '🥭' } },
+      { en: 'Countryside', id: 'Pedesaan', emoji: '🌄', example: { en: 'I love visiting the countryside.', id: 'Aku suka mengunjungi pedesaan.', emoji: '🌄' } },
+      { en: 'Vineyard', id: 'Kebun Anggur', emoji: '🍇', example: { en: 'They grow grapes in the vineyard.', id: 'Mereka menanam anggur di kebun anggur.', emoji: '🍇' } },
+    ],
+  },
+  {
+    id: 'presentasi-diskusi',
+    title: 'Presentasi & Diskusi (Presentation & Discussion)',
+    desc: '10 kata',
+    items: [
+      { en: 'Presentation', id: 'Presentasi', emoji: '📊', example: { en: 'I give a presentation in class.', id: 'Aku memberikan presentasi di kelas.', emoji: '📊' } },
+      { en: 'Debate', id: 'Debat', emoji: '⚖️', example: { en: 'We have a debate about school rules.', id: 'Kami berdebat tentang aturan sekolah.', emoji: '⚖️' } },
+      { en: 'Evidence', id: 'Bukti', emoji: '🔍', example: { en: 'I need evidence to support my idea.', id: 'Aku butuh bukti untuk mendukung ideku.', emoji: '🔍' } },
+      { en: 'Conclusion', id: 'Kesimpulan', emoji: '✅', example: { en: 'I write a conclusion at the end.', id: 'Aku menulis kesimpulan di akhir.', emoji: '✅' } },
+      { en: 'Discussion', id: 'Diskusi', emoji: '💬', example: { en: 'We join a group discussion.', id: 'Kami mengikuti diskusi kelompok.', emoji: '💬' } },
+      { en: 'Perspective', id: 'Sudut Pandang', emoji: '👀', example: { en: 'Everyone has a different perspective.', id: 'Setiap orang punya sudut pandang berbeda.', emoji: '👀' } },
+      { en: 'Persuade', id: 'Meyakinkan', emoji: '🤝', example: { en: 'I try to persuade my friend.', id: 'Aku mencoba meyakinkan temanku.', emoji: '🤝' } },
+      { en: 'Summarize', id: 'Meringkas', emoji: '📋', example: { en: 'I summarize the story in three sentences.', id: 'Aku meringkas cerita itu dalam tiga kalimat.', emoji: '📋' } },
+      { en: 'Feedback', id: 'Masukan', emoji: '🔄', example: { en: 'My teacher gives feedback on my essay.', id: 'Guruku memberi masukan untuk esaiku.', emoji: '🔄' } },
+      { en: 'Volunteer', id: 'Mengajukan Diri', emoji: '✋', example: { en: 'I volunteer to answer the question.', id: 'Aku mengajukan diri untuk menjawab pertanyaan.', emoji: '✋' } },
     ],
   },
 ];
@@ -9451,15 +10666,19 @@ export const LISTENING_TOPICS_BY_LEVEL: Partial<Record<LevelKey, AnyListeningTop
 };
 /**
  * Speaking Little Stars (3–5 th) — format KEDUA `SpeakingPhraseTopic`
- * (types.ts), riset & spesifikasi lengkap: `materi/speaking.md`. 1 topik,
- * 10 frasa, dipetakan dari `VOCAB_TOPICS_LITTLE_STARS` topik
- * `salam-sopan-santun` (kata kunci sama, frasa target ditulis ULANG baru —
- * prinsip "modalitas beda, bukan duplikasi" konsisten dgn Listening/Reading
- * Little Stars) — dipilih krn Kurikulum Merdeka Fase Fondasi eksplisit
- * menyebut "mengucapkan kata tolong, maaf, terima kasih" sbg benchmark
- * keterampilan sosial-bahasa usia ini (`materi/speaking.md` §3.3), jadi
- * domain paling langsung didukung riset utk topik SPEAKING pertama (beda
- * dari Vocab/Listening yang topik pertamanya bebas dipilih).
+ * (types.ts), riset & spesifikasi lengkap: `materi/speaking.md` §10.
+ * **12/12 topik — target ≥10/skill (CLAUDE.md) TERCAPAI**, genapkan dari 2
+ * topik (`sapaan-sopan`/`kenalkan-keluarga`, sesi sebelumnya) jadi FULL
+ * PARITAS dgn `VOCAB_TOPICS_LITTLE_STARS` (setiap 1 dari 12 domain Vocab
+ * dipetakan ke tepat 1 topik Speaking) — kata kunci & emoji SAMA dgn Vocab,
+ * frasa target ditulis ULANG baru (prinsip "modalitas beda, bukan
+ * duplikasi", konsisten Listening/Reading Little Stars). Urutan prioritas
+ * domain BUKAN sembarang — riset Kumon Indonesia EFL (`materi/speaking.md`
+ * §10.1) mengonfirmasi level 7A (paling awal) py tema HEWAN (dgn efek
+ * suara, persis pola `bunyi-hewan` di sini) & KENDARAAN duluan, BARU level
+ * 6A menambah ANGKA & WARNA — urutan array di bawah mengikuti prioritas
+ * riset ini (hewan→kendaraan→tubuh→warna→angka→bentuk→dst), bukan urutan
+ * Vocab aslinya.
  */
 export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
   {
@@ -9479,16 +10698,3395 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
       { en: 'Excuse Me', id: 'Permisi', emoji: '🙋', phrase: { en: 'Excuse me, teacher.', id: 'Permisi, Bu Guru.', emoji: '🙋' } },
     ],
   },
+  {
+    id: 'kenalkan-keluarga',
+    title: 'Kenalkan Keluargaku (Introduce My Family)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Mom', id: 'Mama', emoji: '👩', phrase: { en: 'This is my mom.', id: 'Ini mamaku.', emoji: '👩' } },
+      { en: 'Dad', id: 'Papa', emoji: '👨', phrase: { en: 'This is my dad.', id: 'Ini papaku.', emoji: '👨' } },
+      { en: 'Sister', id: 'Kakak/Adik Perempuan', emoji: '👧', phrase: { en: 'I have a sister.', id: 'Aku punya kakak perempuan.', emoji: '👧' } },
+      { en: 'Brother', id: 'Kakak/Adik Laki-laki', emoji: '👦', phrase: { en: 'I have a brother.', id: 'Aku punya kakak laki-laki.', emoji: '👦' } },
+      { en: 'Baby', id: 'Bayi', emoji: '👶', phrase: { en: 'The baby is cute.', id: 'Bayinya lucu.', emoji: '👶' } },
+      { en: 'Grandma', id: 'Nenek', emoji: '👵', phrase: { en: 'I love my grandma.', id: 'Aku sayang nenekku.', emoji: '👵' } },
+      { en: 'Grandpa', id: 'Kakek', emoji: '👴', phrase: { en: 'I love my grandpa.', id: 'Aku sayang kakekku.', emoji: '👴' } },
+      { en: 'Aunt', id: 'Bibi', emoji: '👩‍🦱', phrase: { en: 'This is my aunt.', id: 'Ini bibiku.', emoji: '👩‍🦱' } },
+      { en: 'Uncle', id: 'Paman', emoji: '🧔', phrase: { en: 'This is my uncle.', id: 'Ini pamanku.', emoji: '🧔' } },
+      { en: 'Family', id: 'Keluarga', emoji: '👨‍👩‍👧‍👦', phrase: { en: 'I love my family!', id: 'Aku sayang keluargaku!', emoji: '👨‍👩‍👧‍👦' } },
+    ],
+  },
+  {
+    id: 'bunyi-hewan',
+    title: 'Bunyi Hewan (Animal Sounds)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Dog', id: 'Anjing', emoji: '🐶', phrase: { en: 'The dog says woof!', id: 'Anjingnya bilang guk guk!', emoji: '🐶' } },
+      { en: 'Cat', id: 'Kucing', emoji: '🐱', phrase: { en: 'The cat says meow!', id: 'Kucingnya bilang meong!', emoji: '🐱' } },
+      { en: 'Fish', id: 'Ikan', emoji: '🐟', phrase: { en: 'The fish can swim!', id: 'Ikannya bisa berenang!', emoji: '🐟' } },
+      { en: 'Bird', id: 'Burung', emoji: '🐦', phrase: { en: 'The bird can fly!', id: 'Burungnya bisa terbang!', emoji: '🐦' } },
+      { en: 'Cow', id: 'Sapi', emoji: '🐄', phrase: { en: 'The cow says moo!', id: 'Sapinya bilang moo!', emoji: '🐄' } },
+      { en: 'Duck', id: 'Bebek', emoji: '🦆', phrase: { en: 'The duck says quack!', id: 'Bebeknya bilang kwek!', emoji: '🦆' } },
+      { en: 'Horse', id: 'Kuda', emoji: '🐴', phrase: { en: 'The horse can run!', id: 'Kudanya bisa berlari!', emoji: '🐴' } },
+      { en: 'Sheep', id: 'Domba', emoji: '🐑', phrase: { en: 'The sheep says baa!', id: 'Dombanya bilang mbee!', emoji: '🐑' } },
+      { en: 'Pig', id: 'Babi', emoji: '🐷', phrase: { en: 'The pig says oink!', id: 'Babinya bilang oink!', emoji: '🐷' } },
+      { en: 'Rabbit', id: 'Kelinci', emoji: '🐰', phrase: { en: 'The rabbit can hop!', id: 'Kelincinya bisa melompat!', emoji: '🐰' } },
+    ],
+  },
+  {
+    id: 'naik-kendaraan',
+    title: 'Yuk Naik Kendaraan (Let’s Ride!)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Car', id: 'Mobil', emoji: '🚗', phrase: { en: 'Vroom, here comes the car!', id: 'Vroom, mobilnya datang!', emoji: '🚗' } },
+      { en: 'Bus', id: 'Bus', emoji: '🚌', phrase: { en: 'I ride the bus to school.', id: 'Aku naik bus ke sekolah.', emoji: '🚌' } },
+      { en: 'Bike', id: 'Sepeda', emoji: '🚲', phrase: { en: 'I ride my bike fast.', id: 'Aku naik sepedaku dengan cepat.', emoji: '🚲' } },
+      { en: 'Train', id: 'Kereta', emoji: '🚆', phrase: { en: 'Choo choo goes the train!', id: 'Ciat ciut, keretanya jalan!', emoji: '🚆' } },
+      { en: 'Airplane', id: 'Pesawat', emoji: '✈️', phrase: { en: 'The airplane flies high.', id: 'Pesawatnya terbang tinggi.', emoji: '✈️' } },
+      { en: 'Boat', id: 'Perahu', emoji: '⛵', phrase: { en: 'The boat floats on water.', id: 'Perahunya mengapung di air.', emoji: '⛵' } },
+      { en: 'Truck', id: 'Truk', emoji: '🚚', phrase: { en: 'The truck carries boxes.', id: 'Truknya mengangkut kotak.', emoji: '🚚' } },
+      { en: 'Fire Truck', id: 'Truk Pemadam', emoji: '🚒', phrase: { en: 'The fire truck is fast!', id: 'Truk pemadamnya cepat!', emoji: '🚒' } },
+      { en: 'Ambulance', id: 'Ambulans', emoji: '🚑', phrase: { en: 'Wee-woo goes the ambulance!', id: 'Nguing nguing, ambulansnya lewat!', emoji: '🚑' } },
+      { en: 'Helicopter', id: 'Helikopter', emoji: '🚁', phrase: { en: 'The helicopter flies up!', id: 'Helikopternya terbang ke atas!', emoji: '🚁' } },
+    ],
+  },
+  {
+    id: 'sentuh-tubuhku',
+    title: 'Sentuh & Sebutkan (Touch & Say)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Head', id: 'Kepala', emoji: '🙂', phrase: { en: 'Touch your head!', id: 'Sentuh kepalamu!', emoji: '🙂' } },
+      { en: 'Shoulders', id: 'Bahu', emoji: '🤷', phrase: { en: 'Touch your shoulders!', id: 'Sentuh bahumu!', emoji: '🤷' } },
+      { en: 'Knees', id: 'Lutut', emoji: '🦵', phrase: { en: 'Touch your knees!', id: 'Sentuh lututmu!', emoji: '🦵' } },
+      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶', phrase: { en: 'Touch your toes!', id: 'Sentuh jari kakimu!', emoji: '🦶' } },
+      { en: 'Eyes', id: 'Mata', emoji: '👀', phrase: { en: 'Blink your eyes!', id: 'Kedipkan matamu!', emoji: '👀' } },
+      { en: 'Ears', id: 'Telinga', emoji: '👂', phrase: { en: 'Wiggle your ears!', id: 'Gerakkan telingamu!', emoji: '👂' } },
+      { en: 'Nose', id: 'Hidung', emoji: '👃', phrase: { en: 'Touch your nose!', id: 'Sentuh hidungmu!', emoji: '👃' } },
+      { en: 'Mouth', id: 'Mulut', emoji: '👄', phrase: { en: 'Open your mouth!', id: 'Buka mulutmu!', emoji: '👄' } },
+      { en: 'Hands', id: 'Tangan', emoji: '🙌', phrase: { en: 'Clap your hands!', id: 'Tepuk tanganmu!', emoji: '🙌' } },
+      { en: 'Hair', id: 'Rambut', emoji: '💇', phrase: { en: 'Brush your hair!', id: 'Sisir rambutmu!', emoji: '💇' } },
+    ],
+  },
+  {
+    id: 'warna-favorit',
+    title: 'Warna Favoritku (My Favorite Color)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Red', id: 'Merah', emoji: '🔴', phrase: { en: 'I like red.', id: 'Aku suka merah.', emoji: '🔴' } },
+      { en: 'Blue', id: 'Biru', emoji: '🔵', phrase: { en: 'I like blue.', id: 'Aku suka biru.', emoji: '🔵' } },
+      { en: 'Yellow', id: 'Kuning', emoji: '🟡', phrase: { en: 'The sun is yellow.', id: 'Mataharinya kuning.', emoji: '🟡' } },
+      { en: 'Green', id: 'Hijau', emoji: '🟢', phrase: { en: 'I like green.', id: 'Aku suka hijau.', emoji: '🟢' } },
+      { en: 'Orange', id: 'Oranye', emoji: '🟠', phrase: { en: 'The pumpkin is orange.', id: 'Labunya oranye.', emoji: '🟠' } },
+      { en: 'Purple', id: 'Ungu', emoji: '🟣', phrase: { en: 'I like purple.', id: 'Aku suka ungu.', emoji: '🟣' } },
+      { en: 'Pink', id: 'Merah Muda', emoji: '🩷', phrase: { en: 'My shoes are pink.', id: 'Sepatuku merah muda.', emoji: '🩷' } },
+      { en: 'Black', id: 'Hitam', emoji: '⚫', phrase: { en: 'My cat is black.', id: 'Kucingku hitam.', emoji: '⚫' } },
+      { en: 'White', id: 'Putih', emoji: '⚪', phrase: { en: 'My shirt is white.', id: 'Bajuku putih.', emoji: '⚪' } },
+      { en: 'Brown', id: 'Cokelat', emoji: '🟤', phrase: { en: 'I like brown.', id: 'Aku suka cokelat.', emoji: '🟤' } },
+    ],
+  },
+  {
+    id: 'hitung-yuk',
+    title: 'Ayo Menghitung (Let’s Count!)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'One', id: 'Satu', emoji: '1️⃣', phrase: { en: 'I see one star.', id: 'Aku lihat satu bintang.', emoji: '1️⃣' } },
+      { en: 'Two', id: 'Dua', emoji: '2️⃣', phrase: { en: 'I have two hands.', id: 'Aku punya dua tangan.', emoji: '2️⃣' } },
+      { en: 'Three', id: 'Tiga', emoji: '3️⃣', phrase: { en: 'I see three cats.', id: 'Aku lihat tiga kucing.', emoji: '3️⃣' } },
+      { en: 'Four', id: 'Empat', emoji: '4️⃣', phrase: { en: 'I have four crayons.', id: 'Aku punya empat krayon.', emoji: '4️⃣' } },
+      { en: 'Five', id: 'Lima', emoji: '5️⃣', phrase: { en: 'High five!', id: 'Tos lima jari!', emoji: '5️⃣' } },
+      { en: 'Six', id: 'Enam', emoji: '6️⃣', phrase: { en: 'I see six balloons.', id: 'Aku lihat enam balon.', emoji: '6️⃣' } },
+      { en: 'Seven', id: 'Tujuh', emoji: '7️⃣', phrase: { en: 'I have seven candies.', id: 'Aku punya tujuh permen.', emoji: '7️⃣' } },
+      { en: 'Eight', id: 'Delapan', emoji: '8️⃣', phrase: { en: 'I see eight fish.', id: 'Aku lihat delapan ikan.', emoji: '8️⃣' } },
+      { en: 'Nine', id: 'Sembilan', emoji: '9️⃣', phrase: { en: 'I have nine blocks.', id: 'Aku punya sembilan balok.', emoji: '9️⃣' } },
+      { en: 'Ten', id: 'Sepuluh', emoji: '🔟', phrase: { en: 'Let’s count to ten!', id: 'Ayo hitung sampai sepuluh!', emoji: '🔟' } },
+    ],
+  },
+  {
+    id: 'cari-bentuk',
+    title: 'Cari Bentuknya (Find the Shape)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Circle', id: 'Lingkaran', emoji: '⚪', phrase: { en: 'I see a circle.', id: 'Aku lihat lingkaran.', emoji: '⚪' } },
+      { en: 'Square', id: 'Persegi', emoji: '⬜', phrase: { en: 'This box is a square.', id: 'Kotak ini persegi.', emoji: '⬜' } },
+      { en: 'Triangle', id: 'Segitiga', emoji: '🔺', phrase: { en: 'I see a triangle.', id: 'Aku lihat segitiga.', emoji: '🔺' } },
+      { en: 'Star', id: 'Bintang', emoji: '⭐', phrase: { en: 'The star has five points.', id: 'Bintangnya punya lima ujung.', emoji: '⭐' } },
+      { en: 'Heart', id: 'Hati', emoji: '❤️', phrase: { en: 'I draw a heart.', id: 'Aku menggambar hati.', emoji: '❤️' } },
+      { en: 'Diamond', id: 'Berlian', emoji: '🔷', phrase: { en: 'I see a diamond.', id: 'Aku lihat berlian.', emoji: '🔷' } },
+      { en: 'Oval', id: 'Oval', emoji: '🥚', phrase: { en: 'The egg is an oval.', id: 'Telurnya berbentuk oval.', emoji: '🥚' } },
+      { en: 'Cross', id: 'Silang', emoji: '➕', phrase: { en: 'I draw a cross.', id: 'Aku menggambar tanda silang.', emoji: '➕' } },
+      { en: 'Arrow', id: 'Panah', emoji: '➡️', phrase: { en: 'The arrow points up.', id: 'Panahnya menunjuk ke atas.', emoji: '➡️' } },
+      { en: 'Moon', id: 'Bulan', emoji: '🌙', phrase: { en: 'I see the moon.', id: 'Aku lihat bulan.', emoji: '🌙' } },
+    ],
+  },
+  {
+    id: 'buah-favorit',
+    title: 'Buah Favoritku (My Favorite Fruit)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Apple', id: 'Apel', emoji: '🍎', phrase: { en: 'I want an apple.', id: 'Aku mau apel.', emoji: '🍎' } },
+      { en: 'Banana', id: 'Pisang', emoji: '🍌', phrase: { en: 'I like bananas.', id: 'Aku suka pisang.', emoji: '🍌' } },
+      { en: 'Orange', id: 'Jeruk', emoji: '🍊', phrase: { en: 'I eat an orange.', id: 'Aku makan jeruk.', emoji: '🍊' } },
+      { en: 'Grape', id: 'Anggur', emoji: '🍇', phrase: { en: 'I like grapes.', id: 'Aku suka anggur.', emoji: '🍇' } },
+      { en: 'Watermelon', id: 'Semangka', emoji: '🍉', phrase: { en: 'I want watermelon.', id: 'Aku mau semangka.', emoji: '🍉' } },
+      { en: 'Strawberry', id: 'Stroberi', emoji: '🍓', phrase: { en: 'I love strawberries!', id: 'Aku suka stroberi!', emoji: '🍓' } },
+      { en: 'Mango', id: 'Mangga', emoji: '🥭', phrase: { en: 'I like mangoes.', id: 'Aku suka mangga.', emoji: '🥭' } },
+      { en: 'Pineapple', id: 'Nanas', emoji: '🍍', phrase: { en: 'I want pineapple.', id: 'Aku mau nanas.', emoji: '🍍' } },
+      { en: 'Pear', id: 'Pir', emoji: '🍐', phrase: { en: 'I eat a pear.', id: 'Aku makan pir.', emoji: '🍐' } },
+      { en: 'Peach', id: 'Persik', emoji: '🍑', phrase: { en: 'I like peaches.', id: 'Aku suka persik.', emoji: '🍑' } },
+    ],
+  },
+  {
+    id: 'rasa-hatiku',
+    title: 'Perasaanku (How I Feel)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Happy', id: 'Senang', emoji: '😊', phrase: { en: 'I am happy today!', id: 'Aku senang hari ini!', emoji: '😊' } },
+      { en: 'Sad', id: 'Sedih', emoji: '😢', phrase: { en: 'I feel sad.', id: 'Aku merasa sedih.', emoji: '😢' } },
+      { en: 'Angry', id: 'Marah', emoji: '😠', phrase: { en: 'I am a little angry.', id: 'Aku agak marah.', emoji: '😠' } },
+      { en: 'Scared', id: 'Takut', emoji: '😨', phrase: { en: 'I feel scared.', id: 'Aku merasa takut.', emoji: '😨' } },
+      { en: 'Sleepy', id: 'Mengantuk', emoji: '😴', phrase: { en: 'I am sleepy now.', id: 'Aku mengantuk sekarang.', emoji: '😴' } },
+      { en: 'Hungry', id: 'Lapar', emoji: '😋', phrase: { en: 'I am hungry!', id: 'Aku lapar!', emoji: '😋' } },
+      { en: 'Thirsty', id: 'Haus', emoji: '🥤', phrase: { en: 'I am thirsty.', id: 'Aku haus.', emoji: '🥤' } },
+      { en: 'Sick', id: 'Sakit', emoji: '🤒', phrase: { en: 'I feel sick today.', id: 'Aku merasa sakit hari ini.', emoji: '🤒' } },
+      { en: 'Silly', id: 'Konyol', emoji: '🤪', phrase: { en: 'I am being silly!', id: 'Aku lagi konyol!', emoji: '🤪' } },
+      { en: 'Excited', id: 'Bersemangat', emoji: '🤩', phrase: { en: 'I am so excited!', id: 'Aku sangat bersemangat!', emoji: '🤩' } },
+    ],
+  },
+  {
+    id: 'main-yuk',
+    title: 'Yuk Main! (Let’s Play!)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Ball', id: 'Bola', emoji: '⚽', phrase: { en: 'I play with a ball.', id: 'Aku main bola.', emoji: '⚽' } },
+      { en: 'Doll', id: 'Boneka', emoji: '🪆', phrase: { en: 'I like my doll.', id: 'Aku suka bonekaku.', emoji: '🪆' } },
+      { en: 'Kite', id: 'Layangan', emoji: '🪁', phrase: { en: 'I fly a kite.', id: 'Aku menerbangkan layangan.', emoji: '🪁' } },
+      { en: 'Balloon', id: 'Balon', emoji: '🎈', phrase: { en: 'I hold a balloon.', id: 'Aku memegang balon.', emoji: '🎈' } },
+      { en: 'Puzzle', id: 'Puzzle', emoji: '🧩', phrase: { en: 'I like puzzles.', id: 'Aku suka puzzle.', emoji: '🧩' } },
+      { en: 'Robot', id: 'Robot', emoji: '🤖', phrase: { en: 'I play with a robot.', id: 'Aku main robot-robotan.', emoji: '🤖' } },
+      { en: 'Drum', id: 'Drum', emoji: '🥁', phrase: { en: 'I play the drum.', id: 'Aku main drum.', emoji: '🥁' } },
+      { en: 'Blocks', id: 'Balok', emoji: '🧱', phrase: { en: 'I build with blocks.', id: 'Aku membangun dengan balok.', emoji: '🧱' } },
+      { en: 'Yoyo', id: 'Yoyo', emoji: '🪀', phrase: { en: 'I play with a yoyo.', id: 'Aku main yoyo.', emoji: '🪀' } },
+      { en: 'Teddy', id: 'Boneka Beruang', emoji: '🧸', phrase: { en: 'I hug my teddy.', id: 'Aku memeluk boneka beruangku.', emoji: '🧸' } },
+    ],
+  },
+  {
+    id: 'pakai-baju',
+    title: 'Pakaianku (What I Wear)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Shirt', id: 'Baju', emoji: '👕', phrase: { en: 'I wear a blue shirt.', id: 'Aku memakai baju biru.', emoji: '👕' } },
+      { en: 'Pants', id: 'Celana Panjang', emoji: '👖', phrase: { en: 'Can I wear my pants?', id: 'Boleh aku pakai celana panjangku?', emoji: '👖' } },
+      { en: 'Shoes', id: 'Sepatu', emoji: '👟', phrase: { en: 'I wear my shoes outside.', id: 'Aku memakai sepatu di luar.', emoji: '👟' } },
+      { en: 'Socks', id: 'Kaos Kaki', emoji: '🧦', phrase: { en: 'I wear warm socks.', id: 'Aku memakai kaos kaki hangat.', emoji: '🧦' } },
+      { en: 'Hat', id: 'Topi', emoji: '🧢', phrase: { en: 'I wear a hat in the sun.', id: 'Aku memakai topi saat panas.', emoji: '🧢' } },
+      { en: 'Dress', id: 'Gaun', emoji: '👗', phrase: { en: 'I wear a pretty dress.', id: 'Aku memakai gaun cantik.', emoji: '👗' } },
+      { en: 'Jacket', id: 'Jaket', emoji: '🧥', phrase: { en: 'I wear a jacket when it’s cold.', id: 'Aku memakai jaket saat dingin.', emoji: '🧥' } },
+      { en: 'Shorts', id: 'Celana Pendek', emoji: '🩳', phrase: { en: 'I wear shorts today.', id: 'Aku memakai celana pendek hari ini.', emoji: '🩳' } },
+      { en: 'Gloves', id: 'Sarung Tangan', emoji: '🧤', phrase: { en: 'I wear gloves to stay warm.', id: 'Aku memakai sarung tangan supaya hangat.', emoji: '🧤' } },
+      { en: 'Scarf', id: 'Syal', emoji: '🧣', phrase: { en: 'I wear a soft scarf.', id: 'Aku memakai syal yang lembut.', emoji: '🧣' } },
+    ],
+  },
+];
+
+/**
+ * Speaking Starter (5–7 th) — format KEDUA `SpeakingPhraseTopic` (types.ts),
+ * kelanjutan langsung dari Little Stars (riset `materi/speaking.md` §11,
+ * pola sama Vocab/Listening/Grammar Starter: kalimat sedikit lebih panjang &
+ * kata lebih abstrak, BUKAN lompat ke kompleksitas baru). **10/10 topik —
+ * target ≥10/skill (CLAUDE.md) TERCAPAI, FULL PARITAS dgn
+ * `VOCAB_TOPICS_STARTER`** (setiap 1 dari 10 domain Vocab Starter dipetakan
+ * ke tepat 1 topik Speaking) — kata kunci & emoji SAMA dgn Vocab, frasa
+ * target ditulis ULANG baru (prinsip "modalitas beda, bukan duplikasi").
+ * Urutan array mengikuti prioritas riset kurikulum Indonesia (Kurikulum
+ * Merdeka Fase A kelas 1-2 SD, `materi/speaking.md` §11.1 — angka & benda di
+ * kelas termasuk unit paling awal, tema keluarga/orang eksplisit menekankan
+ * PRODUKSI KALIMAT DESKRIPTIF, bukan cuma sebut kata) — `makanan-favoritku`
+ * (sesi sebelumnya) tetap topik pertama, 9 topik lain BARU sesi ini.
+ */
+export const SPEAKING_TOPICS_STARTER: SpeakingPhraseTopic[] = [
+  {
+    id: 'suka-makanan',
+    title: 'Makanan Kesukaanku (My Favorite Food)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Pizza', id: 'Pizza', emoji: '🍕', phrase: { en: 'I like pizza.', id: 'Aku suka pizza.', emoji: '🍕' } },
+      { en: 'Burger', id: 'Burger', emoji: '🍔', phrase: { en: 'I want a burger.', id: 'Aku mau burger.', emoji: '🍔' } },
+      { en: 'Sandwich', id: 'Sandwich', emoji: '🥪', phrase: { en: 'I made a sandwich.', id: 'Aku bikin sandwich.', emoji: '🥪' } },
+      { en: 'Ice Cream', id: 'Es Krim', emoji: '🍦', phrase: { en: 'I love ice cream!', id: 'Aku suka es krim!', emoji: '🍦' } },
+      { en: 'Cake', id: 'Kue', emoji: '🍰', phrase: { en: 'Can I have cake?', id: 'Boleh aku minta kue?', emoji: '🍰' } },
+      { en: 'Cookie', id: 'Biskuit', emoji: '🍪', phrase: { en: 'I eat a cookie.', id: 'Aku makan biskuit.', emoji: '🍪' } },
+      { en: 'Chocolate', id: 'Cokelat', emoji: '🍫', phrase: { en: 'I love chocolate.', id: 'Aku suka cokelat.', emoji: '🍫' } },
+      { en: 'Cheese', id: 'Keju', emoji: '🧀', phrase: { en: 'I like cheese.', id: 'Aku suka keju.', emoji: '🧀' } },
+      { en: 'Juice', id: 'Jus', emoji: '🧃', phrase: { en: 'I want some juice.', id: 'Aku mau jus.', emoji: '🧃' } },
+      { en: 'Yogurt', id: 'Yogurt', emoji: '🥣', phrase: { en: 'I eat yogurt.', id: 'Aku makan yogurt.', emoji: '🥣' } },
+    ],
+  },
+  {
+    id: 'sebut-angka',
+    title: 'Sebut Angkanya (Numbers 11–20)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Eleven', id: 'Sebelas', emoji: '1️⃣1️⃣', phrase: { en: 'I count eleven stars.', id: 'Aku menghitung sebelas bintang.', emoji: '1️⃣1️⃣' } },
+      { en: 'Twelve', id: 'Dua Belas', emoji: '1️⃣2️⃣', phrase: { en: 'I have twelve stickers.', id: 'Aku punya dua belas stiker.', emoji: '1️⃣2️⃣' } },
+      { en: 'Thirteen', id: 'Tiga Belas', emoji: '1️⃣3️⃣', phrase: { en: 'I see thirteen birds.', id: 'Aku lihat tiga belas burung.', emoji: '1️⃣3️⃣' } },
+      { en: 'Fourteen', id: 'Empat Belas', emoji: '1️⃣4️⃣', phrase: { en: 'I have fourteen coins.', id: 'Aku punya empat belas koin.', emoji: '1️⃣4️⃣' } },
+      { en: 'Fifteen', id: 'Lima Belas', emoji: '1️⃣5️⃣', phrase: { en: 'I count fifteen candies.', id: 'Aku menghitung lima belas permen.', emoji: '1️⃣5️⃣' } },
+      { en: 'Sixteen', id: 'Enam Belas', emoji: '1️⃣6️⃣', phrase: { en: 'I see sixteen ants.', id: 'Aku lihat enam belas semut.', emoji: '1️⃣6️⃣' } },
+      { en: 'Seventeen', id: 'Tujuh Belas', emoji: '1️⃣7️⃣', phrase: { en: 'I have seventeen crayons.', id: 'Aku punya tujuh belas krayon.', emoji: '1️⃣7️⃣' } },
+      { en: 'Eighteen', id: 'Delapan Belas', emoji: '1️⃣8️⃣', phrase: { en: 'I count eighteen flowers.', id: 'Aku menghitung delapan belas bunga.', emoji: '1️⃣8️⃣' } },
+      { en: 'Nineteen', id: 'Sembilan Belas', emoji: '1️⃣9️⃣', phrase: { en: 'I have nineteen books.', id: 'Aku punya sembilan belas buku.', emoji: '1️⃣9️⃣' } },
+      { en: 'Twenty', id: 'Dua Puluh', emoji: '2️⃣0️⃣', phrase: { en: 'Let’s count to twenty!', id: 'Ayo hitung sampai dua puluh!', emoji: '2️⃣0️⃣' } },
+    ],
+  },
+  {
+    id: 'hari-apa-ini',
+    title: 'Hari Apa Ini? (What Day Is It?)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Monday', id: 'Senin', emoji: '🏫', phrase: { en: 'School starts on Monday.', id: 'Sekolah dimulai hari Senin.', emoji: '🏫' } },
+      { en: 'Tuesday', id: 'Selasa', emoji: '🎨', phrase: { en: 'I paint on Tuesday.', id: 'Aku melukis hari Selasa.', emoji: '🎨' } },
+      { en: 'Wednesday', id: 'Rabu', emoji: '🎵', phrase: { en: 'We sing on Wednesday.', id: 'Kami bernyanyi hari Rabu.', emoji: '🎵' } },
+      { en: 'Thursday', id: 'Kamis', emoji: '⚽', phrase: { en: 'I play sports on Thursday.', id: 'Aku berolahraga hari Kamis.', emoji: '⚽' } },
+      { en: 'Friday', id: 'Jumat', emoji: '🎈', phrase: { en: 'Friday is my favorite day!', id: 'Hari Jumat hari favoritku!', emoji: '🎈' } },
+      { en: 'Saturday', id: 'Sabtu', emoji: '🎉', phrase: { en: 'Saturday is a holiday.', id: 'Hari Sabtu itu libur.', emoji: '🎉' } },
+      { en: 'Sunday', id: 'Minggu', emoji: '🌳', phrase: { en: 'We go to the park on Sunday.', id: 'Kami pergi ke taman hari Minggu.', emoji: '🌳' } },
+      { en: 'Today', id: 'Hari Ini', emoji: '👉', phrase: { en: 'What day is today?', id: 'Hari ini hari apa?', emoji: '👉' } },
+      { en: 'Tomorrow', id: 'Besok', emoji: '🌅', phrase: { en: 'See you tomorrow!', id: 'Sampai jumpa besok!', emoji: '🌅' } },
+      { en: 'Yesterday', id: 'Kemarin', emoji: '🌇', phrase: { en: 'I played yesterday.', id: 'Aku bermain kemarin.', emoji: '🌇' } },
+    ],
+  },
+  {
+    id: 'isi-kelasku',
+    title: 'Isi Kelasku (At School)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Coach', id: 'Pelatih', emoji: '📣', phrase: { en: 'The coach helps us play.', id: 'Pelatih membantu kami bermain.', emoji: '📣' } },
+      { en: 'Classroom', id: 'Ruang Kelas', emoji: '🏫', phrase: { en: 'I learn in the classroom.', id: 'Aku belajar di ruang kelas.', emoji: '🏫' } },
+      { en: 'Friend', id: 'Teman', emoji: '🧑‍🤝‍🧑', phrase: { en: 'She is my friend.', id: 'Dia temanku.', emoji: '🧑‍🤝‍🧑' } },
+      { en: 'Principal', id: 'Kepala Sekolah', emoji: '🧑‍💼', phrase: { en: 'I greet the principal.', id: 'Aku menyapa kepala sekolah.', emoji: '🧑‍💼' } },
+      { en: 'Library', id: 'Perpustakaan', emoji: '📚', phrase: { en: 'I read in the library.', id: 'Aku membaca di perpustakaan.', emoji: '📚' } },
+      { en: 'Lunchbox', id: 'Kotak Bekal', emoji: '🍱', phrase: { en: 'I bring my lunchbox.', id: 'Aku membawa kotak bekalku.', emoji: '🍱' } },
+      { en: 'Uniform', id: 'Seragam', emoji: '👕', phrase: { en: 'I wear my uniform.', id: 'Aku memakai seragamku.', emoji: '👕' } },
+      { en: 'Bell', id: 'Bel', emoji: '🔔', phrase: { en: 'The bell is ringing!', id: 'Belnya berbunyi!', emoji: '🔔' } },
+      { en: 'Homework', id: 'PR', emoji: '📓', phrase: { en: 'I finish my homework.', id: 'Aku menyelesaikan PR-ku.', emoji: '📓' } },
+      { en: 'Recess', id: 'Istirahat', emoji: '🥪', phrase: { en: 'I love recess time!', id: 'Aku suka waktu istirahat!', emoji: '🥪' } },
+    ],
+  },
+  {
+    id: 'kenalkan-orang',
+    title: 'Kenalkan Orangnya (People Around Me)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Neighbor', id: 'Tetangga', emoji: '🏘️', phrase: { en: 'My neighbor is kind.', id: 'Tetanggaku baik hati.', emoji: '🏘️' } },
+      { en: 'Classmate', id: 'Teman Sekelas', emoji: '🧑‍🎓', phrase: { en: 'He is my classmate.', id: 'Dia teman sekelasku.', emoji: '🧑‍🎓' } },
+      { en: 'Boy', id: 'Anak Laki-laki', emoji: '👦', phrase: { en: 'The boy is running.', id: 'Anak laki-laki itu sedang berlari.', emoji: '👦' } },
+      { en: 'Girl', id: 'Anak Perempuan', emoji: '👧', phrase: { en: 'The girl is singing.', id: 'Anak perempuan itu sedang bernyanyi.', emoji: '👧' } },
+      { en: 'Man', id: 'Pria', emoji: '👨', phrase: { en: 'The man is tall.', id: 'Pria itu tinggi.', emoji: '👨' } },
+      { en: 'Woman', id: 'Wanita', emoji: '👩', phrase: { en: 'The woman is smiling.', id: 'Wanita itu tersenyum.', emoji: '👩' } },
+      { en: 'Baby', id: 'Bayi', emoji: '👶', phrase: { en: 'The baby is cute.', id: 'Bayinya lucu.', emoji: '👶' } },
+      { en: 'Driver', id: 'Supir', emoji: '🚕', phrase: { en: 'The driver drives safely.', id: 'Supir itu mengemudi dengan hati-hati.', emoji: '🚕' } },
+      { en: 'Best Friend', id: 'Sahabat', emoji: '🤝', phrase: { en: 'You are my best friend!', id: 'Kamu sahabatku!', emoji: '🤝' } },
+      { en: 'Twin', id: 'Anak Kembar', emoji: '👯', phrase: { en: 'This is my twin.', id: 'Ini kembaranku.', emoji: '👯' } },
+    ],
+  },
+  {
+    id: 'makhluk-kecil',
+    title: 'Makhluk Kecil (Insects & Small Creatures)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Butterfly', id: 'Kupu-kupu', emoji: '🦋', phrase: { en: 'The butterfly is beautiful.', id: 'Kupu-kupunya cantik.', emoji: '🦋' } },
+      { en: 'Bee', id: 'Lebah', emoji: '🐝', phrase: { en: 'The bee makes honey.', id: 'Lebah membuat madu.', emoji: '🐝' } },
+      { en: 'Ant', id: 'Semut', emoji: '🐜', phrase: { en: 'I see a tiny ant.', id: 'Aku lihat semut kecil.', emoji: '🐜' } },
+      { en: 'Ladybug', id: 'Kepik', emoji: '🐞', phrase: { en: 'I found a ladybug.', id: 'Aku menemukan kepik.', emoji: '🐞' } },
+      { en: 'Spider', id: 'Laba-laba', emoji: '🕷️', phrase: { en: 'The spider spins a web.', id: 'Laba-laba memintal sarang.', emoji: '🕷️' } },
+      { en: 'Snail', id: 'Siput', emoji: '🐌', phrase: { en: 'The snail moves slowly.', id: 'Siputnya bergerak lambat.', emoji: '🐌' } },
+      { en: 'Frog', id: 'Katak', emoji: '🐸', phrase: { en: 'The frog can jump high.', id: 'Katak bisa melompat tinggi.', emoji: '🐸' } },
+      { en: 'Turtle', id: 'Kura-kura', emoji: '🐢', phrase: { en: 'The turtle has a shell.', id: 'Kura-kura punya cangkang.', emoji: '🐢' } },
+      { en: 'Crab', id: 'Kepiting', emoji: '🦀', phrase: { en: 'The crab walks sideways.', id: 'Kepiting berjalan menyamping.', emoji: '🦀' } },
+      { en: 'Worm', id: 'Cacing', emoji: '🪱', phrase: { en: 'The worm lives in the soil.', id: 'Cacing hidup di dalam tanah.', emoji: '🪱' } },
+    ],
+  },
+  {
+    id: 'jalan-jalan',
+    title: 'Yuk Jalan-Jalan (Places Around Us)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Park', id: 'Taman', emoji: '🏞️', phrase: { en: 'Let’s go to the park!', id: 'Ayo pergi ke taman!', emoji: '🏞️' } },
+      { en: 'Zoo', id: 'Kebun Binatang', emoji: '🦓', phrase: { en: 'I want to visit the zoo.', id: 'Aku mau mengunjungi kebun binatang.', emoji: '🦓' } },
+      { en: 'Beach', id: 'Pantai', emoji: '🏖️', phrase: { en: 'We swim at the beach.', id: 'Kami berenang di pantai.', emoji: '🏖️' } },
+      { en: 'Market', id: 'Pasar', emoji: '🛒', phrase: { en: 'Mom shops at the market.', id: 'Ibu belanja di pasar.', emoji: '🛒' } },
+      { en: 'Hospital', id: 'Rumah Sakit', emoji: '🏥', phrase: { en: 'The doctor works at the hospital.', id: 'Dokter bekerja di rumah sakit.', emoji: '🏥' } },
+      { en: 'Farm', id: 'Ladang', emoji: '🚜', phrase: { en: 'The farmer works on the farm.', id: 'Petani bekerja di ladang.', emoji: '🚜' } },
+      { en: 'Bridge', id: 'Jembatan', emoji: '🌉', phrase: { en: 'We walk across the bridge.', id: 'Kami berjalan menyeberangi jembatan.', emoji: '🌉' } },
+      { en: 'Playground', id: 'Taman Bermain', emoji: '🛝', phrase: { en: 'I play at the playground.', id: 'Aku bermain di taman bermain.', emoji: '🛝' } },
+      { en: 'Street', id: 'Jalan', emoji: '🛣️', phrase: { en: 'Cars drive on the street.', id: 'Mobil melaju di jalan.', emoji: '🛣️' } },
+      { en: 'Mountain', id: 'Gunung', emoji: '⛰️', phrase: { en: 'We hike up the mountain.', id: 'Kami mendaki gunung.', emoji: '⛰️' } },
+    ],
+  },
+  {
+    id: 'isi-rumahku',
+    title: 'Isi Rumahku (Things at Home)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Table', id: 'Meja', emoji: '🍽️', phrase: { en: 'We eat at the table.', id: 'Kami makan di meja.', emoji: '🍽️' } },
+      { en: 'Bed', id: 'Tempat Tidur', emoji: '🛏️', phrase: { en: 'I sleep in my bed.', id: 'Aku tidur di tempat tidurku.', emoji: '🛏️' } },
+      { en: 'Sofa', id: 'Sofa', emoji: '🛋️', phrase: { en: 'We sit on the sofa.', id: 'Kami duduk di sofa.', emoji: '🛋️' } },
+      { en: 'Lamp', id: 'Lampu', emoji: '💡', phrase: { en: 'Please turn on the lamp.', id: 'Tolong nyalakan lampunya.', emoji: '💡' } },
+      { en: 'Television', id: 'Televisi', emoji: '📺', phrase: { en: 'We watch television together.', id: 'Kami menonton televisi bersama.', emoji: '📺' } },
+      { en: 'Fridge', id: 'Kulkas', emoji: '🧊', phrase: { en: 'The milk is in the fridge.', id: 'Susunya ada di kulkas.', emoji: '🧊' } },
+      { en: 'Mirror', id: 'Cermin', emoji: '🪞', phrase: { en: 'I look in the mirror.', id: 'Aku bercermin.', emoji: '🪞' } },
+      { en: 'Phone', id: 'Telepon', emoji: '📱', phrase: { en: 'Mom is using the phone.', id: 'Ibu sedang memakai telepon.', emoji: '📱' } },
+      { en: 'Cupboard', id: 'Lemari', emoji: '🗄️', phrase: { en: 'The plates are in the cupboard.', id: 'Piringnya ada di lemari.', emoji: '🗄️' } },
+      { en: 'Broom', id: 'Sapu', emoji: '🧹', phrase: { en: 'I sweep with a broom.', id: 'Aku menyapu dengan sapu.', emoji: '🧹' } },
+    ],
+  },
+  {
+    id: 'alam-di-sekitarku',
+    title: 'Alam di Sekitarku (Nature Around Us)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Sun', id: 'Matahari', emoji: '☀️', phrase: { en: 'The sun is so bright!', id: 'Mataharinya terang sekali!', emoji: '☀️' } },
+      { en: 'Moon', id: 'Bulan', emoji: '🌙', phrase: { en: 'I see the moon tonight.', id: 'Aku melihat bulan malam ini.', emoji: '🌙' } },
+      { en: 'Sky', id: 'Langit', emoji: '🌤️', phrase: { en: 'The sky is blue today.', id: 'Langitnya biru hari ini.', emoji: '🌤️' } },
+      { en: 'Cloud', id: 'Awan', emoji: '☁️', phrase: { en: 'I see a fluffy cloud.', id: 'Aku melihat awan yang lembut.', emoji: '☁️' } },
+      { en: 'Tree', id: 'Pohon', emoji: '🌳', phrase: { en: 'The tree is very tall.', id: 'Pohonnya sangat tinggi.', emoji: '🌳' } },
+      { en: 'Flower', id: 'Bunga', emoji: '🌸', phrase: { en: 'The flower smells nice.', id: 'Bunganya harum.', emoji: '🌸' } },
+      { en: 'Grass', id: 'Rumput', emoji: '🌿', phrase: { en: 'The grass feels soft.', id: 'Rumputnya terasa lembut.', emoji: '🌿' } },
+      { en: 'River', id: 'Sungai', emoji: '🌊', phrase: { en: 'We swim in the river.', id: 'Kami berenang di sungai.', emoji: '🌊' } },
+      { en: 'Stone', id: 'Batu', emoji: '🪨', phrase: { en: 'I found a smooth stone.', id: 'Aku menemukan batu yang halus.', emoji: '🪨' } },
+      { en: 'Star', id: 'Bintang', emoji: '⭐', phrase: { en: 'I see a shining star.', id: 'Aku melihat bintang yang bersinar.', emoji: '⭐' } },
+    ],
+  },
+  {
+    id: 'hobiku',
+    title: 'Hobiku (My Hobbies)',
+    desc: '10 ucapan',
+    items: [
+      { en: 'Drawing', id: 'Menggambar', emoji: '🎨', phrase: { en: 'I love drawing pictures.', id: 'Aku suka menggambar.', emoji: '🎨' } },
+      { en: 'Singing', id: 'Bernyanyi', emoji: '🎤', phrase: { en: 'I enjoy singing songs.', id: 'Aku suka bernyanyi.', emoji: '🎤' } },
+      { en: 'Reading', id: 'Membaca', emoji: '📖', phrase: { en: 'I like reading books.', id: 'Aku suka membaca buku.', emoji: '📖' } },
+      { en: 'Painting', id: 'Melukis', emoji: '🖌️', phrase: { en: 'I enjoy painting pictures.', id: 'Aku suka melukis.', emoji: '🖌️' } },
+      { en: 'Cooking', id: 'Memasak', emoji: '🍳', phrase: { en: 'I like cooking with mom.', id: 'Aku suka memasak bersama ibu.', emoji: '🍳' } },
+      { en: 'Camping', id: 'Berkemah', emoji: '⛺', phrase: { en: 'I love camping outside.', id: 'Aku suka berkemah di luar.', emoji: '⛺' } },
+      { en: 'Fishing', id: 'Memancing', emoji: '🎣', phrase: { en: 'I go fishing with dad.', id: 'Aku memancing bersama ayah.', emoji: '🎣' } },
+      { en: 'Gardening', id: 'Berkebun', emoji: '🌱', phrase: { en: 'I enjoy gardening at home.', id: 'Aku suka berkebun di rumah.', emoji: '🌱' } },
+      { en: 'Collecting', id: 'Mengoleksi', emoji: '🪙', phrase: { en: 'I like collecting coins.', id: 'Aku suka mengoleksi koin.', emoji: '🪙' } },
+      { en: 'Building', id: 'Membangun', emoji: '🧱', phrase: { en: 'I love building towers.', id: 'Aku suka membangun menara.', emoji: '🧱' } },
+    ],
+  },
+];
+
+/**
+ * Speaking Achiever (11–13 th, ≈A1→A2) — TETAP format LAMA `SpeakingTopic`
+ * (model/drill/roleplay), BUKAN `SpeakingPhraseTopic` — riset
+ * (`materi/speaking.md` §3 revisi sesi ini): Cambridge A2 Flyers Speaking
+ * (backbone struktural Achiever) py task "describe picture differences" +
+ * "give a reason" (deskripsi & alasan, BUKAN sekadar ulang kata tunggal),
+ * dan EF Indonesia "Trailblazers" (10–14 th, overlap usia Achiever) eksplisit
+ * menyebut "membangun kepercayaan diri mengekspresikan pendapat" — DUA
+ * sumber independen menunjuk ke arah yang SAMA: usia ini sudah siap produksi
+ * kalimat DESKRIPTIF & jawaban OPINI terbuka, bukan lagi cuma tirukan frasa
+ * tertutup (`SpeakingPhraseTopic`, cocok utk Little Stars/Starter yang belum
+ * siap itu). `drill` dipakai utk kalimat deskriptif tertutup (bisa diskor
+ * proporsional), `roleplay` utk pertanyaan opini/deskripsi BEBAS (jawaban
+ * personal, tidak ada 1 jawaban benar — pola sama `roleplay` Explorer/
+ * Adventurer). Kata kunci dipetakan dari `VOCAB_TOPICS_ACHIEVER` topik
+ * `ciri-ciri-fisik` (Physical Appearance).
+ */
+/**
+ * 9 topik tambahan (sesi ini) — menggenapkan Speaking Achiever dari 1 jadi
+ * 10 topik (target CLAUDE.md ≥10 topik/skill). Riset & rasional lengkap:
+ * `materi/speaking.md` §14. Sama prinsip dgn genapkan Adventurer (sesi
+ * sebelumnya): BUKAN cuma tambah topik dgn kompleksitas SAMA — Kurikulum
+ * Merdeka **Fase D** (kelas 7-9 SMP, backbone Achiever py posisi "antara
+ * Fase C & D") eksplisit menuntut *"peserta didik terlibat dalam diskusi,
+ * misalnya memberikan PENDAPAT, membuat PERBANDINGAN, dan menyampaikan
+ * PREFERENSI"* dgn frasa fungsional bernama eksplisit ("In my opinion...",
+ * "What do you think about...", "I believe that...") — SATU TINGKAT LEBIH
+ * MAJU dari pola deskripsi+alasan ("because") yang baru dipakai Adventurer.
+ * SEMUA 9 topik baru WAJIB py ≥1 frasa OPINI eksplisit ("In my opinion"/
+ * "I believe"/"I think") DAN ≥1 pertanyaan PERBANDINGAN/PREFERENSI
+ * ("Which do you prefer...", "..., or...? Why?") — pembeda konkret dari
+ * Adventurer (yang cuma py "because", tanpa framing opini/perbandingan
+ * eksplisit). Domain dipetakan ke 9 dari 10 domain `VOCAB_TOPICS_ACHIEVER`
+ * yg belum disentuh Speaking — SAMA 9 domain (+`ciri-ciri-fisik` yg sudah
+ * ada) yg Listening Achiever SUDAH pakai SEMUA 10-nya, pola sama Explorer/
+ * Adventurer (id topik Speaking beda dari id Listening).
+ */
+export const SPEAKING_TOPICS_ACHIEVER: SpeakingTopic[] = [
+  {
+    id: 'deskripsi-orang',
+    title: 'Deskripsi Orang (Describing People)',
+    desc: '4 latihan bicara',
+    model: ['She has curly hair.', 'He is tall and strong.'],
+    drill: ['My friend has curly hair.', 'My dad is tall.', 'My sister is beautiful.', 'My grandfather is old.'],
+    roleplay: ['What does your best friend look like?', 'Describe someone in your family.', 'Who is the tallest person you know?'],
+  },
+  {
+    id: 'tempat-favorit-di-kota',
+    title: 'Tempat Favoritku di Kota (My Favorite Place in Town)',
+    desc: '3 latihan bicara',
+    model: ['In my opinion, the library is the best place to relax.', 'I prefer the park to the mall because it is quieter.'],
+    drill: ['The museum is more interesting than the mall.', 'I think the stadium is exciting on game day.', 'The market is busier than the library.'],
+    roleplay: ['What is your favorite place in town?', 'Which do you prefer, the park or the mall?', 'What do you think about visiting a museum?'],
+  },
+  {
+    id: 'kasih-arahan',
+    title: 'Kasih Arahan (Giving Directions)',
+    desc: '3 latihan bicara',
+    model: ['Turn left at the corner.', 'I believe this is the fastest way to school.'],
+    drill: ['Go straight, then turn right.', 'The bank is between the school and the park.', 'I think this shortcut is better than the main road.'],
+    roleplay: ['How do you get to your school?', 'Which way is faster, left or right?', 'What do you think is the best way to the park?'],
+  },
+  {
+    id: 'hiburan-favoritku',
+    title: 'Hiburan Favoritku (My Favorite Entertainment)',
+    desc: '3 latihan bicara',
+    model: ['In my opinion, watching movies is more fun than playing video games.', 'I prefer reading comics because they are relaxing.'],
+    drill: ['I think concerts are exciting.', 'Board games are more fun with friends.', 'I believe outdoor activities are healthier than screen time.'],
+    roleplay: ['What do you like to do in your free time?', 'What do you think about video games?', 'Do you prefer indoor or outdoor activities? Why?'],
+  },
+  {
+    id: 'kebiasaan-baikku',
+    title: 'Kebiasaan Baikku (My Good Habits)',
+    desc: '3 latihan bicara',
+    model: ['I believe that exercising every day improves my health.', 'I prefer organizing my room before studying.'],
+    drill: ['I try to achieve my goals every week.', 'I think practicing makes you better at anything.', 'She decided to join the school club.'],
+    roleplay: ['What habit do you want to improve?', 'What do you think helps you study better?', 'Do you prefer planning ahead or doing things spontaneously?'],
+  },
+  {
+    id: 'pendapatku-soal-teknologi',
+    title: 'Pendapatku Soal Teknologi (My Opinion on Technology)',
+    desc: '3 latihan bicara',
+    model: ['In my opinion, tablets are useful for learning.', 'I believe the internet helps us learn new things.'],
+    drill: ['I think computers are faster than tablets for typing.', 'A smartphone is more portable than a laptop.', 'I believe technology should be used carefully.'],
+    roleplay: ['What do you think about using a tablet for school?', 'Which is better, a laptop or a smartphone? Why?', 'How does technology help you learn?'],
+  },
+  {
+    id: 'kepribadian-idolaku',
+    title: 'Kepribadian Idolaku (Personality I Admire)',
+    desc: '3 latihan bicara',
+    model: ['I admire people who are honest.', 'In my opinion, being kind is more important than being smart.'],
+    drill: ['I think confident people are inspiring.', 'A generous friend is a good friend.', 'I believe patience is an important trait.'],
+    roleplay: ['What personality trait do you admire most?', 'Do you think kindness is more important than intelligence? Why?', 'Describe someone with a good personality.'],
+  },
+  {
+    id: 'pelajaran-favoritku',
+    title: 'Pelajaran Favoritku (My Favorite Subject)',
+    desc: '3 latihan bicara',
+    model: ['In my opinion, science is the most interesting subject.', 'I prefer math because it is challenging.'],
+    drill: ['I think art class is more relaxing than math.', 'History helps us understand the past.', 'I believe English is useful for the future.'],
+    roleplay: ['What is your favorite subject?', 'Which subject do you find difficult? Why?', 'What do you think about learning a new language?'],
+  },
+  {
+    id: 'angka-di-sekitarku',
+    title: 'Angka di Sekitarku (Numbers Around Me)',
+    desc: '3 latihan bicara',
+    model: ['I think fifty dollars is expensive for a toy.', 'In my opinion, saving one hundred dollars a month is a good goal.'],
+    drill: ['I have seventy pages left to read.', 'The trip costs around two hundred dollars.', 'I believe ninety percent effort is enough to pass.'],
+    roleplay: ['How much money do you save each month?', 'Do you think one hundred dollars is a lot for a gift?', 'What number is important to you?'],
+  },
+  {
+    id: 'benda-favoritku',
+    title: 'Benda Favoritku (My Favorite Things)',
+    desc: '3 latihan bicara',
+    model: ['I think this backpack is durable and comfortable.', 'In my opinion, a flexible schedule is better than a strict one.'],
+    drill: ['This material is stronger than plastic.', 'I believe a lightweight bag is more practical for school.', 'The fabric feels smooth and soft.'],
+    roleplay: ['What object do you use every day?', 'Which is better, a strong material or a light one? Why?', 'Describe your favorite thing and why you like it.'],
+  },
+];
+
+/**
+ * Speaking Trailblazer (12+ th, ≈B1) — format KETIGA `SpeakingInterviewTopic`
+ * (types.ts), BARU dari nol. Keputusan user (ditanya eksplisit: ikuti default
+ * PRD §9 "low-effort 1-2 topik" VS desain elemen baru ala interview KET/PET
+ * — user PILIH desain baru) — riset `materi/speaking.md` §9: Cambridge A2
+ * Key (KET) → B1 Preliminary (PET) py Speaking test format INTERVIEW
+ * ANTAR-KANDIDAT, ciri khas yg genuinely beda dari semua level di bawahnya
+ * (bukan cuma "naikkan kompleksitas kalimat"). "Kandidat A" fiktif (`Bima`)
+ * menjawab TIAP pertanyaan DULU (model jawaban natural + alasan "because"),
+ * baru giliran anak menjawab dgn kata-katanya sendiri via mic — jawaban anak
+ * TIDAK diskor proporsional (personal/terbuka, sama alasan `roleplay`
+ * `SpeakingTopic` lama), TETAP wajib py "▶️ Play Suaramu".
+ *
+ * **5/5 topik — target Trailblazer TERCAPAI** (CLAUDE.md poin 1: Trailblazer
+ * SENGAJA target ≥5, BUKAN ≥10 spt 5 level lain, biar tetap terasa "jalur
+ * bonus" — bukan target lama "1-2 modul" lagi, sudah direvisi user). 1 topik
+ * (`rencana-masa-depan`) dari sesi awal + 4 topik BARU (`akhir-pekanku`/
+ * `olahraga-kesehatan`/`arti-persahabatan`/`tempat-tinggalku`) — semua tema
+ * PET Speaking Part 1 yg genuinely umum (weekend/hobi, olahraga&kesehatan,
+ * makna persahabatan, deskripsi tempat tinggal) & BELUM dipakai topik
+ * Vocab/Listening Trailblazer manapun. `peerName` KONSISTEN "Bima" di
+ * SEMUA 5 topik (bukan ganti-ganti nama tiap topik) — supaya anak terbiasa
+ * dgn "1 teman ngobrol tetap" di seluruh level ini, bukan karakter baru tiap
+ * kali (konsistensi pengalaman, bukan variasi sembarangan).
+ */
+export const SPEAKING_TOPICS_TRAILBLAZER: SpeakingInterviewTopic[] = [
+  {
+    id: 'rencana-masa-depan',
+    title: 'Rencana Masa Depan (Future Plans)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'What do you want to be when you grow up?', id: 'Apa cita-citamu kalau sudah besar?' },
+        peerAnswer: { en: 'I want to be a doctor because I want to help people.', id: 'Aku mau jadi dokter karena aku mau membantu orang.' },
+      },
+      {
+        question: { en: 'What subject do you want to study more in the future?', id: 'Pelajaran apa yang mau kamu pelajari lebih dalam di masa depan?' },
+        peerAnswer: { en: "I want to study science because it's very interesting.", id: 'Aku mau belajar sains karena sangat menarik.' },
+      },
+      {
+        question: { en: 'Do you want to live in a big city or a small town?', id: 'Kamu mau tinggal di kota besar atau kota kecil?' },
+        peerAnswer: { en: 'I want to live in a big city because there are many things to do.', id: 'Aku mau tinggal di kota besar karena banyak hal yang bisa dilakukan.' },
+      },
+      {
+        question: { en: 'What new skill do you want to learn?', id: 'Keahlian baru apa yang mau kamu pelajari?' },
+        peerAnswer: { en: 'I want to learn how to play the guitar.', id: 'Aku mau belajar main gitar.' },
+      },
+      {
+        question: { en: 'Do you want to travel to another country someday?', id: 'Apakah kamu mau bepergian ke negara lain suatu hari nanti?' },
+        peerAnswer: { en: 'Yes, I want to visit Japan because I love the culture.', id: 'Iya, aku mau mengunjungi Jepang karena aku suka budayanya.' },
+      },
+      {
+        question: { en: 'What kind of job do you think is important for the future?', id: 'Menurutmu, pekerjaan apa yang penting untuk masa depan?' },
+        peerAnswer: { en: 'I think being a teacher is important because they help students learn.', id: 'Menurutku jadi guru itu penting karena mereka membantu murid belajar.' },
+      },
+      {
+        question: { en: 'How do you want to help your community when you are older?', id: 'Bagaimana kamu ingin membantu lingkunganmu saat sudah besar nanti?' },
+        peerAnswer: { en: 'I want to plant more trees to keep the air clean.', id: 'Aku mau menanam lebih banyak pohon supaya udaranya tetap bersih.' },
+      },
+      {
+        question: { en: 'What is your biggest dream?', id: 'Apa impian terbesarmu?' },
+        peerAnswer: { en: 'My biggest dream is to build my own school for children.', id: 'Impian terbesarku adalah membangun sekolahku sendiri untuk anak-anak.' },
+      },
+    ],
+  },
+  {
+    id: 'akhir-pekanku',
+    title: 'Akhir Pekanku (My Weekend)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'What do you usually do on weekends?', id: 'Apa yang biasanya kamu lakukan di akhir pekan?' },
+        peerAnswer: { en: 'I usually play basketball with my friends because it keeps me active.', id: 'Aku biasanya main basket dengan teman-temanku karena itu membuatku tetap aktif.' },
+      },
+      {
+        question: { en: 'Do you prefer staying at home or going out on weekends?', id: 'Kamu lebih suka di rumah atau pergi keluar saat akhir pekan?' },
+        peerAnswer: { en: 'I prefer going out because I like visiting new places.', id: 'Aku lebih suka pergi keluar karena aku suka mengunjungi tempat baru.' },
+      },
+      {
+        question: { en: 'What is your favorite weekend activity?', id: 'Apa aktivitas akhir pekan favoritmu?' },
+        peerAnswer: { en: 'My favorite activity is watching movies with my family.', id: 'Aktivitas favoritku adalah menonton film bersama keluargaku.' },
+      },
+      {
+        question: { en: 'Do you do any chores on the weekend?', id: 'Apakah kamu mengerjakan pekerjaan rumah saat akhir pekan?' },
+        peerAnswer: { en: 'Yes, I help clean the house every Saturday morning.', id: 'Iya, aku bantu bersih-bersih rumah setiap Sabtu pagi.' },
+      },
+      {
+        question: { en: 'How do you relax after a busy week?', id: 'Bagaimana kamu bersantai setelah minggu yang sibuk?' },
+        peerAnswer: { en: 'I relax by listening to music and reading books.', id: 'Aku bersantai dengan mendengarkan musik dan membaca buku.' },
+      },
+      {
+        question: { en: 'Do you spend your weekend with friends or family?', id: 'Kamu menghabiskan akhir pekan dengan teman atau keluarga?' },
+        peerAnswer: { en: 'I spend most of my weekend with my family.', id: 'Aku menghabiskan sebagian besar akhir pekanku dengan keluargaku.' },
+      },
+      {
+        question: { en: 'Would you rather have a longer weekend or a shorter week?', id: 'Kamu lebih suka akhir pekan lebih panjang atau minggu kerja lebih pendek?' },
+        peerAnswer: { en: 'I would rather have a longer weekend to rest more.', id: 'Aku lebih suka akhir pekan yang lebih panjang supaya bisa istirahat lebih banyak.' },
+      },
+      {
+        question: { en: 'What is something new you want to try next weekend?', id: 'Apa hal baru yang ingin kamu coba akhir pekan depan?' },
+        peerAnswer: { en: 'I want to try hiking with my friends next weekend.', id: 'Aku mau coba mendaki gunung bersama teman-temanku akhir pekan depan.' },
+      },
+    ],
+  },
+  {
+    id: 'olahraga-kesehatan',
+    title: 'Olahraga & Kesehatan (Sports & Health)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'Do you play any sports?', id: 'Apakah kamu bermain olahraga?' },
+        peerAnswer: { en: 'Yes, I play badminton twice a week.', id: 'Iya, aku main bulu tangkis dua kali seminggu.' },
+      },
+      {
+        question: { en: 'Why do you think exercise is important?', id: 'Menurutmu kenapa olahraga itu penting?' },
+        peerAnswer: { en: 'I think exercise is important because it keeps our body strong and healthy.', id: 'Menurutku olahraga itu penting karena membuat tubuh kita kuat dan sehat.' },
+      },
+      {
+        question: { en: 'What sport would you like to try?', id: 'Olahraga apa yang ingin kamu coba?' },
+        peerAnswer: { en: 'I would like to try swimming because it looks fun.', id: 'Aku ingin coba berenang karena kelihatannya seru.' },
+      },
+      {
+        question: { en: 'Do you prefer team sports or individual sports?', id: 'Kamu lebih suka olahraga tim atau perorangan?' },
+        peerAnswer: { en: 'I prefer team sports because I enjoy playing with friends.', id: 'Aku lebih suka olahraga tim karena aku suka bermain bersama teman.' },
+      },
+      {
+        question: { en: 'How often do you exercise?', id: 'Seberapa sering kamu berolahraga?' },
+        peerAnswer: { en: 'I exercise almost every day, even just a short walk.', id: 'Aku berolahraga hampir setiap hari, walau cuma jalan kaki sebentar.' },
+      },
+      {
+        question: { en: 'What do you eat to stay healthy?', id: 'Apa yang kamu makan supaya tetap sehat?' },
+        peerAnswer: { en: 'I try to eat more vegetables and drink plenty of water.', id: 'Aku berusaha makan lebih banyak sayur dan minum banyak air.' },
+      },
+      {
+        question: { en: 'Who is your favorite athlete?', id: 'Siapa atlet favoritmu?' },
+        peerAnswer: { en: 'My favorite athlete is a badminton player because he never gives up.', id: 'Atlet favoritku adalah pemain bulu tangkis karena dia tidak pernah menyerah.' },
+      },
+      {
+        question: { en: 'Do you think schools should have more sports classes?', id: 'Menurutmu apakah sekolah harus punya lebih banyak kelas olahraga?' },
+        peerAnswer: { en: 'Yes, I believe more sports classes would make students healthier.', id: 'Iya, aku percaya lebih banyak kelas olahraga akan membuat murid lebih sehat.' },
+      },
+    ],
+  },
+  {
+    id: 'arti-persahabatan',
+    title: 'Arti Persahabatan (The Meaning of Friendship)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'What makes a good friend?', id: 'Apa yang membuat seseorang jadi teman yang baik?' },
+        peerAnswer: { en: 'I think a good friend is someone who is honest and supportive.', id: 'Menurutku teman yang baik adalah orang yang jujur dan suportif.' },
+      },
+      {
+        question: { en: 'How many close friends do you have?', id: 'Berapa banyak teman dekat yang kamu punya?' },
+        peerAnswer: { en: 'I have three close friends that I trust the most.', id: 'Aku punya tiga teman dekat yang paling aku percaya.' },
+      },
+      {
+        question: { en: 'What do you and your friends usually do together?', id: 'Apa yang biasa kamu dan temanmu lakukan bersama?' },
+        peerAnswer: { en: 'We usually play games and study together.', id: 'Kami biasanya main game dan belajar bersama.' },
+      },
+      {
+        question: { en: 'Is it important to have many friends or a few close ones?', id: 'Apakah penting punya banyak teman atau sedikit tapi dekat?' },
+        peerAnswer: { en: 'In my opinion, having a few close friends is better than having many.', id: 'Menurutku, punya sedikit teman dekat lebih baik daripada banyak teman.' },
+      },
+      {
+        question: { en: 'How do you help a friend who is sad?', id: 'Bagaimana kamu membantu teman yang sedang sedih?' },
+        peerAnswer: { en: 'I listen to them and try to cheer them up.', id: 'Aku mendengarkan mereka dan berusaha menghibur mereka.' },
+      },
+      {
+        question: { en: 'Have you ever had a disagreement with a friend?', id: 'Pernahkah kamu berselisih pendapat dengan teman?' },
+        peerAnswer: { en: 'Yes, but we talked about it and became friends again.', id: 'Pernah, tapi kami membicarakannya dan berteman lagi.' },
+      },
+      {
+        question: { en: 'What do you think about making friends online?', id: 'Bagaimana pendapatmu soal berteman secara daring?' },
+        peerAnswer: { en: 'I think it can be nice, but meeting in person is more meaningful.', id: 'Menurutku itu bisa menyenangkan, tapi bertemu langsung lebih berarti.' },
+      },
+      {
+        question: { en: 'Why is friendship important to you?', id: 'Kenapa persahabatan penting untukmu?' },
+        peerAnswer: { en: 'Friendship is important because it makes life happier and easier.', id: 'Persahabatan penting karena membuat hidup lebih bahagia dan lebih mudah.' },
+      },
+    ],
+  },
+  {
+    id: 'tempat-tinggalku',
+    title: 'Tempat Tinggalku (Where I Live)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'Can you describe the place where you live?', id: 'Bisakah kamu menjelaskan tempat tinggalmu?' },
+        peerAnswer: { en: 'I live in a small house near a park.', id: 'Aku tinggal di rumah kecil dekat taman.' },
+      },
+      {
+        question: { en: 'What do you like most about your neighborhood?', id: 'Apa yang paling kamu suka dari lingkungan tempat tinggalmu?' },
+        peerAnswer: { en: 'I like that it is quiet and friendly.', id: 'Aku suka karena tempatnya tenang dan ramah.' },
+      },
+      {
+        question: { en: 'Is your home in a city or a village?', id: 'Apakah rumahmu di kota atau di desa?' },
+        peerAnswer: { en: 'My home is in a small town, between a city and a village.', id: 'Rumahku ada di kota kecil, di antara kota besar dan desa.' },
+      },
+      {
+        question: { en: 'What would you change about your neighborhood?', id: 'Apa yang ingin kamu ubah dari lingkunganmu?' },
+        peerAnswer: { en: 'I would like more parks for children to play in.', id: 'Aku ingin lebih banyak taman untuk anak-anak bermain.' },
+      },
+      {
+        question: { en: 'Do you know your neighbors well?', id: 'Apakah kamu kenal baik dengan tetanggamu?' },
+        peerAnswer: { en: 'Yes, my neighbors are very friendly and helpful.', id: 'Iya, tetanggaku sangat ramah dan suka membantu.' },
+      },
+      {
+        question: { en: 'What is special about the place where you live?', id: 'Apa yang istimewa dari tempat tinggalmu?' },
+        peerAnswer: { en: 'My town is famous for its delicious street food.', id: 'Kotaku terkenal dengan jajanan kaki lima yang enak.' },
+      },
+      {
+        question: { en: 'Would you like to live somewhere else in the future?', id: 'Apakah kamu ingin tinggal di tempat lain di masa depan?' },
+        peerAnswer: { en: 'I would like to live near the beach someday.', id: 'Aku ingin tinggal dekat pantai suatu hari nanti.' },
+      },
+      {
+        question: { en: 'How has your neighborhood changed over the years?', id: 'Bagaimana lingkunganmu berubah selama bertahun-tahun?' },
+        peerAnswer: { en: 'There are more shops and buildings now than before.', id: 'Sekarang ada lebih banyak toko dan bangunan dibanding dulu.' },
+      },
+    ],
+  },
+  {
+    id: 'sekolah-pelajaran',
+    title: 'Sekolah & Pelajaran (School & Studies)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'What is your favorite subject at school?', id: 'Apa pelajaran favoritmu di sekolah?' },
+        peerAnswer: { en: 'My favorite subject is science because I love doing experiments.', id: 'Pelajaran favoritku sains karena aku suka melakukan percobaan.' },
+      },
+      {
+        question: { en: 'Is there a subject you find difficult?', id: 'Apakah ada pelajaran yang menurutmu sulit?' },
+        peerAnswer: { en: 'Yes, math is difficult for me because the formulas are hard to remember.', id: 'Iya, matematika sulit buatku karena rumusnya susah diingat.' },
+      },
+      {
+        question: { en: 'Who is your favorite teacher?', id: 'Siapa guru favoritmu?' },
+        peerAnswer: { en: 'My favorite teacher is my English teacher because she makes lessons fun.', id: 'Guru favoritku adalah guru Bahasa Inggrisku karena dia membuat pelajaran jadi seru.' },
+      },
+      {
+        question: { en: 'What do you usually do during recess?', id: 'Apa yang biasanya kamu lakukan saat istirahat?' },
+        peerAnswer: { en: 'I usually chat with my friends and eat a snack.', id: 'Aku biasanya mengobrol dengan teman-teman dan makan camilan.' },
+      },
+      {
+        question: { en: 'How do you get to school every day?', id: 'Bagaimana kamu pergi ke sekolah setiap hari?' },
+        peerAnswer: { en: 'I go to school by bicycle because it is close to my house.', id: 'Aku naik sepeda ke sekolah karena rumahku dekat.' },
+      },
+      {
+        question: { en: 'What do you think makes a good student?', id: 'Menurutmu apa yang membuat seorang murid jadi baik?' },
+        peerAnswer: { en: 'I think a good student listens carefully and asks questions.', id: 'Menurutku murid yang baik mendengarkan dengan saksama dan bertanya.' },
+      },
+      {
+        question: { en: 'Do you prefer studying alone or in a group?', id: 'Kamu lebih suka belajar sendiri atau berkelompok?' },
+        peerAnswer: { en: 'I prefer studying in a group because we can help each other.', id: 'Aku lebih suka belajar berkelompok karena kami bisa saling membantu.' },
+      },
+      {
+        question: { en: 'What is your dream school project?', id: 'Apa proyek sekolah impianmu?' },
+        peerAnswer: { en: 'My dream project is building a small robot for the science fair.', id: 'Proyek impianku adalah membuat robot kecil untuk pameran sains.' },
+      },
+    ],
+  },
+  {
+    id: 'musik-dan-film',
+    title: 'Musik & Film (Music & Movies)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'What kind of music do you like?', id: 'Musik apa yang kamu sukai?' },
+        peerAnswer: { en: 'I like pop music because the songs are catchy and fun.', id: 'Aku suka musik pop karena lagunya catchy dan menyenangkan.' },
+      },
+      {
+        question: { en: 'Do you play a musical instrument?', id: 'Apakah kamu bisa memainkan alat musik?' },
+        peerAnswer: { en: 'Yes, I play the piano a little bit every week.', id: 'Iya, aku main piano sedikit setiap minggu.' },
+      },
+      {
+        question: { en: 'What is your favorite movie?', id: 'Apa film favoritmu?' },
+        peerAnswer: { en: 'My favorite movie is an animated film because the story is touching.', id: 'Film favoritku adalah film animasi karena ceritanya menyentuh.' },
+      },
+      {
+        question: { en: 'Do you prefer watching movies at home or at the cinema?', id: 'Kamu lebih suka nonton film di rumah atau di bioskop?' },
+        peerAnswer: { en: 'I prefer the cinema because the big screen feels more exciting.', id: 'Aku lebih suka di bioskop karena layar besarnya terasa lebih seru.' },
+      },
+      {
+        question: { en: 'Who is your favorite singer or band?', id: 'Siapa penyanyi atau band favoritmu?' },
+        peerAnswer: { en: 'My favorite singer writes songs about friendship and hope.', id: 'Penyanyi favoritku menulis lagu tentang persahabatan dan harapan.' },
+      },
+      {
+        question: { en: 'How does music make you feel?', id: 'Bagaimana perasaanmu saat mendengarkan musik?' },
+        peerAnswer: { en: 'Music makes me feel calm and happy at the same time.', id: 'Musik membuatku merasa tenang sekaligus senang.' },
+      },
+      {
+        question: { en: 'Do you think music class is important at school?', id: 'Menurutmu apakah pelajaran musik penting di sekolah?' },
+        peerAnswer: { en: 'Yes, I think music class helps students express their feelings.', id: 'Iya, menurutku pelajaran musik membantu murid mengungkapkan perasaan mereka.' },
+      },
+      {
+        question: { en: 'If you could learn a new instrument, what would it be?', id: 'Kalau bisa belajar alat musik baru, kamu mau belajar apa?' },
+        peerAnswer: { en: 'I would like to learn the guitar because it looks fun to play.', id: 'Aku mau belajar gitar karena kelihatannya seru dimainkan.' },
+      },
+    ],
+  },
+  {
+    id: 'makanan-favoritku',
+    title: 'Makanan Favoritku (My Favorite Food)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'What is your favorite food?', id: 'Apa makanan favoritmu?' },
+        peerAnswer: { en: 'My favorite food is fried rice because it reminds me of home.', id: 'Makanan favoritku nasi goreng karena mengingatkanku pada rumah.' },
+      },
+      {
+        question: { en: 'Do you like cooking?', id: 'Apakah kamu suka memasak?' },
+        peerAnswer: { en: 'Yes, I like cooking simple dishes with my mom on weekends.', id: 'Iya, aku suka memasak masakan sederhana bersama mama di akhir pekan.' },
+      },
+      {
+        question: { en: 'What food do you dislike?', id: 'Makanan apa yang tidak kamu suka?' },
+        peerAnswer: { en: 'I dislike spicy food because it makes my stomach hurt.', id: 'Aku tidak suka makanan pedas karena bikin perutku sakit.' },
+      },
+      {
+        question: { en: 'Do you prefer eating at home or at a restaurant?', id: 'Kamu lebih suka makan di rumah atau di restoran?' },
+        peerAnswer: { en: 'I prefer eating at home because the food feels healthier.', id: 'Aku lebih suka makan di rumah karena makanannya terasa lebih sehat.' },
+      },
+      {
+        question: { en: 'What is a traditional food from your hometown?', id: 'Apa makanan tradisional dari kotamu?' },
+        peerAnswer: { en: 'A traditional food from my hometown is satay with peanut sauce.', id: 'Makanan tradisional dari kotaku adalah sate dengan bumbu kacang.' },
+      },
+      {
+        question: { en: 'Do you think fast food is bad for health?', id: 'Menurutmu apakah makanan cepat saji buruk untuk kesehatan?' },
+        peerAnswer: { en: 'I think fast food is fine sometimes, but not every day.', id: 'Menurutku makanan cepat saji tidak apa sesekali, tapi jangan tiap hari.' },
+      },
+      {
+        question: { en: 'What new food would you like to try?', id: 'Makanan baru apa yang ingin kamu coba?' },
+        peerAnswer: { en: 'I would like to try sushi because I have never tasted it before.', id: 'Aku ingin coba sushi karena belum pernah mencicipinya.' },
+      },
+      {
+        question: { en: 'Who usually cooks in your family?', id: 'Siapa yang biasanya memasak di keluargamu?' },
+        peerAnswer: { en: 'My mom usually cooks, but my dad cooks on weekends.', id: 'Mamaku biasanya memasak, tapi papaku memasak di akhir pekan.' },
+      },
+    ],
+  },
+  {
+    id: 'teknologi-media-sosial',
+    title: 'Teknologi & Media Sosial (Technology & Social Media)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'How much time do you spend on your phone every day?', id: 'Berapa lama waktu yang kamu habiskan di ponsel setiap hari?' },
+        peerAnswer: { en: 'I spend about two hours on my phone every day.', id: 'Aku menghabiskan sekitar dua jam di ponsel setiap hari.' },
+      },
+      {
+        question: { en: 'What do you usually do online?', id: 'Apa yang biasanya kamu lakukan saat online?' },
+        peerAnswer: { en: 'I usually watch videos and chat with my friends online.', id: 'Aku biasanya menonton video dan mengobrol dengan teman-teman secara daring.' },
+      },
+      {
+        question: { en: 'Do you think social media is good or bad for teenagers?', id: 'Menurutmu apakah media sosial baik atau buruk untuk remaja?' },
+        peerAnswer: { en: 'I think social media can be good, but too much of it is not healthy.', id: 'Menurutku media sosial bisa baik, tapi terlalu banyak juga tidak sehat.' },
+      },
+      {
+        question: { en: 'What is your favorite app?', id: 'Apa aplikasi favoritmu?' },
+        peerAnswer: { en: 'My favorite app is a video app because it has funny and creative content.', id: 'Aplikasi favoritku aplikasi video karena isinya lucu dan kreatif.' },
+      },
+      {
+        question: { en: 'Do your parents set rules about screen time?', id: 'Apakah orang tuamu membuat aturan soal waktu layar?' },
+        peerAnswer: { en: 'Yes, my parents only let me use my phone for one hour after homework.', id: 'Iya, orang tuaku cuma mengizinkanku pakai ponsel satu jam setelah PR selesai.' },
+      },
+      {
+        question: { en: 'How do you stay safe online?', id: 'Bagaimana kamu tetap aman saat online?' },
+        peerAnswer: { en: 'I never share my personal information with strangers online.', id: 'Aku tidak pernah membagikan data pribadiku ke orang asing secara daring.' },
+      },
+      {
+        question: { en: 'What technology do you think will change in the future?', id: 'Menurutmu teknologi apa yang akan berubah di masa depan?' },
+        peerAnswer: { en: 'I think phones will become even smarter and more helpful.', id: 'Menurutku ponsel akan makin pintar dan makin membantu.' },
+      },
+      {
+        question: { en: 'Would you rather read a book or watch a video to learn something new?', id: 'Kamu lebih suka membaca buku atau menonton video untuk belajar hal baru?' },
+        peerAnswer: { en: 'I would rather watch a video because it is easier to understand.', id: 'Aku lebih suka menonton video karena lebih mudah dipahami.' },
+      },
+    ],
+  },
+  {
+    id: 'hari-libur-tradisi-keluarga',
+    title: 'Hari Libur & Tradisi Keluarga (Holidays & Family Traditions)',
+    desc: '8 giliran wawancara',
+    peerName: 'Bima',
+    turns: [
+      {
+        question: { en: 'What is your favorite holiday?', id: 'Apa hari libur favoritmu?' },
+        peerAnswer: { en: 'My favorite holiday is Eid because I get to meet my whole family.', id: 'Hari libur favoritku Lebaran karena aku bisa bertemu seluruh keluargaku.' },
+      },
+      {
+        question: { en: 'Does your family have any special traditions?', id: 'Apakah keluargamu punya tradisi khusus?' },
+        peerAnswer: { en: 'Yes, we always cook special food together before the holiday.', id: 'Iya, kami selalu memasak makanan spesial bersama sebelum hari raya.' },
+      },
+      {
+        question: { en: 'How do you usually celebrate your birthday?', id: 'Bagaimana biasanya kamu merayakan ulang tahunmu?' },
+        peerAnswer: { en: 'I usually celebrate with a small party and my favorite cake.', id: 'Aku biasanya merayakannya dengan pesta kecil dan kue favoritku.' },
+      },
+      {
+        question: { en: 'Do you prefer celebrating at home or traveling somewhere?', id: 'Kamu lebih suka merayakan di rumah atau bepergian ke suatu tempat?' },
+        peerAnswer: { en: 'I prefer traveling because it feels like a new adventure.', id: 'Aku lebih suka bepergian karena rasanya seperti petualangan baru.' },
+      },
+      {
+        question: { en: 'What gift would you like to receive?', id: 'Hadiah apa yang ingin kamu terima?' },
+        peerAnswer: { en: 'I would like to receive a new book because I love reading.', id: 'Aku ingin menerima buku baru karena aku suka membaca.' },
+      },
+      {
+        question: { en: 'Who do you usually spend holidays with?', id: 'Dengan siapa kamu biasanya menghabiskan hari libur?' },
+        peerAnswer: { en: 'I usually spend holidays with my grandparents and cousins.', id: 'Aku biasanya menghabiskan hari libur bersama kakek nenek dan sepupuku.' },
+      },
+      {
+        question: { en: 'What do you think is the best part of a holiday?', id: 'Menurutmu apa bagian terbaik dari hari libur?' },
+        peerAnswer: { en: 'I think the best part is spending time with family without rushing.', id: 'Menurutku bagian terbaiknya adalah menghabiskan waktu bersama keluarga tanpa terburu-buru.' },
+      },
+      {
+        question: { en: 'Is there a holiday from another country you find interesting?', id: 'Adakah hari libur dari negara lain yang menurutmu menarik?' },
+        peerAnswer: { en: 'Yes, I find Chinese New Year interesting because of the lion dance.', id: 'Iya, aku merasa Tahun Baru Imlek menarik karena ada tarian baronsai.' },
+      },
+    ],
+  },
 ];
 
 export const SPEAKING_TOPICS_BY_LEVEL: Partial<Record<LevelKey, AnySpeakingTopic[]>> = {
   'little-stars': SPEAKING_TOPICS_LITTLE_STARS,
+  starter: SPEAKING_TOPICS_STARTER,
   explorer: SPEAKING_TOPICS,
   adventurer: SPEAKING_TOPICS_ADVENTURER,
+  trailblazer: SPEAKING_TOPICS_TRAILBLAZER,
+  achiever: SPEAKING_TOPICS_ACHIEVER,
 };
-export const GRAMMAR_TOPICS_BY_LEVEL: Partial<Record<LevelKey, GrammarTopic[]>> = {
+/**
+ * Grammar Little Stars (3–6 th) — format KEDUA `GrammarPatternTopic`
+ * (types.ts), riset & spesifikasi lengkap: `materi/grammar.md`. 1 topik, 10
+ * kata, dipetakan dari `VOCAB_TOPICS_LITTLE_STARS` topik `kendaraan` (kata
+ * kunci + emoji sama, kalimat pola `formA`/`formB` — **direname dari
+ * `singular`/`plural` saat riset per-level meluas ke Starter**, lihat
+ * komentar `GrammarPatternItem` types.ts — ditulis ULANG baru —
+ * prinsip "modalitas beda, bukan duplikasi", konsisten Listening/Reading/
+ * Speaking Little Stars) — dipilih krn SEMUA 10 kata kendaraan adalah benda
+ * hitung (countable) & 9/10-nya berpluralisasi beraturan ("-s", cuma
+ * "bus"→"buses" tidak beraturan), jadi anak bisa fokus ke KONTRAS satu vs
+ * banyaknya, bukan kerumitan ejaan. `salam-sopan-santun` sudah dipakai
+ * Speaking, `hewan-peliharaan` sudah dipakai Reading — `kendaraan` masih
+ * kosong dari 2 skill lain itu.
+ *
+ * 🔒 REVISI (audit user: "apa objective grammar, beda dari modul lain?") —
+ * kalimat `en` SENGAJA TIDAK menyebut angka ("It's a car."/"They're cars.",
+ * BUKAN lagi "I see one car."/"I see two cars.") — versi awal py kata "one"/
+ * "two" eksplisit di KEDUA bentuk, jadi anak bisa jawab benar 100% cukup
+ * dengar kata angkanya SAJA, tanpa pernah perlu memperhatikan akhiran "-s"
+ * atau "is"/"are" — task-nya jadi identik dgn latihan dengar-angka (tumpang
+ * tindih persis dgn mini-game hitung Vocab `angka-pertama`), BUKAN grammar.
+ * Sekarang satu-satunya sinyal pembeda singular/plural PERSIS "is"/"are" +
+ * bentuk kata benda (artikel "a"/"an" vs bare plural) — struktur asli
+ * Cambridge YLE Starters ("singular/plural nouns", `materi/grammar.md` §3.3),
+ * tidak bisa lagi dijawab benar cuma dgn dengar kata angka. `id` TETAP pakai
+ * "satu"/"dua" (Indonesia tidak py penanda jamak gramatikal, jadi kata
+ * bilangan MEMANG cara alami menyatakan jumlah di sana) — aman krn `id` cuma
+ * teks bantuan terjemahan di Kenalan, TIDAK PERNAH diputar/dites di Latihan
+ * Inti/Tantangan (yang diuji cuma `en`).
+ */
+export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
+  {
+    id: 'satu-banyak',
+    title: 'Satu atau Banyak? (One or Many?)',
+    desc: '10 kata',
+    items: [
+      {
+        en: 'Car',
+        id: 'Mobil',
+        emoji: '🚗',
+        formA: { en: "It's a car.", id: 'Itu satu mobil.' },
+        formB: { en: "They're cars.", id: 'Itu dua mobil.' },
+      },
+      {
+        en: 'Bus',
+        id: 'Bus',
+        emoji: '🚌',
+        formA: { en: "It's a bus.", id: 'Itu satu bus.' },
+        formB: { en: "They're buses.", id: 'Itu dua bus.' },
+      },
+      {
+        en: 'Bike',
+        id: 'Sepeda',
+        emoji: '🚲',
+        formA: { en: "It's a bike.", id: 'Itu satu sepeda.' },
+        formB: { en: "They're bikes.", id: 'Itu dua sepeda.' },
+      },
+      {
+        en: 'Train',
+        id: 'Kereta',
+        emoji: '🚆',
+        formA: { en: "It's a train.", id: 'Itu satu kereta.' },
+        formB: { en: "They're trains.", id: 'Itu dua kereta.' },
+      },
+      {
+        en: 'Airplane',
+        id: 'Pesawat',
+        emoji: '✈️',
+        formA: { en: "It's an airplane.", id: 'Itu satu pesawat.' },
+        formB: { en: "They're airplanes.", id: 'Itu dua pesawat.' },
+      },
+      {
+        en: 'Boat',
+        id: 'Perahu',
+        emoji: '⛵',
+        formA: { en: "It's a boat.", id: 'Itu satu perahu.' },
+        formB: { en: "They're boats.", id: 'Itu dua perahu.' },
+      },
+      {
+        en: 'Truck',
+        id: 'Truk',
+        emoji: '🚚',
+        formA: { en: "It's a truck.", id: 'Itu satu truk.' },
+        formB: { en: "They're trucks.", id: 'Itu dua truk.' },
+      },
+      {
+        en: 'Fire Truck',
+        id: 'Truk Pemadam',
+        emoji: '🚒',
+        formA: { en: "It's a fire truck.", id: 'Itu satu truk pemadam.' },
+        formB: { en: "They're fire trucks.", id: 'Itu dua truk pemadam.' },
+      },
+      {
+        en: 'Ambulance',
+        id: 'Ambulans',
+        emoji: '🚑',
+        formA: { en: "It's an ambulance.", id: 'Itu satu ambulans.' },
+        formB: { en: "They're ambulances.", id: 'Itu dua ambulans.' },
+      },
+      {
+        en: 'Helicopter',
+        id: 'Helikopter',
+        emoji: '🚁',
+        formA: { en: "It's a helicopter.", id: 'Itu satu helikopter.' },
+        formB: { en: "They're helicopters.", id: 'Itu dua helikopter.' },
+      },
+    ],
+  },
+  /**
+   * Topik 2 (riset lanjutan "genapkan Grammar Little Stars", `materi/
+   * grammar.md` §13) — "have got" utk kepemilikan, struktur RESMI Cambridge
+   * Pre-A1 Starters ("Have you got a pen?"). `contrastVisual: 'polarity'`
+   * (REUSE PERSIS, TANPA kode baru) — struktur positif/negatif yang SAMA
+   * bentuknya dgn "suka/tidak-suka" Starter, cuma kata kerjanya beda ("'ve
+   * got"/"haven't got" vs "like"/"don't like"). Dipetakan dari
+   * `VOCAB_TOPICS_LITTLE_STARS` `pakaian` (Clothes, belum diklaim topik
+   * Grammar/Speaking/Reading manapun).
+   */
+  {
+    id: 'punya-tidak-punya',
+    title: 'Punya atau Tidak? (Have I Got It?)',
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'Shirt', id: 'Baju', emoji: '👕', formA: { en: "I've got a shirt.", id: 'Aku punya baju.' }, formB: { en: "I haven't got a shirt.", id: 'Aku tidak punya baju.' } },
+      { en: 'Pants', id: 'Celana Panjang', emoji: '👖', formA: { en: "I've got pants.", id: 'Aku punya celana panjang.' }, formB: { en: "I haven't got pants.", id: 'Aku tidak punya celana panjang.' } },
+      { en: 'Shoes', id: 'Sepatu', emoji: '👟', formA: { en: "I've got shoes.", id: 'Aku punya sepatu.' }, formB: { en: "I haven't got shoes.", id: 'Aku tidak punya sepatu.' } },
+      { en: 'Socks', id: 'Kaos Kaki', emoji: '🧦', formA: { en: "I've got socks.", id: 'Aku punya kaos kaki.' }, formB: { en: "I haven't got socks.", id: 'Aku tidak punya kaos kaki.' } },
+      { en: 'Hat', id: 'Topi', emoji: '🧢', formA: { en: "I've got a hat.", id: 'Aku punya topi.' }, formB: { en: "I haven't got a hat.", id: 'Aku tidak punya topi.' } },
+      { en: 'Dress', id: 'Gaun', emoji: '👗', formA: { en: "I've got a dress.", id: 'Aku punya gaun.' }, formB: { en: "I haven't got a dress.", id: 'Aku tidak punya gaun.' } },
+      { en: 'Jacket', id: 'Jaket', emoji: '🧥', formA: { en: "I've got a jacket.", id: 'Aku punya jaket.' }, formB: { en: "I haven't got a jacket.", id: 'Aku tidak punya jaket.' } },
+      { en: 'Shorts', id: 'Celana Pendek', emoji: '🩳', formA: { en: "I've got shorts.", id: 'Aku punya celana pendek.' }, formB: { en: "I haven't got shorts.", id: 'Aku tidak punya celana pendek.' } },
+      { en: 'Gloves', id: 'Sarung Tangan', emoji: '🧤', formA: { en: "I've got gloves.", id: 'Aku punya sarung tangan.' }, formB: { en: "I haven't got gloves.", id: 'Aku tidak punya sarung tangan.' } },
+      { en: 'Scarf', id: 'Syal', emoji: '🧣', formA: { en: "I've got a scarf.", id: 'Aku punya syal.' }, formB: { en: "I haven't got a scarf.", id: 'Aku tidak punya syal.' } },
+    ],
+  },
+  /**
+   * Topik 3 — "can" utk kemampuan, struktur RESMI Cambridge Pre-A1 Starters
+   * ("The baby can wave."). `contrastVisual: 'polarity'` (REUSE PERSIS) —
+   * positif/negatif "can"/"can't". Dipetakan dari `VOCAB_TOPICS_LITTLE_STARS`
+   * `tubuhku` (My Body) — kata kerja per item SENGAJA divariasikan (touch/
+   * close/open/clap/brush) mengikuti `example.en` asli tiap kata di Vocab
+   * (bukan "touch" diulang 10x) supaya tetap natural per anggota tubuh.
+   */
+  {
+    id: 'bisa-tidak-bisa',
+    title: 'Bisa atau Tidak Bisa? (I Can or I Can\'t?)',
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'Head', id: 'Kepala', emoji: '🙂', formA: { en: 'I can touch my head.', id: 'Aku bisa menyentuh kepalaku.' }, formB: { en: "I can't touch my head.", id: 'Aku tidak bisa menyentuh kepalaku.' } },
+      { en: 'Shoulders', id: 'Bahu', emoji: '🤷', formA: { en: 'I can touch my shoulders.', id: 'Aku bisa menyentuh bahuku.' }, formB: { en: "I can't touch my shoulders.", id: 'Aku tidak bisa menyentuh bahuku.' } },
+      { en: 'Knees', id: 'Lutut', emoji: '🦵', formA: { en: 'I can touch my knees.', id: 'Aku bisa menyentuh lututku.' }, formB: { en: "I can't touch my knees.", id: 'Aku tidak bisa menyentuh lututku.' } },
+      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶', formA: { en: 'I can touch my toes.', id: 'Aku bisa menyentuh jari kakiku.' }, formB: { en: "I can't touch my toes.", id: 'Aku tidak bisa menyentuh jari kakiku.' } },
+      { en: 'Eyes', id: 'Mata', emoji: '👀', formA: { en: 'I can close my eyes.', id: 'Aku bisa menutup mataku.' }, formB: { en: "I can't close my eyes.", id: 'Aku tidak bisa menutup mataku.' } },
+      { en: 'Ears', id: 'Telinga', emoji: '👂', formA: { en: 'I can touch my ears.', id: 'Aku bisa menyentuh telingaku.' }, formB: { en: "I can't touch my ears.", id: 'Aku tidak bisa menyentuh telingaku.' } },
+      { en: 'Nose', id: 'Hidung', emoji: '👃', formA: { en: 'I can touch my nose.', id: 'Aku bisa menyentuh hidungku.' }, formB: { en: "I can't touch my nose.", id: 'Aku tidak bisa menyentuh hidungku.' } },
+      { en: 'Mouth', id: 'Mulut', emoji: '👄', formA: { en: 'I can open my mouth.', id: 'Aku bisa membuka mulutku.' }, formB: { en: "I can't open my mouth.", id: 'Aku tidak bisa membuka mulutku.' } },
+      { en: 'Hands', id: 'Tangan', emoji: '🙌', formA: { en: 'I can clap my hands.', id: 'Aku bisa bertepuk tangan.' }, formB: { en: "I can't clap my hands.", id: 'Aku tidak bisa bertepuk tangan.' } },
+      { en: 'Hair', id: 'Rambut', emoji: '💇', formA: { en: 'I can brush my hair.', id: 'Aku bisa menyisir rambutku.' }, formB: { en: "I can't brush my hair.", id: 'Aku tidak bisa menyisir rambutku.' } },
+    ],
+  },
+  /**
+   * Topik 4 — demonstrative this/that, struktur RESMI Cambridge Pre-A1
+   * Starters ("This is my car." / "Is that yours?"). `contrastVisual:
+   * 'proximity'` (BARU, types.ts) — proxy JARAK (gambar besar+🔍 dekat vs
+   * kecil+🔭 jauh), BUKAN jumlah/polaritas. Dipetakan dari
+   * `VOCAB_TOPICS_LITTLE_STARS` `mainan` (Toys). Item "Blocks" (plural di
+   * Vocab) SENGAJA ditulis singular "a block" di sini — demonstrative
+   * this/that butuh kata benda singular, "These/those are blocks" akan
+   * mencampur pola jamak ke topik yang fokusnya jarak, bukan jumlah.
+   */
+  {
+    id: 'ini-itu',
+    title: 'Ini atau Itu? (This or That?)',
+    desc: '10 kata',
+    contrastVisual: 'proximity',
+    items: [
+      { en: 'Ball', id: 'Bola', emoji: '⚽', formA: { en: 'This is a ball.', id: 'Ini bola.' }, formB: { en: 'That is a ball.', id: 'Itu bola.' } },
+      { en: 'Doll', id: 'Boneka', emoji: '🪆', formA: { en: 'This is a doll.', id: 'Ini boneka.' }, formB: { en: 'That is a doll.', id: 'Itu boneka.' } },
+      { en: 'Kite', id: 'Layangan', emoji: '🪁', formA: { en: 'This is a kite.', id: 'Ini layangan.' }, formB: { en: 'That is a kite.', id: 'Itu layangan.' } },
+      { en: 'Balloon', id: 'Balon', emoji: '🎈', formA: { en: 'This is a balloon.', id: 'Ini balon.' }, formB: { en: 'That is a balloon.', id: 'Itu balon.' } },
+      { en: 'Puzzle', id: 'Puzzle', emoji: '🧩', formA: { en: 'This is a puzzle.', id: 'Ini puzzle.' }, formB: { en: 'That is a puzzle.', id: 'Itu puzzle.' } },
+      { en: 'Robot', id: 'Robot', emoji: '🤖', formA: { en: 'This is a robot.', id: 'Ini robot.' }, formB: { en: 'That is a robot.', id: 'Itu robot.' } },
+      { en: 'Drum', id: 'Drum', emoji: '🥁', formA: { en: 'This is a drum.', id: 'Ini drum.' }, formB: { en: 'That is a drum.', id: 'Itu drum.' } },
+      { en: 'Blocks', id: 'Balok', emoji: '🧱', formA: { en: 'This is a block.', id: 'Ini balok.' }, formB: { en: 'That is a block.', id: 'Itu balok.' } },
+      { en: 'Yoyo', id: 'Yoyo', emoji: '🪀', formA: { en: 'This is a yoyo.', id: 'Ini yoyo.' }, formB: { en: 'That is a yoyo.', id: 'Itu yoyo.' } },
+      { en: 'Teddy', id: 'Boneka Beruang', emoji: '🧸', formA: { en: 'This is a teddy.', id: 'Ini boneka beruang.' }, formB: { en: 'That is a teddy.', id: 'Itu boneka beruang.' } },
+    ],
+  },
+  /**
+   * Topik 5 — adjective ukuran (big/small), struktur RESMI Cambridge Pre-A1
+   * Starters ("He's a small boy."). `contrastVisual: 'size'` (BARU,
+   * types.ts) — gambar besar vs kecil TANPA lencana tambahan, krn ukurannya
+   * SENDIRI yang jadi konten (beda dari `'proximity'` yang pakai ukuran sbg
+   * PROXY ke konsep jarak). Dipetakan dari `VOCAB_TOPICS_LITTLE_STARS`
+   * `bentuk` (Shapes) — bentuk geometris netral, skala besar/kecil jelas
+   * tanpa makna lain yang mengganggu.
+   */
+  {
+    id: 'besar-kecil',
+    title: 'Besar atau Kecil? (Big or Small?)',
+    desc: '10 kata',
+    contrastVisual: 'size',
+    items: [
+      { en: 'Circle', id: 'Lingkaran', emoji: '⚪', formA: { en: "It's a big circle.", id: 'Itu lingkaran besar.' }, formB: { en: "It's a small circle.", id: 'Itu lingkaran kecil.' } },
+      { en: 'Square', id: 'Persegi', emoji: '⬜', formA: { en: "It's a big square.", id: 'Itu persegi besar.' }, formB: { en: "It's a small square.", id: 'Itu persegi kecil.' } },
+      { en: 'Triangle', id: 'Segitiga', emoji: '🔺', formA: { en: "It's a big triangle.", id: 'Itu segitiga besar.' }, formB: { en: "It's a small triangle.", id: 'Itu segitiga kecil.' } },
+      { en: 'Star', id: 'Bintang', emoji: '⭐', formA: { en: "It's a big star.", id: 'Itu bintang besar.' }, formB: { en: "It's a small star.", id: 'Itu bintang kecil.' } },
+      { en: 'Heart', id: 'Hati', emoji: '❤️', formA: { en: "It's a big heart.", id: 'Itu hati besar.' }, formB: { en: "It's a small heart.", id: 'Itu hati kecil.' } },
+      { en: 'Diamond', id: 'Berlian', emoji: '🔷', formA: { en: "It's a big diamond.", id: 'Itu berlian besar.' }, formB: { en: "It's a small diamond.", id: 'Itu berlian kecil.' } },
+      { en: 'Oval', id: 'Oval', emoji: '🥚', formA: { en: "It's a big oval.", id: 'Itu oval besar.' }, formB: { en: "It's a small oval.", id: 'Itu oval kecil.' } },
+      { en: 'Cross', id: 'Silang', emoji: '➕', formA: { en: "It's a big cross.", id: 'Itu tanda silang besar.' }, formB: { en: "It's a small cross.", id: 'Itu tanda silang kecil.' } },
+      { en: 'Arrow', id: 'Panah', emoji: '➡️', formA: { en: "It's a big arrow.", id: 'Itu panah besar.' }, formB: { en: "It's a small arrow.", id: 'Itu panah kecil.' } },
+      { en: 'Moon', id: 'Bulan', emoji: '🌙', formA: { en: "It's a big moon.", id: 'Itu bulan besar.' }, formB: { en: "It's a small moon.", id: 'Itu bulan kecil.' } },
+    ],
+  },
+  /**
+   * 5 topik lanjutan (riset per-level, `materi/grammar.md` §20) — target
+   * jauh lebih sulit dari sesi §13 krn kategori Cambridge Pre-A1 Starters yg
+   * "bersih" (genuinely belum diklaim & genuinely cocok mekanik 1-gambar
+   * statis) SUDAH HABIS sesi lalu — 5 kategori sisa (adverbs/conjunctions/
+   * impersonal-you/have+obj+inf/-ing forms) SEMUA butuh scene/gerakan/terlalu
+   * abstrak, dikonfirmasi TIDAK dipaksakan. 5 topik di bawah SEMUANYA
+   * merupakan STRUKTUR/PERSON/NOMOR baru di dalam kategori yg SUDAH disentuh
+   * struktur LAIN (pola sama persis dgn `punya-tidak-punya`/`bisa-tidak-bisa`
+   * yg sama-sama `'polarity'` tapi verb beda) — bukan padding, tiap topik
+   * genuinely mengajarkan kata kerja/person/nomor yg belum pernah dilatih.
+   */
+  /**
+   * Topik ke-6 — "to be" positif/negatif utk perasaan (Cambridge Pre-A1
+   * Starters kategori Verbs — kopula "to be" BELUM pernah dipakai utk
+   * kontras polaritas di curriculum manapun, have-got/can/like semua verb
+   * LAIN). `contrastVisual: 'polarity'` (REUSE PERSIS). Dari domain Vocab
+   * `perasaanku` (My Feelings).
+   */
+  {
+    id: 'senang-tidak-senang',
+    title: 'Senang atau Tidak? (I Am / I Am Not)',
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'Happy', id: 'Senang', emoji: '😊', formA: { en: 'I am happy.', id: 'Aku senang.' }, formB: { en: 'I am not happy.', id: 'Aku tidak senang.' } },
+      { en: 'Sad', id: 'Sedih', emoji: '😢', formA: { en: 'I am sad.', id: 'Aku sedih.' }, formB: { en: 'I am not sad.', id: 'Aku tidak sedih.' } },
+      { en: 'Angry', id: 'Marah', emoji: '😠', formA: { en: 'I am angry.', id: 'Aku marah.' }, formB: { en: 'I am not angry.', id: 'Aku tidak marah.' } },
+      { en: 'Scared', id: 'Takut', emoji: '😨', formA: { en: 'I am scared.', id: 'Aku takut.' }, formB: { en: 'I am not scared.', id: 'Aku tidak takut.' } },
+      { en: 'Sleepy', id: 'Mengantuk', emoji: '😴', formA: { en: 'I am sleepy.', id: 'Aku mengantuk.' }, formB: { en: 'I am not sleepy.', id: 'Aku tidak mengantuk.' } },
+      { en: 'Hungry', id: 'Lapar', emoji: '😋', formA: { en: 'I am hungry.', id: 'Aku lapar.' }, formB: { en: 'I am not hungry.', id: 'Aku tidak lapar.' } },
+      { en: 'Thirsty', id: 'Haus', emoji: '🥤', formA: { en: 'I am thirsty.', id: 'Aku haus.' }, formB: { en: 'I am not thirsty.', id: 'Aku tidak haus.' } },
+      { en: 'Sick', id: 'Sakit', emoji: '🤒', formA: { en: 'I am sick.', id: 'Aku sakit.' }, formB: { en: 'I am not sick.', id: 'Aku tidak sakit.' } },
+      { en: 'Silly', id: 'Konyol', emoji: '🤪', formA: { en: 'I am silly.', id: 'Aku konyol.' }, formB: { en: 'I am not silly.', id: 'Aku tidak konyol.' } },
+      { en: 'Excited', id: 'Bersemangat', emoji: '🤩', formA: { en: 'I am excited.', id: 'Aku bersemangat.' }, formB: { en: 'I am not excited.', id: 'Aku tidak bersemangat.' } },
+    ],
+  },
+  /**
+   * Topik ke-7 — "want" positif/negatif, struktur RESMI Cambridge Pre-A1
+   * Starters ("I want some milk."). SENGAJA register lebih LANGSUNG drpd
+   * `would-like` Explorer (permintaan sopan) — pola tangga sama dgn can-
+   * ability(Little Stars)/can-permission(Explorer) & like(Starter)/would-
+   * like(Explorer). `contrastVisual: 'polarity'` (REUSE PERSIS). Dari domain
+   * Vocab `buah-buahan` (Fruits) — artikel a/an/some dipetakan PERSIS sesuai
+   * kata bendanya (apple/orange pakai "an", watermelon/pineapple pakai
+   * "some" krn tak-terhitung) supaya kalimatnya tetap alami.
+   */
+  {
+    id: 'mau-tidak-mau',
+    title: 'Mau atau Tidak? (I Want / I Don\'t Want)',
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'Apple', id: 'Apel', emoji: '🍎', formA: { en: 'I want an apple.', id: 'Aku mau apel.' }, formB: { en: "I don't want an apple.", id: 'Aku tidak mau apel.' } },
+      { en: 'Banana', id: 'Pisang', emoji: '🍌', formA: { en: 'I want a banana.', id: 'Aku mau pisang.' }, formB: { en: "I don't want a banana.", id: 'Aku tidak mau pisang.' } },
+      { en: 'Orange', id: 'Jeruk', emoji: '🍊', formA: { en: 'I want an orange.', id: 'Aku mau jeruk.' }, formB: { en: "I don't want an orange.", id: 'Aku tidak mau jeruk.' } },
+      { en: 'Grape', id: 'Anggur', emoji: '🍇', formA: { en: 'I want a grape.', id: 'Aku mau anggur.' }, formB: { en: "I don't want a grape.", id: 'Aku tidak mau anggur.' } },
+      { en: 'Watermelon', id: 'Semangka', emoji: '🍉', formA: { en: 'I want some watermelon.', id: 'Aku mau semangka.' }, formB: { en: "I don't want any watermelon.", id: 'Aku tidak mau semangka.' } },
+      { en: 'Strawberry', id: 'Stroberi', emoji: '🍓', formA: { en: 'I want a strawberry.', id: 'Aku mau stroberi.' }, formB: { en: "I don't want a strawberry.", id: 'Aku tidak mau stroberi.' } },
+      { en: 'Mango', id: 'Mangga', emoji: '🥭', formA: { en: 'I want a mango.', id: 'Aku mau mangga.' }, formB: { en: "I don't want a mango.", id: 'Aku tidak mau mangga.' } },
+      { en: 'Pineapple', id: 'Nanas', emoji: '🍍', formA: { en: 'I want some pineapple.', id: 'Aku mau nanas.' }, formB: { en: "I don't want any pineapple.", id: 'Aku tidak mau nanas.' } },
+      { en: 'Pear', id: 'Pir', emoji: '🍐', formA: { en: 'I want a pear.', id: 'Aku mau pir.' }, formB: { en: "I don't want a pear.", id: 'Aku tidak mau pir.' } },
+      { en: 'Peach', id: 'Persik', emoji: '🍑', formA: { en: 'I want a peach.', id: 'Aku mau persik.' }, formB: { en: "I don't want a peach.", id: 'Aku tidak mau persik.' } },
+    ],
+  },
+  /**
+   * Topik ke-8 — possessive adjective 1st/2nd person "my/your", struktur
+   * RESMI Cambridge Pre-A1 Starters, kategori SAMA dgn `miliknya-siapa`
+   * Starter (his/her) tapi DEIKSIS beda total (pembicara/lawan bicara,
+   * bukan org ketiga) — genuinely belum pernah dilatih. `contrastVisual:
+   * 'possessor'` (BARU, types.ts — lencana 🙋 "Aku"/formA vs 🫵 "Kamu"/
+   * formB, proxy PEMBICARA vs LAWAN BICARA, REUSE mekanik render `'character'`
+   * TAPI beda makna lencana) — kandidat ini SEMPAT ditolak sesi §13 krn
+   * dinilai "butuh visual 2-karakter lebih rumit drpd proximity/size", TAPI
+   * `'character'` (utk his/her Starter) kemudian TERBUKTI 1 lencana overlay
+   * di gambar STATIS sudah cukup mewakili kontras org — trik yg SAMA
+   * dipakai di sini utk kontras pembicara. Dari domain Vocab `keluargaku`
+   * (My Family).
+   */
+  {
+    id: 'punya-siapa',
+    title: 'Punya Siapa? (My or Your?)',
+    desc: '10 kata',
+    contrastVisual: 'possessor',
+    items: [
+      { en: 'Mom', id: 'Mama', emoji: '👩', formA: { en: 'This is my mom.', id: 'Ini mamaku.' }, formB: { en: 'This is your mom.', id: 'Ini mamamu.' } },
+      { en: 'Dad', id: 'Papa', emoji: '👨', formA: { en: 'This is my dad.', id: 'Ini papaku.' }, formB: { en: 'This is your dad.', id: 'Ini papamu.' } },
+      { en: 'Baby', id: 'Adik Bayi', emoji: '👶', formA: { en: 'This is my baby.', id: 'Ini adik bayiku.' }, formB: { en: 'This is your baby.', id: 'Ini adik bayimu.' } },
+      { en: 'Sister', id: 'Kakak/Adik Perempuan', emoji: '👧', formA: { en: 'This is my sister.', id: 'Ini kakak/adik perempuanku.' }, formB: { en: 'This is your sister.', id: 'Ini kakak/adik perempuanmu.' } },
+      { en: 'Brother', id: 'Kakak/Adik Laki-laki', emoji: '👦', formA: { en: 'This is my brother.', id: 'Ini kakak/adik laki-lakiku.' }, formB: { en: 'This is your brother.', id: 'Ini kakak/adik laki-lakimu.' } },
+      { en: 'Grandma', id: 'Nenek', emoji: '👵', formA: { en: 'This is my grandma.', id: 'Ini nenekku.' }, formB: { en: 'This is your grandma.', id: 'Ini nenekmu.' } },
+      { en: 'Grandpa', id: 'Kakek', emoji: '👴', formA: { en: 'This is my grandpa.', id: 'Ini kakekku.' }, formB: { en: 'This is your grandpa.', id: 'Ini kakekmu.' } },
+      { en: 'Aunt', id: 'Bibi', emoji: '👩‍🦱', formA: { en: 'This is my aunt.', id: 'Ini bibiku.' }, formB: { en: 'This is your aunt.', id: 'Ini bibimu.' } },
+      { en: 'Uncle', id: 'Paman', emoji: '🧔', formA: { en: 'This is my uncle.', id: 'Ini pamanku.' }, formB: { en: 'This is your uncle.', id: 'Ini pamanmu.' } },
+      { en: 'Family', id: 'Keluarga', emoji: '👨‍👩‍👧‍👦', formA: { en: 'This is my family.', id: 'Ini keluargaku.' }, formB: { en: 'This is your family.', id: 'Ini keluargamu.' } },
+    ],
+  },
+  /**
+   * Topik ke-9 — demonstrative JAMAK "these/those", kategori Starters resmi
+   * SAMA dgn `ini-itu` (this/that TUNGGAL) tapi nomor beda — anak pralek
+   * TIDAK otomatis menggeneralisasi bentuk tunggal ke jamak tanpa dilatih
+   * terpisah (beda kata, bukan cuma tambah -s). `contrastVisual: 'proximity'`
+   * (REUSE PERSIS, TANPA kode baru — emoji topik ini SENGAJA diulang 2x
+   * dlm string `emoji` itu sendiri, mis. '🍓🍓', krn renderer `'proximity'`
+   * cuma menaruh `emoji` mentah di DOM, otomatis tampil 2 item). Dari domain
+   * Vocab `kenal-warna` (Colors) — tiap warna dipasangkan benda konkret yg
+   * wajar jamak, warna itu sendiri TETAP SAMA di kedua bentuk (formA/formB)
+   * supaya tidak jadi sinyal kedua yg bocor — SATU-SATUNYA pembeda kalimat
+   * cuma "These"/"Those".
+   */
+  {
+    id: 'ini-itu-jamak',
+    title: 'Ini-ini atau Itu-itu? (These or Those?)',
+    desc: '10 kata',
+    contrastVisual: 'proximity',
+    items: [
+      { en: 'Red Strawberries', id: 'Stroberi Merah', emoji: '🍓🍓', formA: { en: 'These strawberries are red.', id: 'Ini stroberi-stroberi merah.' }, formB: { en: 'Those strawberries are red.', id: 'Itu stroberi-stroberi merah.' } },
+      { en: 'Blue Balloons', id: 'Balon Biru', emoji: '🎈🎈', formA: { en: 'These balloons are blue.', id: 'Ini balon-balon biru.' }, formB: { en: 'Those balloons are blue.', id: 'Itu balon-balon biru.' } },
+      { en: 'Yellow Stars', id: 'Bintang Kuning', emoji: '⭐⭐', formA: { en: 'These stars are yellow.', id: 'Ini bintang-bintang kuning.' }, formB: { en: 'Those stars are yellow.', id: 'Itu bintang-bintang kuning.' } },
+      { en: 'Green Leaves', id: 'Daun Hijau', emoji: '🍃🍃', formA: { en: 'These leaves are green.', id: 'Ini daun-daun hijau.' }, formB: { en: 'Those leaves are green.', id: 'Itu daun-daun hijau.' } },
+      { en: 'Orange Carrots', id: 'Wortel Oranye', emoji: '🥕🥕', formA: { en: 'These carrots are orange.', id: 'Ini wortel-wortel oranye.' }, formB: { en: 'Those carrots are orange.', id: 'Itu wortel-wortel oranye.' } },
+      { en: 'Purple Grapes', id: 'Anggur Ungu', emoji: '🍇🍇', formA: { en: 'These grapes are purple.', id: 'Ini anggur-anggur ungu.' }, formB: { en: 'Those grapes are purple.', id: 'Itu anggur-anggur ungu.' } },
+      { en: 'Pink Flowers', id: 'Bunga Merah Muda', emoji: '🌸🌸', formA: { en: 'These flowers are pink.', id: 'Ini bunga-bunga merah muda.' }, formB: { en: 'Those flowers are pink.', id: 'Itu bunga-bunga merah muda.' } },
+      { en: 'Black Hats', id: 'Topi Hitam', emoji: '🎩🎩', formA: { en: 'These hats are black.', id: 'Ini topi-topi hitam.' }, formB: { en: 'Those hats are black.', id: 'Itu topi-topi hitam.' } },
+      { en: 'White Clouds', id: 'Awan Putih', emoji: '☁️☁️', formA: { en: 'These clouds are white.', id: 'Ini awan-awan putih.' }, formB: { en: 'Those clouds are white.', id: 'Itu awan-awan putih.' } },
+      { en: 'Brown Bears', id: 'Beruang Cokelat', emoji: '🐻🐻', formA: { en: 'These bears are brown.', id: 'Ini beruang-beruang cokelat.' }, formB: { en: 'Those bears are brown.', id: 'Itu beruang-beruang cokelat.' } },
+    ],
+  },
+  /**
+   * Topik ke-10 — eksistensi negatif "there is (a)/there is no", kategori
+   * Starters resmi SAMA dgn `ada-apa-di-sini` Starter (there is/are) tapi
+   * sub-skill beda: NEGASI keberadaan, bukan jumlah tunggal-vs-jamak — jauh
+   * lebih dekat ke cara anak kecil sungguhan memperoleh bahasa ("tidak
+   * ada ___!" duluan drpd bentuk jamak). `contrastVisual: 'polarity'`
+   * (REUSE — BUKAN `'quantity'`, krn yg diuji eksistensi, bukan hitungan).
+   * Dari domain Vocab `hewan-peliharaan` (Pets & Farm Animals) — framing
+   * petak umpet natural. Satu-satunya pembeda kalimat: "a"/"no".
+   */
+  {
+    id: 'ada-tidak-ada',
+    title: 'Ada atau Tidak Ada? (There Is / There Is No)',
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'Dog', id: 'Anjing', emoji: '🐶', formA: { en: 'There is a dog.', id: 'Ada anjing.' }, formB: { en: 'There is no dog.', id: 'Tidak ada anjing.' } },
+      { en: 'Cat', id: 'Kucing', emoji: '🐱', formA: { en: 'There is a cat.', id: 'Ada kucing.' }, formB: { en: 'There is no cat.', id: 'Tidak ada kucing.' } },
+      { en: 'Fish', id: 'Ikan', emoji: '🐟', formA: { en: 'There is a fish.', id: 'Ada ikan.' }, formB: { en: 'There is no fish.', id: 'Tidak ada ikan.' } },
+      { en: 'Bird', id: 'Burung', emoji: '🐦', formA: { en: 'There is a bird.', id: 'Ada burung.' }, formB: { en: 'There is no bird.', id: 'Tidak ada burung.' } },
+      { en: 'Cow', id: 'Sapi', emoji: '🐄', formA: { en: 'There is a cow.', id: 'Ada sapi.' }, formB: { en: 'There is no cow.', id: 'Tidak ada sapi.' } },
+      { en: 'Duck', id: 'Bebek', emoji: '🦆', formA: { en: 'There is a duck.', id: 'Ada bebek.' }, formB: { en: 'There is no duck.', id: 'Tidak ada bebek.' } },
+      { en: 'Horse', id: 'Kuda', emoji: '🐴', formA: { en: 'There is a horse.', id: 'Ada kuda.' }, formB: { en: 'There is no horse.', id: 'Tidak ada kuda.' } },
+      { en: 'Sheep', id: 'Domba', emoji: '🐑', formA: { en: 'There is a sheep.', id: 'Ada domba.' }, formB: { en: 'There is no sheep.', id: 'Tidak ada domba.' } },
+      { en: 'Pig', id: 'Babi', emoji: '🐷', formA: { en: 'There is a pig.', id: 'Ada babi.' }, formB: { en: 'There is no pig.', id: 'Tidak ada babi.' } },
+      { en: 'Rabbit', id: 'Kelinci', emoji: '🐰', formA: { en: 'There is a rabbit.', id: 'Ada kelinci.' }, formB: { en: 'There is no rabbit.', id: 'Tidak ada kelinci.' } },
+    ],
+  },
+];
+
+/**
+ * Grammar Starter (5–7 th) — REUSE PERSIS format KEDUA `GrammarPatternTopic`
+ * (types.ts) yang sama dgn Little Stars, TANPA mekanik baru (riset per-level,
+ * `materi/grammar.md` §9, konsisten pola Reading Starter "perluasan langsung
+ * dari format Little Stars"). Struktur BEDA dari Little Stars supaya bukan
+ * cuma pengulangan: **present simple positive vs negative** ("I like
+ * drawing." / "I don't like drawing.") — struktur inti Cambridge Starters
+ * yang belum diklaim topik Little Stars manapun. `contrastVisual: 'polarity'`
+ * (BARU, types.ts) — kartu jumlah 1-vs-2 Little Stars tidak relevan di sini
+ * (bukan soal jumlah), diganti lencana ✅/❌ suka-tidak-suka.
+ *
+ * Dipetakan dari `VOCAB_TOPICS_STARTER` `hobi` (My Hobbies) — SEMUA 10 kata
+ * SUDAH berbentuk gerund + py `example.en` "I like [hobi]." sendiri (mis.
+ * `{ en: 'Drawing', example: { en: 'I like drawing.' } }`), jadi pola
+ * suka/tidak-suka ini genuinely native ke domain-nya, bukan dipaksakan.
+ */
+export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
+  {
+    id: 'suka-tidak-suka',
+    title: 'Suka atau Tidak Suka? (Like It or Not?)',
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'Drawing', id: 'Menggambar', emoji: '🎨', formA: { en: 'I like drawing.', id: 'Aku suka menggambar.' }, formB: { en: "I don't like drawing.", id: 'Aku tidak suka menggambar.' } },
+      { en: 'Singing', id: 'Bernyanyi', emoji: '🎤', formA: { en: 'I like singing.', id: 'Aku suka bernyanyi.' }, formB: { en: "I don't like singing.", id: 'Aku tidak suka bernyanyi.' } },
+      { en: 'Reading', id: 'Membaca', emoji: '📖', formA: { en: 'I like reading.', id: 'Aku suka membaca.' }, formB: { en: "I don't like reading.", id: 'Aku tidak suka membaca.' } },
+      { en: 'Painting', id: 'Melukis', emoji: '🖌️', formA: { en: 'I like painting.', id: 'Aku suka melukis.' }, formB: { en: "I don't like painting.", id: 'Aku tidak suka melukis.' } },
+      { en: 'Cooking', id: 'Memasak', emoji: '🍳', formA: { en: 'I like cooking.', id: 'Aku suka memasak.' }, formB: { en: "I don't like cooking.", id: 'Aku tidak suka memasak.' } },
+      { en: 'Camping', id: 'Berkemah', emoji: '⛺', formA: { en: 'I like camping.', id: 'Aku suka berkemah.' }, formB: { en: "I don't like camping.", id: 'Aku tidak suka berkemah.' } },
+      { en: 'Fishing', id: 'Memancing', emoji: '🎣', formA: { en: 'I like fishing.', id: 'Aku suka memancing.' }, formB: { en: "I don't like fishing.", id: 'Aku tidak suka memancing.' } },
+      { en: 'Gardening', id: 'Berkebun', emoji: '🌱', formA: { en: 'I like gardening.', id: 'Aku suka berkebun.' }, formB: { en: "I don't like gardening.", id: 'Aku tidak suka berkebun.' } },
+      { en: 'Collecting', id: 'Mengoleksi', emoji: '🪙', formA: { en: 'I like collecting coins.', id: 'Aku suka mengoleksi koin.' }, formB: { en: "I don't like collecting coins.", id: 'Aku tidak suka mengoleksi koin.' } },
+      { en: 'Building', id: 'Membangun', emoji: '🧱', formA: { en: 'I like building.', id: 'Aku suka membangun.' }, formB: { en: "I don't like building.", id: 'Aku tidak suka membangun.' } },
+    ],
+  },
+  /**
+   * Topik 2 (riset lanjutan "genapkan Grammar bertahap per level", `materi/
+   * grammar.md` §14) — "there is/there are" utk keberadaan, struktur RESMI
+   * Cambridge Pre-A1 Starters, dikonfirmasi jg oleh materi kelas 2 SD
+   * Indonesia (Kurikulum Merdeka Fase A). `contrastVisual: 'quantity'`
+   * (REUSE PERSIS, TANPA kode baru) — strukturnya singular-vs-plural yang
+   * SAMA dgn `satu-banyak` Little Stars, cuma frame kalimatnya beda ("there
+   * is/are" vs "it's/they're"). Dipetakan dari `VOCAB_TOPICS_STARTER`
+   * `serangga` (Insects, belum diklaim topik lain). Lokasi "here" DIBUAT
+   * KONSTAN di semua item (bukan divariasikan per serangga) — kalau
+   * lokasinya beda-beda per item, itu jadi sinyal kedua yang bocor,
+   * pelajaran yang sama dgn §8/§13.
+   */
+  {
+    id: 'ada-apa-di-sini',
+    title: 'Ada Apa di Sini? (There Is or There Are?)',
+    desc: '10 kata',
+    contrastVisual: 'quantity',
+    items: [
+      { en: 'Butterfly', id: 'Kupu-kupu', emoji: '🦋', formA: { en: 'There is a butterfly here.', id: 'Ada satu kupu-kupu di sini.' }, formB: { en: 'There are butterflies here.', id: 'Ada banyak kupu-kupu di sini.' } },
+      { en: 'Bee', id: 'Lebah', emoji: '🐝', formA: { en: 'There is a bee here.', id: 'Ada satu lebah di sini.' }, formB: { en: 'There are bees here.', id: 'Ada banyak lebah di sini.' } },
+      { en: 'Ant', id: 'Semut', emoji: '🐜', formA: { en: 'There is an ant here.', id: 'Ada satu semut di sini.' }, formB: { en: 'There are ants here.', id: 'Ada banyak semut di sini.' } },
+      { en: 'Ladybug', id: 'Kepik', emoji: '🐞', formA: { en: 'There is a ladybug here.', id: 'Ada satu kepik di sini.' }, formB: { en: 'There are ladybugs here.', id: 'Ada banyak kepik di sini.' } },
+      { en: 'Spider', id: 'Laba-laba', emoji: '🕷️', formA: { en: 'There is a spider here.', id: 'Ada satu laba-laba di sini.' }, formB: { en: 'There are spiders here.', id: 'Ada banyak laba-laba di sini.' } },
+      { en: 'Snail', id: 'Siput', emoji: '🐌', formA: { en: 'There is a snail here.', id: 'Ada satu siput di sini.' }, formB: { en: 'There are snails here.', id: 'Ada banyak siput di sini.' } },
+      { en: 'Frog', id: 'Katak', emoji: '🐸', formA: { en: 'There is a frog here.', id: 'Ada satu katak di sini.' }, formB: { en: 'There are frogs here.', id: 'Ada banyak katak di sini.' } },
+      { en: 'Turtle', id: 'Kura-kura', emoji: '🐢', formA: { en: 'There is a turtle here.', id: 'Ada satu kura-kura di sini.' }, formB: { en: 'There are turtles here.', id: 'Ada banyak kura-kura di sini.' } },
+      { en: 'Crab', id: 'Kepiting', emoji: '🦀', formA: { en: 'There is a crab here.', id: 'Ada satu kepiting di sini.' }, formB: { en: 'There are crabs here.', id: 'Ada banyak kepiting di sini.' } },
+      { en: 'Worm', id: 'Cacing', emoji: '🪱', formA: { en: 'There is a worm here.', id: 'Ada satu cacing di sini.' }, formB: { en: 'There are worms here.', id: 'Ada banyak cacing di sini.' } },
+    ],
+  },
+  /**
+   * Topik 3 — possessive adjective his/her, struktur RESMI Cambridge Pre-A1
+   * Starters ("His name is Bill."). `contrastVisual: 'character'` (BARU,
+   * types.ts) — proxy KARAKTER (lencana 👦 vs 👧), BUKAN jumlah/polaritas/
+   * jarak/ukuran spt 4 varian sebelumnya. Dipetakan dari
+   * `VOCAB_TOPICS_STARTER` `barang-di-rumah` (Things at Home, belum diklaim
+   * topik lain) — semua 10 kata benda fisik yg wajar "dimiliki". `id` pakai
+   * "kakak laki-laki"/"kakak perempuan" (BUKAN "dia", yg netral gender di
+   * Indonesia — tidak py padanan his/her) supaya teks Indonesia TETAP py
+   * sinyal gender yg jelas, selaras dgn lencana gambar.
+   */
+  {
+    id: 'miliknya-siapa',
+    title: 'Miliknya Siapa? (His or Hers?)',
+    desc: '10 kata',
+    contrastVisual: 'character',
+    items: [
+      { en: 'Table', id: 'Meja', emoji: '🍽️', formA: { en: 'This is his table.', id: 'Ini meja milik kakak laki-laki.' }, formB: { en: 'This is her table.', id: 'Ini meja milik kakak perempuan.' } },
+      { en: 'Bed', id: 'Tempat Tidur', emoji: '🛏️', formA: { en: 'This is his bed.', id: 'Ini tempat tidur milik kakak laki-laki.' }, formB: { en: 'This is her bed.', id: 'Ini tempat tidur milik kakak perempuan.' } },
+      { en: 'Sofa', id: 'Sofa', emoji: '🛋️', formA: { en: 'This is his sofa.', id: 'Ini sofa milik kakak laki-laki.' }, formB: { en: 'This is her sofa.', id: 'Ini sofa milik kakak perempuan.' } },
+      { en: 'Lamp', id: 'Lampu', emoji: '💡', formA: { en: 'This is his lamp.', id: 'Ini lampu milik kakak laki-laki.' }, formB: { en: 'This is her lamp.', id: 'Ini lampu milik kakak perempuan.' } },
+      { en: 'Television', id: 'Televisi', emoji: '📺', formA: { en: 'This is his television.', id: 'Ini televisi milik kakak laki-laki.' }, formB: { en: 'This is her television.', id: 'Ini televisi milik kakak perempuan.' } },
+      { en: 'Fridge', id: 'Kulkas', emoji: '🧊', formA: { en: 'This is his fridge.', id: 'Ini kulkas milik kakak laki-laki.' }, formB: { en: 'This is her fridge.', id: 'Ini kulkas milik kakak perempuan.' } },
+      { en: 'Mirror', id: 'Cermin', emoji: '🪞', formA: { en: 'This is his mirror.', id: 'Ini cermin milik kakak laki-laki.' }, formB: { en: 'This is her mirror.', id: 'Ini cermin milik kakak perempuan.' } },
+      { en: 'Phone', id: 'Telepon', emoji: '📱', formA: { en: 'This is his phone.', id: 'Ini telepon milik kakak laki-laki.' }, formB: { en: 'This is her phone.', id: 'Ini telepon milik kakak perempuan.' } },
+      { en: 'Cupboard', id: 'Lemari', emoji: '🗄️', formA: { en: 'This is his cupboard.', id: 'Ini lemari milik kakak laki-laki.' }, formB: { en: 'This is her cupboard.', id: 'Ini lemari milik kakak perempuan.' } },
+      { en: 'Broom', id: 'Sapu', emoji: '🧹', formA: { en: 'This is his broom.', id: 'Ini sapu milik kakak laki-laki.' }, formB: { en: 'This is her broom.', id: 'Ini sapu milik kakak perempuan.' } },
+    ],
+  },
+  /**
+   * Topik 4 — subject pronoun he/she + present simple 3rd-person agreement,
+   * struktur RESMI Cambridge Pre-A1 Starters (mis. "Anna ___ a cat."/personal
+   * pronouns). `contrastVisual: 'character'` (REUSE PERSIS topik 3, lencana
+   * 👦/👧 sama) — SENGAJA "he vs she" (BUKAN "I vs she") supaya lencana
+   * karakter tetap konsisten bermakna org KETIGA di kedua bentuk (kalau
+   * formA "I", lencana 👦 utk "aku" jadi tidak masuk akal krn "aku" tidak
+   * py gender tetap). Kata kerja tiap item SELALU "+s" di KEDUA bentuk
+   * (he/she sama-sama org ketiga tunggal) — satu-satunya pembeda kalimat
+   * PERSIS "he"/"she", bukan bentuk kata kerja. Dipetakan dari
+   * `VOCAB_TOPICS_STARTER` `alam-sekitar` (Nature, belum diklaim topik
+   * lain), kata kerja per item divariasikan (see/watch/climb/smell/sit/
+   * swim/find) mengikuti kewajaran tiap benda alam, bukan 1 kata kerja
+   * diulang 10x.
+   */
+  {
+    id: 'dia-siapa',
+    title: 'Dia Laki-laki atau Perempuan? (He or She?)',
+    desc: '10 kata',
+    contrastVisual: 'character',
+    items: [
+      { en: 'Sun', id: 'Matahari', emoji: '☀️', formA: { en: 'He sees the sun.', id: 'Kakak laki-laki melihat mataharinya.' }, formB: { en: 'She sees the sun.', id: 'Kakak perempuan melihat mataharinya.' } },
+      { en: 'Moon', id: 'Bulan', emoji: '🌙', formA: { en: 'He sees the moon.', id: 'Kakak laki-laki melihat bulannya.' }, formB: { en: 'She sees the moon.', id: 'Kakak perempuan melihat bulannya.' } },
+      { en: 'Sky', id: 'Langit', emoji: '🌤️', formA: { en: 'He watches the sky.', id: 'Kakak laki-laki memandangi langitnya.' }, formB: { en: 'She watches the sky.', id: 'Kakak perempuan memandangi langitnya.' } },
+      { en: 'Cloud', id: 'Awan', emoji: '☁️', formA: { en: 'He sees the cloud.', id: 'Kakak laki-laki melihat awannya.' }, formB: { en: 'She sees the cloud.', id: 'Kakak perempuan melihat awannya.' } },
+      { en: 'Tree', id: 'Pohon', emoji: '🌳', formA: { en: 'He climbs the tree.', id: 'Kakak laki-laki memanjat pohonnya.' }, formB: { en: 'She climbs the tree.', id: 'Kakak perempuan memanjat pohonnya.' } },
+      { en: 'Flower', id: 'Bunga', emoji: '🌸', formA: { en: 'He smells the flower.', id: 'Kakak laki-laki mencium bunganya.' }, formB: { en: 'She smells the flower.', id: 'Kakak perempuan mencium bunganya.' } },
+      { en: 'Grass', id: 'Rumput', emoji: '🌿', formA: { en: 'He sits on the grass.', id: 'Kakak laki-laki duduk di rumputnya.' }, formB: { en: 'She sits on the grass.', id: 'Kakak perempuan duduk di rumputnya.' } },
+      { en: 'River', id: 'Sungai', emoji: '🌊', formA: { en: 'He swims in the river.', id: 'Kakak laki-laki berenang di sungainya.' }, formB: { en: 'She swims in the river.', id: 'Kakak perempuan berenang di sungainya.' } },
+      { en: 'Stone', id: 'Batu', emoji: '🪨', formA: { en: 'He finds the stone.', id: 'Kakak laki-laki menemukan batunya.' }, formB: { en: 'She finds the stone.', id: 'Kakak perempuan menemukan batunya.' } },
+      { en: 'Star', id: 'Bintang', emoji: '⭐', formA: { en: 'He sees the star.', id: 'Kakak laki-laki melihat bintangnya.' }, formB: { en: 'She sees the star.', id: 'Kakak perempuan melihat bintangnya.' } },
+    ],
+  },
+  /**
+   * 5 topik lanjutan (riset per-level, `materi/grammar.md` §21) — pola SAMA
+   * dgn Little Stars §20 (sekali kategori "bersih" Cambridge Pre-A1 Starters
+   * habis, cari struktur/person/nomor baru DI DALAM kategori yg SUDAH
+   * tersentuh struktur LAIN, bukan padding tanpa arah). **1 kandidat riset
+   * DIJATUHKAN sesi ini** ("some/any" quantifier, mis. "I've got some
+   * cake."/"I haven't got any cake.") — audit menemukan strukturnya SELALU
+   * terikat pada polaritas have-got/haven't-got scr gramatikal (some/any
+   * TIDAK BISA bebas ditukar sambil mempertahankan polaritas tetap), jadi
+   * kalimatnya py 2 SINYAL beda (have-got/haven't-got DAN some/any) bukan 1
+   * — anak bisa jawab benar 100% cuma dari sinyal have-got yg SUDAH
+   * dikuasai sejak `punya-tidak-punya` Little Stars, tanpa pernah perlu
+   * memperhatikan some/any sama sekali — PERSIS pelajaran numeral-leak §8,
+   * jadi DIJATUHKAN drpd dipaksakan (Starter sekarang 4→9, BUKAN 4→10 —
+   * dilaporkan jujur ke user, bukan padding dgn topik lemah).
+   */
+  /**
+   * Topik ke-5 — locative adverb "here/there", KELAS KATA beda dari `ini-itu`
+   * (Little Stars, demonstrative PRONOUN this/that) — Cambridge Pre-A1
+   * Starters mendaftar keduanya sbg entri terpisah di bawah Adverbs of
+   * Place. `contrastVisual: 'proximity'` REUSE PERSIS (metafora jarak
+   * dekat/jauh yg sama). Dari domain Vocab `tempat-di-sekitar` (Places
+   * Around Us).
+   */
+  {
+    id: 'di-sini-di-sana',
+    title: 'Di Sini atau Di Sana? (Here or There?)',
+    desc: '10 kata',
+    contrastVisual: 'proximity',
+    items: [
+      { en: 'Park', id: 'Taman', emoji: '🏞️', formA: { en: 'The park is here.', id: 'Tamannya ada di sini.' }, formB: { en: 'The park is there.', id: 'Tamannya ada di sana.' } },
+      { en: 'Zoo', id: 'Kebun Binatang', emoji: '🦓', formA: { en: 'The zoo is here.', id: 'Kebun binatangnya ada di sini.' }, formB: { en: 'The zoo is there.', id: 'Kebun binatangnya ada di sana.' } },
+      { en: 'Beach', id: 'Pantai', emoji: '🏖️', formA: { en: 'The beach is here.', id: 'Pantainya ada di sini.' }, formB: { en: 'The beach is there.', id: 'Pantainya ada di sana.' } },
+      { en: 'Market', id: 'Pasar', emoji: '🛒', formA: { en: 'The market is here.', id: 'Pasarnya ada di sini.' }, formB: { en: 'The market is there.', id: 'Pasarnya ada di sana.' } },
+      { en: 'Hospital', id: 'Rumah Sakit', emoji: '🏥', formA: { en: 'The hospital is here.', id: 'Rumah sakitnya ada di sini.' }, formB: { en: 'The hospital is there.', id: 'Rumah sakitnya ada di sana.' } },
+      { en: 'Farm', id: 'Ladang', emoji: '🚜', formA: { en: 'The farm is here.', id: 'Ladangnya ada di sini.' }, formB: { en: 'The farm is there.', id: 'Ladangnya ada di sana.' } },
+      { en: 'Bridge', id: 'Jembatan', emoji: '🌉', formA: { en: 'The bridge is here.', id: 'Jembatannya ada di sini.' }, formB: { en: 'The bridge is there.', id: 'Jembatannya ada di sana.' } },
+      { en: 'Playground', id: 'Taman Bermain', emoji: '🛝', formA: { en: 'The playground is here.', id: 'Taman bermainnya ada di sini.' }, formB: { en: 'The playground is there.', id: 'Taman bermainnya ada di sana.' } },
+      { en: 'Street', id: 'Jalan', emoji: '🛣️', formA: { en: 'The street is here.', id: 'Jalannya ada di sini.' }, formB: { en: 'The street is there.', id: 'Jalannya ada di sana.' } },
+      { en: 'Mountain', id: 'Gunung', emoji: '⛰️', formA: { en: 'The mountain is here.', id: 'Gunungnya ada di sini.' }, formB: { en: 'The mountain is there.', id: 'Gunungnya ada di sana.' } },
+    ],
+  },
+  /**
+   * Topik ke-6 — subject pronoun PLURAL "we/they", struktur RESMI Cambridge
+   * Pre-A1 Starters yg belum pernah dilatih (`character` Starter cuma
+   * TUNGGAL org ketiga he/she; `pronouns` Explorer cuma "I"). `contrastVisual:
+   * 'inclusion'` (BARU, types.ts — lencana 🙋 "Kita" vs 👉 "Mereka", proxy
+   * GRUP TERMASUK vs DI LUAR pembicara). Dari domain Vocab
+   * `orang-di-sekitarku` (People Around Me). Kata kerja "are" TETAP SAMA di
+   * kedua bentuk (org ketiga jamak, sama spt org pertama jamak) — satu-
+   * satunya pembeda kalimat PERSIS "we"/"they".
+   */
+  {
+    id: 'kita-mereka',
+    title: 'Kita atau Mereka? (We or They?)',
+    desc: '10 kata',
+    contrastVisual: 'inclusion',
+    items: [
+      { en: 'Neighbor', id: 'Tetangga', emoji: '🏘️', formA: { en: 'We are neighbors.', id: 'Kami bertetangga.' }, formB: { en: 'They are neighbors.', id: 'Mereka bertetangga.' } },
+      { en: 'Classmate', id: 'Teman Sekelas', emoji: '🧑‍🎓', formA: { en: 'We are classmates.', id: 'Kami teman sekelas.' }, formB: { en: 'They are classmates.', id: 'Mereka teman sekelas.' } },
+      { en: 'Boy', id: 'Anak Laki-laki', emoji: '👦', formA: { en: 'We are boys.', id: 'Kami anak laki-laki.' }, formB: { en: 'They are boys.', id: 'Mereka anak laki-laki.' } },
+      { en: 'Girl', id: 'Anak Perempuan', emoji: '👧', formA: { en: 'We are girls.', id: 'Kami anak perempuan.' }, formB: { en: 'They are girls.', id: 'Mereka anak perempuan.' } },
+      { en: 'Cousin', id: 'Sepupu', emoji: '🧑', formA: { en: 'We are cousins.', id: 'Kami sepupu.' }, formB: { en: 'They are cousins.', id: 'Mereka sepupu.' } },
+      { en: 'Sibling', id: 'Saudara Kandung', emoji: '🧒', formA: { en: 'We are siblings.', id: 'Kami bersaudara.' }, formB: { en: 'They are siblings.', id: 'Mereka bersaudara.' } },
+      { en: 'Baby', id: 'Bayi', emoji: '👶', formA: { en: 'We are babies.', id: 'Kami bayi.' }, formB: { en: 'They are babies.', id: 'Mereka bayi.' } },
+      { en: 'Driver', id: 'Supir', emoji: '🚕', formA: { en: 'We are drivers.', id: 'Kami supir.' }, formB: { en: 'They are drivers.', id: 'Mereka supir.' } },
+      { en: 'Best Friend', id: 'Sahabat', emoji: '🤝', formA: { en: 'We are best friends.', id: 'Kami sahabat.' }, formB: { en: 'They are best friends.', id: 'Mereka sahabat.' } },
+      { en: 'Twin', id: 'Anak Kembar', emoji: '👯', formA: { en: 'We are twins.', id: 'Kami anak kembar.' }, formB: { en: 'They are twins.', id: 'Mereka anak kembar.' } },
+    ],
+  },
+  /**
+   * Topik ke-7 — imperatif positif/negatif ("Jump!"/"Don't jump!"), struktur
+   * RESMI Cambridge Pre-A1 Starters (verb list), belum pernah dilatih di
+   * level manapun (Explorer cuma py `lets-suggestion`/`can-requests`, BUKAN
+   * perintah polos). `contrastVisual: 'polarity'` REUSE — lencana ✅/❌
+   * dibaca sbg "boleh/dilarang" (metafora rambu, bukan status ya/tidak),
+   * tetap intuitif utk perintah. Kosakata BUKAN dipetakan ke 1 domain Vocab
+   * (BESPOKE, pola sama Explorer's topik generik awal `this-is`/`there-is`/
+   * `pronouns` yg jg tanpa domain) — dicoba pakai domain `di-sekolah` dulu,
+   * TAPI menegasikan instruksi otoritas ("jangan dengarkan gurumu") atau
+   * relasi sosial ("jangan main dgn temanmu") melanggar filter kid-friendly
+   * CLAUDE.md, jadi diganti kosakata TPR ("Listen and do") standar Cambridge
+   * yg netral scr sosial (lompat/lari/duduk/dst).
+   */
+  {
+    id: 'lakukan-jangan-lakukan',
+    title: "Lakukan atau Jangan? (Do It or Don't?)",
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'Jump', id: 'Lompat', emoji: '🤸', formA: { en: 'Jump!', id: 'Lompat!' }, formB: { en: "Don't jump!", id: 'Jangan lompat!' } },
+      { en: 'Run', id: 'Lari', emoji: '🏃', formA: { en: 'Run!', id: 'Lari!' }, formB: { en: "Don't run!", id: 'Jangan lari!' } },
+      { en: 'Sit Down', id: 'Duduk', emoji: '🪑', formA: { en: 'Sit down!', id: 'Duduk!' }, formB: { en: "Don't sit down!", id: 'Jangan duduk!' } },
+      { en: 'Stand Up', id: 'Berdiri', emoji: '🧍', formA: { en: 'Stand up!', id: 'Berdiri!' }, formB: { en: "Don't stand up!", id: 'Jangan berdiri!' } },
+      { en: 'Clap', id: 'Tepuk Tangan', emoji: '👏', formA: { en: 'Clap your hands!', id: 'Tepuk tanganmu!' }, formB: { en: "Don't clap your hands!", id: 'Jangan tepuk tanganmu!' } },
+      { en: 'Open the Door', id: 'Buka Pintu', emoji: '🚪', formA: { en: 'Open the door!', id: 'Buka pintunya!' }, formB: { en: "Don't open the door!", id: 'Jangan buka pintunya!' } },
+      { en: 'Close the Window', id: 'Tutup Jendela', emoji: '🪟', formA: { en: 'Close the window!', id: 'Tutup jendelanya!' }, formB: { en: "Don't close the window!", id: 'Jangan tutup jendelanya!' } },
+      { en: 'Wash Your Hands', id: 'Cuci Tangan', emoji: '🧼', formA: { en: 'Wash your hands!', id: 'Cuci tanganmu!' }, formB: { en: "Don't wash your hands!", id: 'Jangan cuci tanganmu!' } },
+      { en: 'Touch It', id: 'Sentuh Itu', emoji: '🤚', formA: { en: 'Touch it!', id: 'Sentuh itu!' }, formB: { en: "Don't touch it!", id: 'Jangan sentuh itu!' } },
+      { en: 'Write Your Name', id: 'Tulis Namamu', emoji: '✍️', formA: { en: 'Write your name!', id: 'Tulis namamu!' }, formB: { en: "Don't write your name!", id: 'Jangan tulis namamu!' } },
+    ],
+  },
+  /**
+   * Topik ke-8 — verb "need" positif/negatif, kata kerja BARU di
+   * `'polarity'` yg belum pernah dipakai (beda dari `mau-tidak-mau` Little
+   * Stars yg "want" — KEBUTUHAN vs KEINGINAN, perbedaan yg genuinely
+   * bermakna utk anak usia Starter yg sedikit lebih besar drpd Little
+   * Stars). Dari domain Vocab `di-sekolah` (At School).
+   */
+  {
+    id: 'perlu-tidak-perlu',
+    title: "Perlu atau Tidak Perlu? (Need or Don't Need?)",
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'Coach', id: 'Pelatih', emoji: '📣', formA: { en: 'I need a coach.', id: 'Aku perlu pelatih.' }, formB: { en: "I don't need a coach.", id: 'Aku tidak perlu pelatih.' } },
+      { en: 'Classroom', id: 'Ruang Kelas', emoji: '🏫', formA: { en: 'I need the classroom.', id: 'Aku perlu ruang kelas itu.' }, formB: { en: "I don't need the classroom.", id: 'Aku tidak perlu ruang kelas itu.' } },
+      { en: 'Friend', id: 'Teman', emoji: '🧑‍🤝‍🧑', formA: { en: 'I need a friend.', id: 'Aku perlu teman.' }, formB: { en: "I don't need a friend.", id: 'Aku tidak perlu teman.' } },
+      { en: 'Principal', id: 'Kepala Sekolah', emoji: '🧑‍💼', formA: { en: 'I need the principal.', id: 'Aku perlu kepala sekolah.' }, formB: { en: "I don't need the principal.", id: 'Aku tidak perlu kepala sekolah.' } },
+      { en: 'Library', id: 'Perpustakaan', emoji: '📚', formA: { en: 'I need the library.', id: 'Aku perlu perpustakaan.' }, formB: { en: "I don't need the library.", id: 'Aku tidak perlu perpustakaan.' } },
+      { en: 'Lunchbox', id: 'Kotak Bekal', emoji: '🍱', formA: { en: 'I need my lunchbox.', id: 'Aku perlu kotak bekalku.' }, formB: { en: "I don't need my lunchbox.", id: 'Aku tidak perlu kotak bekalku.' } },
+      { en: 'Uniform', id: 'Seragam', emoji: '👕', formA: { en: 'I need my uniform.', id: 'Aku perlu seragamku.' }, formB: { en: "I don't need my uniform.", id: 'Aku tidak perlu seragamku.' } },
+      { en: 'Bell', id: 'Bel', emoji: '🔔', formA: { en: 'I need the bell.', id: 'Aku perlu belnya.' }, formB: { en: "I don't need the bell.", id: 'Aku tidak perlu belnya.' } },
+      { en: 'Homework', id: 'PR', emoji: '📓', formA: { en: 'I need my homework.', id: 'Aku perlu PR-ku.' }, formB: { en: "I don't need my homework.", id: 'Aku tidak perlu PR-ku.' } },
+      { en: 'Recess', id: 'Istirahat', emoji: '🥪', formA: { en: 'I need recess.', id: 'Aku perlu istirahat.' }, formB: { en: "I don't need recess.", id: 'Aku tidak perlu istirahat.' } },
+    ],
+  },
+  /**
+   * Topik ke-9 — possessive determiner PLURAL "our/their", pasangan
+   * struktural utk `kita-mereka` (subjek) di atas — persis pola `dia-siapa`
+   * (subjek he/she) + `miliknya-siapa` (posesif his/her) yg SUDAH ada di
+   * level ini, cuma versi PLURAL. `contrastVisual: 'inclusion'` REUSE PERSIS
+   * dari topik ke-6. Dari domain Vocab `makanan-favoritku` (My Favorite
+   * Food) — konteks berbagi makanan pas pesta paling natural utk "punya
+   * kita" vs "punya mereka".
+   */
+  {
+    id: 'milik-kita-milik-mereka',
+    title: 'Milik Kita atau Milik Mereka? (Ours or Theirs?)',
+    desc: '10 kata',
+    contrastVisual: 'inclusion',
+    items: [
+      { en: 'Pizza', id: 'Pizza', emoji: '🍕', formA: { en: 'This is our pizza.', id: 'Ini pizza kita.' }, formB: { en: 'This is their pizza.', id: 'Ini pizza mereka.' } },
+      { en: 'Burger', id: 'Burger', emoji: '🍔', formA: { en: 'This is our burger.', id: 'Ini burger kita.' }, formB: { en: 'This is their burger.', id: 'Ini burger mereka.' } },
+      { en: 'Sandwich', id: 'Sandwich', emoji: '🥪', formA: { en: 'This is our sandwich.', id: 'Ini sandwich kita.' }, formB: { en: 'This is their sandwich.', id: 'Ini sandwich mereka.' } },
+      { en: 'Ice Cream', id: 'Es Krim', emoji: '🍦', formA: { en: 'This is our ice cream.', id: 'Ini es krim kita.' }, formB: { en: 'This is their ice cream.', id: 'Ini es krim mereka.' } },
+      { en: 'Cake', id: 'Kue', emoji: '🍰', formA: { en: 'This is our cake.', id: 'Ini kue kita.' }, formB: { en: 'This is their cake.', id: 'Ini kue mereka.' } },
+      { en: 'Cookie', id: 'Biskuit', emoji: '🍪', formA: { en: 'This is our cookie.', id: 'Ini biskuit kita.' }, formB: { en: 'This is their cookie.', id: 'Ini biskuit mereka.' } },
+      { en: 'Chocolate', id: 'Cokelat', emoji: '🍫', formA: { en: 'This is our chocolate.', id: 'Ini cokelat kita.' }, formB: { en: 'This is their chocolate.', id: 'Ini cokelat mereka.' } },
+      { en: 'Cheese', id: 'Keju', emoji: '🧀', formA: { en: 'This is our cheese.', id: 'Ini keju kita.' }, formB: { en: 'This is their cheese.', id: 'Ini keju mereka.' } },
+      { en: 'Juice', id: 'Jus', emoji: '🧃', formA: { en: 'This is our juice.', id: 'Ini jus kita.' }, formB: { en: 'This is their juice.', id: 'Ini jus mereka.' } },
+      { en: 'Yogurt', id: 'Yogurt', emoji: '🥣', formA: { en: 'This is our yogurt.', id: 'Ini yogurt kita.' }, formB: { en: 'This is their yogurt.', id: 'Ini yogurt mereka.' } },
+    ],
+  },
+  /**
+   * Topik ke-10 — verb "go" positif/negatif, struktur RESMI Cambridge Pre-A1
+   * Starters (present simple verb list), verb BARU di `'polarity'` yg belum
+   * pernah dipakai (permintaan user langsung: "add 1 topic grammar in
+   * Starter level so the total is 10" — sesi lanjutan §21, gap terakhir yg
+   * sengaja belum diisi krn kandidat "some/any" dijatuhkan §21.1). SENGAJA
+   * "go to + PLACE" polos (bukan "go + -ing" spt `go-plus-ing` Adventurer,
+   * struktur A1 Movers yg lebih tinggi tier — di sini TETAP present simple
+   * dasar, sesuai tier Pre-A1 Starter). BESPOKE tanpa domain Vocab resmi
+   * (pola sama `lakukan-jangan-lakukan` di atas — 2 domain Starter yg
+   * tersisa, `angka-11-20`/`hari-dalam-seminggu`, SUDAH dicek riset
+   * sebelumnya & TIDAK survive utk struktur apa pun tanpa dipaksakan),
+   * kosakata tempat dipilih SENGAJA beda dari `di-sini-di-sana` (Park/Zoo/
+   * Beach/Market/Hospital/Farm/Bridge/Playground/Street/Mountain) supaya
+   * anak tidak melihat 10 gambar yg SAMA PERSIS 2 topik berturut-turut.
+   */
+  {
+    id: 'pergi-tidak-pergi',
+    title: 'Pergi atau Tidak Pergi? (I Go / I Don\'t Go?)',
+    desc: '10 kata',
+    contrastVisual: 'polarity',
+    items: [
+      { en: 'School', id: 'Sekolah', emoji: '🏫', formA: { en: 'I go to school.', id: 'Aku pergi ke sekolah.' }, formB: { en: "I don't go to school.", id: 'Aku tidak pergi ke sekolah.' } },
+      { en: 'Home', id: 'Rumah', emoji: '🏠', formA: { en: 'I go home.', id: 'Aku pulang ke rumah.' }, formB: { en: "I don't go home.", id: 'Aku tidak pulang ke rumah.' } },
+      { en: 'Mall', id: 'Mal', emoji: '🛍️', formA: { en: 'I go to the mall.', id: 'Aku pergi ke mal.' }, formB: { en: "I don't go to the mall.", id: 'Aku tidak pergi ke mal.' } },
+      { en: 'Swimming Pool', id: 'Kolam Renang', emoji: '🏊', formA: { en: 'I go to the swimming pool.', id: 'Aku pergi ke kolam renang.' }, formB: { en: "I don't go to the swimming pool.", id: 'Aku tidak pergi ke kolam renang.' } },
+      { en: 'Dentist', id: 'Dokter Gigi', emoji: '🦷', formA: { en: 'I go to the dentist.', id: 'Aku pergi ke dokter gigi.' }, formB: { en: "I don't go to the dentist.", id: 'Aku tidak pergi ke dokter gigi.' } },
+      { en: 'Cinema', id: 'Bioskop', emoji: '🎬', formA: { en: 'I go to the cinema.', id: 'Aku pergi ke bioskop.' }, formB: { en: "I don't go to the cinema.", id: 'Aku tidak pergi ke bioskop.' } },
+      { en: 'Countryside', id: 'Pedesaan', emoji: '🌾', formA: { en: 'I go to the countryside.', id: 'Aku pergi ke pedesaan.' }, formB: { en: "I don't go to the countryside.", id: 'Aku tidak pergi ke pedesaan.' } },
+      { en: 'Downtown', id: 'Pusat Kota', emoji: '🏙️', formA: { en: 'I go downtown.', id: 'Aku pergi ke pusat kota.' }, formB: { en: "I don't go downtown.", id: 'Aku tidak pergi ke pusat kota.' } },
+      { en: "Grandma's House", id: 'Rumah Nenek', emoji: '👵', formA: { en: "I go to grandma's house.", id: 'Aku pergi ke rumah nenek.' }, formB: { en: "I don't go to grandma's house.", id: 'Aku tidak pergi ke rumah nenek.' } },
+      { en: 'Gym', id: 'Pusat Kebugaran', emoji: '🏋️', formA: { en: 'I go to the gym.', id: 'Aku pergi ke pusat kebugaran.' }, formB: { en: "I don't go to the gym.", id: 'Aku tidak pergi ke pusat kebugaran.' } },
+    ],
+  },
+];
+
+/**
+ * Grammar Achiever (11–13 th) — REUSE `GrammarTopic` LAMA (examples/scramble/
+ * fill), BUKAN format baru — riset per-level (`materi/grammar.md` §9)
+ * mengonfirmasi A2 Flyers (backbone Achiever) py struktur BARU "present
+ * continuous VS present simple" (kontrasnya, bukan continuous doang) yang
+ * masih terjawab dgn 3-bagian teks-first yang sama asal KONTENNYA dikurasi
+ * sbg pasangan kontras (`examples` sengaja berpasang "every day"/"right now"
+ * per aktivitas yang sama) — pola sama "Format C+ via konten, bukan mekanik
+ * baru" yang sudah dipakai Achiever Reading. Dipetakan dari
+ * `VOCAB_TOPICS_ACHIEVER` `kata-kerja-lanjutan` (Advanced Actions).
+ */
+export const GRAMMAR_TOPICS_ACHIEVER: GrammarTopic[] = [
+  {
+    id: 'continuous-vs-simple',
+    title: 'Sedang vs Biasa Dilakukan (Present Continuous vs Simple)',
+    desc: 'Kontras -ing vs Sehari-hari',
+    examples: [
+      { en: 'I climb the tree every day.', emoji: '🧗' },
+      { en: 'I am climbing the tree right now.', emoji: '🧗' },
+      { en: 'She laughs at jokes every day.', emoji: '😂' },
+      { en: 'She is laughing right now.', emoji: '😂' },
+    ],
+    scramble: [
+      { emoji: '🤸', target: ['She', 'is', 'jumping', 'right', 'now'] },
+      { emoji: '📢', target: ['He', 'shouts', 'every', 'morning'] },
+    ],
+    fill: {
+      before: ['Right', 'now', 'I', 'am'],
+      after: [],
+      options: [
+        { word: 'laughing', emoji: '😂' },
+        { word: 'crying', emoji: '😭' },
+        { word: 'whispering', emoji: '🤫' },
+      ],
+    },
+  },
+  /**
+   * 10 topik lanjutan (riset per-level, `materi/grammar.md` §18) — struktur
+   * Cambridge A2 Flyers Handbook for Teachers (2018, tabel resmi hlm.80),
+   * diverifikasi LANGSUNG dari dokumen asli (bukan cuma ringkasan pihak
+   * ketiga) — semua struktur BARU yg ditambahkan Flyers di atas A1 Movers,
+   * di luar `continuous-vs-simple` yg sudah ada. Kurikulum Merdeka Fase D
+   * (CP resmi, diverifikasi via dokumen primer Kemendikbud, BUKAN cuma
+   * parafrase blog) mengonfirmasi "future tense" & konjungsi "because/so/
+   * when/but" sbg materi fase ini — mendukung `going-to-vs-will`/`so-result`
+   * — TAPI "passive voice"/"relative pronouns" yg sempat diduga (riset sesi
+   * sebelumnya) TERNYATA TIDAK ada di teks CP resmi Fase D, jadi relative
+   * clauses & full passive voice SENGAJA TIDAK dipakai sesi ini (dicatat
+   * sbg kandidat masa depan, bukan lupa — beda dari `made-of` yg memang ADA
+   * di tabel resmi Flyers sbg chunk pasif terbatas). Modal `must/mustn't`
+   * (juga muncul di tabel Flyers) SENGAJA DILEWATI krn sudah diklaim
+   * Adventurer — `should`/`could`(saran)/`might` yg dipilih di sini semua
+   * genuinely BELUM ada di level manapun. `could` di sini bermakna SARAN
+   * ("You could try..."), sengaja beda makna dari `past-ability-could`
+   * Adventurer (kemampuan lampau) — Cambridge sendiri mendaftar 2 makna
+   * `could` sbg entri terpisah di tabelnya.
+   */
+  /**
+   * Topik ke-2 — "Past Continuous" (Cambridge Flyers, "I was walking down
+   * the road when I saw her.") — BEDA dari `present-continuous` Explorer
+   * (present) & `continuous-vs-simple` di atas (kontras present). Dari
+   * domain `tempat-di-kota` (Places in Town).
+   */
+  {
+    id: 'past-continuous',
+    title: 'Sedang Terjadi di Masa Lalu (Past Continuous)',
+    desc: 'Was/Were + -ing',
+    examples: [
+      { en: 'I was walking to the bank when it started to rain.', emoji: '🏦' },
+      { en: 'She was shopping at the supermarket when she saw her teacher.', emoji: '🏬' },
+      { en: 'We were watching a movie at the cinema when the lights went out.', emoji: '🎬' },
+    ],
+    scramble: [
+      { emoji: '🏦', target: ['I', 'was', 'walking', 'to', 'the', 'bank'] },
+      { emoji: '🎬', target: ['We', 'were', 'watching', 'a', 'movie'] },
+    ],
+    fill: {
+      before: ['I', 'was', 'walking', 'to', 'the'],
+      after: ['when', 'it', 'started', 'to', 'rain'],
+      options: [
+        { word: 'library', emoji: '📚' },
+        { word: 'stadium', emoji: '🏟️' },
+        { word: 'airport', emoji: '✈️' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-3 — "Present Perfect" (Cambridge Flyers, "Have you ever been
+   * to the circus?") — struktur BARU sepenuhnya, belum ada di level
+   * manapun. Dari domain `hiburan-waktu-luang` (Leisure & Entertainment).
+   */
+  {
+    id: 'present-perfect',
+    title: 'Pernah atau Belum? (Present Perfect)',
+    desc: "Have/Has + Kata Kerja ke-3",
+    examples: [
+      { en: 'I have never played chess.', emoji: '♟️' },
+      { en: 'She has already watched a play at the theater.', emoji: '🎭' },
+      { en: 'Have you ever ridden a roller coaster at the amusement park?', emoji: '🎡' },
+    ],
+    scramble: [
+      { emoji: '🍣', target: ['He', 'has', 'never', 'eaten', 'sushi'] },
+      { emoji: '🎭', target: ['She', 'has', 'already', 'watched', 'a', 'play'] },
+    ],
+    fill: {
+      before: ['I', 'have', 'never', 'played'],
+      after: [],
+      options: [
+        { word: 'tennis', emoji: '🎾' },
+        { word: 'basketball', emoji: '🏀' },
+        { word: 'badminton', emoji: '🏸' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-4 — "Going To vs Will" (Cambridge Flyers, "be going to" &
+   * "will" KEDUANYA struktur baru) — dual-sourced, Kurikulum Merdeka Fase D
+   * eksplisit menyebut "future tense" sbg materi fase ini. BUKAN duplikat
+   * `go-plus-ing` Adventurer (idiom "pergi lalu beraktivitas", struktur
+   * beda total). Dari domain `mata-pelajaran` (School Subjects). Scramble
+   * SENGAJA menyertakan SATU contoh tiap bentuk (going-to DAN will) —
+   * pola sama `continuous-vs-simple` di atas yg scramble-nya jg mewakili
+   * kedua sisi kontras, bukan cuma satu.
+   */
+  {
+    id: 'going-to-vs-will',
+    title: 'Rencana vs Keputusan Mendadak (Going To vs Will)',
+    desc: 'Kontras Going To vs Will',
+    examples: [
+      { en: 'I am going to study Math after school.', emoji: '🔢' },
+      { en: 'She will help her friend with Science homework.', emoji: '🔬' },
+      { en: 'We are going to have an English test tomorrow.', emoji: '🇬🇧' },
+    ],
+    scramble: [
+      { emoji: '🔢', target: ['I', 'am', 'going', 'to', 'study', 'Math'] },
+      { emoji: '🔬', target: ['She', 'will', 'help', 'her', 'friend'] },
+    ],
+    fill: {
+      before: ['I', 'am', 'going', 'to', 'study'],
+      after: ['after', 'school'],
+      options: [
+        { word: 'art', emoji: '🎨' },
+        { word: 'science', emoji: '🔬' },
+        { word: 'history', emoji: '📜' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-5 — "Should vs Could (saran)" (Cambridge Flyers, "should" BARU
+   * + "could" bermakna SARAN — Cambridge mendaftar makna ini TERPISAH dari
+   * "could" kemampuan lampau, jadi BUKAN duplikat `past-ability-could`
+   * Adventurer walau kata sama). Dari domain `teknologi-internet`
+   * (perangkat saja, tanpa medsos, konsisten batasan Vocab domain ini).
+   */
+  {
+    id: 'should-vs-could',
+    title: 'Saran & Pilihan (Should vs Could)',
+    desc: 'Kontras Should vs Could',
+    examples: [
+      { en: 'You should charge your computer before school.', emoji: '💻' },
+      { en: 'You could try a new password for your email.', emoji: '🔑' },
+      { en: 'You should not look at the screen for too long.', emoji: '🖥️' },
+    ],
+    scramble: [
+      { emoji: '💻', target: ['You', 'should', 'charge', 'your', 'computer'] },
+      { emoji: '🔑', target: ['You', 'could', 'try', 'a', 'new', 'password'] },
+    ],
+    fill: {
+      before: ['You', 'should', 'charge', 'your'],
+      after: ['before', 'school'],
+      options: [
+        { word: 'watch', emoji: '⌚' },
+        { word: 'phone', emoji: '📱' },
+        { word: 'camera', emoji: '📷' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-6 — "Might for Possibility" (Cambridge Flyers, "Vicky might
+   * come to the party.") — struktur BARU, belum ada di level manapun.
+   * Dari domain `arah-posisi` (Directions & Position) — "might be
+   * [posisi]" natural utk menebak lokasi.
+   */
+  {
+    id: 'might-possibility',
+    title: 'Mungkin Saja (Might for Possibility)',
+    desc: 'Modal Might',
+    examples: [
+      { en: 'My keys might be behind the sofa.', emoji: '🛋️' },
+      { en: 'The bakery might be near the corner.', emoji: '📐' },
+      { en: 'She might turn left at the next street.', emoji: '⬅️' },
+    ],
+    scramble: [
+      { emoji: '📺', target: ['The', 'remote', 'might', 'be', 'under', 'the', 'couch'] },
+      { emoji: '⬅️', target: ['She', 'might', 'turn', 'left'] },
+    ],
+    fill: {
+      before: ['She', 'might', 'turn'],
+      after: ['at', 'the', 'corner'],
+      options: [
+        { word: 'left', emoji: '⬅️' },
+        { word: 'right', emoji: '➡️' },
+        { word: 'around', emoji: '🔄' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-7 — "Conjunction So" (Cambridge Flyers kategori Conjunctions —
+   * "so") — dual-sourced, Kurikulum Merdeka Fase D py set konjungsi
+   * because/so/when/but; `because-reasons` sudah diklaim Adventurer, "so"
+   * (akibat, arah sebaliknya dari "because") masih kosong. Dari domain
+   * `sifat-kepribadian` (Personality Traits) — sifat→akibat sosial paling
+   * natural dirangkai "so".
+   */
+  {
+    id: 'so-result',
+    title: 'Jadi, Akibatnya... (Conjunction So)',
+    desc: 'Sebab-Akibat dengan So',
+    examples: [
+      { en: 'Dio is very kind, so everyone likes him.', emoji: '🤗' },
+      { en: 'She is very funny, so her friends laugh a lot.', emoji: '😂' },
+      { en: 'He is very honest, so people trust him.', emoji: '🤝' },
+    ],
+    scramble: [
+      { emoji: '🦸', target: ['Andi', 'is', 'very', 'brave', 'so', 'he', 'helps', 'others'] },
+      { emoji: '🎁', target: ['Maya', 'is', 'very', 'generous', 'so', 'she', 'shares', 'her', 'toys'] },
+    ],
+    fill: {
+      before: ['Dio', 'is', 'very'],
+      after: ['so', 'everyone', 'likes', 'him'],
+      options: [
+        { word: 'helpful', emoji: '🙌' },
+        { word: 'funny', emoji: '😂' },
+        { word: 'friendly', emoji: '😊' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-8 — "Look Like" (Cambridge Flyers, "Be/look/sound/feel/taste/
+   * smell like" — "What's your new teacher like?") — struktur BARU. Dari
+   * domain `ciri-ciri-fisik` (Physical Appearance) — domain jadi PANGGUNG
+   * tema kemiripan wajah/fisik, bukan sumber kata harfiah (pola sama
+   * `prepositions-of-place` Explorer).
+   */
+  {
+    id: 'look-like',
+    title: 'Mirip Siapa? (Look Like)',
+    desc: 'Look Like + Orang',
+    examples: [
+      { en: 'My brother looks like our dad.', emoji: '👨' },
+      { en: 'She looks like her older sister.', emoji: '👧' },
+      { en: 'The puppy looks like a little bear.', emoji: '🐻' },
+    ],
+    scramble: [
+      { emoji: '🐯', target: ['The', 'kitten', 'looks', 'like', 'a', 'small', 'tiger'] },
+      { emoji: '👴', target: ['He', 'looks', 'like', 'his', 'grandfather'] },
+    ],
+    fill: {
+      before: ['My', 'brother', 'looks', 'like', 'our'],
+      after: [],
+      options: [
+        { word: 'uncle', emoji: '🧔' },
+        { word: 'mom', emoji: '👩' },
+        { word: 'grandpa', emoji: '👴' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-9 — "Be Made Of" (Cambridge Flyers, "The toy is made of
+   * wood.") — chunk semi-pasif TERBATAS yg memang ADA di tabel resmi
+   * Flyers, BUKAN full passive voice (itu tetap di luar scope, tier
+   * KET/PET). Dari domain `sifat-benda-lanjutan` (Object Qualities).
+   */
+  {
+    id: 'made-of',
+    title: 'Terbuat dari Apa? (Be Made Of)',
+    desc: 'Be Made Of + Bahan',
+    examples: [
+      { en: 'This spoon is made of metal, so it feels hard.', emoji: '🥄' },
+      { en: 'My pillow is made of cotton, so it feels soft.', emoji: '🛏️' },
+      { en: 'The plate is made of glass, so it feels smooth.', emoji: '🍽️' },
+    ],
+    scramble: [
+      { emoji: '🥄', target: ['This', 'spoon', 'is', 'made', 'of', 'metal'] },
+      { emoji: '🛏️', target: ['My', 'pillow', 'is', 'made', 'of', 'cotton'] },
+    ],
+    fill: {
+      before: ['This', 'toy', 'is', 'made', 'of'],
+      after: [],
+      options: [
+        { word: 'wood', emoji: '🪵' },
+        { word: 'plastic', emoji: '🧴' },
+        { word: 'metal', emoji: '🔩' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-10 — "Zero Conditional" (Cambridge Flyers, "If it's sunny, we
+   * go swimming.") — BEDA dari `because-reasons` Adventurer (konjungsi
+   * sebab, bukan klausa if). Dari domain `kata-kerja-lanjutan` (REUSE dari
+   * `continuous-vs-simple` di atas — kata kerja lanjutan natural utk
+   * reaksi/kebiasaan "if X maka Y").
+   */
+  {
+    id: 'zero-conditional',
+    title: 'Kalau... Maka... (Zero Conditional)',
+    desc: 'If + Present Simple',
+    examples: [
+      { en: 'If I climb the tree, I feel happy.', emoji: '🧗' },
+      { en: 'If she hears a joke, she laughs.', emoji: '😂' },
+      { en: 'If the ball comes, he catches it.', emoji: '🤲' },
+    ],
+    scramble: [
+      { emoji: '📝', target: ['If', 'he', 'studies', 'hard', 'he', 'passes', 'the', 'test'] },
+      { emoji: '☔', target: ['If', 'it', 'rains', 'we', 'stay', 'home'] },
+    ],
+    fill: {
+      before: ['If', 'I', 'feel', 'scared,', 'I'],
+      after: [],
+      options: [
+        { word: 'hide', emoji: '🙈' },
+        { word: 'cry', emoji: '😭' },
+        { word: 'shout', emoji: '📢' },
+      ],
+    },
+  },
+  /**
+   * Topik ke-11 — "Many vs Much" (kategori kuantifier — Cambridge
+   * mendaftar "much"/"a few"/"a little" di daftar KOSAKATA Flyers, bukan
+   * tabel struktur grammar, tapi kontras countable/uncountable ini genuinely
+   * konten baru di tier ini, dikonfirmasi jg pola umum ESL scope-and-
+   * sequence A1→A2 British Council/Wordwall). Dari domain `angka-puluhan`
+   * (Bigger Numbers) — tema hitung-menghitung jadi panggung natural.
+   * Scramble menyertakan SATU contoh tiap sisi kontras (many DAN much),
+   * pola sama `continuous-vs-simple`/`going-to-vs-will` di atas.
+   */
+  {
+    id: 'many-vs-much',
+    title: 'Banyak yang Bisa Dihitung vs Tidak (Many vs Much)',
+    desc: 'Kontras Many vs Much',
+    examples: [
+      { en: 'I have many friends at school.', emoji: '👫' },
+      { en: "We don't have much water left.", emoji: '💧' },
+      { en: 'How many students are in your class?', emoji: '🏫' },
+    ],
+    scramble: [
+      { emoji: '👫', target: ['I', 'have', 'many', 'friends'] },
+      { emoji: '💧', target: ['We', "don't", 'have', 'much', 'water'] },
+    ],
+    fill: {
+      before: ['I', 'have', 'many'],
+      after: ['at', 'school'],
+      options: [
+        { word: 'lessons', emoji: '📖' },
+        { word: 'books', emoji: '📚' },
+        { word: 'classes', emoji: '🏫' },
+      ],
+    },
+  },
+];
+
+/**
+ * Grammar Trailblazer (12+ th, ≈B1) — format KETIGA `GrammarTransformTopic`
+ * (types.ts, BARU — lihat komentar lengkap di sana). Riset per-level
+ * (`materi/grammar.md` §9): struktur baru PET (passive/reported speech/
+ * conditionals) diuji Cambridge sendiri lewat key-word sentence
+ * transformation — task shape yang genuinely tidak bisa dijawab 2 format
+ * lain, sama alasan Listening/Speaking py format ketiga sendiri di level
+ * ini. **User ditanya eksplisit** ("ikuti default PRD §9 low-effort" VS
+ * "bangun format baru sentence-transformation ala PET") — user PILIH bangun
+ * format baru.
+ *
+ * Topik pertama: reported speech, DIBATASI ke kalimat PERNYATAAN present
+ * simple saja (bukan pertanyaan/perintah yg py aturan beda: "asked if"/"told
+ * to") — dipetakan dari `VOCAB_TOPICS_TRAILBLAZER` `bahasa-komunikasi`
+ * (Language & Communication, tokoh fiktif membuat pernyataan TENTANG proses
+ * belajar bahasa mereka sendiri, fit tematik langsung). Distraktor
+ * `reportedOptions` menguji 3 kesalahan umum: lupa geser tense (present tdk
+ * berubah), kata ganti salah, tense salah total (pakai "will").
+ */
+export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
+  {
+    id: 'reported-speech',
+    title: 'Reported Speech — Dia Bilang…',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Rani',
+        emoji: '✏️',
+        original: 'I study grammar every day.',
+        originalId: 'Aku belajar tata bahasa setiap hari.',
+        reportedOptions: [
+          { text: 'Rani said that she studied grammar every day.', ok: true },
+          { text: 'Rani said that she studies grammar every day.', ok: false },
+          { text: 'Rani said that I studied grammar every day.', ok: false },
+          { text: 'Rani said that she will study grammar every day.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Dimas',
+        emoji: '💬',
+        original: 'I am fluent in English.',
+        originalId: 'Aku fasih berbahasa Inggris.',
+        reportedOptions: [
+          { text: 'Dimas said that he was fluent in English.', ok: true },
+          { text: 'Dimas said that he is fluent in English.', ok: false },
+          { text: 'Dimas said that she was fluent in English.', ok: false },
+          { text: 'Dimas said that he will be fluent in English.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '🎤',
+        original: 'I have an English accent.',
+        originalId: 'Aku punya aksen Inggris.',
+        reportedOptions: [
+          { text: 'Sari said that she had an English accent.', ok: true },
+          { text: 'Sari said that she has an English accent.', ok: false },
+          { text: 'Sari said that I had an English accent.', ok: false },
+          { text: 'Sari said that she will have an English accent.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '👄',
+        original: 'I practice pronunciation every night.',
+        originalId: 'Aku berlatih pengucapan setiap malam.',
+        reportedOptions: [
+          { text: 'Budi said that he practiced pronunciation every night.', ok: true },
+          { text: 'Budi said that he practices pronunciation every night.', ok: false },
+          { text: 'Budi said that she practiced pronunciation every night.', ok: false },
+          { text: 'Budi said that he will practice pronunciation every night.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Wati',
+        emoji: '📖',
+        original: 'I learn new vocabulary every week.',
+        originalId: 'Aku belajar kosakata baru setiap minggu.',
+        reportedOptions: [
+          { text: 'Wati said that she learned new vocabulary every week.', ok: true },
+          { text: 'Wati said that she learns new vocabulary every week.', ok: false },
+          { text: 'Wati said that I learned new vocabulary every week.', ok: false },
+          { text: 'Wati said that she will learn new vocabulary every week.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '📕',
+        original: 'I look up words in a dictionary.',
+        originalId: 'Aku mencari kata di kamus.',
+        reportedOptions: [
+          { text: 'Andi said that he looked up words in a dictionary.', ok: true },
+          { text: 'Andi said that he looks up words in a dictionary.', ok: false },
+          { text: 'Andi said that she looked up words in a dictionary.', ok: false },
+          { text: 'Andi said that he will look up words in a dictionary.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '🌍',
+        original: 'I am bilingual.',
+        originalId: 'Aku dwibahasa.',
+        reportedOptions: [
+          { text: 'Lina said that she was bilingual.', ok: true },
+          { text: 'Lina said that she is bilingual.', ok: false },
+          { text: 'Lina said that he was bilingual.', ok: false },
+          { text: 'Lina said that she will be bilingual.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '🔤',
+        original: 'I translate the sentence.',
+        originalId: 'Aku menerjemahkan kalimat itu.',
+        reportedOptions: [
+          { text: 'Doni said that he translated the sentence.', ok: true },
+          { text: 'Doni said that he translates the sentence.', ok: false },
+          { text: 'Doni said that she translated the sentence.', ok: false },
+          { text: 'Doni said that he will translate the sentence.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '🎙️',
+        original: 'I talk to a native speaker.',
+        originalId: 'Aku bicara dengan penutur asli.',
+        reportedOptions: [
+          { text: 'Maya said that she talked to a native speaker.', ok: true },
+          { text: 'Maya said that she talks to a native speaker.', ok: false },
+          { text: 'Maya said that I talked to a native speaker.', ok: false },
+          { text: 'Maya said that she will talk to a native speaker.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '🗣️',
+        original: 'I work as an interpreter.',
+        originalId: 'Aku bekerja sebagai penerjemah lisan.',
+        reportedOptions: [
+          { text: 'Fajar said that he worked as an interpreter.', ok: true },
+          { text: 'Fajar said that he works as an interpreter.', ok: false },
+          { text: 'Fajar said that she worked as an interpreter.', ok: false },
+          { text: 'Fajar said that he will work as an interpreter.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * 9 topik lanjutan (riset per-level, `materi/grammar.md` §19) — SEMUA
+   * TETAP sub-pola "reported speech" (bukan pindah ke struktur PET lain
+   * spt passive voice/conditional) krn UI Latihan Inti/Tantangan HARDCODE
+   * teks "🔁 Ubah Jadi Reported Speech"/"🔎 Siapa Bilang Apa?" (`games/
+   * grammar.ts`, tidak dibaca dari field topik) — topik format LAIN akan
+   * salah label kalau bukan genuinely reported speech. Untungnya reported
+   * speech sendiri SECARA RESMI Cambridge B1 Preliminary (PET) py banyak
+   * sub-pola beda aturan (statement/question/command tiap py aturan
+   * transformasi sendiri) — persis yg SUDAH diflag topik pertama sbg scope
+   * masa depan ("bukan campur pertanyaan/perintah yg py aturan beda").
+   * Permintaan user EKSPLISIT: "min 10" utk Grammar Trailblazer — DEVIASI
+   * dari target BAKU level ini (≥5, CLAUDE.md) krn instruksi baru user,
+   * pola sama persis dgn Listening Trailblazer yg jg dibangun ke 10 penuh
+   * atas permintaan eksplisit. 10 karakter (Rani/Dimas/Sari/Budi/Wati/
+   * Andi/Lina/Doni/Maya/Fajar) di-REUSE PERSIS sbg pemeran lintas topik
+   * (SATU per kutipan per topik, bukan karakter baru) — konsisten pola
+   * "Bima" Speaking Trailblazer.
+   */
+  /**
+   * Topik ke-2 — "Reported Continuous" (present continuous → past
+   * continuous, "was/were + -ing" — BEDA morfologi dari shift simple-past
+   * topik pertama). Dari domain Vocab `hiburan-media` (Entertainment &
+   * Media) — aktivitas hiburan natural berbentuk continuous ("sedang
+   * nonton/dengar/main"). Distraktor: (1) lupa geser tense, (2) kata ganti
+   * salah, (3) aspek continuous hilang (jadi simple past polos).
+   */
+  {
+    id: 'reported-continuous',
+    title: 'Reported Speech — Sedang Apa? (Continuous)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Dimas',
+        emoji: '🎬',
+        original: 'I am watching a new anime series.',
+        originalId: 'Aku sedang menonton serial anime baru.',
+        reportedOptions: [
+          { text: 'Dimas said that he was watching a new anime series.', ok: true },
+          { text: 'Dimas said that he is watching a new anime series.', ok: false },
+          { text: 'Dimas said that she was watching a new anime series.', ok: false },
+          { text: 'Dimas said that he watched a new anime series.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '🎧',
+        original: 'I am listening to a podcast about music.',
+        originalId: 'Aku sedang mendengarkan podcast tentang musik.',
+        reportedOptions: [
+          { text: 'Sari said that she was listening to a podcast about music.', ok: true },
+          { text: 'Sari said that she is listening to a podcast about music.', ok: false },
+          { text: 'Sari said that he was listening to a podcast about music.', ok: false },
+          { text: 'Sari said that she listened to a podcast about music.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '🎮',
+        original: 'I am playing an online game with my friends.',
+        originalId: 'Aku sedang main gim daring bareng teman-temanku.',
+        reportedOptions: [
+          { text: 'Andi said that he was playing an online game with his friends.', ok: true },
+          { text: 'Andi said that he is playing an online game with his friends.', ok: false },
+          { text: 'Andi said that she was playing an online game with her friends.', ok: false },
+          { text: 'Andi said that he played an online game with his friends.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '📺',
+        original: 'I am watching a drama series.',
+        originalId: 'Aku sedang menonton serial drama.',
+        reportedOptions: [
+          { text: 'Rani said that she was watching a drama series.', ok: true },
+          { text: 'Rani said that she is watching a drama series.', ok: false },
+          { text: 'Rani said that he was watching a drama series.', ok: false },
+          { text: 'Rani said that she watched a drama series.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '🎤',
+        original: 'I am recording a new song.',
+        originalId: 'Aku sedang merekam lagu baru.',
+        reportedOptions: [
+          { text: 'Budi said that he was recording a new song.', ok: true },
+          { text: 'Budi said that he is recording a new song.', ok: false },
+          { text: 'Budi said that she was recording a new song.', ok: false },
+          { text: 'Budi said that he recorded a new song.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Wati',
+        emoji: '🎨',
+        original: 'I am drawing a comic for the school magazine.',
+        originalId: 'Aku sedang menggambar komik untuk majalah sekolah.',
+        reportedOptions: [
+          { text: 'Wati said that she was drawing a comic for the school magazine.', ok: true },
+          { text: 'Wati said that she is drawing a comic for the school magazine.', ok: false },
+          { text: 'Wati said that he was drawing a comic for the school magazine.', ok: false },
+          { text: 'Wati said that she drew a comic for the school magazine.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '🎥',
+        original: 'I am editing a video for my vlog.',
+        originalId: 'Aku sedang mengedit video untuk vlogku.',
+        reportedOptions: [
+          { text: 'Lina said that she was editing a video for her vlog.', ok: true },
+          { text: 'Lina said that she is editing a video for her vlog.', ok: false },
+          { text: 'Lina said that he was editing a video for his vlog.', ok: false },
+          { text: 'Lina said that she edited a video for her vlog.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '📖',
+        original: 'I am reading a comic book.',
+        originalId: 'Aku sedang membaca buku komik.',
+        reportedOptions: [
+          { text: 'Doni said that he was reading a comic book.', ok: true },
+          { text: 'Doni said that he is reading a comic book.', ok: false },
+          { text: 'Doni said that she was reading a comic book.', ok: false },
+          { text: 'Doni said that he read a comic book.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '🎶',
+        original: 'I am singing karaoke with my cousins.',
+        originalId: 'Aku sedang bernyanyi karaoke bareng sepupu-sepupuku.',
+        reportedOptions: [
+          { text: 'Maya said that she was singing karaoke with her cousins.', ok: true },
+          { text: 'Maya said that she is singing karaoke with her cousins.', ok: false },
+          { text: 'Maya said that he was singing karaoke with his cousins.', ok: false },
+          { text: 'Maya said that she sang karaoke with her cousins.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '💃',
+        original: 'I am dancing to my favorite song.',
+        originalId: 'Aku sedang menari mengikuti lagu favoritku.',
+        reportedOptions: [
+          { text: 'Fajar said that he was dancing to his favorite song.', ok: true },
+          { text: 'Fajar said that he is dancing to his favorite song.', ok: false },
+          { text: 'Fajar said that she was dancing to her favorite song.', ok: false },
+          { text: 'Fajar said that he danced to his favorite song.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * Topik ke-3 — "Reported Past Perfect" (past simple → past perfect,
+   * "had + V3" — pola shift RESMI PET utk kalimat yg sumbernya SUDAH past
+   * simple, dikonfirmasi flo-joe PET practice set). Dari domain Vocab
+   * `perjalanan-wisata` (Travel & Tourism) — register bercerita
+   * pengalaman jalan-jalan paling natural utk struktur ini. Distraktor:
+   * (1) lupa geser (tetap simple past), (2) kata ganti salah, (3) tipe
+   * tense salah (continuous, bukan perfect).
+   */
+  {
+    id: 'reported-past-perfect',
+    title: 'Reported Speech — Sudah Terjadi (Past Perfect)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Wati',
+        emoji: '🏝️',
+        original: 'I visited Lombok with my family.',
+        originalId: 'Aku mengunjungi Lombok bersama keluargaku.',
+        reportedOptions: [
+          { text: 'Wati said that she had visited Lombok with her family.', ok: true },
+          { text: 'Wati said that she visited Lombok with her family.', ok: false },
+          { text: 'Wati said that he had visited Lombok with his family.', ok: false },
+          { text: 'Wati said that she was visiting Lombok with her family.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '🎒',
+        original: 'I packed my bag before the trip.',
+        originalId: 'Aku mengemas tasku sebelum perjalanan.',
+        reportedOptions: [
+          { text: 'Fajar said that he had packed his bag before the trip.', ok: true },
+          { text: 'Fajar said that he packed his bag before the trip.', ok: false },
+          { text: 'Fajar said that she had packed her bag before the trip.', ok: false },
+          { text: 'Fajar said that he was packing his bag before the trip.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '📸',
+        original: 'I took many photos at the waterfall.',
+        originalId: 'Aku mengambil banyak foto di air terjun itu.',
+        reportedOptions: [
+          { text: 'Maya said that she had taken many photos at the waterfall.', ok: true },
+          { text: 'Maya said that she took many photos at the waterfall.', ok: false },
+          { text: 'Maya said that he had taken many photos at the waterfall.', ok: false },
+          { text: 'Maya said that she was taking many photos at the waterfall.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Dimas',
+        emoji: '🏔️',
+        original: 'I climbed a small hill near the village.',
+        originalId: 'Aku mendaki bukit kecil dekat desa itu.',
+        reportedOptions: [
+          { text: 'Dimas said that he had climbed a small hill near the village.', ok: true },
+          { text: 'Dimas said that he climbed a small hill near the village.', ok: false },
+          { text: 'Dimas said that she had climbed a small hill near the village.', ok: false },
+          { text: 'Dimas said that he was climbing a small hill near the village.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '🚆',
+        original: 'I traveled by train to Yogyakarta.',
+        originalId: 'Aku bepergian naik kereta ke Yogyakarta.',
+        reportedOptions: [
+          { text: 'Sari said that she had traveled by train to Yogyakarta.', ok: true },
+          { text: 'Sari said that she traveled by train to Yogyakarta.', ok: false },
+          { text: 'Sari said that he had traveled by train to Yogyakarta.', ok: false },
+          { text: 'Sari said that she was traveling by train to Yogyakarta.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '🏨',
+        original: 'I booked a room at a small hotel.',
+        originalId: 'Aku memesan kamar di hotel kecil.',
+        reportedOptions: [
+          { text: 'Budi said that he had booked a room at a small hotel.', ok: true },
+          { text: 'Budi said that he booked a room at a small hotel.', ok: false },
+          { text: 'Budi said that she had booked a room at a small hotel.', ok: false },
+          { text: 'Budi said that he was booking a room at a small hotel.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '🗺️',
+        original: 'I explored the old town on foot.',
+        originalId: 'Aku menjelajahi kota tua itu dengan berjalan kaki.',
+        reportedOptions: [
+          { text: 'Rani said that she had explored the old town on foot.', ok: true },
+          { text: 'Rani said that she explored the old town on foot.', ok: false },
+          { text: 'Rani said that he had explored the old town on foot.', ok: false },
+          { text: 'Rani said that she was exploring the old town on foot.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '⛵',
+        original: 'I sailed to a small island with my uncle.',
+        originalId: 'Aku berlayar ke pulau kecil bersama pamanku.',
+        reportedOptions: [
+          { text: 'Andi said that he had sailed to a small island with his uncle.', ok: true },
+          { text: 'Andi said that he sailed to a small island with his uncle.', ok: false },
+          { text: 'Andi said that she had sailed to a small island with her uncle.', ok: false },
+          { text: 'Andi said that he was sailing to a small island with his uncle.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '🍜',
+        original: 'I tried the local food at the market.',
+        originalId: 'Aku mencoba makanan khas di pasar itu.',
+        reportedOptions: [
+          { text: 'Lina said that she had tried the local food at the market.', ok: true },
+          { text: 'Lina said that she tried the local food at the market.', ok: false },
+          { text: 'Lina said that he had tried the local food at the market.', ok: false },
+          { text: 'Lina said that she was trying the local food at the market.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '🏕️',
+        original: 'I camped near the lake for two nights.',
+        originalId: 'Aku berkemah dekat danau selama dua malam.',
+        reportedOptions: [
+          { text: 'Doni said that he had camped near the lake for two nights.', ok: true },
+          { text: 'Doni said that he camped near the lake for two nights.', ok: false },
+          { text: 'Doni said that she had camped near the lake for two nights.', ok: false },
+          { text: 'Doni said that he was camping near the lake for two nights.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * Topik ke-4 — "Reported Modals" (can→could, will→would, must→had to,
+   * may→might — pergeseran MODAL, bukan kata kerja utama, tabel terpisah
+   * di Cambridge). Dari domain Vocab `pendapat-pengalaman` (Opinions &
+   * Experience) — pernyataan kemampuan/rencana/kewajiban natural di
+   * register ini. Distraktor: (1) modal tidak digeser, (2) kata ganti
+   * salah, (3) modal salah (ditukar ke modal lain).
+   */
+  {
+    id: 'reported-modals',
+    title: 'Reported Speech — Bisa, Akan, Harus (Modals)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Doni',
+        emoji: '🎸',
+        original: 'I can play the guitar.',
+        originalId: 'Aku bisa main gitar.',
+        reportedOptions: [
+          { text: 'Doni said that he could play the guitar.', ok: true },
+          { text: 'Doni said that he can play the guitar.', ok: false },
+          { text: 'Doni said that she could play the guitar.', ok: false },
+          { text: 'Doni said that he would play the guitar.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Wati',
+        emoji: '🙋',
+        original: 'I will join the debate club.',
+        originalId: 'Aku akan ikut klub debat.',
+        reportedOptions: [
+          { text: 'Wati said that she would join the debate club.', ok: true },
+          { text: 'Wati said that she will join the debate club.', ok: false },
+          { text: 'Wati said that he would join the debate club.', ok: false },
+          { text: 'Wati said that she could join the debate club.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '📝',
+        original: 'I must submit my project by Monday.',
+        originalId: 'Aku harus mengumpulkan proyekku sebelum hari Senin.',
+        reportedOptions: [
+          { text: 'Andi said that he had to submit his project by Monday.', ok: true },
+          { text: 'Andi said that he must submit his project by Monday.', ok: false },
+          { text: 'Andi said that she had to submit her project by Monday.', ok: false },
+          { text: 'Andi said that he might submit his project by Monday.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '🏊',
+        original: 'I can swim across the pool.',
+        originalId: 'Aku bisa berenang menyeberangi kolam itu.',
+        reportedOptions: [
+          { text: 'Lina said that she could swim across the pool.', ok: true },
+          { text: 'Lina said that she can swim across the pool.', ok: false },
+          { text: 'Lina said that he could swim across the pool.', ok: false },
+          { text: 'Lina said that she would swim across the pool.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '🎭',
+        original: 'I will perform in the school play.',
+        originalId: 'Aku akan tampil di drama sekolah.',
+        reportedOptions: [
+          { text: 'Fajar said that he would perform in the school play.', ok: true },
+          { text: 'Fajar said that he will perform in the school play.', ok: false },
+          { text: 'Fajar said that she would perform in the school play.', ok: false },
+          { text: 'Fajar said that he could perform in the school play.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '📐',
+        original: 'I must finish my homework before dinner.',
+        originalId: 'Aku harus menyelesaikan PR-ku sebelum makan malam.',
+        reportedOptions: [
+          { text: 'Maya said that she had to finish her homework before dinner.', ok: true },
+          { text: 'Maya said that she must finish her homework before dinner.', ok: false },
+          { text: 'Maya said that he had to finish his homework before dinner.', ok: false },
+          { text: 'Maya said that she might finish her homework before dinner.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '🎨',
+        original: 'I can paint very well.',
+        originalId: 'Aku bisa melukis dengan sangat baik.',
+        reportedOptions: [
+          { text: 'Rani said that she could paint very well.', ok: true },
+          { text: 'Rani said that she can paint very well.', ok: false },
+          { text: 'Rani said that he could paint very well.', ok: false },
+          { text: 'Rani said that she would paint very well.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '🎤',
+        original: 'I will sing at the concert.',
+        originalId: 'Aku akan bernyanyi di konser itu.',
+        reportedOptions: [
+          { text: 'Budi said that he would sing at the concert.', ok: true },
+          { text: 'Budi said that he will sing at the concert.', ok: false },
+          { text: 'Budi said that she would sing at the concert.', ok: false },
+          { text: 'Budi said that he could sing at the concert.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '📚',
+        original: 'I must return the library book.',
+        originalId: 'Aku harus mengembalikan buku perpustakaan itu.',
+        reportedOptions: [
+          { text: 'Sari said that she had to return the library book.', ok: true },
+          { text: 'Sari said that she must return the library book.', ok: false },
+          { text: 'Sari said that he had to return the library book.', ok: false },
+          { text: 'Sari said that she might return the library book.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Dimas',
+        emoji: '🏃',
+        original: 'I may join the running club.',
+        originalId: 'Aku mungkin akan ikut klub lari.',
+        reportedOptions: [
+          { text: 'Dimas said that he might join the running club.', ok: true },
+          { text: 'Dimas said that he may join the running club.', ok: false },
+          { text: 'Dimas said that she might join the running club.', ok: false },
+          { text: 'Dimas said that he would join the running club.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * Topik ke-5 — "Reported Yes/No Questions" ("asked if/whether" — konversi
+   * urutan kata pertanyaan→pernyataan + sisip "if", BUKAN cuma soal tense).
+   * Dari domain Vocab `pendidikan-kehidupan-akademik` (Education & Academic
+   * Life) — dialog guru↔murid paling natural. Penerima ditulis LANGSUNG di
+   * teks `reportedOptions` (tanpa field baru di skema). Distraktor: (1)
+   * inversi tanya tidak dibuang ("if did..."), (2) kata ganti salah, (3)
+   * tense tidak digeser.
+   */
+  {
+    id: 'reported-yesno-questions',
+    title: 'Reported Speech — Tanya Ya/Tidak (Asked If)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Budi',
+        emoji: '📚',
+        original: 'Do you understand the lesson?',
+        originalId: 'Apakah kamu mengerti pelajaran ini?',
+        reportedOptions: [
+          { text: 'Budi asked Sari if she understood the lesson.', ok: true },
+          { text: 'Budi asked Sari if did she understand the lesson.', ok: false },
+          { text: 'Budi asked Sari if he understood the lesson.', ok: false },
+          { text: 'Budi asked Sari if she understands the lesson.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '🧮',
+        original: 'Do you like solving math problems?',
+        originalId: 'Apakah kamu suka menyelesaikan soal matematika?',
+        reportedOptions: [
+          { text: 'Lina asked Doni if he liked solving math problems.', ok: true },
+          { text: 'Lina asked Doni if did he like solving math problems.', ok: false },
+          { text: 'Lina asked Doni if she liked solving math problems.', ok: false },
+          { text: 'Lina asked Doni if he likes solving math problems.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '🪪',
+        original: 'Do you have your ID card with you?',
+        originalId: 'Apakah kamu bawa kartu pelajarmu?',
+        reportedOptions: [
+          { text: 'Andi asked Wati if she had her ID card with her.', ok: true },
+          { text: 'Andi asked Wati if did she have her ID card with her.', ok: false },
+          { text: 'Andi asked Wati if he had his ID card with him.', ok: false },
+          { text: 'Andi asked Wati if she has her ID card with her.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '📝',
+        original: 'Do you finish your homework every day?',
+        originalId: 'Apakah kamu menyelesaikan PR-mu setiap hari?',
+        reportedOptions: [
+          { text: 'Maya asked Fajar if he finished his homework every day.', ok: true },
+          { text: 'Maya asked Fajar if did he finish his homework every day.', ok: false },
+          { text: 'Maya asked Fajar if she finished her homework every day.', ok: false },
+          { text: 'Maya asked Fajar if he finishes his homework every day.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '🔬',
+        original: 'Do you enjoy science class?',
+        originalId: 'Apakah kamu suka pelajaran sains?',
+        reportedOptions: [
+          { text: 'Rani asked Dimas if he enjoyed science class.', ok: true },
+          { text: 'Rani asked Dimas if did he enjoy science class.', ok: false },
+          { text: 'Rani asked Dimas if she enjoyed science class.', ok: false },
+          { text: 'Rani asked Dimas if he enjoys science class.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Wati',
+        emoji: '📏',
+        original: 'Do you have a ruler?',
+        originalId: 'Apakah kamu punya penggaris?',
+        reportedOptions: [
+          { text: 'Wati asked Andi if he had a ruler.', ok: true },
+          { text: 'Wati asked Andi if did he have a ruler.', ok: false },
+          { text: 'Wati asked Andi if she had a ruler.', ok: false },
+          { text: 'Wati asked Andi if he has a ruler.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '🎒',
+        original: 'Do you bring your own lunch to school?',
+        originalId: 'Apakah kamu bawa bekal sendiri ke sekolah?',
+        reportedOptions: [
+          { text: 'Doni asked Lina if she brought her own lunch to school.', ok: true },
+          { text: 'Doni asked Lina if did she bring her own lunch to school.', ok: false },
+          { text: 'Doni asked Lina if he brought his own lunch to school.', ok: false },
+          { text: 'Doni asked Lina if she brings her own lunch to school.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '📖',
+        original: 'Are you reading the new novel for class?',
+        originalId: 'Apakah kamu sedang membaca novel baru untuk kelas?',
+        reportedOptions: [
+          { text: 'Sari asked Budi if he was reading the new novel for class.', ok: true },
+          { text: 'Sari asked Budi if was he reading the new novel for class.', ok: false },
+          { text: 'Sari asked Budi if she was reading the new novel for class.', ok: false },
+          { text: 'Sari asked Budi if he is reading the new novel for class.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '🖊️',
+        original: 'Do you write in your journal every night?',
+        originalId: 'Apakah kamu menulis jurnal setiap malam?',
+        reportedOptions: [
+          { text: 'Fajar asked Maya if she wrote in her journal every night.', ok: true },
+          { text: 'Fajar asked Maya if did she write in her journal every night.', ok: false },
+          { text: 'Fajar asked Maya if he wrote in his journal every night.', ok: false },
+          { text: 'Fajar asked Maya if she writes in her journal every night.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '🎨',
+        original: 'Do you like art class?',
+        originalId: 'Apakah kamu suka pelajaran seni?',
+        reportedOptions: [
+          { text: 'Andi asked Rani if she liked art class.', ok: true },
+          { text: 'Andi asked Rani if did she like art class.', ok: false },
+          { text: 'Andi asked Rani if he liked art class.', ok: false },
+          { text: 'Andi asked Rani if she likes art class.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * Topik ke-6 — "Reported Wh-Questions" (asked what/where/why/when/how —
+   * kata tanya TETAP dipakai sbg konektor, TIDAK disisip "if" spt topik
+   * sebelumnya — kesalahan paling umum anak tertukar antar 2 pola ini).
+   * Dari domain Vocab `pendapat-pengalaman`, gaya wawancara pengalaman.
+   * Distraktor: (1) inversi tanya tidak dibuang, (2) kata ganti salah, (3)
+   * tense tidak digeser.
+   */
+  {
+    id: 'reported-wh-questions',
+    title: 'Reported Speech — Tanya Detail (Asked Wh-)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Maya',
+        emoji: '🏀',
+        original: 'Where do you practice basketball?',
+        originalId: 'Di mana kamu berlatih basket?',
+        reportedOptions: [
+          { text: 'Maya asked Fajar where he practiced basketball.', ok: true },
+          { text: 'Maya asked Fajar where did he practice basketball.', ok: false },
+          { text: 'Maya asked Fajar where she practiced basketball.', ok: false },
+          { text: 'Maya asked Fajar where he practices basketball.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '✈️',
+        original: 'Why do you like traveling so much?',
+        originalId: 'Kenapa kamu suka sekali bepergian?',
+        reportedOptions: [
+          { text: 'Doni asked Rani why she liked traveling so much.', ok: true },
+          { text: 'Doni asked Rani why did she like traveling so much.', ok: false },
+          { text: 'Doni asked Rani why he liked traveling so much.', ok: false },
+          { text: 'Doni asked Rani why she likes traveling so much.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '🎤',
+        original: 'How do you stay confident before a performance?',
+        originalId: 'Bagaimana caramu tetap percaya diri sebelum tampil?',
+        reportedOptions: [
+          { text: 'Sari asked Budi how he stayed confident before a performance.', ok: true },
+          { text: 'Sari asked Budi how did he stay confident before a performance.', ok: false },
+          { text: 'Sari asked Budi how she stayed confident before a performance.', ok: false },
+          { text: 'Sari asked Budi how he stays confident before a performance.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Wati',
+        emoji: '🎵',
+        original: 'What music do you listen to?',
+        originalId: 'Musik apa yang kamu dengarkan?',
+        reportedOptions: [
+          { text: 'Wati asked Andi what music he listened to.', ok: true },
+          { text: 'Wati asked Andi what music did he listen to.', ok: false },
+          { text: 'Wati asked Andi what music she listened to.', ok: false },
+          { text: 'Wati asked Andi what music he listens to.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '📚',
+        original: 'When do you study for exams?',
+        originalId: 'Kapan kamu belajar untuk ujian?',
+        reportedOptions: [
+          { text: 'Lina asked Doni when he studied for exams.', ok: true },
+          { text: 'Lina asked Doni when did he study for exams.', ok: false },
+          { text: 'Lina asked Doni when she studied for exams.', ok: false },
+          { text: 'Lina asked Doni when he studies for exams.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '🎨',
+        original: 'What do you usually paint?',
+        originalId: 'Apa yang biasanya kamu lukis?',
+        reportedOptions: [
+          { text: 'Fajar asked Maya what she usually painted.', ok: true },
+          { text: 'Fajar asked Maya what did she usually paint.', ok: false },
+          { text: 'Fajar asked Maya what he usually painted.', ok: false },
+          { text: 'Fajar asked Maya what she usually paints.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '⚽',
+        original: 'How often do you practice football?',
+        originalId: 'Seberapa sering kamu berlatih sepak bola?',
+        reportedOptions: [
+          { text: 'Rani asked Dimas how often he practiced football.', ok: true },
+          { text: 'Rani asked Dimas how often did he practice football.', ok: false },
+          { text: 'Rani asked Dimas how often she practiced football.', ok: false },
+          { text: 'Rani asked Dimas how often he practices football.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '🎬',
+        original: 'What is your favorite movie genre?',
+        originalId: 'Apa genre film favoritmu?',
+        reportedOptions: [
+          { text: 'Budi asked Sari what her favorite movie genre was.', ok: true },
+          { text: 'Budi asked Sari what was her favorite movie genre.', ok: false },
+          { text: 'Budi asked Sari what his favorite movie genre was.', ok: false },
+          { text: 'Budi asked Sari what her favorite movie genre is.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '🍲',
+        original: 'What do you usually cook on weekends?',
+        originalId: 'Apa yang biasanya kamu masak di akhir pekan?',
+        reportedOptions: [
+          { text: 'Andi asked Wati what she usually cooked on weekends.', ok: true },
+          { text: 'Andi asked Wati what did she usually cook on weekends.', ok: false },
+          { text: 'Andi asked Wati what he usually cooked on weekends.', ok: false },
+          { text: 'Andi asked Wati what she usually cooks on weekends.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '🎓',
+        original: 'Why did you join the school choir?',
+        originalId: 'Kenapa kamu ikut paduan suara sekolah?',
+        reportedOptions: [
+          { text: 'Maya asked Fajar why he had joined the school choir.', ok: true },
+          { text: 'Maya asked Fajar why did he join the school choir.', ok: false },
+          { text: 'Maya asked Fajar why she had joined the school choir.', ok: false },
+          { text: 'Maya asked Fajar why he joined the school choir.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * Topik ke-7 — "Reported Requests" (permintaan sopan "Could/Can you...?"/
+   * "Please..." → "asked someone TO..." — SECARA BENTUK mirip pertanyaan
+   * tapi FUNGSInya permintaan, jadi konversi ke infinitive spt perintah,
+   * BUKAN "asked if" spt topik yes/no — pembeda paling penting antar
+   * topik ini & topik 5/6). Dari domain Vocab `hiburan-media` (minta
+   * tolong ke teman di acara hiburan). Distraktor: (1) salah dibaca sbg
+   * pertanyaan info ("asked if...could"), (2) kata ganti/objek salah, (3)
+   * "to" hilang.
+   */
+  {
+    id: 'reported-requests',
+    title: 'Reported Speech — Minta Tolong (Asked To)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Sari',
+        emoji: '📷',
+        original: 'Could you take a photo of us?',
+        originalId: 'Bisakah kamu memotret kami?',
+        reportedOptions: [
+          { text: 'Sari asked Doni to take a photo of them.', ok: true },
+          { text: 'Sari asked Doni if he could take a photo of them.', ok: false },
+          { text: 'Sari asked Doni to take a photo of her.', ok: false },
+          { text: 'Sari asked Doni take a photo of them.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '🎫',
+        original: 'Can you hold my seat for a minute?',
+        originalId: 'Bisakah kamu jagain kursiku sebentar?',
+        reportedOptions: [
+          { text: 'Budi asked Lina to hold his seat for a minute.', ok: true },
+          { text: 'Budi asked Lina if she could hold his seat for a minute.', ok: false },
+          { text: 'Budi asked Lina to hold her seat for a minute.', ok: false },
+          { text: 'Budi asked Lina hold his seat for a minute.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Wati',
+        emoji: '🎬',
+        original: 'Please turn off your phone during the movie.',
+        originalId: 'Tolong matikan ponselmu selama film diputar.',
+        reportedOptions: [
+          { text: 'Wati asked Andi to turn off his phone during the movie.', ok: true },
+          { text: 'Wati asked Andi if he could turn off his phone during the movie.', ok: false },
+          { text: 'Wati asked Andi to turn off her phone during the movie.', ok: false },
+          { text: 'Wati asked Andi turn off his phone during the movie.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '🎤',
+        original: 'Could you turn down your volume, please?',
+        originalId: 'Bisakah kamu mengecilkan volumemu?',
+        reportedOptions: [
+          { text: 'Rani asked Fajar to turn down his volume.', ok: true },
+          { text: 'Rani asked Fajar if he could turn down his volume.', ok: false },
+          { text: 'Rani asked Fajar to turn down her volume.', ok: false },
+          { text: 'Rani asked Fajar turn down his volume.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Dimas',
+        emoji: '🍿',
+        original: 'Can you buy some popcorn for us?',
+        originalId: 'Bisakah kamu membelikan kami popcorn?',
+        reportedOptions: [
+          { text: 'Dimas asked Maya to buy some popcorn for them.', ok: true },
+          { text: 'Dimas asked Maya if she could buy some popcorn for them.', ok: false },
+          { text: 'Dimas asked Maya to buy some popcorn for him.', ok: false },
+          { text: 'Dimas asked Maya buy some popcorn for them.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '🎟️',
+        original: 'Could you save two tickets for your friends?',
+        originalId: 'Bisakah kamu menyimpan dua tiket untuk teman-temanmu?',
+        reportedOptions: [
+          { text: 'Doni asked Sari to save two tickets for her friends.', ok: true },
+          { text: 'Doni asked Sari if she could save two tickets for her friends.', ok: false },
+          { text: 'Doni asked Sari to save two tickets for his friends.', ok: false },
+          { text: 'Doni asked Sari save two tickets for her friends.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '📺',
+        original: 'Please lend me your remote control.',
+        originalId: 'Tolong pinjamkan aku remote TV-mu.',
+        reportedOptions: [
+          { text: 'Lina asked Budi to lend her his remote control.', ok: true },
+          { text: 'Lina asked Budi if he could lend her his remote control.', ok: false },
+          { text: 'Lina asked Budi to lend him his remote control.', ok: false },
+          { text: 'Lina asked Budi lend her his remote control.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '🎧',
+        original: 'Can you share your earphones with me?',
+        originalId: 'Bisakah kamu meminjamkan earphone-mu padaku?',
+        reportedOptions: [
+          { text: 'Andi asked Wati to share her earphones with him.', ok: true },
+          { text: 'Andi asked Wati if she could share her earphones with him.', ok: false },
+          { text: 'Andi asked Wati to share his earphones with him.', ok: false },
+          { text: 'Andi asked Wati share her earphones with him.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '🎨',
+        original: 'Could you help me choose a costume?',
+        originalId: 'Bisakah kamu membantuku memilih kostum?',
+        reportedOptions: [
+          { text: 'Maya asked Rani to help her choose a costume.', ok: true },
+          { text: 'Maya asked Rani if she could help her choose a costume.', ok: false },
+          { text: 'Maya asked Rani to help him choose a costume.', ok: false },
+          { text: 'Maya asked Rani help her choose a costume.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '📸',
+        original: 'Please send me the photos from the concert.',
+        originalId: 'Tolong kirimkan aku foto-foto dari konser itu.',
+        reportedOptions: [
+          { text: 'Fajar asked Dimas to send him the photos from the concert.', ok: true },
+          { text: 'Fajar asked Dimas if he could send him the photos from the concert.', ok: false },
+          { text: 'Fajar asked Dimas to send her the photos from the concert.', ok: false },
+          { text: 'Fajar asked Dimas send him the photos from the concert.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * Topik ke-8 — "Reported Commands" (perintah imperatif polos → "told
+   * someone TO..." — konversi MOOD, bukan cuma tense, dimensi transformasi
+   * beda total dari semua topik sebelumnya). Dari domain Vocab
+   * `pendidikan-kehidupan-akademik` (konteks guru memberi instruksi).
+   * Distraktor: (1) tetap klausa finite ("told...that..."), (2) kata
+   * ganti salah, (3) "to" hilang.
+   */
+  {
+    id: 'reported-commands',
+    title: 'Reported Speech — Perintah (Told To)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Wati',
+        emoji: '📚',
+        original: 'Close your books, please.',
+        originalId: 'Tolong tutup buku kalian.',
+        reportedOptions: [
+          { text: 'Wati told the students to close their books.', ok: true },
+          { text: 'Wati told the students that close their books.', ok: false },
+          { text: 'Wati told the students to close her books.', ok: false },
+          { text: 'Wati told the students close their books.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '⚽',
+        original: 'Pass the ball to your teammate!',
+        originalId: 'Oper bolanya ke rekan setimmu!',
+        reportedOptions: [
+          { text: 'Andi told Doni to pass the ball to his teammate.', ok: true },
+          { text: 'Andi told Doni that pass the ball to his teammate.', ok: false },
+          { text: 'Andi told Doni to pass the ball to her teammate.', ok: false },
+          { text: 'Andi told Doni pass the ball to his teammate.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '📖',
+        original: 'Return your book by Friday.',
+        originalId: 'Kembalikan bukumu sebelum hari Jumat.',
+        reportedOptions: [
+          { text: 'Lina told Fajar to return his book by Friday.', ok: true },
+          { text: 'Lina told Fajar that return his book by Friday.', ok: false },
+          { text: 'Lina told Fajar to return her book by Friday.', ok: false },
+          { text: 'Lina told Fajar return his book by Friday.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '🖊️',
+        original: 'Write your name at the top of the page.',
+        originalId: 'Tulis namamu di bagian atas halaman.',
+        reportedOptions: [
+          { text: 'Budi told the students to write their names at the top of the page.', ok: true },
+          { text: 'Budi told the students that write their names at the top of the page.', ok: false },
+          { text: 'Budi told the students to write his name at the top of the page.', ok: false },
+          { text: 'Budi told the students write their names at the top of the page.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '🎒',
+        original: 'Bring your art supplies to class.',
+        originalId: 'Bawa perlengkapan senimu ke kelas.',
+        reportedOptions: [
+          { text: 'Sari told Rani to bring her art supplies to class.', ok: true },
+          { text: 'Sari told Rani that bring her art supplies to class.', ok: false },
+          { text: 'Sari told Rani to bring his art supplies to class.', ok: false },
+          { text: 'Sari told Rani bring her art supplies to class.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '🧪',
+        original: 'Wear your safety goggles in the lab.',
+        originalId: 'Pakai kacamata pelindungmu di laboratorium.',
+        reportedOptions: [
+          { text: 'Maya told Dimas to wear his safety goggles in the lab.', ok: true },
+          { text: 'Maya told Dimas that wear his safety goggles in the lab.', ok: false },
+          { text: 'Maya told Dimas to wear her safety goggles in the lab.', ok: false },
+          { text: 'Maya told Dimas wear his safety goggles in the lab.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '🎵',
+        original: 'Practice your song before the concert.',
+        originalId: 'Latih lagumu sebelum konser.',
+        reportedOptions: [
+          { text: 'Doni told Wati to practice her song before the concert.', ok: true },
+          { text: 'Doni told Wati that practice her song before the concert.', ok: false },
+          { text: 'Doni told Wati to practice his song before the concert.', ok: false },
+          { text: 'Doni told Wati practice her song before the concert.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '🧹',
+        original: 'Clean your desks after class.',
+        originalId: 'Bersihkan meja kalian setelah kelas selesai.',
+        reportedOptions: [
+          { text: 'Fajar told the students to clean their desks after class.', ok: true },
+          { text: 'Fajar told the students that clean their desks after class.', ok: false },
+          { text: 'Fajar told the students to clean his desk after class.', ok: false },
+          { text: 'Fajar told the students clean their desks after class.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '🎤',
+        original: 'Raise your hand to answer.',
+        originalId: 'Angkat tanganmu untuk menjawab.',
+        reportedOptions: [
+          { text: 'Andi told Lina to raise her hand to answer.', ok: true },
+          { text: 'Andi told Lina that raise her hand to answer.', ok: false },
+          { text: 'Andi told Lina to raise his hand to answer.', ok: false },
+          { text: 'Andi told Lina raise her hand to answer.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '📐',
+        original: 'Use your ruler to draw the line.',
+        originalId: 'Gunakan penggarismu untuk menggambar garis itu.',
+        reportedOptions: [
+          { text: 'Rani told Budi to use his ruler to draw the line.', ok: true },
+          { text: 'Rani told Budi that use his ruler to draw the line.', ok: false },
+          { text: 'Rani told Budi to use her ruler to draw the line.', ok: false },
+          { text: 'Rani told Budi use his ruler to draw the line.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * Topik ke-9 — "Reported Negative Commands" ("Don't..." → "told someone
+   * NOT TO..." — konversi mood SAMA spt topik perintah, tapi nambah
+   * penempatan "not" — kesalahan khas: "not" hilang (membalik makna) atau
+   * salah urutan "to not"). Dari domain Vocab `perjalanan-wisata` (aturan/
+   * larangan pemandu wisata, register paling natural utk larangan).
+   * Distraktor: (1) "not" hilang, (2) objek/kata ganti salah, (3) urutan
+   * salah ("to not" bukan "not to").
+   */
+  {
+    id: 'reported-negative-commands',
+    title: 'Reported Speech — Larangan (Told Not To)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Rani',
+        emoji: '🐒',
+        original: "Don't feed the monkeys!",
+        originalId: 'Jangan kasih makan monyet-monyetnya!',
+        reportedOptions: [
+          { text: 'Rani told the tourists not to feed the monkeys.', ok: true },
+          { text: 'Rani told the tourists to feed the monkeys.', ok: false },
+          { text: 'Rani told him not to feed the monkeys.', ok: false },
+          { text: 'Rani told the tourists to not feed the monkeys.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '🏞️',
+        original: "Don't leave any trash on the trail.",
+        originalId: 'Jangan tinggalkan sampah di jalur pendakian.',
+        reportedOptions: [
+          { text: 'Budi told the hikers not to leave any trash on the trail.', ok: true },
+          { text: 'Budi told the hikers to leave any trash on the trail.', ok: false },
+          { text: 'Budi told her not to leave any trash on the trail.', ok: false },
+          { text: 'Budi told the hikers to not leave any trash on the trail.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '🤿',
+        original: "Don't touch the coral reef.",
+        originalId: 'Jangan sentuh terumbu karangnya.',
+        reportedOptions: [
+          { text: 'Sari told the divers not to touch the coral reef.', ok: true },
+          { text: 'Sari told the divers to touch the coral reef.', ok: false },
+          { text: 'Sari told him not to touch the coral reef.', ok: false },
+          { text: 'Sari told the divers to not touch the coral reef.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Wati',
+        emoji: '🏨',
+        original: "Don't make noise in the hallway.",
+        originalId: 'Jangan berisik di lorong.',
+        reportedOptions: [
+          { text: 'Wati told the guests not to make noise in the hallway.', ok: true },
+          { text: 'Wati told the guests to make noise in the hallway.', ok: false },
+          { text: 'Wati told him not to make noise in the hallway.', ok: false },
+          { text: 'Wati told the guests to not make noise in the hallway.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '⛺',
+        original: "Don't light a fire near the tent.",
+        originalId: 'Jangan nyalakan api dekat tenda.',
+        reportedOptions: [
+          { text: 'Andi told the campers not to light a fire near the tent.', ok: true },
+          { text: 'Andi told the campers to light a fire near the tent.', ok: false },
+          { text: 'Andi told her not to light a fire near the tent.', ok: false },
+          { text: 'Andi told the campers to not light a fire near the tent.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '🏛️',
+        original: "Don't take photos inside the museum.",
+        originalId: 'Jangan foto-foto di dalam museum.',
+        reportedOptions: [
+          { text: 'Doni told the visitors not to take photos inside the museum.', ok: true },
+          { text: 'Doni told the visitors to take photos inside the museum.', ok: false },
+          { text: 'Doni told her not to take photos inside the museum.', ok: false },
+          { text: 'Doni told the visitors to not take photos inside the museum.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '🚌',
+        original: "Don't stand on the bus.",
+        originalId: 'Jangan berdiri di dalam bus.',
+        reportedOptions: [
+          { text: 'Lina told the passengers not to stand on the bus.', ok: true },
+          { text: 'Lina told the passengers to stand on the bus.', ok: false },
+          { text: 'Lina told him not to stand on the bus.', ok: false },
+          { text: 'Lina told the passengers to not stand on the bus.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '🦋',
+        original: "Don't chase the butterflies in the garden.",
+        originalId: 'Jangan kejar kupu-kupu di taman itu.',
+        reportedOptions: [
+          { text: 'Maya told the tourists not to chase the butterflies in the garden.', ok: true },
+          { text: 'Maya told the tourists to chase the butterflies in the garden.', ok: false },
+          { text: 'Maya told him not to chase the butterflies in the garden.', ok: false },
+          { text: 'Maya told the tourists to not chase the butterflies in the garden.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Fajar',
+        emoji: '🥾',
+        original: "Don't walk off the marked path.",
+        originalId: 'Jangan berjalan keluar dari jalur yang ditandai.',
+        reportedOptions: [
+          { text: 'Fajar told the group not to walk off the marked path.', ok: true },
+          { text: 'Fajar told the group to walk off the marked path.', ok: false },
+          { text: 'Fajar told her not to walk off the marked path.', ok: false },
+          { text: 'Fajar told the group to not walk off the marked path.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '🏊',
+        original: "Don't swim too far from the shore.",
+        originalId: 'Jangan berenang terlalu jauh dari pantai.',
+        reportedOptions: [
+          { text: 'Rani told the swimmers not to swim too far from the shore.', ok: true },
+          { text: 'Rani told the swimmers to swim too far from the shore.', ok: false },
+          { text: 'Rani told him not to swim too far from the shore.', ok: false },
+          { text: 'Rani told the swimmers to not swim too far from the shore.', ok: false },
+        ],
+      },
+    ],
+  },
+  /**
+   * Topik ke-10 — "Reported Time & Place Shift" (here→there, now→then,
+   * tomorrow→the next day, yesterday→the day before, this→that — dimensi
+   * KOSAKATA deiktik, bukan morfologi verba — CAPSTONE yg SENGAJA
+   * merekombinasi aturan tense topik 3 di beberapa item). Dari domain
+   * Vocab `bahasa-komunikasi` (REUSE dari topik pertama — konteks telepon/
+   * pesan paling natural utk kata "di sini/sekarang/besok"). Ini
+   * SATU-SATUNYA topik yg memakai kata deiktik — 8 topik sebelumnya SENGAJA
+   * menghindarinya spy tiap topik menguji SATU aturan transformasi murni
+   * (sama prinsip "kalimat tidak boleh bocor sinyal kedua" §8/§13).
+   * Distraktor: (1) kata deiktik TIDAK digeser (tense digeser), (2) kata
+   * ganti salah, (3) kata deiktik digeser TAPI tense TIDAK (atau
+   * sebaliknya).
+   */
+  {
+    id: 'reported-time-place',
+    title: 'Reported Speech — Waktu & Tempat Berubah (Time & Place Shift)',
+    desc: '10 kutipan',
+    transforms: [
+      {
+        speaker: 'Fajar',
+        emoji: '📱',
+        original: 'I am arriving here tomorrow.',
+        originalId: 'Aku akan tiba di sini besok.',
+        reportedOptions: [
+          { text: 'Fajar said that he was arriving there the next day.', ok: true },
+          { text: 'Fajar said that he was arriving here tomorrow.', ok: false },
+          { text: 'Fajar said that she was arriving there the next day.', ok: false },
+          { text: 'Fajar said that he is arriving there the next day.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Maya',
+        emoji: '📞',
+        original: 'I am busy now.',
+        originalId: 'Aku sedang sibuk sekarang.',
+        reportedOptions: [
+          { text: 'Maya said that she was busy then.', ok: true },
+          { text: 'Maya said that she was busy now.', ok: false },
+          { text: 'Maya said that he was busy then.', ok: false },
+          { text: 'Maya said that she is busy then.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Rani',
+        emoji: '💬',
+        original: 'I finished this book yesterday.',
+        originalId: 'Aku menyelesaikan buku ini kemarin.',
+        reportedOptions: [
+          { text: 'Rani said that she had finished that book the day before.', ok: true },
+          { text: 'Rani said that she had finished this book yesterday.', ok: false },
+          { text: 'Rani said that he had finished that book the day before.', ok: false },
+          { text: 'Rani said that she finished that book the day before.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Dimas',
+        emoji: '📲',
+        original: 'I will finish the report today.',
+        originalId: 'Aku akan menyelesaikan laporan ini hari ini.',
+        reportedOptions: [
+          { text: 'Dimas said that he would finish the report that day.', ok: true },
+          { text: 'Dimas said that he would finish the report today.', ok: false },
+          { text: 'Dimas said that she would finish the report that day.', ok: false },
+          { text: 'Dimas said that he will finish the report that day.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Sari',
+        emoji: '💌',
+        original: 'I will visit this city next week.',
+        originalId: 'Aku akan mengunjungi kota ini minggu depan.',
+        reportedOptions: [
+          { text: 'Sari said that she would visit that city the following week.', ok: true },
+          { text: 'Sari said that she would visit this city next week.', ok: false },
+          { text: 'Sari said that he would visit that city the following week.', ok: false },
+          { text: 'Sari said that she will visit that city the following week.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Budi',
+        emoji: '📧',
+        original: 'I sent the email yesterday.',
+        originalId: 'Aku mengirim email itu kemarin.',
+        reportedOptions: [
+          { text: 'Budi said that he had sent the email the day before.', ok: true },
+          { text: 'Budi said that he had sent the email yesterday.', ok: false },
+          { text: 'Budi said that she had sent the email the day before.', ok: false },
+          { text: 'Budi said that he sent the email the day before.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Wati',
+        emoji: '🧳',
+        original: 'I am staying here for two more days.',
+        originalId: 'Aku akan tinggal di sini selama dua hari lagi.',
+        reportedOptions: [
+          { text: 'Wati said that she was staying there for two more days.', ok: true },
+          { text: 'Wati said that she was staying here for two more days.', ok: false },
+          { text: 'Wati said that he was staying there for two more days.', ok: false },
+          { text: 'Wati said that she is staying there for two more days.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Andi',
+        emoji: '🗓️',
+        original: 'I will finish this project tomorrow.',
+        originalId: 'Aku akan menyelesaikan proyek ini besok.',
+        reportedOptions: [
+          { text: 'Andi said that he would finish that project the next day.', ok: true },
+          { text: 'Andi said that he would finish this project tomorrow.', ok: false },
+          { text: 'Andi said that she would finish that project the next day.', ok: false },
+          { text: 'Andi said that he will finish that project the next day.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Lina',
+        emoji: '⏰',
+        original: 'I am free now.',
+        originalId: 'Aku sedang senggang sekarang.',
+        reportedOptions: [
+          { text: 'Lina said that she was free then.', ok: true },
+          { text: 'Lina said that she was free now.', ok: false },
+          { text: 'Lina said that he was free then.', ok: false },
+          { text: 'Lina said that she is free then.', ok: false },
+        ],
+      },
+      {
+        speaker: 'Doni',
+        emoji: '🛍️',
+        original: 'I bought this yesterday.',
+        originalId: 'Aku membeli ini kemarin.',
+        reportedOptions: [
+          { text: 'Doni said that he had bought that the day before.', ok: true },
+          { text: 'Doni said that he had bought this yesterday.', ok: false },
+          { text: 'Doni said that she had bought that the day before.', ok: false },
+          { text: 'Doni said that he bought that the day before.', ok: false },
+        ],
+      },
+    ],
+  },
+];
+
+export const GRAMMAR_TOPICS_BY_LEVEL: Partial<Record<LevelKey, AnyGrammarTopic[]>> = {
+  'little-stars': GRAMMAR_TOPICS_LITTLE_STARS,
+  starter: GRAMMAR_TOPICS_STARTER,
   explorer: GRAMMAR_TOPICS,
   adventurer: GRAMMAR_TOPICS_ADVENTURER,
+  achiever: GRAMMAR_TOPICS_ACHIEVER,
+  trailblazer: GRAMMAR_TOPICS_TRAILBLAZER,
 };
 /**
  * Reading Little Stars (3–5 th) — format KEDUA `ReadingWordTopic` (§types.ts),
@@ -9520,6 +14118,31 @@ export const GRAMMAR_TOPICS_BY_LEVEL: Partial<Record<LevelKey, GrammarTopic[]>> 
  * Latihan Inti) — tangga 2-arah yang TIDAK dipunyai kompetitor manapun yang
  * diriset (semuanya 1 arah: word→meaning), memaksa anak benar-benar
  * membedakan BENTUK CETAK kata (bukan cuma tebak dari familiaritas urutan).
+ *
+ * **Digenapkan 1→10 topik** (target CLAUDE.md ≥10/skill, permintaan user
+ * "materi reading di little stars masih 1... buatkan minimal 10... research
+ * ke lembaga bahasa inggris dalam negeri" — riset dikonfirmasi ulang: LIA
+ * GEYL/EF Small Stars/Kumon Indonesia SEMUA mulai dari "look-listen-repeat"
+ * kata benda konkret bergambar sebelum phonics, jadi PERLUASAN yang tepat
+ * murni GENAPKAN domain `VOCAB_TOPICS_LITTLE_STARS` yang belum dipakai
+ * Reading — bukan format/mekanik baru) — 9 topik baru: `kata-warna`/`kata-
+ * angka`/`kata-bentuk`/`kata-keluarga`/`kata-tubuh`/`kata-buah`/`kata-
+ * mainan`/`kata-pakaian`/`kata-kendaraan`, dipetakan 1:1 dari domain Vocab
+ * `kenal-warna`/`angka-pertama`/`bentuk`/`keluargaku`/`tubuhku`/`buah-
+ * buahan`/`mainan`/`pakaian`/`kendaraan` — urutan REUSE urutan asli Vocab
+ * (sudah mencerminkan progresi "konsep dasar → diri & keluarga → benda
+ * konkret" ala Kurikulum Merdeka Fase Fondasi/Kumon level 7A-6A). **2 domain
+ * Vocab SENGAJA DILEWATI** (bukan lupa): `salam-sopan-santun` (ditandai
+ * `iconAmbiguous:true` di Vocab — emoji gestur/ekspresi (mis. 😔 utk "Sorry")
+ * multi-tafsir tanpa teks penjelas, fatal utk format Reading yang jawaban
+ * Latihan Inti-nya MURNI gambar tanpa label; kata²nya jg frasa 2-3 kata
+ * "Good Morning"/"Excuse Me", bukan kata benda tunggal) & `perasaanku`
+ * (konsep EMOSI abstrak — semua sumber yg diriset & urutan Vocab-nya sendiri
+ * menaruh kategori ini PALING TERAKHIR/tersulit di tangga Little Stars,
+ * disisakan utk sesi mendatang kalau mau digenapkan lebih jauh). ZERO
+ * perubahan mekanik/tipe data — 9 topik baru cuma `ReadingWordItem[]`
+ * (en/id/emoji) via copy-paste 1:1 dari item Vocab yang sudah divalidasi,
+ * murni kerja data.
  */
 export const READING_TOPICS_LITTLE_STARS: ReadingWordTopic[] = [
   {
@@ -9540,9 +14163,1456 @@ export const READING_TOPICS_LITTLE_STARS: ReadingWordTopic[] = [
       { en: 'Rabbit', id: 'Kelinci', emoji: '🐰' },
     ],
   },
+  {
+    id: 'kata-warna',
+    title: 'Membaca Kata: Warna (Reading Color Words)',
+    scene: '🔴',
+    desc: '10 kata',
+    items: [
+      { en: 'Red', id: 'Merah', emoji: '🔴' },
+      { en: 'Blue', id: 'Biru', emoji: '🔵' },
+      { en: 'Yellow', id: 'Kuning', emoji: '🟡' },
+      { en: 'Green', id: 'Hijau', emoji: '🟢' },
+      { en: 'Orange', id: 'Oranye', emoji: '🟠' },
+      { en: 'Purple', id: 'Ungu', emoji: '🟣' },
+      { en: 'Pink', id: 'Merah Muda', emoji: '🩷' },
+      { en: 'Black', id: 'Hitam', emoji: '⚫' },
+      { en: 'White', id: 'Putih', emoji: '⚪' },
+      { en: 'Brown', id: 'Cokelat', emoji: '🟤' },
+    ],
+  },
+  {
+    id: 'kata-angka',
+    title: 'Membaca Kata: Angka (Reading Number Words)',
+    scene: '🔢',
+    desc: '10 kata',
+    items: [
+      { en: 'One', id: 'Satu', emoji: '1️⃣' },
+      { en: 'Two', id: 'Dua', emoji: '2️⃣' },
+      { en: 'Three', id: 'Tiga', emoji: '3️⃣' },
+      { en: 'Four', id: 'Empat', emoji: '4️⃣' },
+      { en: 'Five', id: 'Lima', emoji: '5️⃣' },
+      { en: 'Six', id: 'Enam', emoji: '6️⃣' },
+      { en: 'Seven', id: 'Tujuh', emoji: '7️⃣' },
+      { en: 'Eight', id: 'Delapan', emoji: '8️⃣' },
+      { en: 'Nine', id: 'Sembilan', emoji: '9️⃣' },
+      { en: 'Ten', id: 'Sepuluh', emoji: '🔟' },
+    ],
+  },
+  {
+    id: 'kata-bentuk',
+    title: 'Membaca Kata: Bentuk (Reading Shape Words)',
+    scene: '⭐',
+    desc: '10 kata',
+    items: [
+      { en: 'Circle', id: 'Lingkaran', emoji: '⚪' },
+      { en: 'Square', id: 'Persegi', emoji: '⬜' },
+      { en: 'Triangle', id: 'Segitiga', emoji: '🔺' },
+      { en: 'Star', id: 'Bintang', emoji: '⭐' },
+      { en: 'Heart', id: 'Hati', emoji: '❤️' },
+      { en: 'Diamond', id: 'Berlian', emoji: '🔷' },
+      { en: 'Oval', id: 'Oval', emoji: '🥚' },
+      { en: 'Cross', id: 'Silang', emoji: '➕' },
+      { en: 'Arrow', id: 'Panah', emoji: '➡️' },
+      { en: 'Moon', id: 'Bulan', emoji: '🌙' },
+    ],
+  },
+  {
+    id: 'kata-keluarga',
+    title: 'Membaca Kata: Keluarga (Reading Family Words)',
+    scene: '👨‍👩‍👧‍👦',
+    desc: '10 kata',
+    items: [
+      { en: 'Mom', id: 'Mama', emoji: '👩' },
+      { en: 'Dad', id: 'Papa', emoji: '👨' },
+      { en: 'Baby', id: 'Bayi', emoji: '👶' },
+      { en: 'Sister', id: 'Kakak/Adik Perempuan', emoji: '👧' },
+      { en: 'Brother', id: 'Kakak/Adik Laki-laki', emoji: '👦' },
+      { en: 'Grandma', id: 'Nenek', emoji: '👵' },
+      { en: 'Grandpa', id: 'Kakek', emoji: '👴' },
+      { en: 'Aunt', id: 'Bibi', emoji: '👩‍🦱' },
+      { en: 'Uncle', id: 'Paman', emoji: '🧔' },
+      { en: 'Family', id: 'Keluarga', emoji: '👨‍👩‍👧‍👦' },
+    ],
+  },
+  {
+    id: 'kata-tubuh',
+    title: 'Membaca Kata: Tubuh (Reading Body Words)',
+    scene: '🙂',
+    desc: '10 kata',
+    items: [
+      { en: 'Head', id: 'Kepala', emoji: '🙂' },
+      { en: 'Shoulders', id: 'Bahu', emoji: '🤷' },
+      { en: 'Knees', id: 'Lutut', emoji: '🦵' },
+      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶' },
+      { en: 'Eyes', id: 'Mata', emoji: '👀' },
+      { en: 'Ears', id: 'Telinga', emoji: '👂' },
+      { en: 'Nose', id: 'Hidung', emoji: '👃' },
+      { en: 'Mouth', id: 'Mulut', emoji: '👄' },
+      { en: 'Hands', id: 'Tangan', emoji: '🙌' },
+      { en: 'Hair', id: 'Rambut', emoji: '💇' },
+    ],
+  },
+  {
+    id: 'kata-buah',
+    title: 'Membaca Kata: Buah (Reading Fruit Words)',
+    scene: '🍎',
+    desc: '10 kata',
+    items: [
+      { en: 'Apple', id: 'Apel', emoji: '🍎' },
+      { en: 'Banana', id: 'Pisang', emoji: '🍌' },
+      { en: 'Orange', id: 'Jeruk', emoji: '🍊' },
+      { en: 'Grape', id: 'Anggur', emoji: '🍇' },
+      { en: 'Watermelon', id: 'Semangka', emoji: '🍉' },
+      { en: 'Strawberry', id: 'Stroberi', emoji: '🍓' },
+      { en: 'Mango', id: 'Mangga', emoji: '🥭' },
+      { en: 'Pineapple', id: 'Nanas', emoji: '🍍' },
+      { en: 'Pear', id: 'Pir', emoji: '🍐' },
+      { en: 'Peach', id: 'Persik', emoji: '🍑' },
+    ],
+  },
+  {
+    id: 'kata-mainan',
+    title: 'Membaca Kata: Mainan (Reading Toy Words)',
+    scene: '🧸',
+    desc: '10 kata',
+    items: [
+      { en: 'Ball', id: 'Bola', emoji: '⚽' },
+      { en: 'Doll', id: 'Boneka', emoji: '🪆' },
+      { en: 'Kite', id: 'Layangan', emoji: '🪁' },
+      { en: 'Balloon', id: 'Balon', emoji: '🎈' },
+      { en: 'Puzzle', id: 'Puzzle', emoji: '🧩' },
+      { en: 'Robot', id: 'Robot', emoji: '🤖' },
+      { en: 'Drum', id: 'Drum', emoji: '🥁' },
+      { en: 'Blocks', id: 'Balok', emoji: '🧱' },
+      { en: 'Yoyo', id: 'Yoyo', emoji: '🪀' },
+      { en: 'Teddy', id: 'Boneka Beruang', emoji: '🧸' },
+    ],
+  },
+  {
+    id: 'kata-pakaian',
+    title: 'Membaca Kata: Pakaian (Reading Clothes Words)',
+    scene: '👕',
+    desc: '10 kata',
+    items: [
+      { en: 'Shirt', id: 'Baju', emoji: '👕' },
+      { en: 'Pants', id: 'Celana Panjang', emoji: '👖' },
+      { en: 'Shoes', id: 'Sepatu', emoji: '👟' },
+      { en: 'Socks', id: 'Kaos Kaki', emoji: '🧦' },
+      { en: 'Hat', id: 'Topi', emoji: '🧢' },
+      { en: 'Dress', id: 'Gaun', emoji: '👗' },
+      { en: 'Jacket', id: 'Jaket', emoji: '🧥' },
+      { en: 'Shorts', id: 'Celana Pendek', emoji: '🩳' },
+      { en: 'Gloves', id: 'Sarung Tangan', emoji: '🧤' },
+      { en: 'Scarf', id: 'Syal', emoji: '🧣' },
+    ],
+  },
+  {
+    id: 'kata-kendaraan',
+    title: 'Membaca Kata: Kendaraan (Reading Vehicle Words)',
+    scene: '🚗',
+    desc: '10 kata',
+    items: [
+      { en: 'Car', id: 'Mobil', emoji: '🚗' },
+      { en: 'Bus', id: 'Bus', emoji: '🚌' },
+      { en: 'Bike', id: 'Sepeda', emoji: '🚲' },
+      { en: 'Train', id: 'Kereta', emoji: '🚆' },
+      { en: 'Airplane', id: 'Pesawat', emoji: '✈️' },
+      { en: 'Boat', id: 'Perahu', emoji: '⛵' },
+      { en: 'Truck', id: 'Truk', emoji: '🚚' },
+      { en: 'Fire Truck', id: 'Truk Pemadam', emoji: '🚒' },
+      { en: 'Ambulance', id: 'Ambulans', emoji: '🚑' },
+      { en: 'Helicopter', id: 'Helikopter', emoji: '🚁' },
+    ],
+  },
+];
+
+/**
+ * Reading Starter (5–7 th) — TETAP format KEDUA (`ReadingWordTopic`), BUKAN
+ * format baru (`materi/reading.md` §9.1) — riset mengonfirmasi Kurikulum
+ * Merdeka Fase A (kelas 1–2) masih "teks dibacakan guru", bukan baca
+ * mandiri, jadi Starter cuma naik UNIT dari kata tunggal (Little Stars) ke
+ * FRASA pendek (2–3 kata) — mekanik & fungsi render 100% sama, TTS TETAP
+ * jadi bantuan aktif (jangan dicabut). 10 frasa dipetakan dari
+ * `VOCAB_TOPICS_STARTER` topik `tempat-di-sekitar` (preposisi+the+tempat,
+ * panjang konsisten, emoji tempat sangat khas/tidak ambigu).
+ *
+ * **Digenapkan 1→10 topik** (target CLAUDE.md ≥10/skill, permintaan user
+ * "materi reading di starter masih 1... buatkan minimal 10... research ke
+ * lembaga bahasa inggris dalam negeri" — riset dikonfirmasi ulang, pola sama
+ * `materi/reading.md` §13: TIDAK ada institusi/kompetitor yg menyarankan
+ * urutan kategori beda dari yg sudah dipakai `VOCAB_TOPICS_STARTER`, jadi
+ * PERLUASAN yg tepat murni GENAPKAN 9 domain Vocab Starter yg belum
+ * disentuh Reading — SEMUA 9 domain dipakai (0 domain dilewati, beda dari
+ * Little Stars yg py 2 domain `iconAmbiguous`/terlalu abstrak — Vocab
+ * Starter TIDAK py flag `iconAmbiguous` di domain manapun, aman dipakai
+ * semua) — 9 topik baru: `baca-angka`/`baca-hari`/`baca-serangga`/`baca-
+ * makanan`/`baca-barang`/`baca-sekolah`/`baca-orang`/`baca-alam`/`baca-
+ * hobi`, dipetakan dari `angka-11-20`/`hari-dalam-seminggu`/`serangga`/
+ * `makanan-favoritku`/`barang-di-rumah`/`di-sekolah`/`orang-di-sekitarku`/
+ * `alam-sekitar`/`hobi`. **Frasa 2-3 kata DIKONSTRUKSI natural per-item**
+ * (bukan cuma copy `item.en` mentah spt Little Stars, krn Starter emang
+ * wajib naik ke unit FRASA) — pola bervariasi per domain sesuai kealamian
+ * bahasa Inggrisnya sendiri (sama prinsip `baca-tempat` yg SUDAH mencampur
+ * "At The X" & "On The X" dalam 1 topik, bukan 1 template kaku): `The X`
+ * (benda/makhluk — serangga/barang-di-rumah/alam/sebagian orang), `I Like X`
+ * (makanan/hobi, REUSE PERSIS `item.example.en` yg sudah ada tanpa titik),
+ * `My X` (hal personal — teman/kotak bekal/seragam/PR/tetangga/sahabat),
+ * `On Day` (7 nama hari) + `I Play(ed) Today/Tomorrow/Yesterday` (3 kata
+ * waktu relatif, tense disesuaikan biar tetap gramatikal: present utk
+ * today/tomorrow, past utk yesterday), `<Angka> <Benda Jamak>` (reuse kata
+ * benda dari `item.example.en` masing² angka, mis. "Eleven Stickers"). ZERO
+ * kosakata baru diauthoring — semua kata sumbernya SUDAH ada di Vocab
+ * Starter, cuma dirangkai jadi frasa baca.
+ */
+export const READING_TOPICS_STARTER: ReadingWordTopic[] = [
+  {
+    id: 'baca-tempat',
+    title: 'Membaca Frasa: Tempat (Reading Place Phrases)',
+    scene: '🏞️',
+    desc: '10 frasa',
+    items: [
+      { en: 'At The Park', id: 'Di Taman', emoji: '🏞️' },
+      { en: 'At The Zoo', id: 'Di Kebun Binatang', emoji: '🦓' },
+      { en: 'At The Beach', id: 'Di Pantai', emoji: '🏖️' },
+      { en: 'At The Market', id: 'Di Pasar', emoji: '🛒' },
+      { en: 'At The Hospital', id: 'Di Rumah Sakit', emoji: '🏥' },
+      { en: 'On The Farm', id: 'Di Ladang', emoji: '🚜' },
+      { en: 'On The Bridge', id: 'Di Jembatan', emoji: '🌉' },
+      { en: 'At The Playground', id: 'Di Taman Bermain', emoji: '🛝' },
+      { en: 'On The Street', id: 'Di Jalan', emoji: '🛣️' },
+      { en: 'On The Mountain', id: 'Di Gunung', emoji: '⛰️' },
+    ],
+  },
+  {
+    id: 'baca-angka',
+    title: 'Membaca Frasa: Angka (Reading Number Phrases)',
+    scene: '1️⃣1️⃣',
+    desc: '10 frasa',
+    items: [
+      { en: 'Eleven Stickers', id: 'Sebelas Stiker', emoji: '1️⃣1️⃣' },
+      { en: 'Twelve Apples', id: 'Dua Belas Apel', emoji: '1️⃣2️⃣' },
+      { en: 'Thirteen Balloons', id: 'Tiga Belas Balon', emoji: '1️⃣3️⃣' },
+      { en: 'Fourteen Birds', id: 'Empat Belas Burung', emoji: '1️⃣4️⃣' },
+      { en: 'Fifteen Candies', id: 'Lima Belas Permen', emoji: '1️⃣5️⃣' },
+      { en: 'Sixteen Ants', id: 'Enam Belas Semut', emoji: '1️⃣6️⃣' },
+      { en: 'Seventeen Coins', id: 'Tujuh Belas Koin', emoji: '1️⃣7️⃣' },
+      { en: 'Eighteen Flowers', id: 'Delapan Belas Bunga', emoji: '1️⃣8️⃣' },
+      { en: 'Nineteen Crackers', id: 'Sembilan Belas Biskuit', emoji: '1️⃣9️⃣' },
+      { en: 'Twenty Fish', id: 'Dua Puluh Ikan', emoji: '2️⃣0️⃣' },
+    ],
+  },
+  {
+    id: 'baca-hari',
+    title: 'Membaca Frasa: Hari (Reading Day Phrases)',
+    scene: '🏫',
+    desc: '10 frasa',
+    items: [
+      { en: 'On Monday', id: 'Hari Senin', emoji: '🏫' },
+      { en: 'On Tuesday', id: 'Hari Selasa', emoji: '🎨' },
+      { en: 'On Wednesday', id: 'Hari Rabu', emoji: '🎵' },
+      { en: 'On Thursday', id: 'Hari Kamis', emoji: '⚽' },
+      { en: 'On Friday', id: 'Hari Jumat', emoji: '🎈' },
+      { en: 'On Saturday', id: 'Hari Sabtu', emoji: '🎉' },
+      { en: 'On Sunday', id: 'Hari Minggu', emoji: '🌳' },
+      { en: 'I Play Today', id: 'Aku Bermain Hari Ini', emoji: '👉' },
+      { en: 'I Play Tomorrow', id: 'Aku Bermain Besok', emoji: '🌅' },
+      { en: 'I Played Yesterday', id: 'Aku Bermain Kemarin', emoji: '🌇' },
+    ],
+  },
+  {
+    id: 'baca-serangga',
+    title: 'Membaca Frasa: Serangga (Reading Insect Phrases)',
+    scene: '🦋',
+    desc: '10 frasa',
+    items: [
+      { en: 'The Butterfly', id: 'Kupu-kupu Itu', emoji: '🦋' },
+      { en: 'The Bee', id: 'Lebah Itu', emoji: '🐝' },
+      { en: 'The Ant', id: 'Semut Itu', emoji: '🐜' },
+      { en: 'The Ladybug', id: 'Kepik Itu', emoji: '🐞' },
+      { en: 'The Spider', id: 'Laba-laba Itu', emoji: '🕷️' },
+      { en: 'The Snail', id: 'Siput Itu', emoji: '🐌' },
+      { en: 'The Frog', id: 'Katak Itu', emoji: '🐸' },
+      { en: 'The Turtle', id: 'Kura-kura Itu', emoji: '🐢' },
+      { en: 'The Crab', id: 'Kepiting Itu', emoji: '🦀' },
+      { en: 'The Worm', id: 'Cacing Itu', emoji: '🪱' },
+    ],
+  },
+  {
+    id: 'baca-makanan',
+    title: 'Membaca Frasa: Makanan (Reading Food Phrases)',
+    scene: '🍕',
+    desc: '10 frasa',
+    items: [
+      { en: 'I Like Pizza', id: 'Aku Suka Pizza', emoji: '🍕' },
+      { en: 'I Like Burger', id: 'Aku Suka Burger', emoji: '🍔' },
+      { en: 'I Like Sandwich', id: 'Aku Suka Sandwich', emoji: '🥪' },
+      { en: 'I Like Ice Cream', id: 'Aku Suka Es Krim', emoji: '🍦' },
+      { en: 'I Like Cake', id: 'Aku Suka Kue', emoji: '🍰' },
+      { en: 'I Like Cookie', id: 'Aku Suka Biskuit', emoji: '🍪' },
+      { en: 'I Like Chocolate', id: 'Aku Suka Cokelat', emoji: '🍫' },
+      { en: 'I Like Cheese', id: 'Aku Suka Keju', emoji: '🧀' },
+      { en: 'I Like Juice', id: 'Aku Suka Jus', emoji: '🧃' },
+      { en: 'I Like Yogurt', id: 'Aku Suka Yogurt', emoji: '🥣' },
+    ],
+  },
+  {
+    id: 'baca-barang',
+    title: 'Membaca Frasa: Barang di Rumah (Reading Home Item Phrases)',
+    scene: '🛏️',
+    desc: '10 frasa',
+    items: [
+      { en: 'The Table', id: 'Meja Itu', emoji: '🍽️' },
+      { en: 'The Bed', id: 'Tempat Tidur Itu', emoji: '🛏️' },
+      { en: 'The Sofa', id: 'Sofa Itu', emoji: '🛋️' },
+      { en: 'The Lamp', id: 'Lampu Itu', emoji: '💡' },
+      { en: 'The Television', id: 'Televisi Itu', emoji: '📺' },
+      { en: 'The Fridge', id: 'Kulkas Itu', emoji: '🧊' },
+      { en: 'The Mirror', id: 'Cermin Itu', emoji: '🪞' },
+      { en: 'The Phone', id: 'Telepon Itu', emoji: '📱' },
+      { en: 'The Cupboard', id: 'Lemari Itu', emoji: '🗄️' },
+      { en: 'The Broom', id: 'Sapu Itu', emoji: '🧹' },
+    ],
+  },
+  {
+    id: 'baca-sekolah',
+    title: 'Membaca Frasa: Di Sekolah (Reading School Phrases)',
+    scene: '🏫',
+    desc: '10 frasa',
+    items: [
+      { en: 'The Coach', id: 'Pelatih Itu', emoji: '📣' },
+      { en: 'The Classroom', id: 'Ruang Kelas Itu', emoji: '🏫' },
+      { en: 'My Friend', id: 'Temanku', emoji: '🧑‍🤝‍🧑' },
+      { en: 'The Principal', id: 'Kepala Sekolah Itu', emoji: '🧑‍💼' },
+      { en: 'The Library', id: 'Perpustakaan Itu', emoji: '📚' },
+      { en: 'My Lunchbox', id: 'Kotak Bekalku', emoji: '🍱' },
+      { en: 'My Uniform', id: 'Seragamku', emoji: '👕' },
+      { en: 'The Bell', id: 'Bel Itu', emoji: '🔔' },
+      { en: 'My Homework', id: 'PR-ku', emoji: '📓' },
+      { en: 'At Recess', id: 'Saat Istirahat', emoji: '🥪' },
+    ],
+  },
+  {
+    id: 'baca-orang',
+    title: 'Membaca Frasa: Orang di Sekitarku (Reading People Phrases)',
+    scene: '🧑‍🎓',
+    desc: '10 frasa',
+    items: [
+      { en: 'My Neighbor', id: 'Tetanggaku', emoji: '🏘️' },
+      { en: 'My Classmate', id: 'Teman Sekelasku', emoji: '🧑‍🎓' },
+      { en: 'The Boy', id: 'Anak Laki-laki Itu', emoji: '👦' },
+      { en: 'The Girl', id: 'Anak Perempuan Itu', emoji: '👧' },
+      { en: 'The Man', id: 'Pria Itu', emoji: '👨' },
+      { en: 'The Woman', id: 'Wanita Itu', emoji: '👩' },
+      { en: 'The Baby', id: 'Bayi Itu', emoji: '👶' },
+      { en: 'The Driver', id: 'Supir Itu', emoji: '🚕' },
+      { en: 'My Best Friend', id: 'Sahabatku', emoji: '🤝' },
+      { en: 'My Twin', id: 'Kembaranku', emoji: '👯' },
+    ],
+  },
+  {
+    id: 'baca-alam',
+    title: 'Membaca Frasa: Alam (Reading Nature Phrases)',
+    scene: '🌳',
+    desc: '10 frasa',
+    items: [
+      { en: 'The Sun', id: 'Matahari Itu', emoji: '☀️' },
+      { en: 'The Moon', id: 'Bulan Itu', emoji: '🌙' },
+      { en: 'The Sky', id: 'Langit Itu', emoji: '🌤️' },
+      { en: 'The Cloud', id: 'Awan Itu', emoji: '☁️' },
+      { en: 'The Tree', id: 'Pohon Itu', emoji: '🌳' },
+      { en: 'The Flower', id: 'Bunga Itu', emoji: '🌸' },
+      { en: 'The Grass', id: 'Rumput Itu', emoji: '🌿' },
+      { en: 'The River', id: 'Sungai Itu', emoji: '🌊' },
+      { en: 'The Stone', id: 'Batu Itu', emoji: '🪨' },
+      { en: 'The Star', id: 'Bintang Itu', emoji: '⭐' },
+    ],
+  },
+  {
+    id: 'baca-hobi',
+    title: 'Membaca Frasa: Hobi (Reading Hobby Phrases)',
+    scene: '🎨',
+    desc: '10 frasa',
+    items: [
+      { en: 'I Like Drawing', id: 'Aku Suka Menggambar', emoji: '🎨' },
+      { en: 'I Like Singing', id: 'Aku Suka Bernyanyi', emoji: '🎤' },
+      { en: 'I Like Reading', id: 'Aku Suka Membaca', emoji: '📖' },
+      { en: 'I Like Painting', id: 'Aku Suka Melukis', emoji: '🖌️' },
+      { en: 'I Like Cooking', id: 'Aku Suka Memasak', emoji: '🍳' },
+      { en: 'I Like Camping', id: 'Aku Suka Berkemah', emoji: '⛺' },
+      { en: 'I Like Fishing', id: 'Aku Suka Memancing', emoji: '🎣' },
+      { en: 'I Like Gardening', id: 'Aku Suka Berkebun', emoji: '🌱' },
+      { en: 'I Like Collecting', id: 'Aku Suka Mengoleksi', emoji: '🪙' },
+      { en: 'I Like Building', id: 'Aku Suka Membangun', emoji: '🧱' },
+    ],
+  },
+];
+
+/**
+ * Reading Achiever (11–13 th) — TETAP format LAMA `ReadingTopic` (persis tipe
+ * Adventurer, TIDAK ada tipe baru), krn riset (`materi/reading.md` §9.4)
+ * bilang "Format C+" achiever DNA-nya sama dgn format Adventurer, cukup naik
+ * INTENSITAS lewat konten, bukan mekanik baru: (1) passage lebih panjang
+ * (`story` 4-5 kalimat, naik dari 3 kalimat Adventurer), (2) `question`
+ * WAJIB pertanyaan INFERENSI (butuh gabungkan >1 info dari story, bukan
+ * fakta 1-kalimat literal spt Adventurer) — jembatan menuju Fase D/
+ * Trailblazer. Tipe soal cloze-dalam-passage (disebut riset sbg pelengkap
+ * opsional) SENGAJA belum dibangun sesi ini (di luar scope "reuse tipe
+ * existing", `materi/reading.md` §7 gap) — 1 topik pembuka dulu, sama pola
+ * bootstrap dgn Little Stars/Starter/Explorer.
+ *
+ * **Digenapkan 1→10 topik** (target CLAUDE.md ≥10/skill, permintaan user
+ * "materi reading di achiver masih 1... buatkan minimal 10... research ke
+ * lembaga bahasa inggris dalam negeri" — riset konfirmasi EF Indonesia
+ * Trailblazers (10-14 th, irisan Achiever) & Kumon EFL: keduanya eksplisit
+ * fokus "topik relevan kehidupan nyata" + critical thinking, cocok dgn arah
+ * yg sudah dipilih §9.4, `materi/reading.md` §17) — 9 topik baru skenario
+ * remaja 11-13 th, masing² dipetakan dari 1 domain `VOCAB_TOPICS_ACHIEVER`
+ * (`ciri-ciri-fisik`/`tempat-di-kota`/`arah-posisi`/`hiburan-waktu-luang`/
+ * `kata-kerja-lanjutan`/`teknologi-internet`/`sifat-kepribadian`/`mata-
+ * pelajaran`/`angka-puluhan` — 9 dari 10 domain, `sifat-benda-lanjutan`
+ * SENGAJA dilewati krn paling sulit dirangkai jadi narasi personal
+ * dibanding 9 domain lain, disisakan sbg opsi kalau mau digenapkan lebih
+ * jauh). SEMUA 9 topik konsisten format "C+" §9.4: `story` 4 kalimat +
+ * `question` akhir WAJIB INFERENSI (jawaban TIDAK PERNAH ditulis literal,
+ * anak gabungkan ≥2 info dari primer/drill/story — pola sama `hari-piknik`,
+ * mis. `menggalang-dana-sekolah` minta anak MENGHITUNG SENDIRI 90rb+10×1rb
+ * = 100rb utk simpulkan target tercapai, bukan sekadar re-baca fakta).
+ */
+export const READING_TOPICS_ACHIEVER: ReadingTopic[] = [
+  {
+    id: 'hari-piknik',
+    title: 'Hari Piknik (Picnic Day)',
+    scene: '🧺',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Lani plans a picnic with her cousins.', 'She packs sandwiches, juice, and a big blanket.'], id: 'Lani merencanakan piknik dengan sepupu-sepupunya. Dia mengemas sandwich, jus, dan selimut besar.' },
+      { passage: ['They choose a park near the river.', 'The park has tall trees for shade.'], id: 'Mereka memilih taman dekat sungai. Tamannya punya pohon tinggi untuk keteduhan.' },
+    ],
+    // Sama pola anti-tebak dgn topik Adventurer (distraktor jg disebut di
+    // teks, dilekatkan ke hal LAIN) — di sini distraktornya jg dipakai utk
+    // "naikkan intensitas" (info yang relevan tidak selalu di kalimat
+    // pertama, anak harus baca semua baris dulu).
+    drill: [
+      {
+        passage: ['Lani wants to sit under the big tree, but her cousin Budi prefers the open grass.', 'In the end, they spread the blanket under the tree because the sun is too hot.'],
+        id: 'Lani ingin duduk di bawah pohon besar, tapi sepupunya Budi lebih suka rumput terbuka. Akhirnya, mereka menggelar selimut di bawah pohon karena mataharinya terlalu terik.',
+        question: 'Where do they finally spread the blanket?',
+        questionId: 'Di mana akhirnya mereka menggelar selimut?',
+        opts: [{ emoji: '🌳', lbl: 'Under the tree', ok: true }, { emoji: '🌱', lbl: 'On the open grass' }, { emoji: '🏠', lbl: 'Inside the house' }],
+      },
+      {
+        passage: ['Budi brings a kite, and Lani brings a ball.', 'After lunch, the wind is strong, so they decide to fly the kite first.'],
+        id: 'Budi membawa layangan, dan Lani membawa bola. Setelah makan siang, anginnya kencang, jadi mereka memutuskan menerbangkan layangan dulu.',
+        question: 'What do they play first after lunch?',
+        questionId: 'Apa yang mereka mainkan lebih dulu setelah makan siang?',
+        opts: [{ emoji: '🪁', lbl: 'The kite', ok: true }, { emoji: '⚽', lbl: 'The ball' }, { emoji: '🎨', lbl: 'Drawing' }],
+      },
+    ],
+    story: [
+      'Lani and her cousins arrive at the park at nine in the morning.',
+      'They play by the river until they feel hungry.',
+      'When they open the basket, the sandwiches are gone — a group of ducks is walking away happily nearby.',
+      'Lani laughs and says they will bring a covered basket next time.',
+    ],
+    storyId: 'Lani dan sepupu-sepupunya tiba di taman pukul sembilan pagi. Mereka bermain di dekat sungai sampai merasa lapar. Ketika membuka keranjang, sandwichnya sudah hilang — sekelompok bebek berjalan pergi dengan riang di dekat situ. Lani tertawa dan berkata mereka akan membawa keranjang bertutup lain kali.',
+    // Pertanyaan INFERENSI (permintaan riset §9.4) — jawabannya TIDAK
+    // disebutkan literal di story manapun ("ducks ate the sandwiches" tidak
+    // pernah ditulis), anak harus GABUNGKAN 2 info (basket kosong + bebek
+    // jalan pergi di dekatnya) buat menyimpulkan sendiri.
+    question: {
+      text: 'What most likely happened to the sandwiches?',
+      id: 'Apa yang kemungkinan besar terjadi pada sandwich-nya?',
+      opts: [{ emoji: '🦆', lbl: 'The ducks ate them', ok: true }, { emoji: '🎒', lbl: 'Lani forgot to pack them' }, { emoji: '🏠', lbl: 'They left them at home' }],
+    },
+  },
+  {
+    id: 'mencari-sahabat-pena',
+    title: 'Mencari Sahabat Pena (Finding a Pen Pal)',
+    scene: '🧳',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Rani is waiting at the airport to meet her pen pal, Emma, for the first time.', 'She has never seen Emma’s photo, only read her letters.'], id: 'Rani menunggu di bandara untuk bertemu sahabat penanya, Emma, untuk pertama kalinya. Dia belum pernah melihat foto Emma, cuma membaca surat-suratnya.' },
+      { passage: ['Emma wrote that she has curly hair and is quite tall.', 'Rani looks around at the crowd of passengers.'], id: 'Emma menulis bahwa dia punya rambut keriting dan cukup tinggi. Rani melihat sekeliling kerumunan penumpang.' },
+    ],
+    drill: [
+      {
+        passage: ['Two girls with curly hair walk out of the arrival gate.', 'One girl is tall and one girl is quite short.'],
+        id: 'Dua anak perempuan berambut keriting keluar dari gerbang kedatangan. Satu anak tinggi dan satu anak agak pendek.',
+        question: 'Which girl matches Emma’s letter?',
+        questionId: 'Anak perempuan mana yang cocok dengan surat Emma?',
+        opts: [{ emoji: '👧', lbl: 'The tall girl', ok: true }, { emoji: '👧', lbl: 'The short girl' }, { emoji: '👦', lbl: 'A boy nearby' }],
+      },
+      {
+        passage: ['The tall girl waves and smiles at Rani.', 'She is wearing a bright yellow backpack, just like in her last letter.'],
+        id: 'Anak perempuan tinggi itu melambai dan tersenyum ke Rani. Dia memakai tas ransel kuning cerah, persis seperti di surat terakhirnya.',
+        question: 'What color is the girl’s backpack?',
+        questionId: 'Apa warna tas ransel anak perempuan itu?',
+        opts: [{ emoji: '🟡', lbl: 'Yellow', ok: true }, { emoji: '🔵', lbl: 'Blue' }, { emoji: '🔴', lbl: 'Red' }],
+      },
+    ],
+    story: [
+      'Rani walks closer and says hello, but the girl laughs and says her name is Sarah, not Emma.',
+      'A little confused, Rani checks her phone and rereads Emma’s last letter.',
+      'She then notices a girl nearby holding a notebook with the exact same neat handwriting from the letter.',
+      'Rani walks over immediately, and the girl looks up and says, “You must be Rani!”',
+    ],
+    storyId: 'Rani mendekat dan menyapa, tapi anak itu tertawa dan bilang namanya Sarah, bukan Emma. Agak bingung, Rani memeriksa ponselnya dan membaca ulang surat terakhir Emma. Lalu dia melihat seorang anak perempuan di dekatnya memegang buku catatan dengan tulisan tangan rapi yang persis sama dari surat itu. Rani langsung menghampirinya, dan anak itu mendongak dan bilang, "Kamu pasti Rani!"',
+    question: {
+      text: 'How does Rani figure out who Emma really is?',
+      id: 'Bagaimana Rani akhirnya tahu siapa Emma sebenarnya?',
+      opts: [{ emoji: '✍️', lbl: 'She recognizes the handwriting', ok: true }, { emoji: '🎒', lbl: 'She recognizes the backpack' }, { emoji: '👧', lbl: 'She recognizes the curly hair' }],
+    },
+  },
+  {
+    id: 'jalan-jalan-di-kota',
+    title: 'Jalan-jalan di Kota (A Day Around Town)',
+    scene: '🏙️',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Dimas and his dad run errands around town on Saturday.', 'Their first stop is the bank to withdraw some money.'], id: 'Dimas dan ayahnya mengurus keperluan di kota hari Sabtu. Perhentian pertama mereka adalah bank untuk mengambil uang.' },
+      { passage: ['Next, they walk to the post office to send a package.', 'The post office is very crowded today.'], id: 'Selanjutnya, mereka berjalan ke kantor pos untuk mengirim paket. Kantor posnya sangat ramai hari ini.' },
+    ],
+    drill: [
+      {
+        passage: ['After the post office, Dimas wants to visit the museum, but his dad needs to go to the supermarket first.', 'They agree to go to the supermarket first since it closes earlier.'],
+        id: 'Setelah kantor pos, Dimas ingin mengunjungi museum, tapi ayahnya perlu ke supermarket dulu. Mereka sepakat ke supermarket dulu karena tutup lebih awal.',
+        question: 'Where do they go first, the museum or the supermarket?',
+        questionId: 'Ke mana mereka pergi duluan, museum atau supermarket?',
+        opts: [{ emoji: '🏬', lbl: 'The supermarket', ok: true }, { emoji: '🏛️', lbl: 'The museum' }, { emoji: '🏦', lbl: 'The bank' }],
+      },
+      {
+        passage: ['At the supermarket, dad buys bread, milk, and eggs.', 'Dimas picks out his favorite cereal to add to the cart.'],
+        id: 'Di supermarket, ayah membeli roti, susu, dan telur. Dimas memilih sereal favoritnya untuk ditambahkan ke troli.',
+        question: 'What does Dimas add to the cart?',
+        questionId: 'Apa yang ditambahkan Dimas ke troli?',
+        opts: [{ emoji: '🥣', lbl: 'Cereal', ok: true }, { emoji: '🍞', lbl: 'Bread' }, { emoji: '🥛', lbl: 'Milk' }],
+      },
+    ],
+    story: [
+      'By the time they finish shopping, it is almost four o’clock.',
+      'Dimas looks at the museum’s opening hours printed on a flyer in his pocket — it closes at four thirty.',
+      'Dad checks his watch and starts walking very quickly toward the car.',
+      'Dimas grins and grabs his backpack, running to catch up.',
+    ],
+    storyId: 'Saat mereka selesai belanja, waktu sudah hampir jam empat. Dimas melihat jam buka museum yang tercetak di selebaran di sakunya — tutup jam empat setengah. Ayah melihat jamnya dan mulai berjalan sangat cepat menuju mobil. Dimas tersenyum lebar dan meraih ranselnya, berlari untuk mengejar.',
+    question: {
+      text: 'Why does dad start walking quickly?',
+      id: 'Kenapa ayah mulai berjalan cepat?',
+      opts: [{ emoji: '🏛️', lbl: 'They might still make it to the museum', ok: true }, { emoji: '🚗', lbl: 'The car is about to be towed' }, { emoji: '🌧️', lbl: 'It is starting to rain' }],
+    },
+  },
+  {
+    id: 'mencari-alamat',
+    title: 'Mencari Alamat (Finding the Address)',
+    scene: '🧭',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Sinta is looking for her new friend’s house for the first time.', 'She has the address written on a small piece of paper.'], id: 'Sinta sedang mencari rumah teman barunya untuk pertama kalinya. Dia punya alamatnya tertulis di secarik kertas kecil.' },
+      { passage: ['The house is near the corner of Melati Street.', 'Sinta checks a map on her phone.'], id: 'Rumahnya dekat sudut Jalan Melati. Sinta memeriksa peta di ponselnya.' },
+    ],
+    drill: [
+      {
+        passage: ['A man tells Sinta to go straight and then turn left at the corner.', 'Sinta thanks him and follows his directions carefully.'],
+        id: 'Seorang pria memberi tahu Sinta untuk jalan lurus lalu belok kiri di sudut. Sinta berterima kasih dan mengikuti arahannya dengan hati-hati.',
+        question: 'Which way does Sinta turn at the corner?',
+        questionId: 'Ke arah mana Sinta belok di sudut itu?',
+        opts: [{ emoji: '⬅️', lbl: 'Left', ok: true }, { emoji: '➡️', lbl: 'Right' }, { emoji: '⬆️', lbl: 'Straight' }],
+      },
+      {
+        passage: ['Sinta sees a small bakery on her right and a park on her left.', 'Her friend’s house should be right behind the bakery.'],
+        id: 'Sinta melihat toko roti kecil di sebelah kanannya dan taman di sebelah kirinya. Rumah temannya seharusnya persis di belakang toko roti itu.',
+        question: 'Where should the friend’s house be?',
+        questionId: 'Di mana seharusnya rumah temannya?',
+        opts: [{ emoji: '🥖', lbl: 'Behind the bakery', ok: true }, { emoji: '🌳', lbl: 'Inside the park' }, { emoji: '👉', lbl: 'In front of the bakery' }],
+      },
+    ],
+    story: [
+      'Sinta walks behind the bakery, but she only sees a tall fence and no houses at all.',
+      'She checks her phone map and sees she is standing on “Melati Street”, just like the address says.',
+      'A woman walking her dog mentions that there are actually two different streets named Melati in this town — one near the market, and one near the school.',
+      'Sinta looks at her friend’s address again: it says “Melati Street, near the school.”',
+    ],
+    storyId: 'Sinta berjalan ke belakang toko roti, tapi dia cuma melihat pagar tinggi dan tidak ada rumah sama sekali. Dia memeriksa peta ponselnya dan melihat dia sedang berdiri di "Jalan Melati", persis seperti di alamat itu. Seorang wanita yang jalan-jalan dengan anjingnya bilang sebenarnya ada dua jalan berbeda bernama Melati di kota ini — satu dekat pasar, dan satu dekat sekolah. Sinta melihat lagi alamat temannya: tertulis "Jalan Melati, dekat sekolah."',
+    question: {
+      text: 'Why did Sinta go to the wrong place first?',
+      id: 'Kenapa Sinta pergi ke tempat yang salah di awal?',
+      opts: [{ emoji: '🛣️', lbl: 'She went to the Melati Street near the market, not the school', ok: true }, { emoji: '📱', lbl: 'Her phone map was broken' }, { emoji: '🐕', lbl: 'A dog led her the wrong way' }],
+    },
+  },
+  {
+    id: 'akhir-pekan-di-rumah',
+    title: 'Akhir Pekan di Rumah (Weekend at Home)',
+    scene: '🎮',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['It is Saturday, and Bima has no school today.', 'He wants to decide how to spend his free time.'], id: 'Ini hari Sabtu, dan Bima tidak sekolah hari ini. Dia ingin memutuskan bagaimana menghabiskan waktu luangnya.' },
+      { passage: ['His sister invites him to play a board game.', 'His friend calls and invites him to play video games instead.'], id: 'Kakaknya mengajaknya main permainan papan. Temannya menelepon dan mengajaknya main gim video sebagai gantinya.' },
+    ],
+    drill: [
+      {
+        passage: ['Bima’s sister sets up a chess board on the living room table.', 'She has been practicing every day this week.'],
+        id: 'Kakak Bima menyiapkan papan catur di meja ruang tamu. Dia sudah berlatih setiap hari minggu ini.',
+        question: 'What game does the sister want to play?',
+        questionId: 'Permainan apa yang ingin dimainkan kakaknya?',
+        opts: [{ emoji: '♟️', lbl: 'Chess', ok: true }, { emoji: '🕹️', lbl: 'Video game' }, { emoji: '🃏', lbl: 'Cards' }],
+      },
+      {
+        passage: ['Bima’s friend Andi says the new video game has amazing graphics.', 'Andi has already finished two levels by himself.'],
+        id: 'Teman Bima, Andi, bilang gim video barunya punya grafis luar biasa. Andi sudah menyelesaikan dua level sendirian.',
+        question: 'How many levels has Andi finished?',
+        questionId: 'Berapa level yang sudah diselesaikan Andi?',
+        opts: [{ emoji: '2️⃣', lbl: 'Two', ok: true }, { emoji: '1️⃣', lbl: 'One' }, { emoji: '3️⃣', lbl: 'Three' }],
+      },
+    ],
+    story: [
+      'Bima looks at his sister’s serious face as she arranges the chess pieces.',
+      'He remembers that she lost every game to him last month and really wants a rematch.',
+      'He also looks at his phone, where Andi is still typing excited messages about the new game.',
+      'Bima puts his phone down and sits across from his sister at the chess board.',
+    ],
+    storyId: 'Bima melihat wajah serius kakaknya saat menyusun bidak caturnya. Dia ingat kakaknya kalah setiap kali main bulan lalu dan sangat ingin tanding ulang. Dia juga melihat ponselnya, tempat Andi masih mengetik pesan-pesan bersemangat tentang gim barunya. Bima meletakkan ponselnya dan duduk di seberang kakaknya di papan catur.',
+    question: {
+      text: 'Why does Bima decide to play chess with his sister?',
+      id: 'Kenapa Bima memutuskan main catur dengan kakaknya?',
+      opts: [{ emoji: '♟️', lbl: 'He wants to give her a chance for a rematch', ok: true }, { emoji: '🕹️', lbl: 'The video game stopped working' }, { emoji: '📵', lbl: 'His phone battery died' }],
+    },
+  },
+  {
+    id: 'main-petak-umpet',
+    title: 'Main Petak Umpet (Playing Hide and Seek)',
+    scene: '🙈',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Reza and his cousins play hide and seek in the backyard.', 'Reza’s turn is to count while everyone hides.'], id: 'Reza dan sepupu-sepupunya main petak umpet di halaman belakang. Giliran Reza untuk menghitung sementara semua orang bersembunyi.' },
+      { passage: ['He closes his eyes and counts to twenty loudly.', 'Everyone runs to find a good hiding spot.'], id: 'Dia menutup matanya dan menghitung sampai dua puluh dengan keras. Semua orang berlari mencari tempat sembunyi yang bagus.' },
+    ],
+    drill: [
+      {
+        passage: ['Reza’s cousin Wati climbs up into the mango tree to hide.', 'His other cousin Doni hides behind the water tank instead.'],
+        id: 'Sepupu Reza, Wati, memanjat pohon mangga untuk bersembunyi. Sepupunya yang lain, Doni, malah bersembunyi di belakang tandon air.',
+        question: 'Where does Wati hide?',
+        questionId: 'Di mana Wati bersembunyi?',
+        opts: [{ emoji: '🌳', lbl: 'The mango tree', ok: true }, { emoji: '🚰', lbl: 'The water tank' }, { emoji: '🚗', lbl: 'The garage' }],
+      },
+      {
+        passage: ['Reza finds Doni first and shouts his name loudly.', 'Doni laughs and jumps out from behind the water tank.'],
+        id: 'Reza menemukan Doni duluan dan berteriak namanya dengan keras. Doni tertawa dan melompat keluar dari belakang tandon air.',
+        question: 'Who does Reza find first?',
+        questionId: 'Siapa yang ditemukan Reza duluan?',
+        opts: [{ emoji: '🧑', lbl: 'Doni', ok: true }, { emoji: '👧', lbl: 'Wati' }, { emoji: '❓', lbl: 'Nobody' }],
+      },
+    ],
+    story: [
+      'After finding Doni, Reza searches the whole yard but cannot find Wati anywhere.',
+      'Suddenly, he hears someone trying not to laugh, coming from somewhere above him.',
+      'He looks up slowly and sees a pair of shoes dangling between the mango tree leaves.',
+      'Reza points and shouts, catching Wati completely by surprise.',
+    ],
+    storyId: 'Setelah menemukan Doni, Reza mencari ke seluruh halaman tapi tidak menemukan Wati di mana pun. Tiba-tiba, dia mendengar seseorang menahan tawa, datang dari suatu tempat di atasnya. Dia mendongak perlahan dan melihat sepasang sepatu menjuntai di antara daun pohon mangga. Reza menunjuk dan berteriak, membuat Wati benar-benar terkejut.',
+    question: {
+      text: 'How does Reza finally find Wati?',
+      id: 'Bagaimana akhirnya Reza menemukan Wati?',
+      opts: [{ emoji: '👀', lbl: 'He sees her shoes in the tree and hears her laughing', ok: true }, { emoji: '📣', lbl: 'Wati calls out her own hiding spot' }, { emoji: '⏰', lbl: 'Time runs out and everyone must come out' }],
+    },
+  },
+  {
+    id: 'tugas-sekolah-online',
+    title: 'Tugas Sekolah Online (Online Homework)',
+    scene: '💻',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Farah has an English homework assignment due tomorrow.', 'She turns on her computer to start researching.'], id: 'Farah punya tugas Bahasa Inggris yang harus dikumpulkan besok. Dia menyalakan komputernya untuk mulai mencari informasi.' },
+      { passage: ['She opens the internet and searches for information about volcanoes.', 'She finds a helpful website with pictures and facts.'], id: 'Dia membuka internet dan mencari informasi tentang gunung berapi. Dia menemukan situs web yang membantu dengan gambar dan fakta.' },
+    ],
+    drill: [
+      {
+        passage: ['Farah types her password to log into the school’s online portal.', 'She types it wrong twice before getting it right.'],
+        id: 'Farah mengetik kata sandinya untuk masuk ke portal daring sekolah. Dia mengetiknya salah dua kali sebelum akhirnya benar.',
+        question: 'How many times does Farah type her password wrong?',
+        questionId: 'Berapa kali Farah salah mengetik kata sandinya?',
+        opts: [{ emoji: '2️⃣', lbl: 'Two', ok: true }, { emoji: '1️⃣', lbl: 'One' }, { emoji: '3️⃣', lbl: 'Three' }],
+      },
+      {
+        passage: ['Farah downloads a picture of a volcano to use in her homework.', 'She also uploads her finished essay to the school portal.'],
+        id: 'Farah mengunduh gambar gunung berapi untuk dipakai di tugasnya. Dia juga mengunggah esainya yang sudah selesai ke portal sekolah.',
+        question: 'What does Farah upload to the school portal?',
+        questionId: 'Apa yang diunggah Farah ke portal sekolah?',
+        opts: [{ emoji: '📝', lbl: 'Her essay', ok: true }, { emoji: '🖼️', lbl: 'A picture' }, { emoji: '🎬', lbl: 'A video' }],
+      },
+    ],
+    story: [
+      'Just as Farah finishes typing the last paragraph, her screen suddenly turns black.',
+      'She waits a few seconds, but the computer does not turn back on.',
+      'Farah remembers she forgot to save her work before the screen went black.',
+      'She sighs and starts typing the whole essay again from memory.',
+    ],
+    storyId: 'Persis saat Farah selesai mengetik paragraf terakhir, layarnya tiba-tiba menghitam. Dia menunggu beberapa detik, tapi komputernya tidak menyala kembali. Farah ingat dia lupa menyimpan pekerjaannya sebelum layarnya menghitam. Dia menghela napas dan mulai mengetik ulang seluruh esainya dari ingatan.',
+    question: {
+      text: 'Why does Farah have to type her essay again?',
+      id: 'Kenapa Farah harus mengetik esainya lagi?',
+      opts: [{ emoji: '💾', lbl: 'She did not save her work before the computer turned off', ok: true }, { emoji: '🌋', lbl: 'She wrote about the wrong topic' }, { emoji: '🔑', lbl: 'She forgot her password again' }],
+    },
+  },
+  {
+    id: 'murid-baru-di-kelas',
+    title: 'Murid Baru di Kelas (The New Student)',
+    scene: '🧑‍🎓',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['A new student named Kevin joins Ayu’s class this week.', 'He sits quietly at the back on his first day.'], id: 'Seorang murid baru bernama Kevin bergabung ke kelas Ayu minggu ini. Dia duduk diam di belakang di hari pertamanya.' },
+      { passage: ['Ayu wonders what Kevin is really like.', 'She decides to say hello during recess.'], id: 'Ayu penasaran seperti apa sebenarnya Kevin. Dia memutuskan untuk menyapa saat istirahat.' },
+    ],
+    drill: [
+      {
+        passage: ['At recess, Ayu offers Kevin half of her sandwich.', 'Kevin smiles and thanks her politely before eating it.'],
+        id: 'Saat istirahat, Ayu menawarkan Kevin setengah sandwichnya. Kevin tersenyum dan berterima kasih dengan sopan sebelum memakannya.',
+        question: 'What does Ayu offer Kevin?',
+        questionId: 'Apa yang ditawarkan Ayu ke Kevin?',
+        opts: [{ emoji: '🥪', lbl: 'Half of her sandwich', ok: true }, { emoji: '🥤', lbl: 'Her drink' }, { emoji: '✏️', lbl: 'Her pencil' }],
+      },
+      {
+        passage: ['A boy accidentally drops his books all over the hallway.', 'Kevin immediately kneels down and helps pick everything up.'],
+        id: 'Seorang anak laki-laki tidak sengaja menjatuhkan buku-bukunya di lorong. Kevin langsung berlutut dan membantu mengambil semuanya.',
+        question: 'What does Kevin do when the boy drops his books?',
+        questionId: 'Apa yang dilakukan Kevin saat anak itu menjatuhkan bukunya?',
+        opts: [{ emoji: '🤝', lbl: 'Helps pick them up', ok: true }, { emoji: '😂', lbl: 'Laughs at him' }, { emoji: '🚶', lbl: 'Walks away' }],
+      },
+    ],
+    story: [
+      'After school, Ayu tells her mom about the new student.',
+      'She describes how Kevin shared his snack with a hungry classmate, and how he helped clean up the classroom without being asked.',
+      'Ayu also remembers Kevin patiently explaining a math problem to a confused classmate three times.',
+      'Her mom smiles and asks if Ayu has made a new friend.',
+    ],
+    storyId: 'Sepulang sekolah, Ayu bercerita ke ibunya tentang murid baru itu. Dia menceritakan bagaimana Kevin berbagi camilannya dengan teman sekelas yang lapar, dan bagaimana dia membantu membersihkan kelas tanpa diminta. Ayu juga ingat Kevin dengan sabar menjelaskan soal matematika ke teman sekelas yang bingung sampai tiga kali. Ibunya tersenyum dan bertanya apakah Ayu sudah punya teman baru.',
+    question: {
+      text: 'What kind of personality does Kevin most likely have?',
+      id: 'Kira-kira, kepribadian Kevin itu seperti apa?',
+      opts: [{ emoji: '🤗', lbl: 'Kind and helpful', ok: true }, { emoji: '😠', lbl: 'Angry and rude' }, { emoji: '😴', lbl: 'Lazy and careless' }],
+    },
+  },
+  {
+    id: 'memilih-proyek-sekolah',
+    title: 'Memilih Proyek Sekolah (Choosing a School Project)',
+    scene: '🔬',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['This semester, students can choose one subject for their big project.', 'Fajri looks at the list: Science, Art, History, and Music.'], id: 'Semester ini, murid bisa memilih satu mata pelajaran untuk proyek besar mereka. Fajri melihat daftarnya: Sains, Seni, Sejarah, dan Musik.' },
+      { passage: ['His best friend Ilham already picked Music because he loves singing.', 'Fajri is still not sure what to choose.'], id: 'Sahabatnya, Ilham, sudah memilih Musik karena dia suka bernyanyi. Fajri masih belum yakin harus memilih apa.' },
+    ],
+    drill: [
+      {
+        passage: ['Fajri really enjoys mixing chemicals safely in Science class.', 'But he also loves drawing comic characters during Art class.'],
+        id: 'Fajri sangat senang mencampur bahan kimia dengan aman di kelas Sains. Tapi dia juga suka menggambar karakter komik saat kelas Seni.',
+        question: 'What does Fajri enjoy doing in Science class?',
+        questionId: 'Apa yang disukai Fajri di kelas Sains?',
+        opts: [{ emoji: '🧪', lbl: 'Mixing chemicals', ok: true }, { emoji: '🎨', lbl: 'Drawing' }, { emoji: '🎵', lbl: 'Singing' }],
+      },
+      {
+        passage: ['His teacher says the Science project needs a lot of extra time after school.', 'The Art project can be finished mostly during class hours.'],
+        id: 'Gurunya bilang proyek Sains butuh banyak waktu tambahan setelah sekolah. Proyek Seni bisa diselesaikan hampir semuanya saat jam pelajaran.',
+        question: 'Which project needs more extra time after school?',
+        questionId: 'Proyek mana yang butuh lebih banyak waktu tambahan setelah sekolah?',
+        opts: [{ emoji: '🔬', lbl: 'Science', ok: true }, { emoji: '🎨', lbl: 'Art' }, { emoji: '🎵', lbl: 'Music' }],
+      },
+    ],
+    story: [
+      'That evening, Fajri remembers he also plays football practice three times a week after school.',
+      'He counts his afternoons on his fingers and realizes he barely has any free time left.',
+      'He thinks about the comic characters he has already sketched in his notebook this week.',
+      'The next morning, Fajri walks to the sign-up sheet and writes his name under one subject.',
+    ],
+    storyId: 'Malam itu, Fajri ingat dia juga latihan sepak bola tiga kali seminggu setelah sekolah. Dia menghitung sore harinya dengan jarinya dan sadar dia hampir tidak punya waktu luang lagi. Dia memikirkan karakter komik yang sudah dia sketsa di buku catatannya minggu ini. Keesokan paginya, Fajri berjalan ke daftar pendaftaran dan menulis namanya di bawah satu mata pelajaran.',
+    question: {
+      text: 'Which project does Fajri most likely choose?',
+      id: 'Proyek mana yang kemungkinan besar dipilih Fajri?',
+      opts: [{ emoji: '🎨', lbl: 'Art', ok: true }, { emoji: '🔬', lbl: 'Science' }, { emoji: '🎵', lbl: 'Music' }],
+    },
+  },
+  {
+    id: 'menggalang-dana-sekolah',
+    title: 'Menggalang Dana Sekolah (School Fundraiser)',
+    scene: '💰',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Ayu’s class is raising money for a school library project.', 'They sell homemade cookies during recess.'], id: 'Kelas Ayu sedang menggalang dana untuk proyek perpustakaan sekolah. Mereka menjual kue buatan sendiri saat istirahat.' },
+      { passage: ['Each cookie costs one thousand rupiah.', 'Ayu keeps track of the money in a small notebook.'], id: 'Setiap kue harganya seribu rupiah. Ayu mencatat uangnya di buku catatan kecil.' },
+    ],
+    drill: [
+      {
+        passage: ['On Monday, the class sells forty cookies and raises forty thousand rupiah.', 'On Tuesday, they sell fifty cookies instead.'],
+        id: 'Hari Senin, kelas menjual empat puluh kue dan mengumpulkan empat puluh ribu rupiah. Hari Selasa, mereka menjual lima puluh kue.',
+        question: 'How many cookies does the class sell on Tuesday?',
+        questionId: 'Berapa kue yang dijual kelas hari Selasa?',
+        opts: [{ emoji: '5️⃣0️⃣', lbl: 'Fifty', ok: true }, { emoji: '4️⃣0️⃣', lbl: 'Forty' }, { emoji: '6️⃣0️⃣', lbl: 'Sixty' }],
+      },
+      {
+        passage: ['By Wednesday, the total money collected reaches ninety thousand rupiah.', 'The teacher says they need one hundred thousand rupiah for the new bookshelf.'],
+        id: 'Sampai hari Rabu, total uang yang terkumpul mencapai sembilan puluh ribu rupiah. Gurunya bilang mereka butuh seratus ribu rupiah untuk rak buku baru.',
+        question: 'How much money do they need for the bookshelf?',
+        questionId: 'Berapa uang yang mereka butuhkan untuk rak buku?',
+        opts: [{ emoji: '💯', lbl: 'One hundred thousand', ok: true }, { emoji: '9️⃣0️⃣', lbl: 'Ninety thousand' }, { emoji: '8️⃣0️⃣', lbl: 'Eighty thousand' }],
+      },
+    ],
+    story: [
+      'On Thursday morning, Ayu counts the money in the box very carefully.',
+      'She counts ninety thousand rupiah from before, plus ten new cookies sold that morning.',
+      'Each cookie is one thousand rupiah, so she adds the new money to the total.',
+      'Ayu jumps up excitedly and runs to tell her teacher the good news.',
+    ],
+    storyId: 'Kamis pagi, Ayu menghitung uang di kotak dengan sangat hati-hati. Dia menghitung sembilan puluh ribu rupiah dari sebelumnya, ditambah sepuluh kue baru yang terjual pagi itu. Setiap kue harganya seribu rupiah, jadi dia menambahkan uang barunya ke total. Ayu melompat kegirangan dan berlari memberi tahu gurunya kabar baiknya.',
+    question: {
+      text: 'Why is Ayu so excited?',
+      id: 'Kenapa Ayu sangat senang?',
+      opts: [{ emoji: '💯', lbl: 'They finally reached one hundred thousand rupiah', ok: true }, { emoji: '🍪', lbl: 'They ran out of cookies to sell' }, { emoji: '📚', lbl: 'The bookshelf arrived early' }],
+    },
+  },
+];
+
+/**
+ * Reading Explorer (7–9 th) — format KETIGA BARU `ReadingCheckTopic`
+ * (`types.ts`, `materi/reading.md` §9.2) — 1 kalimat + gambar → Benar/Salah,
+ * TTS TIDAK PERNAH (keluarga "silent reading" sama dgn `ReadingTopic`).
+ * 10 item dipetakan 1:1 dari `VOCAB_TOPICS` (Explorer) topik `kata-sifat`
+ * (Adjectives & Opposites) — domain ini SENGAJA dipilih krn tiap kata sudah
+ * py pasangan lawan kata alami (big↔small, dst), jadi `falseSentence` cukup
+ * ganti PERSIS 1 kata sifat jadi lawannya — near-miss yang masuk akal &
+ * konsisten, bukan kalimat absurd yang gampang ditebak tanpa baca.
+ *
+ * **Digenapkan 1→10 topik** (target CLAUDE.md ≥10/skill, permintaan user
+ * "materi reading di explorer masih 1... buatkan minimal 10... research ke
+ * lembaga bahasa inggris dalam negeri" — riset konfirmasi LIA GEYL: domain
+ * keluarga/uang/waktu/negara eksplisit disebut cocok utk usia 7-9,
+ * `materi/reading.md` §15) — 9 topik baru dipetakan dari SEMUA 9 domain
+ * `VOCAB_TOPICS` (Explorer) yg belum disentuh Reading (`keluarga`/`angka`/
+ * `warna`/`kesehatan`/`belanja-uang`/`waktu-harian`/`negara`/`pesta-
+ * perayaan`/`peralatan-dapur` → `cek-keluarga`/`cek-angka`/`cek-warna`/
+ * `cek-kesehatan`/`cek-uang`/`cek-waktu`/`cek-negara`/`cek-pesta`/
+ * `cek-dapur`). **Beda dari domain `kata-sifat` (adjective, py lawan kata
+ * alami), 9 domain baru ini SEMUANYA kata benda** — mekanik `falseSentence`
+ * diadaptasi: domain `warna` REUSE PERSIS pola adjective asli (`item.
+ * example.en` Vocab-nya sendiri sudah berbentuk "The X is <warna>.", false
+ * ganti warna ke warna sibling — paling natural krn warna jg py struktur
+ * deskriptif spt kata sifat); 8 domain benda murni lainnya pakai template
+ * seragam "This is a/an <benda>."/frasa natural per-domain ("I am from
+ * <negara>."/"It is <waktu>."/dst), `falseSentence` ganti KATA BENDA/FAKTA
+ * ke sibling item DALAM topik yang sama (bukan lawan kata krn tidak semua
+ * py antonim alami) — tetap "near-miss masuk akal" (kalimat gramatikal utuh,
+ * cuma 1 fakta yg salah), bukan kalimat absurd. ZERO kosakata baru
+ * diauthoring — semua kata sumbernya sudah ada di `VOCAB_TOPICS`.
+ */
+export const READING_TOPICS_EXPLORER: ReadingCheckTopic[] = [
+  {
+    id: 'baca-dan-cek',
+    title: 'Baca & Cek: Sifat Benda (Read & Check: Descriptions)',
+    scene: '🐘',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '🐘', trueSentence: 'The elephant is big.', falseSentence: 'The elephant is small.', id: 'Gajahnya besar.' },
+      { emoji: '🐭', trueSentence: 'The mouse is small.', falseSentence: 'The mouse is big.', id: 'Tikusnya kecil.' },
+      { emoji: '🐆', trueSentence: 'The cheetah is fast.', falseSentence: 'The cheetah is slow.', id: 'Citahnya cepat.' },
+      { emoji: '🐢', trueSentence: 'The turtle is slow.', falseSentence: 'The turtle is fast.', id: 'Kura-kuranya lambat.' },
+      { emoji: '🐍', trueSentence: 'The snake is long.', falseSentence: 'The snake is short.', id: 'Ularnya panjang.' },
+      { emoji: '✏️', trueSentence: 'The pencil is short.', falseSentence: 'The pencil is long.', id: 'Pensilnya pendek.' },
+      { emoji: '🪨', trueSentence: 'The rock is heavy.', falseSentence: 'The rock is light.', id: 'Batunya berat.' },
+      { emoji: '🪶', trueSentence: 'The feather is light.', falseSentence: 'The feather is heavy.', id: 'Bulunya ringan.' },
+      { emoji: '🧼', trueSentence: 'The hands are clean.', falseSentence: 'The hands are dirty.', id: 'Tangannya bersih.' },
+      { emoji: '🐷', trueSentence: 'The pig is dirty.', falseSentence: 'The pig is clean.', id: 'Babinya kotor.' },
+    ],
+  },
+  {
+    id: 'cek-keluarga',
+    title: 'Baca & Cek: Keluarga (Read & Check: Family)',
+    scene: '👩',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '👩', trueSentence: 'This is my mother.', falseSentence: 'This is my father.', id: 'Ini ibuku.' },
+      { emoji: '👨', trueSentence: 'This is my father.', falseSentence: 'This is my mother.', id: 'Ini ayahku.' },
+      { emoji: '👧', trueSentence: 'This is my sister.', falseSentence: 'This is my brother.', id: 'Ini kakak/adik perempuanku.' },
+      { emoji: '👦', trueSentence: 'This is my brother.', falseSentence: 'This is my sister.', id: 'Ini kakak/adik laki-lakiku.' },
+      { emoji: '👵', trueSentence: 'This is my grandmother.', falseSentence: 'This is my grandfather.', id: 'Ini nenekku.' },
+      { emoji: '👴', trueSentence: 'This is my grandfather.', falseSentence: 'This is my grandmother.', id: 'Ini kakekku.' },
+      { emoji: '🧔', trueSentence: 'This is my uncle.', falseSentence: 'This is my aunt.', id: 'Ini pamanku.' },
+      { emoji: '👩‍🦱', trueSentence: 'This is my aunt.', falseSentence: 'This is my uncle.', id: 'Ini bibiku.' },
+      { emoji: '🧑', trueSentence: 'This is my cousin.', falseSentence: 'This is my baby.', id: 'Ini sepupuku.' },
+      { emoji: '👶', trueSentence: 'This is my baby.', falseSentence: 'This is my cousin.', id: 'Ini bayiku.' },
+    ],
+  },
+  {
+    id: 'cek-angka',
+    title: 'Baca & Cek: Angka (Read & Check: Numbers)',
+    scene: '1️⃣',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '1️⃣', trueSentence: 'This is the number one.', falseSentence: 'This is the number two.', id: 'Ini angka satu.' },
+      { emoji: '2️⃣', trueSentence: 'This is the number two.', falseSentence: 'This is the number one.', id: 'Ini angka dua.' },
+      { emoji: '3️⃣', trueSentence: 'This is the number three.', falseSentence: 'This is the number four.', id: 'Ini angka tiga.' },
+      { emoji: '4️⃣', trueSentence: 'This is the number four.', falseSentence: 'This is the number three.', id: 'Ini angka empat.' },
+      { emoji: '5️⃣', trueSentence: 'This is the number five.', falseSentence: 'This is the number six.', id: 'Ini angka lima.' },
+      { emoji: '6️⃣', trueSentence: 'This is the number six.', falseSentence: 'This is the number five.', id: 'Ini angka enam.' },
+      { emoji: '7️⃣', trueSentence: 'This is the number seven.', falseSentence: 'This is the number eight.', id: 'Ini angka tujuh.' },
+      { emoji: '8️⃣', trueSentence: 'This is the number eight.', falseSentence: 'This is the number seven.', id: 'Ini angka delapan.' },
+      { emoji: '9️⃣', trueSentence: 'This is the number nine.', falseSentence: 'This is the number ten.', id: 'Ini angka sembilan.' },
+      { emoji: '🔟', trueSentence: 'This is the number ten.', falseSentence: 'This is the number nine.', id: 'Ini angka sepuluh.' },
+    ],
+  },
+  {
+    id: 'cek-warna',
+    title: 'Baca & Cek: Warna (Read & Check: Colors)',
+    scene: '🔴',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '🍎', trueSentence: 'The apple is red.', falseSentence: 'The apple is blue.', id: 'Apelnya merah.' },
+      { emoji: '🌤️', trueSentence: 'The sky is blue.', falseSentence: 'The sky is green.', id: 'Langitnya biru.' },
+      { emoji: '🌿', trueSentence: 'The grass is green.', falseSentence: 'The grass is yellow.', id: 'Rumputnya hijau.' },
+      { emoji: '🍌', trueSentence: 'The banana is yellow.', falseSentence: 'The banana is orange.', id: 'Pisangnya kuning.' },
+      { emoji: '🍊', trueSentence: 'The orange is orange.', falseSentence: 'The orange is purple.', id: 'Jeruknya berwarna oranye.' },
+      { emoji: '🍇', trueSentence: 'The grapes are purple.', falseSentence: 'The grapes are green.', id: 'Anggurnya ungu.' },
+      { emoji: '👗', trueSentence: 'Her dress is pink.', falseSentence: 'Her dress is black.', id: 'Gaunnya merah muda.' },
+      { emoji: '🐈‍⬛', trueSentence: 'The cat is black.', falseSentence: 'The cat is white.', id: 'Kucingnya hitam.' },
+      { emoji: '☁️', trueSentence: 'The cloud is white.', falseSentence: 'The cloud is pink.', id: 'Awannya putih.' },
+      { emoji: '🐻', trueSentence: 'The bear is brown.', falseSentence: 'The bear is red.', id: 'Beruangnya cokelat.' },
+    ],
+  },
+  {
+    id: 'cek-kesehatan',
+    title: 'Baca & Cek: Kesehatan (Read & Check: Health)',
+    scene: '🤒',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '😷', trueSentence: 'I have a cough.', falseSentence: 'I have a fever.', id: 'Aku batuk.' },
+      { emoji: '🤒', trueSentence: 'I have a fever.', falseSentence: 'I have a headache.', id: 'Aku demam.' },
+      { emoji: '🤕', trueSentence: 'I have a headache.', falseSentence: 'I have a stomachache.', id: 'Aku sakit kepala.' },
+      { emoji: '😖', trueSentence: 'I have a stomachache.', falseSentence: 'I have a cough.', id: 'Aku sakit perut.' },
+      { emoji: '🩹', trueSentence: 'I wear a bandage.', falseSentence: 'I take medicine.', id: 'Aku memakai perban.' },
+      { emoji: '💊', trueSentence: 'I take medicine.', falseSentence: 'I get an injection.', id: 'Aku minum obat.' },
+      { emoji: '💉', trueSentence: 'I get an injection.', falseSentence: 'I wear a bandage.', id: 'Aku mendapat suntikan.' },
+      { emoji: '🤧', trueSentence: 'I sneeze a lot.', falseSentence: 'I have a cough.', id: 'Aku banyak bersin.' },
+      { emoji: '🛌', trueSentence: 'I need rest.', falseSentence: 'I am healthy.', id: 'Aku butuh istirahat.' },
+      { emoji: '💪', trueSentence: 'I am healthy.', falseSentence: 'I need rest.', id: 'Aku sehat.' },
+    ],
+  },
+  {
+    id: 'cek-uang',
+    title: 'Baca & Cek: Belanja & Uang (Read & Check: Shopping & Money)',
+    scene: '💵',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '💵', trueSentence: 'This is money.', falseSentence: 'This is a coin.', id: 'Ini uang.' },
+      { emoji: '🪙', trueSentence: 'This is a coin.', falseSentence: 'This is money.', id: 'Ini koin.' },
+      { emoji: '🏷️', trueSentence: 'This is the price.', falseSentence: 'This is a receipt.', id: 'Ini harganya.' },
+      { emoji: '🧾', trueSentence: 'This is a receipt.', falseSentence: 'This is the price.', id: 'Ini struk.' },
+      { emoji: '💎', trueSentence: 'This is expensive.', falseSentence: 'This is a wallet.', id: 'Ini mahal.' },
+      { emoji: '👛', trueSentence: 'This is a wallet.', falseSentence: 'This is expensive.', id: 'Ini dompet.' },
+      { emoji: '🧺', trueSentence: 'This is a basket.', falseSentence: 'This is a cart.', id: 'Ini keranjang.' },
+      { emoji: '🛒', trueSentence: 'This is a cart.', falseSentence: 'This is a basket.', id: 'Ini troli.' },
+      { emoji: '🧑‍💼', trueSentence: 'This is a cashier.', falseSentence: 'This is a piggy bank.', id: 'Ini kasir.' },
+      { emoji: '🐷', trueSentence: 'This is a piggy bank.', falseSentence: 'This is a cashier.', id: 'Ini celengan.' },
+    ],
+  },
+  {
+    id: 'cek-waktu',
+    title: 'Baca & Cek: Waktu (Read & Check: Time)',
+    scene: '🌅',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '🌅', trueSentence: 'It is morning.', falseSentence: 'It is night.', id: 'Ini pagi hari.' },
+      { emoji: '☀️', trueSentence: 'It is afternoon.', falseSentence: 'It is evening.', id: 'Ini siang hari.' },
+      { emoji: '🌇', trueSentence: 'It is evening.', falseSentence: 'It is afternoon.', id: 'Ini sore hari.' },
+      { emoji: '🌃', trueSentence: 'It is night.', falseSentence: 'It is morning.', id: 'Ini malam hari.' },
+      { emoji: '🕛', trueSentence: 'It is noon.', falseSentence: 'It is evening.', id: 'Ini tengah hari.' },
+      { emoji: '🗓️', trueSentence: 'I see her every week.', falseSentence: 'I see her every month.', id: 'Aku menemuinya setiap minggu.' },
+      { emoji: '📅', trueSentence: 'I see her every month.', falseSentence: 'I see her every year.', id: 'Aku menemuinya setiap bulan.' },
+      { emoji: '🎊', trueSentence: 'I see her every year.', falseSentence: 'I see her every week.', id: 'Aku menemuinya setiap tahun.' },
+      { emoji: '🎂', trueSentence: 'Today is my birthday.', falseSentence: 'Today is a holiday.', id: 'Hari ini ulang tahunku.' },
+      { emoji: '🏖️', trueSentence: 'Today is a holiday.', falseSentence: 'Today is my birthday.', id: 'Hari ini hari libur.' },
+    ],
+  },
+  {
+    id: 'cek-negara',
+    title: 'Baca & Cek: Negara (Read & Check: Countries)',
+    scene: '🇮🇩',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '🇮🇩', trueSentence: 'I am from Indonesia.', falseSentence: 'I am from Japan.', id: 'Aku dari Indonesia.' },
+      { emoji: '🇯🇵', trueSentence: 'I am from Japan.', falseSentence: 'I am from Indonesia.', id: 'Aku dari Jepang.' },
+      { emoji: '🇬🇧', trueSentence: 'I am from England.', falseSentence: 'I am from France.', id: 'Aku dari Inggris.' },
+      { emoji: '🇫🇷', trueSentence: 'I am from France.', falseSentence: 'I am from England.', id: 'Aku dari Prancis.' },
+      { emoji: '🇺🇸', trueSentence: 'I am from America.', falseSentence: 'I am from Germany.', id: 'Aku dari Amerika.' },
+      { emoji: '🇩🇪', trueSentence: 'I am from Germany.', falseSentence: 'I am from America.', id: 'Aku dari Jerman.' },
+      { emoji: '🇨🇳', trueSentence: 'I am from China.', falseSentence: 'I am from Korea.', id: 'Aku dari Tiongkok.' },
+      { emoji: '🇰🇷', trueSentence: 'I am from Korea.', falseSentence: 'I am from China.', id: 'Aku dari Korea.' },
+      { emoji: '🇦🇺', trueSentence: 'I am from Australia.', falseSentence: 'I am from India.', id: 'Aku dari Australia.' },
+      { emoji: '🇮🇳', trueSentence: 'I am from India.', falseSentence: 'I am from Australia.', id: 'Aku dari India.' },
+    ],
+  },
+  {
+    id: 'cek-pesta',
+    title: 'Baca & Cek: Pesta (Read & Check: Party)',
+    scene: '🎉',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '🎉', trueSentence: 'This is a party.', falseSentence: 'This is a wish.', id: 'Ini pesta.' },
+      { emoji: '⭐', trueSentence: 'This is a wish.', falseSentence: 'This is a party.', id: 'Ini harapan.' },
+      { emoji: '🎁', trueSentence: 'This is a present.', falseSentence: 'This is a decoration.', id: 'Ini hadiah.' },
+      { emoji: '🎊', trueSentence: 'This is a decoration.', falseSentence: 'This is a present.', id: 'Ini hiasan.' },
+      { emoji: '🕯️', trueSentence: 'This is a candle.', falseSentence: 'This is a card.', id: 'Ini lilin.' },
+      { emoji: '✉️', trueSentence: 'This is a card.', falseSentence: 'This is a candle.', id: 'Ini kartu.' },
+      { emoji: '💌', trueSentence: 'This is an invitation.', falseSentence: 'This is a surprise.', id: 'Ini undangan.' },
+      { emoji: '😲', trueSentence: 'This is a surprise.', falseSentence: 'This is an invitation.', id: 'Ini kejutan.' },
+      { emoji: '🧑‍🤝‍🧑', trueSentence: 'This is a guest.', falseSentence: 'This is a celebration.', id: 'Ini tamu.' },
+      { emoji: '🥳', trueSentence: 'This is a celebration.', falseSentence: 'This is a guest.', id: 'Ini perayaan.' },
+    ],
+  },
+  {
+    id: 'cek-dapur',
+    title: 'Baca & Cek: Dapur (Read & Check: Kitchen)',
+    scene: '🍳',
+    desc: '10 kalimat',
+    checks: [
+      { emoji: '🍲', trueSentence: 'This is a pot.', falseSentence: 'This is a pan.', id: 'Ini panci.' },
+      { emoji: '🍳', trueSentence: 'This is a pan.', falseSentence: 'This is a pot.', id: 'Ini wajan.' },
+      { emoji: '🥄', trueSentence: 'This is a spoon.', falseSentence: 'This is a fork.', id: 'Ini sendok.' },
+      { emoji: '🍴', trueSentence: 'This is a fork.', falseSentence: 'This is a spoon.', id: 'Ini garpu.' },
+      { emoji: '🔪', trueSentence: 'This is a knife.', falseSentence: 'This is a plate.', id: 'Ini pisau.' },
+      { emoji: '🍽️', trueSentence: 'This is a plate.', falseSentence: 'This is a knife.', id: 'Ini piring.' },
+      { emoji: '🥣', trueSentence: 'This is a bowl.', falseSentence: 'This is a cup.', id: 'Ini mangkuk.' },
+      { emoji: '☕', trueSentence: 'This is a cup.', falseSentence: 'This is a bowl.', id: 'Ini cangkir.' },
+      { emoji: '🫖', trueSentence: 'This is a kettle.', falseSentence: 'This is a pot.', id: 'Ini ketel.' },
+      { emoji: '🥢', trueSentence: 'These are chopsticks.', falseSentence: 'These are forks.', id: 'Ini sumpit.' },
+    ],
+  },
+];
+
+/**
+ * Reading Trailblazer (12+ th, ≈B1) — 🔒 revisi user: target Trailblazer
+ * dinaikkan dari "low-effort, 1-2 modul preview" (PRD §9 lama) jadi
+ * **minimal 5 topik/skill** (CLAUDE.md "Target Kelengkapan Konten per
+ * Modul" poin 1) — TETAP lebih ringan dari 5 level lain (≥10), levelnya
+ * tetap "jalur lanjutan" opsional. TETAP format LAMA `ReadingTopic` (BUKAN
+ * tipe baru) — riset (`materi/reading.md` §9.5) TIDAK menemukan alasan kuat
+ * utk revisi mekanik penuh spt Listening dulu (lompatan Cambridge KET→PET
+ * utk Reading lebih ke "teks lebih panjang, tipe soal serupa", bukan
+ * kategori skill baru) — cukup reuse format Achiever dgn konten LEBIH berat
+ * lagi (kalimat majemuk, konektor "however/although/instead", tema B1 anak
+ * 12+: wawancara, liburan, lingkungan, teknologi, kerja sosial). Semua 10
+ * topik py `question` akhir INFERENSI (pola sama Achiever) — cerita tidak
+ * pernah menyebutkan simpulannya literal, anak gabungkan ≥2 info.
+ *
+ * **🔒 Digenapkan 5→10 topik + audit konten existing** (permintaan user
+ * "tambah 5 materi untuk level trailblazer dan audit juga materi saat ini
+ * apakah sudah relevan?", `materi/reading.md` §18) — audit menemukan gap
+ * NYATA: 5 topik pertama TIDAK PERNAH benar² pakai konektor "however"/
+ * "although" walau dokumentasi desain awal (di atas) mengklaim itu ciri
+ * pembeda utama dari Achiever — dicek via grep, cuma "but"/"instead" yg
+ * dipakai (0× "however"/"although" di 5 topik awal). **Diperbaiki**: 3 dari
+ * 5 topik lama (`liburan-yang-berubah`/`kompetisi-robot`/`proyek-
+ * lingkungan`) direvisi ringan (1 kata sambung diganti per topik, MAKNA
+ * sama, opsi jawaban/logic TIDAK diubah) supaya korpusnya benar² py variasi
+ * konektor B1 spt yg diklaim. **5 topik BARU** (riset WebSearch: Cambridge
+ * B1 Preliminary/PET tema resmi remaja — sports & fitness, art & music,
+ * food & cooking, friends & parties, money & saving/future plans, SEMUA
+ * tema yg belum disentuh 5 topik lama) SENGAJA py "however"/"although"/
+ * "even though" GENUINE sejak awal ditulis (bukan retrofit) + struktur
+ * kalimat lebih kompleks (klausa relatif "who is much taller", klausa
+ * konsesif) supaya benar² lebih berat dari Achiever, bukan cuma beda tema:
+ * `seleksi-tim-basket`, `pameran-seni-sekolah`, `kelas-memasak-mingguan`,
+ * `pesta-kejutan-sahabat`, `menabung-untuk-sepeda` (yg terakhir REUSE pola
+ * "perhitungan matematika aktual" dari Achiever `menggalang-dana-sekolah` —
+ * anak hitung sendiri selisih 1.600.000-1.400.000=200.000, bukan re-baca
+ * fakta). **Deviasi SADAR dari target baku Trailblazer (≥5)** — user
+ * eksplisit minta +5 lagi, preseden sama dgn Listening/Grammar Trailblazer
+ * yg jg dibangun ke 10/10 penuh atas permintaan eksplisit sebelumnya.
+ */
+export const READING_TOPICS_TRAILBLAZER: ReadingTopic[] = [
+  {
+    id: 'wawancara-radio-sekolah',
+    title: 'Wawancara Radio Sekolah (School Radio Interview)',
+    scene: '🎙️',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Sarah joins the school radio club this semester.', 'She wants to interview interesting students and teachers.'], id: 'Sarah bergabung dengan klub radio sekolah semester ini. Dia ingin mewawancarai murid dan guru yang menarik.' },
+      { passage: ['Her first interview is with the school’s chess champion.', 'She prepares five questions the night before.'], id: 'Wawancara pertamanya dengan juara catur sekolah. Dia menyiapkan lima pertanyaan malam sebelumnya.' },
+    ],
+    drill: [
+      {
+        passage: ['Sarah plans to record the interview in the library, but it is too noisy there.', 'She decides to use the music room instead because it is quiet.'],
+        id: 'Sarah berencana merekam wawancara di perpustakaan, tapi di sana terlalu berisik. Dia memutuskan memakai ruang musik karena tenang.',
+        question: 'Where does Sarah record the interview?',
+        questionId: 'Di mana Sarah merekam wawancaranya?',
+        opts: [{ emoji: '🎵', lbl: 'The music room', ok: true }, { emoji: '📚', lbl: 'The library' }, { emoji: '🏫', lbl: 'The classroom' }],
+      },
+      {
+        passage: ['The chess champion says he practices every day after school.', 'He also says weekends are for resting, not practicing.'],
+        id: 'Juara catur itu bilang dia berlatih setiap hari sepulang sekolah. Dia juga bilang akhir pekan untuk istirahat, bukan berlatih.',
+        question: 'When does the chess champion practice?',
+        questionId: 'Kapan juara catur itu berlatih?',
+        opts: [{ emoji: '📅', lbl: 'Every day after school', ok: true }, { emoji: '🌞', lbl: 'On weekends' }, { emoji: '🌙', lbl: 'Only at night' }],
+      },
+    ],
+    story: [
+      'After the interview, Sarah listens to the recording carefully.',
+      'She notices her voice sounds nervous at the beginning but calmer later.',
+      'Her teacher says this is normal for a first interview and tells her to keep practicing.',
+      'Sarah feels proud because she finished her very first project for the radio club.',
+    ],
+    storyId: 'Setelah wawancara, Sarah mendengarkan rekamannya dengan saksama. Dia sadar suaranya terdengar gugup di awal tapi lebih tenang belakangan. Gurunya bilang ini wajar untuk wawancara pertama dan menyuruhnya terus berlatih. Sarah merasa bangga karena sudah menyelesaikan proyek pertamanya untuk klub radio.',
+    question: {
+      text: 'How does Sarah probably feel about her first interview by the end of the story?',
+      id: 'Bagaimana perasaan Sarah tentang wawancara pertamanya di akhir cerita?',
+      opts: [{ emoji: '😊', lbl: 'Proud, even though it wasn’t perfect', ok: true }, { emoji: '😢', lbl: 'Sad because she failed' }, { emoji: '😠', lbl: 'Angry at her teacher' }],
+    },
+  },
+  {
+    id: 'liburan-yang-berubah',
+    title: 'Liburan yang Berubah (A Holiday That Changed)',
+    scene: '🌦️',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['The Putra family plans a beach holiday for the weekend.', 'They pack swimsuits, sunscreen, and beach towels.'], id: 'Keluarga Putra merencanakan liburan pantai akhir pekan. Mereka mengemas baju renang, tabir surya, dan handuk pantai.' },
+      { passage: ['On Saturday morning, the weather forecast shows heavy rain.', 'The family must change their plan quickly.'], id: 'Sabtu pagi, ramalan cuaca menunjukkan hujan deras. Keluarga itu harus mengubah rencana dengan cepat.' },
+    ],
+    drill: [
+      {
+        passage: ['Instead of the beach, they decide to visit a science museum in the city.', 'Rudi, the youngest, is disappointed at first, however he changes his mind after seeing the dinosaur exhibit.'],
+        id: 'Alih-alih ke pantai, mereka memutuskan mengunjungi museum sains di kota. Rudi, yang paling kecil, kecewa di awal, tapi dia berubah pikiran setelah melihat pameran dinosaurus.',
+        question: 'Where does the family go instead of the beach?',
+        questionId: 'Ke mana keluarga itu pergi selain ke pantai?',
+        opts: [{ emoji: '🏛️', lbl: 'A science museum', ok: true }, { emoji: '🎬', lbl: 'A cinema' }, { emoji: '🛍️', lbl: 'A shopping mall' }],
+      },
+      {
+        passage: ['The museum has a special show about space at two o’clock.', 'The family arrives at one thirty so they have time to look around first.'],
+        id: 'Museum itu punya pertunjukan khusus tentang luar angkasa jam dua siang. Keluarga itu tiba jam satu setengah supaya sempat melihat-lihat dulu.',
+        question: 'What time does the space show start?',
+        questionId: 'Jam berapa pertunjukan luar angkasanya dimulai?',
+        opts: [{ emoji: '🕑', lbl: 'Two o’clock', ok: true }, { emoji: '🕐', lbl: 'One o’clock' }, { emoji: '🕜', lbl: 'One thirty' }],
+      },
+    ],
+    story: [
+      'The space show turns out to be the best part of the day.',
+      'Rudi asks so many questions that the guide invites him to press the buttons on the model rocket.',
+      'That night, Rudi tells his parents he wants to be an astronaut someday.',
+      'His parents smile and say the rainy day turned into a lucky day after all.',
+    ],
+    storyId: 'Pertunjukan luar angkasa ternyata jadi bagian terbaik hari itu. Rudi bertanya begitu banyak sampai pemandunya mengajaknya menekan tombol pada model roket. Malam itu, Rudi bilang ke orang tuanya dia ingin jadi astronaut suatu hari nanti. Orang tuanya tersenyum dan bilang hari hujan itu ternyata berubah jadi hari yang beruntung.',
+    question: {
+      text: 'Why do the parents call it a lucky day?',
+      id: 'Mengapa orang tuanya menyebutnya hari yang beruntung?',
+      opts: [{ emoji: '🚀', lbl: 'The rain led them to a trip Rudi loved', ok: true }, { emoji: '💰', lbl: 'They won some money' }, { emoji: '🏖️', lbl: 'The rain stopped and they went to the beach' }],
+    },
+  },
+  {
+    id: 'proyek-lingkungan',
+    title: 'Proyek Lingkungan (Environmental Project)',
+    scene: '♻️',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Dea’s class starts a recycling project this month.', 'Every student brings used paper and plastic bottles from home.'], id: 'Kelas Dea memulai proyek daur ulang bulan ini. Setiap murid membawa kertas bekas dan botol plastik dari rumah.' },
+      { passage: ['They sort the materials into different bins.', 'Paper goes in one bin, and plastic goes in another.'], id: 'Mereka memilah bahan ke tempat sampah berbeda. Kertas masuk ke satu tempat, plastik ke tempat lain.' },
+    ],
+    drill: [
+      {
+        passage: ['Dea’s group collects the most plastic bottles, although another group collects the most paper.', 'The teacher says both groups did equally well.'],
+        id: 'Kelompok Dea mengumpulkan botol plastik paling banyak, meski kelompok lain mengumpulkan kertas paling banyak. Gurunya bilang kedua kelompok sama-sama hebat.',
+        question: 'What does Dea’s group collect the most of?',
+        questionId: 'Apa yang paling banyak dikumpulkan kelompok Dea?',
+        opts: [{ emoji: '🍾', lbl: 'Plastic bottles', ok: true }, { emoji: '📄', lbl: 'Paper' }, { emoji: '🥫', lbl: 'Cans' }],
+      },
+      {
+        passage: ['The class uses the collected paper to make new notebooks.', 'They use the plastic bottles to build a small greenhouse for the school garden.'],
+        id: 'Kelas itu memakai kertas yang terkumpul untuk membuat buku catatan baru. Mereka memakai botol plastik untuk membangun rumah kaca kecil di kebun sekolah.',
+        question: 'What do they build with the plastic bottles?',
+        questionId: 'Apa yang mereka bangun dari botol plastik?',
+        opts: [{ emoji: '🏡', lbl: 'A small greenhouse', ok: true }, { emoji: '📓', lbl: 'Notebooks' }, { emoji: '🎨', lbl: 'A painting' }],
+      },
+    ],
+    story: [
+      'At the end of the month, the school invites parents to see the greenhouse.',
+      'Dea explains how the project reduced trash and grew fresh vegetables at the same time.',
+      'One parent asks if other classes can join next semester.',
+      'The principal agrees and says the whole school will start recycling next year.',
+    ],
+    storyId: 'Di akhir bulan, sekolah mengundang orang tua melihat rumah kaca itu. Dea menjelaskan bagaimana proyek ini mengurangi sampah sekaligus menumbuhkan sayuran segar. Seorang orang tua bertanya apakah kelas lain bisa ikut semester depan. Kepala sekolah setuju dan bilang seluruh sekolah akan mulai daur ulang tahun depan.',
+    question: {
+      text: 'What will most likely happen next semester?',
+      id: 'Apa yang kemungkinan besar terjadi semester depan?',
+      opts: [{ emoji: '🏫', lbl: 'More classes will join the recycling project', ok: true }, { emoji: '🛑', lbl: 'The project will stop completely' }, { emoji: '🏖️', lbl: 'The school will go on a trip instead' }],
+    },
+  },
+  {
+    id: 'kompetisi-robot',
+    title: 'Kompetisi Robot (Robotics Competition)',
+    scene: '🤖',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Bayu and his team build a small robot for a school competition.', 'The robot must move through a maze without touching the walls.'], id: 'Bayu dan timnya membangun robot kecil untuk lomba sekolah. Robot itu harus melewati labirin tanpa menyentuh dinding.' },
+      { passage: ['They practice for three weeks before the competition day.', 'Bayu is in charge of programming the robot’s sensors.'], id: 'Mereka berlatih tiga minggu sebelum hari lomba. Bayu bertanggung jawab memprogram sensor robotnya.' },
+    ],
+    drill: [
+      {
+        passage: ['During practice, the robot works perfectly on a flat floor.', 'However, on the competition day, the floor has small bumps that confuse the sensors.'],
+        id: 'Saat latihan, robotnya bekerja sempurna di lantai rata. Namun, pada hari lomba, lantainya punya benjolan kecil yang membingungkan sensornya.',
+        question: 'What confuses the robot’s sensors on competition day?',
+        questionId: 'Apa yang membingungkan sensor robot pada hari lomba?',
+        opts: [{ emoji: '🪨', lbl: 'Small bumps on the floor', ok: true }, { emoji: '💡', lbl: 'Bright lights' }, { emoji: '🔊', lbl: 'Loud noise' }],
+      },
+      {
+        passage: ['Bayu quickly changes one line of the program before their turn.', 'His teammate Wati checks the wheels one more time.'],
+        id: 'Bayu cepat-cepat mengubah satu baris program sebelum giliran mereka. Rekan timnya Wati memeriksa rodanya sekali lagi.',
+        question: 'What does Bayu do before their turn?',
+        questionId: 'Apa yang dilakukan Bayu sebelum giliran mereka?',
+        opts: [{ emoji: '💻', lbl: 'Changes the program', ok: true }, { emoji: '🔧', lbl: 'Checks the wheels' }, { emoji: '🔋', lbl: 'Charges the battery' }],
+      },
+    ],
+    story: [
+      'When it is finally their turn, the robot moves slowly but carefully through the maze.',
+      'It stops once, but Bayu’s quick fix from earlier helps it continue.',
+      'The team does not win first place, but they finish the maze completely, unlike two other teams.',
+      'Bayu says the competition taught him that mistakes can be fixed if you stay calm.',
+    ],
+    storyId: 'Ketika akhirnya giliran mereka, robotnya bergerak pelan tapi hati-hati melewati labirin. Robotnya berhenti sekali, tapi perbaikan cepat Bayu tadi membantunya terus jalan. Tim itu tidak menang juara satu, tapi mereka menyelesaikan labirinnya penuh, tidak seperti dua tim lain. Bayu bilang lomba ini mengajarkannya bahwa kesalahan bisa diperbaiki kalau tetap tenang.',
+    question: {
+      text: 'What lesson does Bayu learn from the competition?',
+      id: 'Pelajaran apa yang didapat Bayu dari lomba ini?',
+      opts: [{ emoji: '🧠', lbl: 'Mistakes can be fixed if you stay calm', ok: true }, { emoji: '🏆', lbl: 'Winning is the only thing that matters' }, { emoji: '😴', lbl: 'Practicing is not necessary' }],
+    },
+  },
+  {
+    id: 'kerja-sukarela',
+    title: 'Hari Kerja Sukarela (Volunteer Day)',
+    scene: '🤝',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Nina’s school organizes a volunteer day at a local animal shelter.', 'Students help clean cages and feed the animals.'], id: 'Sekolah Nina mengadakan hari sukarelawan di penampungan hewan setempat. Murid-murid membantu membersihkan kandang dan memberi makan hewan.' },
+      { passage: ['Nina chooses to help with the cats because she loves them the most.', 'Her friend Tio prefers to walk the dogs.'], id: 'Nina memilih membantu kucing karena dia paling menyukainya. Temannya Tio lebih suka mengajak anjing jalan-jalan.' },
+    ],
+    drill: [
+      {
+        passage: ['Nina notices one shy cat that hides in the corner all morning.', 'She sits quietly near the cage until the cat slowly comes closer.'],
+        id: 'Nina memperhatikan seekor kucing pemalu yang bersembunyi di sudut sepanjang pagi. Dia duduk diam di dekat kandang sampai kucingnya perlahan mendekat.',
+        question: 'What does the shy cat do at first?',
+        questionId: 'Apa yang dilakukan kucing pemalu itu di awal?',
+        opts: [{ emoji: '🙈', lbl: 'Hides in the corner', ok: true }, { emoji: '😼', lbl: 'Comes closer immediately' }, { emoji: '😴', lbl: 'Sleeps the whole time' }],
+      },
+      {
+        passage: ['Tio walks three dogs before lunch and two more after lunch.', 'He says the energetic puppy is the hardest to walk.'],
+        id: 'Tio mengajak jalan tiga anjing sebelum makan siang dan dua lagi setelahnya. Dia bilang anak anjing yang enerjik itu paling sulit diajak jalan.',
+        question: 'How many dogs does Tio walk before lunch?',
+        questionId: 'Berapa anjing yang diajak jalan Tio sebelum makan siang?',
+        opts: [{ emoji: '3️⃣', lbl: 'Three', ok: true }, { emoji: '2️⃣', lbl: 'Two' }, { emoji: '5️⃣', lbl: 'Five' }],
+      },
+    ],
+    story: [
+      'By the afternoon, the shy cat finally lets Nina pet her.',
+      'Nina feels very happy and asks the shelter staff if she can visit again next month.',
+      'The staff member smiles and says volunteers like Nina help the animals trust people again.',
+      'On the bus home, Nina tells Tio she wants to volunteer every month from now on.',
+    ],
+    storyId: 'Menjelang sore, kucing pemalu itu akhirnya membiarkan Nina mengelusnya. Nina merasa sangat senang dan bertanya ke staf penampungan apakah dia boleh berkunjung lagi bulan depan. Stafnya tersenyum dan bilang sukarelawan seperti Nina membantu hewan-hewan belajar percaya lagi pada manusia. Di bus pulang, Nina bilang ke Tio dia ingin jadi sukarelawan setiap bulan mulai sekarang.',
+    question: {
+      text: 'Why does the staff member say volunteers like Nina are important?',
+      id: 'Mengapa staf itu bilang sukarelawan seperti Nina itu penting?',
+      opts: [{ emoji: '🐾', lbl: 'They help animals learn to trust people', ok: true }, { emoji: '🧹', lbl: 'They clean the shelter faster' }, { emoji: '💰', lbl: 'They bring money to the shelter' }],
+    },
+  },
+  {
+    id: 'seleksi-tim-basket',
+    title: 'Seleksi Tim Basket (Basketball Team Tryouts)',
+    scene: '🏀',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Vino has been practicing basketball every morning for a month, hoping to make the school team this year.', 'Although he is not the tallest player trying out, he is one of the fastest.'], id: 'Vino sudah berlatih basket setiap pagi selama sebulan, berharap masuk tim sekolah tahun ini. Meskipun dia bukan pemain tertinggi yang ikut seleksi, dia salah satu yang tercepat.' },
+      { passage: ['The coach announces that tryouts will have two rounds: a fitness test and a skills test.', 'Vino feels confident about the fitness test, but nervous about shooting free throws.'], id: 'Pelatihnya mengumumkan seleksi akan ada dua babak: tes kebugaran dan tes keterampilan. Vino merasa percaya diri soal tes kebugaran, tapi gugup soal melempar bola bebas.' },
+    ],
+    drill: [
+      {
+        passage: ['Vino finishes the fitness test in record time, however his legs feel shaky afterward from the effort.', 'He drinks some water and stretches before the skills test begins.'],
+        id: 'Vino menyelesaikan tes kebugaran dengan waktu rekor, namun kakinya terasa gemetar setelahnya karena usahanya. Dia minum air dan meregangkan otot sebelum tes keterampilan dimulai.',
+        question: 'How does Vino feel after the fitness test?',
+        questionId: 'Bagaimana perasaan Vino setelah tes kebugaran?',
+        opts: [{ emoji: '🦵', lbl: 'His legs feel shaky', ok: true }, { emoji: '⚡', lbl: 'Full of energy' }, { emoji: '😴', lbl: 'Bored' }],
+      },
+      {
+        passage: ['During the skills test, Vino makes seven out of ten free throws, although his hands are still shaking a little.', 'The player before him only makes four out of ten.'],
+        id: 'Saat tes keterampilan, Vino memasukkan tujuh dari sepuluh lemparan bebas, walaupun tangannya masih sedikit gemetar. Pemain sebelum dia cuma memasukkan empat dari sepuluh.',
+        question: 'How many free throws does Vino make?',
+        questionId: 'Berapa lemparan bebas yang berhasil dimasukkan Vino?',
+        opts: [{ emoji: '7️⃣', lbl: 'Seven', ok: true }, { emoji: '4️⃣', lbl: 'Four' }, { emoji: '🔟', lbl: 'Ten' }],
+      },
+    ],
+    story: [
+      'That evening, the coach posts the team list on the school notice board.',
+      'Vino’s friend Doni, who is much taller, does not see his own name on the list, however he claps for Vino when he sees his friend’s name there.',
+      'The coach later explains that the team needed more players who could run fast and pass accurately, not just players who were tall.',
+      'Vino promises Doni that he will ask the coach if Doni can join the practice sessions anyway.',
+    ],
+    storyId: 'Malam itu, pelatih menempel daftar tim di papan pengumuman sekolah. Teman Vino, Doni, yang jauh lebih tinggi, tidak melihat namanya sendiri di daftar itu, namun dia tetap bertepuk tangan untuk Vino saat melihat nama temannya di sana. Pelatihnya kemudian menjelaskan tim butuh lebih banyak pemain yang bisa berlari cepat dan mengoper dengan akurat, bukan cuma pemain yang tinggi. Vino berjanji ke Doni akan bertanya ke pelatih apakah Doni boleh ikut sesi latihan meski begitu.',
+    question: {
+      text: 'Why does Vino make the team instead of Doni?',
+      id: 'Kenapa Vino masuk tim, bukan Doni?',
+      opts: [{ emoji: '🏃', lbl: 'The coach values speed and passing over height', ok: true }, { emoji: '📏', lbl: 'Doni is too tall for the team' }, { emoji: '😢', lbl: 'Doni decided not to try out' }],
+    },
+  },
+  {
+    id: 'pameran-seni-sekolah',
+    title: 'Pameran Seni Sekolah (School Art Exhibition)',
+    scene: '🎨',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Every year, the school holds an art exhibition where students display their best paintings.', 'Citra has been working on a large painting of her grandmother’s garden for three weeks.'], id: 'Setiap tahun, sekolah mengadakan pameran seni tempat murid memamerkan lukisan terbaik mereka. Citra sudah mengerjakan lukisan besar tentang kebun neneknya selama tiga minggu.' },
+      { passage: ['Although painting is not her strongest subject, Citra loves spending time on details like flower petals and leaves.', 'Her art teacher encourages her to enter the exhibition this year.'], id: 'Meskipun melukis bukan pelajaran terkuatnya, Citra suka menghabiskan waktu untuk detail seperti kelopak bunga dan daun. Guru senirya mendorongnya untuk ikut pameran tahun ini.' },
+    ],
+    drill: [
+      {
+        passage: ['On the day before the exhibition, Citra accidentally spills orange paint on the corner of her painting.', 'She panics for a moment, however she quickly decides to turn the stain into a small sun in the sky.'],
+        id: 'Sehari sebelum pameran, Citra tidak sengaja menumpahkan cat oranye di sudut lukisannya. Dia panik sesaat, namun dia cepat memutuskan mengubah nodanya jadi matahari kecil di langit.',
+        question: 'What does Citra turn the paint stain into?',
+        questionId: 'Noda catnya diubah jadi apa oleh Citra?',
+        opts: [{ emoji: '☀️', lbl: 'A small sun', ok: true }, { emoji: '🌸', lbl: 'A flower' }, { emoji: '🐦', lbl: 'A bird' }],
+      },
+      {
+        passage: ['At the exhibition, three teachers walk past Citra’s painting without stopping.', 'But the fourth teacher, the school principal, stops and stares at it for almost a minute.'],
+        id: 'Di pameran, tiga guru berjalan melewati lukisan Citra tanpa berhenti. Tapi guru keempat, kepala sekolahnya, berhenti dan menatapnya hampir satu menit.',
+        question: 'Who stops to look at Citra’s painting for almost a minute?',
+        questionId: 'Siapa yang berhenti melihat lukisan Citra hampir satu menit?',
+        opts: [{ emoji: '🧑‍💼', lbl: 'The principal', ok: true }, { emoji: '🎨', lbl: 'An art teacher' }, { emoji: '🧑‍🎓', lbl: 'A classmate' }],
+      },
+    ],
+    story: [
+      'The principal finally speaks and asks Citra about the small sun in the corner of the painting.',
+      'Citra explains honestly that it started as a mistake, although she tried her best to make it look natural.',
+      'The principal smiles and says that turning mistakes into something beautiful is exactly what good artists do.',
+      'A week later, Citra’s painting is chosen to hang permanently in the school library.',
+    ],
+    storyId: 'Kepala sekolah akhirnya bicara dan bertanya ke Citra tentang matahari kecil di sudut lukisannya. Citra menjelaskan dengan jujur itu awalnya kesalahan, meski dia berusaha sebaik mungkin membuatnya terlihat alami. Kepala sekolah tersenyum dan bilang mengubah kesalahan jadi sesuatu yang indah itu persis yang dilakukan seniman hebat. Seminggu kemudian, lukisan Citra terpilih untuk dipajang permanen di perpustakaan sekolah.',
+    question: {
+      text: 'Why is Citra’s painting chosen for the library?',
+      id: 'Kenapa lukisan Citra dipilih untuk perpustakaan?',
+      opts: [{ emoji: '🎨', lbl: 'The principal admires how she handled her mistake creatively', ok: true }, { emoji: '👵', lbl: 'It is the only painting about a grandmother' }, { emoji: '🖌️', lbl: 'It is the biggest painting in the exhibition' }],
+    },
+  },
+  {
+    id: 'kelas-memasak-mingguan',
+    title: 'Kelas Memasak Mingguan (Weekly Cooking Class)',
+    scene: '🍳',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Every Friday afternoon, Yoga joins an after-school cooking class with his classmates.', 'This week, the class is learning how to make traditional soto soup.'], id: 'Setiap Jumat siang, Yoga ikut kelas memasak sepulang sekolah bersama teman-teman sekelasnya. Minggu ini, kelasnya belajar membuat soto tradisional.' },
+      { passage: ['The teacher explains that soto recipes are different in almost every region of Indonesia.', 'Yoga is paired with his classmate Mira to cook together.'], id: 'Gurunya menjelaskan resep soto berbeda-beda di hampir setiap daerah di Indonesia. Yoga dipasangkan dengan teman sekelasnya, Mira, untuk memasak bersama.' },
+    ],
+    drill: [
+      {
+        passage: ['Mira wants to add a lot of chili to their soto, however Yoga reminds her that some classmates cannot eat spicy food.', 'They agree to add the chili separately as a side condiment instead.'],
+        id: 'Mira ingin menambahkan banyak cabai ke soto mereka, namun Yoga mengingatkan beberapa teman sekelas tidak bisa makan pedas. Mereka sepakat menambahkan cabainya terpisah sebagai sambal saja.',
+        question: 'How do Yoga and Mira decide to serve the chili?',
+        questionId: 'Bagaimana Yoga dan Mira memutuskan menyajikan cabainya?',
+        opts: [{ emoji: '🌶️', lbl: 'As a separate side condiment', ok: true }, { emoji: '🍲', lbl: 'Mixed into the soup' }, { emoji: '🚫', lbl: 'Not at all' }],
+      },
+      {
+        passage: ['Although the recipe says to cook the broth for one hour, Yoga and Mira only have thirty minutes left before class ends.', 'They turn up the heat slightly to make the broth ready faster.'],
+        id: 'Meskipun resepnya bilang merebus kaldu selama satu jam, Yoga dan Mira cuma punya sisa waktu tiga puluh menit sebelum kelas berakhir. Mereka membesarkan apinya sedikit supaya kaldunya lebih cepat siap.',
+        question: 'How much time do Yoga and Mira have left before class ends?',
+        questionId: 'Berapa sisa waktu Yoga dan Mira sebelum kelas berakhir?',
+        opts: [{ emoji: '⏱️', lbl: 'Thirty minutes', ok: true }, { emoji: '⏰', lbl: 'One hour' }, { emoji: '⌛', lbl: 'Ten minutes' }],
+      },
+    ],
+    story: [
+      'When the teacher tastes every group’s soto, she pauses longest at Yoga and Mira’s bowl.',
+      'She says the broth tastes rich and well-balanced, even though it was cooked in less time than the recipe suggested.',
+      'Yoga admits they were worried the shortcut would ruin the flavor.',
+      'The teacher laughs and says sometimes cooks discover better methods by accident, under pressure.',
+    ],
+    storyId: 'Ketika gurunya mencicipi soto setiap kelompok, dia berhenti paling lama di mangkuk Yoga dan Mira. Dia bilang kaldunya terasa kaya dan seimbang, meskipun dimasak dalam waktu lebih singkat dari yang disarankan resep. Yoga mengakui mereka khawatir jalan pintas itu akan merusak rasanya. Gurunya tertawa dan bilang terkadang juru masak menemukan cara yang lebih baik secara tidak sengaja, di bawah tekanan.',
+    question: {
+      text: 'What does the teacher’s reaction suggest about Yoga and Mira’s soto?',
+      id: 'Apa yang tersirat dari reaksi gurunya soal soto Yoga dan Mira?',
+      opts: [{ emoji: '😋', lbl: 'It turned out surprisingly delicious despite the shortcut', ok: true }, { emoji: '🤢', lbl: 'It tasted bad because it cooked too fast' }, { emoji: '😐', lbl: 'It tasted exactly the same as everyone else’s' }],
+    },
+  },
+  {
+    id: 'pesta-kejutan-sahabat',
+    title: 'Pesta Kejutan untuk Sahabat (A Surprise Party for a Friend)',
+    scene: '🎉',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Nadia wants to plan a surprise birthday party for her best friend, Zahra.', 'She asks five other classmates to help keep the secret.'], id: 'Nadia ingin merencanakan pesta ulang tahun kejutan untuk sahabatnya, Zahra. Dia meminta lima teman sekelas lain untuk membantu menjaga rahasianya.' },
+      { passage: ['The plan is to invite Zahra to a fake study group, however the real party will be waiting at Nadia’s house.', 'Everyone promises not to say a single word to Zahra.'], id: 'Rencananya adalah mengundang Zahra ke kelompok belajar palsu, padahal pesta sungguhannya sudah menunggu di rumah Nadia. Semua orang berjanji tidak akan bilang sepatah kata pun ke Zahra.' },
+    ],
+    drill: [
+      {
+        passage: ['Two days before the party, one classmate almost tells Zahra by accident, although he stops himself just in time.', 'Nadia reminds everyone again to be extra careful.'],
+        id: 'Dua hari sebelum pesta, seorang teman sekelas hampir memberi tahu Zahra tanpa sengaja, meski dia menahan diri tepat waktu. Nadia mengingatkan semua orang lagi untuk lebih hati-hati.',
+        question: 'What almost happens two days before the party?',
+        questionId: 'Apa yang hampir terjadi dua hari sebelum pesta?',
+        opts: [{ emoji: '🤭', lbl: 'A classmate almost tells the secret', ok: true }, { emoji: '🚫', lbl: 'The party gets cancelled' }, { emoji: '💌', lbl: 'Zahra finds an invitation' }],
+      },
+      {
+        passage: ['On the day of the party, Zahra suspects something is strange because all her friends are busy at the same time.', 'She decides not to ask any questions and just waits to see what happens.'],
+        id: 'Pada hari pestanya, Zahra curiga ada yang aneh karena semua temannya sibuk di waktu yang sama. Dia memutuskan tidak bertanya apa-apa dan cuma menunggu apa yang akan terjadi.',
+        question: 'What does Zahra decide to do about her suspicion?',
+        questionId: 'Apa yang diputuskan Zahra soal kecurigaannya?',
+        opts: [{ emoji: '⏳', lbl: 'Wait and see what happens', ok: true }, { emoji: '❓', lbl: 'Ask her friends directly' }, { emoji: '🚫', lbl: 'Cancel the study group' }],
+      },
+    ],
+    story: [
+      'When Zahra walks into Nadia’s living room expecting a boring study session, the lights suddenly turn on and everyone shouts, “Surprise!”',
+      'Zahra freezes for a second, and then her eyes fill with tears of joy.',
+      'She later tells Nadia she had actually guessed something was happening, however she never imagined it would be this big.',
+      'Nadia smiles and says keeping the secret for two whole weeks was the hardest part.',
+    ],
+    storyId: 'Ketika Zahra masuk ke ruang tamu Nadia sambil menyangka akan ada sesi belajar yang membosankan, lampunya tiba-tiba menyala dan semua orang berteriak, "Kejutan!" Zahra membeku sesaat, lalu matanya berkaca-kaca karena bahagia. Belakangan dia bilang ke Nadia sebenarnya dia sudah menduga ada sesuatu yang terjadi, namun dia tidak pernah membayangkan akan sebesar ini. Nadia tersenyum dan bilang menjaga rahasia selama dua minggu penuh adalah bagian tersulit.',
+    question: {
+      text: 'What was the hardest part of the surprise for Nadia?',
+      id: 'Apa bagian tersulit dari kejutan itu bagi Nadia?',
+      opts: [{ emoji: '🤫', lbl: 'Keeping the secret for two weeks', ok: true }, { emoji: '💸', lbl: 'Paying for the decorations' }, { emoji: '📞', lbl: 'Inviting all the classmates' }],
+    },
+  },
+  {
+    id: 'menabung-untuk-sepeda',
+    title: 'Menabung untuk Sepeda Baru (Saving for a New Bike)',
+    scene: '🚲',
+    desc: '2 bacaan pendek',
+    primer: [
+      { passage: ['Arya has wanted a new mountain bike for months, however the one he likes costs one million five hundred thousand rupiah.', 'He decides to save his allowance instead of asking his parents to buy it for him.'], id: 'Arya sudah ingin sepeda gunung baru selama berbulan-bulan, namun yang dia suka harganya satu juta lima ratus ribu rupiah. Dia memutuskan menabung uang jajannya alih-alih meminta orang tuanya membelikannya.' },
+      { passage: ['His parents give him ten thousand rupiah a day, but Arya usually spends half of it on snacks.', 'He decides to change his habit starting this week.'], id: 'Orang tuanya memberinya sepuluh ribu rupiah sehari, tapi Arya biasanya menghabiskan setengahnya untuk jajan. Dia memutuskan mengubah kebiasaannya mulai minggu ini.' },
+    ],
+    drill: [
+      {
+        passage: ['In the first month, Arya saves two hundred thousand rupiah, although he still buys snacks twice a week.', 'He keeps the money in a locked box under his bed.'],
+        id: 'Bulan pertama, Arya menabung dua ratus ribu rupiah, meski dia masih jajan dua kali seminggu. Dia menyimpan uangnya di kotak terkunci di bawah tempat tidurnya.',
+        question: 'How much does Arya save in the first month?',
+        questionId: 'Berapa yang ditabung Arya di bulan pertama?',
+        opts: [{ emoji: '💰', lbl: 'Two hundred thousand', ok: true }, { emoji: '💵', lbl: 'One hundred thousand' }, { emoji: '💴', lbl: 'Three hundred thousand' }],
+      },
+      {
+        passage: ['Arya’s neighbor offers to pay him to water the plants every morning before school.', 'Arya agrees, even though it means waking up fifteen minutes earlier.'],
+        id: 'Tetangga Arya menawarkan membayarnya untuk menyiram tanaman setiap pagi sebelum sekolah. Arya setuju, meski itu berarti bangun lima belas menit lebih awal.',
+        question: 'What job does Arya’s neighbor offer him?',
+        questionId: 'Pekerjaan apa yang ditawarkan tetangga Arya?',
+        opts: [{ emoji: '🌱', lbl: 'Watering plants', ok: true }, { emoji: '🚗', lbl: 'Washing the car' }, { emoji: '🐕', lbl: 'Walking the dog' }],
+      },
+    ],
+    story: [
+      'After three months of saving allowance and watering plants, Arya counts his money one evening.',
+      'He has exactly one million four hundred thousand rupiah, however the bike he wants now costs one million six hundred thousand because the price went up.',
+      'Arya feels disappointed for a moment, but his older sister offers to lend him the difference until his next birthday.',
+      'Arya thanks his sister and promises to pay her back with his allowance over the next two months.',
+    ],
+    storyId: 'Setelah tiga bulan menabung uang jajan dan menyiram tanaman, suatu malam Arya menghitung uangnya. Dia punya tepat satu juta empat ratus ribu rupiah, namun sepeda yang dia inginkan sekarang harganya satu juta enam ratus ribu karena harganya naik. Arya merasa kecewa sesaat, tapi kakak perempuannya menawarkan meminjamkan selisihnya sampai ulang tahunnya berikutnya. Arya berterima kasih ke kakaknya dan berjanji akan membayarnya kembali dengan uang jajannya selama dua bulan ke depan.',
+    question: {
+      text: 'How much money does Arya still need to reach his goal after counting his savings?',
+      id: 'Berapa uang yang masih dibutuhkan Arya setelah menghitung tabungannya?',
+      opts: [{ emoji: '💰', lbl: 'Two hundred thousand rupiah', ok: true }, { emoji: '💵', lbl: 'One hundred thousand rupiah' }, { emoji: '💴', lbl: 'Four hundred thousand rupiah' }],
+    },
+  },
 ];
 
 export const READING_TOPICS_BY_LEVEL: Partial<Record<LevelKey, AnyReadingTopic[]>> = {
   'little-stars': READING_TOPICS_LITTLE_STARS,
+  starter: READING_TOPICS_STARTER,
+  explorer: READING_TOPICS_EXPLORER,
   adventurer: READING_TOPICS_ADVENTURER,
+  achiever: READING_TOPICS_ACHIEVER,
+  trailblazer: READING_TOPICS_TRAILBLAZER,
 };

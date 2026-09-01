@@ -25,6 +25,10 @@ export const ICON_GAME = wrap(
   '<rect x="2.6" y="8.4" width="18.8" height="9.6" rx="4.6"/><path d="M6.8 11v4M4.8 13h4"/><circle cx="16.1" cy="11.6" r="1.35" fill="currentColor" stroke="none"/><circle cx="18.4" cy="14" r="1.35" fill="currentColor" stroke="none"/>'
 );
 
+export const ICON_RAPOR = wrap(
+  '<rect x="3.6" y="3.6" width="16.8" height="16.8" rx="3.4"/><path d="M7.6 15.2v-3.4M12 15.2V8.4M16.4 15.2v-5.8"/><circle class="ico-accent" cx="12" cy="8.4" r="1.1" stroke="none"/>'
+);
+
 export const ICON_SETTINGS = wrap(
   '<path d="M4 7h7"/><path d="M15 7h5"/><path d="M4 12h3"/><path d="M11 12h9"/><path d="M4 17h7"/><path d="M15 17h5"/><circle class="ico-accent" cx="13" cy="7" r="2" stroke-width="2"/><circle class="ico-accent" cx="9" cy="12" r="2" stroke-width="2"/><circle class="ico-accent" cx="13" cy="17" r="2" stroke-width="2"/>'
 );

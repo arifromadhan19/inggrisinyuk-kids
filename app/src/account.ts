@@ -27,6 +27,14 @@ export interface CachedPlacementResult {
   takenAt: string;
 }
 
+/** 1 baris papan peringkat — SENGAJA cuma avatar (1 dari 12 emoji hewan
+ *  tetap, `ANIMAL_AVATARS` di progress.ts) + XP, TANPA nama/nickname (lihat
+ *  rationale lengkap di `refreshLeaderboard`). */
+export interface LeaderboardEntry {
+  avatar: string;
+  xp: number;
+}
+
 interface AccountStore {
   token: string | null;
   identifier: string | null;
@@ -39,6 +47,10 @@ interface AccountStore {
    *  gating tombol "Yuk Mulai"/"Main Lagi" tanpa perlu fetch dulu. */
   placementAttemptsUsed: number;
   latestPlacementResult: CachedPlacementResult | null;
+  /** Cache hasil `/api/leaderboard` terakhir — `null` = belum pernah
+   *  disegarkan (kartu Papan Peringkat disembunyikan, bukan tampil kosong,
+   *  PRD §4.6). Disegarkan di background saat app dibuka (`refreshLeaderboard`). */
+  leaderboardTop: LeaderboardEntry[] | null;
 }
 
 const EMPTY: AccountStore = {
@@ -48,6 +60,7 @@ const EMPTY: AccountStore = {
   placementTestDone: null,
   placementAttemptsUsed: 0,
   latestPlacementResult: null,
+  leaderboardTop: null,
 };
 
 function read(): AccountStore {
@@ -62,6 +75,12 @@ function read(): AccountStore {
       placementTestDone: typeof parsed.placementTestDone === 'boolean' ? parsed.placementTestDone : null,
       placementAttemptsUsed: typeof parsed.placementAttemptsUsed === 'number' ? parsed.placementAttemptsUsed : 0,
       latestPlacementResult: parsed.latestPlacementResult ?? null,
+      leaderboardTop: Array.isArray(parsed.leaderboardTop)
+        ? parsed.leaderboardTop.filter(
+            (e): e is LeaderboardEntry =>
+              !!e && typeof e === 'object' && typeof e.avatar === 'string' && typeof e.xp === 'number'
+          )
+        : null,
     };
   } catch {
     return { ...EMPTY };
@@ -86,6 +105,19 @@ export function getIdentifier(): string | null {
 
 export function isLoggedIn(): boolean {
   return read().token !== null;
+}
+
+/** No HP "124" — akun tes dev khusus (`portal/prisma/seed.ts`,
+ *  `portal/lib/placement-attempts.ts` UNLIMITED_ATTEMPT_PHONES, dibuat
+ *  khusus buat iterasi First Placement Test). Permintaan user "untuk akun
+ *  124 semua game terbuka tidak ada yang terkunci karena akun 124 adalah
+ *  akun test dan development" — dipakai `games/wordmatch.ts`/
+ *  `games/balloonpop.ts`/`games/soundhunt.ts` (satu-satunya 3 raja Game Hub
+ *  yang py Map bermarkas terkunci) supaya SEMUA markas tampil terbuka buat
+ *  akun ini, tanpa perlu jelajahi markas sebelumnya dulu — anak lain (akun
+ *  non-124) TETAP kena aturan "Dikunci jika belum selesai" seperti biasa. */
+export function isDevTestAccount(): boolean {
+  return getIdentifier() === '124';
 }
 
 export function cacheChildStatus(
@@ -119,6 +151,16 @@ export function getCachedChildStatus(): {
     placementAttemptsRemaining: Math.max(0, MAX_PLACEMENT_ATTEMPTS - placementAttemptsUsed),
     latestPlacementResult,
   };
+}
+
+function cacheLeaderboard(top: LeaderboardEntry[]): void {
+  const store = read();
+  store.leaderboardTop = top;
+  write(store);
+}
+
+export function getCachedLeaderboard(): LeaderboardEntry[] | null {
+  return read().leaderboardTop;
 }
 
 export function logout(): void {
@@ -178,6 +220,7 @@ export async function login(identifier: string): Promise<void> {
     placementTestDone: null,
     placementAttemptsUsed: 0,
     latestPlacementResult: null,
+    leaderboardTop: null,
   });
 }
 
@@ -214,6 +257,31 @@ export async function refreshChildStatus(): Promise<void> {
     if (err instanceof ApiRequestError && err.status === 401) {
       write({ ...EMPTY });
     }
+  }
+}
+
+interface LeaderboardResult {
+  top: LeaderboardEntry[];
+}
+
+/**
+ * Papan Peringkat XP (permintaan user, revisi dari keputusan lama PRD §4.6/
+ * §13 "tanpa leaderboard" — dibolehkan sekarang KHUSUS krn progres sudah
+ * tersimpan di database & login WAJIB, tapi filter kid-friendly tetap
+ * berlaku penuh: dianonimkan total, TANPA nama/ranking eksplisit yang
+ * membanding-bandingkan anak (lihat CLAUDE.md). Server (`/api/leaderboard`)
+ * SENGAJA cuma balas avatar (1 dari 12 emoji hewan tetap, bukan foto/nama
+ * bebas) + XP — dipanggil di background saat app dibuka, sama pola dgn
+ * `refreshChildStatus`. Gagal (offline/belum ada data) = diam saja, kartu di
+ * Beranda/Rapor otomatis tidak tampil (`getCachedLeaderboard` tetap `null`).
+ */
+export async function refreshLeaderboard(): Promise<void> {
+  if (!isLoggedIn()) return;
+  try {
+    const data = await apiFetch<LeaderboardResult>('/api/leaderboard', { method: 'GET' });
+    cacheLeaderboard(Array.isArray(data.top) ? data.top : []);
+  } catch {
+    /* offline/gagal — kartu Papan Peringkat tetap tersembunyi, bukan error ke anak */
   }
 }
 

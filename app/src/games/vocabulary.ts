@@ -254,16 +254,20 @@ function blankSentence(sentence: string, word: string): string {
  * (audit user: sebelumnya SEMUA topik dipaksa jadi soal "ada berapa X ini"
  * dgn emoji kata itu sendiri diulang — relevan utk topik Angka, tapi random
  * & tidak masuk akal utk topik lain, mis. "ada berapa dokter ini?").
- * Sekarang 2 tipe soal, dipilih otomatis dari BENTUK topiknya sendiri
- * (`isNumberTopic`, bukan hardcode topic id — supaya topik angka baru di
- * level lain ikut kebaca otomatis):
+ * 2 tipe soal, dipilih otomatis dari BENTUK topiknya sendiri (`isNumberTopic`,
+ * bukan hardcode topic id — supaya topik angka baru di level lain ikut
+ * kebaca otomatis):
  *  - Topik Angka: gambar buah diulang SESUAI NILAI kata target (bukan angka
  *    acak lagi), jawaban pilihan ganda KATA Inggris-nya (One/Two/…, bukan
  *    digit) — sesuai kosakata yang sedang dipelajari (permintaan user).
- *  - Topik lain: "Apa bahasa Inggrisnya [kata Indonesia]?", pilihan ganda
- *    TEKS Inggris tanpa ikon (permintaan user eksplisit "tanpa pakai icon")
- *    — memaksa anak mengingat kata, bukan cuma cocokkan gambar (yang sudah
- *    jadi tipe soal lain di Latihan Inti).
+ *  - Topik lain: **"Dengar & Tunjuk"** (`drawListenPointQuestion`, REVISI —
+ *    dulu "Apa bahasa Inggrisnya [kata Indonesia]?" + pilihan teks, TAPI itu
+ *    task IDENTIK dgn Latihan Inti tipe `'toEn'`, cuma beda kemasan visual —
+ *    audit user: "Kenalan Main duplikat Latihan Inti"). Sekarang dengar TTS
+ *    kata itu SAJA (tanpa bahasa terjemahan/arah), tunjuk gambar emoji polos
+ *    yang cocok dari 3-4 pilihan (punya sendiri vs kata lain di topik yang
+ *    sama) — task shape genuinely beda dari SEMUA 4 tipe Latihan Inti
+ *    (`hear`/`toEn`/`toId`/`sentence`, semua berbasis pilihan TEKS).
  */
 const NUMBER_WORDS = [
   'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
@@ -309,20 +313,6 @@ function buildNumberQuestion(topic: VocabTopic, item: VocabItem): WordQuestion {
   };
 }
 
-function buildTranslateQuestion(topic: VocabTopic, item: VocabItem): WordQuestion {
-  const distractors = shuffle(topic.items.filter((i) => i !== item)).slice(0, 3);
-  return {
-    visual: '',
-    prompt: `Apa bahasa Inggrisnya <b>"${item.id}"</b>?`,
-    target: item.en,
-    options: shuffle([item, ...distractors]).map((i) => i.en),
-  };
-}
-
-function buildWordQuestion(topic: VocabTopic, item: VocabItem): WordQuestion {
-  return isNumberTopic(topic) ? buildNumberQuestion(topic, item) : buildTranslateQuestion(topic, item);
-}
-
 function drawWordQuestion(container: HTMLElement, badge: string, idText: string, q: WordQuestion): void {
   container.innerHTML = `
     <span class="stage-badge">${badge}</span>
@@ -336,19 +326,122 @@ function drawWordQuestion(container: HTMLElement, badge: string, idText: string,
   `;
 }
 
+/**
+ * Soal "Dengar & Tunjuk" utk topik NON-angka (permintaan user: fix
+ * redundansi — versi lama SELALU tanya "Apa bahasa Inggrisnya '[ID]'?"
+ * (`buildTranslateQuestion`, DIHAPUS total sesi ini), task-nya IDENTIK
+ * dgn Latihan Inti tipe `'toEn'`, cuma beda kemasan visual (teks polos vs
+ * kartu 2×2) — 2 layar nanya soal yang SAMA PERSIS. Sekarang: dengar KATA
+ * (TTS), tunjuk 1 dari 3-4 GAMBAR EMOJI POLOS (punya sendiri vs kata lain
+ * di topik yang sama) — TANPA bahasa terjemahan/arah sama sekali, jadi
+ * task shape-nya genuinely beda dari SEMUA 4 tipe Latihan Inti (yang semua
+ * berbasis pilihan TEKS). Pola sama dgn "Dengar & Tunjuk" Listening
+ * (`games/listening.ts` `runItemMiniGame`).
+ */
+function drawListenPointQuestion(
+  container: HTMLElement,
+  topic: VocabTopic,
+  item: VocabItem,
+  onAnswer: (correct: boolean, btn: HTMLElement) => void
+): void {
+  const distractorPool = topic.items.filter((i) => i !== item && i.emoji !== item.emoji);
+  const distractors = shuffle(distractorPool).slice(0, Math.min(3, distractorPool.length));
+  const options = shuffle([{ emoji: item.emoji, ok: true }, ...distractors.map((d) => ({ emoji: d.emoji, ok: false }))]);
+  container.innerHTML = `
+    <span class="stage-badge">🎮 MAIN · Dengar &amp; Tunjuk</span>
+    <div class="id-text">Dengarkan katanya, lalu tunjuk gambar yang cocok</div>
+    <div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar Lagi</button></div>
+    <div class="opt-grid ${options.length > 2 ? 'three' : ''}">
+      ${options.map((o, i) => `<button class="opt-btn" type="button" data-action="pick" data-payload="${i}" style="font-size:40px">${o.emoji}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  speak(item.en);
+  setHandlers({
+    replay: () => speak(item.en),
+    pick: (payload) => {
+      const i = Number(payload);
+      onAnswer(options[i].ok, container.querySelectorAll<HTMLElement>('.opt-btn')[i]);
+    },
+  });
+}
+
+/**
+ * Mini-game "Kelompokkan" (`materi/game.md` §4/§7 kandidat #1 — kategori
+ * "Urutkan/Kelompokkan" yang sebelumnya BELUM pernah dipakai di app manapun)
+ * — dipilih otomatis dari BENTUK topik (`sortBaskets` + `item.group`, pola
+ * sama `isNumberTopic`), bukan hardcode topic id. Beda task-shape dari
+ * `drawListenPointQuestion` (itu "dengar kata → tunjuk gambar yang SAMA
+ * PERSIS", recognition murni) — ini "lihat 1 benda → putuskan itu masuk
+ * kelompok MANA dari 2 pilihan", melatih kategorisasi (klasifikasi relatif
+ * antar-konsep dalam topik), bukan sekadar cocok-gambar.
+ */
+export function isSortableTopic(
+  topic: VocabTopic
+): topic is VocabTopic & { sortBaskets: NonNullable<VocabTopic['sortBaskets']> } {
+  if (!topic.sortBaskets) return false;
+  const hasA = topic.items.some((i) => i.group === 'a');
+  const hasB = topic.items.some((i) => i.group === 'b');
+  return hasA && hasB;
+}
+
+/** `navHtml` opsional (default kosong) — diisi `quizNavHtml(...)` oleh
+ *  `runKelompokkan` (ronde berdiri sendiri, Raja Kelompok Game Hub), kosong
+ *  di pemanggilan lama (`runWordMiniGame`, 1 soal fokus 1 kata di Kenalan,
+ *  tidak butuh navigasi antar-soal). */
+function drawSortQuestion(
+  container: HTMLElement,
+  baskets: NonNullable<VocabTopic['sortBaskets']>,
+  item: VocabItem,
+  onAnswer: (correct: boolean, btn: HTMLElement) => void,
+  navHtml = ''
+): void {
+  // Urutan 2 keranjang diacak tiap soal — supaya jawaban benar tidak selalu
+  // di posisi yang sama (anti-tebak-posisi, konsisten pola opsi acak di
+  // seluruh file ini).
+  const order: ('a' | 'b')[] = Math.random() < 0.5 ? ['a', 'b'] : ['b', 'a'];
+  container.innerHTML = `
+    ${navHtml}
+    <span class="stage-badge">🎮 MAIN · Kelompokkan</span>
+    <div class="id-text">Ini masuk kelompok yang mana?</div>
+    <div class="big-emoji" style="font-size:clamp(40px,10vw,60px)" aria-hidden="true">${item.emoji}</div>
+    <p class="reading-question">${item.en}</p>
+    <div class="opt-grid">
+      ${order.map((k, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="pick" data-payload="${i}">${baskets[k].emoji} ${baskets[k].label}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>
+  `;
+  setHandlers({
+    pick: (payload) => {
+      const i = Number(payload);
+      onAnswer(order[i] === item.group, container.querySelectorAll<HTMLElement>('.opt-btn')[i]);
+    },
+  });
+}
+
 /** Tombol 🎮 per kata di daftar Kenalan (permintaan user: "kenapa belum ada
  *  button main di setiap kata") — 1 soal fokus ke kata itu saja, balik ke
- *  daftar kata sesudahnya, BUKAN lanjut ke Latihan Inti. */
+ *  daftar kata sesudahnya, BUKAN lanjut ke Latihan Inti. 3 bentuk soal,
+ *  dipilih otomatis dari BENTUK topik+item (bukan hardcode topic id):
+ *  topik Angka → `buildNumberQuestion` (hitung gambar); topik "sortable" DAN
+ *  item ini punya `group` → `drawSortQuestion` (Kelompokkan); sisanya →
+ *  `drawListenPointQuestion` (Dengar & Tunjuk, default lama). */
 function runWordMiniGame(container: HTMLElement, topic: VocabTopic, item: VocabItem, onBack: OnDone, level: LevelKey): void {
   function draw(): void {
-    const q = buildWordQuestion(topic, item);
-    drawWordQuestion(container, `🎮 MAIN · ${item.en}`, 'Yuk coba!', q);
-    setHandlers({
-      pick: (payload) => {
-        const i = Number(payload);
-        onAnswer(q.options[i] === q.target, container.querySelectorAll<HTMLElement>('.opt-btn')[i]);
-      },
-    });
+    if (isNumberTopic(topic)) {
+      const q = buildNumberQuestion(topic, item);
+      drawWordQuestion(container, `🎮 MAIN · ${item.en}`, 'Yuk coba!', q);
+      setHandlers({
+        pick: (payload) => {
+          const i = Number(payload);
+          onAnswer(q.options[i] === q.target, container.querySelectorAll<HTMLElement>('.opt-btn')[i]);
+        },
+      });
+    } else if (isSortableTopic(topic) && item.group) {
+      drawSortQuestion(container, topic.sortBaskets, item, onAnswer);
+    } else {
+      drawListenPointQuestion(container, topic, item, onAnswer);
+    }
   }
 
   function onAnswer(correct: boolean, btn: HTMLElement): void {
@@ -818,7 +911,7 @@ function singleWordItems(items: VocabItem[]): VocabItem[] {
  *  (permintaan user: Tantangan sengaja tanpa clue, beda dari Latihan Inti).
  *  PERSIS `TANTANGAN_TAB_SIZE` soal, kata tunggal saja (`ensureTantanganPlan`
  *  + `singleWordItems`). */
-function runEjaKata(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey): void {
+export function runEjaKata(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey): void {
   const items = ensureTantanganPlan(topicId, 'tantangan-eja', singleWordItems(allItems));
   let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-eja')?.cursor ?? 0, 0), items.length - 1);
   let slots: (string | null)[] = [];
@@ -1176,7 +1269,7 @@ function runUcapan(container: HTMLElement, topicId: string, allItems: VocabItem[
  * Contoh Penggunaan (`runContohPenggunaan`) — sekarang tab BERDIRI SENDIRI
  * (permintaan user: 3 tab terpisah, 5 soal masing-masing).
  */
-function runSusunKalimat(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey): void {
+export function runSusunKalimat(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey): void {
   const items = ensureTantanganPlan(topicId, 'tantangan-susun', allItems);
   let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-susun')?.cursor ?? 0, 0), items.length - 1);
 
@@ -1329,4 +1422,206 @@ function runSusunKalimat(container: HTMLElement, topicId: string, allItems: Voca
   }
 
   draw();
+}
+
+/**
+ * Ronde "Kelompokkan" berdiri sendiri — dipakai Raja Kelompok Game Hub
+ * (`app.ts`, `materi/game.md` §7 kandidat #1), BUKAN bagian dari Tantangan
+ * Vocab 3-tab. Reuse PERSIS `drawSortQuestion` (mekanik sama dgn mini-game
+ * Kenalan 🎮), tapi jadi rangkaian N soal quiz-dot — pola sama persis
+ * `runEjaKata`/`runSusunKalimat` di atas (plan tersimpan per section,
+ * resumable, TANPA hint krn soal biner 2 opsi, sama alasan Grammar/Listening
+ * "Benar atau Salah"). Section name `'tantangan-kelompok'` — BARU, beda dari
+ * 3 section Tantangan lama (`tantangan-eja`/`tantangan-susun`/`tantangan-
+ * ucap`) supaya progresnya tidak numpuk sama Tantangan asli topik itu.
+ * Caller (app.ts) WAJIB sudah memfilter topik lewat `isSortableTopic()`
+ * sebelum manggil ini — fungsi ini sendiri tidak fallback kalau topiknya
+ * ternyata tidak sortable.
+ */
+export function runKelompokkan(
+  container: HTMLElement,
+  topicId: string,
+  allItems: VocabItem[],
+  baskets: NonNullable<VocabTopic['sortBaskets']>,
+  onDone: OnDone,
+  level: LevelKey
+): void {
+  const eligible = allItems.filter((it) => it.group === 'a' || it.group === 'b');
+  const items = ensureTantanganPlan(topicId, 'tantangan-kelompok', eligible);
+  let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-kelompok')?.cursor ?? 0, 0), items.length - 1);
+
+  const slotStatus = (i: number): 0 | 1 | 2 => getSlot('vocabulary', topicId, 'tantangan-kelompok', i)?.st ?? 0;
+
+  function goTo(i: number): void {
+    round = Math.min(Math.max(i, 0), items.length - 1);
+    setSectionCursor('vocabulary', topicId, 'tantangan-kelompok', round);
+    draw();
+  }
+
+  function draw(): void {
+    if (round >= items.length) return onDone();
+    const it = items[round];
+    drawSortQuestion(container, baskets, it, onAnswer, quizNavHtml(round, items.length, slotStatus));
+    wireQuizNav(goTo);
+  }
+
+  function onAnswer(correct: boolean, btn: HTMLElement): void {
+    lockOptionButtons(container);
+    const fb = container.querySelector<HTMLElement>('#fb')!;
+    const it = items[round];
+    if (correct) {
+      recordAttempt(true);
+      btn.classList.add('correct', 'win-burst');
+      playCorrectTone();
+      fireConfetti();
+      fb.textContent = pickPraise(level);
+      fb.className = 'feedback good';
+    } else {
+      recordAttempt(false);
+      btn.classList.add('wrong');
+      fb.textContent = pickEncourage(level);
+      fb.className = 'feedback bad';
+    }
+    markSlotAnswered('vocabulary', topicId, 'tantangan-kelompok', round, correct, { itemRef: it.en });
+    recordEvent({
+      kind: 'answer',
+      skill: 'vocabulary',
+      topicId,
+      section: 'tantangan-kelompok',
+      slot: round,
+      itemRef: it.en,
+      activity: 'sort',
+      correct,
+    });
+    fb.insertAdjacentHTML('afterend', roundActionsHtml(round === items.length - 1));
+    setHandlers({
+      tryAgainRound: () => draw(),
+      nextRound: () => {
+        round += 1;
+        setSectionCursor('vocabulary', topicId, 'tantangan-kelompok', Math.min(round, items.length - 1));
+        draw();
+      },
+    });
+  }
+
+  draw();
+}
+
+/**
+ * "Ingat & Buka" / Memory Match — Raja Ingatan Game Hub (`materi/game.md`
+ * §4/§7 kandidat #2, "Ingat & Buka" — GAP sebelumnya, belum pernah dipakai
+ * di skill manapun). Beda task-shape dari SEMUA mekanik lain di file ini:
+ * bukan 1 soal-1 jawaban berurutan, tapi grid kartu tertutup — anak buka 2
+ * kartu tiap giliran, cari PASANGAN yang cocok (working memory spasial,
+ * bukan sekadar recognition). Pasangan dikonstruksi LANGSUNG dari
+ * `VocabItem` yang sudah ada (kartu A = emoji+`id`, kartu B = teks `en`) —
+ * TANPA data baru, jadi bisa jalan di topik VOCAB MANAPUN di level manapun,
+ * beda dari Kelompokkan yang butuh `sortBaskets` per topik.
+ */
+const MEMORY_PAIR_COUNT = 3;
+
+interface MemoryCard {
+  pairId: number;
+  face: 'id' | 'en';
+  matched: boolean;
+}
+
+export function runMemoryMatch(container: HTMLElement, topic: VocabTopic, onDone: OnDone, level: LevelKey): void {
+  const pairItems = shuffle(topic.items).slice(0, Math.min(MEMORY_PAIR_COUNT, topic.items.length));
+  let cards: MemoryCard[] = shuffle(
+    pairItems.flatMap((_, i) => [
+      { pairId: i, face: 'id' as const, matched: false },
+      { pairId: i, face: 'en' as const, matched: false },
+    ])
+  );
+  let opened: number[] = [];
+  let score = 0;
+  let busy = false;
+
+  function cardLabel(c: MemoryCard): { emoji: string; text: string } {
+    const it = pairItems[c.pairId];
+    return c.face === 'id' ? { emoji: it.emoji, text: it.id } : { emoji: '', text: it.en };
+  }
+
+  function paint(): void {
+    const matchedPairs = cards.filter((c) => c.matched).length / 2;
+    container.innerHTML = `
+      <div class="mm-head">
+        <span class="mm-score">SKOR: <b>${score}</b></span>
+        <span class="tag">${matchedPairs}/${pairItems.length}</span>
+      </div>
+      <div class="mm-grid">
+        ${cards
+          .map((c, i) => {
+            const isOpen = c.matched || opened.includes(i);
+            const label = cardLabel(c);
+            return `
+            <button class="mm-card ${isOpen ? 'is-open' : ''} ${c.matched ? 'is-matched' : ''}" type="button"
+              data-action="flip" data-payload="${i}" ${isOpen ? 'disabled' : ''} aria-label="${isOpen ? label.text : 'Kartu tertutup'}">
+              ${
+                isOpen
+                  ? `${c.matched ? '<span class="mm-check" aria-hidden="true">✅</span>' : ''}${label.emoji ? `<span class="mm-emoji">${label.emoji}</span>` : ''}<span class="mm-text">${label.text}</span>`
+                  : `<span class="mm-mark" aria-hidden="true">❓</span>`
+              }
+            </button>`;
+          })
+          .join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+    `;
+    setHandlers({ flip: (payload) => flip(Number(payload)) });
+  }
+
+  function flip(i: number): void {
+    if (busy || cards[i].matched || opened.includes(i) || opened.length >= 2) return;
+    opened.push(i);
+    paint();
+    if (opened.length < 2) return;
+
+    busy = true;
+    const [a, b] = opened;
+    const isMatch = cards[a].pairId === cards[b].pairId && cards[a].face !== cards[b].face;
+    setTimeout(() => {
+      const fb = container.querySelector<HTMLElement>('#fb');
+      if (isMatch) {
+        cards[a].matched = true;
+        cards[b].matched = true;
+        score += 10;
+        recordAttempt(true);
+        playCorrectTone();
+        fireConfetti();
+        if (fb) {
+          fb.textContent = pickPraise(level);
+          fb.className = 'feedback good';
+        }
+      } else {
+        recordAttempt(false);
+        playTryAgainTone();
+        if (fb) {
+          fb.textContent = pickEncourage(level);
+          fb.className = 'feedback bad';
+        }
+      }
+      opened = [];
+      busy = false;
+      paint();
+
+      if (cards.every((c) => c.matched)) {
+        recordEvent({ kind: 'answer', skill: 'vocabulary', topicId: topic.id, activity: 'memory-match', correct: true, score });
+        const doneFb = container.querySelector<HTMLElement>('#fb');
+        if (doneFb) doneFb.insertAdjacentHTML('afterend', roundActionsHtml(true));
+        setHandlers({
+          tryAgainRound: () => {
+            cards = shuffle(cards.map((c) => ({ ...c, matched: false })));
+            opened = [];
+            score = 0;
+            paint();
+          },
+          nextRound: () => onDone(),
+        });
+      }
+    }, 700);
+  }
+
+  paint();
 }

@@ -100,9 +100,9 @@ export interface PlacementRank {
  * bentrok/konflik dengan CEFR yang sudah established di peta — rank & level
  * harus "satu pasangan", dipetakan LANGSUNG ke level Bos yang sama, bukan
  * sistem pengukuran skill terpisah dari rasio skor). Diekspor — dipakai
- * ulang di app.ts `renderLevels` untuk badge rank TUNGGAL di Peta
- * Petualangan (bukan diulang per-perhentian, biar tidak redundan dgn status
- * Bos/level yang sudah ada di tiap perhentian — permintaan user).
+ * ulang di app.ts `renderHome` untuk badge rank TUNGGAL di Peta Petualangan
+ * (bukan diulang per-perhentian, biar tidak redundan dgn status Bos/level
+ * yang sudah ada di tiap perhentian — permintaan user).
  */
 export function pickRank(levelRecommended: string): PlacementRank | null {
   const lvl = LEVELS.find((l) => l.key === levelRecommended);
@@ -165,13 +165,12 @@ export function renderPlacementIntro(container: HTMLElement, onStart: OnDone, on
 }
 
 /** Layar non-punitive saat kuota 2x percobaan sudah habis (§"max 2 kali").
- *  Dibingkai sebagai "kamu sudah eksplorasi", bukan "ditolak"/"gagal". */
-export function renderPlacementLimitReached(
-  container: HTMLElement,
-  level: string | undefined,
-  onHome: OnDone,
-  onViewMap: OnDone
-): void {
+ *  Dibingkai sebagai "kamu sudah eksplorasi", bukan "ditolak"/"gagal".
+ *  Cuma 1 tombol (permintaan user, "Peta Petualangan jadi Beranda") — dulu
+ *  ada tombol kedua "Lihat di Peta Petualangan" terpisah dari "Ke Beranda",
+ *  sekarang keduanya mendarat di layar YANG SAMA jadi tombol kedua itu cuma
+ *  duplikat tujuan, bukan pilihan beda lagi. */
+export function renderPlacementLimitReached(container: HTMLElement, level: string | undefined, onHome: OnDone): void {
   container.innerHTML = `
     <div style="text-align:center">
       <span class="stage-badge">🎈 SUDAH DICOBA</span>
@@ -179,11 +178,10 @@ export function renderPlacementLimitReached(
       <p class="lede" style="margin-bottom:16px">First Placement Test cuma bisa dicoba maksimal 2 kali — titik mulaimu sekarang:</p>
       <div style="font-size:48px;margin-bottom:6px">${level ? (LEVEL_LABEL[level]?.slice(0, 2) ?? '🌱') : '🌱'}</div>
       <h2 class="h2" style="margin-bottom:22px">${level ? (LEVEL_LABEL[level] ?? level) : '—'}</h2>
-      <button class="primary-btn" type="button" data-action="ptHome">Ke Beranda →</button>
-      <button class="ghost-btn" type="button" data-action="ptViewMap">🗺️ Lihat di Peta Petualangan</button>
+      <button class="primary-btn" type="button" data-action="ptHome">🗺️ Ke Peta Petualangan</button>
     </div>
   `;
-  setHandlers({ ptHome: onHome, ptViewMap: onViewMap });
+  setHandlers({ ptHome: onHome });
 }
 
 /**
@@ -599,13 +597,15 @@ export function runPlacementQuestions(container: HTMLElement, onDone: (outcome: 
 
 /** Entry point ke Peta Petualangan (permintaan user) — begitu anak tahu
  *  levelnya, langsung bisa lihat posisinya di peta, bukan cuma nama level
- *  polos. Peta Level yang render (`renderLevels`) sudah otomatis nyorot
- *  "Kamu di sini" di level itu — tidak perlu diteruskan manual dari sini. */
+ *  polos. Peta Level (sekarang bagian dari Beranda, `renderHome` di app.ts)
+ *  sudah otomatis nyorot "Kamu di sini" di level itu — tidak perlu
+ *  diteruskan manual dari sini. Cuma 1 tombol (bukan 2 lagi) — dulu "Lanjut"
+ *  & "Lihat di Peta Petualangan" beda tujuan (Beranda vs Peta Level layar
+ *  terpisah), sekarang keduanya mendarat di layar yang sama. */
 export function renderPlacementResult(
   container: HTMLElement,
   levelRecommended: string,
   onContinue: OnDone,
-  onViewMap: OnDone,
   totalCorrect?: number,
   totalItems?: number
 ): void {
@@ -647,11 +647,10 @@ export function renderPlacementResult(
       <div style="background:var(--brand-50);border:1px solid var(--brand-100);border-radius:var(--r-md);padding:18px;margin-bottom:22px">
         ${cardBody}
       </div>
-      <button class="primary-btn" type="button" data-action="ptContinue">Lanjut →</button>
-      <button class="ghost-btn" type="button" data-action="ptViewMap">🗺️ Lihat di Peta Petualangan</button>
+      <button class="primary-btn" type="button" data-action="ptContinue">🗺️ Lanjut ke Peta Petualangan</button>
     </div>
   `;
-  setHandlers({ ptContinue: onContinue, ptViewMap: onViewMap });
+  setHandlers({ ptContinue: onContinue });
 }
 
 export async function doSkipPlacementTest(): Promise<PlacementOutcome> {

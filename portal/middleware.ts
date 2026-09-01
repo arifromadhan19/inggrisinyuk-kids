@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * `inggrisinyuk-app/middleware.ts`: middleware cuma untuk hal lintas-route,
  * bukan auth per-endpoint).
  */
-const ALLOWED_ORIGIN = process.env.APP_ORIGIN ?? 'http://127.0.0.1:8000';
+const ALLOWED_ORIGIN = process.env.APP_ORIGIN ?? 'http://127.0.0.1:8200';
 
 function corsHeaders(): Record<string, string> {
   return {

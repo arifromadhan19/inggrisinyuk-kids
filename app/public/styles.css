@@ -205,6 +205,14 @@ body.is-placement-test .topline,
 body.is-placement-test .rail,
 body.is-placement-test .tabbar{ display:none; }
 
+/* Main 1 Raja Game Hub (screen 'gamePlay') — halaman berdiri sendiri juga
+   (permintaan user: "ketika klik icon game maka ke halaman baru... sehingga
+   navbar dibawahnya hilang"), pola SAMA PERSIS is-placement-test. Class
+   ditoggle app.ts (render()) berdasar state.screen. */
+body.is-game-play .topline,
+body.is-game-play .rail,
+body.is-game-play .tabbar{ display:none; }
+
 /* --------------------------------------------------------- brand mark ---- */
 .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
 .brand-mark{ width:38px; height:38px; flex:none; border-radius:13px; }
@@ -429,6 +437,11 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   background:radial-gradient(circle at 34% 26%, var(--sun-400) 0%, var(--sun-500) 58%, #EF9C24 100%);
   box-shadow:0 0 0 6px rgba(255,255,255,.14), 0 14px 26px -12px rgba(6,51,58,.85);
 }
+/* Beranda/Menu Belajar SELALU isi `.spark-art` dgn 1 emoji polos (font-size
+   di atas cukup) — kartu hero Game Hub (app.ts renderGame()) SEKARANG bisa
+   isi gambar asli Raja-nya sendiri, jadi <img> butuh sizing eksplisit
+   (inert di 2 layar lain krn mereka tidak pernah taruh <img> di sini). */
+.spark-art img{ width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
 
 /* Versi slim (permintaan user) — padding & ukuran dikecilkan, dipakai di
    kartu "lanjutkan" Beranda MAUPUN kartu serupa di Menu Belajar (progress
@@ -1004,17 +1017,17 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 .leaderboard-avatar{ font-size:1.25rem; flex:none; }
 .leaderboard-xp{ margin-left:auto; font-family:var(--font-head); font-size:.875rem; color:var(--ink); }
 
-/* Jalur "Raja" Game Hub (app.ts renderGame) — dulu reuse PERSIS .trail-rail/
-   .trail-medallion (medali kecil 60px) Peta Level. SEKARANG DIGANTI
-   (permintaan user: "icon lebih dominan... raja kata icon di kiri, game
-   selanjutnya icon di kanan, selang seling... tetap berpetualang jd saling
-   terhubung"): ikon per-kartu jauh lebih besar & jadi bagian kartu itu
-   sendiri (`.raja-stop-inner`, flex row), sisi kiri/kanan bergantian per
-   index (`.icon-right`), disambung 1 garis putus-putus vertikal di celah
-   antar kartu (bukan lagi bend-path SVG per-rail — itu didesain utk medali
-   kecil, tidak cocok lagi dgn ikon sebesar ini). Scoped ke `.raja-trail`
-   SAJA, TIDAK menyentuh `.trail-stop`/`.trail-rail`/`.trail-medallion` dasar
-   (tetap dipakai Peta Level apa adanya). */
+/* Jalur "Raja" (`.raja-trail`/`.raja-icon`/`.raja-stop-inner`) — dulu dipakai
+   Game Hub ITU SENDIRI (`app.ts renderGame()`), SEKARANG DIGANTI TOTAL di
+   sana oleh grid `.raja-grid`/`.raja-card` (lihat blok di bawah) — permintaan
+   user "buat tampilan game nya mencari card seperti contoh gambar" (referensi
+   grid 2-kolom kompetitor). Class di bawah ini TIDAK DIHAPUS krn MASIH
+   DIPAKAI PERSIS APA ADANYA oleh 3 layar Map Kerajaan/Hutan Ajaib INTERNAL
+   tiap game (`games/wordmatch.ts`/`games/balloonpop.ts`/`games/soundhunt.ts`,
+   semua komentarnya eksplisit bilang "reuse PERSIS `.trail.raja-trail`") —
+   JANGAN diubah/dihapus tanpa mengecek ketiga file itu dulu. Scoped ke
+   `.raja-trail` SAJA, TIDAK menyentuh `.trail-stop`/`.trail-rail`/
+   `.trail-medallion` dasar (tetap dipakai Peta Level apa adanya). */
 .raja-trail .trail-stop{
   position:relative; display:block; padding:0; background:none; margin-bottom:var(--s6);
 }
@@ -1027,16 +1040,74 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
 }
 .raja-trail .trail-stop.icon-right .raja-stop-inner{ flex-direction:row-reverse; }
 .raja-trail .trail-card{ flex:1; min-width:0; }
+/* 🔒 Ukuran dinaikkan (permintaan user, task 5: "list game setelah masuk
+   icon nya seperti konsep petualang, mirip peta petualang tapi bedakan
+   dimana icon nya lebih dominan" — dikonfirmasi scope-nya Map Kerajaan/
+   Hutan Ajaib INTERNAL tiap game, bukan roster /game) — dari 104/132px jadi
+   148/176px, MASIH konsep trail petualang yang sama (dashed path, markas
+   selang-seling, `.trail-card` teks di sebelahnya TIDAK diubah struktur),
+   cuma ikon markas-nya sendiri yang dibuat lebih dominan/menonjol drpd
+   sebelumnya (& drpd `.trail-medallion` 60-78px Peta Level yang jauh lebih
+   kecil). Font-size emoji markas (`clamp(...)`) ikut dinaikkan inline di
+   3 pemanggil (`games/wordmatch.ts`/`games/balloonpop.ts`/`games/
+   soundhunt.ts`) — TIDAK dipusatkan di sini krn emoji-nya sendiri (bukan
+   ukuran kotak) yang diset per-baris lewat `style=`. */
 .raja-icon{
-  flex:none; width:104px; height:104px; border-radius:var(--r-lg); overflow:hidden;
+  flex:none; width:148px; height:148px; border-radius:var(--r-lg); overflow:hidden;
   display:grid; place-items:center; background:var(--surface); border:4px solid var(--band-deep);
   box-shadow:var(--sh-lift);
 }
 .raja-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
-.raja-icon svg{ width:64px; height:64px; display:block; }
+.raja-icon svg{ width:92px; height:92px; display:block; }
 @media (min-width:560px){
-  .raja-icon{ width:132px; height:132px; }
-  .raja-icon svg{ width:80px; height:80px; }
+  .raja-icon{ width:176px; height:176px; }
+  .raja-icon svg{ width:108px; height:108px; }
+}
+
+/* Grid "Pilih Game" — Game Hub (app.ts renderGame()), permintaan user "buat
+   tampilan game nya mencari card seperti contoh gambar tapi dengan ciri khas
+   inggrisin yuk kids": 2 kolom kartu kotak berdiri sendiri (bukan lagi jalur
+   trail selang-seling di atas), tiap kartu SELURUHNYA 1 tombol tap (bukan
+   ikon+judul+tombol "▶️ Main" terpisah lagi) — ikon besar di atas, judul,
+   badge XP/Baru di bawahnya, pola PERSIS referensi. "Ciri khas" InggrisinYuk
+   Kids: warna & badge TETAP pakai token sendiri (`--band-deep` per-Raja,
+   `.tag`/`.tag.ok` yang sudah dipakai lintas app — BUKAN warna hijau/ungu
+   flat referensi), ikon dapat latar tint lembut dari warna Raja-nya sendiri
+   (`.raja-card-icon`, `color-mix`) biar kartu kerasa "hidup", bukan kartu
+   putih polos. Subtitle (`RajaDef.sub`) SENGAJA tidak ikut dirender di sini
+   (CLAUDE.md "Teks Singkat" — ikon+judul sudah cukup di hub, deskripsi
+   lengkap tetap muncul begitu anak masuk ke `renderGamePlay()`).
+   Class BARU, SENGAJA TIDAK reuse `.raja-trail`/`.raja-icon` di atas — lihat
+   catatan di situ kenapa. */
+.raja-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--s4); }
+@media (min-width:640px){ .raja-grid{ grid-template-columns:repeat(3,1fr); } }
+@media (min-width:960px){ .raja-grid{ grid-template-columns:repeat(4,1fr); } }
+.raja-card{
+  position:relative;
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;
+  background:linear-gradient(180deg,var(--surface) 0%, var(--surface-2) 100%);
+  border-radius:var(--r-lg); border:1px solid var(--line);
+  padding:var(--s5) var(--s3) var(--s4);
+  box-shadow:var(--sh-1); cursor:pointer;
+  font-family:inherit; transition:transform .12s ease, box-shadow .15s ease;
+}
+/* Badge persen pojok-kanan-atas — REUSE PERSIS `.skill-pct` (Menu Belajar,
+   lihat komentar di situ), tanpa CSS baru; `.raja-card` cuma butuh
+   `position:relative` di atas supaya `.skill-pct`'s `position:absolute`
+   anchor ke kartu ini, bukan ke ancestor lain. */
+.raja-card:active{ transform:translateY(1px) scale(.98); }
+.raja-card-icon{
+  flex:none; width:88px; height:88px; border-radius:var(--r-lg); overflow:hidden;
+  display:grid; place-items:center;
+  background:color-mix(in srgb, var(--band-deep) 18%, var(--surface-2));
+}
+.raja-card-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+.raja-card-icon svg{ width:52px; height:52px; display:block; }
+.raja-card h3{ font-family:var(--font-head); font-size:.9375rem; margin:0; color:var(--ink); }
+@media (min-width:560px){
+  .raja-card-icon{ width:108px; height:108px; }
+  .raja-card-icon svg{ width:64px; height:64px; }
+  .raja-card h3{ font-size:1.0625rem; }
 }
 
 /* Skin "arcade" utk stage main Raja (permintaan user: "jangan kaku, ini game
@@ -1046,37 +1117,6 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
    --k (warna Raja itu, diisi inline app.ts). */
 .raja-stage .stage-badge{ background:var(--k); color:#fff; box-shadow:var(--sh-1); }
 .raja-stage .quiz-dot.current{ box-shadow:0 0 0 3px color-mix(in srgb, var(--k) 25%, transparent), inset 0 0 0 1.5px var(--k); color:var(--k); }
-
-/* 🚪 Open the Door — kartu hero PALING ATAS layar Game (app.ts openDoorGame/
-   renderGame) + rangkaian pintu di dalamnya. Warna ungu kastil sengaja beda
-   dari kartu Raja lain di bawahnya (bukan salah satu warna --c-*) supaya
-   kartu ini kebaca sbg "featured", bukan raja ke-6 yang menyatu di list. */
-.door-hero{
-  background:linear-gradient(160deg,#3E2465,#7A46B8); color:#fff;
-  border-radius:var(--r-lg); padding:var(--s4); text-align:center;
-  margin-bottom:var(--s5); box-shadow:var(--sh-lift);
-}
-.door-hero-ico{ font-size:clamp(46px,13vw,60px); line-height:1; }
-.door-hero h2{ font-family:var(--font-head); margin:6px 0 2px; font-size:1.25rem; }
-.door-hero p{ margin:0 0 var(--s3); opacity:.92; font-size:var(--fs-meta); }
-.door-hero .tag{ background:rgba(255,255,255,.18); color:#fff; }
-.door-hero .primary-btn{ background:var(--sun-500); color:var(--brand-900); box-shadow:none; }
-
-.door-dots{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:var(--s4); }
-.door-dot{
-  width:36px; height:36px; border-radius:50%; flex:none;
-  display:grid; place-items:center; font-size:1.05rem; font-weight:800;
-  background:var(--surface); color:var(--ink-3); box-shadow:inset 0 0 0 1.5px var(--line);
-}
-.door-dot.current{ box-shadow:0 0 0 3px var(--sun-100), inset 0 0 0 2px var(--sun-500); }
-.door-dot.done{ background:var(--sun-500); color:var(--brand-900); box-shadow:none; }
-
-.door-card{ text-align:center; padding:var(--s4) 0; }
-.door-illustration{ font-size:clamp(64px,20vw,92px); line-height:1; display:inline-block; }
-.door-illustration.shake{ animation:doorShake .4s ease; }
-.door-illustration.opening{ animation:doorOpen .45s ease both; }
-@keyframes doorShake{ 0%,100%{transform:rotate(0);} 25%{transform:rotate(-5deg);} 75%{transform:rotate(5deg);} }
-@keyframes doorOpen{ 0%{transform:scale(1);} 60%{transform:scale(1.15) rotate(-3deg);} 100%{transform:scale(1.25); opacity:0;} }
 
 /* Memory Match — grid kartu tertutup (permintaan user, contoh referensi
    "Memory Match"): flip 2 kartu/giliran, cari pasangan id↔en 1 VocabItem
@@ -1135,17 +1175,6 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
    — kartu polos spt .raja-trail (TANPA .trail-scene medan), bukan bagian
    tangga LEVELS jadi tidak butuh status locked/cleared apa pun. */
 .raja-kata-stop{ background:var(--surface-2); border-radius:var(--r-lg); margin-bottom:var(--s3); }
-
-/* Pemilih tingkat Mudah/Sedang/Sulit (renderRajaKataPicker) — co-class dgn
-   .opt-btn (pola sama .opt-btn.answer-card) supaya border/hover ikut gratis,
-   cuma layout+tipografinya yang beda (label+sub teks, bukan emoji raksasa). */
-.wm-tier-grid{ display:grid; gap:var(--s3); margin-top:var(--s4); }
-@media (min-width:560px){ .wm-tier-grid{ grid-template-columns:repeat(3,1fr); } }
-.opt-btn.wm-tier-btn{
-  font-size:inherit; display:flex; flex-direction:column; align-items:center; gap:4px; padding:var(--s4);
-}
-.wm-tier-label{ font-family:var(--font-head); font-weight:800; font-size:1.25rem; color:var(--ink); }
-.wm-tier-sub{ font-size:.8125rem; font-weight:700; color:var(--ink-3); }
 
 /* Raja Balon — Balloon Pop (games/balloonpop.ts): prompt Bahasa Indonesia
    di atas, balon berisi kata Inggris naik terus-menerus dari bawah ke atas
@@ -1252,6 +1281,62 @@ svg.ico .ico-accent{ transition:fill .15s ease; }
   margin:var(--s3) auto; max-width:520px;
 }
 .sp-answer-bar.empty{ color:var(--ink-3); font-size:.9375rem; font-weight:700; }
+
+/* Story Quest — Petualangan Cerita (games/storyquest.ts): halaman buku
+   dibungkus kartu krem+border tipis ala buku dongeng (`.story-page`, BUKAN
+   kartu quiz polos), ilustrasi lingkaran gradient (`.story-scene`) reuse
+   bahasa visual `.sunburst` tapi utk ADEGAN cerita (bukan mascot). Jawaban
+   SALAH cuma menonaktifkan tombol itu sendiri (opsi lain tetap bisa ditap
+   langsung, TANPA tombol "Coba Lagi" terpisah) — cerita baru lanjut halaman
+   berikutnya setelah jawaban BENAR (gerbang comprehension, bukan sekadar
+   catatan progres spt raja lain). "💡 Petunjuk" (`.story-clue`) cuma
+   kalimat penuntun baca ulang, BUKAN jawabannya langsung. */
+.story-scene{
+  width:104px; height:104px; margin:0 auto var(--s3); border-radius:50%;
+  display:grid; place-items:center; font-size:clamp(44px,11vw,58px);
+  background:radial-gradient(circle at 34% 26%, var(--sun-100) 0%, var(--c-vocab-bg) 78%);
+  box-shadow:var(--sh-1);
+}
+.story-page{
+  position:relative; background:linear-gradient(180deg,#FFFDF7,#FBF4E4);
+  border:1px solid #EFE0BE; border-radius:var(--r-xl); padding:var(--s4) var(--s5);
+  box-shadow:var(--sh-1); margin:var(--s3) 0 var(--s4);
+}
+.story-line{
+  font-family:var(--font-head); font-weight:700; font-size:1.0625rem; line-height:1.55;
+  color:var(--ink); text-align:center; margin:0 0 8px;
+}
+.story-line:last-child{ margin-bottom:0; }
+.story-divider{ text-align:center; color:var(--sun-500); font-size:.9375rem; margin:var(--s3) 0; letter-spacing:.08em; }
+.story-question{
+  font-family:var(--font-head); font-weight:800; font-size:1.125rem; text-align:center;
+  color:var(--ink); margin:0 0 var(--s3);
+}
+.story-clue{ text-align:center; color:var(--ink-2); }
+/* Adventure map (progress halaman) reuse `.quiz-dot` APA ADANYA, tapi
+   read-only (bukan quiz-dot jump-around) — `.static` matikan cursor:pointer
+   warisan supaya tidak kelihatan "bisa diklik" padahal tidak. */
+.quiz-dot.static{ cursor:default; }
+
+@keyframes storyPageIn{
+  from{ opacity:0; transform:translateX(18px); }
+  to{ opacity:1; transform:translateX(0); }
+}
+.story-page-enter{ animation:storyPageIn .3s ease both; }
+
+/* Magic Library — koleksi buku (CLAUDE.md kid-friendly: locked state tetap
+   ramah "Segera Hadir", bukan placeholder rusak). MVP 1 buku terbuka. */
+.library-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--s3); margin:var(--s4) 0; }
+@media (min-width:560px){ .library-grid{ grid-template-columns:repeat(3,1fr); } }
+.library-card{
+  background:var(--surface); border:2px solid var(--line); border-radius:var(--r-lg);
+  padding:var(--s4) var(--s3); text-align:center; box-shadow:var(--sh-1);
+}
+.library-cover{ font-size:clamp(36px,9vw,48px); margin-bottom:8px; }
+.library-title{ font-family:var(--font-head); font-weight:800; font-size:.875rem; color:var(--ink); margin:0 0 6px; }
+.library-card.locked{ background:var(--muted); border-color:var(--line); }
+.library-card.locked .library-cover{ opacity:.55; filter:grayscale(.4); }
+.library-card.locked .library-title{ color:var(--ink-3); }
 
 /* -------------------------------------------------------------- aktivitas */
 .act-head{ display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s4); }

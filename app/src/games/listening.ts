@@ -53,43 +53,101 @@ export function renderKenalan(container: HTMLElement, topic: ListeningTopic, onN
   });
 }
 
+/**
+ * 💡 Petunjuk utk format LAMA (`ListeningDrill`/`question.opts`, keduanya
+ * `ListeningOption[]` — cuma py `.ok`, beda dari `ListeningQuestionOption`
+ * yg format baru pakai lewat `wireHint`) — logic-nya IDENTIK `wireHint` di
+ * bawah (eliminasi sampai 2 opsi salah), tapi diduplikasi jadi fungsi kecil
+ * sendiri drpd maksa `wireHint` nerima tipe yg beda field-nya, biar tidak
+ * ganggu fungsi yg sudah diverifikasi di format baru (§CLAUDE.md "Listening
+ * — 4 Format Berdampingan": helper generik DIDUPLIKASI, bukan dishare,
+ * supaya tidak ada risiko regresi silang format).
+ */
+function wireOldFormatHint(container: HTMLElement, opts: { ok?: boolean }[]): void {
+  let used = false;
+  setHandlers({
+    hint: () => {
+      if (used) return;
+      const btns = container.querySelectorAll<HTMLButtonElement>('.opt-btn');
+      const wrongIdx = opts.map((_, i) => i).filter((i) => !opts[i].ok && !btns[i]?.disabled);
+      if (!wrongIdx.length) return;
+      used = true;
+      const toEliminate = shuffle(wrongIdx).slice(0, Math.min(2, wrongIdx.length));
+      toEliminate.forEach((pick) => {
+        btns[pick].disabled = true;
+        btns[pick].classList.add('eliminated');
+      });
+      const hintBtn = container.querySelector<HTMLButtonElement>('#hintBtn');
+      if (hintBtn) hintBtn.disabled = true;
+    },
+  });
+}
+
+/**
+ * Format LAMA — revisi (analisis user "apa yang perlu di-improve"): dulu
+ * auto-advance via `setTimeout` (anak tidak bisa atur pace sendiri, TIDAK
+ * ada hint) & TIDAK PERNAH manggil `playCorrectTone`/`playTryAgainTone`/
+ * `fireConfetti` sama sekali — melanggar "🔒 Aturan Wajib: Setiap Percobaan
+ * Anak Harus Direspons" (CLAUDE.md, berlaku "di game mana pun") krn feedback
+ * cuma teks polos tanpa nada/animasi festive. Sekarang disamakan ke pola
+ * non-punitive yg sudah jadi standar app (Vocab/format baru Listening):
+ * tombol manual 🔁 Coba Lagi/➡️ Lanjut (`roundActionsHtml`), 💡 Petunjuk
+ * (`wireOldFormatHint`), nada+confetti benar mengikuti aturan wajib di atas.
+ * Konten (`drill`/`story`/`question`) TIDAK diubah sama sekali — murni
+ * modernisasi interaksi, bukan migrasi format (`'items' in topic` tetap
+ * `false` utk topik ini, `app.ts` dispatch tidak berubah).
+ */
 export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, onDone: OnDone): void {
   let round = 0;
 
   function draw(): void {
     if (round >= topic.drill.length) return onDone();
     const d = topic.drill[round];
+    const play = () => speak(d.en);
     container.innerHTML = `
-      <span class="stage-badge">🎯 Dengar &amp; Pilih</span>
+      <div class="latihan-head">
+        <span class="stage-badge">🎯 Dengar &amp; Pilih</span>
+        ${hintButtonHtml}
+      </div>
       <div class="id-text">Soal ${round + 1} dari ${topic.drill.length}</div>
       <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Putar Kalimat</button></div>
       <div class="opt-grid ${d.opts.length > 2 ? 'three' : ''}">
-        ${d.opts.map((o, i) => `<button class="opt-btn" data-action="pick" data-payload="${i}">${o.emoji}</button>`).join('')}
+        ${d.opts.map((o, i) => `<button class="opt-btn" type="button" data-action="pick" data-payload="${i}">${o.emoji}</button>`).join('')}
       </div>
       <div class="feedback" id="fb"></div>
     `;
-    speak(d.en);
+    play();
+    wireOldFormatHint(container, d.opts);
 
     setHandlers({
-      replay: () => speak(d.en),
+      replay: play,
       pick: (payload) => {
         const i = Number(payload);
         const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
         const fb = container.querySelector<HTMLElement>('#fb')!;
-        if (d.opts[i].ok) {
-          recordAttempt(true);
-          btn.classList.add('correct');
+        const correct = !!d.opts[i].ok;
+        lockOptionButtons(container);
+        recordAttempt(correct);
+        if (correct) {
+          btn.classList.add('correct', 'win-burst');
+          playCorrectTone();
+          fireConfetti();
           fb.textContent = 'Tepat! 🎉';
           fb.className = 'feedback good';
-          round += 1;
-          setTimeout(draw, 800);
         } else {
-          recordAttempt(false);
           btn.classList.add('wrong');
+          playTryAgainTone();
           fb.textContent = 'Dengar lagi, yuk 💪';
           fb.className = 'feedback bad';
-          setTimeout(() => btn.classList.remove('wrong'), 350);
         }
+        fb.insertAdjacentHTML('afterend', roundActionsHtml(round === topic.drill.length - 1));
+        setHandlers({
+          tryAgainRound: () => draw(),
+          nextRound: () => {
+            round += 1;
+            draw();
+          },
+        });
       },
     });
   }
@@ -98,52 +156,56 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
 }
 
 export function runTantangan(container: HTMLElement, topic: ListeningTopic, onDone: OnDone): void {
-  container.innerHTML = `
-    <span class="stage-badge">🌟 Dengar Cerita Mini</span>
-    <div class="big-emoji">${topic.scene}</div>
-    <div class="speak-row"><button class="speak-btn" data-action="playStory">▶️ Putar Ceritanya</button></div>
-    <div class="id-text" id="qArea" style="margin-top:6px;">Putar dulu ceritanya, baru jawab pertanyaannya</div>
-    <div id="qWrap"></div>
-    <div class="feedback" id="fb"></div>
-  `;
+  function draw(): void {
+    const playStory = () => speakSequence(topic.story, 1900);
+    container.innerHTML = `
+      <div class="latihan-head">
+        <span class="stage-badge">🌟 Dengar Cerita Mini</span>
+        ${hintButtonHtml}
+      </div>
+      <div class="big-emoji">${topic.scene}</div>
+      <div class="speak-row"><button class="speak-btn" data-action="playStory">▶️ Putar Ceritanya</button></div>
+      <div class="en-text" style="margin-top:10px;">${topic.question.en}</div>
+      ${answerCardsHtml(
+        topic.question.opts.map((o) => ({ emoji: o.emoji, label: o.lbl ?? '' })),
+        'answer'
+      )}
+      <div class="feedback" id="fb"></div>
+    `;
+    playStory();
+    wireOldFormatHint(container, topic.question.opts);
 
-  setHandlers({
-    playStory: () => {
-      speakSequence(topic.story, 1900);
-      container.querySelector<HTMLElement>('#qArea')!.textContent = '';
-      container.querySelector<HTMLElement>('#qWrap')!.innerHTML = `
-        <div class="en-text" style="margin-top:10px;">${topic.question.en}</div>
-        <div class="opt-grid ${topic.question.opts.length > 2 ? 'three' : ''}">
-          ${topic.question.opts
-            .map(
-              (o, i) =>
-                `<button class="opt-btn" data-action="answer" data-payload="${i}">${o.emoji}<span class="lbl">${o.lbl ?? ''}</span></button>`
-            )
-            .join('')}
-        </div>
-      `;
-      setHandlers({
-        answer: (payload) => {
-          const i = Number(payload);
-          const btn = container.querySelectorAll<HTMLElement>('#qWrap .opt-btn')[i];
-          const fb = container.querySelector<HTMLElement>('#fb')!;
-          if (topic.question.opts[i].ok) {
-            recordAttempt(true);
-            btn.classList.add('correct');
-            fb.textContent = 'Ceritanya kedengeran ya! 🎉';
-            fb.className = 'feedback good';
-            setTimeout(onDone, 900);
-          } else {
-            recordAttempt(false);
-            btn.classList.add('wrong');
-            fb.textContent = 'Coba putar & dengar lagi 💪';
-            fb.className = 'feedback bad';
-            setTimeout(() => btn.classList.remove('wrong'), 350);
-          }
-        },
-      });
-    },
-  });
+    setHandlers({
+      playStory,
+      answer: (payload) => {
+        const i = Number(payload);
+        const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
+        const fb = container.querySelector<HTMLElement>('#fb')!;
+        const correct = !!topic.question.opts[i].ok;
+        lockOptionButtons(container);
+        recordAttempt(correct);
+        if (correct) {
+          btn.classList.add('correct', 'win-burst');
+          playCorrectTone();
+          fireConfetti();
+          fb.textContent = 'Ceritanya kedengeran ya! 🎉';
+          fb.className = 'feedback good';
+        } else {
+          btn.classList.add('wrong');
+          playTryAgainTone();
+          fb.textContent = 'Coba putar & dengar lagi 💪';
+          fb.className = 'feedback bad';
+        }
+        fb.insertAdjacentHTML('afterend', roundActionsHtml(true));
+        setHandlers({
+          tryAgainRound: () => draw(),
+          nextRound: () => onDone(),
+        });
+      },
+    });
+  }
+
+  draw();
 }
 
 /**

@@ -26,10 +26,13 @@ import * as bossGame from './games/boss';
 import * as grammarGame from './games/grammar';
 import * as listeningGame from './games/listening';
 import * as balloonPopGame from './games/balloonpop';
+import * as memoryMatchGame from './games/memorymatch';
 import * as placementGame from './games/placement';
 import * as readingGame from './games/reading';
 import * as sentencePuzzleGame from './games/sentencepuzzle';
+import * as soundHuntGame from './games/soundhunt';
 import * as speakingGame from './games/speaking';
+import * as storyQuestGame from './games/storyquest';
 import * as vocabularyGame from './games/vocabulary';
 import * as wordMatchGame from './games/wordmatch';
 import {
@@ -58,8 +61,10 @@ import {
   getActiveDaysCount,
   getAvatar,
   getBossClearedCount,
+  gamesPlayedCount,
   getGameXp,
   getLast,
+  getLastGame,
   getLongestStreak,
   getName,
   getStreak,
@@ -81,12 +86,13 @@ import {
   setAvatar,
   setEventSyncHandler,
   setLast,
+  setLastGame,
   setName,
   setSyncHandler,
   snapshot,
   vocabTopicPercent,
 } from './progress';
-import type { AppState, BalloonDifficulty, LevelKey, LevelMeta, NavKey, OnDone, Screen, SkillKey, SkillMeta, WordMatchDifficulty } from './types';
+import type { AppState, LevelKey, LevelMeta, NavKey, RajaKey, Screen, SkillKey, SkillMeta } from './types';
 import { escapeHtml, qs } from './util';
 import { renderVoicePanel } from './voice-panel';
 
@@ -206,6 +212,7 @@ const state: AppState = {
   bossLevel: null,
   soonLevel: null,
   viewLevel: null,
+  gameKey: null,
 };
 
 let root: HTMLElement;
@@ -473,7 +480,7 @@ function activeNav(): NavKey {
   // nyala padahal anak sedang melihat peta).
   if (state.screen === 'home' || state.screen === 'levelSoon') return 'home';
   if (state.screen === 'settings') return 'settings';
-  if (state.screen === 'game') return 'game';
+  if (state.screen === 'game' || state.screen === 'gamePlay') return 'game';
   if (state.screen === 'rapor') return 'rapor';
   return 'belajar'; // menu, topics, activity, boss
 }
@@ -531,6 +538,12 @@ const SCREEN_TO_SLUG: Record<Screen, string> = {
   levelSoon: 'materi-segera',
   boss: 'bos',
   game: 'game',
+  // Fallback SAJA (dipakai kalau `gameKey` somehow null) — jalur normal
+  // `/game/<slug>` DITANGANI KHUSUS di `pathFromState`/`applyPathToState`
+  // di bawah (nested path, bukan pola flat 1-segmen spt slug lain di sini),
+  // slug ini sengaja beda dari `game` di atas biar TIDAK bertabrakan di
+  // `SLUG_TO_SCREEN` (reverse map).
+  gamePlay: 'game-play',
   account: 'masuk',
   placementTest: 'placement-test',
   landing: '',
@@ -540,6 +553,12 @@ const SLUG_TO_SCREEN: Record<string, Screen> = Object.fromEntries(
 );
 
 function pathFromState(s: AppState): string {
+  // Screen 'gamePlay' — nested path `/game/<slug>` (permintaan user "misal
+  // game/raja-kata"), BUKAN pola flat `/${SCREEN_TO_SLUG[...]}` spt layar
+  // lain — ditangani PALING AWAL, sebelum fallback generik di akhir fungsi.
+  if (s.screen === 'gamePlay' && s.gameKey) {
+    return `/game/${RAJA_SLUG[s.gameKey]}`;
+  }
   const query: string[] = [];
   if (s.screen === 'topics' || s.screen === 'activity') {
     if (s.skillKey) query.push(`skill=${s.skillKey}`);
@@ -563,8 +582,24 @@ function pathFromState(s: AppState): string {
  *  tidak bisa bikin renderer nge-crash gara-gara state setengah jadi. */
 function applyPathToState(pathname: string, search: string): void {
   const raw = pathname.replace(/^\//, '');
-  const screen = SLUG_TO_SCREEN[raw] ?? 'home';
   const params = new URLSearchParams(search);
+
+  // Screen 'gamePlay' — nested path `/game/<slug>`, dicek DULU sebelum
+  // fallback flat `SLUG_TO_SCREEN` (yang cuma kenal segmen tunggal persis
+  // "game", bukan "game/raja-kata"). Slug tidak dikenal → jatuh ke roster
+  // Game Hub biasa, bukan crash.
+  if (raw.startsWith('game/')) {
+    const gameKey = SLUG_TO_RAJA[raw.slice('game/'.length)];
+    if (gameKey) {
+      state.screen = 'gamePlay';
+      state.gameKey = gameKey;
+      return;
+    }
+    state.screen = 'game';
+    return;
+  }
+
+  const screen = SLUG_TO_SCREEN[raw] ?? 'home';
 
   const skillParam = params.get('skill');
   const skillKey = SKILL_KEYS.includes(skillParam as SkillKey) ? (skillParam as SkillKey) : null;
@@ -666,6 +701,11 @@ function render(): void {
   // Pengaturan di tengah tes; keluar cuma lewat tombol balik yang sudah
   // digerbang konfirmasi (renderPlacementTestScreen).
   document.body.classList.toggle('is-placement-test', state.screen === 'placementTest');
+  // Main 1 Raja Game Hub juga halaman tersendiri (permintaan user: "ketika
+  // klik icon game maka ke halaman baru... sehingga navbar dibawahnya
+  // hilang") — pola SAMA PERSIS is-placement-test, keluar tetap lewat
+  // tombol balik yang digerbang konfirmasi (`renderGamePlay`).
+  document.body.classList.toggle('is-game-play', state.screen === 'gamePlay');
 
   syncNav();
   renderCrumb();
@@ -678,6 +718,7 @@ function render(): void {
   if (state.screen === 'menu') return renderMenu();
   if (state.screen === 'topics') return renderTopics();
   if (state.screen === 'game') return renderGame();
+  if (state.screen === 'gamePlay') return renderGamePlay();
   if (state.screen === 'boss') return renderBoss();
   if (state.screen === 'account') return renderAccount();
   if (state.screen === 'placementTest') return renderPlacementTestScreen();
@@ -2850,18 +2891,16 @@ function renderBossWin(levelKey: LevelKey): void {
  * menambah bintang & tidak pernah dihitung levelUnlockMap/bossCleared. Belajar
  * tetap satu-satunya jalur nyata untuk membuka level baru.
  */
-type RajaKey = 'kata' | 'balon' | 'susun' | 'kelompok' | 'ingatan';
-
 interface RajaDef {
   key: RajaKey;
   name: string;
   sub: string;
   color: string;
   /** URL gambar ikon dominan (permintaan user) — kalau kosong, fallback ke
-   *  mascot SVG generik `rajaMascot()` (scenery.ts). Raja Kata
-   *  (`public/img/word_match.jpg`), Raja Balon (`public/img/balloon.jpg`) &
-   *  Sentence Puzzle (`public/img/sentence puzzle.jpeg`) punya art asli; 2
-   *  raja lain masih fallback mascot. */
+   *  mascot SVG generik `rajaMascot()` (scenery.ts). Raja Kata, Raja Balon,
+   *  Sentence Puzzle, Raja Ingatan, Sound Hunt & Story Quest punya art asli
+   *  (lihat path masing-masing di RAJA_LIST); Raja Kelompok & Talk to the
+   *  King masih fallback mascot. */
   icon?: string;
 }
 
@@ -2883,10 +2922,11 @@ interface RajaDef {
  * Peta Level (arena+menang sendiri, XP lebih besar), lalu user minta
  * dipindah ke sini krn lebih pas sbg "main bebas" — sekarang XP-nya SAMA
  * dgn 3 raja lain (`XP_FREEPLAY`, bukan lagi angka spesial), gate 3
- * tingkat kesulitannya (Mudah/Sedang/Sulit) tetap ada tapi jadi langkah
- * pilih-dulu di dalam `runRajaRound` (lihat `renderKataTierPicker`) — Raja
- * Kata & Raja Balon (lihat catatan di bawah) SEKARANG SAMA-SAMA minta pilih
- * varian dulu sebelum main (2 raja lain langsung random topik). Eja Kata (`runEjaKata`) TIDAK dihapus
+ * tingkat kesulitannya (Mudah/Sedang/Sulit) SEMPAT jadi langkah pilih-dulu
+ * di dalam `runRajaRound` (`renderKataTierPicker`) — ⚠️ paragraf ini SUDAH
+ * DIREVISI, TIDAK BERLAKU LAGI utk Raja Kata (lihat paragraf 🔒 revisi di
+ * bawah, sesudah "Raja Balon") — Raja Balon SENDIRI TETAP begini (picker
+ * tingkat kesulitan sebelum main, lihat catatan Raja Balon). Eja Kata (`runEjaKata`) TIDAK dihapus
  * dari app — tetap dipakai Tantangan Vocab (`games/vocabulary.ts` tab "✏️
  * Eja Kata"), cuma kehilangan entri berdiri-sendiri di Game Hub ini.
  * (3) **Roster & warna SENDIRI** — beda karakter total dari 6 Raja Hewan
@@ -2908,6 +2948,47 @@ interface RajaDef {
  * tiap tingkat py BANK KATA SENDIRI (mudah=kata pendek, sulit=kata
  * panjang, pola sama 3 bank Raja Kata) SEKALIGUS kecepatan naik-turun balon
  * beda (`DIFFICULTY_META.durMin/durMax`, mudah=paling lambat).
+ * 🔒 **Revisi (4 sesi) — "Raja Kata" SEKARANG konsep PETUALANGAN ala
+ * `games/soundhunt.ts` (Map Kerajaan Kata 5-markas), TANPA picker tingkat
+ * kesulitan, TANPA layar Welcome terpisah** — sesi 1 "update game Raja
+ * Kata dimana konsep nya seperti game Talk to the King jadi tidak ada
+ * level cukup dari awal sampai akhir dan dikunci jika belum selesai"
+ * (`renderKataTierPicker` di atas DIHAPUS TOTAL, diganti alur linear tanpa
+ * picker) — sesi 2 "kenapa game raja kata tidak seperti Sound Hunt yang
+ * ada konsep petualang", ditanya map-style Sound Hunt vs bullet-dot Story
+ * Quest → user pilih map-style + "tp konsep nya lebih ke arah
+ * berpetualang" (jadi Map 3-markas) — sesi 3 "untuk raja kata minimal 5
+ * kerajaan" (digenapkan 3→5 markas) — sesi 4 "remoeve page ini jadi ketika
+ * klik game raja-kata maka direct ke list kerajaan nya dan di atas
+ * berikan catatan 1 atau kalimat untuk rule game ini" (layar Welcome
+ * DIHAPUS, langsung buka Map + 1 kalimat aturan di puncaknya). `runRajaRound`'s
+ * cabang `'kata'` manggil `wordMatchGame.runWordMatch(stage, onRoundDone,
+ * praiseLevel)` LANGSUNG (signature baru, TANPA parameter `difficulty`
+ * lagi) — fungsi itu SENDIRI SEKARANG orkestrator penuh: **Map Kerajaan
+ * Kata** (`renderMap()`, layar PERTAMA yang tampil — 5 markas bertema
+ * Gerbang/Istana/Balairung/Menara/Ruang Harta Kata = Mudah/Sedang/Sulit/
+ * Jago/Legendaris, reuse `.trail.raja-trail` PERSIS Sound Hunt) → tap
+ * markas kebuka → 1 ronde → balik ke Map → markas berikutnya kebuka →
+ * markas ke-5 tuntas → "Semua Kepingan Ditemukan!" → `onDone()`. "Dikunci
+ * jika belum selesai" (sesi 1) TETAP terjaga: markas berikutnya SUNGGUH
+ * tidak bisa disentuh (🔒 Terkunci, tombol disabled) sebelum markas
+ * sebelumnya PERNAH dikunjungi (non-punitive — cukup pernah dicoba, bukan
+ * harus menang, persis `visited` Sound Hunt) — detail lengkap: komentar
+ * puncak `games/wordmatch.ts`. Mesin 1-ronde/1-tingkat LAMA (dulu bernama
+ * `runWordMatch`, dipanggil picker) TIDAK dihapus, cuma direname
+ * `runWordMatchRound` (lihat komentarnya sendiri di `games/wordmatch.ts` —
+ * pemanggil KEDUA yang dulu ada di sini, Door Flow "Buka Pintu Kastil",
+ * SUDAH DIHAPUS TOTAL, permintaan user).
+ * 🔒 **Revisi (sesi lanjutan) — "Raja Balon" SEKARANG JUGA ikut diubah**
+ * (permintaan user "remove tingkat kesulitan jadikan konsepnya seperti Raja
+ * Kata") — `renderBalonTierPicker` di atas SUDAH DIHAPUS TOTAL, pola SAMA
+ * PERSIS Raja Kata: `runRajaRound`'s cabang `'balon'` manggil
+ * `balloonPopGame.runBalloonPop(stage, onRoundDone, praiseLevel)` LANGSUNG
+ * (signature baru, TANPA parameter `difficulty`) — fungsi itu SENDIRI
+ * SEKARANG orkestrator Map Kerajaan Balon 5-markas (Taman/Pasar/Awan/
+ * Puncak/Balon Emas = Mudah/Sedang/Sulit/Jago/Legendaris, `BalloonDifficulty`
+ * digenapkan 3→5 tingkat sama pola `WordMatchDifficulty`), detail lengkap:
+ * komentar puncak `games/balloonpop.ts`.
  * 🔒 **"Raja Susun" DIGANTI TOTAL jadi "Sentence Puzzle"** (permintaan
  * user, screenshot referensi kompetitor: gambar di atas + kata dalam
  * gelembung tersusun piramida termasuk kata pengecoh + bar jawaban emas +
@@ -2918,35 +2999,129 @@ interface RajaDef {
  * Susun Kalimat" (`vocabularyGame.runSusunKalimat`) SAMA SEKALI TIDAK
  * disentuh, tetap dipakai persis seperti sebelumnya di luar Game Hub ini.
  * Detail mekanik: `games/sentencepuzzle.ts`.
+ * 🔒 **"Story Quest" BARU** (permintaan user, ditaruh TEPAT DI BAWAH Sound
+ * Hunt — "simpan di bawah game sound hunt", urutan array = urutan render)
+ * — fokus MURNI Reading comprehension: baca 1 halaman cerita pendek lalu
+ * jawab 1 pertanyaan, dibungkus tema "buku ajaib" (Magic Library) supaya
+ * terasa interactive storybook, BUKAN kuis 10-soal-sekaligus spt raja lain.
+ * Mekanik+data: `games/storyquest.ts`. Sama seperti Sound Hunt, SENGAJA
+ * dulu tidak ikut Open the Door "Buka Pintu Kastil" (fitur itu SUDAH
+ * DIHAPUS TOTAL, permintaan user) — sudah 1 mini-petualangan multi-halaman
+ * sendiri, beda ritme dari gauntlet cepat.
+ * 🔒 **"Talk to the King" SUDAH DIHAPUS TOTAL** (permintaan user) — dulu
+ * raja PERTAMA di Game Hub ini yang 100% Speaking (tema "audiensi dgn
+ * Raja", Royal Map → Throne Room, `games/talktotheking.ts`), sekarang
+ * dicabut dari roster & `RajaKey` sepenuhnya — file `games/talktotheking.ts`
+ * DIHAPUS, jangan cari referensinya lagi.
  */
 const RAJA_LIST: RajaDef[] = [
-  { key: 'kata', name: 'Raja Kata', sub: 'Cocokkan kata & gambar', color: 'var(--c-vocab)', icon: '/img/word_match.jpg' },
-  { key: 'balon', name: 'Raja Balon', sub: 'Letupkan balon yang cocok', color: 'var(--sun-500)', icon: '/img/balloon.jpg' },
-  { key: 'susun', name: 'Sentence Puzzle', sub: 'Susun kalimat dari gelembung kata', color: 'var(--c-gram)', icon: '/img/sentence puzzle.jpeg' },
+  { key: 'kata', name: 'Raja Kata', sub: 'Cocokkan kata & gambar', color: 'var(--c-vocab)', icon: '/img/word_match.jpeg' },
+  { key: 'balon', name: 'Raja Balon', sub: 'Letupkan balon yang cocok', color: 'var(--sun-500)', icon: '/img/baloon.jpeg' },
+  { key: 'susun', name: 'Sentence Puzzle', sub: 'Susun kalimat dari gelembung kata', color: 'var(--c-gram)', icon: '/img/sentence puzzle.png' },
   { key: 'kelompok', name: 'Raja Kelompok', sub: 'Kelompokkan gambarnya', color: 'var(--c-listen)' },
-  { key: 'ingatan', name: 'Raja Ingatan', sub: 'Cari pasangan katanya', color: 'var(--c-speak)' },
+  { key: 'ingatan', name: 'Raja Ingatan', sub: 'Cari pasangan katanya', color: 'var(--c-speak)', icon: '/img/ingatan.jpeg' },
+  { key: 'soundhunt', name: 'Sound Hunt', sub: 'Dengar & temukan Sound Crystal', color: 'var(--c-read)', icon: '/img/sound_hunt.png' },
+  { key: 'storyquest', name: 'Story Quest', sub: 'Baca cerita, jawab, lanjut petualang', color: 'var(--brand-500)', icon: '/img/story_quest.png' },
 ];
 
+/** Slug URL per Raja (screen 'gamePlay', `/game/<slug>` — permintaan user
+ *  "ketika klik icon game maka ke halaman baru misal game/raja-kata")—
+ *  manusiawi/deskriptif, BUKAN `RajaKey` mentah (mis. 'susun' → 'sentence-
+ *  puzzle', bukan '/game/susun', biar URL kebaca jelas tanpa perlu buka kode). */
+const RAJA_SLUG: Record<RajaKey, string> = {
+  kata: 'raja-kata',
+  balon: 'raja-balon',
+  susun: 'sentence-puzzle',
+  kelompok: 'raja-kelompok',
+  ingatan: 'raja-ingatan',
+  soundhunt: 'sound-hunt',
+  storyquest: 'story-quest',
+};
+const SLUG_TO_RAJA: Record<string, RajaKey> = Object.fromEntries(
+  (Object.entries(RAJA_SLUG) as [RajaKey, string][]).map(([key, slug]) => [slug, key])
+);
+
 /**
- * Game Hub — jalur petualangan mini (permintaan user: "mirip seperti halaman
- * peta petualang", "berikan edge dan garis putus-putus yang merupakan jalur
- * petualang"). Reuse `.trail`/`.trail-card` dasar yang sama dgn Peta Level
- * (`renderLevels`) TANPA `.trail-scene` (siluet medan)/status locked-cleared
- * (Game Hub tidak py progres sekuensial, PRD §12.3), TAPI rail+medali kecil
- * (`.trail-rail`/`.trail-medallion`) yang dulu dipakai di sini SEKARANG
- * DIGANTI TOTAL (permintaan user: "icon lebih dominan... raja kata icon di
- * kiri, game selanjutnya icon di kanan, selang seling... tetap berpetualang
- * jd saling terhubung") — ikon per-Raja (gambar asli utk Raja Kata,
- * `public/img/word_match.jpg`; mascot SVG generik `rajaMascot()` utk 3 raja
- * lain yang belum py art sendiri) sekarang JAUH lebih besar & jadi bagian
- * kartu itu sendiri (`.raja-stop-inner`, flex row), sisi kiri/kanan
- * BERGANTIAN per index (`icon-right` tiap index ganjil) — bukan lagi selalu
- * di rail sempit sebelah kiri. "Terhubung antar game" sekarang berupa 1
- * garis putus-putus vertikal di celah antar kartu (`.raja-trail
- * .trail-stop::after`), bukan lagi bend-path SVG per-rail (yg didesain utk
- * medali KECIL, tidak cocok lagi dgn ikon besar+selang-seling ini). Warna
- * tiap kartu tetap lewat `--band-deep` inline, cuma sekarang dibaca ikon
- * fallback (`rajaMascot`) & border ikon, bukan lagi bend/medallion lama.
+ * Game Hub — grid kartu "Pilih Game" (permintaan user "buat tampilan game
+ * nya mencari card seperti contoh gambar tapi dengan ciri khas inggrisin
+ * yuk kids", referensi screenshot kompetitor: grid 2-kolom, ikon besar di
+ * atas + judul + badge, SELURUH kartu jadi 1 tombol tap — DIGANTI TOTAL
+ * dari jalur petualang selang-seling versi sebelumnya). Diadaptasi, bukan
+ * ditiru 100% (filter kid-friendly CLAUDE.md): warna & badge tetap pakai
+ * token InggrisinYuk Kids sendiri (`--band-deep` per-Raja, `.tag`/`.tag.ok`
+ * yang sudah dipakai lintas app), subtitle (`r.sub`) SENGAJA tidak ikut
+ * dirender di kartu hub (CLAUDE.md "Teks Singkat" — ikon+judul cukup,
+ * deskripsi lengkap tetap muncul begitu anak masuk ke `renderGamePlay()`).
+ * Class BARU (`.raja-grid`/`.raja-card`/`.raja-card-icon`,
+ * `public/styles.css`) — SENGAJA TIDAK reuse `.raja-trail`/`.raja-icon`
+ * (desain trail lama) krn 3 game (Raja Kata/Balon, Sound Hunt) masih pakai
+ * PERSIS class itu utk Map Kerajaan/Hutan Ajaib INTERNAL mereka sendiri.
+ *
+ * 🔒 **Revisi user lanjutan** ("di atas list game buat seperti ini [ref
+ * screenshot 'Tantangan Harian'] dimana mirip dengan di beranda dan belajar
+ * yaitu 'Yuk Mulai'/'Yuk Lanjut' dari game terakhir dan berikan juga
+ * progress game secara general... dan tiap card game tambahkan percentage
+ * di kanan atas mirip konsepnya dengan percentage di setiap modul di
+ * halaman belajar") — 2 tambahan, KEDUANYA reuse komponen yang SUDAH ADA
+ * (bukan tiru mekanik "Tantangan Harian" referensi apa adanya — app ini
+ * TIDAK PERNAH punya coin/mata uang/streak-kalender, PRD §11, jadi 🔥/🪙/💡
+ * di puncak referensi itu SENGAJA tidak diambil sama sekali):
+ * 1. **Kartu hero "Yuk Mulai"/"Yuk Lanjutkan"** — REUSE PERSIS `.spark
+ *    compact` (komponen yang SAMA dgn kartu "lanjutkan materi" Beranda &
+ *    Menu Belajar, `sky`/`CLOUD`/`HILLS_SHORE` dari `scenery.ts`), BUKAN
+ *    komponen baru. Game terakhir dibuka (`getLastGame()`, `Store.lastGame`
+ *    BARU di `progress.ts`, diisi `setLastGame()` di `renderGamePlay()` —
+ *    pola SAMA PERSIS `last`/`setLast()` utk materi Belajar) jadi tujuan
+ *    tombol; kalau belum pernah buka game apa pun, fallback ke game
+ *    PERTAMA di roster & labelnya "Yuk Mulai" (bukan "Yuk Lanjutkan") —
+ *    logic sama `next.continuing` di `findNextMateri`. `.spark-art`
+ *    menampilkan ikon Raja itu SENDIRI (gambar asli via `<img>`, `public/
+ *    styles.css` `.spark-art img` BARU — bukan emoji generik spt Beranda/
+ *    Belajar, krn Game Hub sendiri sudah py art asli per-Raja yang lebih
+ *    kaya drpd 1 emoji).
+ * 2. **Progress bar keseluruhan** — `.spark-progress` (KOMPONEN SAMA PERSIS
+ *    dgn strip progress Menu Belajar, cuma angkanya beda sumber) di dalam
+ *    kartu hero, formula SAMA PERSIS contoh user ("100 game, baru main 10,
+ *    jadi 10%"): `gamesPlayedCount()` (BARU, `progress.ts`) hitung berapa
+ *    Raja yang `gameXp[key] > 0` (pernah dimainkan MINIMAL 1x, non-punitive
+ *    — bukan harus "tuntas", sama filosofi `visited` markas) dari total
+ *    roster level ini.
+ * 3. **Badge persen per-kartu** — REUSE PERSIS `.skill-pct` (class yang
+ *    SAMA dgn badge persen pojok-kanan-atas kartu modul Menu Belajar, TANPA
+ *    CSS baru) krn "mirip konsepnya dengan percentage di setiap modul".
+ *    Nilainya BINER 0%/100% (`getGameXp(r.key) > 0`, BUKAN skema ambang XP
+ *    yang diciptakan sendiri) — Game Hub TIDAK py struktur "10 soal
+ *    tetap"/markas persisten lintas sesi spt topik Belajar (Map Kerajaan
+ *    tiap Raja reset tiap sesi main baru, lihat komentar `games/
+ *    wordmatch.ts`), jadi satu-satunya sinyal yang JUJUR & bertahan lama
+ *    adalah "pernah dimainkan atau belum" — SAMA PERSIS basis
+ *    `gamesPlayedCount()` di atas, supaya kartu individual & progress bar
+ *    total selalu cerita yang konsisten (bukan 2 formula independen yang
+ *    bisa berselisih).
+ *
+ * 🔒 **Revisi user lanjutan (5 permintaan sekaligus)**:
+ * 1. **Judul "Game" polos DIHAPUS** — `.greet`/`<h1 class="display">` di atas
+ *    grid ikut dicabut (bukan cuma teksnya dikosongkan) krn tanpa isi lain
+ *    wrapper itu cuma nyisa margin kosong; kartu hero "Yuk Mulai" sekarang
+ *    jadi elemen PALING ATAS layar.
+ * 2. **"Setiap icon" gerak-gerak pelan** — class `mascot-idle` (keyframe
+ *    `mascotIdle`, SUDAH ADA `public/styles.css`, dipakai badge XP/kartu
+ *    Bos) ditempel ke `.raja-card-icon` (roster grid, `animation-delay`
+ *    bertingkat per kartu `i*0.15s` biar tidak bobbing bareng-bareng
+ *    serempak) DAN `.raja-icon` (markas Map Kerajaan/Hutan Ajaib internal
+ *    tiap game — `games/wordmatch.ts`/`games/balloonpop.ts`/`games/
+ *    soundhunt.ts`, lihat komentar masing-masing) — TANPA keyframe baru,
+ *    `.spark-art`'s icon (hero) SUDAH pakai `mascot-idle` sejak awal.
+ * 3. **Kartu hero "tema berpetualang"** — eyebrow BARU "🧭 Petualangan Game
+ *    Hub" di atas judul (`.eyebrow`, class generik yang sudah dipakai kartu
+ *    spark lain, mis. "Semua materi tuntas!"), progress bar labelnya diganti
+ *    dari "X/Y game" jadi **"X/Y markas"** (istilah yang sama dgn perhentian
+ *    Raja di Peta Level/Map Kerajaan tiap game, bukan kata "game" generik) —
+ *    murni lewat copy+eyebrow, BUKAN komponen visual baru (`.spark compact`
+ *    yang sama tetap dipakai apa adanya).
+ * 4/5. Screen 'gamePlay' TERSENDIRI (routing/navbar) & desain Map Kerajaan
+ *    per-game — lihat komentar `renderGamePlay()` di bawah & komentar
+ *    masing-masing `games/*.ts`.
  */
 function renderGame(): void {
   const level = currentPlayableLevel().key;
@@ -2956,61 +3131,88 @@ function renderGame(): void {
   // sama `visibleSkillKeys()`, sembunyikan diam-diam drpd kartu mati.
   const roster = RAJA_LIST.filter((r) => r.key !== 'kelompok' || sortableCount > 0);
 
-  const stops = roster
+  const playedCount = gamesPlayedCount(roster.map((r) => r.key));
+  const gamePct = roster.length > 0 ? Math.round((playedCount / roster.length) * 100) : 0;
+  // "markas" (bukan "game" polos) — permintaan user "tema nya berpetualang",
+  // reuse istilah yang sudah dipakai lintas app utk perhentian Raja (Peta
+  // Level/Map Kerajaan tiap game), bukan kata generik baru.
+  const progressBar = `
+    <div class="spark-progress">
+      <div class="spark-progress-track" role="img" aria-label="${gamePct}% markas Game Hub sudah dijelajahi">
+        <div class="spark-progress-fill" style="width:${gamePct}%"></div>
+      </div>
+      <span class="spark-progress-label">${playedCount}/${roster.length} markas · ${gamePct}%</span>
+    </div>`;
+
+  const lastKey = getLastGame();
+  const next = roster.find((r) => r.key === lastKey) ?? roster[0];
+  const sky = `<span class="cloud c1" aria-hidden="true">${CLOUD}</span><span class="cloud c2" aria-hidden="true">${CLOUD}</span>${HILLS_SHORE}`;
+  const heroIcon = next?.icon ? `<img src="${next.icon}" alt="" loading="lazy">` : next ? rajaMascot(next.key, next.color) : '';
+  const heroCard = next
+    ? `
+    <article class="spark compact" style="--spark-accent:${next.color}">
+      ${sky}
+      <div class="spark-body">
+        <span class="eyebrow">🧭 Petualangan Game Hub</span>
+        <h2 class="spark-title">${next.name}</h2>
+        <p class="spark-sub">${next.sub}</p>
+        <button class="cta" type="button" data-action="playRaja" data-payload="${next.key}">${ICON_PLAY} ${next.key === lastKey ? 'Yuk Lanjutkan' : 'Yuk Mulai'}</button>
+        ${progressBar}
+      </div>
+      <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${heroIcon}</span></div>
+    </article>`
+    : '';
+
+  const cards = roster
     .map((r, i) => {
       const xp = getGameXp(r.key);
+      const pct = xp > 0 ? 100 : 0;
       const badge = xp > 0 ? `<span class="tag">🏆 ${xp} XP</span>` : `<span class="tag ok">Baru</span>`;
       const iconInner = r.icon ? `<img src="${r.icon}" alt="" loading="lazy">` : rajaMascot(r.key, r.color);
       return `
-      <li class="trail-stop ${i % 2 === 1 ? 'icon-right' : ''}" style="--band-deep:${r.color}">
-        <div class="raja-stop-inner">
-          <span class="raja-icon" aria-hidden="true">${iconInner}</span>
-          <div class="trail-card">
-            <span class="trail-place">🎮 Raja Game Hub</span>
-            <h3>${r.name}</h3>
-            <div class="trail-meta"><span class="meta">${r.sub}</span>${badge}</div>
-            <div class="trail-actions">
-              <button class="primary-btn" type="button" data-action="playRaja" data-payload="${r.key}">▶️ Main</button>
-            </div>
-          </div>
-        </div>
-      </li>`;
+      <button class="raja-card" type="button" data-action="playRaja" data-payload="${r.key}" style="--band-deep:${r.color}">
+        <span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>
+        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="display:block;animation-delay:${(i * 0.15).toFixed(2)}s">${iconInner}</span></span>
+        <h3>${r.name}</h3>
+        ${badge}
+      </button>`;
     })
     .join('');
 
-  const doorXp = getGameXp('pintu');
-  const doorBadge = doorXp > 0 ? `🏆 ${doorXp} XP` : 'Baru';
-
   root.innerHTML = `
-    <div class="greet">
-      <h1 class="display">Game</h1>
-      <p class="lede">Main bebas kapan saja — jalur Raja menanti tantangan santaimu. Tetap dapat XP tiap main, tapi tidak menambah bintang dan tidak dihitung untuk buka level baru — bintang &amp; Tantangan Raja Hewan tetap dari Menu Belajar.</p>
-    </div>
-    <div class="door-hero">
-      <div class="door-hero-ico" aria-hidden="true">🏰🚪</div>
-      <h2>Buka Pintu Kastil</h2>
-      <p>5 pintu, 5 tantangan seru — temui Raja di ujung lorong! <span class="tag">${doorBadge}</span></p>
-      <button class="primary-btn" type="button" data-action="playOpenDoor">▶️ Mulai Petualangan</button>
-    </div>
-    <ol class="trail raja-trail">${stops}</ol>
+    ${heroCard}
+    <div class="raja-grid">${cards}</div>
   `;
 
   setHandlers({
-    playRaja: (payload) => openRajaGame(payload as RajaKey),
-    playOpenDoor: () => openDoorGame(),
+    playRaja: (payload) => go('gamePlay', { gameKey: payload as RajaKey }),
   });
 }
 
-/** Layar main 1 Raja Game Hub (Kata/Balon/Susun/Kelompok/Ingatan) —
- *  🔒 permintaan user ("pastikan ketika keluar ada pop up keluar atau
- *  lanjut", laporan tabbar bawah tidak kelihatan di layar ini) — tombol
- *  balik SEKARANG SELALU lewat konfirmasi dulu (`placementGame.
- *  renderExitConfirm`, REUSE PERSIS overlay First Placement Test — pola
- *  sama `confirmExit` di `renderPlacementTestScreen`, BUKAN duplikat baru)
- *  supaya SELALU ada jalan keluar eksplisit & disengaja dari layar ini,
- *  terlepas dari tabbar ambient kelihatan/tidak di perangkat anak. */
-function openRajaGame(key: RajaKey): void {
-  const raja = RAJA_LIST.find((r) => r.key === key)!;
+/** Layar main 1 Raja Game Hub (Kata/Balon/Susun/Kelompok/Ingatan) — screen
+ *  'gamePlay' TERSENDIRI (`state.gameKey`, URL `/game/<slug>`, permintaan
+ *  user "ketika klik icon game maka ke halaman baru... sehingga navbar
+ *  dibawahnya hilang"; rail/topline/tabbar disembunyikan lewat
+ *  `body.is-game-play`, `render()`/styles.css). Dulu `openRajaGame(key)`
+ *  cuma menimpa `root.innerHTML` langsung (bukan route beneran) — itu
+ *  sebabnya tabbar dulu masih nyangkut kelihatan walau sudah ditambah pop up
+ *  konfirmasi keluar (paragraf di bawah); SEKARANG betul² halaman
+ *  tersendiri, tabbar hilang total lewat CSS, bukan cuma diakali popup.
+ *  🔒 Pop up konfirmasi keluar (permintaan user sesi sebelumnya, "pastikan
+ *  ketika keluar ada pop up keluar atau lanjut") TETAP dipertahankan —
+ *  tombol balik SELALU lewat konfirmasi dulu (`placementGame.
+ *  renderExitConfirm`, REUSE PERSIS overlay First Placement Test) supaya
+ *  SELALU ada jalan keluar eksplisit & disengaja, bukan cuma karena tabbar
+ *  sekarang hilang jadi popup-nya jadi tidak perlu lagi. */
+function renderGamePlay(): void {
+  const key = state.gameKey;
+  const raja = key ? RAJA_LIST.find((r) => r.key === key) : undefined;
+  // URL `/game/<slug-tidak-dikenal>` atau gameKey somehow null — jatuhkan ke
+  // roster Game Hub biasa, bukan biarkan renderer crash (pola sama fallback
+  // `topics`/`activity` tanpa skill valid di `applyPathToState`).
+  if (!raja) return go('game');
+
+  setLastGame(raja.key);
   root.innerHTML = `
     <div class="act-head">
       <button class="iconbtn" type="button" data-action="backToGame" aria-label="Kembali ke Game">${ICON_BACK}</button>
@@ -3030,20 +3232,23 @@ function openRajaGame(key: RajaKey): void {
         () => go('game')
       ),
   });
-  runRajaRound(key);
+  runRajaRound(raja.key);
 }
 
 /** Topik dipilih ACAK tiap "Main" (bukan daftar-lalu-pilih) — permintaan
  *  user "ini game bukan materi": langsung main, bukan browsing materi dulu.
  *  Raja Kelompok wajib dari pool topik `sortBaskets` (`isSortableTopic`);
  *  Raja Kata py bank kata sendiri (games/wordmatch.ts, TIDAK dari
- *  vocabTopicsForLevel — lihat renderKataTierPicker); Raja Balon jg py bank
- *  kata sendiri PER TINGKAT KESULITAN (games/balloonpop.ts, TIDAK terikat
- *  level/topik apa pun — lihat renderBalonTierPicker); Sentence Puzzle
- *  ('susun') & Raja Ingatan bebas dari topik Vocab manapun di level ini
- *  (generik lintas topik Vocab) — Sentence Puzzle butuh SELURUH `topics`
- *  (bukan 1 topik acak spt Raja Ingatan) krn tiap ronde memilih topik+kata
- *  pengecoh sibling sendiri secara internal (`games/sentencepuzzle.ts`). */
+ *  vocabTopicsForLevel — Map Kerajaan Kata 5-markas Mudah→Sedang→Sulit→
+ *  Jago→Legendaris TANPA picker, lihat `wordMatchGame.runWordMatch`); Raja
+ *  Balon SEKARANG pola SAMA PERSIS Raja Kata (games/balloonpop.ts, Map
+ *  Kerajaan Balon 5-markas TANPA picker tingkat kesulitan lagi, lihat
+ *  `balloonPopGame.runBalloonPop`); Raja Ingatan jg py bank kata sendiri
+ *  (games/memorymatch.ts, TIDAK terikat level/topik Vocab manapun —
+ *  permintaan user "dedicated game"); Sentence Puzzle ('susun')
+ *  SATU-SATUNYA yang masih butuh `topics` topik Vocab level ini krn tiap
+ *  ronde memilih topik+kata pengecoh sibling sendiri secara internal
+ *  (`games/sentencepuzzle.ts`). */
 function runRajaRound(key: RajaKey): void {
   const stage = qs<HTMLDivElement>(root, '#rajaStage');
   const level = currentPlayableLevel().key;
@@ -3062,75 +3267,44 @@ function runRajaRound(key: RajaKey): void {
   }
 
   if (key === 'kata') {
-    renderKataTierPicker(stage, praiseLevel, onRoundDone);
+    // Raja Kata: TANPA picker tingkat kesulitan lagi — orkestrator penuh
+    // (Map Kerajaan Kata 5-markas) hidup DI DALAM wordMatchGame.runWordMatch()
+    // sendiri.
+    wordMatchGame.runWordMatch(stage, onRoundDone, praiseLevel);
     return;
   }
 
   if (key === 'balon') {
-    renderBalonTierPicker(stage, praiseLevel, onRoundDone);
+    // Raja Balon: TANPA picker tingkat kesulitan lagi — orkestrator penuh
+    // (Map Kerajaan Balon 5-markas) hidup DI DALAM
+    // balloonPopGame.runBalloonPop() sendiri, konsep sama Raja Kata.
+    balloonPopGame.runBalloonPop(stage, onRoundDone, praiseLevel);
     return;
   }
 
-  const topics = vocabTopicsForLevel(level);
   if (key === 'susun') {
+    const topics = vocabTopicsForLevel(level);
     sentencePuzzleGame.runSentencePuzzle(stage, topics, onRoundDone, praiseLevel);
     return;
   }
 
-  const topic = topics[Math.floor(Math.random() * topics.length)];
-  vocabularyGame.runMemoryMatch(stage, topic, onRoundDone, praiseLevel);
-}
+  if (key === 'ingatan') {
+    // Dedicated (games/memorymatch.ts, bank kata sendiri), BUKAN lagi reuse
+    // topik Vocab acak (permintaan user, lihat komentar file itu).
+    memoryMatchGame.runMemoryMatch(stage, onRoundDone, praiseLevel);
+    return;
+  }
 
-/** Raja Kata & Raja Balon (di bawah) — DUA Raja Game Hub yang minta pilih
- *  varian dulu sebelum main (tingkat kesulitan Mudah/Sedang/Sulit — bagian
- *  inti mekaniknya, bukan sekadar variasi topik spt 3 raja lain). Reuse
- *  `.wm-tier-grid`/`.wm-tier-btn` (CSS sudah ada dari `games/wordmatch.ts`). */
-function renderKataTierPicker(stage: HTMLDivElement, praiseLevel: LevelKey, onRoundDone: OnDone): void {
-  const tiers: WordMatchDifficulty[] = ['mudah', 'sedang', 'sulit'];
-  const cards = tiers
-    .map((d) => {
-      const meta = wordMatchGame.DIFFICULTY_META[d];
-      return `
-        <button class="opt-btn wm-tier-btn" type="button" data-action="pickKataTier" data-payload="${d}">
-          <span class="wm-tier-label">${meta.label}</span>
-          <span class="wm-tier-sub">${meta.sub}</span>
-        </button>`;
-    })
-    .join('');
-  stage.innerHTML = `
-    <p class="meta" style="margin-bottom:var(--s3)">Pilih tingkat kesulitan dulu, yuk!</p>
-    <div class="wm-tier-grid">${cards}</div>
-  `;
-  setHandlers({
-    pickKataTier: (payload) => wordMatchGame.runWordMatch(stage, payload as WordMatchDifficulty, onRoundDone, praiseLevel),
-  });
-}
+  if (key === 'soundhunt') {
+    // Sound Hunt: Listening murni, bank soal & Forest Map sendiri
+    // (games/soundhunt.ts), generik lintas level sama seperti raja lain.
+    soundHuntGame.runSoundHunt(stage, onRoundDone, praiseLevel);
+    return;
+  }
 
-/** Pola SAMA PERSIS `renderKataTierPicker` di atas (permintaan user
- *  "kecepatan [balon] sama seperti game match word, ada level mudah/sedang/
- *  sulit") — tingkat kesulitan di sini mengatur KECEPATAN naik balon
- *  (`DIFFICULTY_META.durMin/durMax`, mudah=paling lambat) SEKALIGUS bank
- *  kata (`materi soal pun disesuaikan dengan level` — mudah=kata pendek,
- *  sulit=kata panjang, lihat `games/balloonpop.ts`). */
-function renderBalonTierPicker(stage: HTMLDivElement, praiseLevel: LevelKey, onRoundDone: OnDone): void {
-  const tiers: BalloonDifficulty[] = ['mudah', 'sedang', 'sulit'];
-  const cards = tiers
-    .map((d) => {
-      const meta = balloonPopGame.DIFFICULTY_META[d];
-      return `
-        <button class="opt-btn wm-tier-btn" type="button" data-action="pickBalonTier" data-payload="${d}">
-          <span class="wm-tier-label">${meta.label}</span>
-          <span class="wm-tier-sub">${meta.sub}</span>
-        </button>`;
-    })
-    .join('');
-  stage.innerHTML = `
-    <p class="meta" style="margin-bottom:var(--s3)">Pilih tingkat kesulitan dulu, yuk!</p>
-    <div class="wm-tier-grid">${cards}</div>
-  `;
-  setHandlers({
-    pickBalonTier: (payload) => balloonPopGame.runBalloonPop(stage, payload as BalloonDifficulty, onRoundDone, praiseLevel),
-  });
+  // 'storyquest' — Story Quest: Reading comprehension murni, cerita & Magic
+  // Library sendiri (games/storyquest.ts), generik lintas level sama raja lain.
+  storyQuestGame.runStoryQuest(stage, onRoundDone, praiseLevel);
 }
 
 function showRajaDone(key: RajaKey): void {
@@ -3145,178 +3319,6 @@ function showRajaDone(key: RajaKey): void {
   `;
   setHandlers({
     replayRaja: () => runRajaRound(key),
-    toGame: () => go('game'),
-  });
-}
-
-/**
- * 🚪 Open the Door — kartu hero PALING ATAS layar Game (di atas trail Raja
- * Game Hub, permintaan user eksplisit "posisinya paling atas"). Rangkaian
- * 5 "pintu" yang SENGAJA reuse 5 mekanik Raja yang SUDAH ADA (Kata→Balon→
- * Susun→Kelompok→Ingatan) apa adanya, BUKAN 5 quiz per-skill baru —
- * proposal awal user (pintu = Vocabulary/Listening/Grammar/Reading/Speaking
- * MCQ, referensi spec luar) dianalisis dulu & DITOLAK SENDIRI oleh user
- * setelah ketahuan 2 masalah: (1) persis mengulang pola "kuis skill
- * berbaju mahkota" yang sudah ditolak dulu utk RAJA_LIST (lihat komentar
- * di atas RAJA_LIST — versi awal "Raja Kata/Dengar/Suara"), krn tiap pintu
- * cuma MCQ bernama skill, bukan mekanik game beneran; (2) versi Speaking-
- * nya simulasi ("record lalu tunggu 2 detik, tanpa skor asli") melanggar
- * Aturan Wajib Speaking CLAUDE.md. User pilih arah "Gauntlet 5-Raja" —
- * bungkus 5 mekanik yang sudah lolos semua aturan itu jadi 1 pengalaman
- * bertema lorong kastil, ketemu Raja di pintu terakhir. Reward TETAP flat
- * XP per pintu (`XP_FREEPLAY`, sama persis 1 Raja individual), TIDAK ADA
- * bintang tambahan — konsisten aturan Game Hub ("tidak menambah bintang").
- */
-const DOOR_ORDER: RajaKey[] = ['kata', 'balon', 'susun', 'kelompok', 'ingatan'];
-
-const DOOR_META: Record<RajaKey, { emoji: string; label: string }> = {
-  kata: { emoji: '🧩', label: 'Raja Kata' },
-  balon: { emoji: '🎈', label: 'Raja Balon' },
-  susun: { emoji: '📜', label: 'Sentence Puzzle' },
-  kelompok: { emoji: '🗂️', label: 'Raja Kelompok' },
-  ingatan: { emoji: '🧠', label: 'Raja Ingatan' },
-};
-
-/** Sama filter dgn `roster` di `renderGame()` — Raja Kelompok cuma ikut
- *  rangkaian pintu kalau level ini punya ≥1 topik `sortBaskets`. */
-function doorKeysFor(level: LevelKey): RajaKey[] {
-  const sortableCount = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic).length;
-  return DOOR_ORDER.filter((k) => k !== 'kelompok' || sortableCount > 0);
-}
-
-function doorDotsHtml(keys: RajaKey[], activeIndex: number): string {
-  const dots = keys
-    .map((_, i) => {
-      const cls = [i === activeIndex ? 'current' : '', i < activeIndex ? 'done' : ''].filter(Boolean).join(' ');
-      return `<span class="door-dot ${cls}" aria-hidden="true">${i < activeIndex ? '🚪' : i + 1}</span>`;
-    })
-    .join('');
-  return `<div class="door-dots">${dots}</div>`;
-}
-
-/** Layar masuk gauntlet — header+exit-confirm pola SAMA PERSIS `openRajaGame`
- *  (`placementGame.renderExitConfirm`, supaya tombol balik selalu lewat
- *  konfirmasi dulu, konsisten seluruh layar main Game Hub). */
-function openDoorGame(): void {
-  root.innerHTML = `
-    <div class="act-head">
-      <button class="iconbtn" type="button" data-action="backToGame" aria-label="Kembali ke Game">${ICON_BACK}</button>
-      <div class="txt">
-        <h1>🚪 Buka Pintu Kastil</h1>
-        <div class="sub"><span class="tag accent">🏰 5 pintu menuju Raja</span></div>
-      </div>
-    </div>
-    <div class="card raja-stage" id="doorStage" style="--k:var(--sun-500)"></div>
-  `;
-  setHandlers({
-    backToGame: () =>
-      placementGame.renderExitConfirm(
-        () => {
-          /* "Yuk Lanjut" — overlay sudah menutup dirinya sendiri */
-        },
-        () => go('game')
-      ),
-  });
-  const level = currentPlayableLevel().key;
-  runDoorFlow(qs<HTMLDivElement>(root, '#doorStage'), doorKeysFor(level), 0, 0);
-}
-
-/** Mesin gauntlet: kartu pintu tertutup → tap ketuk → mekanik Raja aslinya
- *  jalan LANGSUNG di stage yang sama (0 duplikasi logic dari `runRajaRound`)
- *  → begitu mekanik itu selesai (`onDone`-nya sendiri, tombol "Selesai ✅"
- *  di dalamnya), tampilkan transisi "pintu terbuka" singkat lalu lanjut ke
- *  pintu berikutnya — sampai `index` melebihi jumlah pintu, baru ketemu
- *  Raja. Kata/Balon dikunci ke tingkat 'sedang' (skip layar pilih-tingkat
- *  supaya lorong tetap terasa mengalir, bukan berhenti tiap pintu). */
-function runDoorFlow(stage: HTMLDivElement, keys: RajaKey[], index: number, xpSoFar: number): void {
-  if (index >= keys.length) {
-    showKingReward(stage, xpSoFar);
-    return;
-  }
-  const key = keys[index]!;
-  const meta = DOOR_META[key];
-  const level = currentPlayableLevel().key;
-  const praiseLevel = currentLevelMeta().key;
-
-  function openDoorCard(): void {
-    stage.innerHTML = `
-      ${doorDotsHtml(keys, index)}
-      <div class="door-card">
-        <div class="door-illustration" id="doorIllus" aria-hidden="true">🚪</div>
-        <h3>Pintu ${index + 1}</h3>
-        <p class="meta">${meta.emoji} ${meta.label}</p>
-        <button class="primary-btn" type="button" data-action="knockDoor">🔓 Ketuk & Buka!</button>
-      </div>
-    `;
-    setHandlers({
-      knockDoor: () => {
-        qs<HTMLDivElement>(stage, '#doorIllus').classList.add('shake');
-        setTimeout(startMechanic, 380);
-      },
-    });
-  }
-
-  function startMechanic(): void {
-    const onMechanicDone = () => {
-      addXp(XP_FREEPLAY);
-      addGameXp('pintu', XP_FREEPLAY);
-      showDoorOpenTransition();
-    };
-    switch (key) {
-      case 'kata':
-        wordMatchGame.runWordMatch(stage, 'sedang', onMechanicDone, praiseLevel);
-        return;
-      case 'balon':
-        balloonPopGame.runBalloonPop(stage, 'sedang', onMechanicDone, praiseLevel);
-        return;
-      case 'susun':
-        sentencePuzzleGame.runSentencePuzzle(stage, vocabTopicsForLevel(level), onMechanicDone, praiseLevel);
-        return;
-      case 'kelompok': {
-        const pool = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic);
-        const topic = pool[Math.floor(Math.random() * pool.length)]!;
-        vocabularyGame.runKelompokkan(stage, topic.id, topic.items, topic.sortBaskets, onMechanicDone, praiseLevel);
-        return;
-      }
-      case 'ingatan': {
-        const topics = vocabTopicsForLevel(level);
-        const topic = topics[Math.floor(Math.random() * topics.length)]!;
-        vocabularyGame.runMemoryMatch(stage, topic, onMechanicDone, praiseLevel);
-        return;
-      }
-    }
-  }
-
-  function showDoorOpenTransition(): void {
-    stage.innerHTML = `
-      ${doorDotsHtml(keys, index + 1)}
-      <div class="door-card">
-        <div class="door-illustration opening" aria-hidden="true">🚪✨</div>
-        <p class="meta">Pintu ${index + 1} terbuka!</p>
-      </div>
-    `;
-    setTimeout(() => runDoorFlow(stage, keys, index + 1, xpSoFar + XP_FREEPLAY), 500);
-  }
-
-  openDoorCard();
-}
-
-/** Layar ketemu Raja di ujung lorong — reuse PERSIS bahasa visual
- *  `renderBossWin` (`.done-wrap.win`/`.sunburst.lg.mascot-pop`/`.stars-pop`/
- *  `.win-banner`), TANPA bintang (Game Hub tidak pernah kasih bintang). */
-function showKingReward(stage: HTMLDivElement, xpEarned: number): void {
-  stage.innerHTML = `
-    <div class="done-wrap win">
-      <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">🤴</span><span class="crown">👑</span></div>
-      <h2 class="win-banner">Kamu Berhasil!</h2>
-      <p class="done-sub">"Hebaaat! Kamu sudah membuka semua pintu di kastilku." — Raja Kastil</p>
-      <p class="done-sub"><b>+${xpEarned} XP</b> ⚡ terkumpul dari petualangan ini</p>
-      <button class="primary-btn" type="button" data-action="replayDoor">🔁 Main Lagi</button>
-      <button class="ghost-btn" type="button" data-action="toGame">📋 Kembali ke Game</button>
-    </div>
-  `;
-  setHandlers({
-    replayDoor: () => runDoorFlow(stage, doorKeysFor(currentPlayableLevel().key), 0, 0),
     toGame: () => go('game'),
   });
 }

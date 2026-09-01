@@ -59,10 +59,10 @@ saja yang berubah.
 
 ```bash
 npm install     # sekali saja
-npm run dev     # bundle (esbuild watch) + serve di http://127.0.0.1:8000, auto-rebuild tiap perubahan
+npm run dev     # bundle (esbuild watch) + serve di http://127.0.0.1:8200, auto-rebuild tiap perubahan
 ```
 
-Buka **http://127.0.0.1:8000** di browser (bukan buka file `index.html` langsung). Ini penting khusus untuk fitur mikrofon (Speaking) — Chrome cuma nyimpen izin mikrofon secara permanen untuk origin `http://`/`https://` (termasuk localhost), sedangkan untuk `file://` izinnya sering kebersihkan lagi tiap reload sehingga terus-terusan minta izin ulang. Biarkan `npm run dev` tetap berjalan di terminal selama development; berhenti dengan `Ctrl+C`.
+Buka **http://127.0.0.1:8200** di browser (bukan buka file `index.html` langsung). Ini penting khusus untuk fitur mikrofon (Speaking) — Chrome cuma nyimpen izin mikrofon secara permanen untuk origin `http://`/`https://` (termasuk localhost), sedangkan untuk `file://` izinnya sering kebersihkan lagi tiap reload sehingga terus-terusan minta izin ulang. Biarkan `npm run dev` tetap berjalan di terminal selama development; berhenti dengan `Ctrl+C`.
 
 `npm run dev` sekarang menjalankan `dev-server.mjs` (esbuild JS API + proxy kecil), bukan langsung CLI `esbuild --servedir` — supaya ada **SPA fallback**: URL layar (`/belajar`, `/pengaturan`, dst — lihat bagian "URL routing" di `app.ts`) bukan file asli, jadi request ke path itu perlu diarahkan balik ke `index.html` supaya router client-side yang render layarnya. Tanpa ini, reload langsung di `/belajar` akan 404 di localhost juga.
 

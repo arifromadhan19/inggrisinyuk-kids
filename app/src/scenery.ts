@@ -75,6 +75,61 @@ export const HILLS_RIDGE = HILLS_DUNES;
 export const CLOUD = `<svg class="cloud-art" viewBox="0 0 90 34" aria-hidden="true" focusable="false"><g fill="currentColor"><ellipse cx="30" cy="20" rx="22" ry="12"/><ellipse cx="53" cy="16" rx="17" ry="14"/><ellipse cx="68" cy="22" rx="16" ry="10"/></g></svg>`;
 
 /**
+ * Maskot "Raja" Game Hub (`app.ts` `RAJA_LIST`, `materi/game.md` §7) — roster
+ * KHUSUS Game Hub, beda karakter total dari 6 Raja Hewan Peta Level
+ * (permintaan user eksplisit). Dibangun tangan dari bentuk SVG sederhana
+ * (bukan ilustrasi digambar/di-generate — tidak ada tool gambar tersedia):
+ * 1 wajah+mahkota dipakai bersama semua Raja (identitas keluarga karakter),
+ * cuma 1 aksesori kecil yang beda per jenis mekanik. Warna diisi lewat
+ * parameter (bukan hardcode) supaya tiap Raja bisa pakai token warna
+ * `--c-*` yang sudah ada di styles.css, bukan palet baru.
+ */
+const RAJA_CROWN =
+  '<path d="M14 26 L14 15 L21 20.5 L32 6 L43 20.5 L50 15 L50 26 Z" fill="var(--sun-500)"/>' +
+  '<rect x="13" y="25" width="38" height="5" rx="2" fill="var(--sun-500)"/>' +
+  '<circle cx="21" cy="17.5" r="2.1" fill="var(--sun-100)"/><circle cx="32" cy="10.5" r="2.5" fill="var(--sun-100)"/><circle cx="43" cy="17.5" r="2.1" fill="var(--sun-100)"/>';
+
+const rajaFace = (c: string): string =>
+  `<circle cx="36" cy="40" r="16" fill="#fff" stroke="${c}" stroke-width="3"/>` +
+  '<circle cx="30" cy="38" r="2" fill="var(--ink)"/><circle cx="42" cy="38" r="2" fill="var(--ink)"/>' +
+  '<path d="M30 45 q6 5 12 0" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round"/>';
+
+/** Aksesori kecil per jenis mekanik — pola sama komentar file ini (bentuk
+ *  sederhana: rect/circle/text, bukan path panjang). Key = `RajaKey` (app.ts). */
+const RAJA_ACCESSORY: Record<string, (c: string) => string> = {
+  // Dua kartu kecil + garis penghubung — echo mekanik Word Match (tap
+  // kata↔gambar lalu digambar garis, games/wordmatch.ts), bukan lagi "Aa"
+  // (aksesori lama utk Raja Ejaan, kini diganti Raja Kata di roster ini).
+  kata: (c) =>
+    `<rect x="18" y="42" width="14" height="12" rx="4" fill="${c}"/>` +
+    `<rect x="40" y="42" width="14" height="12" rx="4" fill="${c}" opacity=".55"/>` +
+    `<path d="M32 48h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`,
+  susun: (c) =>
+    `<rect x="20" y="49" width="9" height="9" rx="2.5" fill="${c}" opacity=".55"/>` +
+    `<rect x="31" y="44" width="10" height="14" rx="2.5" fill="${c}" opacity=".8"/>` +
+    `<rect x="43" y="38" width="11" height="20" rx="2.5" fill="${c}"/>`,
+  kelompok: (c) =>
+    `<rect x="20" y="46" width="14" height="11" rx="4" fill="${c}"/>` +
+    `<rect x="38" y="46" width="14" height="11" rx="4" fill="${c}" opacity=".55"/>` +
+    `<circle cx="27" cy="40" r="3.5" fill="${c}"/>`,
+  ingatan: (c) =>
+    `<rect x="24" y="40" width="11" height="14" rx="3" fill="${c}"/>` +
+    `<rect x="37" y="40" width="11" height="14" rx="3" fill="${c}" opacity=".55"/>` +
+    `<path d="M24 46h11M37 46h11" stroke="#fff" stroke-width="1" opacity=".6"/>`,
+  // Kristal kecil (belah ketupat) diapit 2 lengkung gelombang suara — echo
+  // tema "Sound Crystal" + Listening (games/soundhunt.ts).
+  soundhunt: (c) =>
+    `<rect x="30" y="40" width="12" height="12" rx="2" fill="${c}" transform="rotate(45 36 46)"/>` +
+    `<path d="M20 50a8 8 0 0 1 0-8" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>` +
+    `<path d="M52 50a8 8 0 0 0 0-8" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>`,
+};
+
+export function rajaMascot(key: string, color: string): string {
+  const accessory = RAJA_ACCESSORY[key]?.(color) ?? '';
+  return `<svg viewBox="0 0 72 72" width="40" height="40" aria-hidden="true" focusable="false">${RAJA_CROWN}${rajaFace(color)}${accessory}</svg>`;
+}
+
+/**
  * Satu "markas" di peta = 1 level (PRD §3). Nama tempat di sini MURNI label
  * pemandangan untuk bagian peta yang sedang dilewati — nama & emoji level
  * tetap yang utama dan tidak diganti (PRD §7, RESEARCH §13.2: nama level tidak

@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "npm run typecheck && esbuild src/main.ts --bundle --outfile=public/bundle.js --format=iife --target=es2019 --minify",
+    "verify:content": "node scripts/verify-vocab-content.mjs",
+    "verify:duplicates": "node scripts/verify-content-duplicates.mjs",
+    "build": "npm run typecheck && npm run verify:content && npm run verify:duplicates && esbuild src/main.ts --bundle --outfile=public/bundle.js --format=iife --target=es2019 --minify",
     "dev": "node dev-server.mjs"
   },
   "devDependencies": {

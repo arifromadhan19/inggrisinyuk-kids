@@ -9,7 +9,7 @@ import * as esbuild from 'esbuild';
 import http from 'node:http';
 
 const HOST = '127.0.0.1';
-const PORT = 8000;
+const PORT = 8200;
 // Port internal esbuild HARUS beda dari PORT publik di atas & host-nya
 // eksplisit '127.0.0.1' — tanpa host/port eksplisit, esbuild default ke
 // host '0.0.0.0' (target connect yang tidak reliable dari proxy) DAN port

@@ -198,15 +198,32 @@ export function speak(text: string): void {
   pendingTimers.push(timerId);
 }
 
+/** OS/browser sering punya LEBIH dari 1 voice utk bahasa yang sama — mis.
+ *  macOS default cuma bawa voice "compact" (mis. "Damayanti" utk id-ID,
+ *  kualitas robotic), sedangkan varian "Enhanced"/"Premium" (diunduh manual
+ *  lewat Pengaturan > Aksesibilitas > Spoken Content > Kelola Voice) muncul
+ *  sbg voice TERPISAH dgn nama yang sama + kata kualitas ini, jauh lebih
+ *  natural. Chrome kadang jg punya "Google [Bahasa]" utk beberapa bahasa,
+ *  serupa kualitasnya. `speakLocalized` di bawah PRIORITASKAN voice yang
+ *  namanya mengandung salah satu kata ini kalau ada beberapa kandidat utk
+ *  bahasa yang sama — 0 biaya/tanpa backend (masih Web Speech API bawaan
+ *  browser, PRD §5), cuma pilih yang TERBAIK dari yang SUDAH tersedia di
+ *  device, BUKAN mendatangkan voice baru. Kalau device cuma punya 1 voice
+ *  compact utk bahasa itu (paling umum di macOS bawaan), TTS tetap kedengaran
+ *  spt sebelumnya — batasan Web Speech API, bukan sesuatu yang app ini bisa
+ *  perbaiki lagi tanpa TTS cloud berbayar (di luar scope v1, CLAUDE.md §5). */
+const QUALITY_VOICE_HINTS = ['google', 'enhanced', 'premium', 'neural', 'natural', 'wavenet'];
+
 /**
  * Ucapkan teks dalam bahasa LAIN dari konten belajar Inggris (mis. soal
  * Vocab arah Indonesia→Inggris di First Placement Test). `selectedVoice`
  * (untuk Inggris) SENGAJA tidak dipakai di sini — voice punya bahasanya
  * sendiri yang menang atas `u.lang` kalau dipaksa, jadi teks Indonesia
  * pakai voice Inggris akan salah lafal total. Cari voice `lang`-nya cocok
- * dari daftar MENTAH (`allVoicesRaw`, semua bahasa); kalau tidak ketemu,
- * biarkan browser pilih default-nya sendiri utk `lang` itu (masih lebih
- * baik drpd dipaksa voice Inggris).
+ * dari daftar MENTAH (`allVoicesRaw`, semua bahasa) — kalau ADA beberapa
+ * kandidat, ambil yang paling "natural" dulu (`QUALITY_VOICE_HINTS`); kalau
+ * tidak ada satu pun voice cocok, biarkan browser pilih default-nya sendiri
+ * utk `lang` itu (masih lebih baik drpd dipaksa voice Inggris).
  */
 export function speakLocalized(text: string, lang: string): void {
   if (!ttsSupported) return;
@@ -217,7 +234,8 @@ export function speakLocalized(text: string, lang: string): void {
   u.lang = lang;
   u.rate = playbackRate;
   const prefix = lang.slice(0, 2).toLowerCase();
-  const localizedVoice = allVoicesRaw.find((v) => v.lang?.toLowerCase().startsWith(prefix));
+  const candidates = allVoicesRaw.filter((v) => v.lang?.toLowerCase().startsWith(prefix));
+  const localizedVoice = candidates.find((v) => QUALITY_VOICE_HINTS.some((h) => v.name.toLowerCase().includes(h))) ?? candidates[0];
   if (localizedVoice) u.voice = localizedVoice;
   const timerId = setTimeout(() => window.speechSynthesis.speak(u), SPEAK_SAFETY_DELAY_MS);
   pendingTimers.push(timerId);

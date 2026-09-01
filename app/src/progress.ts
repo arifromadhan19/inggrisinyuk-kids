@@ -66,6 +66,19 @@ export interface Store {
    *  TRD.md §5/§6 untuk desain lengkap. Menggantikan `wordInteractions` untuk
    *  Kenalan JUGA (section='kenalan') — satu sistem, bukan dua paralel. */
   sections: Record<string, SectionState>;
+  /** XP kumulatif PER "Raja" Game Hub (`materi/game.md` §7, `app.ts`
+   *  `RAJA_LIST`) — subtotal MURNI KOSMETIK utk badge kartu ("🏆 X XP"),
+   *  bukan sumber kebenaran baru: tetap ditambah BARENGAN `xp` total lewat
+   *  `addXp` di titik yang sama (lihat `app.ts` `onRajaRoundDone`), cuma
+   *  dipecah per-Raja di sini biar tiap kartu bisa nunjukin progresnya
+   *  sendiri. Key = `RajaKey` (app.ts), TIDAK disinkron ke server (lokal
+   *  murni, sama alasan `name`/`avatar` — lihat `mergeFromServer`). */
+  gameXp: Record<string, number>;
+  /** "Raja" Game Hub terakhir dibuka (`RajaKey`, app.ts) — dipakai kartu
+   *  "Yuk Mulai"/"Yuk Lanjutkan" di puncak layar Game (permintaan user, pola
+   *  SAMA PERSIS `last`/`setLast` di atas utk materi Belajar). TIDAK
+   *  disinkron ke server (lokal murni, alasan sama `gameXp`). */
+  lastGame: string | null;
 }
 
 /** `kind` soal Latihan Inti (`games/vocabulary.ts` `LatihanQuestion`) — cuma
@@ -157,6 +170,8 @@ const EMPTY: Store = {
   avatar: ANIMAL_AVATARS[0],
   wordInteractions: [],
   sections: {},
+  gameXp: {},
+  lastGame: null,
 };
 
 function read(): Store {
@@ -185,6 +200,11 @@ function read(): Store {
         parsed.sections && typeof parsed.sections === 'object' && !Array.isArray(parsed.sections)
           ? (parsed.sections as Record<string, SectionState>)
           : {},
+      gameXp:
+        parsed.gameXp && typeof parsed.gameXp === 'object' && !Array.isArray(parsed.gameXp)
+          ? Object.fromEntries(Object.entries(parsed.gameXp).filter(([, v]) => num(v) === v))
+          : {},
+      lastGame: typeof parsed.lastGame === 'string' ? parsed.lastGame : null,
     };
   } catch {
     // Storage bisa diblokir (mode privat). App tetap jalan, cuma tanpa progres.
@@ -419,6 +439,22 @@ export function isStepVisited(skill: SkillKey, topicId: string, step: 'latihan' 
   return getSlot(skill, topicId, `${step}-visited`, 0)?.st === 2;
 }
 
+/**
+ * Penanda "kartu Cara Main topik ini sudah pernah dilihat" (permintaan user)
+ * — gate SEKALI SEUMUR HIDUP topik sebelum Kenalan pertama kali dibuka
+ * (`renderActivity`, app.ts). Pola SAMA PERSIS `markStepVisited`/
+ * `isStepVisited` di atas: reuse `markSlotAnswered`/`getSlot` (slot 0 sbg
+ * satu-satunya slot, section khusus) — supaya TIDAK perlu field `Store`
+ * baru/migrasi skema sync ke `portal/`.
+ */
+export function markCaraMainSeen(skill: SkillKey, topicId: string): void {
+  markSlotAnswered(skill, topicId, 'caramain-visited', 0, true);
+}
+
+export function hasSeenCaraMain(skill: SkillKey, topicId: string): boolean {
+  return getSlot(skill, topicId, 'caramain-visited', 0)?.st === 2;
+}
+
 /** Tap tombol Kenalan (🔊 listen / 🎤 mic / 🎮 game) — dipanggil dari
  *  `markWordInteraction` di bawah (section selalu 'kenalan' di situ). */
 export function markSlotInteraction(
@@ -569,6 +605,94 @@ export function listeningTopicPercent(
   return Math.round(((latihanPct + tantanganPct) / 2) * 100);
 }
 
+/**
+ * Persentase progres 1 topik Reading FORMAT KEDUA (`ReadingWordTopic`, "Baca
+ * Kata", Little Stars) — sama persis pola `listeningTopicPercent` di atas
+ * (rata-rata Latihan Inti + 1 sub-section Tantangan, Kenalan TIDAK dihitung).
+ * Ditambahkan sbg respons feedback user ("progress bar Reading masih kasar
+ * dibanding Vocab/Listening") — sebelumnya Reading (KEDUA format) jatuh ke
+ * fallback `isStepVisited` di `app.ts` (0%/100% kasar, bukan naik bertahap
+ * per soal). Section Tantangan-nya `'tantangan-baca'` (BUKAN
+ * `'tantangan-susun'` spt Listening — mekanik beda: pilih kata/gambar, bukan
+ * susun kata dari word bank — nama section sengaja dibedakan biar jelas dari
+ * dump data mana pun, walau aman dari tabrakan lintas skill krn key progress
+ * sudah py awalan skill). Format LAMA (Adventurer, `ReadingTopic`) TIDAK
+ * pakai fungsi ini sama sekali — TETAP fallback `isStepVisited`, belum py
+ * section granular (di luar scope revisi ini, lihat CLAUDE.md "Reading — 2
+ * Format Berdampingan").
+ */
+export function readingTopicPercent(
+  topicId: string,
+  itemCount: number,
+  tantangan?: { section: SectionName; total: number }
+): number {
+  if (itemCount <= 0) return 0;
+  const skill: SkillKey = 'reading';
+
+  const stepPct = (section: SectionName, total: number): number => {
+    if (total <= 0) return 0;
+    const s = getSection(skill, topicId, section);
+    if (!s) return 0;
+    let done = 0;
+    for (let i = 0; i < total; i += 1) {
+      if (s.slots[i]?.st === 2) done += 1;
+    }
+    return done / total;
+  };
+
+  const sectionTotal = (section: SectionName, fallback: number): number =>
+    getSection(skill, topicId, section)?.plan?.length ?? fallback;
+
+  const latihanPct = stepPct('latihan', sectionTotal('latihan', itemCount));
+  // `tantangan` opsional — default `'tantangan-baca'` (Little Stars/Starter,
+  // `ReadingWordTopic`) supaya pemanggil lama TIDAK perlu diubah; Explorer
+  // (`ReadingCheckTopic`) manggil dgn `{section:'tantangan-cek', total}`
+  // sendiri krn nama section-nya beda (mekanik beda: pilih gambar dari
+  // kalimat, bukan pilih gambar dari kata).
+  const tantanganSection = tantangan?.section ?? 'tantangan-baca';
+  const tantanganFallback = tantangan?.total ?? itemCount;
+  const tantanganPct = stepPct(tantanganSection, sectionTotal(tantanganSection, tantanganFallback));
+
+  return Math.round(((latihanPct + tantanganPct) / 2) * 100);
+}
+
+/**
+ * Persentase progres 1 topik Grammar FORMAT KEDUA (`GrammarPatternTopic` —
+ * Little Stars "Satu atau Banyak?" DAN Starter "Suka atau Tidak Suka?", SATU
+ * fungsi dipakai KEDUANYA krn section name-nya sama `'tantangan-pola'`
+ * apa pun kontras visualnya) — sama persis pola `readingTopicPercent` di
+ * atas (rata-rata Latihan Inti + 1 sub-section Tantangan, Kenalan TIDAK
+ * dihitung). Section Tantangan-nya `'tantangan-pola'` (mekanik pilih ucapan
+ * cocok dgn gambar, beda dari `'tantangan-baca'` Reading/`'tantangan-susun'`
+ * Listening — nama section sengaja dibedakan biar jelas dari dump data mana
+ * pun). Format LAMA (`GrammarTopic`, Explorer/Adventurer/Achiever) & format
+ * KETIGA (`GrammarTransformTopic`, Trailblazer) TIDAK pakai fungsi ini —
+ * TETAP fallback `isStepVisited`, belum py section granular.
+ */
+export function grammarTopicPercent(topicId: string, itemCount: number, tantanganTotal: number): number {
+  if (itemCount <= 0) return 0;
+  const skill: SkillKey = 'grammar';
+
+  const stepPct = (section: SectionName, total: number): number => {
+    if (total <= 0) return 0;
+    const s = getSection(skill, topicId, section);
+    if (!s) return 0;
+    let done = 0;
+    for (let i = 0; i < total; i += 1) {
+      if (s.slots[i]?.st === 2) done += 1;
+    }
+    return done / total;
+  };
+
+  const sectionTotal = (section: SectionName, fallback: number): number =>
+    getSection(skill, topicId, section)?.plan?.length ?? fallback;
+
+  const latihanPct = stepPct('latihan', sectionTotal('latihan', itemCount));
+  const tantanganPct = stepPct('tantangan-pola', sectionTotal('tantangan-pola', tantanganTotal));
+
+  return Math.round(((latihanPct + tantanganPct) / 2) * 100);
+}
+
 export function setLast(spot: LastSpot): void {
   const store = read();
   store.last = spot;
@@ -645,6 +769,41 @@ export function addXp(amount: number): void {
 
 export function getXp(): number {
   return read().xp;
+}
+
+/** Subtotal XP PER "Raja" Game Hub (`app.ts` `RAJA_LIST`) — murni kosmetik
+ *  buat badge kartu, lihat komentar `Store.gameXp`. SELALU dipanggil
+ *  BARENGAN `addXp` (bukan pengganti) di titik yang sama. */
+export function addGameXp(key: string, amount: number): void {
+  const store = read();
+  store.gameXp[key] = Math.max(0, (store.gameXp[key] ?? 0) + amount);
+  write(store);
+}
+
+export function getGameXp(key: string): number {
+  return read().gameXp[key] ?? 0;
+}
+
+/** "Raja" Game Hub terakhir dibuka — lihat komentar `Store.lastGame`. */
+export function setLastGame(key: string): void {
+  const store = read();
+  store.lastGame = key;
+  write(store);
+}
+
+export function getLastGame(): string | null {
+  return read().lastGame;
+}
+
+/** Berapa banyak "Raja" Game Hub yang PERNAH dimainkan (`gameXp[key] > 0`)
+ *  dari total `keys` yang tersedia di level ini — dasar progress bar "Yuk
+ *  Mulai/Lanjutkan" Game Hub (permintaan user: "progress game secara umum
+ *  dari 0-100%... misal ada 100 game dan baru main 10, maka 10%"). Non-
+ *  punitive, sama filosofi "pernah dicoba" markas Map Kerajaan — main sekali
+ *  saja sudah dihitung, tidak perlu "menang"/"tuntas". */
+export function gamesPlayedCount(keys: string[]): number {
+  const store = read();
+  return keys.filter((k) => (store.gameXp[k] ?? 0) > 0).length;
 }
 
 /* ------------------------------------------------------ progres harian -- */
@@ -732,6 +891,60 @@ export function getStreak(): number {
   }
 }
 
+/**
+ * "Absensi" — total HARI berbeda anak pernah aktif (permintaan user: "Stats
+ * Singkat... tambahkan seperti absensi seberapa sering buka dalam hari") —
+ * dari `activeDays` yang SAMA dgn `getWeekActivity`/`getStreak`, murni
+ * derived (bukan counter kali-dibuka baru — app ini TIDAK melacak berapa
+ * kali dibuka DALAM 1 hari yang sama, cuma HARI mana saja yang punya
+ * aktivitas, konsisten prinsip "progres searah naik/informatif" §12.4: yang
+ * dilaporkan itu KONSISTENSI hari main, bukan jumlah buka-tutup app yang
+ * tidak ada nilai pedagogisnya). Beda dari `getStreak()` (berturut-turut,
+ * bisa reset) — ini akumulasi SELAMANYA, cuma naik, tidak pernah berkurang.
+ */
+export function getActiveDaysCount(): number {
+  return new Set(read().activeDays).size;
+}
+
+/**
+ * Rekor hari beruntun TERPANJANG yang PERNAH dicapai (beda dari `getStreak()`
+ * yang cuma streak SAAT INI, bisa 0 kalau lagi libur) — dipakai pendamping
+ * "Hari Aktif" di Stats Singkat Rapor spy libur beberapa hari tidak bikin
+ * pencapaian lama seolah hilang (non-punitive, sama semangat XP yang cuma
+ * naik). Scan SEKALI lintas seluruh `activeDays`, pakai aturan pemaaf 1-hari
+ * yang SAMA dgn `getStreak()` (README §di atas) — 1 hari bolong di tengah
+ * TIDAK memutus rekor, 2 hari bolong berturut-turut baru memutus.
+ */
+export function getLongestStreak(): number {
+  const days = [...new Set(read().activeDays.map(toEpochDay))].sort((a, b) => a - b);
+  if (days.length === 0) return 0;
+
+  let best = 1;
+  let current = 1;
+  let usedGrace = false;
+  for (let i = 1; i < days.length; i += 1) {
+    const gap = days[i] - days[i - 1];
+    if (gap === 1) {
+      current += 1;
+    } else if (gap === 2 && !usedGrace) {
+      current += 1;
+      usedGrace = true;
+    } else {
+      current = 1;
+      usedGrace = false;
+    }
+    best = Math.max(best, current);
+  }
+  return best;
+}
+
+/** Jumlah Raja/Markas yang sudah ditaklukkan (`bossCleared`, dipakai
+ *  `isBossCleared`/Peta Level) — dipakai Stats Singkat Rapor sbg pencapaian
+ *  bertema petualangan, pelengkap "Hari Aktif"/"Rekor Beruntun". */
+export function getBossClearedCount(): number {
+  return read().bossCleared.length;
+}
+
 /* -------------------------------------------------------------- akurasi -- */
 
 /**
@@ -751,6 +964,151 @@ export function getAccuracy(): number | null {
   const { correctAttempts, totalAttempts } = read();
   if (totalAttempts === 0) return null;
   return Math.round((correctAttempts / totalAttempts) * 100);
+}
+
+/* -------------------------------------------------------------- insight -- */
+
+/**
+ * Kartu insight per TOPIK/KATA di Rapor (`app.ts` `renderRapor`) — "topik
+ * mana yang sudah mantap" vs "topik mana yang masih perlu dilatih lagi",
+ * DERIVED murni dari `SlotState.n`/`w`/`ir` yang SUDAH dicatat tiap soal
+ * dijawab (`markSlotAnswered`) — TIDAK ADA field `Store` baru/migrasi skema
+ * sync. Beda granularitas dari "Skor Tiap Skill" (`topicFinished`, cuma
+ * lihat SUDAH DICOBA/BELUM per topik) — ini lihat SEBERAPA SERING meleset,
+ * jadi bisa nangkep topik yang sudah "selesai dicoba" tapi masih goyah
+ * (topik finished TIDAK berarti mantap — 2 sinyal ini sengaja independen,
+ * topik boleh saja masuk `weakTopics` walau `topicFinished()` sudah true).
+ */
+export interface TopicSignal {
+  skill: SkillKey;
+  topicId: string;
+  attempts: number;
+  wrongRate: number;
+}
+
+export interface ItemSignal {
+  skill: SkillKey;
+  topicId: string;
+  /** Kata/kalimat target yg meleset (denormalisasi `SlotState.ir`, lihat
+   *  komentarnya di atas — "supaya rapor 'kata apa yang masih susah' bisa
+   *  GROUP BY langsung"). */
+  ir: string;
+  attempts: number;
+  wrongRate: number;
+}
+
+export interface LearningInsights {
+  /** Topik yg cukup sering dicoba TAPI wrongRate-nya masih tinggi — urut
+   *  paling perlu dilatih lagi dulu. */
+  weakTopics: TopicSignal[];
+  /** Topik yg cukup sering dicoba DAN wrongRate-nya rendah — urut paling
+   *  banyak dicoba dulu (paling teruji, bukan cuma kebetulan sekali benar). */
+  strongTopics: TopicSignal[];
+  /** Kata/kalimat spesifik yg paling sering meleset lintas topik. */
+  strugglingWords: ItemSignal[];
+  /** Total soal terjawab lintas SEMUA section granular/skill — angka konkret
+   *  buat "Stats Singkat" Rapor, pelengkap XP/streak/akurasi. */
+  totalAnswered: number;
+  /** Jumlah KATA Vocabulary unik (`ir` distinct, skill:'vocabulary' saja —
+   *  bukan kalimat Listening/Reading) yg pernah benar minimal 1x (`ok:1`,
+   *  union non-punitive — sekali benar tetap dihitung "dikuasai" walau
+   *  sempat salah di percobaan lain). Dipakai "Stats Singkat" Rapor. */
+  masteredWords: number;
+}
+
+/** Section 'kenalan' (tap 🔊/🎤/🎮, bukan soal berjawaban benar-salah) &
+ *  `*-visited` (penanda biner "step pernah dibuka", `markStepVisited`) TIDAK
+ *  dihitung — keduanya lewat `markSlotInteraction`/slot khusus yg TIDAK
+ *  PERNAH mengisi `SlotState.n`, jadi otomatis kelewat lewat cek `slot.n` di
+ *  bawah; guard nama section ini murni buat kejelasan/skip lebih cepat. */
+function isGradedSection(section: string): boolean {
+  return section !== 'kenalan' && !section.endsWith('-visited');
+}
+
+/**
+ * Scan `Store.sections` SEKALI, agregasi wrong-rate per topik & per kata
+ * (`ir`) — generik lintas skill/format (Vocab/Listening/Reading/Grammar/
+ * Speaking, format lama maupun baru) krn cuma baca BENTUK `SlotState` yang
+ * sudah seragam, bukan hardcode nama section per format.
+ *
+ * Ambang default (`minTopicAttempts`/`weakThreshold` dst) sengaja tidak
+ * agresif — 1-2 kali meleset dari sedikit percobaan BUKAN sinyal yang
+ * layak dilaporkan ke orang tua sbg "perlu dilatih" (bisa cuma salah tap
+ * sekali), makanya ada syarat jumlah percobaan MINIMUM dulu sebelum
+ * wrong-rate-nya dipercaya.
+ */
+export function computeInsights(
+  opts: {
+    minTopicAttempts?: number;
+    minWordAttempts?: number;
+    weakThreshold?: number;
+    strongThreshold?: number;
+    limit?: number;
+  } = {}
+): LearningInsights {
+  const { minTopicAttempts = 3, minWordAttempts = 2, weakThreshold = 0.34, strongThreshold = 0.1, limit = 3 } = opts;
+
+  const store = read();
+  const topicMap = new Map<string, { skill: SkillKey; topicId: string; attempts: number; wrong: number }>();
+  const itemMap = new Map<string, { skill: SkillKey; topicId: string; ir: string; attempts: number; wrong: number }>();
+  const masteredVocabWords = new Set<string>();
+  let totalAnswered = 0;
+
+  for (const [key, section] of Object.entries(store.sections)) {
+    const [skill, topicId, sectionName] = key.split(':') as [SkillKey, string, string];
+    if (!isGradedSection(sectionName)) continue;
+    for (const slot of Object.values(section.slots)) {
+      if (!slot.n) continue;
+      totalAnswered += slot.n;
+
+      const tKey = `${skill}:${topicId}`;
+      const t = topicMap.get(tKey) ?? { skill, topicId, attempts: 0, wrong: 0 };
+      t.attempts += slot.n;
+      t.wrong += slot.w ?? 0;
+      topicMap.set(tKey, t);
+
+      if (slot.ir) {
+        const iKey = `${skill}:${topicId}:${slot.ir}`;
+        const it = itemMap.get(iKey) ?? { skill, topicId, ir: slot.ir, attempts: 0, wrong: 0 };
+        it.attempts += slot.n;
+        it.wrong += slot.w ?? 0;
+        itemMap.set(iKey, it);
+
+        if (skill === 'vocabulary' && slot.ok === 1) masteredVocabWords.add(slot.ir);
+      }
+    }
+  }
+
+  const topics: TopicSignal[] = [...topicMap.values()].map((t) => ({
+    skill: t.skill,
+    topicId: t.topicId,
+    attempts: t.attempts,
+    wrongRate: t.wrong / t.attempts,
+  }));
+  const items: ItemSignal[] = [...itemMap.values()].map((i) => ({
+    skill: i.skill,
+    topicId: i.topicId,
+    ir: i.ir,
+    attempts: i.attempts,
+    wrongRate: i.wrong / i.attempts,
+  }));
+
+  const weakTopics = topics
+    .filter((t) => t.attempts >= minTopicAttempts && t.wrongRate >= weakThreshold)
+    .sort((a, b) => b.wrongRate - a.wrongRate)
+    .slice(0, limit);
+
+  const strongTopics = topics
+    .filter((t) => t.attempts >= minTopicAttempts && t.wrongRate <= strongThreshold)
+    .sort((a, b) => b.attempts - a.attempts)
+    .slice(0, limit);
+
+  const strugglingWords = items
+    .filter((i) => i.attempts >= minWordAttempts && i.wrongRate >= weakThreshold)
+    .sort((a, b) => b.wrongRate - a.wrongRate)
+    .slice(0, limit * 2);
+
+  return { weakTopics, strongTopics, strugglingWords, totalAnswered, masteredWords: masteredVocabWords.size };
 }
 
 /* ----------------------------------------------------------------- nama -- */
@@ -872,6 +1230,8 @@ export function mergeFromServer(remote: Partial<Store> | null | undefined): void
     avatar: local.avatar,
     wordInteractions: union(local.wordInteractions, strings(remote.wordInteractions)),
     sections: mergeSections(local.sections, remote.sections),
+    gameXp: local.gameXp,
+    lastGame: local.lastGame,
   });
 }
 
