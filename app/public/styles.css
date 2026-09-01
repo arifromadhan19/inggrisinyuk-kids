@@ -1204,14 +1204,20 @@ body.is-game-play .tabbar{ display:none; }
    sebelumnya, dari hasil analisis giggleacademy.com/learning-course": grid
    2-kolom (`.raja-grid`/`.raja-card`) DIKONFIRMASI sudah tepat, cuma kartu
    Map Kerajaan-nya sendiri kerasa terlalu datar/putih polos (versi grid ini
-   awalnya 1:1 ikut gaya kartu roster `/game`, yang MEMANG sengaja netral).
-   Modifier BARU, HANYA ditempel kartu Map Kerajaan (roster `/game` TETAP
-   putih/krem polos apa adanya, tidak ikut berubah) — kartu dapat rona warna
-   Raja-nya sendiri yang LEMBUT (`color-mix` low-%, bukan latar saturasi
-   penuh spt versi terrain SEBELUMNYA yang sudah dicabut — temuan riset
-   sendiri: Giggle Academy dominan putih/krem, warna cuma AKSEN, bukan latar
-   utama), ikon dapat tint sedikit lebih pekat drpd roster biar tetap
-   menonjol di atas kartu yang sekarang tidak polos putih lagi. */
+   awalnya 1:1 ikut gaya kartu roster `/game`, yang waktu itu sengaja netral).
+   Kartu dapat rona warna Raja-nya sendiri yang LEMBUT (`color-mix` low-%,
+   bukan latar saturasi penuh spt versi terrain SEBELUMNYA yang sudah dicabut
+   — temuan riset sendiri: Giggle Academy dominan putih/krem, warna cuma
+   AKSEN, bukan latar utama), ikon dapat tint sedikit lebih pekat drpd base
+   biar tetap menonjol di atas kartu yang sekarang tidak polos putih lagi.
+   🔒 **Revisi (permintaan user, dibandingkan langsung vs versi warna KUAT
+   lewat screenshot side-by-side)** — modifier ini SEKARANG JUGA dipakai di
+   roster utama `/game` (dulu "TETAP putih/krem polos apa adanya, tidak ikut
+   berubah" — keputusan itu DIBALIK setelah dikonfirmasi ulang, bukan lupa).
+   Versi warna KUAT (dicoba sekali lagi utk perbandingan, class `terrain-
+   card`) TETAP DITOLAK — user pilih rona lembut ini utk KEDUA konteks
+   (Map Kerajaan & roster), jadi sekarang `.raja-card.map-card` satu-satunya
+   modifier warna yang hidup, dipakai di 2 tempat. */
 .raja-card.map-card{
   background:linear-gradient(180deg, color-mix(in srgb, var(--band-deep) 14%, var(--surface)) 0%, color-mix(in srgb, var(--band-deep) 6%, var(--surface-2)) 100%);
   border-color:color-mix(in srgb, var(--band-deep) 30%, var(--line));

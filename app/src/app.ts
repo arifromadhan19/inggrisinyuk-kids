@@ -3343,7 +3343,7 @@ function renderGame(): void {
       const badge = xp > 0 ? `<span class="tag">🏆 ${xp} XP</span>` : `<span class="tag ok">Baru</span>`;
       const iconInner = r.icon ? `<img src="${r.icon}" alt="" loading="lazy">` : rajaMascot(r.key, r.color);
       return `
-      <button class="raja-card" type="button" data-action="playRaja" data-payload="${r.key}" style="--band-deep:${r.color}">
+      <button class="raja-card map-card" type="button" data-action="playRaja" data-payload="${r.key}" style="--band-deep:${r.color}">
         <span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>
         <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="display:block;animation-delay:${(i * 0.15).toFixed(2)}s">${iconInner}</span></span>
         <h3>${r.name}</h3>
