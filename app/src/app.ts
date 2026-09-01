@@ -1299,6 +1299,12 @@ function renderHome(): void {
         </div>
       </aside>
     </section>
+
+    ${
+      hereLevel && LEVEL_CAMBRIDGE_REF[hereLevel.key]
+        ? `<p class="meta" style="margin-top:var(--s3)">Catatan: level ini berdasarkan ${LEVEL_CAMBRIDGE_REF[hereLevel.key]}.</p>`
+        : ''
+    }
   `;
 
   setHandlers({
@@ -3153,11 +3159,17 @@ interface RajaDef {
  * DIHAPUS, jangan cari referensinya lagi.
  */
 const RAJA_LIST: RajaDef[] = [
-  { key: 'kata', name: 'Raja Kata', sub: 'Cocokkan kata & gambar', color: 'var(--c-vocab)', icon: '/img/word_match.jpeg' },
-  { key: 'balon', name: 'Raja Balon', sub: 'Letupkan balon yang cocok', color: 'var(--sun-500)', icon: '/img/baloon.jpeg' },
+  // 🔒 Nama tampilan disamakan ke pola Inggris "petualangan" yang sudah
+  // dipakai Sentence Puzzle/Sound Hunt/Story Quest (permintaan user, audit
+  // "penggunaan nama game tidak konsisten") — Raja Kata/Balon/Ingatan dulu
+  // satu-satunya yang masih "Raja [Indonesia]", sekarang jadi Word Quest/
+  // Balloon Hunt/Memory Hunt. `key`/slug/icon TIDAK berubah (progres lokal
+  // anak & URL lama tetap valid) — MURNI label yang tampil ke user.
+  { key: 'kata', name: 'Word Quest', sub: 'Cocokkan kata & gambar', color: 'var(--c-vocab)', icon: '/img/word_match.jpeg' },
+  { key: 'balon', name: 'Balloon Hunt', sub: 'Letupkan balon yang cocok', color: 'var(--sun-500)', icon: '/img/baloon.jpeg' },
   { key: 'susun', name: 'Sentence Puzzle', sub: 'Susun kalimat dari gelembung kata', color: 'var(--c-gram)', icon: '/img/sentence puzzle.png' },
   { key: 'kelompok', name: 'Raja Kelompok', sub: 'Kelompokkan gambarnya', color: 'var(--c-listen)' },
-  { key: 'ingatan', name: 'Raja Ingatan', sub: 'Cari pasangan katanya', color: 'var(--c-speak)', icon: '/img/ingatan.jpeg' },
+  { key: 'ingatan', name: 'Memory Hunt', sub: 'Cari pasangan katanya', color: 'var(--c-speak)', icon: '/img/ingatan.jpeg' },
   { key: 'soundhunt', name: 'Sound Hunt', sub: 'Dengar & temukan Sound Crystal', color: 'var(--c-read)', icon: '/img/sound_hunt.png' },
   { key: 'storyquest', name: 'Story Quest', sub: 'Baca cerita, jawab, lanjut petualang', color: 'var(--brand-500)', icon: '/img/story_quest.png' },
 ];
@@ -3342,7 +3354,16 @@ function renderGame(): void {
 
   root.innerHTML = `
     ${heroCard}
-    <div class="raja-grid game-hub-grid">${cards}</div>
+    <div class="map-board game-hub-board">
+      <div class="map-sky">
+        <span class="map-sun" aria-hidden="true"></span>
+        <span class="cloud c1" aria-hidden="true">${CLOUD}</span>
+        <span class="cloud c2" aria-hidden="true">${CLOUD}</span>
+        <h2>🗺️ Semua Markas</h2>
+        <p>Pilih markas yang mau dijelajahi.</p>
+      </div>
+      <div class="raja-grid game-hub-grid">${cards}</div>
+    </div>
   `;
 
   setHandlers({

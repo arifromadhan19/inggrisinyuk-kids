@@ -515,12 +515,19 @@ body.is-game-play .tabbar{ display:none; }
    nempel di class list, harmless, tapi CSS-nya dihapus krn sudah redundan). */
 .spark.compact .spark-art{ width:76px; height:76px; font-size:36px; box-shadow:0 0 0 4px rgba(255,255,255,.14), 0 10px 20px -10px rgba(6,51,58,.85); }
 
-/* Jarak ke daftar Raja di bawahnya (permintaan user) — `.spark` sendiri
-   TIDAK punya margin-bottom (dipakai jg di Beranda/Menu Belajar yang
-   spacing-nya sudah pas lewat `.stack`/gap induk lain), jadi digantung di
-   grid Game Hub SAJA (`.game-hub-grid`, bukan `.raja-grid` polos — dipakai
-   jg di dalam Map Kerajaan tiap game yang tidak butuh margin ini). */
-.game-hub-grid{ margin-top:var(--s4); }
+/* Board "Semua Markas" (permintaan user: "tiru yang relevan" dari section
+   Jalur Petualangan Beranda) — REUSE PERSIS `.map-board`/`.map-sky` (sky
+   gradien+matahari+awan) yg sudah ada, TANPA warna terrain di kartunya
+   sendiri (`.raja-card` TETAP netral putih/krem — keputusan riset Giggle
+   Academy yg sudah dikunci sebelumnya, lihat komentar `.raja-card.map-card`
+   di atas, SENGAJA tidak dibalik). `.spark` (hero) sendiri TIDAK punya
+   margin-bottom (dipakai jg di Beranda/Menu Belajar yg spacing-nya sudah pas
+   lewat `.stack`/gap induk lain), jadi jarak ke board ini digantung di
+   `.game-hub-board` SAJA. */
+.game-hub-board{ margin-top:var(--s4); }
+.game-hub-board .map-sky{ padding:var(--s4) var(--s4) var(--s3); }
+.game-hub-board .map-sky h2{ position:relative; z-index:1; }
+.game-hub-board .raja-grid{ padding:var(--s4); }
 
 .jump-grid{ display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); }
 .jump{
