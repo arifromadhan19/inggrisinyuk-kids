@@ -23,7 +23,17 @@ import {
   resetSectionPlan,
   setSectionCursor,
 } from '../progress';
-import { listenAndRecordOnce, playCorrectTone, playTryAgainTone, speak, speakSequence, sttSupported, wordMatchDetail } from '../speech';
+import {
+  listenAndRecordOnce,
+  playCorrectTone,
+  playTryAgainTone,
+  playWrongTone,
+  speak,
+  speakSequence,
+  sttSupported,
+  vibrateDevice,
+  wordMatchDetail,
+} from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
 import { shuffle } from '../util';
@@ -36,7 +46,7 @@ export function renderKenalan(container: HTMLElement, topic: GrammarTopic, onNex
         .map(
           (ex, i) => `
         <div class="primer-item">
-          <div style="font-size:26px">${ex.emoji}</div>
+          <div class="primer-ic">${ex.emoji}</div>
           <div class="txt"><b>${ex.en}</b></div>
           <div class="mini-play" data-action="play" data-payload="${i}">🔊</div>
         </div>`
@@ -71,7 +81,6 @@ export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDo
     container.innerHTML = `
       <span class="stage-badge">🎯 Susun Kalimat</span>
       <div class="id-text">Soal ${round + 1} dari ${topic.scramble.length}</div>
-      <div class="big-emoji" style="font-size:44px;">${sc.emoji}</div>
       <div class="answer-row ${answer.length ? '' : 'empty'}">
         ${answer.map((a, ai) => `<span class="chip placed" data-action="unpick" data-payload="${ai}">${a.w}</span>`).join('')}
       </div>
@@ -107,6 +116,8 @@ export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDo
         const built = answer.map((a) => a.w).join(' ');
         if (built === sc.target.join(' ')) {
           recordAttempt(true);
+          playCorrectTone();
+          fireConfetti();
           fb.textContent = 'Kalimatnya pas! 🎉';
           fb.className = 'feedback good';
           speak(built);
@@ -114,6 +125,9 @@ export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDo
           setTimeout(draw, 1000);
         } else {
           recordAttempt(false);
+          container.querySelector('.answer-row')?.classList.add('is-wrong');
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = 'Urutannya belum pas, coba atur lagi 💪';
           fb.className = 'feedback bad';
         }
@@ -372,7 +386,7 @@ export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatte
           .map(
             (it, i) => `
           <div class="primer-item" style="align-items:flex-start">
-            <div style="font-size:26px">${it.emoji}</div>
+            <div class="primer-ic">${it.emoji}</div>
             <div class="txt">
               <b>${it.formA.en}</b><span>${it.formA.id}</span>
               <b style="display:block;margin-top:6px">${it.formB.en}</b><span>${it.formB.id}</span>
@@ -539,6 +553,8 @@ function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, 
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
+      playWrongTone();
+      vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
     }
@@ -624,7 +640,8 @@ export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatt
         } else {
           recordAttempt(false);
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
@@ -759,7 +776,8 @@ export function runTantanganPattern(container: HTMLElement, topic: GrammarPatter
       } else {
         recordAttempt(false);
         btn.classList.add('wrong');
-        playTryAgainTone();
+        playWrongTone();
+        vibrateDevice(160);
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';
       }
@@ -880,7 +898,7 @@ export function renderKenalanTransform(container: HTMLElement, topic: GrammarTra
           const correct = t.reportedOptions.find((o) => o.ok)!;
           return `
         <div class="primer-item" style="align-items:flex-start">
-          <div style="font-size:26px">${t.emoji}</div>
+          <div class="primer-ic">${t.emoji}</div>
           <div class="txt">
             <b>${t.speaker}: "${t.original}"</b>
             <span style="display:block;margin-top:4px">→ ${correct.text}</span>
@@ -975,7 +993,8 @@ export function runLatihanIntiTransform(container: HTMLElement, topic: GrammarTr
         } else {
           recordAttempt(false);
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
@@ -1094,7 +1113,8 @@ export function runTantanganTransform(container: HTMLElement, topic: GrammarTran
         } else {
           recordAttempt(false);
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }

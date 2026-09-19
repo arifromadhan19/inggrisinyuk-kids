@@ -86,9 +86,9 @@ import {
   mergeFromServer,
   peekOutbox,
   readingTopicPercent,
+  requestSync,
   setAvatar,
   setBrowseLevel,
-  setEventSyncHandler,
   setLast,
   setLastGame,
   setName,
@@ -278,17 +278,23 @@ function syncUnlocksFromAccount(): void {
 
 /**
  * Sync progres (bintang/XP/streak/status soal per section, dst) + outbox
- * event ("setiap mencoba pakai di save") ke `portal/` — dipasang SEKALI di
- * boot lewat `setSyncHandler`/`setEventSyncHandler` (progress.ts), jadi tiap
- * `write()`/`recordEvent()` internal di sana (dari MANA pun dipanggil)
- * otomatis memicu debounce yang SAMA, tanpa perlu menyentuh puluhan titik
- * panggil satu-satu. 1 flush = 1 request PUT berisi snapshot `Store` TERBARU
- * (`snapshot()`, bukan snapshot basi dari pemicu pertama) + outbox event
- * yang belum terkirim — event yang sukses dikirim baru dihapus dari outbox
- * (`clearOutboxIds`), supaya gagal kirim tidak menghilangkan detailnya.
- * Didebounce 1.5s supaya ronde beruntun (mis. 10 soal Latihan Inti) cuma
- * kirim 1 request. Kalau belum login: no-op (localStorage TETAP jalan penuh
- * sendirian, PRD §5/§14.4 — main tanpa akun harus utuh).
+ * event ke `portal/` — REVISI (permintaan user: "supaya server ringan,
+ * jangan auto-sync tiap progress kecil") dari desain lama yang memicu
+ * request tiap `write()`/`recordEvent()` internal progress.ts (yaitu tiap 1
+ * soal dijawab). SEKARANG localStorage MURNI jadi sumber kebenaran selama
+ * anak masih mengerjakan section — request PUT ke server cuma terjadi kalau
+ * `requestSync()` (progress.ts) dipanggil EKSPLISIT dari titik section
+ * BENERAN selesai (lihat pemanggil `requestSync` di `runStage`'s case
+ * `'vocabulary'` & `games/vocabulary.ts` `runTantangan` — Latihan Inti +
+ * tiap tab Tantangan [Eja Kata/Susun Kalimat/Penggunaan], bukan skill lain
+ * dulu utk saat ini). 1 flush = 1 request PUT berisi snapshot `Store`
+ * TERBARU (`snapshot()`) + outbox event yang belum terkirim — event yang
+ * sukses dikirim baru dihapus dari outbox (`clearOutboxIds`), supaya gagal
+ * kirim tidak menghilangkan detailnya. Debounce 1.5s dipertahankan sbg
+ * pengaman kalau 2 section selesai nyaris bersamaan, BUKAN lagi mekanisme
+ * utama pembatas frekuensi (skenario itu sudah hilang krn trigger-nya
+ * sendiri sudah jarang). Kalau belum login: no-op (localStorage TETAP jalan
+ * penuh sendirian, PRD §5/§14.4 — main tanpa akun harus utuh).
  */
 let progressSyncTimer: ReturnType<typeof setTimeout> | undefined;
 function scheduleProgressSync(): void {
@@ -299,14 +305,13 @@ function scheduleProgressSync(): void {
     void saveProgress(snapshot() as unknown as Record<string, unknown>, events)
       .then(() => clearOutboxIds(events.map((e) => (e as { id: string }).id)))
       .catch(() => {
-        /* offline/gagal kirim — progres tetap aman di localStorage, coba lagi di write/event berikutnya */
+        /* offline/gagal kirim — progres tetap aman di localStorage, coba lagi di requestSync berikutnya */
       });
   }, 1500);
 }
 
 function wireProgressSync(): void {
   setSyncHandler(() => scheduleProgressSync());
-  setEventSyncHandler(() => scheduleProgressSync());
 }
 
 /** Tarik progres dari server & gabung ke localStorage (union, bukan
@@ -352,7 +357,7 @@ export function initApp(): void {
 
   paintLevelChips();
   paintNav();
-  wireProgressSync(); // pasang sekali — dari sini tiap write() progress.ts otomatis ikut ke-push kalau login
+  wireProgressSync(); // pasang sekali — requestSync() (dipanggil eksplisit di titik section selesai) ikut ke-push kalau login
   // SEBELUM render pertama — supaya peta (/peta) & strip peta di Beranda
   // langsung tampil sinkron dengan hasil placement test yang tersimpan,
   // tanpa nunggu fetch /api/me selesai (cache lokal dibaca sinkron).
@@ -1178,7 +1183,7 @@ function renderHome(): void {
     let actions: string;
     if (lvl.hasContent && isUnlocked) {
       actions = `
-        <button class="primary-btn" type="button" data-action="openMenuFromLevels" data-payload="${lvl.key}">📋 Yuk Belajar</button>
+        <button class="primary-btn" type="button" data-action="openMenuFromLevels" data-payload="${lvl.key}">🧭 Yuk Petualang</button>
         <button class="ghost-btn" type="button" data-action="openBossFromLevels" data-payload="${lvl.key}">${BOSS_AVATAR[lvl.key]} ${cleared ? 'Main Lagi' : 'Coba Tantangan'}</button>`;
     } else if (isUnlocked) {
       // Terbuka tapi materinya belum ada (`hasContent:false`). Dulu cuma teks
@@ -2068,7 +2073,19 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
     case 'vocabulary': {
       const topic = vocabTopicsForLevel(contentLevel)[state.topicIndex];
       if (state.step === 0) vocabularyGame.renderKenalan(stage, topic, praiseLevel);
-      else if (state.step === 1) vocabularyGame.runLatihanInti(stage, topic, nextStep, praiseLevel);
+      // requestSync() di sini (bukan generik semua skill) — permintaan user
+      // eksplisit scope Vocab dulu "untuk saat ini" (4 titik: Latihan Inti +
+      // 3 tab Tantangan, yang terakhir di games/vocabulary.ts runTantangan).
+      else if (state.step === 1)
+        vocabularyGame.runLatihanInti(
+          stage,
+          topic,
+          () => {
+            requestSync();
+            nextStep();
+          },
+          praiseLevel
+        );
       else vocabularyGame.runTantangan(stage, topic, nextStep, praiseLevel);
       return;
     }
@@ -3326,7 +3343,6 @@ function renderGame(): void {
     <article class="spark compact game-hero" style="--spark-accent:${next.color}">
       ${sky}
       <div class="spark-body">
-        <span class="eyebrow">🧭 Petualangan Game Hub</span>
         <h2 class="spark-title">${next.name}</h2>
         <p class="spark-sub">${next.sub}</p>
         <button class="cta" type="button" data-action="playRaja" data-payload="${next.key}">${ICON_PLAY} ${next.key === lastKey ? 'Yuk Lanjutkan' : 'Yuk Mulai'}</button>
@@ -3343,7 +3359,7 @@ function renderGame(): void {
       const badge = xp > 0 ? `<span class="tag">🏆 ${xp} XP</span>` : `<span class="tag ok">Baru</span>`;
       const iconInner = r.icon ? `<img src="${r.icon}" alt="" loading="lazy">` : rajaMascot(r.key, r.color);
       return `
-      <button class="raja-card map-card" type="button" data-action="playRaja" data-payload="${r.key}" style="--band-deep:${r.color}">
+      <button class="raja-card terrain-card" type="button" data-action="playRaja" data-payload="${r.key}" style="--band-deep:${r.color}">
         <span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>
         <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="display:block;animation-delay:${(i * 0.15).toFixed(2)}s">${iconInner}</span></span>
         <h3>${r.name}</h3>
@@ -3359,8 +3375,8 @@ function renderGame(): void {
         <span class="map-sun" aria-hidden="true"></span>
         <span class="cloud c1" aria-hidden="true">${CLOUD}</span>
         <span class="cloud c2" aria-hidden="true">${CLOUD}</span>
-        <h2>🗺️ Semua Markas</h2>
-        <p>Pilih markas yang mau dijelajahi.</p>
+        <h2>🗺️ Pilih Markasmu!</h2>
+        <p>Banyak game seru menantimu di sini.</p>
       </div>
       <div class="raja-grid game-hub-grid">${cards}</div>
     </div>

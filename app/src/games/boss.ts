@@ -24,7 +24,16 @@ import {
 } from '../content';
 import { setHandlers } from '../interaction';
 import { recordAttempt, recordEvent } from '../progress';
-import { listenAndRecordOnce, playCorrectTone, playTryAgainTone, speak, sttSupported, wordMatchDetail } from '../speech';
+import {
+  listenAndRecordOnce,
+  playCorrectTone,
+  playTryAgainTone,
+  playWrongTone,
+  speak,
+  sttSupported,
+  vibrateDevice,
+  wordMatchDetail,
+} from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
 import type { LevelKey, OnDone } from '../types';
@@ -146,12 +155,16 @@ export function runBoss(container: HTMLElement, onWin: OnDone, level: LevelKey):
           if (opts[i] === target) {
             recordAttempt(true);
             btn.classList.add('correct');
+            playCorrectTone();
+            fireConfetti();
             fb.textContent = 'Kena! 🎉';
             fb.className = 'feedback good';
             setTimeout(() => runVocabPhase(round + 1), 750);
           } else {
             recordAttempt(false);
             btn.classList.add('wrong');
+            playWrongTone();
+            vibrateDevice(160);
             fb.textContent = 'Coba lagi ya 💪';
             fb.className = 'feedback bad';
             setTimeout(() => btn.classList.remove('wrong'), 350);
@@ -186,12 +199,16 @@ export function runBoss(container: HTMLElement, onWin: OnDone, level: LevelKey):
           if (d.opts[i].ok) {
             recordAttempt(true);
             btn.classList.add('correct');
+            playCorrectTone();
+            fireConfetti();
             fb.textContent = 'Tepat! 🎉';
             fb.className = 'feedback good';
             setTimeout(() => runListenPhase(round + 1), 750);
           } else {
             recordAttempt(false);
             btn.classList.add('wrong');
+            playWrongTone();
+            vibrateDevice(160);
             fb.textContent = 'Dengar lagi, yuk 💪';
             fb.className = 'feedback bad';
             setTimeout(() => btn.classList.remove('wrong'), 350);
@@ -211,7 +228,6 @@ export function runBoss(container: HTMLElement, onWin: OnDone, level: LevelKey):
       container.innerHTML = `
         ${phaseBadge(bossName, 3, 'Grammar', '✏️')}
         ${roundMeta(roundNo)}
-        <div class="big-emoji" style="font-size:44px;">${sc.emoji}</div>
         <div class="answer-row ${answer.length ? '' : 'empty'}">
           ${answer.map((a, ai) => `<span class="chip placed" data-action="unpick" data-payload="${ai}">${a.w}</span>`).join('')}
         </div>
@@ -247,12 +263,17 @@ export function runBoss(container: HTMLElement, onWin: OnDone, level: LevelKey):
           const built = answer.map((a) => a.w).join(' ');
           if (built === sc.target.join(' ')) {
             recordAttempt(true);
+            playCorrectTone();
+            fireConfetti();
             fb.textContent = 'Pas banget! 🎉';
             fb.className = 'feedback good';
             speak(built);
             setTimeout(() => runGrammarPhase(round + 1), 900);
           } else {
             recordAttempt(false);
+            container.querySelector('.answer-row')?.classList.add('is-wrong');
+            playWrongTone();
+            vibrateDevice(160);
             fb.textContent = 'Urutannya belum pas, coba atur lagi 💪';
             fb.className = 'feedback bad';
           }

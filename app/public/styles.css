@@ -525,8 +525,22 @@ body.is-game-play .tabbar{ display:none; }
    lewat `.stack`/gap induk lain), jadi jarak ke board ini digantung di
    `.game-hub-board` SAJA. */
 .game-hub-board{ margin-top:var(--s4); }
-.game-hub-board .map-sky{ padding:var(--s4) var(--s4) var(--s3); }
-.game-hub-board .map-sky h2{ position:relative; z-index:1; }
+/* 🔒 Revisi (permintaan user "update sky... seperti semula dimana sedikit
+   lebih slim") — `min-height`+flex-center (sempat dipasang saat teksnya
+   cuma 1 baris, biar matahari tidak kepotong) DICABUT lagi sekarang teksnya
+   balik 2 baris (h2+p, "Pilih Markasmu!"/"Banyak game seru...") — kontennya
+   sendiri sudah cukup tinggi buat matahari tidak kepotong, jadi min-height
+   artifisial itu SEKARANG cuma nambah ruang kosong yang bikin band-nya
+   kerasa lebih tebal dari perlu. Padding jg dikurangi dikit (var(--s3) di
+   ATAS, bukan var(--s4)) biar lebih ramping/slim, konsisten permintaan. */
+.game-hub-board .map-sky{ padding:var(--s3) var(--s4); }
+/* Band-nya sekarang pendek (68px, dulu 96px) — matahari (`.map-sun`, 104px)
+   jadi relatif lebih besar drpd tinggi band, teks h2/p bisa numpuk visual
+   dgn matahari di sisi kanan kalau dibiarkan selebar band penuh. `max-width`
+   nahan teks di sisi kiri, jauh dari zona matahari, tanpa perlu naikkan
+   tinggi band lagi (itu yang justru mau dihindari — permintaan "lebih slim"). */
+.game-hub-board .map-sky h2,
+.game-hub-board .map-sky p{ max-width:62%; }
 .game-hub-board .raja-grid{ padding:var(--s4); }
 
 .jump-grid{ display:grid; grid-template-columns:1fr 1fr; gap:var(--s3); }
@@ -1225,6 +1239,27 @@ body.is-game-play .tabbar{ display:none; }
 .raja-card.map-card .raja-card-icon{ background:color-mix(in srgb, var(--band-deep) 26%, var(--surface)); }
 .raja-card.map-card.is-locked{ background:linear-gradient(180deg,#FFFDF9,#F8F3EA); border-color:var(--line); }
 
+/* 🔒 `.terrain-card` — permintaan user "coba variant 2" (dihidupkan lagi
+   utk dicoba LIVE di roster `/game`, gantikan `.map-card` di sana). Versi
+   warna KUAT yang SAMA PERSIS pernah "dicabut" (lihat komentar `.map-card`)
+   & sempat dihidupkan-lalu-dihapus lagi utk perbandingan screenshot sesi
+   sebelumnya — sekarang dihidupkan LAGI, kali ini beneran dipakai.
+   🔒 **Revisi (permintaan user "implementasi variant 2" [lanjutan, di Map
+   Kerajaan tiap game])** — SEKARANG JUGA dipakai di 6 `games/*.ts` (dulu
+   "TETAP `.map-card` lembut, TIDAK ikut berubah" — sengaja dibalik). Beda
+   dari roster (tiap KARTU = game beda, jadi warnanya alami bervariasi),
+   Map Kerajaan 1 game py SEMUA kartu warna SAMA (`--band-deep` per-game
+   di-hardcode 1 nilai di tiap file games/*.ts) — konsekuensinya diketahui &
+   diterima, bukan bug. `.is-locked` dapat override SENDIRI (beda dari
+   `.map-card.is-locked`, sama alasan/nilai) krn dipakai jg di konteks yg
+   PUNYA status terkunci (roster tidak pernah). */
+.raja-card.terrain-card{
+  background:linear-gradient(180deg, color-mix(in srgb, var(--band-deep) 35%, var(--surface)) 0%, color-mix(in srgb, var(--band-deep) 65%, var(--surface)) 100%);
+  border-color:var(--band-deep);
+}
+.raja-card.terrain-card .raja-card-icon{ background:color-mix(in srgb, var(--band-deep) 15%, var(--surface)); }
+.raja-card.terrain-card.is-locked{ background:linear-gradient(180deg,#FFFDF9,#F8F3EA); border-color:var(--line); }
+
 /* Tag tingkat kesulitan berwarna (permintaan user "lebih kids friendly" —
    sebelumnya SEMUA tingkat pakai `.tag` netral abu-abu yang sama, kurang
    terasa "naik tangga"). REUSE token warna yang SUDAH ADA (bukan palet
@@ -1256,15 +1291,36 @@ body.is-game-play .tabbar{ display:none; }
    progress-head`/`.game-progress-ic`) SUDAH DIHAPUS TOTAL (permintaan user
    "remove text '🧩Kerajaan Kata'" — nama kerajaan sudah kebaca dari `.act-
    head`/judul Raja di puncak layar, redundan diulang di sini). */
-.game-progress-card{ margin-bottom:var(--s5); }
-.game-progress-card h2{ font-family:var(--font-head); font-size:1.0625rem; margin:0 0 var(--s3); }
-.game-progress-dots{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+/* 🔒 Revisi (permintaan user: "background sublist game mirip dgn background
+   di [roster] game, tp bedakan — bukan langit dan [mata]hari") — kartu ini
+   sekarang jadi banner GELAP "langit malam", BUKAN langit siang (`.map-sky`
+   roster `/game`, biru muda+matahari+awan) — bintang kelap-kelip yang SUDAH
+   ADA (`GAME_STAR_FIELD`, sebelumnya cuma latar ambient samar di BELAKANG
+   seluruh `.raja-map-wrap`, hampir tak kelihatan di atas card putih) SEKARANG
+   DIRENDER LAGI di DALAM kartu ini secara khusus (`games/*.ts`, instance
+   KEDUA) supaya benar-benar kelihatan sbg dekorasi utama banner, bukan cuma
+   tekstur nyaris-invisible. Gradien gelap reuse `--brand-700/900` (teal tua
+   yang SAMA dgn rail/tabbar gelap di tempat lain — BUKAN navy/indigo baru,
+   tetap konsisten rationale warna di atas file ini). */
+.game-progress-card{
+  margin-bottom:var(--s5); position:relative; overflow:hidden;
+  background:linear-gradient(160deg, var(--brand-700) 0%, var(--brand-900) 100%);
+  border:none;
+}
+.game-progress-card h2{ position:relative; z-index:1; font-family:var(--font-head); font-size:1.0625rem; margin:0 0 var(--s3); color:#fff; }
+.game-progress-dots{ position:relative; z-index:1; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .game-progress-dot{
   width:28px; height:28px; flex:none; border-radius:50%; display:grid; place-items:center;
-  background:var(--muted); color:transparent; font-weight:800; font-size:.8125rem;
+  background:rgba(255,255,255,.18); color:transparent; font-weight:800; font-size:.8125rem;
 }
 .game-progress-dot.done{ background:var(--ok-bg); color:var(--ok); }
-.game-progress-label{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-3); margin-left:4px; }
+/* 🔒 Permintaan user: tandai markas BERIKUTNYA yang belum ditaklukkan
+   (posisi anak sekarang di perjalanan) beda dari titik "belum" polos —
+   ring putih + bg sedikit lebih terang, konsisten pola ring `.quiz-dot`/
+   `.day-chip.is-today` di tempat lain, cuma warnanya putih krn kartu ini
+   gelap (bukan brand teal yang lebur dgn latar). */
+.game-progress-dot.current{ background:rgba(255,255,255,.32); box-shadow:0 0 0 3px rgba(255,255,255,.4); }
+.game-progress-label{ font-size:var(--fs-meta); font-weight:700; color:rgba(255,255,255,.78); margin-left:4px; }
 
 /* 🔒 "Cara Main" (permintaan user, referensi screenshot: judul tengah +
    kartu daftar bernomor) — GANTIKAN pesan penutup custom "Itu semua
@@ -1292,7 +1348,8 @@ body.is-game-play .tabbar{ display:none; }
    quiz (stage-badge/quiz-dot) dari label datar jadi lebih "game", warna ikut
    --k (warna Raja itu, diisi inline app.ts). */
 .raja-stage .stage-badge{ background:var(--k); color:#fff; box-shadow:var(--sh-1); }
-.raja-stage .quiz-dot.current{ box-shadow:0 0 0 3px color-mix(in srgb, var(--k) 25%, transparent), inset 0 0 0 1.5px var(--k); color:var(--k); }
+.raja-stage .quiz-dot.current{ background:var(--k); color:#fff; box-shadow:0 0 0 3px color-mix(in srgb, var(--k) 25%, transparent); }
+.raja-stage .quiz-dot.current.done{ background:var(--ok); color:#fff; box-shadow:0 0 0 3px color-mix(in srgb, var(--k) 25%, transparent); }
 
 /* Memory Match — grid kartu tertutup (permintaan user, contoh referensi
    "Memory Match"): flip 2 kartu/giliran, cari pasangan id↔en 1 VocabItem
@@ -1310,6 +1367,10 @@ body.is-game-play .tabbar{ display:none; }
 .mm-card:disabled{ cursor:default; }
 .mm-card.is-open{ background:color-mix(in srgb, var(--k, var(--brand-500)) 10%, var(--surface)); border-color:var(--k, var(--brand-300)); }
 .mm-card.is-matched{ background:var(--ok-bg); border-color:var(--ok); position:relative; }
+/* 🔒 Kartu SALAH pasang (permintaan user, CLAUDE.md "🔒 Aturan Wajib:
+   Notifikasi Jawaban Salah") — flash merah singkat sebelum ke-2 kartu
+   ditutup lagi, pola sama `.opt-btn.wrong`. */
+.mm-card.is-wrong{ animation:shake .3s ease; border-color:var(--try); background:var(--try-bg); }
 .mm-mark{
   width:40px; height:40px; border-radius:50%; background:var(--k, var(--brand-700)); color:#fff;
   display:grid; place-items:center; font-size:18px; font-weight:800;
@@ -1336,7 +1397,7 @@ body.is-game-play .tabbar{ display:none; }
 .wm-card:disabled{ cursor:default; }
 .wm-card.is-selected{ border-color:var(--accent); background:var(--accent-bg); }
 .wm-card.is-matched{ border-color:var(--ok); background:var(--ok-bg); opacity:.85; }
-.wm-card.is-wrong{ animation:shake .3s ease; border-color:var(--try); }
+.wm-card.is-wrong{ animation:shake .3s ease; border-color:var(--try); background:var(--try-bg); }
 .wm-word-text{ font-family:var(--font-head); font-weight:800; font-size:1.0625rem; color:var(--ink); }
 .wm-emoji{ font-size:2rem; line-height:1; }
 .wm-line{ stroke:var(--ok); stroke-width:3; stroke-linecap:round; }
@@ -1400,7 +1461,7 @@ body.is-game-play .tabbar{ display:none; }
   width:100%; aspect-ratio:5/6; padding:8px;
   background:var(--bg,var(--brand-500)); border-radius:50% 50% 50% 50% / 58% 58% 42% 42%;
 }
-.bp-balloon.is-wrong .bp-balloon-body{ animation:shake .32s ease; }
+.bp-balloon.is-wrong .bp-balloon-body{ animation:shake .32s ease; box-shadow:0 0 0 4px var(--try); }
 .bp-balloon-body::before{
   content:''; position:absolute; top:16%; left:22%; width:26%; height:16%;
   background:rgba(255,255,255,.55); border-radius:50%; transform:rotate(-18deg);
@@ -1457,6 +1518,9 @@ body.is-game-play .tabbar{ display:none; }
   margin:var(--s3) auto; max-width:520px;
 }
 .sp-answer-bar.empty{ color:var(--ink-3); font-size:.9375rem; font-weight:700; }
+/* 🔒 Kalimat SALAH (permintaan user, CLAUDE.md "🔒 Aturan Wajib: Notifikasi
+   Jawaban Salah") — flash merah singkat, pola sama `.answer-row.is-wrong`. */
+.sp-answer-bar.is-wrong{ animation:shake .3s ease; background:var(--try-bg); border-color:var(--try); color:var(--try); }
 
 /* Story Quest — Petualangan Cerita (games/storyquest.ts): halaman buku
    dibungkus kartu krem+border tipis ala buku dongeng (`.story-page`, BUKAN
@@ -1604,8 +1668,15 @@ body.is-game-play .tabbar{ display:none; }
 }
 
 /* --------------------------------------------------------- panggung game - */
-#stage{ padding:var(--s5) var(--s4); }
-@media (min-width:768px){ #stage{ padding:var(--s6) var(--s5); } }
+/* 🔒 Permintaan user (revisi — fix sebelumnya TIDAK KEPAKAI): jarak kartu
+   soal → panel "Suara & Kecepatan" dirapatkan via padding-BAWAH panggung
+   yang dikecilkan (3-value shorthand: top | kiri-kanan | bawah). Rule
+   `.act-stage > .card{padding-bottom:...}` sesi sebelumnya SIA-SIA krn
+   selector ID `#stage` di sini spesifisitasnya lebih tinggi & override
+   balik ke padding lama — HARUS diedit di ID ini langsung, bukan lewat
+   class tambahan manapun. */
+#stage{ padding:var(--s5) var(--s4) var(--s3); }
+@media (min-width:768px){ #stage{ padding:var(--s6) var(--s5) var(--s4); } }
 
 /* Panggung Tantangan Bos = #stage biasa, cuma dikasih rim mango supaya terasa
    "acara besar" dibanding modul biasa — tetap kartu yang sama, bukan redesain
@@ -1713,6 +1784,12 @@ body.is-game-play .tabbar{ display:none; }
   transition:transform .12s ease;
 }
 .speak-btn:active{ transform:scale(.97); }
+/* State "sedang merekam" (permintaan user: seragamkan tombol mic dgn gaya
+   teks "Dengar Lagi" — `drawListenSpeakQuestion`, games/vocabulary.ts —
+   dulu tombol mic bulat besar icon-only `.mic-btn`, sekarang pill teks
+   `.speak-btn` biasa) — reuse PERSIS animasi `pulse`/warna `.mic-btn.
+   listening` yang sudah ada, cuma dipindah ke selector `.speak-btn` juga. */
+.speak-btn.listening{ animation:pulse 1s infinite; background:var(--try); }
 /* Tombol sekunder di `.speak-row` (mis. "💡 Petunjuk" di sebelah "🔊 Dengar
    Lagi", modul Listening) — UKURAN sama persis dgn .speak-btn (padding
    dikurangi 2px tiap sisi krn border, supaya total box tetap sama), tapi
@@ -1726,12 +1803,43 @@ body.is-game-play .tabbar{ display:none; }
 
 .primer-list{ display:flex; flex-direction:column; gap:10px; margin-top:var(--s3); }
 .primer-item{
-  display:flex; align-items:center; gap:12px;
-  background:var(--accent-bg); border-radius:var(--r-md); padding:13px var(--s4);
+  display:flex; align-items:center; gap:8px;
+  /* gap 12→8 & padding-x 16→12 (permintaan user "gambar lebih besar, card
+     tetap"): ruang itu dipindahkan ke `.primer-ic` yg membesar 26→40px.
+     Tanpa ini kolom teks kehabisan tempat & terjemahan panjang (mis. "Kebun
+     Binatang" di `tempat-di-sekitar`) pecah 2 baris — tinggi barisnya ikut
+     melar 74→97px & jadi tidak rata dgn baris lain. 3 tombol `.mini-play`
+     SENGAJA tidak ikut dikecilkan (target tap anak, filter kid-friendly). */
+  background:var(--accent-bg); border-radius:var(--r-md); padding:13px 12px;
 }
+/* Ikon kiri tiap baris Kenalan (permintaan user: "gambar di card kurang
+   besar, buat lebih besar tapi card-nya tetap") — dulu `font-size:26px`
+   inline yang diulang di 9 titik lintas 5 file game, sekarang 1 class biar
+   ukurannya cukup diubah di sini. `line-height:1` + flex bikin kotak ikon
+   PERSIS setinggi font-size-nya (bukan line-box ~1.5x spt sebelumnya),
+   jadi ikon bisa dibesarkan TANPA ikut menaikkan tinggi `.primer-item`
+   (tinggi baris tetap ditentukan blok teks di sebelahnya). */
+.primer-ic{
+  flex:none; display:flex; align-items:center; justify-content:center;
+  font-size:40px; line-height:1;
+}
+/* Gambar custom (`KENALAN_ICON_IMAGE_OVERRIDES`) sedikit lebih besar dari
+   emoji: emoji punya padding visual bawaan di dalam em box-nya, gambar
+   `1em` tidak — tanpa selisih ini gambar terlihat lebih kecil dari emoji
+   tetangganya di baris yang sama (rasio 32:26 lama dipertahankan). */
+.primer-ic.is-img{ font-size:48px; }
 .primer-item .txt{ flex:1; min-width:0; }
 .primer-item .txt b{ font-family:var(--font-head); font-size:1.0625rem; display:block; }
 .primer-item .txt span{ font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; }
+/* Baris "Lawan kata" (CLAUDE.md "Aturan Wajib: Topik Lawan Kata WAJIB
+   Tampilkan Pasangannya di Kenalan") — `display:block` biar jadi baris ke-3
+   sendiri (bukan nempel di span terjemahan yg inline), warna lebih pudar
+   (--ink-3) drpd terjemahan (--ink-2) krn ini info suplemen, bukan konten
+   utama yg diuji. */
+.primer-item .txt .opp{ display:block; font-size:var(--fs-meta); color:var(--ink-3); font-weight:600; margin-top:2px; }
+/* Reset `.txt b` (font besar utk kata utama) — `<b>` di dalam `.opp` cuma
+   penekanan ringan pada kata lawan-nya, BUKAN kata utama baris ini. */
+.primer-item .txt .opp b{ display:inline; font-family:inherit; font-size:inherit; font-weight:700; color:inherit; }
 .mini-play{
   width:38px; height:38px; border-radius:50%; background:var(--surface); color:var(--accent);
   display:grid; place-items:center; font-size:15px; flex:none; cursor:pointer;
@@ -1796,7 +1904,14 @@ body.is-game-play .tabbar{ display:none; }
 .opt-grid.three{ grid-template-columns:repeat(3,1fr); }
 .opt-btn{
   background:var(--surface); border:3px solid var(--line); border-radius:var(--r-md);
-  padding:18px 8px; text-align:center; font-size:clamp(30px,8vw,44px); line-height:1.1;
+  /* 🔒 Permintaan user: gambar/kartu Kenalan "Main" WAJIB ukuran SAMA PERSIS
+     dgn kartu jawaban Latihan Inti (`.opt-btn.answer-card`/`.answer-card-
+     emoji` di bawah) — padding & font-size disamakan ke angka yang sama,
+     TETAP 2 kartu per baris (`.opt-grid` tidak diubah). */
+  /* Permintaan user lanjutan: gambarnya dibesarkan (44-62px → 56-78px) TAPI
+     kartunya tetap — padding vertikal dikurangi 24px→18px supaya tambahan
+     tinggi gambar terserap di situ, bukan bikin kartu ikut membesar. */
+  padding:18px 14px; text-align:center; font-size:clamp(56px,14vw,78px); line-height:1.1;
   transition:transform .12s ease, border-color .15s ease;
 }
 .opt-btn .lbl{
@@ -1811,7 +1926,11 @@ body.is-game-play .tabbar{ display:none; }
   color:var(--ink); padding:20px 14px; line-height:1.3;
 }
 .opt-btn.correct{ border-color:var(--ok); background:var(--ok-bg); animation:pop .3s ease; }
-.opt-btn.wrong{ border-color:var(--try); animation:shake .3s ease; }
+/* 🔒 Permintaan user: notifikasi salah wajib SEJELAS notifikasi benar (bg
+   merah muda penuh, bukan cuma border tipis) — lihat CLAUDE.md "🔒 Aturan
+   Wajib: Notifikasi Jawaban Salah". Dipasangkan SELALU dgn `playWrongTone()`
+   ("tetot") + `vibrateDevice()` di JS, kecuali jalur skor mic/Speaking. */
+.opt-btn.wrong{ border-color:var(--try); background:var(--try-bg); color:var(--try); animation:shake .3s ease; }
 /* Dipilih tapi BELUM dikonfirmi (Grammar Tantangan "Lihat & Dengar, Pilih
    yang Pas" — dengar dulu boleh berkali-kali/ganti pilihan, baru commit lewat
    tombol terpisah "Pilih Jawaban Ini") — beda dari .correct/.wrong yang
@@ -1831,15 +1950,34 @@ body.is-game-play .tabbar{ display:none; }
    layout HORIZONTAL (emoji kiri, label+lencana kanan) bukan lagi vertikal
    gambar-di-atas, supaya tinggi kartu jauh lebih pendek. Teks tetap besar
    & tebal (permintaan user), cuma areanya yang diperkecil, bukan font-nya. */
+/* 🔒 Permintaan user (revisi lagi — BALIK ke vertikal, kebalikan dari
+   catatan "Diramping-kan...horizontal" di atas yg sekarang SUDAH TIDAK
+   BERLAKU): "kalau ada text maka text-nya di bawah gambar untuk semuanya,
+   tinggi diperbesar sedikit lagi" — gambar/emoji SELALU di ATAS (konten
+   utama, dibesarkan), label+lencana (kalau ada) SELALU di BAWAH gambar,
+   BUKAN lagi di samping. `.picture-only` (tanpa label) jadi TIDAK PERLU
+   override layout apa pun lagi — bentuknya SUDAH sama persis default,
+   cuma beda ADA/TIDAKNYA elemen label saja. Efek samping BAGUS: kata
+   panjang tanpa spasi (mis. "Grandmother"/"Kakak/Adik Perempuan") sekarang
+   dapat LEBAR PENUH kartu utk wrap (tidak lagi berbagi baris sempit dgn
+   emoji), jauh lebih longgar drpd layout horizontal lama. */
 .opt-btn.answer-card{
-  display:flex; flex-direction:row; align-items:center; gap:10px;
-  min-height:0; padding:10px 12px; text-align:left;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  /* `min-width:0` WAJIB (kartu ini GRID ITEM `.opt-grid`, grid item default
+     `min-width:auto` bukan 0 — tanpa ini kartu menolak menyusut ke `1fr`,
+     bug yg pernah ditemukan sesi sebelumnya). */
+  min-width:0; min-height:0; padding:18px 14px; text-align:center;
 }
-.answer-card-emoji{ flex:none; font-size:clamp(26px,7vw,34px); line-height:1; }
-.answer-card-bottom{ flex:1; display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; }
-.answer-card-label{ font-family:var(--font-head); font-weight:800; font-size:1rem; line-height:1.25; color:var(--ink); }
+/* Ukuran WAJIB tetap sinkron dgn `.opt-btn` di atas (aturan lama), jadi
+   pembesaran gambar sesi ini diterapkan ke KEDUANYA sekaligus. */
+.answer-card-emoji{ font-size:clamp(56px,14vw,78px); line-height:1; }
+.answer-card-bottom{ display:flex; align-items:center; justify-content:center; gap:8px; min-width:0; }
+.answer-card-label{
+  font-family:var(--font-head); font-weight:800; font-size:1.0625rem; line-height:1.3; color:var(--ink);
+  min-width:0; overflow-wrap:break-word;
+}
 .answer-card-badge{
-  flex:none; width:24px; height:24px; border-radius:50%; background:var(--muted); color:var(--ink-3);
+  flex:none; width:25px; height:25px; border-radius:50%; background:var(--muted); color:var(--ink-3);
   font-family:var(--font-head); font-weight:800; font-size:.75rem;
   display:flex; align-items:center; justify-content:center;
 }
@@ -1886,8 +2024,13 @@ body.is-game-play .tabbar{ display:none; }
   box-shadow:inset 0 0 0 1.5px var(--line); cursor:pointer;
 }
 .quiz-dot.done{ background:var(--ok-bg); color:var(--ok); box-shadow:inset 0 0 0 1.5px var(--ok); }
-.quiz-dot.current{ box-shadow:0 0 0 3px var(--brand-100), inset 0 0 0 1.5px var(--brand-500); color:var(--brand-700); }
-.quiz-dot.current.done{ box-shadow:0 0 0 3px var(--brand-100), inset 0 0 0 1.5px var(--ok); }
+/* 🔒 Permintaan user: dot soal yang SEDANG dibuka/disinggahi wajib beda
+   warna JELAS dari yang belum/sudah dijawab — bukan cuma ring tipis di
+   atas bg putih yang sama dgn dot polos (gampang kelewat anak/ortu).
+   Sekarang solid var(--brand-500) + ring "glow" luar dipertahankan
+   sbg penguat fokus, bukan satu-satunya pembeda lagi. */
+.quiz-dot.current{ background:var(--brand-500); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
+.quiz-dot.current.done{ background:var(--ok); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
 
 /* "⌫ Hapus Huruf"/"⌫ Hapus Kata" berdampingan dgn "🔄 Ulang Susunan"/
    "🔄 Bersihkan" (permintaan user, Tantangan). */
@@ -1985,6 +2128,12 @@ body.is-game-play .tabbar{ display:none; }
   max-width:560px;
 }
 .answer-row.empty::after{ content:'Tap kata di bawah ⤵️'; color:var(--accent); font-weight:800; font-size:var(--fs-meta); }
+/* 🔒 Susunan SALAH (Eja Kata/Susun Kalimat & sejenisnya — permintaan user,
+   CLAUDE.md "🔒 Aturan Wajib: Notifikasi Jawaban Salah") — flash merah
+   singkat SEBELUM papan direset ke kosong lagi, dipasangkan `playWrongTone()`
+   + `vibrateDevice()` di JS. Dipakai lintas skill krn `.answer-row` sendiri
+   class generik (Vocab/Listening/Grammar/Reading/Boss). */
+.answer-row.is-wrong{ animation:shake .3s ease; background:var(--try-bg); box-shadow:inset 0 0 0 2px var(--try); }
 .bank-row{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:560px; margin:0 auto; }
 .chip{
   background:var(--surface); border:2px solid var(--accent); color:var(--accent);
@@ -1995,10 +2144,11 @@ body.is-game-play .tabbar{ display:none; }
 .chip:active{ transform:scale(.94); }
 .chip.placed{ background:var(--accent); color:#fff; }
 .chip.letter{ padding:10px 14px; min-width:22px; text-align:center; text-transform:uppercase; }
-/* Huruf dari "💡 Petunjuk" Eja Kata (permintaan user) — beda tampilan dari
-   huruf yang anak taruh sendiri (`.chip.placed` solid), supaya jelas mana
+/* Huruf/kata dari "💡 Petunjuk" (Eja Kata `.letter.hint`, Susun Kalimat
+   `.hint` polos tanpa `.letter` krn chip KATA bukan huruf) — beda tampilan
+   dari yang anak taruh sendiri (`.chip.placed` solid), supaya jelas mana
    "diberi" vs "usaha sendiri": outline aksen di atas kertas, bukan solid. */
-.chip.placed.letter.hint{ background:var(--surface); color:var(--accent); border-style:dashed; }
+.chip.placed.hint{ background:var(--surface); color:var(--accent); border-style:dashed; }
 
 /* Tantangan "📝 Lengkapi Catatan" (Achiever, note completion) —
    games/listening.ts runTantanganNote. Kartu ala kertas catatan, blank
@@ -2064,6 +2214,12 @@ body.is-game-play .tabbar{ display:none; }
 .turn-dots{ display:flex; justify-content:center; gap:7px; margin-bottom:var(--s3); }
 .turn-dot{ width:10px; height:10px; border-radius:50%; background:var(--line); }
 .turn-dot.on{ background:var(--accent); }
+/* 🔒 Permintaan user: giliran yang SEDANG berjalan wajib beda dari
+   giliran yang sudah lewat — sebelumnya SEMUA giliran `<= turn` sama-sama
+   `.on` (warna identik), jadi giliran ke-2 dari 3 tidak kebeda dari
+   giliran ke-1 yang sudah kelar. Titik giliran sekarang SAJA dibesarkan +
+   diberi ring, pola sama "dot lebih besar = posisi sekarang" ala carousel. */
+.turn-dot.current{ width:12px; height:12px; box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
 
 /* ------------------------------------------------------------- selesai --- */
 .done-wrap{ position:relative; text-align:center; padding:var(--s3) 0; }
@@ -2366,7 +2522,11 @@ body.is-game-play .tabbar{ display:none; }
 /* Sebelum layar cukup lebar untuk kolom samping, panel suara turun ke bawah
    panggung supaya anak langsung melihat gamenya. */
 @media (max-width:1079px){
-  .act-body{ display:flex; flex-direction:column; gap:var(--s4); }
+  /* 🔒 Permintaan user: jarak kartu jawaban → panel "Suara & Kecepatan"
+     dirapatkan sedikit (kartu jawaban sekarang lebih tinggi/vertikal,
+     jaraknya kerasa lebih longgar drpd sebelumnya) — gap flex diperkecil,
+     TETAP dgn token spasi yg ada (bukan angka sembarangan). */
+  .act-body{ display:flex; flex-direction:column; gap:var(--s3); }
   .act-side{ display:contents; }
   .stepper{ order:1; }
   .act-stage{ order:2; }
@@ -2481,7 +2641,12 @@ body.is-game-play .tabbar{ display:none; }
   .nav-item:hover{ background:rgba(255,255,255,.10); color:#fff; }
   .skill-card:hover,.topic-card:hover,.jump:hover{ border-color:var(--brand-300); box-shadow:var(--sh-2); }
   .cta:hover{ filter:brightness(1.05); }
-  .opt-btn:hover{ border-color:var(--brand-300); }
+  /* 🔒 Bug ditemukan sesi "Notifikasi Jawaban Salah" — TANPA `:not(...)` ini,
+     hover pointer yang lagi diam di atas tombol yang BARU dijawab (`.correct`/
+     `.wrong`/`.selected`) menimpa border-color state itu jadi teal netral lagi
+     (spesifisitas sama, urutan file menang) — di desktop kelihatan warna
+     benar/salahnya "hilang" begitu mouse tidak digerakkan setelah klik. */
+  .opt-btn:hover:not(.correct):not(.wrong):not(.selected){ border-color:var(--brand-300); }
   .chip:hover{ filter:brightness(.97); }
   .iconbtn:hover{ background:var(--brand-50); }
 }

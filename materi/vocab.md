@@ -132,7 +132,7 @@ Cambridge Pre A1 Starters (bagian dari YLE, ~500 kata resmi) diorganisasi jadi 2
 | Grammar | 62 | *(bukan Vocabulary — domain skill Grammar, PRD §4.2)* |
 | The Home | 46 | `barang-di-rumah` (sudut perabotan, beda dari nama ruangan Adventurer) |
 | Food & Drink | 45 | `makanan-favoritku` (sudut makanan anak-populer, beda dari makanan pokok Adventurer) |
-| Animals | 32 | `serangga` (sudut serangga/makhluk kecil, beda dari pets/farm Little Stars & wild/zoo Adventurer) |
+| Animals | 32 | ~~`serangga` (sudut serangga/makhluk kecil, beda dari pets/farm Little Stars & wild/zoo Adventurer)~~ — **DIGANTI TOTAL** jadi `perkakas` (Tools & Equipment, benda mati) §3B.4, kategori Animals SEKARANG TIDAK terwakili di Starter |
 | Leisure | 32 | `hobi` |
 | Family & Friends | 30 | `orang-di-sekitarku` (sudut orang di luar keluarga inti, beda dari `keluarga`/`keluargaku`) |
 | Names | 24 | *(nama orang generik — tidak relevan sbg materi vocab bergambar)* |
@@ -163,6 +163,28 @@ Cambridge Pre A1 Starters (bagian dari YLE, ~500 kata resmi) diorganisasi jadi 2
 | **Duolingo ABC & Reading Eggs** (app literasi, usia 3–7) | App kompetitor (native literacy, bukan ESL — PRD §2/RESEARCH §11.1) | Kurikulum terstruktur: phonics → sight words → vocabulary → comprehension, ratusan aktivitas bite-sized. Relevan sbg validasi arah (bukan sumber tema): app ini BUKAN app literasi huruf (beda tujuan dari Duolingo ABC), tapi progresi "kata tunggal dulu, baru struktur" yang sama tetap relevan sbg prinsip umum urutan kesulitan. |
 
 **Insight lintas sumber**: baik kurikulum nasional (Kurikulum Merdeka Fase A) maupun kursus swasta (EF, LIA) sama-sama menegaskan usia 5–7/8 th itu transisi dari "lisan murni" (Little Stars) ke "mulai ada literasi ringan" (Explorer ke atas) — TIDAK ada satu pun sumber yang menyarankan lompat langsung ke baca-tulis berat di usia ini. Ini membenarkan keputusan tidak mengubah mekanik game sama sekali untuk Starter (§2.2) — loop TTS-first + pilihan-ganda yang sudah ada sudah pas untuk transisi ini, cukup kontennya yang perlu progresif (kata makin panjang/abstrak: `Neighbor`, `Yesterday`, `Collecting` — dibanding kata Little Stars yang semua ≤7 huruf).
+
+### 3B.4 Topik `serangga` DIGANTI TOTAL jadi `perkakas` (Tools & Equipment) — laporan user, kategori Animals
+
+Laporan user langsung ke topik `serangga` ("Serangga & Makhluk Kecil"): tanya apakah emoji makhluk hidupnya bisa dibuat "kepala saja" (konsisten aturan CLAUDE.md "Emoji Hewan/Makhluk Hidup WAJIB Kepala SAJA"), atau materinya diganti total kalau tidak bisa.
+
+**Audit emoji (cek `unicodedata` resmi, pola sama audit Pets & Farm Animals sebelumnya)**: dari 10 kata topik ini (Butterfly/Bee/Ant/Ladybug/Spider/Snail/Frog/Turtle/Crab/Worm), **CUMA Frog** yang resmi "FROG FACE" (sudah kepala-dominan). 9 SISANYA (Butterfly/Honeybee/Ant/Lady Beetle/Spider/Snail/Turtle/Crab/Worm) **TIDAK PUNYA varian "kepala saja" sama sekali di Unicode** — beda dari mamalia (Dog/Cat/Cow/dst) yang punya 2 varian, serangga/makhluk kecil ini cuma py 1 bentuk (tubuh utuh), DAN "kepala saja" utk kategori ini secara alami tidak masuk akal (identitas visual kupu-kupu = sayapnya, siput = cangkangnya, dst — bukan wajahnya).
+
+**Keputusan user, ditanya via 3 opsi eksplisit** (biarkan apa adanya sbg pengecualian / ganti SEMUA kata / ganti sebagian) — **user pilih ganti SEMUA kata**, meski konsekuensinya (topik "Insects & Small Creatures" kehilangan makna aslinya) sudah disampaikan lebih dulu. User juga eksplisit: TIDAK perlu makhluk hidup lagi kalau ada topik lain yang lebih pas (Dog/Cat sendiri sudah kepakai di `hewan-peliharaan` Little Stars).
+
+**Domain baru: Perkakas & Alat Tukang (Tools & Equipment)** — dipilih murni benda mati (sejalan default CLAUDE.md "Hindari Makhluk Hidup Kalau Ada Alternatif Benda Mati"), 10 kata dicek SATU PER SATU belum pernah dipakai di 65 topik Vocab lain manapun (`Hammer`/`Screwdriver`/`Wrench`/`Saw`/`Ladder`/`Toolbox`/`Bucket`/`Bolt`/`Rope`/`Flashlight` — SEMUA 0 hit), dan tiap emoji-nya resmi 1:1 merepresentasikan bendanya sendiri (🔨🪛🔧🪚🪜🧰🪣🔩🪢🔦 — cek `unicodedata`: HAMMER/SCREWDRIVER/WRENCH/CARPENTRY SAW/LADDER/TOOLBOX/BUCKET/NUT AND BOLT/KNOT/FLASHLIGHT), jadi sekaligus comply "Ikon/Gambar WAJIB Relevan" tanpa perlu ikon custom (`KENALAN_ICON_IMAGE_OVERRIDES`) sama sekali.
+
+**Blast radius: 5 clone, bukan cuma Vocab** — kata "serangga" yang sama dipakai ulang di Listening (`serangga-kecil`), Speaking (`makhluk-kecil`), Reading (`baca-serangga`), dan Grammar (topik `ada-apa-di-sini` REUSE kosakata serangga sbg domainnya, id/judul topiknya sendiri TIDAK berubah krn itu soal grammar "there is/are", bukan soal serangga) — SEMUA diganti bersamaan biar konsisten (pola sama fix Pets & Farm Animals sebelumnya). Rincian ganti nama per skill:
+
+| Skill | Id lama → baru | Judul lama → baru |
+|---|---|---|
+| Vocab | `serangga` → `perkakas` | Serangga & Makhluk Kecil (Insects & Small Creatures) → Perkakas & Alat Tukang (Tools & Equipment) |
+| Listening | `serangga-kecil` → `perkakas-tukang` | Serangga Kecil (Tiny Creatures) → Perkakas Tukang (Handyman's Tools) |
+| Speaking | `makhluk-kecil` → `alat-tukang` | Makhluk Kecil (Insects & Small Creatures) → Alat Tukang (Tools & Equipment) |
+| Reading | `baca-serangga` → `baca-perkakas` | Membaca Frasa: Serangga → Membaca Frasa: Perkakas |
+| Grammar | `ada-apa-di-sini` (TIDAK berubah) | "Ada Apa di Sini? (There Is or There Are?)" (TIDAK berubah, cuma 10 item formA/formB-nya diganti kosakata Tools) |
+
+Kategori Cambridge Pre-A1 Starters "Animals" (32 kata resmi) **SEKARANG TIDAK terwakili sama sekali di topik manapun Starter** (§3B.2) — dicatat sbg gap terbuka, bukan ditutup diam-diam; kalau mau diisi lagi nanti, kandidat aman HARUS dicek dulu py varian "kepala saja" di Unicode SEBELUM dipetakan jadi topik (pelajaran langsung dari sesi ini), jangan re-pakai `serangga`/kombinasi makhluk-kecil lagi tanpa cek itu dulu.
 
 ---
 
@@ -422,7 +444,7 @@ Keputusan konten per-kata yang bukan sekadar terjemahan literal: kalimat contoh 
 | 1 | `angka-11-20` | Angka 11–20 (Numbers 11–20) | Numbers — lanjutan progresif dari 1–10 |
 | 2 | `hari-dalam-seminggu` | Hari dalam Seminggu (Days of the Week) | Time |
 | 3 | `tempat-di-sekitar` | Tempat di Sekitar Kita (Places Around Us) | Places and Directions |
-| 4 | `serangga` | Serangga & Makhluk Kecil (Insects & Small Creatures) | Animals (sudut baru) |
+| 4 | `perkakas` | Perkakas & Alat Tukang (Tools & Equipment) | *(semula `serangga`/Animals, diganti total §3B.4 — benda mati, bukan lagi kategori Animals)* |
 | 5 | `makanan-favoritku` | Makanan Favoritku (My Favorite Food) | Food & Drink (sudut baru) |
 | 6 | `barang-di-rumah` | Barang di Rumah (Things at Home) | The Home (sudut baru) |
 | 7 | `di-sekolah` | Di Sekolah (At School) | School (sudut baru) |

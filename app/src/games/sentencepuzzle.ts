@@ -53,7 +53,7 @@
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
-import { playCorrectTone, playTryAgainTone, speak } from '../speech';
+import { playCorrectTone, playWrongTone, speak, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
@@ -121,7 +121,6 @@ function tokenize(sentence: string): string[] {
 
 interface PuzzleRound {
   targetWords: string[];
-  emoji: string;
   bubbles: string[];
 }
 
@@ -140,7 +139,7 @@ function buildRound(topics: VocabTopic[], difficulty: WordMatchDifficulty): Puzz
   let distractors = [...siblingWords, ...filler];
   if (distractors.length > meta.maxDistractors) distractors = shuffle(distractors).slice(0, meta.maxDistractors);
 
-  return { targetWords, emoji: target.example.emoji, bubbles: shuffle([...targetWords, ...distractors]) };
+  return { targetWords, bubbles: shuffle([...targetWords, ...distractors]) };
 }
 
 /** Susunan baris piramida (jumlah bubble per baris) — makin ke bawah makin
@@ -260,7 +259,6 @@ function runSentencePuzzleRound(
         <span class="sp-bird">🐦</span>
         <span class="sp-bird sp-bird2">🐦</span>
       </div>
-      <div class="sp-picture"><span class="big-emoji" style="margin:0">${round.emoji}</span></div>
       <div class="speak-row">
         <button class="speak-btn pt-cta" type="button" data-action="hearSentence">🔊 Dengar</button>
         <button class="speak-btn-ghost" type="button" data-action="hint" ${hintRevealed || answered ? 'disabled' : ''}>💡 Petunjuk</button>
@@ -320,14 +318,15 @@ function runSentencePuzzleRound(
     const correct = answerText().toLowerCase() === round.targetWords.join(' ').toLowerCase();
     if (correct) {
       recordAttempt(true, GAME_KEY);
-      container.querySelector<HTMLElement>('.sp-picture')?.classList.add('win-burst');
       playCorrectTone();
       fireConfetti();
       fb.textContent = pickPraise(level);
       fb.className = 'feedback good';
     } else {
       recordAttempt(false, GAME_KEY);
-      playTryAgainTone();
+      container.querySelector('.sp-answer-bar')?.classList.add('is-wrong');
+      playWrongTone();
+      vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
     }
@@ -416,7 +415,7 @@ export function runSentencePuzzle(container: HTMLElement, topics: VocabTopic[], 
       const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
       const meta = DIFFICULTY_META[node.difficulty];
       return `
-      <button class="raja-card map-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-gram)">
+      <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-gram)">
         ${badge}
         <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${node.emoji}</span></span>
         <h3>${node.place}</h3>
@@ -424,22 +423,28 @@ export function runSentencePuzzle(container: HTMLElement, topics: VocabTopic[], 
       </button>`;
     }).join('');
 
+    // 🔒 `current` = markas berikutnya yang belum ditaklukkan (posisi anak
+    // sekarang), permintaan user "beri pembeda di progress yang sedang
+    // disinggahi" — lihat komentar `.game-progress-dot.current` styles.css.
+    const nextIdx = JOURNEY_NODES.findIndex((_, i) => !visited.has(i));
     const dots = JOURNEY_NODES.map((_, i) => {
       const done = visited.has(i);
-      return `<span class="game-progress-dot${done ? ' done' : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
+      const cls = [done ? 'done' : '', i === nextIdx ? 'current' : ''].filter(Boolean).join(' ');
+      return `<span class="game-progress-dot${cls ? ' ' + cls : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
     }).join('');
 
     container.innerHTML = `
       <div class="raja-map-wrap">
         ${GAME_STAR_FIELD}
         <div class="card game-progress-card">
+          ${GAME_STAR_FIELD}
           <h2>Taklukkan markas satu per satu, ya!</h2>
           <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${visited.size} dari ${total}</span></div>
         </div>
         <div class="raja-grid">${stops}</div>
         ${gameHowToHtml([
           'Tap gelembung kata untuk menyusun kalimat',
-          'Susun sampai artinya sama seperti gambar',
+          'Dengar dulu contohnya, lalu susun kata sampai pas',
           'Selesaikan 5 kalimat di tiap markas',
           'Taklukkan markas satu per satu sampai tuntas!',
         ])}

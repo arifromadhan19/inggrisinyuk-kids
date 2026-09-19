@@ -38,7 +38,7 @@
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
-import { speak, speakLocalized, playCorrectTone, playTryAgainTone } from '../speech';
+import { speak, speakLocalized, playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
@@ -280,7 +280,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
       const pct = cleared ? 100 : 0;
       const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
       return `
-      <button class="raja-card map-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-read)">
+      <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-read)">
         ${badge}
         <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${lvl.nodeEmoji}</span></span>
         <h3>${lvl.node}</h3>
@@ -288,15 +288,21 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
       </button>`;
     }).join('');
 
+    // 🔒 `current` = markas berikutnya yang belum ditaklukkan (posisi anak
+    // sekarang), permintaan user "beri pembeda di progress yang sedang
+    // disinggahi" — lihat komentar `.game-progress-dot.current` styles.css.
+    const nextIdx = SOUND_HUNT_LEVELS.findIndex((_, i) => !crystals.has(i));
     const dots = SOUND_HUNT_LEVELS.map((_, i) => {
       const done = crystals.has(i);
-      return `<span class="game-progress-dot${done ? ' done' : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
+      const cls = [done ? 'done' : '', i === nextIdx ? 'current' : ''].filter(Boolean).join(' ');
+      return `<span class="game-progress-dot${cls ? ' ' + cls : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
     }).join('');
 
     container.innerHTML = `
       <div class="raja-map-wrap">
         ${GAME_STAR_FIELD}
         <div class="card game-progress-card">
+          ${GAME_STAR_FIELD}
           <h2>Taklukkan markas satu per satu, ya!</h2>
           <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${crystals.size} dari ${total}</span></div>
         </div>
@@ -361,7 +367,8 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
         fb.className = 'feedback good';
       } else {
         btn.classList.add('wrong');
-        playTryAgainTone();
+        playWrongTone();
+        vibrateDevice(160);
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';
       }

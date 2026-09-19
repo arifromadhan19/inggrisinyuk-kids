@@ -41,7 +41,17 @@ import {
   resetSectionPlan,
   setSectionCursor,
 } from '../progress';
-import { listenAndRecordOnce, playCorrectTone, playTryAgainTone, speak, speakSequence, sttSupported, wordMatchDetail } from '../speech';
+import {
+  listenAndRecordOnce,
+  playCorrectTone,
+  playTryAgainTone,
+  playWrongTone,
+  speak,
+  speakSequence,
+  sttSupported,
+  vibrateDevice,
+  wordMatchDetail,
+} from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
 import { shuffle } from '../util';
@@ -321,6 +331,9 @@ function runSceneMiniGame(container: HTMLElement, topic: ReadingTopic, index: nu
       fb.className = 'feedback good';
     } else {
       recordAttempt(false);
+      container.querySelector('.answer-row')?.classList.add('is-wrong');
+      playWrongTone();
+      vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
     }
@@ -467,7 +480,8 @@ function runReadingQuizSet(
         } else {
           recordAttempt(false);
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
@@ -638,7 +652,7 @@ export function renderKenalanWord(container: HTMLElement, topic: ReadingWordTopi
           .map(
             (it, i) => `
           <div class="primer-item">
-            <div style="font-size:26px">${it.emoji}</div>
+            <div class="primer-ic">${it.emoji}</div>
             <div class="txt"><b>${it.en}</b><span>${it.id}</span></div>
             <div class="mini-play${doneCls(i, 'listen')}" data-action="listen" data-payload="${i}">🔊</div>
             ${sttSupported ? `<div class="mini-play${doneCls(i, 'mic')}" id="micMini${i}" data-action="micWord" data-payload="${i}">🎤</div>` : ''}
@@ -809,6 +823,8 @@ function runWordMiniGame(container: HTMLElement, topic: ReadingWordTopic, item: 
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
+      playWrongTone();
+      vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
     }
@@ -911,7 +927,8 @@ export function runLatihanIntiWord(container: HTMLElement, topic: ReadingWordTop
         } else {
           recordAttempt(false);
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
@@ -1033,7 +1050,8 @@ export function runTantanganWord(container: HTMLElement, topic: ReadingWordTopic
         } else {
           recordAttempt(false);
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
@@ -1107,7 +1125,7 @@ export function renderKenalanCheck(container: HTMLElement, topic: ReadingCheckTo
         .map(
           (c) => `
         <div class="primer-item" style="align-items:flex-start">
-          <div style="font-size:26px">${c.emoji}</div>
+          <div class="primer-ic">${c.emoji}</div>
           <div class="txt">
             <b style="display:block">${c.trueSentence}</b>
             <span>${c.id}</span>
@@ -1201,7 +1219,8 @@ export function runLatihanIntiCheck(container: HTMLElement, topic: ReadingCheckT
         } else {
           recordAttempt(false);
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
@@ -1315,7 +1334,8 @@ export function runTantanganCheck(container: HTMLElement, topic: ReadingCheckTop
         } else {
           recordAttempt(false);
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }

@@ -1,0 +1,9 @@
+# Hasil generate & model yang di-download — tempat kerja sementara, BUKAN
+# sumber kebenaran final (audio yang sudah lolos QA dipindah manual ke
+# app/public/audio/, lihat TTS_Research.md §5/§8).
+output/
+models/
+*.wav
+__pycache__/
+.venv/
+.env

@@ -304,7 +304,7 @@ Digenapkan LANGSUNG ke `SPEAKING_TOPICS_STARTER` (array yang sama, `suka-makanan
 | 3 | `hari-apa-ini` | Hari Apa Ini? | `hari-dalam-seminggu` | Rutinitas kalender kelas awal SD |
 | 4 | `isi-kelasku` | Isi Kelasku (At School) | `di-sekolah` | Kurikulum Merdeka Fase A unit "benda di kelas" |
 | 5 | `kenalkan-orang` | Kenalkan Orangnya | `orang-di-sekitarku` | Kurikulum Merdeka unit keluarga/orang — WAJIB kalimat deskriptif (§11.1) |
-| 6 | `makhluk-kecil` | Makhluk Kecil (Insects) | `serangga` | Perluasan alami tema hewan |
+| 6 | `alat-tukang` | Alat Tukang (Tools & Equipment) | `perkakas` *(semula `makhluk-kecil`/Insects dari domain `serangga`, diganti total ke Tools — `materi/vocab.md` §3B.4)* | Perkakas sehari-hari, benda mati |
 | 7 | `jalan-jalan` | Yuk Jalan-Jalan | `tempat-di-sekitar` | — |
 | 8 | `isi-rumahku` | Isi Rumahku | `barang-di-rumah` | — |
 | 9 | `alam-di-sekitarku` | Alam di Sekitarku | `alam-sekitar` | — |
@@ -313,7 +313,7 @@ Digenapkan LANGSUNG ke `SPEAKING_TOPICS_STARTER` (array yang sama, `suka-makanan
 Keputusan authoring:
 
 - **`kenalkan-orang` SATU-SATUNYA topik yg SEMUA 10 frasanya berupa kalimat deskriptif penuh** ("The man is tall.", "The woman is smiling.", bukan pola "I [verb] a/the [noun]" spt topik lain) — langsung menjawab temuan §11.1 (kurikulum resmi menuntut deskripsi utk tema orang/keluarga di usia ini), bukan authoring bebas.
-- **Id `makhluk-kecil` SENGAJA beda dari id Listening Starter `serangga-kecil`** (domain Vocab yg sama, `serangga`) — murni menghindari kebingungan baca kode/dokumen (2 id string identik lintas skill berbeda), TIDAK ada risiko tabrakan progres sungguhan (key `${skill}:${topicId}:${section}` sudah py awalan skill).
+- **Id `alat-tukang` (semula `makhluk-kecil`) SENGAJA beda dari id Listening Starter `perkakas-tukang` (semula `serangga-kecil`)** (domain Vocab yg sama, `perkakas`/semula `serangga`) — murni menghindari kebingungan baca kode/dokumen (2 id string identik lintas skill berbeda), TIDAK ada risiko tabrakan progres sungguhan (key `${skill}:${topicId}:${section}` sudah py awalan skill).
 - Variasi pola kalimat dijaga (statement/exclamation/imperative/pertanyaan) — mis. `hari-apa-ini` py "What day is today?" (pertanyaan) & "See you tomorrow!" (seruan perpisahan), `isi-rumahku` py "Please turn on the lamp." (permintaan sopan) — bukan "I have a/an X" diulang 10x monoton.
 - Kata kunci & emoji SAMA dgn Vocab (konsistensi lintas skill), frasa target ditulis ULANG baru (prinsip "modalitas beda, bukan duplikasi", konsisten §10).
 

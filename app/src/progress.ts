@@ -278,15 +278,26 @@ function read(): Store {
   }
 }
 
-/** Dipanggil tiap `write()` sukses (permintaan user: "simpan setiap progress
- *  ke database") — `app.ts` pasang handler-nya sekali di boot (push ke
- *  `portal/` API, didebounce di sana) lewat `setSyncHandler`, supaya file
- *  ini sendiri TETAP murni localStorage, tanpa tahu apa pun soal network/akun
- *  (progres offline-tanpa-login tetap harus jalan penuh, PRD §5/§14.4). */
+/** REVISI (permintaan user: "supaya server ringan" — bukan lagi tiap
+ *  `write()` otomatis, itu bikin request kecil beruntun tiap 1 soal
+ *  dijawab). Sekarang localStorage MURNI jadi sumber kebenaran selama anak
+ *  masih mengerjakan — sync ke server cuma dipicu EKSPLISIT lewat
+ *  `requestSync()` di titik anak BENERAN selesai 1 section (`app.ts`/game
+ *  file manggil pas Latihan Inti/tiap tab Tantangan tuntas, bukan tiap slot
+ *  terjawab) — `app.ts` pasang handler-nya sekali di boot lewat
+ *  `setSyncHandler`, supaya file ini sendiri TETAP murni localStorage, tanpa
+ *  tahu apa pun soal network/akun (progres offline-tanpa-login tetap harus
+ *  jalan penuh, PRD §5/§14.4). */
 let onWrite: ((store: Store) => void) | null = null;
 
 export function setSyncHandler(fn: ((store: Store) => void) | null): void {
   onWrite = fn;
+}
+
+/** Panggil ini EKSPLISIT di titik section selesai (bukan otomatis lagi) —
+ *  lihat komentar `onWrite` di atas. */
+export function requestSync(): void {
+  onWrite?.(read());
 }
 
 function write(store: Store): void {
@@ -295,7 +306,6 @@ function write(store: Store): void {
   } catch {
     /* diabaikan dengan sengaja — progres bersifat opsional */
   }
-  onWrite?.(store);
 }
 
 /* --------------------------------------------------------- outbox event -- */
@@ -311,11 +321,6 @@ function write(store: Store): void {
  *  tetap hidup di `Store` (bintang/XP/status slot), bukan di log ini. */
 const EVENTS_KEY = 'inggrisinyuk-kids.events.v1';
 const MAX_OUTBOX = 500;
-
-let onEvent: (() => void) | null = null;
-export function setEventSyncHandler(fn: (() => void) | null): void {
-  onEvent = fn;
-}
 
 function readOutbox(): LearningEventInput[] {
   try {
@@ -345,8 +350,10 @@ export function clearOutboxIds(ids: readonly string[]): void {
   writeOutbox(readOutbox().filter((e) => !idSet.has(e.id)));
 }
 
-/** Generate id+jam lokal, dorong ke outbox, lalu beri tahu `app.ts` (kalau
- *  sudah dipasang) supaya sync-nya didebounce sama seperti `write()`. */
+/** Generate id+jam lokal, dorong ke outbox — TIDAK lagi memicu sync sendiri
+ *  (lihat komentar `onWrite`/`requestSync` di atas); outbox ini ikut
+ *  terkirim bareng snapshot `Store` di request PUT yang sama begitu
+ *  `requestSync()` dipanggil eksplisit di titik section selesai. */
 export function recordEvent(input: Omit<LearningEventInput, 'id' | 'occurredAt' | 'localDay' | 'localHour'>): void {
   const now = new Date();
   const event: LearningEventInput = {
@@ -359,7 +366,6 @@ export function recordEvent(input: Omit<LearningEventInput, 'id' | 'occurredAt' 
   const outbox = readOutbox();
   outbox.push(event);
   writeOutbox(outbox.length > MAX_OUTBOX ? outbox.slice(-MAX_OUTBOX) : outbox);
-  onEvent?.();
 }
 
 const tag = (skill: SkillKey, topicId: string): string => `${skill}:${topicId}`;

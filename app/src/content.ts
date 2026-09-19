@@ -171,59 +171,126 @@ export const SKILL_META: Record<SkillKey, SkillMeta> = {
 export const VOCAB_TOPICS: VocabTopic[] = [
   {
     id: 'keluarga',
-    // Judul bilingual (permintaan user) — Indonesia dulu, Inggris di
-    // kurung, konsisten di semua topik Vocab.
-    title: 'Anggota Keluarga (Family Members)',
+    // Konten diganti total TIGA KALI (audit user, lihat CLAUDE.md "Deep
+    // Audit Vocab Explorer"). Sesi 1: 8/10 kata versi lama (Mother/Father/
+    // Sister/Brother/Grandmother/Grandfather/Cousin/Baby) ternyata Cambridge
+    // Pre A1 STARTERS, sama tier dgn Little Stars `keluargaku`. Diganti ke
+    // 9 kata resmi Cambridge A1 MOVERS "Family & friends" + "Twin". Sesi 2:
+    // "Uncle"/"Aunt" TERNYATA JUGA duplikat PERSIS dgn Little Stars
+    // `keluargaku` yg SUDAH py keduanya — wordlist "Family & friends" A1
+    // Movers cuma 9 kata TOTAL (semua sudah kepakai), jadi user minta GANTI
+    // TOPIK SEKALIAN ke domain "Sports & leisure" (CD/Comic/Dance/Goal/
+    // Kick/Player/Score/Sail/Text/Video). Sesi 3 (revisi user lagi):
+    // "Dance"(💃)/"Player"(🏃) TERNYATA melanggar "Hindari Makhluk Hidup sbg
+    // Objek Ilustrasi" (poin "orang" jg termasuk kategori dihindari, bukan
+    // cuma hewan) — topik ini generik/bukan topik tentang manusia, tapi
+    // Dance/Player/Kick semuanya kata AKSI/PERAN yg inheren perlu figur
+    // manusia utk diilustrasikan, susah dicari ikon benda-mati yg genuinely
+    // representatif (co-alasan dgn kenapa "Small"/"Dirty" tetap pakai
+    // hewan). User minta domain yg SAMA SEKALI hindari makhluk hidup —
+    // diganti kategori resmi Cambridge A1 Movers "Places & directions" +
+    // "Transport" (Café/Car Park/Circus/Funfair/Shopping Centre/Bus Stop/
+    // Bus Station/Tractor/Trip/Ticket) — SEMUA benda/tempat, ZERO figur
+    // hidup diperlukan sama sekali, beda sudut dari `tempat-di-sekitar`
+    // Starter (Pre-A1: Park/Zoo/Farm) & `tempat-di-kota` Achiever (Flyers:
+    // Bank/Museum/dst) yg fokus tempat SEHARI-HARI, topik ini fokus tempat
+    // JALAN-JALAN/LIBURAN. Id topik TETAP SAMA (progres anak aman).
+    title: 'Jalan-jalan Seru (Fun Outings)',
     desc: '10 kata',
     items: [
-      { en: 'Mother', id: 'Ibu', emoji: '👩', example: { en: 'This is my mother.', id: 'Ini ibuku.', emoji: '👩' } },
-      { en: 'Father', id: 'Ayah', emoji: '👨', example: { en: 'This is my father.', id: 'Ini ayahku.', emoji: '👨' } },
-      { en: 'Sister', id: 'Kakak/Adik Perempuan', emoji: '👧', example: { en: 'I love my sister.', id: 'Aku sayang kakak/adik perempuanku.', emoji: '👧' } },
-      { en: 'Brother', id: 'Kakak/Adik Laki-laki', emoji: '👦', example: { en: 'I play with my brother.', id: 'Aku main dengan kakak/adik laki-lakiku.', emoji: '👦' } },
-      { en: 'Grandmother', id: 'Nenek', emoji: '👵', example: { en: 'This is my grandmother.', id: 'Ini nenekku.', emoji: '👵' } },
-      { en: 'Grandfather', id: 'Kakek', emoji: '👴', example: { en: 'This is my grandfather.', id: 'Ini kakekku.', emoji: '👴' } },
-      { en: 'Uncle', id: 'Paman', emoji: '🧔', example: { en: 'This is my uncle.', id: 'Ini pamanku.', emoji: '🧔' } },
-      { en: 'Aunt', id: 'Bibi', emoji: '👩‍🦱', example: { en: 'This is my aunt.', id: 'Ini bibiku.', emoji: '👩‍🦱' } },
-      { en: 'Cousin', id: 'Sepupu', emoji: '🧑', example: { en: 'I play with my cousin.', id: 'Aku main dengan sepupuku.', emoji: '🧑' } },
-      { en: 'Baby', id: 'Bayi', emoji: '👶', example: { en: 'The baby is sleeping.', id: 'Bayinya sedang tidur.', emoji: '👶' } },
+      { en: 'Cafe', id: 'Kafe', emoji: '☕', example: { en: 'We eat cake at the cafe.', id: 'Kami makan kue di kafe.', emoji: '☕' } },
+      { en: 'Car Park', id: 'Tempat Parkir', emoji: '🅿️', example: { en: 'We leave the car at the car park.', id: 'Kami memarkir mobil di tempat parkir.', emoji: '🅿️' } },
+      { en: 'Circus', id: 'Sirkus', emoji: '🎪', example: { en: 'We watch the circus.', id: 'Kami menonton sirkus.', emoji: '🎪' } },
+      { en: 'Funfair', id: 'Taman Hiburan', emoji: '🎡', example: { en: 'We have fun at the funfair.', id: 'Kami senang-senang di taman hiburan.', emoji: '🎡' } },
+      { en: 'Shopping Centre', id: 'Pusat Perbelanjaan', emoji: '🏬', example: { en: 'We shop at the shopping centre.', id: 'Kami berbelanja di pusat perbelanjaan.', emoji: '🏬' } },
+      { en: 'Bus Stop', id: 'Halte Bus', emoji: '🚏', example: { en: 'We wait at the bus stop.', id: 'Kami menunggu di halte bus.', emoji: '🚏' } },
+      { en: 'Bus Station', id: 'Terminal Bus', emoji: '🚉', example: { en: 'The bus station is busy.', id: 'Terminal busnya ramai.', emoji: '🚉' } },
+      { en: 'Tractor', id: 'Traktor', emoji: '🚜', example: { en: 'The tractor works on the farm.', id: 'Traktornya bekerja di ladang.', emoji: '🚜' } },
+      { en: 'Trip', id: 'Perjalanan', emoji: '🧳', example: { en: 'We go on a trip.', id: 'Kami pergi jalan-jalan.', emoji: '🧳' } },
+      { en: 'Ticket', id: 'Tiket', emoji: '🎫', example: { en: 'I buy a ticket.', id: 'Aku membeli tiket.', emoji: '🎫' } },
     ],
   },
   {
     id: 'angka',
-    title: 'Angka 1–10 (Numbers 1–10)',
+    // Konten diganti total (audit user) — 10 kata versi lama (One–Ten)
+    // adalah duplikat PERSIS Little Stars `angka-pertama` (kata sama, emoji
+    // sama), dan Cambridge sendiri menaruh angka 1–20 di tier Pre A1
+    // STARTERS ("Letters & numbers" wordlist resmi), bukan A1 Movers.
+    // Diganti ke konsep angka BARU yang genuinely A1 Movers: nomor urutan
+    // (ordinal) — First/Second/Third dikonfirmasi individual di A-Z wordlist
+    // Movers, Fourth–Tenth tercakup pernyataan resmi "1st–20th" di tabel
+    // tematik Movers. Zero overlap kata dgn Little Stars (cardinal 1–10)
+    // maupun Starter `angka-11-20` (cardinal 11–20) — genuinely skill baru
+    // (urutan posisi, bukan cuma menghitung). Id topik TETAP SAMA.
+    // 🔒 Revisi user ("icon bisa lebih konsisten") — versi awal Fourth–Tenth
+    // pakai teks digit polos ("4th"/dst, pola sama Starter `angka-11-20`
+    // yg tidak py keycap emoji) dipasangkan ke PROP ACAK beda2 per kata
+    // (bendera balap/kursi/kalender/kotak/buku/tanda tanya/halte) — jomplang
+    // drastis dari First–Third yg pakai medali emas/perak/perunggu 🥇🥈🥉,
+    // jadi terasa 3 kata pertama "niat" & 7 sisanya "asal tempel". Diganti
+    // 🏅 (medali polos) SERAGAM utk Fourth–Tenth — tetap 1 keluarga visual
+    // "badge ranking" dgn First–Third (beda cuma warna/kekhususannya, sama
+    // spt dunia nyata: juara 1-3 dapat medali warna beda, 4 ke atas dapat
+    // medali peserta generik) — kalimat contoh (racing/kursi/kalender/dst)
+    // TIDAK diubah, tetap variatif, cuma ikon yg diseragamkan.
+    title: 'Nomor Urutan (Ordinal Numbers)',
     desc: '10 kata',
     items: [
-      { en: 'One', id: 'Satu', emoji: '1️⃣', example: { en: 'I have one apple.', id: 'Aku punya satu apel.', emoji: '🍎' } },
-      { en: 'Two', id: 'Dua', emoji: '2️⃣', example: { en: 'Budi has two apples.', id: 'Budi punya dua apel.', emoji: '🍎🍎' } },
-      { en: 'Three', id: 'Tiga', emoji: '3️⃣', example: { en: 'I see three cats.', id: 'Aku lihat tiga kucing.', emoji: '🐱🐱🐱' } },
-      { en: 'Four', id: 'Empat', emoji: '4️⃣', example: { en: 'She has four balls.', id: 'Dia punya empat bola.', emoji: '⚽⚽⚽⚽' } },
-      { en: 'Five', id: 'Lima', emoji: '5️⃣', example: { en: 'I have five fingers.', id: 'Aku punya lima jari.', emoji: '✋' } },
-      { en: 'Six', id: 'Enam', emoji: '6️⃣', example: { en: 'There are six eggs.', id: 'Ada enam telur.', emoji: '🥚' } },
-      { en: 'Seven', id: 'Tujuh', emoji: '7️⃣', example: { en: 'She has seven pencils.', id: 'Dia punya tujuh pensil.', emoji: '✏️' } },
-      { en: 'Eight', id: 'Delapan', emoji: '8️⃣', example: { en: 'I see eight stars.', id: 'Aku lihat delapan bintang.', emoji: '⭐' } },
-      { en: 'Nine', id: 'Sembilan', emoji: '9️⃣', example: { en: 'We have nine books.', id: 'Kami punya sembilan buku.', emoji: '📚' } },
-      { en: 'Ten', id: 'Sepuluh', emoji: '🔟', example: { en: 'He has ten fish.', id: 'Dia punya sepuluh ikan.', emoji: '🐟' } },
+      { en: 'First', id: 'Pertama', emoji: '🥇', example: { en: 'I am first in line.', id: 'Aku pertama di antrean.', emoji: '🥇' } },
+      { en: 'Second', id: 'Kedua', emoji: '🥈', example: { en: 'She is second in line.', id: 'Dia kedua di antrean.', emoji: '🥈' } },
+      { en: 'Third', id: 'Ketiga', emoji: '🥉', example: { en: 'He is third in line.', id: 'Dia ketiga di antrean.', emoji: '🥉' } },
+      { en: 'Fourth', id: 'Keempat', emoji: '🏅', example: { en: 'I finished fourth in the race.', id: 'Aku selesai keempat di lomba.', emoji: '🏅' } },
+      { en: 'Fifth', id: 'Kelima', emoji: '🏅', example: { en: 'This is the fifth chair.', id: 'Ini kursi kelima.', emoji: '🏅' } },
+      { en: 'Sixth', id: 'Keenam', emoji: '🏅', example: { en: 'Today is the sixth day.', id: 'Hari ini hari keenam.', emoji: '🏅' } },
+      { en: 'Seventh', id: 'Ketujuh', emoji: '🏅', example: { en: 'This is the seventh box.', id: 'Ini kotak ketujuh.', emoji: '🏅' } },
+      { en: 'Eighth', id: 'Kedelapan', emoji: '🏅', example: { en: 'I picked the eighth book.', id: 'Aku mengambil buku kedelapan.', emoji: '🏅' } },
+      { en: 'Ninth', id: 'Kesembilan', emoji: '🏅', example: { en: 'This is the ninth question.', id: 'Ini pertanyaan kesembilan.', emoji: '🏅' } },
+      { en: 'Tenth', id: 'Kesepuluh', emoji: '🏅', example: { en: 'This is the tenth stop.', id: 'Ini perhentian kesepuluh.', emoji: '🏅' } },
     ],
   },
   {
     id: 'warna',
-    title: 'Warna (Colors)',
+    // Konten diganti total DUA KALI (audit user). Sesi 1: 10 warna versi
+    // lama adalah duplikat PERSIS Little Stars `kenal-warna`, dan tabel
+    // tematik resmi Cambridge menaruh SEMUA warna dasar di tier Pre A1
+    // STARTERS dgn kolom A1 Movers-nya KOSONG — diganti ke kategori "The
+    // home" A1 Movers (Elevator/Shower/Toothbrush/Toothpaste/Stairs/
+    // Message/Dream/Seat/Balcony/Basement). Sesi 2 (revisi user lanjutan):
+    // (a) "Message"/"Dream" TERNYATA tidak nyambung ke tema "Bagian Rumah"
+    // sama sekali (bisa terjadi di mana saja, bukan spesifik rumah) —
+    // diganti "Roof"(part rumah asli) & "Address"(spesifik terkait rumah:
+    // alamat RUMAHmu). (b) "Balcony"/"Basement" TERNYATA tidak py ikon
+    // Unicode yang relevan (dicek `unicodedata`, nol hasil utk "balcony"/
+    // "basement"), user pilih GANTI KATA drpd custom image — diganti
+    // "Blanket" (🛏️ bed, tidak py emoji sendiri tapi asosiasinya erat/
+    // selalu menempel di kasur) & "Upstairs" (⬆️ arrow, konvensi visual yg
+    // SAMA dgn tombol lift/tanda gedung sungguhan, bukan ikon dipaksakan).
+    // Sesi 3 (revisi user lagi): "Roof"(🔺) TERNYATA jg dianggap kurang
+    // relevan (segitiga polos, bisa apa saja) — dicek ulang via
+    // `unicodedata`, TIDAK ADA emoji "roof" terisolasi sama sekali di
+    // Unicode (cuma ada rumah utuh 🏠/🏡/🛖, bukan cuma bagian atapnya) —
+    // diganti "Downstairs" (⬇️), mencerminkan/pasangan simetris dari
+    // "Upstairs" (⬆️) yang konvensi ikonnya SAMA & sudah diterima user
+    // sesi sebelumnya. Sesi 4 (revisi user lagi): "Address"(📫) TERNYATA
+    // ikonnya literally gambar KOTAK SURAT, bukan konsep abstrak "alamat"
+    // — kata diubah jadi "Mailbox" (Kotak Surat) supaya kata & ikon match
+    // 1:1 tanpa perlu asosiasi tidak langsung lagi (bukan wordlist resmi
+    // Cambridge, sama status dgn "Twin"/"Nephew" — zero konflik, & justru
+    // lebih pas ke "Bagian Rumah" drpd "Address" yg abstrak/info, bukan
+    // benda fisik). Id topik TETAP SAMA (progres anak aman).
+    title: 'Fasilitas Rumah (Home Features)',
     desc: '10 kata',
-    // "Sun/Matahari" dulu ikut di sini padahal bukan nama warna — diganti
-    // set warna asli (permintaan user: minimal 10 kata per materi), pola
-    // circle emoji sama dgn s2 di placement-test-data.ts (merah/biru/
-    // hijau/kuning/putih/hitam) + oranye/ungu/pink/cokelat.
     items: [
-      { en: 'Red', id: 'Merah', emoji: '🔴', example: { en: 'The apple is red.', id: 'Apel itu merah.', emoji: '🍎' } },
-      { en: 'Blue', id: 'Biru', emoji: '🔵', example: { en: 'The sky is blue.', id: 'Langitnya biru.', emoji: '🌤️' } },
-      { en: 'Green', id: 'Hijau', emoji: '🟢', example: { en: 'The grass is green.', id: 'Rumputnya hijau.', emoji: '🌿' } },
-      { en: 'Yellow', id: 'Kuning', emoji: '🟡', example: { en: 'The banana is yellow.', id: 'Pisangnya kuning.', emoji: '🍌' } },
-      { en: 'Orange', id: 'Oranye', emoji: '🟠', example: { en: 'The orange is orange.', id: 'Jeruknya berwarna oranye.', emoji: '🍊' } },
-      { en: 'Purple', id: 'Ungu', emoji: '🟣', example: { en: 'The grapes are purple.', id: 'Anggurnya ungu.', emoji: '🍇' } },
-      { en: 'Pink', id: 'Merah Muda', emoji: '🩷', example: { en: 'Her dress is pink.', id: 'Gaunnya merah muda.', emoji: '👗' } },
-      { en: 'Black', id: 'Hitam', emoji: '⚫', example: { en: 'The cat is black.', id: 'Kucingnya hitam.', emoji: '🐈‍⬛' } },
-      { en: 'White', id: 'Putih', emoji: '⚪', example: { en: 'The cloud is white.', id: 'Awannya putih.', emoji: '☁️' } },
-      { en: 'Brown', id: 'Cokelat', emoji: '🟤', example: { en: 'The bear is brown.', id: 'Beruangnya cokelat.', emoji: '🐻' } },
+      { en: 'Elevator', id: 'Lift', emoji: '🛗', example: { en: 'We go up in the elevator.', id: 'Kami naik lift.', emoji: '🛗' } },
+      { en: 'Shower', id: 'Pancuran', emoji: '🚿', example: { en: 'I take a shower every morning.', id: 'Aku mandi shower setiap pagi.', emoji: '🚿' } },
+      { en: 'Toothbrush', id: 'Sikat Gigi', emoji: '🪥', example: { en: 'I use my toothbrush.', id: 'Aku memakai sikat gigiku.', emoji: '🪥' } },
+      { en: 'Toothpaste', id: 'Pasta Gigi', emoji: '🧴', example: { en: 'I put toothpaste on my toothbrush.', id: 'Aku memakai pasta gigi di sikat gigiku.', emoji: '🧴' } },
+      { en: 'Stairs', id: 'Tangga', emoji: '🪜', example: { en: 'I walk up the stairs.', id: 'Aku menaiki tangga.', emoji: '🪜' } },
+      { en: 'Downstairs', id: 'Lantai Bawah', emoji: '⬇️', example: { en: 'The kitchen is downstairs.', id: 'Dapurnya di lantai bawah.', emoji: '⬇️' } },
+      { en: 'Mailbox', id: 'Kotak Surat', emoji: '📫', example: { en: 'I check the mailbox.', id: 'Aku memeriksa kotak surat.', emoji: '📫' } },
+      { en: 'Seat', id: 'Tempat Duduk', emoji: '🪑', example: { en: 'Take a seat, please.', id: 'Silakan duduk di tempat ini.', emoji: '🪑' } },
+      { en: 'Blanket', id: 'Selimut', emoji: '🛏️', example: { en: 'I sleep with a blanket.', id: 'Aku tidur memakai selimut.', emoji: '🛏️' } },
+      { en: 'Upstairs', id: 'Lantai Atas', emoji: '⬆️', example: { en: 'My room is upstairs.', id: 'Kamarku di lantai atas.', emoji: '⬆️' } },
     ],
   },
   {
@@ -247,21 +314,55 @@ export const VOCAB_TOPICS: VocabTopic[] = [
     id: 'kata-sifat',
     title: 'Kata Sifat & Lawan Kata (Adjectives & Opposites)',
     desc: '10 kata',
+    // Big/Fast/Slow/Long dulu pakai hewan TUBUH UTUH (Elephant🐘/Leopard🐆/
+    // Turtle🐢/Snake🐍) — keempatnya TIDAK PUNYA varian "face"/kepala di
+    // Unicode sama sekali (beda dari Small/Dirty di bawah yg emoji-nya
+    // MEMANG sudah 🐭/🐷 "face", jadi TIDAK disentuh) — CLAUDE.md "Emoji
+    // Hewan WAJIB Kepala SAJA" poin 3: default-nya ganti ke hewan lain yg
+    // py opsi kepala, TAPI topik ini generik (bukan topik hewan), jadi
+    // dipilih opsi "cara image lain" (permintaan user): ganti ke BENDA MATI
+    // sekalian — sejalan jg dgn "Hindari Makhluk Hidup sbg Objek Ilustrasi
+    // Kalau Ada Alternatif Benda Mati" (topik ini netral, bukan spesifik
+    // hewan), sekaligus menuntaskan pola yg Short/Heavy/Light/Clean di
+    // bawah SUDAH pakai (pensil/batu/bulu/sabun).
     items: [
-      { en: 'Big', id: 'Besar', emoji: '🐘', example: { en: 'The elephant is big.', id: 'Gajahnya besar.', emoji: '🐘' } },
+      { en: 'Big', id: 'Besar', emoji: '⛰️', example: { en: 'The mountain is big.', id: 'Gunungnya besar.', emoji: '⛰️' } },
       { en: 'Small', id: 'Kecil', emoji: '🐭', example: { en: 'The mouse is small.', id: 'Tikusnya kecil.', emoji: '🐭' } },
-      { en: 'Fast', id: 'Cepat', emoji: '🐆', example: { en: 'The cheetah is fast.', id: 'Citahnya cepat.', emoji: '🐆' } },
-      { en: 'Slow', id: 'Lambat', emoji: '🐢', example: { en: 'The turtle is slow.', id: 'Kura-kuranya lambat.', emoji: '🐢' } },
-      { en: 'Long', id: 'Panjang', emoji: '🐍', example: { en: 'The snake is long.', id: 'Ularnya panjang.', emoji: '🐍' } },
+      { en: 'Fast', id: 'Cepat', emoji: '🏎️', example: { en: 'The race car is fast.', id: 'Mobil balapnya cepat.', emoji: '🏎️' } },
+      // Ikon diganti gambar custom (KENALAN_ICON_IMAGE_OVERRIDES,
+      // /img/slow-icon.png, permintaan user) — cangkang siput, TANPA
+      // tubuh/mata/antena kelihatan (beda dari emoji 🐌 full-body yg
+      // sengaja dihindari sejak awal topik ini krn tanpa varian kepala) +
+      // analogi "selambat siput" jauh lebih kuat drpd sepeda. Kalimat
+      // contoh diubah cocok.
+      { en: 'Slow', id: 'Lambat', emoji: '🐌', example: { en: 'The snail is slow.', id: 'Siputnya lambat.', emoji: '🐌' } },
+      { en: 'Long', id: 'Panjang', emoji: '🪢', example: { en: 'The rope is long.', id: 'Talinya panjang.', emoji: '🪢' } },
       { en: 'Short', id: 'Pendek', emoji: '✏️', example: { en: 'The pencil is short.', id: 'Pensilnya pendek.', emoji: '✏️' } },
       { en: 'Heavy', id: 'Berat', emoji: '🪨', example: { en: 'The rock is heavy.', id: 'Batunya berat.', emoji: '🪨' } },
       { en: 'Light', id: 'Ringan', emoji: '🪶', example: { en: 'The feather is light.', id: 'Bulunya ringan.', emoji: '🪶' } },
       { en: 'Clean', id: 'Bersih', emoji: '🧼', example: { en: 'My hands are clean.', id: 'Tanganku bersih.', emoji: '🧼' } },
-      { en: 'Dirty', id: 'Kotor', emoji: '🐷', example: { en: 'The pig is dirty.', id: 'Babinya kotor.', emoji: '🐷' } },
+      // Ikon diganti gambar custom (KENALAN_ICON_IMAGE_OVERRIDES,
+      // games/vocabulary.ts, /img/dirty-icon.png) — permintaan user: 🐷 (jg
+      // sudah head-only/compliant) tetap dianggap berisiko misleading (anak
+      // bisa nangkep "Pig" bukan "Dirty" krn hewan py asosiasi kuat sbg
+      // kata benda sendiri). Kalimat contoh diubah cocok gambar baru
+      // (kaos belepotan lumpur, BUKAN lagi babi). `emoji: '🐷'` tetap
+      // disimpan sbg fallback (pola sama Table/Zoo/dkk — tidak pernah
+      // tampil selama override aktif).
+      { en: 'Dirty', id: 'Kotor', emoji: '🐷', example: { en: 'My shirt is dirty.', id: 'Bajuku kotor.', emoji: '🐷' } },
     ],
   },
   {
     id: 'belanja-uang',
+    // "Cashier" diganti (audit user: ikon 🧑‍💼 generik pekerja kantoran,
+    // nol hubungan ke "kasir" spesifik — dicek `unicodedata`, TIDAK ADA
+    // emoji "cashier"/"cash register"/"till" sama sekali di Unicode).
+    // Diganti "Money Bag" (💰) — ikon & kata match 1:1 langsung, tetap
+    // dalam tema uang/belanja, tidak duplikat konsep dgn "Money" (💵
+    // banknote, bentuk beda). "Piggy Bank" (🐷) SENGAJA TIDAK diganti
+    // (dicek juga, sama2 tidak py emoji khusus) — beda kasus dari
+    // "Cashier": kata "piggy" ITU SENDIRI secara harfiah berarti "bentuk
+    // babi", jadi 🐷 genuinely representatif, bukan asosiasi dipaksakan.
     title: 'Belanja & Uang (Shopping & Money)',
     desc: '10 kata',
     items: [
@@ -271,7 +372,7 @@ export const VOCAB_TOPICS: VocabTopic[] = [
       { en: 'Expensive', id: 'Mahal', emoji: '💎', example: { en: 'This is expensive.', id: 'Ini mahal.', emoji: '💎' } },
       { en: 'Wallet', id: 'Dompet', emoji: '👛', example: { en: 'I keep money in my wallet.', id: 'Aku menyimpan uang di dompetku.', emoji: '👛' } },
       { en: 'Basket', id: 'Keranjang', emoji: '🧺', example: { en: 'I put fruit in the basket.', id: 'Aku memasukkan buah ke keranjang.', emoji: '🧺' } },
-      { en: 'Cashier', id: 'Kasir', emoji: '🧑‍💼', example: { en: 'The cashier helps me pay.', id: 'Kasir membantuku membayar.', emoji: '🧑‍💼' } },
+      { en: 'Money Bag', id: 'Kantong Uang', emoji: '💰', example: { en: 'I keep coins in my money bag.', id: 'Aku menyimpan koin di kantong uangku.', emoji: '💰' } },
       { en: 'Receipt', id: 'Struk', emoji: '🧾', example: { en: 'I get a receipt.', id: 'Aku dapat struk.', emoji: '🧾' } },
       { en: 'Cart', id: 'Troli', emoji: '🛒', example: { en: 'I push the cart.', id: 'Aku mendorong troli.', emoji: '🛒' } },
       { en: 'Piggy Bank', id: 'Celengan', emoji: '🐷', example: { en: 'I save money in my piggy bank.', id: 'Aku menabung di celenganku.', emoji: '🐷' } },
@@ -313,6 +414,13 @@ export const VOCAB_TOPICS: VocabTopic[] = [
   },
   {
     id: 'pesta-perayaan',
+    // "Card" diganti (audit user) — ikon ✉️ literally envelope, nol
+    // hubungan ke "kartu", dan tidak ada emoji "greeting card" sama sekali
+    // di Unicode (dicek `unicodedata`, cuma ada playing card/credit card/
+    // card index — semua makna beda). Diganti "Message" (💬) — masih
+    // dalam tema tulisan-ucapan utk pesta (spt Card/Invitation), ikon
+    // match langsung, & kata ini genuinely A1 Movers resmi (kategori
+    // "Home" tapi tier-nya berlaku lintas kategori).
     title: 'Pesta & Perayaan (Party & Celebrations)',
     desc: '10 kata',
     items: [
@@ -320,10 +428,10 @@ export const VOCAB_TOPICS: VocabTopic[] = [
       { en: 'Present', id: 'Hadiah', emoji: '🎁', example: { en: 'I open my present.', id: 'Aku membuka hadiahku.', emoji: '🎁' } },
       { en: 'Candle', id: 'Lilin', emoji: '🕯️', example: { en: 'I blow the candle.', id: 'Aku meniup lilin.', emoji: '🕯️' } },
       { en: 'Invitation', id: 'Undangan', emoji: '💌', example: { en: 'I send an invitation.', id: 'Aku mengirim undangan.', emoji: '💌' } },
-      { en: 'Guest', id: 'Tamu', emoji: '🧑‍🤝‍🧑', example: { en: 'We welcome the guest.', id: 'Kami menyambut tamu.', emoji: '🧑‍🤝‍🧑' } },
+      { en: 'Guest', id: 'Tamu', emoji: '👥', example: { en: 'We welcome the guest.', id: 'Kami menyambut tamu.', emoji: '👥' } },
       { en: 'Decoration', id: 'Hiasan', emoji: '🎊', example: { en: 'We put up decoration.', id: 'Kami memasang hiasan.', emoji: '🎊' } },
       { en: 'Celebration', id: 'Perayaan', emoji: '🥳', example: { en: 'We have a celebration.', id: 'Kami mengadakan perayaan.', emoji: '🥳' } },
-      { en: 'Card', id: 'Kartu', emoji: '✉️', example: { en: 'I make a card.', id: 'Aku membuat kartu.', emoji: '✉️' } },
+      { en: 'Message', id: 'Pesan', emoji: '💬', example: { en: 'I write a birthday message.', id: 'Aku menulis pesan ulang tahun.', emoji: '💬' } },
       { en: 'Wish', id: 'Harapan', emoji: '⭐', example: { en: 'I make a wish.', id: 'Aku membuat harapan.', emoji: '⭐' } },
       { en: 'Surprise', id: 'Kejutan', emoji: '😲', example: { en: 'This is a surprise!', id: 'Ini kejutan!', emoji: '😲' } },
     ],
@@ -1040,25 +1148,25 @@ export const VOCAB_TOPICS_ADVENTURER: VocabTopic[] = [
     ],
   },
   {
-    id: 'binatang',
-    title: 'Binatang (Animals)',
+    id: 'alat-musik',
+    title: 'Musik & Alat Musik (Music & Instruments)',
     desc: '10 kata',
     items: [
-      { en: 'Elephant', id: 'Gajah', emoji: '🐘', example: { en: 'The elephant is very big.', id: 'Gajahnya sangat besar.', emoji: '🐘' } },
-      { en: 'Lion', id: 'Singa', emoji: '🦁', example: { en: 'The lion lives in the jungle.', id: 'Singa tinggal di hutan.', emoji: '🦁' } },
-      { en: 'Tiger', id: 'Harimau', emoji: '🐯', example: { en: 'The tiger has orange stripes.', id: 'Harimau punya garis oranye.', emoji: '🐯' } },
-      { en: 'Monkey', id: 'Monyet', emoji: '🐒', example: { en: 'The monkey climbs the tree.', id: 'Monyet memanjat pohon.', emoji: '🐒' } },
-      { en: 'Giraffe', id: 'Jerapah', emoji: '🦒', example: { en: 'The giraffe has a long neck.', id: 'Jerapah punya leher panjang.', emoji: '🦒' } },
-      { en: 'Zebra', id: 'Zebra', emoji: '🦓', example: { en: 'The zebra has black and white stripes.', id: 'Zebra punya garis hitam putih.', emoji: '🦓' } },
-      { en: 'Bear', id: 'Beruang', emoji: '🐻', example: { en: 'The bear sleeps in winter.', id: 'Beruang tidur di musim dingin.', emoji: '🐻' } },
-      { en: 'Penguin', id: 'Pinguin', emoji: '🐧', example: { en: 'The penguin lives in the snow.', id: 'Pinguin tinggal di salju.', emoji: '🐧' } },
-      { en: 'Kangaroo', id: 'Kanguru', emoji: '🦘', example: { en: 'The kangaroo can jump high.', id: 'Kanguru bisa melompat tinggi.', emoji: '🦘' } },
-      { en: 'Panda', id: 'Panda', emoji: '🐼', example: { en: 'The panda eats bamboo.', id: 'Panda makan bambu.', emoji: '🐼' } },
+      { en: 'Guitar', id: 'Gitar', emoji: '🎸', example: { en: 'I play the guitar.', id: 'Aku bermain gitar.', emoji: '🎸' } },
+      { en: 'Piano', id: 'Piano', emoji: '🎹', example: { en: 'She plays the piano.', id: 'Dia bermain piano.', emoji: '🎹' } },
+      { en: 'Violin', id: 'Biola', emoji: '🎻', example: { en: 'He plays the violin.', id: 'Dia bermain biola.', emoji: '🎻' } },
+      { en: 'Trumpet', id: 'Terompet', emoji: '🎺', example: { en: 'I blow the trumpet.', id: 'Aku meniup terompet.', emoji: '🎺' } },
+      { en: 'Saxophone', id: 'Saksofon', emoji: '🎷', example: { en: 'She plays the saxophone.', id: 'Dia bermain saksofon.', emoji: '🎷' } },
+      { en: 'Banjo', id: 'Banjo', emoji: '🪕', example: { en: 'He plays the banjo.', id: 'Dia bermain banjo.', emoji: '🪕' } },
+      { en: 'Accordion', id: 'Akordeon', emoji: '🪗', example: { en: 'She plays the accordion.', id: 'Dia bermain akordeon.', emoji: '🪗' } },
+      { en: 'Microphone', id: 'Mikrofon', emoji: '🎤', example: { en: 'I sing into the microphone.', id: 'Aku bernyanyi lewat mikrofon.', emoji: '🎤' } },
+      { en: 'Headphones', id: 'Headphone', emoji: '🎧', example: { en: 'I listen with my headphones.', id: 'Aku mendengarkan pakai headphone-ku.', emoji: '🎧' } },
+      { en: 'Song', id: 'Lagu', emoji: '🎵', example: { en: 'We sing a song.', id: 'Kami menyanyikan lagu.', emoji: '🎵' } },
     ],
   },
   {
     id: 'makanan',
-    title: 'Makanan (Food)',
+    title: 'Makanan Pokok Sehari-hari (Everyday Staple Foods)',
     desc: '10 kata',
     items: [
       { en: 'Bread', id: 'Roti', emoji: '🍞', example: { en: 'I eat bread for breakfast.', id: 'Aku makan roti untuk sarapan.', emoji: '🍞' } },
@@ -1075,7 +1183,7 @@ export const VOCAB_TOPICS_ADVENTURER: VocabTopic[] = [
   },
   {
     id: 'alat-sekolah',
-    title: 'Alat Sekolah (School Supplies)',
+    title: 'Perlengkapan Belajar (Study Supplies)',
     desc: '10 kata',
     items: [
       { en: 'Pencil', id: 'Pensil', emoji: '✏️', example: { en: 'I write with a pencil.', id: 'Aku menulis dengan pensil.', emoji: '✏️' } },
@@ -1092,52 +1200,52 @@ export const VOCAB_TOPICS_ADVENTURER: VocabTopic[] = [
   },
   {
     id: 'cuaca',
-    title: 'Cuaca (Weather)',
+    title: 'Cuaca & Musim (Weather & Seasons)',
     desc: '10 kata',
     items: [
       { en: 'Sunny', id: 'Cerah', emoji: '☀️', example: { en: 'Today is sunny.', id: 'Hari ini cerah.', emoji: '☀️' } },
-      { en: 'Rainy', id: 'Hujan', emoji: '🌧️', example: { en: 'It is rainy today.', id: 'Hari ini hujan.', emoji: '🌧️' } },
       { en: 'Cloudy', id: 'Berawan', emoji: '☁️', example: { en: 'The sky is cloudy.', id: 'Langitnya berawan.', emoji: '☁️' } },
-      { en: 'Windy', id: 'Berangin', emoji: '💨', example: { en: 'It is windy outside.', id: 'Di luar berangin.', emoji: '💨' } },
-      { en: 'Snowy', id: 'Bersalju', emoji: '❄️', example: { en: 'It is snowy in winter.', id: 'Bersalju saat musim dingin.', emoji: '❄️' } },
-      { en: 'Hot', id: 'Panas', emoji: '🌡️', example: { en: 'Today is hot.', id: 'Hari ini panas.', emoji: '🌡️' } },
-      { en: 'Cold', id: 'Dingin', emoji: '🥶', example: { en: 'Today is cold.', id: 'Hari ini dingin.', emoji: '🥶' } },
-      { en: 'Stormy', id: 'Badai', emoji: '⛈️', example: { en: 'It is stormy today.', id: 'Hari ini badai.', emoji: '⛈️' } },
-      { en: 'Foggy', id: 'Berkabut', emoji: '🌫️', example: { en: 'It is foggy this morning.', id: 'Pagi ini berkabut.', emoji: '🌫️' } },
-      { en: 'Rainbow', id: 'Pelangi', emoji: '🌈', example: { en: 'I see a rainbow.', id: 'Aku lihat pelangi.', emoji: '🌈' } },
+      { en: 'Thunder', id: 'Guntur', emoji: '⛈️', example: { en: 'I hear the thunder.', id: 'Aku mendengar suara guntur.', emoji: '⛈️' } },
+      { en: 'Breezy', id: 'Berangin Sepoi-sepoi', emoji: '🌬️', example: { en: 'It is breezy today.', id: 'Hari ini berangin sepoi-sepoi.', emoji: '🌬️' } },
+      { en: 'Humid', id: 'Lembap', emoji: '💧', example: { en: 'The air feels humid.', id: 'Udaranya terasa lembap.', emoji: '💧' } },
+      { en: 'Freezing', id: 'Membeku', emoji: '🧊', example: { en: 'The lake is freezing.', id: 'Danaunya membeku.', emoji: '🧊' } },
+      { en: 'Drizzly', id: 'Gerimis', emoji: '🌦️', example: { en: 'It is drizzly this morning.', id: 'Pagi ini gerimis.', emoji: '🌦️' } },
+      { en: 'Thermometer', id: 'Termometer', emoji: '🌡️', example: { en: 'The thermometer shows the temperature.', id: 'Termometer menunjukkan suhunya.', emoji: '🌡️' } },
+      { en: 'Season', id: 'Musim', emoji: '🍂', example: { en: 'Each season feels different.', id: 'Setiap musim terasa berbeda.', emoji: '🍂' } },
+      { en: 'Sunrise', id: 'Matahari Terbit', emoji: '🌅', example: { en: 'We watch the sunrise.', id: 'Kami melihat matahari terbit.', emoji: '🌅' } },
     ],
   },
   {
     id: 'anggota-tubuh',
-    title: 'Anggota Tubuh (Body Parts)',
+    title: 'Tubuh & Otak (Body & Brain)',
     desc: '10 kata',
     items: [
       { en: 'Eye', id: 'Mata', emoji: '👁️', example: { en: 'I close my eye.', id: 'Aku menutup mataku.', emoji: '👁️' } },
       { en: 'Ear', id: 'Telinga', emoji: '👂', example: { en: 'I clean my ear.', id: 'Aku membersihkan telingaku.', emoji: '👂' } },
       { en: 'Nose', id: 'Hidung', emoji: '👃', example: { en: 'My nose is small.', id: 'Hidungku kecil.', emoji: '👃' } },
       { en: 'Mouth', id: 'Mulut', emoji: '👄', example: { en: 'Open your mouth.', id: 'Buka mulutmu.', emoji: '👄' } },
-      { en: 'Hand', id: 'Tangan', emoji: '✋', example: { en: 'I wave my hand.', id: 'Aku melambaikan tanganku.', emoji: '✋' } },
+      { en: 'Brain', id: 'Otak', emoji: '🧠', example: { en: 'My brain helps me think.', id: 'Otakku membantuku berpikir.', emoji: '🧠' } },
       { en: 'Foot', id: 'Kaki', emoji: '🦶', example: { en: 'I wash my foot.', id: 'Aku mencuci kakiku.', emoji: '🦶' } },
       { en: 'Tooth', id: 'Gigi', emoji: '🦷', example: { en: 'I brush my tooth.', id: 'Aku menyikat gigiku.', emoji: '🦷' } },
       { en: 'Tongue', id: 'Lidah', emoji: '👅', example: { en: 'I stick out my tongue.', id: 'Aku menjulurkan lidahku.', emoji: '👅' } },
-      { en: 'Finger', id: 'Jari', emoji: '👆', example: { en: 'I point with my finger.', id: 'Aku menunjuk dengan jariku.', emoji: '👆' } },
+      { en: 'Thumb', id: 'Jempol', emoji: '👍', example: { en: 'I show my thumb.', id: 'Aku menunjukkan jempolku.', emoji: '👍' } },
       { en: 'Arm', id: 'Lengan', emoji: '💪', example: { en: 'I flex my arm.', id: 'Aku menekuk lenganku.', emoji: '💪' } },
     ],
   },
   {
     id: 'transportasi',
-    title: 'Transportasi (Transportation)',
+    title: 'Transportasi Unik Dunia (Unique Transport Around the World)',
     desc: '10 kata',
     items: [
-      { en: 'Car', id: 'Mobil', emoji: '🚗', example: { en: 'We travel by car.', id: 'Kami bepergian naik mobil.', emoji: '🚗' } },
-      { en: 'Bus', id: 'Bus', emoji: '🚌', example: { en: 'I go to school by bus.', id: 'Aku ke sekolah naik bus.', emoji: '🚌' } },
-      { en: 'Train', id: 'Kereta', emoji: '🚆', example: { en: 'The train is fast.', id: 'Keretanya cepat.', emoji: '🚆' } },
-      { en: 'Bicycle', id: 'Sepeda', emoji: '🚲', example: { en: 'He rides a bicycle.', id: 'Dia naik sepeda.', emoji: '🚲' } },
+      { en: 'Scooter', id: 'Skuter', emoji: '🛵', example: { en: 'She rides a scooter.', id: 'Dia naik skuter.', emoji: '🛵' } },
+      { en: 'Van', id: 'Van', emoji: '🚐', example: { en: 'The van is big.', id: 'Vannya besar.', emoji: '🚐' } },
+      { en: 'Sailboat', id: 'Perahu Layar', emoji: '⛵', example: { en: 'They sail a sailboat.', id: 'Mereka berlayar dengan perahu layar.', emoji: '⛵' } },
       { en: 'Motorcycle', id: 'Motor', emoji: '🏍️', example: { en: 'She rides a motorcycle.', id: 'Dia naik motor.', emoji: '🏍️' } },
-      { en: 'Airplane', id: 'Pesawat', emoji: '✈️', example: { en: 'We fly by airplane.', id: 'Kami terbang naik pesawat.', emoji: '✈️' } },
-      { en: 'Boat', id: 'Perahu', emoji: '🛶', example: { en: 'They sail a boat.', id: 'Mereka berlayar naik perahu.', emoji: '🛶' } },
+      { en: 'Speedboat', id: 'Perahu Cepat', emoji: '🚤', example: { en: 'The speedboat is fast.', id: 'Perahu cepat itu laju.', emoji: '🚤' } },
+      { en: 'Cable Car', id: 'Kereta Gantung', emoji: '🚡', example: { en: 'We ride a cable car.', id: 'Kami naik kereta gantung.', emoji: '🚡' } },
       { en: 'Taxi', id: 'Taksi', emoji: '🚕', example: { en: 'I take a taxi.', id: 'Aku naik taksi.', emoji: '🚕' } },
-      { en: 'Truck', id: 'Truk', emoji: '🚚', example: { en: 'The truck is big.', id: 'Truknya besar.', emoji: '🚚' } },
+      { en: 'Tram', id: 'Trem', emoji: '🚋', example: { en: 'The tram stops here.', id: 'Tramnya berhenti di sini.', emoji: '🚋' } },
+      { en: 'Rickshaw', id: 'Bajaj', emoji: '🛺', example: { en: 'He rides a rickshaw.', id: 'Dia naik bajaj.', emoji: '🛺' } },
       { en: 'Ship', id: 'Kapal', emoji: '🚢', example: { en: 'The ship crosses the sea.', id: 'Kapal itu menyeberangi laut.', emoji: '🚢' } },
     ],
   },
@@ -1149,18 +1257,18 @@ export const VOCAB_TOPICS_ADVENTURER: VocabTopic[] = [
       { en: 'Football', id: 'Sepak Bola', emoji: '⚽', example: { en: 'I play football.', id: 'Aku main sepak bola.', emoji: '⚽' } },
       { en: 'Basketball', id: 'Bola Basket', emoji: '🏀', example: { en: 'He plays basketball.', id: 'Dia main bola basket.', emoji: '🏀' } },
       { en: 'Swimming', id: 'Berenang', emoji: '🏊', example: { en: 'She likes swimming.', id: 'Dia suka berenang.', emoji: '🏊' } },
-      { en: 'Running', id: 'Berlari', emoji: '🏃', example: { en: 'I like running.', id: 'Aku suka berlari.', emoji: '🏃' } },
+      { en: 'Golf', id: 'Golf', emoji: '⛳', example: { en: 'He plays golf.', id: 'Dia main golf.', emoji: '⛳' } },
       { en: 'Badminton', id: 'Bulu Tangkis', emoji: '🏸', example: { en: 'We play badminton.', id: 'Kami main bulu tangkis.', emoji: '🏸' } },
       { en: 'Volleyball', id: 'Bola Voli', emoji: '🏐', example: { en: 'They play volleyball.', id: 'Mereka main bola voli.', emoji: '🏐' } },
       { en: 'Tennis', id: 'Tenis', emoji: '🎾', example: { en: 'He plays tennis.', id: 'Dia main tenis.', emoji: '🎾' } },
-      { en: 'Cycling', id: 'Bersepeda', emoji: '🚴', example: { en: 'I enjoy cycling.', id: 'Aku suka bersepeda.', emoji: '🚴' } },
-      { en: 'Jumping', id: 'Melompat', emoji: '🤸', example: { en: 'The kids are jumping.', id: 'Anak-anak sedang melompat.', emoji: '🤸' } },
-      { en: 'Dancing', id: 'Menari', emoji: '💃', example: { en: 'She loves dancing.', id: 'Dia suka menari.', emoji: '💃' } },
+      { en: 'Boxing', id: 'Tinju', emoji: '🥊', example: { en: 'He learns boxing.', id: 'Dia belajar tinju.', emoji: '🥊' } },
+      { en: 'Archery', id: 'Memanah', emoji: '🏹', example: { en: 'I try archery.', id: 'Aku mencoba memanah.', emoji: '🏹' } },
+      { en: 'Bowling', id: 'Boling', emoji: '🎳', example: { en: 'We go bowling.', id: 'Kami pergi boling.', emoji: '🎳' } },
     ],
   },
   {
     id: 'rumah',
-    title: 'Bagian Rumah (Parts of the House)',
+    title: 'Ruangan di Rumah (Rooms of the House)',
     desc: '10 kata',
     items: [
       { en: 'Kitchen', id: 'Dapur', emoji: '🍳', example: { en: 'Mom cooks in the kitchen.', id: 'Ibu memasak di dapur.', emoji: '🍳' } },
@@ -1172,20 +1280,20 @@ export const VOCAB_TOPICS_ADVENTURER: VocabTopic[] = [
       { en: 'Roof', id: 'Atap', emoji: '🏠', example: { en: 'The roof is red.', id: 'Atapnya merah.', emoji: '🏠' } },
       { en: 'Garden', id: 'Kebun', emoji: '🌻', example: { en: 'We play in the garden.', id: 'Kami main di kebun.', emoji: '🌻' } },
       { en: 'Wall', id: 'Dinding', emoji: '🧱', example: { en: 'The wall is red.', id: 'Dindingnya merah.', emoji: '🧱' } },
-      { en: 'Floor', id: 'Lantai', emoji: '🪵', example: { en: 'The floor is clean.', id: 'Lantainya bersih.', emoji: '🪵' } },
+      { en: 'Playroom', id: 'Ruang Bermain', emoji: '🧸', example: { en: 'We play in the playroom.', id: 'Kami bermain di ruang bermain.', emoji: '🧸' } },
     ],
   },
   {
     id: 'perasaan',
-    title: 'Perasaan (Feelings)',
+    title: 'Perasaan yang Lebih Rumit (Complex Feelings)',
     desc: '10 kata',
     items: [
-      { en: 'Happy', id: 'Senang', emoji: '😊', example: { en: 'I feel happy today.', id: 'Aku merasa senang hari ini.', emoji: '😊' } },
-      { en: 'Sad', id: 'Sedih', emoji: '😢', example: { en: 'She feels sad.', id: 'Dia merasa sedih.', emoji: '😢' } },
-      { en: 'Angry', id: 'Marah', emoji: '😠', example: { en: 'He is angry.', id: 'Dia marah.', emoji: '😠' } },
-      { en: 'Scared', id: 'Takut', emoji: '😨', example: { en: 'I am scared of the dark.', id: 'Aku takut gelap.', emoji: '😨' } },
+      { en: 'Nervous', id: 'Gugup', emoji: '😬', example: { en: 'I feel nervous before the test.', id: 'Aku merasa gugup sebelum ujian.', emoji: '😬' } },
+      { en: 'Confused', id: 'Bingung', emoji: '😕', example: { en: 'He looks confused.', id: 'Dia terlihat bingung.', emoji: '😕' } },
+      { en: 'Worried', id: 'Khawatir', emoji: '😟', example: { en: 'Mom is worried about me.', id: 'Ibu khawatir tentang aku.', emoji: '😟' } },
+      { en: 'Amazed', id: 'Kagum', emoji: '🤩', example: { en: 'I am amazed by the view.', id: 'Aku kagum dengan pemandangannya.', emoji: '🤩' } },
       { en: 'Surprised', id: 'Terkejut', emoji: '😲', example: { en: 'We are surprised.', id: 'Kami terkejut.', emoji: '😲' } },
-      { en: 'Excited', id: 'Bersemangat', emoji: '🤩', example: { en: 'I am excited for the trip.', id: 'Aku bersemangat untuk perjalanan itu.', emoji: '🤩' } },
+      { en: 'Calm', id: 'Tenang', emoji: '😌', example: { en: 'Just stay calm.', id: 'Tetap tenang saja.', emoji: '😌' } },
       { en: 'Tired', id: 'Lelah', emoji: '😴', example: { en: 'She is tired.', id: 'Dia lelah.', emoji: '😴' } },
       { en: 'Bored', id: 'Bosan', emoji: '😑', example: { en: 'He is bored.', id: 'Dia bosan.', emoji: '😑' } },
       { en: 'Proud', id: 'Bangga', emoji: '🥹', example: { en: 'My mom is proud of me.', id: 'Ibuku bangga padaku.', emoji: '🥹' } },
@@ -1222,8 +1330,8 @@ export const VOCAB_TOPICS_ADVENTURER: VocabTopic[] = [
       { en: 'Wash', id: 'Mencuci', emoji: '🧼', example: { en: 'I wash my hands.', id: 'Aku mencuci tanganku.', emoji: '🧼' } },
       { en: 'Open', id: 'Buka', emoji: '🔓', example: { en: 'I open the door.', id: 'Aku membuka pintu.', emoji: '🔓' } },
       { en: 'Close', id: 'Tutup', emoji: '🔒', example: { en: 'I close the door.', id: 'Aku menutup pintu.', emoji: '🔒' } },
-      { en: 'Push', id: 'Dorong', emoji: '👉', example: { en: 'I push the swing.', id: 'Aku mendorong ayunan.', emoji: '👉' } },
-      { en: 'Pull', id: 'Tarik', emoji: '👈', example: { en: 'I pull the rope.', id: 'Aku menarik tali.', emoji: '👈' } },
+      { en: 'Fix', id: 'Memperbaiki', emoji: '🔧', example: { en: 'I fix the toy.', id: 'Aku memperbaiki mainan itu.', emoji: '🔧' } },
+      { en: 'Wave', id: 'Melambai', emoji: '👋', example: { en: 'I wave at my friend.', id: 'Aku melambai ke temanku.', emoji: '👋' } },
     ],
   },
   {
@@ -1705,13 +1813,13 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Friend',
         id: 'Teman',
-        emoji: '🧑‍🤝‍🧑',
-        example: { en: 'I play with my friend.', id: 'Aku bermain dengan temanku.', emoji: '🧑‍🤝‍🧑' },
+        emoji: '👥',
+        example: { en: 'I play with my friend.', id: 'Aku bermain dengan temanku.', emoji: '👥' },
         question: {
           en: 'Who does she play with?',
           id: 'Dia bermain dengan siapa?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'Friend', ok: true },
+            { emoji: '👥', text: 'Friend', ok: true },
             { emoji: '👧', text: 'Sister', ok: false },
             { emoji: '🧑‍🏫', text: 'Teacher', ok: false },
             { emoji: '👦', text: 'Brother', ok: false },
@@ -1889,7 +1997,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           en: 'Who does she say sorry to?',
           id: 'Dia mengucapkan maaf pada siapa?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'Friend', ok: true },
+            { emoji: '👥', text: 'Friend', ok: true },
             { emoji: '👩', text: 'Mom', ok: false },
             { emoji: '🧑‍🏫', text: 'Teacher', ok: false },
             { emoji: '👶', text: 'Baby', ok: false },
@@ -3973,13 +4081,13 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
     iconAmbiguous: true,
     items: [
       { en: 'Hello', id: 'Halo', emoji: '👋', example: { en: 'Hello, friend!', id: 'Halo, teman!', emoji: '👋' } },
-      { en: 'Goodbye', id: 'Dadah', emoji: '🚶', example: { en: 'Goodbye, mom!', id: 'Dadah, mama!', emoji: '🚶' } },
       { en: 'Please', id: 'Tolong', emoji: '🥺', example: { en: 'Please help me.', id: 'Tolong bantu aku.', emoji: '🥺' } },
       { en: 'Thank You', id: 'Terima Kasih', emoji: '🙏', example: { en: 'Thank you, mom!', id: 'Terima kasih, mama!', emoji: '🙏' } },
       { en: 'Sorry', id: 'Maaf', emoji: '😔', example: { en: 'I am sorry.', id: 'Aku minta maaf.', emoji: '😔' } },
       { en: 'Yes', id: 'Iya', emoji: '✅', example: { en: 'Yes, I can.', id: 'Iya, aku bisa.', emoji: '✅' } },
       { en: 'No', id: 'Tidak', emoji: '🙅', example: { en: 'No, thank you.', id: 'Tidak, terima kasih.', emoji: '🙅' } },
       { en: 'Good Morning', id: 'Selamat Pagi', emoji: '☀️', example: { en: 'Good morning, teacher!', id: 'Selamat pagi, bu guru!', emoji: '☀️' } },
+      { en: 'Good Afternoon', id: 'Selamat Siang', emoji: '🌤️', example: { en: 'Good afternoon, everyone!', id: 'Selamat siang, semuanya!', emoji: '🌤️' } },
       { en: 'Good Night', id: 'Selamat Malam', emoji: '🌙', example: { en: 'Good night, mom.', id: 'Selamat malam, mama.', emoji: '🌙' } },
       { en: 'Excuse Me', id: 'Permisi', emoji: '🙋', example: { en: 'Excuse me, please.', id: 'Permisi, ya.', emoji: '🙋' } },
     ],
@@ -3990,7 +4098,7 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
     desc: '10 kata',
     items: [
       { en: 'Red', id: 'Merah', emoji: '🔴', example: { en: 'The strawberry is red.', id: 'Stroberinya merah.', emoji: '🍓' } },
-      { en: 'Blue', id: 'Biru', emoji: '🔵', example: { en: 'The sky is blue.', id: 'Langitnya biru.', emoji: '🌤️' } },
+      { en: 'Blue', id: 'Biru', emoji: '🔵', example: { en: 'The ocean is blue.', id: 'Lautnya biru.', emoji: '🌊' } },
       { en: 'Yellow', id: 'Kuning', emoji: '🟡', example: { en: 'The star is yellow.', id: 'Bintangnya kuning.', emoji: '⭐' } },
       { en: 'Green', id: 'Hijau', emoji: '🟢', example: { en: 'The leaf is green.', id: 'Daunnya hijau.', emoji: '🍃' } },
       { en: 'Orange', id: 'Oranye', emoji: '🟠', example: { en: 'The carrot is orange.', id: 'Wortelnya oranye.', emoji: '🥕' } },
@@ -4007,9 +4115,9 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
     desc: '10 kata',
     items: [
       { en: 'One', id: 'Satu', emoji: '1️⃣', example: { en: 'I have one ball.', id: 'Aku punya satu bola.', emoji: '⚽' } },
-      { en: 'Two', id: 'Dua', emoji: '2️⃣', example: { en: 'I see two dogs.', id: 'Aku lihat dua anjing.', emoji: '🐶🐶' } },
-      { en: 'Three', id: 'Tiga', emoji: '3️⃣', example: { en: 'I have three apples.', id: 'Aku punya tiga apel.', emoji: '🍎🍎🍎' } },
-      { en: 'Four', id: 'Empat', emoji: '4️⃣', example: { en: 'I see four birds.', id: 'Aku lihat empat burung.', emoji: '🐦🐦🐦🐦' } },
+      { en: 'Two', id: 'Dua', emoji: '2️⃣', example: { en: 'I see two dogs.', id: 'Aku lihat dua anjing.', emoji: '🐶' } },
+      { en: 'Three', id: 'Tiga', emoji: '3️⃣', example: { en: 'I have three apples.', id: 'Aku punya tiga apel.', emoji: '🍎' } },
+      { en: 'Four', id: 'Empat', emoji: '4️⃣', example: { en: 'I see four balloons.', id: 'Aku lihat empat balon.', emoji: '🎈' } },
       { en: 'Five', id: 'Lima', emoji: '5️⃣', example: { en: 'I have five fingers.', id: 'Aku punya lima jari.', emoji: '✋' } },
       { en: 'Six', id: 'Enam', emoji: '6️⃣', example: { en: 'I see six eggs.', id: 'Aku lihat enam telur.', emoji: '🥚' } },
       { en: 'Seven', id: 'Tujuh', emoji: '7️⃣', example: { en: 'I have seven crayons.', id: 'Aku punya tujuh krayon.', emoji: '🖍️' } },
@@ -4036,8 +4144,22 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
       { en: 'Heart', id: 'Hati', emoji: '❤️', example: { en: 'This is a heart.', id: 'Ini hati.', emoji: '❤️' }, group: 'a' },
       { en: 'Diamond', id: 'Berlian', emoji: '🔷', example: { en: 'This is a diamond.', id: 'Ini berlian.', emoji: '🔷' }, group: 'b' },
       { en: 'Oval', id: 'Oval', emoji: '🥚', example: { en: 'This is an oval.', id: 'Ini bentuk oval.', emoji: '🥚' }, group: 'a' },
-      { en: 'Cross', id: 'Silang', emoji: '➕', example: { en: 'This is a cross.', id: 'Ini tanda silang.', emoji: '➕' }, group: 'b' },
-      { en: 'Arrow', id: 'Panah', emoji: '➡️', example: { en: 'This is an arrow.', id: 'Ini panah.', emoji: '➡️' }, group: 'b' },
+      // 🔒 Cross & Arrow SENGAJA TIDAK diberi `group` (skip mini-game
+      // "Kelompokkan", fallback ke "Dengar & Tunjuk" via `runWordMiniGame`'s
+      // `item.group` check) — laporan user: jawaban Bundar/Bersudut "tidak
+      // ada yang sesuai". Diverifikasi via screenshot live (headless Chrome,
+      // sama origin dgn dev server): ➡️ dirender platform ini sbg badge
+      // KOTAK BERSUDUT TUMPUL (rounded-square) berisi panah putih — bentuk
+      // VISUALnya sendiri kontradiksi label "Bersudut" yg mau diajarkan,
+      // bukan cuma soal warna/kontras (beda dari ⬜ Square yg tetap persegi
+      // asli walau pucat). Cross (➕) jg dilepas krn bukan "bentuk" baku yg
+      // diajarkan kurikulum shapes anak (simbol matematika/UI, bukan shape
+      // spt lingkaran/persegi/segitiga/bintang/hati/oval/bulan sabit) —
+      // dipaksa ke biner bundar/bersudut jd terasa mengada-ada. Keduanya
+      // TETAP jadi materi vocab topik ini (kata/emoji/example tidak
+      // berubah), cuma tidak ikut mini-game "Kelompokkan" spesifik ini.
+      { en: 'Cross', id: 'Silang', emoji: '➕', example: { en: 'This is a cross.', id: 'Ini tanda silang.', emoji: '➕' } },
+      { en: 'Arrow', id: 'Panah', emoji: '➡️', example: { en: 'This is an arrow.', id: 'Ini panah.', emoji: '➡️' } },
       { en: 'Moon', id: 'Bulan', emoji: '🌙', example: { en: 'This is the moon.', id: 'Ini bulan.', emoji: '🌙' }, group: 'a' },
     ],
   },
@@ -4064,7 +4186,7 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
     desc: '10 kata',
     items: [
       { en: 'Head', id: 'Kepala', emoji: '🙂', example: { en: 'Touch your head.', id: 'Sentuh kepalamu.', emoji: '🙂' } },
-      { en: 'Shoulders', id: 'Bahu', emoji: '🤷', example: { en: 'Touch your shoulders.', id: 'Sentuh bahumu.', emoji: '🤷' } },
+      { en: 'Fingers', id: 'Jari Tangan', emoji: '🖐️', example: { en: 'Touch your fingers.', id: 'Sentuh jari tanganmu.', emoji: '🖐️' } },
       { en: 'Knees', id: 'Lutut', emoji: '🦵', example: { en: 'Touch your knees.', id: 'Sentuh lututmu.', emoji: '🦵' } },
       { en: 'Toes', id: 'Jari Kaki', emoji: '🦶', example: { en: 'Touch your toes.', id: 'Sentuh jari kakimu.', emoji: '🦶' } },
       { en: 'Eyes', id: 'Mata', emoji: '👀', example: { en: 'I open my eyes.', id: 'Aku membuka mataku.', emoji: '👀' } },
@@ -4082,12 +4204,12 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
     items: [
       { en: 'Dog', id: 'Anjing', emoji: '🐶', example: { en: 'I have a dog.', id: 'Aku punya anjing.', emoji: '🐶' } },
       { en: 'Cat', id: 'Kucing', emoji: '🐱', example: { en: 'I have a cat.', id: 'Aku punya kucing.', emoji: '🐱' } },
-      { en: 'Fish', id: 'Ikan', emoji: '🐟', example: { en: 'The fish can swim.', id: 'Ikan itu bisa berenang.', emoji: '🐟' } },
-      { en: 'Bird', id: 'Burung', emoji: '🐦', example: { en: 'The bird can fly.', id: 'Burung itu bisa terbang.', emoji: '🐦' } },
-      { en: 'Cow', id: 'Sapi', emoji: '🐄', example: { en: 'The cow says moo.', id: 'Sapinya bilang moo.', emoji: '🐄' } },
-      { en: 'Duck', id: 'Bebek', emoji: '🦆', example: { en: 'The duck says quack.', id: 'Bebeknya bilang kwek.', emoji: '🦆' } },
+      { en: 'Lion', id: 'Singa', emoji: '🦁', example: { en: 'The lion can roar.', id: 'Singa itu bisa mengaum.', emoji: '🦁' } },
+      { en: 'Hamster', id: 'Hamster', emoji: '🐹', example: { en: 'The hamster is small.', id: 'Hamsternya kecil.', emoji: '🐹' } },
+      { en: 'Cow', id: 'Sapi', emoji: '🐮', example: { en: 'The cow says moo.', id: 'Sapinya bilang moo.', emoji: '🐮' } },
+      { en: 'Frog', id: 'Katak', emoji: '🐸', example: { en: 'The frog says ribbit.', id: 'Kataknya bilang kwak kwak.', emoji: '🐸' } },
       { en: 'Horse', id: 'Kuda', emoji: '🐴', example: { en: 'The horse can run.', id: 'Kuda itu bisa berlari.', emoji: '🐴' } },
-      { en: 'Sheep', id: 'Domba', emoji: '🐑', example: { en: 'The sheep is white.', id: 'Dombanya putih.', emoji: '🐑' } },
+      { en: 'Mouse', id: 'Tikus', emoji: '🐭', example: { en: 'The mouse is small.', id: 'Tikusnya kecil.', emoji: '🐭' } },
       { en: 'Pig', id: 'Babi', emoji: '🐷', example: { en: 'The pig says oink.', id: 'Babinya bilang oink.', emoji: '🐷' } },
       { en: 'Rabbit', id: 'Kelinci', emoji: '🐰', example: { en: 'The rabbit can hop.', id: 'Kelinci itu bisa melompat.', emoji: '🐰' } },
     ],
@@ -4123,7 +4245,7 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
       { en: 'Drum', id: 'Drum', emoji: '🥁', example: { en: 'I play the drum.', id: 'Aku main drum.', emoji: '🥁' } },
       { en: 'Blocks', id: 'Balok', emoji: '🧱', example: { en: 'I build with blocks.', id: 'Aku membangun dengan balok.', emoji: '🧱' } },
       { en: 'Yoyo', id: 'Yoyo', emoji: '🪀', example: { en: 'I play with a yoyo.', id: 'Aku main yoyo.', emoji: '🪀' } },
-      { en: 'Teddy', id: 'Boneka Beruang', emoji: '🧸', example: { en: 'I hug my teddy.', id: 'Aku memeluk boneka beruangku.', emoji: '🧸' } },
+      { en: 'Car', id: 'Mobil-mobilan', emoji: '🚗', example: { en: 'I play with a car.', id: 'Aku main mobil-mobilan.', emoji: '🚗' } },
     ],
   },
   {
@@ -4198,9 +4320,14 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
  *  - Numbers → lanjutan 11–20 (bukan ulang 1–10 yang sudah Little
  *    Stars/Explorer), tetap kebaca `isNumberTopic()` otomatis (semua kata
  *    ada di `NUMBER_WORDS` sampai 'twenty').
- *  - Animals → sudut serangga/makhluk kecil (Cambridge tetap 1 kategori
- *    "Animals", tapi belum ada level yang authoring sudut ini — Little Stars
- *    pets/farm, Adventurer wild/zoo).
+ *  - Animals → SEMPAT sudut serangga/makhluk kecil (Cambridge tetap 1
+ *    kategori "Animals", tapi belum ada level yang authoring sudut ini —
+ *    Little Stars pets/farm, Adventurer wild/zoo), TAPI topik `serangga`
+ *    kemudian DIGANTI TOTAL ke domain benda mati `perkakas` (Tools) —
+ *    hampir semua emoji serangga/makhluk kecil cuma py varian "tubuh utuh"
+ *    di Unicode, tanpa opsi "kepala saja" (CLAUDE.md "Emoji Hewan/Makhluk
+ *    Hidup WAJIB Kepala SAJA"), jadi kategori "Animals" ini SEKARANG TIDAK
+ *    lagi terwakili di Starter (`materi/vocab.md` §3B.4).
  *  - Home/School → sudut barang/orang yang beda dari nama ruangan
  *    (Adventurer `rumah`) & alat tulis (Adventurer `alat-sekolah`).
  *  - Places & Directions dan Time (hari dalam seminggu) BENAR-BENAR baru,
@@ -4221,22 +4348,30 @@ export const VOCAB_TOPICS_STARTER: VocabTopic[] = [
     title: 'Angka 11–20 (Numbers 11–20)',
     desc: '10 kata',
     items: [
-      { en: 'Eleven', id: 'Sebelas', emoji: '1️⃣1️⃣', example: { en: 'I have eleven stickers.', id: 'Aku punya sebelas stiker.', emoji: '🏷️' } },
-      { en: 'Twelve', id: 'Dua Belas', emoji: '1️⃣2️⃣', example: { en: 'I see twelve apples.', id: 'Aku lihat dua belas apel.', emoji: '🍎' } },
-      { en: 'Thirteen', id: 'Tiga Belas', emoji: '1️⃣3️⃣', example: { en: 'I have thirteen balloons.', id: 'Aku punya tiga belas balon.', emoji: '🎈' } },
-      { en: 'Fourteen', id: 'Empat Belas', emoji: '1️⃣4️⃣', example: { en: 'I see fourteen birds.', id: 'Aku lihat empat belas burung.', emoji: '🐦' } },
-      { en: 'Fifteen', id: 'Lima Belas', emoji: '1️⃣5️⃣', example: { en: 'I have fifteen candies.', id: 'Aku punya lima belas permen.', emoji: '🍬' } },
-      { en: 'Sixteen', id: 'Enam Belas', emoji: '1️⃣6️⃣', example: { en: 'I see sixteen ants.', id: 'Aku lihat enam belas semut.', emoji: '🐜' } },
-      { en: 'Seventeen', id: 'Tujuh Belas', emoji: '1️⃣7️⃣', example: { en: 'I have seventeen coins.', id: 'Aku punya tujuh belas koin.', emoji: '🪙' } },
-      { en: 'Eighteen', id: 'Delapan Belas', emoji: '1️⃣8️⃣', example: { en: 'I see eighteen flowers.', id: 'Aku lihat delapan belas bunga.', emoji: '🌸' } },
-      { en: 'Nineteen', id: 'Sembilan Belas', emoji: '1️⃣9️⃣', example: { en: 'I have nineteen crackers.', id: 'Aku punya sembilan belas biskuit.', emoji: '🍪' } },
-      { en: 'Twenty', id: 'Dua Puluh', emoji: '2️⃣0️⃣', example: { en: 'I see twenty fish.', id: 'Aku lihat dua puluh ikan.', emoji: '🐟' } },
+      { en: 'Eleven', id: 'Sebelas', emoji: '11', example: { en: 'I have eleven stickers.', id: 'Aku punya sebelas stiker.', emoji: '🏷️' } },
+      { en: 'Twelve', id: 'Dua Belas', emoji: '12', example: { en: 'I see twelve apples.', id: 'Aku lihat dua belas apel.', emoji: '🍎' } },
+      { en: 'Thirteen', id: 'Tiga Belas', emoji: '13', example: { en: 'I have thirteen balloons.', id: 'Aku punya tiga belas balon.', emoji: '🎈' } },
+      { en: 'Fourteen', id: 'Empat Belas', emoji: '14', example: { en: 'I see fourteen coins.', id: 'Aku lihat empat belas koin.', emoji: '🪙' } },
+      { en: 'Fifteen', id: 'Lima Belas', emoji: '15', example: { en: 'I have fifteen candies.', id: 'Aku punya lima belas permen.', emoji: '🍬' } },
+      { en: 'Sixteen', id: 'Enam Belas', emoji: '16', example: { en: 'I see sixteen pens.', id: 'Aku lihat enam belas pulpen.', emoji: '🖊️' } },
+      { en: 'Seventeen', id: 'Tujuh Belas', emoji: '17', example: { en: 'I have seventeen books.', id: 'Aku punya tujuh belas buku.', emoji: '📚' } },
+      { en: 'Eighteen', id: 'Delapan Belas', emoji: '18', example: { en: 'I see eighteen flowers.', id: 'Aku lihat delapan belas bunga.', emoji: '🌸' } },
+      { en: 'Nineteen', id: 'Sembilan Belas', emoji: '19', example: { en: 'I have nineteen crackers.', id: 'Aku punya sembilan belas biskuit.', emoji: '🍪' } },
+      { en: 'Twenty', id: 'Dua Puluh', emoji: '20', example: { en: 'I see twenty cars.', id: 'Aku lihat dua puluh mobil.', emoji: '🚗' } },
     ],
   },
   {
     id: 'hari-dalam-seminggu',
     title: 'Hari dalam Seminggu (Days of the Week)',
     desc: '10 kata',
+    // iconAmbiguous: emoji tiap item (🏫/🎨/dst) cuma aktivitas sembarang,
+    // TIDAK merepresentasikan harinya sendiri (beda dari Warna/Bentuk/Angka
+    // yang emoji-nya proxy asli konsepnya) — laporan user "tidak relevan
+    // penggunaan icon/gambar". Flag ini bikin 🎮 Main di Kenalan pakai mode
+    // mic "Dengar & Ucapkan" (bukan tebak-gambar sembarang yg tidak bisa
+    // ditebak dari pengetahuan umum) — lihat `isDayTopic()`/`games/vocabulary.ts`
+    // utk sisi teks-saja kartu jawaban Latihan Inti.
+    iconAmbiguous: true,
     items: [
       { en: 'Monday', id: 'Senin', emoji: '🏫', example: { en: 'School starts on Monday.', id: 'Sekolah dimulai hari Senin.', emoji: '🏫' } },
       { en: 'Tuesday', id: 'Selasa', emoji: '🎨', example: { en: 'We paint on Tuesday.', id: 'Kami melukis hari Selasa.', emoji: '🎨' } },
@@ -4256,7 +4391,7 @@ export const VOCAB_TOPICS_STARTER: VocabTopic[] = [
     desc: '10 kata',
     items: [
       { en: 'Park', id: 'Taman', emoji: '🏞️', example: { en: 'We play at the park.', id: 'Kami bermain di taman.', emoji: '🏞️' } },
-      { en: 'Zoo', id: 'Kebun Binatang', emoji: '🦓', example: { en: 'We visit the zoo.', id: 'Kami mengunjungi kebun binatang.', emoji: '🦓' } },
+      { en: 'Zoo', id: 'Kebun Binatang', emoji: '🐼', example: { en: 'We visit the zoo.', id: 'Kami mengunjungi kebun binatang.', emoji: '🐼' } },
       { en: 'Beach', id: 'Pantai', emoji: '🏖️', example: { en: 'We swim at the beach.', id: 'Kami berenang di pantai.', emoji: '🏖️' } },
       { en: 'Market', id: 'Pasar', emoji: '🛒', example: { en: 'Mom shops at the market.', id: 'Ibu belanja di pasar.', emoji: '🛒' } },
       { en: 'Hospital', id: 'Rumah Sakit', emoji: '🏥', example: { en: 'The doctor works at the hospital.', id: 'Dokter bekerja di rumah sakit.', emoji: '🏥' } },
@@ -4268,20 +4403,20 @@ export const VOCAB_TOPICS_STARTER: VocabTopic[] = [
     ],
   },
   {
-    id: 'serangga',
-    title: 'Serangga & Makhluk Kecil (Insects & Small Creatures)',
+    id: 'perkakas',
+    title: 'Perkakas & Alat Tukang (Tools & Equipment)',
     desc: '10 kata',
     items: [
-      { en: 'Butterfly', id: 'Kupu-kupu', emoji: '🦋', example: { en: 'The butterfly is beautiful.', id: 'Kupu-kupunya cantik.', emoji: '🦋' } },
-      { en: 'Bee', id: 'Lebah', emoji: '🐝', example: { en: 'The bee makes honey.', id: 'Lebah membuat madu.', emoji: '🐝' } },
-      { en: 'Ant', id: 'Semut', emoji: '🐜', example: { en: 'The ant is small.', id: 'Semutnya kecil.', emoji: '🐜' } },
-      { en: 'Ladybug', id: 'Kepik', emoji: '🐞', example: { en: 'I see a ladybug.', id: 'Aku lihat kepik.', emoji: '🐞' } },
-      { en: 'Spider', id: 'Laba-laba', emoji: '🕷️', example: { en: 'The spider makes a web.', id: 'Laba-laba membuat sarang.', emoji: '🕷️' } },
-      { en: 'Snail', id: 'Siput', emoji: '🐌', example: { en: 'The snail is slow.', id: 'Siputnya lambat.', emoji: '🐌' } },
-      { en: 'Frog', id: 'Katak', emoji: '🐸', example: { en: 'The frog can jump.', id: 'Katak bisa melompat.', emoji: '🐸' } },
-      { en: 'Turtle', id: 'Kura-kura', emoji: '🐢', example: { en: 'The turtle has a shell.', id: 'Kura-kura punya cangkang.', emoji: '🐢' } },
-      { en: 'Crab', id: 'Kepiting', emoji: '🦀', example: { en: 'The crab walks sideways.', id: 'Kepiting berjalan menyamping.', emoji: '🦀' } },
-      { en: 'Worm', id: 'Cacing', emoji: '🪱', example: { en: 'The worm lives in soil.', id: 'Cacing hidup di tanah.', emoji: '🪱' } },
+      { en: 'Hammer', id: 'Palu', emoji: '🔨', example: { en: 'Dad builds with a hammer.', id: 'Ayah membangun dengan palu.', emoji: '🔨' } },
+      { en: 'Screwdriver', id: 'Obeng', emoji: '🪛', example: { en: 'I fix it with a screwdriver.', id: 'Aku memperbaikinya dengan obeng.', emoji: '🪛' } },
+      { en: 'Wrench', id: 'Kunci Inggris', emoji: '🔧', example: { en: 'I turn the wrench.', id: 'Aku memutar kunci Inggris itu.', emoji: '🔧' } },
+      { en: 'Saw', id: 'Gergaji', emoji: '🪚', example: { en: 'The saw cuts the wood.', id: 'Gergaji memotong kayu.', emoji: '🪚' } },
+      { en: 'Ladder', id: 'Tangga', emoji: '🪜', example: { en: 'I climb the ladder.', id: 'Aku memanjat tangga itu.', emoji: '🪜' } },
+      { en: 'Toolbox', id: 'Kotak Perkakas', emoji: '🧰', example: { en: 'I keep tools in the toolbox.', id: 'Aku menyimpan perkakas di kotak perkakas.', emoji: '🧰' } },
+      { en: 'Bucket', id: 'Ember', emoji: '🪣', example: { en: 'I fill the bucket with water.', id: 'Aku mengisi ember dengan air.', emoji: '🪣' } },
+      { en: 'Bolt', id: 'Baut', emoji: '🔩', example: { en: 'I tighten the bolt.', id: 'Aku mengencangkan baut itu.', emoji: '🔩' } },
+      { en: 'Rope', id: 'Tali', emoji: '🪢', example: { en: 'I tie the rope.', id: 'Aku mengikat tali itu.', emoji: '🪢' } },
+      { en: 'Flashlight', id: 'Senter', emoji: '🔦', example: { en: 'I use a flashlight at night.', id: 'Aku memakai senter di malam hari.', emoji: '🔦' } },
     ],
   },
   {
@@ -4325,31 +4460,31 @@ export const VOCAB_TOPICS_STARTER: VocabTopic[] = [
     items: [
       { en: 'Coach', id: 'Pelatih', emoji: '📣', example: { en: 'The coach helps us play.', id: 'Pelatih membantu kami bermain.', emoji: '📣' } },
       { en: 'Classroom', id: 'Ruang Kelas', emoji: '🏫', example: { en: 'We learn in the classroom.', id: 'Kami belajar di ruang kelas.', emoji: '🏫' } },
-      { en: 'Friend', id: 'Teman', emoji: '🧑‍🤝‍🧑', example: { en: 'She is my friend.', id: 'Dia temanku.', emoji: '🧑‍🤝‍🧑' } },
-      { en: 'Principal', id: 'Kepala Sekolah', emoji: '🧑‍💼', example: { en: 'The principal is at school.', id: 'Kepala sekolah ada di sekolah.', emoji: '🧑‍💼' } },
+      { en: 'Friend', id: 'Teman', emoji: '👥', example: { en: 'She is my friend.', id: 'Dia temanku.', emoji: '👥' } },
+      { en: 'Backpack', id: 'Tas Sekolah', emoji: '🎒', example: { en: 'I carry my backpack every day.', id: 'Aku membawa tas sekolahku setiap hari.', emoji: '🎒' } },
       { en: 'Library', id: 'Perpustakaan', emoji: '📚', example: { en: 'I read books in the library.', id: 'Aku membaca buku di perpustakaan.', emoji: '📚' } },
       { en: 'Lunchbox', id: 'Kotak Bekal', emoji: '🍱', example: { en: 'I bring my lunchbox.', id: 'Aku membawa kotak bekalku.', emoji: '🍱' } },
       { en: 'Uniform', id: 'Seragam', emoji: '👕', example: { en: 'I wear my school uniform.', id: 'Aku memakai seragam sekolahku.', emoji: '👕' } },
       { en: 'Bell', id: 'Bel', emoji: '🔔', example: { en: 'The bell rings.', id: 'Belnya berbunyi.', emoji: '🔔' } },
       { en: 'Homework', id: 'PR', emoji: '📓', example: { en: 'I do my homework.', id: 'Aku mengerjakan PR-ku.', emoji: '📓' } },
-      { en: 'Recess', id: 'Istirahat', emoji: '🥪', example: { en: 'We eat snacks at recess.', id: 'Kami makan camilan saat istirahat.', emoji: '🥪' } },
+      { en: 'Locker', id: 'Loker', emoji: '🗄️', example: { en: 'I keep my books in my locker.', id: 'Aku menyimpan bukuku di loker.', emoji: '🗄️' } },
     ],
   },
   {
-    id: 'orang-di-sekitarku',
-    title: 'Orang di Sekitarku (People Around Me)',
+    id: 'kondisi-cuaca',
+    title: 'Cuaca di Sekitarku (Weather Around Me)',
     desc: '10 kata',
     items: [
-      { en: 'Neighbor', id: 'Tetangga', emoji: '🏘️', example: { en: 'My neighbor is friendly.', id: 'Tetanggaku ramah.', emoji: '🏘️' } },
-      { en: 'Classmate', id: 'Teman Sekelas', emoji: '🧑‍🎓', example: { en: 'He is my classmate.', id: 'Dia teman sekelasku.', emoji: '🧑‍🎓' } },
-      { en: 'Boy', id: 'Anak Laki-laki', emoji: '👦', example: { en: 'The boy is playing.', id: 'Anak laki-laki itu sedang bermain.', emoji: '👦' } },
-      { en: 'Girl', id: 'Anak Perempuan', emoji: '👧', example: { en: 'The girl is singing.', id: 'Anak perempuan itu sedang bernyanyi.', emoji: '👧' } },
-      { en: 'Man', id: 'Pria', emoji: '👨', example: { en: 'The man is tall.', id: 'Pria itu tinggi.', emoji: '👨' } },
-      { en: 'Woman', id: 'Wanita', emoji: '👩', example: { en: 'The woman is smiling.', id: 'Wanita itu tersenyum.', emoji: '👩' } },
-      { en: 'Baby', id: 'Bayi', emoji: '👶', example: { en: 'The baby is cute.', id: 'Bayinya lucu.', emoji: '👶' } },
-      { en: 'Driver', id: 'Supir', emoji: '🚕', example: { en: 'The driver drives the car.', id: 'Supir itu mengemudikan mobil.', emoji: '🚕' } },
-      { en: 'Best Friend', id: 'Sahabat', emoji: '🤝', example: { en: 'You are my best friend.', id: 'Kamu sahabatku.', emoji: '🤝' } },
-      { en: 'Twin', id: 'Anak Kembar', emoji: '👯', example: { en: 'This is my twin.', id: 'Ini kembaranku.', emoji: '👯' } },
+      { en: 'Rain', id: 'Hujan', emoji: '🌧️', example: { en: 'I hear the rain.', id: 'Aku mendengar hujan.', emoji: '🌧️' } },
+      { en: 'Wind', id: 'Angin', emoji: '💨', example: { en: 'The wind is strong.', id: 'Anginnya kencang.', emoji: '💨' } },
+      { en: 'Snow', id: 'Salju', emoji: '❄️', example: { en: 'I see white snow.', id: 'Aku lihat salju putih.', emoji: '❄️' } },
+      { en: 'Storm', id: 'Badai', emoji: '⛈️', example: { en: 'We wait inside during the storm.', id: 'Kami menunggu di dalam saat badai.', emoji: '⛈️' } },
+      { en: 'Rainbow', id: 'Pelangi', emoji: '🌈', example: { en: 'The rainbow has many colors.', id: 'Pelanginya punya banyak warna.', emoji: '🌈' } },
+      { en: 'Hot', id: 'Panas', emoji: '🥵', example: { en: 'It is hot outside.', id: 'Di luar panas.', emoji: '🥵' } },
+      { en: 'Cold', id: 'Dingin', emoji: '🥶', example: { en: 'It is cold outside.', id: 'Di luar dingin.', emoji: '🥶' } },
+      { en: 'Umbrella', id: 'Payung', emoji: '☂️', example: { en: 'I bring my umbrella.', id: 'Aku membawa payungku.', emoji: '☂️' } },
+      { en: 'Fog', id: 'Kabut', emoji: '🌫️', example: { en: 'The fog is thick.', id: 'Kabutnya tebal.', emoji: '🌫️' } },
+      { en: 'Lightning', id: 'Petir', emoji: '⚡', example: { en: 'I see lightning in the sky.', id: 'Aku lihat petir di langit.', emoji: '⚡' } },
     ],
   },
   {
@@ -4411,14 +4546,14 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
     title: 'Ciri-ciri Fisik (Physical Appearance)',
     desc: '10 kata',
     items: [
-      { en: 'Tall', id: 'Tinggi', emoji: '🦒', example: { en: 'He is tall.', id: 'Dia tinggi.', emoji: '🦒' } },
-      { en: 'Beautiful', id: 'Cantik', emoji: '😍', example: { en: 'She is beautiful.', id: 'Dia cantik.', emoji: '😍' } },
-      { en: 'Handsome', id: 'Tampan', emoji: '😎', example: { en: 'He is handsome.', id: 'Dia tampan.', emoji: '😎' } },
+      { en: 'Tall', id: 'Tinggi', emoji: '🗻', example: { en: 'He is tall.', id: 'Dia tinggi.', emoji: '🗻' } },
+      { en: 'Bald', id: 'Botak', emoji: '🧑‍🦲', example: { en: 'The man is bald.', id: 'Pria itu botak.', emoji: '🧑‍🦲' } },
+      { en: 'Beard', id: 'Janggut', emoji: '🧔', example: { en: 'He has a beard.', id: 'Dia punya janggut.', emoji: '🧔' } },
       { en: 'Young', id: 'Muda', emoji: '👶', example: { en: 'My cousin is young.', id: 'Sepupuku muda.', emoji: '👶' } },
-      { en: 'Old', id: 'Tua', emoji: '👴', example: { en: 'My grandfather is old.', id: 'Kakekku tua.', emoji: '👴' } },
-      { en: 'Curly Hair', id: 'Rambut Keriting', emoji: '🦱', example: { en: 'She has curly hair.', id: 'Dia punya rambut keriting.', emoji: '🦱' } },
-      { en: 'Straight Hair', id: 'Rambut Lurus', emoji: '💇', example: { en: 'He has straight hair.', id: 'Dia punya rambut lurus.', emoji: '💇' } },
-      { en: 'Slim', id: 'Langsing', emoji: '🧍', example: { en: 'She is slim.', id: 'Dia langsing.', emoji: '🧍' } },
+      { en: 'Old', id: 'Tua', emoji: '🧓', example: { en: 'My grandfather is old.', id: 'Kakekku tua.', emoji: '🧓' } },
+      { en: 'Curly Hair', id: 'Rambut Keriting', emoji: '🧑‍🦱', example: { en: 'She has curly hair.', id: 'Dia punya rambut keriting.', emoji: '🧑‍🦱' } },
+      { en: 'Red Hair', id: 'Rambut Merah', emoji: '🧑‍🦰', example: { en: 'He has red hair.', id: 'Dia punya rambut merah.', emoji: '🧑‍🦰' } },
+      { en: 'Wears Glasses', id: 'Berkacamata', emoji: '👓', example: { en: 'She wears glasses.', id: 'Dia memakai kacamata.', emoji: '👓' } },
       { en: 'Strong', id: 'Kuat', emoji: '💪', example: { en: 'He is strong.', id: 'Dia kuat.', emoji: '💪' } },
       { en: 'Cute', id: 'Lucu', emoji: '🥰', example: { en: 'The puppy is cute.', id: 'Anak anjingnya lucu.', emoji: '🐶' } },
     ],
@@ -4430,7 +4565,7 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
     items: [
       { en: 'Bank', id: 'Bank', emoji: '🏦', example: { en: 'I go to the bank.', id: 'Aku pergi ke bank.', emoji: '🏦' } },
       { en: 'Post Office', id: 'Kantor Pos', emoji: '📮', example: { en: 'I go to the post office.', id: 'Aku pergi ke kantor pos.', emoji: '📮' } },
-      { en: 'Police Station', id: 'Kantor Polisi', emoji: '🚓', example: { en: 'The police station is near here.', id: 'Kantor polisinya dekat sini.', emoji: '🚓' } },
+      { en: 'Police Station', id: 'Kantor Polisi', emoji: '🏢', example: { en: 'The police station is near here.', id: 'Kantor polisinya dekat sini.', emoji: '🏢' } },
       { en: 'Restaurant', id: 'Restoran', emoji: '🍽️', example: { en: 'We eat at the restaurant.', id: 'Kami makan di restoran.', emoji: '🍽️' } },
       { en: 'Cinema', id: 'Bioskop', emoji: '🎬', example: { en: 'We watch a movie at the cinema.', id: 'Kami nonton film di bioskop.', emoji: '🎬' } },
       { en: 'Museum', id: 'Museum', emoji: '🏛️', example: { en: 'We visit the museum.', id: 'Kami mengunjungi museum.', emoji: '🏛️' } },
@@ -4448,13 +4583,13 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
       { en: 'Left', id: 'Kiri', emoji: '⬅️', example: { en: 'Turn left.', id: 'Belok kiri.', emoji: '⬅️' } },
       { en: 'Right', id: 'Kanan', emoji: '➡️', example: { en: 'Turn right.', id: 'Belok kanan.', emoji: '➡️' } },
       { en: 'Straight', id: 'Lurus', emoji: '⬆️', example: { en: 'Go straight.', id: 'Jalan terus lurus.', emoji: '⬆️' } },
-      { en: 'Near', id: 'Dekat', emoji: '📍', example: { en: 'The park is near.', id: 'Tamannya dekat.', emoji: '📍' } },
+      { en: 'Down', id: 'Bawah', emoji: '⬇️', example: { en: 'Go down the stairs.', id: 'Turun ke bawah tangga.', emoji: '⬇️' } },
       { en: 'Far', id: 'Jauh', emoji: '🛣️', example: { en: 'The zoo is far.', id: 'Kebun binatangnya jauh.', emoji: '🛣️' } },
       { en: 'Turn', id: 'Belok', emoji: '🔄', example: { en: 'Turn at the corner.', id: 'Belok di sudut.', emoji: '🔄' } },
       { en: 'Corner', id: 'Sudut', emoji: '📐', example: { en: 'Wait at the corner.', id: 'Tunggu di sudut.', emoji: '📐' } },
       { en: 'Between', id: 'Di Antara', emoji: '↔️', example: { en: 'I sit between my friends.', id: 'Aku duduk di antara teman-temanku.', emoji: '↔️' } },
-      { en: 'In Front Of', id: 'Di Depan', emoji: '👉', example: { en: 'The car is in front of the house.', id: 'Mobilnya ada di depan rumah.', emoji: '👉' } },
-      { en: 'Behind', id: 'Di Belakang', emoji: '👈', example: { en: 'The tree is behind the house.', id: 'Pohonnya ada di belakang rumah.', emoji: '👈' } },
+      { en: 'Traffic Light', id: 'Lampu Lalu Lintas', emoji: '🚦', example: { en: 'Stop at the traffic light.', id: 'Berhenti di lampu lalu lintas.', emoji: '🚦' } },
+      { en: 'Crosswalk', id: 'Zebra Cross', emoji: '🚸', example: { en: 'We cross at the crosswalk.', id: 'Kami menyeberang di zebra cross.', emoji: '🚸' } },
     ],
   },
   {
@@ -4462,15 +4597,15 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
     title: 'Waktu Luang & Hiburan (Leisure & Entertainment)',
     desc: '10 kata',
     items: [
-      { en: 'Concert', id: 'Konser', emoji: '🎤', example: { en: 'I go to a concert.', id: 'Aku pergi ke konser.', emoji: '🎤' } },
+      { en: 'Karaoke', id: 'Karaoke', emoji: '🎤', example: { en: 'I sing karaoke with friends.', id: 'Aku karaokean dengan teman-teman.', emoji: '🎤' } },
       { en: 'Theater', id: 'Teater', emoji: '🎭', example: { en: 'We watch a play at the theater.', id: 'Kami menonton pertunjukan di teater.', emoji: '🎭' } },
       { en: 'Amusement Park', id: 'Taman Hiburan', emoji: '🎡', example: { en: 'We ride rides at the amusement park.', id: 'Kami naik wahana di taman hiburan.', emoji: '🎡' } },
-      { en: 'Board Game', id: 'Permainan Papan', emoji: '🎲', example: { en: 'I play a board game.', id: 'Aku main permainan papan.', emoji: '🎲' } },
+      { en: 'Card Game', id: 'Permainan Kartu', emoji: '🃏', example: { en: 'I play a card game.', id: 'Aku main permainan kartu.', emoji: '🃏' } },
       { en: 'Video Game', id: 'Gim Video', emoji: '🕹️', example: { en: 'I play a video game.', id: 'Aku main gim video.', emoji: '🕹️' } },
       { en: 'Chess', id: 'Catur', emoji: '♟️', example: { en: 'I play chess.', id: 'Aku main catur.', emoji: '♟️' } },
       { en: 'Skateboard', id: 'Papan Seluncur', emoji: '🛹', example: { en: 'I ride my skateboard.', id: 'Aku main papan seluncurku.', emoji: '🛹' } },
       { en: 'Camera', id: 'Kamera', emoji: '📷', example: { en: 'I take photos with a camera.', id: 'Aku memotret dengan kamera.', emoji: '📷' } },
-      { en: 'Comic Book', id: 'Buku Komik', emoji: '🦸', example: { en: 'I read a comic book.', id: 'Aku membaca buku komik.', emoji: '🦸' } },
+      { en: 'Superhero', id: 'Pahlawan Super', emoji: '🦸', example: { en: 'I like reading about a superhero.', id: 'Aku suka membaca tentang pahlawan super.', emoji: '🦸' } },
       { en: 'Magazine', id: 'Majalah', emoji: '📰', example: { en: 'I read a magazine.', id: 'Aku membaca majalah.', emoji: '📰' } },
     ],
   },
@@ -4479,16 +4614,16 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
     title: 'Kata Kerja Lanjutan (Advanced Actions)',
     desc: '10 kata',
     items: [
-      { en: 'Climb', id: 'Memanjat', emoji: '🧗', example: { en: 'I climb the tree.', id: 'Aku memanjat pohon.', emoji: '🧗' } },
-      { en: 'Catch', id: 'Menangkap', emoji: '🤲', example: { en: 'I catch the ball.', id: 'Aku menangkap bola.', emoji: '🤲' } },
-      { en: 'Throw', id: 'Melempar', emoji: '🤾', example: { en: 'I throw the ball.', id: 'Aku melempar bola.', emoji: '🤾' } },
+      { en: 'Climb', id: 'Memanjat', emoji: '🪜', example: { en: 'I climb the tree.', id: 'Aku memanjat pohon.', emoji: '🪜' } },
+      { en: 'Catch', id: 'Menangkap', emoji: '🧤', example: { en: 'I catch the ball.', id: 'Aku menangkap bola.', emoji: '🧤' } },
+      { en: 'Throw', id: 'Melempar', emoji: '🎯', example: { en: 'I throw the ball.', id: 'Aku melempar bola.', emoji: '🎯' } },
       { en: 'Hide', id: 'Bersembunyi', emoji: '🙈', example: { en: 'I hide behind the tree.', id: 'Aku bersembunyi di belakang pohon.', emoji: '🙈' } },
       { en: 'Laugh', id: 'Tertawa', emoji: '😂', example: { en: 'I laugh at the joke.', id: 'Aku tertawa mendengar lelucon itu.', emoji: '😂' } },
       { en: 'Cry', id: 'Menangis', emoji: '😭', example: { en: 'I cry when I am sad.', id: 'Aku menangis saat aku sedih.', emoji: '😭' } },
-      { en: 'Shout', id: 'Berteriak', emoji: '📢', example: { en: 'I shout for help.', id: 'Aku berteriak minta tolong.', emoji: '📢' } },
+      { en: 'Shout', id: 'Berteriak', emoji: '🗣️', example: { en: 'I shout for help.', id: 'Aku berteriak minta tolong.', emoji: '🗣️' } },
       { en: 'Whisper', id: 'Berbisik', emoji: '🤫', example: { en: 'I whisper a secret.', id: 'Aku berbisik rahasia.', emoji: '🤫' } },
-      { en: 'Jump', id: 'Melompat', emoji: '🤸', example: { en: 'I jump high.', id: 'Aku melompat tinggi.', emoji: '🤸' } },
-      { en: 'Fly', id: 'Terbang', emoji: '🕊️', example: { en: 'Birds fly in the sky.', id: 'Burung-burung terbang di langit.', emoji: '🕊️' } },
+      { en: 'Dig', id: 'Menggali', emoji: '⛏️', example: { en: 'I dig in the sand.', id: 'Aku menggali di pasir.', emoji: '⛏️' } },
+      { en: 'Pray', id: 'Berdoa', emoji: '🤲', example: { en: 'I pray before I eat.', id: 'Aku berdoa sebelum makan.', emoji: '🤲' } },
     ],
   },
   {
@@ -4498,7 +4633,7 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
     items: [
       { en: 'Computer', id: 'Komputer', emoji: '💻', example: { en: 'I use a computer.', id: 'Aku memakai komputer.', emoji: '💻' } },
       { en: 'Internet', id: 'Internet', emoji: '🌐', example: { en: 'I search on the internet.', id: 'Aku mencari di internet.', emoji: '🌐' } },
-      { en: 'Website', id: 'Situs Web', emoji: '🔗', example: { en: 'I visit a website.', id: 'Aku mengunjungi situs web.', emoji: '🔗' } },
+      { en: 'Artificial Intelligence', id: 'Kecerdasan Buatan', emoji: '🤖', example: { en: 'I ask artificial intelligence a question.', id: 'Aku bertanya ke kecerdasan buatan.', emoji: '🤖' } },
       { en: 'Email', id: 'Surel', emoji: '📧', example: { en: 'I send an email.', id: 'Aku mengirim surel.', emoji: '📧' } },
       { en: 'Password', id: 'Kata Sandi', emoji: '🔑', example: { en: 'I type my password.', id: 'Aku mengetik kata sandiku.', emoji: '🔑' } },
       { en: 'Download', id: 'Unduh', emoji: '⬇️', example: { en: 'I download a file.', id: 'Aku mengunduh berkas.', emoji: '⬇️' } },
@@ -4509,20 +4644,20 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
     ],
   },
   {
-    id: 'sifat-kepribadian',
-    title: 'Sifat Kepribadian (Personality Traits)',
+    id: 'peralatan-sains',
+    title: 'Peralatan Sains (Science Tools)',
     desc: '10 kata',
     items: [
-      { en: 'Kind', id: 'Baik Hati', emoji: '🤗', example: { en: 'She is kind.', id: 'Dia baik hati.', emoji: '🤗' } },
-      { en: 'Brave', id: 'Berani', emoji: '🦁', example: { en: 'He is brave.', id: 'Dia berani.', emoji: '🦁' } },
-      { en: 'Honest', id: 'Jujur', emoji: '🤝', example: { en: 'I am honest.', id: 'Aku jujur.', emoji: '🤝' } },
-      { en: 'Funny', id: 'Lucu', emoji: '😂', example: { en: 'He is funny.', id: 'Dia lucu.', emoji: '😂' } },
-      { en: 'Clever', id: 'Pintar', emoji: '🧠', example: { en: 'She is clever.', id: 'Dia pintar.', emoji: '🧠' } },
-      { en: 'Friendly', id: 'Ramah', emoji: '😊', example: { en: 'He is friendly.', id: 'Dia ramah.', emoji: '😊' } },
-      { en: 'Generous', id: 'Dermawan', emoji: '🎁', example: { en: 'She is generous.', id: 'Dia dermawan.', emoji: '🎁' } },
-      { en: 'Patient', id: 'Sabar', emoji: '⏳', example: { en: 'I am patient.', id: 'Aku sabar.', emoji: '⏳' } },
-      { en: 'Polite', id: 'Sopan', emoji: '🙏', example: { en: 'He is polite.', id: 'Dia sopan.', emoji: '🙏' } },
-      { en: 'Confident', id: 'Percaya Diri', emoji: '💪', example: { en: 'She is confident.', id: 'Dia percaya diri.', emoji: '💪' } },
+      { en: 'Microscope', id: 'Mikroskop', emoji: '🔬', example: { en: 'I look through a microscope.', id: 'Aku melihat lewat mikroskop.', emoji: '🔬' } },
+      { en: 'Telescope', id: 'Teleskop', emoji: '🔭', example: { en: 'I look through a telescope.', id: 'Aku melihat lewat teleskop.', emoji: '🔭' } },
+      { en: 'Test Tube', id: 'Tabung Reaksi', emoji: '🧪', example: { en: 'I mix chemicals in a test tube.', id: 'Aku mencampur bahan kimia di tabung reaksi.', emoji: '🧪' } },
+      { en: 'Magnet', id: 'Magnet', emoji: '🧲', example: { en: 'The magnet attracts metal.', id: 'Magnetnya menarik logam.', emoji: '🧲' } },
+      { en: 'Magnifying Glass', id: 'Kaca Pembesar', emoji: '🔍', example: { en: 'I use a magnifying glass.', id: 'Aku memakai kaca pembesar.', emoji: '🔍' } },
+      { en: 'Battery', id: 'Baterai', emoji: '🔋', example: { en: 'The toy needs a battery.', id: 'Mainannya butuh baterai.', emoji: '🔋' } },
+      { en: 'Lightbulb', id: 'Bola Lampu', emoji: '💡', example: { en: 'The lightbulb is bright.', id: 'Bola lampunya terang.', emoji: '💡' } },
+      { en: 'Scale', id: 'Timbangan', emoji: '⚖️', example: { en: 'I weigh it on a scale.', id: 'Aku menimbangnya di timbangan.', emoji: '⚖️' } },
+      { en: 'Stethoscope', id: 'Stetoskop', emoji: '🩺', example: { en: 'The doctor uses a stethoscope.', id: 'Dokter memakai stetoskop.', emoji: '🩺' } },
+      { en: 'Compass', id: 'Kompas', emoji: '🧭', example: { en: 'The compass points north.', id: 'Kompasnya menunjuk utara.', emoji: '🧭' } },
     ],
   },
   {
@@ -4547,16 +4682,16 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
     title: 'Angka Puluhan ke Atas (Bigger Numbers)',
     desc: '10 kata',
     items: [
-      { en: 'Thirty', id: 'Tiga Puluh', emoji: '3️⃣0️⃣', example: { en: 'I have thirty stickers.', id: 'Aku punya tiga puluh stiker.', emoji: '🏷️' } },
-      { en: 'Forty', id: 'Empat Puluh', emoji: '4️⃣0️⃣', example: { en: 'I have forty marbles.', id: 'Aku punya empat puluh kelereng.', emoji: '🔵' } },
-      { en: 'Fifty', id: 'Lima Puluh', emoji: '5️⃣0️⃣', example: { en: 'I have fifty coins.', id: 'Aku punya lima puluh koin.', emoji: '🪙' } },
-      { en: 'Sixty', id: 'Enam Puluh', emoji: '6️⃣0️⃣', example: { en: 'I have sixty candies.', id: 'Aku punya enam puluh permen.', emoji: '🍬' } },
-      { en: 'Seventy', id: 'Tujuh Puluh', emoji: '7️⃣0️⃣', example: { en: 'I read seventy pages.', id: 'Aku membaca tujuh puluh halaman.', emoji: '📖' } },
-      { en: 'Eighty', id: 'Delapan Puluh', emoji: '8️⃣0️⃣', example: { en: 'I have eighty points.', id: 'Aku punya delapan puluh poin.', emoji: '⭐' } },
-      { en: 'Ninety', id: 'Sembilan Puluh', emoji: '9️⃣0️⃣', example: { en: 'I have ninety stamps.', id: 'Aku punya sembilan puluh perangko.', emoji: '📮' } },
-      { en: 'Hundred', id: 'Seratus', emoji: '💯', example: { en: 'I have one hundred books.', id: 'Aku punya seratus buku.', emoji: '📚' } },
-      { en: 'Thousand', id: 'Seribu', emoji: '🔢', example: { en: 'There are one thousand stars.', id: 'Ada seribu bintang.', emoji: '⭐' } },
-      { en: 'Million', id: 'Sejuta', emoji: '🌌', example: { en: 'There are a million stars in the sky.', id: 'Ada sejuta bintang di langit.', emoji: '🌌' } },
+      { en: 'Thirty', id: 'Tiga Puluh', emoji: '30', example: { en: 'I have thirty stickers.', id: 'Aku punya tiga puluh stiker.', emoji: '🏷️' } },
+      { en: 'Forty', id: 'Empat Puluh', emoji: '40', example: { en: 'I have forty marbles.', id: 'Aku punya empat puluh kelereng.', emoji: '🔵' } },
+      { en: 'Fifty', id: 'Lima Puluh', emoji: '50', example: { en: 'I have fifty coins.', id: 'Aku punya lima puluh koin.', emoji: '🪙' } },
+      { en: 'Sixty', id: 'Enam Puluh', emoji: '60', example: { en: 'I have sixty candies.', id: 'Aku punya enam puluh permen.', emoji: '🍬' } },
+      { en: 'Seventy', id: 'Tujuh Puluh', emoji: '70', example: { en: 'I read seventy pages.', id: 'Aku membaca tujuh puluh halaman.', emoji: '📖' } },
+      { en: 'Eighty', id: 'Delapan Puluh', emoji: '80', example: { en: 'I have eighty points.', id: 'Aku punya delapan puluh poin.', emoji: '⭐' } },
+      { en: 'Ninety', id: 'Sembilan Puluh', emoji: '90', example: { en: 'I have ninety leaves.', id: 'Aku punya sembilan puluh daun.', emoji: '🍁' } },
+      { en: 'Hundred', id: 'Seratus', emoji: '100', example: { en: 'I have one hundred books.', id: 'Aku punya seratus buku.', emoji: '📚' } },
+      { en: 'Thousand', id: 'Seribu', emoji: '1K', example: { en: 'There are one thousand stars.', id: 'Ada seribu bintang.', emoji: '⭐' } },
+      { en: 'Million', id: 'Sejuta', emoji: '1M', example: { en: 'There are a million stars in the sky.', id: 'Ada sejuta bintang di langit.', emoji: '🌌' } },
     ],
   },
   {
@@ -4570,7 +4705,7 @@ export const VOCAB_TOPICS_ACHIEVER: VocabTopic[] = [
       { en: 'Hard', id: 'Keras', emoji: '🪨', example: { en: 'The rock is hard.', id: 'Batunya keras.', emoji: '🪨' } },
       { en: 'Sharp', id: 'Tajam', emoji: '🔪', example: { en: 'The knife is sharp.', id: 'Pisaunya tajam.', emoji: '🔪' } },
       { en: 'Smooth', id: 'Halus', emoji: '👘', example: { en: 'The silk is smooth.', id: 'Sutranya halus.', emoji: '👘' } },
-      { en: 'Rough', id: 'Kasar', emoji: '🌵', example: { en: 'The cactus is rough.', id: 'Kaktusnya kasar.', emoji: '🌵' } },
+      { en: 'Spiky', id: 'Berduri', emoji: '🌵', example: { en: 'The cactus is spiky.', id: 'Kaktusnya berduri.', emoji: '🌵' } },
       { en: 'Loud', id: 'Keras (Suara)', emoji: '📢', example: { en: 'The music is loud.', id: 'Musiknya keras.', emoji: '📢' } },
       { en: 'Quiet', id: 'Tenang', emoji: '🤫', example: { en: 'The library is quiet.', id: 'Perpustakaannya tenang.', emoji: '🤫' } },
       { en: 'Bright', id: 'Terang', emoji: '💡', example: { en: 'The light is bright.', id: 'Cahayanya terang.', emoji: '💡' } },
@@ -4602,31 +4737,31 @@ export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
     items: [
       { en: 'Passport', id: 'Paspor', emoji: '🛂', example: { en: 'I show my passport.', id: 'Aku menunjukkan pasporku.', emoji: '🛂' } },
       { en: 'Luggage', id: 'Koper', emoji: '🧳', example: { en: 'I pack my luggage.', id: 'Aku mengemas koperku.', emoji: '🧳' } },
-      { en: 'Journey', id: 'Perjalanan', emoji: '🗺️', example: { en: 'We enjoy the journey.', id: 'Kami menikmati perjalanan.', emoji: '🗺️' } },
-      { en: 'Destination', id: 'Tujuan', emoji: '📍', example: { en: 'Bali is our destination.', id: 'Bali adalah tujuan kami.', emoji: '📍' } },
-      { en: 'Tourist', id: 'Turis', emoji: '📸', example: { en: 'The tourist takes photos.', id: 'Turis itu memotret.', emoji: '📸' } },
+      { en: 'Flip Flops', id: 'Sandal Jepit', emoji: '🩴', example: { en: 'I wear flip flops on vacation.', id: 'Aku memakai sandal jepit saat liburan.', emoji: '🩴' } },
+      { en: 'Palm Tree', id: 'Pohon Palem', emoji: '🌴', example: { en: 'I see a palm tree.', id: 'Aku melihat pohon palem.', emoji: '🌴' } },
+      { en: 'Selfie', id: 'Swafoto', emoji: '🤳', example: { en: 'I take a selfie.', id: 'Aku swafoto.', emoji: '🤳' } },
       { en: 'Souvenir', id: 'Oleh-oleh', emoji: '🎁', example: { en: 'I buy a souvenir.', id: 'Aku membeli oleh-oleh.', emoji: '🎁' } },
-      { en: 'Map', id: 'Peta', emoji: '🧭', example: { en: 'I read the map.', id: 'Aku membaca peta.', emoji: '🧭' } },
+      { en: 'Map', id: 'Peta', emoji: '🗺️', example: { en: 'I read the map.', id: 'Aku membaca peta.', emoji: '🗺️' } },
       { en: 'Ticket', id: 'Tiket', emoji: '🎫', example: { en: 'I buy a ticket.', id: 'Aku membeli tiket.', emoji: '🎫' } },
       { en: 'Hotel', id: 'Hotel', emoji: '🏨', example: { en: 'We stay at a hotel.', id: 'Kami menginap di hotel.', emoji: '🏨' } },
       { en: 'Sightseeing', id: 'Wisata', emoji: '🏞️', example: { en: 'We go sightseeing.', id: 'Kami pergi berwisata.', emoji: '🏞️' } },
     ],
   },
   {
-    id: 'bahasa-komunikasi',
-    title: 'Bahasa & Komunikasi (Language & Communication)',
+    id: 'keselamatan-darurat',
+    title: 'Keselamatan & Darurat (Safety & Emergency)',
     desc: '10 kata',
     items: [
-      { en: 'Translate', id: 'Menerjemahkan', emoji: '🔤', example: { en: 'I translate the sentence.', id: 'Aku menerjemahkan kalimat itu.', emoji: '🔤' } },
-      { en: 'Interpreter', id: 'Penerjemah Lisan', emoji: '🗣️', example: { en: 'The interpreter helps us talk.', id: 'Penerjemah lisan itu membantu kami bicara.', emoji: '🗣️' } },
-      { en: 'Fluent', id: 'Fasih', emoji: '💬', example: { en: 'She is fluent in English.', id: 'Dia fasih berbahasa Inggris.', emoji: '💬' } },
-      { en: 'Accent', id: 'Aksen', emoji: '🎤', example: { en: 'He has an English accent.', id: 'Dia punya aksen Inggris.', emoji: '🎤' } },
-      { en: 'Pronunciation', id: 'Pengucapan', emoji: '👄', example: { en: 'I practice pronunciation.', id: 'Aku berlatih pengucapan.', emoji: '👄' } },
-      { en: 'Vocabulary', id: 'Kosakata', emoji: '📖', example: { en: 'I learn new vocabulary.', id: 'Aku belajar kosakata baru.', emoji: '📖' } },
-      { en: 'Dictionary', id: 'Kamus', emoji: '📕', example: { en: 'I look up the word in a dictionary.', id: 'Aku mencari kata itu di kamus.', emoji: '📕' } },
-      { en: 'Bilingual', id: 'Dwibahasa', emoji: '🌍', example: { en: 'She is bilingual.', id: 'Dia dwibahasa.', emoji: '🌍' } },
-      { en: 'Grammar', id: 'Tata Bahasa', emoji: '✏️', example: { en: 'I study grammar.', id: 'Aku belajar tata bahasa.', emoji: '✏️' } },
-      { en: 'Native Speaker', id: 'Penutur Asli', emoji: '🎙️', example: { en: 'I talk to a native speaker.', id: 'Aku bicara dengan penutur asli.', emoji: '🎙️' } },
+      { en: 'Fire Extinguisher', id: 'Alat Pemadam Kebakaran', emoji: '🧯', example: { en: 'I use a fire extinguisher.', id: 'Aku memakai alat pemadam kebakaran.', emoji: '🧯' } },
+      { en: 'Helmet', id: 'Helm', emoji: '⛑️', example: { en: 'I wear a helmet.', id: 'Aku memakai helm.', emoji: '⛑️' } },
+      { en: 'Safety Vest', id: 'Rompi Keselamatan', emoji: '🦺', example: { en: 'I wear a safety vest.', id: 'Aku memakai rompi keselamatan.', emoji: '🦺' } },
+      { en: 'Band-Aid', id: 'Plester', emoji: '🩹', example: { en: 'I put on a band-aid.', id: 'Aku menempelkan plester.', emoji: '🩹' } },
+      { en: 'Siren', id: 'Sirene', emoji: '🚨', example: { en: 'I hear the siren.', id: 'Aku mendengar sirene.', emoji: '🚨' } },
+      { en: 'Stop Sign', id: 'Rambu Berhenti', emoji: '🛑', example: { en: 'I see a stop sign.', id: 'Aku melihat rambu berhenti.', emoji: '🛑' } },
+      { en: 'Megaphone', id: 'Pengeras Suara', emoji: '📢', example: { en: 'I use a megaphone.', id: 'Aku memakai pengeras suara.', emoji: '📢' } },
+      { en: 'Warning Sign', id: 'Tanda Peringatan', emoji: '⚠️', example: { en: 'I see a warning sign.', id: 'Aku melihat tanda peringatan.', emoji: '⚠️' } },
+      { en: 'Barrier', id: 'Penghalang', emoji: '🚧', example: { en: 'There is a barrier ahead.', id: 'Ada penghalang di depan.', emoji: '🚧' } },
+      { en: 'Safety Pin', id: 'Peniti', emoji: '🧷', example: { en: 'I use a safety pin.', id: 'Aku memakai peniti.', emoji: '🧷' } },
     ],
   },
   {
@@ -4643,24 +4778,24 @@ export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
       { en: 'Library', id: 'Perpustakaan', emoji: '📚', example: { en: 'I borrow books from the library.', id: 'Aku meminjam buku dari perpustakaan.', emoji: '📚' } },
       { en: 'Graduate', id: 'Lulus', emoji: '🎉', example: { en: 'She will graduate next year.', id: 'Dia akan lulus tahun depan.', emoji: '🎉' } },
       { en: 'Curriculum', id: 'Kurikulum', emoji: '📋', example: { en: 'Our curriculum includes many subjects.', id: 'Kurikulum kami mencakup banyak mata pelajaran.', emoji: '📋' } },
-      { en: 'Knowledge', id: 'Pengetahuan', emoji: '🧠', example: { en: 'Reading gives you more knowledge.', id: 'Membaca memberimu lebih banyak pengetahuan.', emoji: '🧠' } },
+      { en: 'Knowledge', id: 'Pengetahuan', emoji: '💡', example: { en: 'Reading gives you more knowledge.', id: 'Membaca memberimu lebih banyak pengetahuan.', emoji: '💡' } },
     ],
   },
   {
-    id: 'pendapat-pengalaman',
-    title: 'Pendapat & Pengalaman (Opinions & Experiences)',
+    id: 'peralatan-kantor',
+    title: 'Peralatan Kantor (Office Supplies)',
     desc: '10 kata',
     items: [
-      { en: 'Opinion', id: 'Pendapat', emoji: '💭', example: { en: 'I have an opinion about this movie.', id: 'Aku punya pendapat tentang film ini.', emoji: '💭' } },
-      { en: 'Experience', id: 'Pengalaman', emoji: '🌟', example: { en: 'Traveling was a great experience.', id: 'Bepergian adalah pengalaman yang seru.', emoji: '🌟' } },
-      { en: 'Achievement', id: 'Prestasi', emoji: '🏆', example: { en: 'Winning the contest was my achievement.', id: 'Menang lomba itu adalah prestasiku.', emoji: '🏆' } },
-      { en: 'Curious', id: 'Penasaran', emoji: '🤔', example: { en: 'I am curious about space.', id: 'Aku penasaran tentang luar angkasa.', emoji: '🤔' } },
-      { en: 'Memorable', id: 'Berkesan', emoji: '📸', example: { en: 'It was a memorable day.', id: 'Itu adalah hari yang berkesan.', emoji: '📸' } },
-      { en: 'Disagree', id: 'Tidak Setuju', emoji: '🙅', example: { en: 'I disagree with that idea.', id: 'Aku tidak setuju dengan ide itu.', emoji: '🙅' } },
-      { en: 'Agree', id: 'Setuju', emoji: '🙆', example: { en: 'I agree with your plan.', id: 'Aku setuju dengan rencanamu.', emoji: '🙆' } },
-      { en: 'Impressed', id: 'Terkesan', emoji: '😲', example: { en: 'I am impressed by her talent.', id: 'Aku terkesan dengan talentanya.', emoji: '😲' } },
-      { en: 'Prefer', id: 'Lebih Suka', emoji: '❤️', example: { en: 'I prefer tea over coffee.', id: 'Aku lebih suka teh daripada kopi.', emoji: '❤️' } },
-      { en: 'Suggest', id: 'Menyarankan', emoji: '💡', example: { en: 'I suggest we try this game.', id: 'Aku menyarankan kita coba permainan ini.', emoji: '💡' } },
+      { en: 'Briefcase', id: 'Tas Kerja', emoji: '💼', example: { en: 'I carry a briefcase to work.', id: 'Aku membawa tas kerja ke kantor.', emoji: '💼' } },
+      { en: 'Folder', id: 'Folder', emoji: '📁', example: { en: 'I put papers in a folder.', id: 'Aku menaruh kertas di folder.', emoji: '📁' } },
+      { en: 'Paperclip', id: 'Klip Kertas', emoji: '📎', example: { en: 'I use a paperclip.', id: 'Aku memakai klip kertas.', emoji: '📎' } },
+      { en: 'Envelope', id: 'Amplop', emoji: '✉️', example: { en: 'I send a letter in an envelope.', id: 'Aku mengirim surat di amplop.', emoji: '✉️' } },
+      { en: 'Business Card', id: 'Kartu Nama', emoji: '📇', example: { en: 'I give my business card.', id: 'Aku memberikan kartu namaku.', emoji: '📇' } },
+      { en: 'Inbox', id: 'Kotak Masuk', emoji: '📥', example: { en: 'I check my inbox.', id: 'Aku memeriksa kotak masukku.', emoji: '📥' } },
+      { en: 'Outbox', id: 'Kotak Keluar', emoji: '📤', example: { en: 'I check my outbox.', id: 'Aku memeriksa kotak keluarku.', emoji: '📤' } },
+      { en: 'Pushpin', id: 'Paku Payung', emoji: '📌', example: { en: 'I use a pushpin.', id: 'Aku memakai paku payung.', emoji: '📌' } },
+      { en: 'Growth Chart', id: 'Grafik Pertumbuhan', emoji: '📈', example: { en: 'I look at the growth chart.', id: 'Aku melihat grafik pertumbuhan.', emoji: '📈' } },
+      { en: 'Bar Chart', id: 'Grafik Batang', emoji: '📊', example: { en: 'I read the bar chart.', id: 'Aku membaca grafik batang.', emoji: '📊' } },
     ],
   },
   {
@@ -4673,10 +4808,10 @@ export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
       { en: 'Broadcast', id: 'Siaran', emoji: '📡', example: { en: 'The news broadcast starts at seven.', id: 'Siaran berita dimulai pukul tujuh.', emoji: '📡' } },
       { en: 'Review', id: 'Ulasan', emoji: '⭐', example: { en: 'I read a review before watching it.', id: 'Aku membaca ulasan sebelum menontonnya.', emoji: '⭐' } },
       { en: 'Subscribe', id: 'Berlangganan', emoji: '🔔', example: { en: 'I subscribe to my favorite channel.', id: 'Aku berlangganan kanal favoritku.', emoji: '🔔' } },
-      { en: 'Streaming', id: 'Streaming', emoji: '📱', example: { en: 'We enjoy streaming movies at home.', id: 'Kami suka streaming film di rumah.', emoji: '📱' } },
+      { en: 'Smartphone', id: 'Ponsel Pintar', emoji: '📱', example: { en: 'I watch movies on my smartphone.', id: 'Aku nonton film di ponsel pintarku.', emoji: '📱' } },
       { en: 'Episode', id: 'Episode', emoji: '🎬', example: { en: 'This episode was really exciting.', id: 'Episode ini sangat mengasyikkan.', emoji: '🎬' } },
       { en: 'Interview', id: 'Wawancara', emoji: '🎤', example: { en: 'The reporter did an interview with the actor.', id: 'Reporter itu mewawancarai aktor itu.', emoji: '🎤' } },
-      { en: 'Animation', id: 'Animasi', emoji: '🎨', example: { en: 'I love watching animation movies.', id: 'Aku suka menonton film animasi.', emoji: '🎨' } },
+      { en: 'Soundtrack', id: 'Musik Latar', emoji: '🎼', example: { en: 'I love the movie soundtrack.', id: 'Aku suka musik latar filmnya.', emoji: '🎼' } },
       { en: 'Audience', id: 'Penonton', emoji: '👥', example: { en: 'The audience clapped loudly.', id: 'Penonton bertepuk tangan dengan keras.', emoji: '👥' } },
     ],
   },
@@ -4692,9 +4827,9 @@ export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
       { en: 'Laundry', id: 'Laundry', emoji: '🧺', example: { en: 'I take my clothes to the laundry.', id: 'Aku membawa bajuku ke laundry.', emoji: '🧺' } },
       { en: 'Petrol Station', id: 'Pom Bensin', emoji: '⛽', example: { en: 'We stop at the petrol station.', id: 'Kami berhenti di pom bensin.', emoji: '⛽' } },
       { en: 'Fire Station', id: 'Pos Pemadam Kebakaran', emoji: '🚒', example: { en: 'The fire station is close to my house.', id: 'Pos pemadam kebakaran itu dekat rumahku.', emoji: '🚒' } },
-      { en: 'Vet', id: 'Dokter Hewan', emoji: '🐾', example: { en: 'I take my cat to the vet.', id: 'Aku membawa kucingku ke dokter hewan.', emoji: '🐾' } },
+      { en: 'Florist', id: 'Toko Bunga', emoji: '💐', example: { en: 'I buy flowers at the florist.', id: 'Aku membeli bunga di toko bunga.', emoji: '💐' } },
       { en: 'Optician', id: 'Toko Kacamata', emoji: '👓', example: { en: 'I get new glasses at the optician.', id: 'Aku membeli kacamata baru di toko kacamata.', emoji: '👓' } },
-      { en: 'Tailor', id: 'Penjahit', emoji: '✂️', example: { en: 'The tailor makes my school uniform.', id: 'Penjahit itu membuat seragam sekolahku.', emoji: '✂️' } },
+      { en: 'Tailor', id: 'Penjahit', emoji: '🧵', example: { en: 'The tailor makes my school uniform.', id: 'Penjahit itu membuat seragam sekolahku.', emoji: '🧵' } },
     ],
   },
   {
@@ -4702,12 +4837,12 @@ export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
     title: 'Peralatan Elektronik Rumah (Home Appliances)',
     desc: '10 kata',
     items: [
-      { en: 'Washing Machine', id: 'Mesin Cuci', emoji: '🫧', example: { en: 'Mom washes clothes in the washing machine.', id: 'Ibu mencuci baju di mesin cuci.', emoji: '🫧' } },
-      { en: 'Air Conditioner', id: 'AC', emoji: '❄️', example: { en: 'The air conditioner keeps the room cool.', id: 'AC itu membuat ruangan sejuk.', emoji: '❄️' } },
+      { en: 'Alarm Clock', id: 'Jam Weker', emoji: '⏰', example: { en: 'The alarm clock wakes me up.', id: 'Jam wekernya membangunkanku.', emoji: '⏰' } },
+      { en: 'Telephone', id: 'Telepon', emoji: '☎️', example: { en: 'I answer the telephone.', id: 'Aku menjawab telepon.', emoji: '☎️' } },
       { en: 'Printer', id: 'Printer', emoji: '🖨️', example: { en: 'I print my homework with the printer.', id: 'Aku mencetak PR-ku dengan printer.', emoji: '🖨️' } },
       { en: 'Radio', id: 'Radio', emoji: '📻', example: { en: 'Dad listens to the radio every morning.', id: 'Ayah mendengarkan radio setiap pagi.', emoji: '📻' } },
-      { en: 'Rice Cooker', id: 'Penanak Nasi', emoji: '🍚', example: { en: 'The rice cooker makes rice every day.', id: 'Penanak nasi itu memasak nasi setiap hari.', emoji: '🍚' } },
-      { en: 'Electric Fan', id: 'Kipas Angin', emoji: '🌀', example: { en: 'The electric fan cools the room.', id: 'Kipas angin itu menyejukkan ruangan.', emoji: '🌀' } },
+      { en: 'Security Camera', id: 'Kamera Keamanan', emoji: '📹', example: { en: 'The security camera watches the door.', id: 'Kamera keamanan itu mengawasi pintu.', emoji: '📹' } },
+      { en: 'Router', id: 'Router', emoji: '📶', example: { en: 'The router gives us wifi.', id: 'Router itu memberi kami wifi.', emoji: '📶' } },
       { en: 'Water Heater', id: 'Pemanas Air', emoji: '🚿', example: { en: 'The water heater warms my shower.', id: 'Pemanas air itu menghangatkan air mandiku.', emoji: '🚿' } },
       { en: 'Speaker', id: 'Speaker', emoji: '🔊', example: { en: 'We play music on the speaker.', id: 'Kami memutar musik di speaker.', emoji: '🔊' } },
       { en: 'Charger', id: 'Charger', emoji: '🔌', example: { en: 'I plug in the charger at night.', id: 'Aku mencolokkan charger di malam hari.', emoji: '🔌' } },
@@ -4742,7 +4877,7 @@ export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
       { en: 'Meadow', id: 'Padang Rumput', emoji: '🌼', example: { en: 'Cows eat grass in the meadow.', id: 'Sapi makan rumput di padang rumput.', emoji: '🌼' } },
       { en: 'Barn', id: 'Kandang', emoji: '🛖', example: { en: 'The farmer keeps cows in the barn.', id: 'Petani menyimpan sapi di kandang.', emoji: '🛖' } },
       { en: 'Path', id: 'Jalan Setapak', emoji: '🥾', example: { en: 'We walk on a narrow path.', id: 'Kami berjalan di jalan setapak yang sempit.', emoji: '🥾' } },
-      { en: 'Pond', id: 'Kolam', emoji: '🦆', example: { en: 'Ducks swim in the pond.', id: 'Bebek berenang di kolam.', emoji: '🦆' } },
+      { en: 'Pond', id: 'Kolam', emoji: '💧', example: { en: 'Fish swim in the pond.', id: 'Ikan berenang di kolam.', emoji: '💧' } },
       { en: 'Orchard', id: 'Kebun Buah', emoji: '🥭', example: { en: 'We pick mangoes in the orchard.', id: 'Kami memetik mangga di kebun buah.', emoji: '🥭' } },
       { en: 'Countryside', id: 'Pedesaan', emoji: '🌄', example: { en: 'I love visiting the countryside.', id: 'Aku suka mengunjungi pedesaan.', emoji: '🌄' } },
       { en: 'Vineyard', id: 'Kebun Anggur', emoji: '🍇', example: { en: 'They grow grapes in the vineyard.', id: 'Mereka menanam anggur di kebun anggur.', emoji: '🍇' } },
@@ -4754,12 +4889,12 @@ export const VOCAB_TOPICS_TRAILBLAZER: VocabTopic[] = [
     desc: '10 kata',
     items: [
       { en: 'Presentation', id: 'Presentasi', emoji: '📊', example: { en: 'I give a presentation in class.', id: 'Aku memberikan presentasi di kelas.', emoji: '📊' } },
-      { en: 'Debate', id: 'Debat', emoji: '⚖️', example: { en: 'We have a debate about school rules.', id: 'Kami berdebat tentang aturan sekolah.', emoji: '⚖️' } },
+      { en: 'Projector', id: 'Proyektor', emoji: '📽️', example: { en: 'I use a projector for my presentation.', id: 'Aku memakai proyektor untuk presentasiku.', emoji: '📽️' } },
       { en: 'Evidence', id: 'Bukti', emoji: '🔍', example: { en: 'I need evidence to support my idea.', id: 'Aku butuh bukti untuk mendukung ideku.', emoji: '🔍' } },
       { en: 'Conclusion', id: 'Kesimpulan', emoji: '✅', example: { en: 'I write a conclusion at the end.', id: 'Aku menulis kesimpulan di akhir.', emoji: '✅' } },
-      { en: 'Discussion', id: 'Diskusi', emoji: '💬', example: { en: 'We join a group discussion.', id: 'Kami mengikuti diskusi kelompok.', emoji: '💬' } },
-      { en: 'Perspective', id: 'Sudut Pandang', emoji: '👀', example: { en: 'Everyone has a different perspective.', id: 'Setiap orang punya sudut pandang berbeda.', emoji: '👀' } },
-      { en: 'Persuade', id: 'Meyakinkan', emoji: '🤝', example: { en: 'I try to persuade my friend.', id: 'Aku mencoba meyakinkan temanku.', emoji: '🤝' } },
+      { en: 'Discussion', id: 'Diskusi', emoji: '👥', example: { en: 'We join a group discussion.', id: 'Kami mengikuti diskusi kelompok.', emoji: '👥' } },
+      { en: 'Applause', id: 'Tepuk Tangan', emoji: '👏', example: { en: 'I hear applause after the presentation.', id: 'Aku mendengar tepuk tangan setelah presentasi.', emoji: '👏' } },
+      { en: 'Timer', id: 'Pengatur Waktu', emoji: '⏱️', example: { en: 'I set a timer for my presentation.', id: 'Aku memasang pengatur waktu untuk presentasiku.', emoji: '⏱️' } },
       { en: 'Summarize', id: 'Meringkas', emoji: '📋', example: { en: 'I summarize the story in three sentences.', id: 'Aku meringkas cerita itu dalam tiga kalimat.', emoji: '📋' } },
       { en: 'Feedback', id: 'Masukan', emoji: '🔄', example: { en: 'My teacher gives feedback on my essay.', id: 'Guruku memberi masukan untuk esaiku.', emoji: '🔄' } },
       { en: 'Volunteer', id: 'Mengajukan Diri', emoji: '✋', example: { en: 'I volunteer to answer the question.', id: 'Aku mengajukan diri untuk menjawab pertanyaan.', emoji: '✋' } },
@@ -4802,160 +4937,160 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
       {
         en: 'Eleven',
         id: 'Sebelas',
-        emoji: '1️⃣1️⃣',
+        emoji: '11',
         example: { en: 'I have eleven marbles.', id: 'Aku punya sebelas kelereng.', emoji: '🔴' },
         question: {
           en: 'How many marbles does she have?',
           id: 'Berapa kelereng yang dia punya?',
           options: [
-            { emoji: '1️⃣1️⃣', text: 'Eleven', ok: true },
-            { emoji: '1️⃣2️⃣', text: 'Twelve', ok: false },
+            { emoji: '11', text: 'Eleven', ok: true },
+            { emoji: '12', text: 'Twelve', ok: false },
             { emoji: '🔟', text: 'Ten', ok: false },
-            { emoji: '1️⃣3️⃣', text: 'Thirteen', ok: false },
+            { emoji: '13', text: 'Thirteen', ok: false },
           ],
         },
       },
       {
         en: 'Twelve',
         id: 'Dua Belas',
-        emoji: '1️⃣2️⃣',
+        emoji: '12',
         example: { en: 'I see twelve ducks.', id: 'Aku lihat dua belas bebek.', emoji: '🦆' },
         question: {
           en: 'How many ducks does she see?',
           id: 'Berapa bebek yang dia lihat?',
           options: [
-            { emoji: '1️⃣2️⃣', text: 'Twelve', ok: true },
-            { emoji: '1️⃣1️⃣', text: 'Eleven', ok: false },
-            { emoji: '1️⃣4️⃣', text: 'Fourteen', ok: false },
-            { emoji: '2️⃣0️⃣', text: 'Twenty', ok: false },
+            { emoji: '12', text: 'Twelve', ok: true },
+            { emoji: '11', text: 'Eleven', ok: false },
+            { emoji: '14', text: 'Fourteen', ok: false },
+            { emoji: '20', text: 'Twenty', ok: false },
           ],
         },
       },
       {
         en: 'Thirteen',
         id: 'Tiga Belas',
-        emoji: '1️⃣3️⃣',
+        emoji: '13',
         example: { en: 'I count thirteen shells.', id: 'Aku menghitung tiga belas kerang.', emoji: '🐚' },
         question: {
           en: 'How many shells does she count?',
           id: 'Berapa kerang yang dia hitung?',
           options: [
-            { emoji: '1️⃣3️⃣', text: 'Thirteen', ok: true },
-            { emoji: '1️⃣2️⃣', text: 'Twelve', ok: false },
-            { emoji: '1️⃣5️⃣', text: 'Fifteen', ok: false },
-            { emoji: '1️⃣8️⃣', text: 'Eighteen', ok: false },
+            { emoji: '13', text: 'Thirteen', ok: true },
+            { emoji: '12', text: 'Twelve', ok: false },
+            { emoji: '15', text: 'Fifteen', ok: false },
+            { emoji: '18', text: 'Eighteen', ok: false },
           ],
         },
       },
       {
         en: 'Fourteen',
         id: 'Empat Belas',
-        emoji: '1️⃣4️⃣',
+        emoji: '14',
         example: { en: 'I have fourteen crayons.', id: 'Aku punya empat belas krayon.', emoji: '🖍️' },
         question: {
           en: 'How many crayons does she have?',
           id: 'Berapa krayon yang dia punya?',
           options: [
-            { emoji: '1️⃣4️⃣', text: 'Fourteen', ok: true },
-            { emoji: '1️⃣3️⃣', text: 'Thirteen', ok: false },
-            { emoji: '1️⃣6️⃣', text: 'Sixteen', ok: false },
-            { emoji: '1️⃣1️⃣', text: 'Eleven', ok: false },
+            { emoji: '14', text: 'Fourteen', ok: true },
+            { emoji: '13', text: 'Thirteen', ok: false },
+            { emoji: '16', text: 'Sixteen', ok: false },
+            { emoji: '11', text: 'Eleven', ok: false },
           ],
         },
       },
       {
         en: 'Fifteen',
         id: 'Lima Belas',
-        emoji: '1️⃣5️⃣',
+        emoji: '15',
         example: { en: 'I see fifteen kites.', id: 'Aku lihat lima belas layangan.', emoji: '🪁' },
         question: {
           en: 'How many kites does she see?',
           id: 'Berapa layangan yang dia lihat?',
           options: [
-            { emoji: '1️⃣5️⃣', text: 'Fifteen', ok: true },
-            { emoji: '1️⃣4️⃣', text: 'Fourteen', ok: false },
-            { emoji: '1️⃣7️⃣', text: 'Seventeen', ok: false },
-            { emoji: '2️⃣0️⃣', text: 'Twenty', ok: false },
+            { emoji: '15', text: 'Fifteen', ok: true },
+            { emoji: '14', text: 'Fourteen', ok: false },
+            { emoji: '17', text: 'Seventeen', ok: false },
+            { emoji: '20', text: 'Twenty', ok: false },
           ],
         },
       },
       {
         en: 'Sixteen',
         id: 'Enam Belas',
-        emoji: '1️⃣6️⃣',
+        emoji: '16',
         example: { en: 'I count sixteen candles.', id: 'Aku menghitung enam belas lilin.', emoji: '🕯️' },
         question: {
           en: 'How many candles does she count?',
           id: 'Berapa lilin yang dia hitung?',
           options: [
-            { emoji: '1️⃣6️⃣', text: 'Sixteen', ok: true },
-            { emoji: '1️⃣5️⃣', text: 'Fifteen', ok: false },
-            { emoji: '1️⃣8️⃣', text: 'Eighteen', ok: false },
-            { emoji: '1️⃣2️⃣', text: 'Twelve', ok: false },
+            { emoji: '16', text: 'Sixteen', ok: true },
+            { emoji: '15', text: 'Fifteen', ok: false },
+            { emoji: '18', text: 'Eighteen', ok: false },
+            { emoji: '12', text: 'Twelve', ok: false },
           ],
         },
       },
       {
         en: 'Seventeen',
         id: 'Tujuh Belas',
-        emoji: '1️⃣7️⃣',
+        emoji: '17',
         example: { en: 'I have seventeen buttons.', id: 'Aku punya tujuh belas kancing.', emoji: '🔘' },
         question: {
           en: 'How many buttons does she have?',
           id: 'Berapa kancing yang dia punya?',
           options: [
-            { emoji: '1️⃣7️⃣', text: 'Seventeen', ok: true },
-            { emoji: '1️⃣6️⃣', text: 'Sixteen', ok: false },
-            { emoji: '1️⃣9️⃣', text: 'Nineteen', ok: false },
-            { emoji: '1️⃣1️⃣', text: 'Eleven', ok: false },
+            { emoji: '17', text: 'Seventeen', ok: true },
+            { emoji: '16', text: 'Sixteen', ok: false },
+            { emoji: '19', text: 'Nineteen', ok: false },
+            { emoji: '11', text: 'Eleven', ok: false },
           ],
         },
       },
       {
         en: 'Eighteen',
         id: 'Delapan Belas',
-        emoji: '1️⃣8️⃣',
+        emoji: '18',
         example: { en: 'I see eighteen leaves.', id: 'Aku lihat delapan belas daun.', emoji: '🍂' },
         question: {
           en: 'How many leaves does she see?',
           id: 'Berapa daun yang dia lihat?',
           options: [
-            { emoji: '1️⃣8️⃣', text: 'Eighteen', ok: true },
-            { emoji: '1️⃣7️⃣', text: 'Seventeen', ok: false },
-            { emoji: '2️⃣0️⃣', text: 'Twenty', ok: false },
-            { emoji: '1️⃣3️⃣', text: 'Thirteen', ok: false },
+            { emoji: '18', text: 'Eighteen', ok: true },
+            { emoji: '17', text: 'Seventeen', ok: false },
+            { emoji: '20', text: 'Twenty', ok: false },
+            { emoji: '13', text: 'Thirteen', ok: false },
           ],
         },
       },
       {
         en: 'Nineteen',
         id: 'Sembilan Belas',
-        emoji: '1️⃣9️⃣',
+        emoji: '19',
         example: { en: 'I count nineteen bricks.', id: 'Aku menghitung sembilan belas bata.', emoji: '🧱' },
         question: {
           en: 'How many bricks does she count?',
           id: 'Berapa bata yang dia hitung?',
           options: [
-            { emoji: '1️⃣9️⃣', text: 'Nineteen', ok: true },
-            { emoji: '1️⃣8️⃣', text: 'Eighteen', ok: false },
-            { emoji: '2️⃣0️⃣', text: 'Twenty', ok: false },
-            { emoji: '1️⃣4️⃣', text: 'Fourteen', ok: false },
+            { emoji: '19', text: 'Nineteen', ok: true },
+            { emoji: '18', text: 'Eighteen', ok: false },
+            { emoji: '20', text: 'Twenty', ok: false },
+            { emoji: '14', text: 'Fourteen', ok: false },
           ],
         },
       },
       {
         en: 'Twenty',
         id: 'Dua Puluh',
-        emoji: '2️⃣0️⃣',
+        emoji: '20',
         example: { en: 'I have twenty balloons.', id: 'Aku punya dua puluh balon.', emoji: '🎈' },
         question: {
           en: 'How many balloons does she have?',
           id: 'Berapa balon yang dia punya?',
           options: [
-            { emoji: '2️⃣0️⃣', text: 'Twenty', ok: true },
-            { emoji: '1️⃣9️⃣', text: 'Nineteen', ok: false },
-            { emoji: '1️⃣8️⃣', text: 'Eighteen', ok: false },
-            { emoji: '1️⃣5️⃣', text: 'Fifteen', ok: false },
+            { emoji: '20', text: 'Twenty', ok: true },
+            { emoji: '19', text: 'Nineteen', ok: false },
+            { emoji: '18', text: 'Eighteen', ok: false },
+            { emoji: '15', text: 'Fifteen', ok: false },
           ],
         },
       },
@@ -5143,7 +5278,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
           id: 'Di mana kami main layangan?',
           options: [
             { emoji: '🏞️', text: 'Park', ok: true },
-            { emoji: '🦓', text: 'Zoo', ok: false },
+            { emoji: '🐼', text: 'Zoo', ok: false },
             { emoji: '🏖️', text: 'Beach', ok: false },
             { emoji: '🚜', text: 'Farm', ok: false },
           ],
@@ -5152,13 +5287,13 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
       {
         en: 'Zoo',
         id: 'Kebun Binatang',
-        emoji: '🦓',
+        emoji: '🐼',
         example: { en: 'We see lions at the zoo.', id: 'Kami lihat singa di kebun binatang.', emoji: '🦁' },
         question: {
           en: 'Where do we see lions?',
           id: 'Di mana kami lihat singa?',
           options: [
-            { emoji: '🦓', text: 'Zoo', ok: true },
+            { emoji: '🐼', text: 'Zoo', ok: true },
             { emoji: '🚜', text: 'Farm', ok: false },
             { emoji: '🏞️', text: 'Park', ok: false },
             { emoji: '⛰️', text: 'Mountain', ok: false },
@@ -5193,7 +5328,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
             { emoji: '🛒', text: 'Market', ok: true },
             { emoji: '🏥', text: 'Hospital', ok: false },
             { emoji: '🚜', text: 'Farm', ok: false },
-            { emoji: '🦓', text: 'Zoo', ok: false },
+            { emoji: '🐼', text: 'Zoo', ok: false },
           ],
         },
       },
@@ -5223,7 +5358,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
           id: 'Di mana kami memberi makan sapi?',
           options: [
             { emoji: '🚜', text: 'Farm', ok: true },
-            { emoji: '🦓', text: 'Zoo', ok: false },
+            { emoji: '🐼', text: 'Zoo', ok: false },
             { emoji: '🏞️', text: 'Park', ok: false },
             { emoji: '🏖️', text: 'Beach', ok: false },
           ],
@@ -5273,7 +5408,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
             { emoji: '🛣️', text: 'Street', ok: true },
             { emoji: '🌉', text: 'Bridge', ok: false },
             { emoji: '🚜', text: 'Farm', ok: false },
-            { emoji: '🦓', text: 'Zoo', ok: false },
+            { emoji: '🐼', text: 'Zoo', ok: false },
           ],
         },
       },
@@ -5296,167 +5431,167 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
     ],
   },
   {
-    id: 'serangga-kecil',
-    title: 'Serangga Kecil (Tiny Creatures)',
+    id: 'perkakas-tukang',
+    title: 'Perkakas Tukang (Handyman\'s Tools)',
     desc: '10 kalimat',
     items: [
       {
-        en: 'Butterfly',
-        id: 'Kupu-kupu',
-        emoji: '🦋',
-        example: { en: 'The butterfly flies from flower to flower.', id: 'Kupu-kupu terbang dari bunga ke bunga.', emoji: '🌸' },
+        en: 'Hammer',
+        id: 'Palu',
+        emoji: '🔨',
+        example: { en: 'Dad uses the hammer to build a chair.', id: 'Ayah memakai palu untuk membuat kursi.', emoji: '🪑' },
         question: {
-          en: 'What does the butterfly do?',
-          id: 'Apa yang dilakukan kupu-kupu?',
+          en: 'What does dad build?',
+          id: 'Apa yang dibuat ayah?',
           options: [
-            { emoji: '🦋', text: 'Flies', ok: true },
-            { emoji: '🏊', text: 'Swims', ok: false },
-            { emoji: '⛏️', text: 'Digs', ok: false },
-            { emoji: '😴', text: 'Sleeps', ok: false },
+            { emoji: '🪑', text: 'A Chair', ok: true },
+            { emoji: '🚗', text: 'A Car', ok: false },
+            { emoji: '📦', text: 'A Box', ok: false },
+            { emoji: '🏠', text: 'A House', ok: false },
           ],
         },
       },
       {
-        en: 'Bee',
-        id: 'Lebah',
-        emoji: '🐝',
-        example: { en: 'The bee collects honey from flowers.', id: 'Lebah mengumpulkan madu dari bunga.', emoji: '🍯' },
+        en: 'Screwdriver',
+        id: 'Obeng',
+        emoji: '🪛',
+        example: { en: 'Mom fixes the toy with a screwdriver.', id: 'Ibu memperbaiki mainan dengan obeng.', emoji: '🧸' },
         question: {
-          en: 'What does the bee collect?',
-          id: 'Apa yang dikumpulkan lebah?',
+          en: 'What does mom fix?',
+          id: 'Apa yang diperbaiki ibu?',
           options: [
-            { emoji: '🍯', text: 'Honey', ok: true },
-            { emoji: '💧', text: 'Water', ok: false },
-            { emoji: '🍃', text: 'Leaves', ok: false },
-            { emoji: '🌾', text: 'Seeds', ok: false },
+            { emoji: '🧸', text: 'A Toy', ok: true },
+            { emoji: '📺', text: 'A TV', ok: false },
+            { emoji: '🚲', text: 'A Bike', ok: false },
+            { emoji: '⏰', text: 'A Clock', ok: false },
           ],
         },
       },
       {
-        en: 'Ant',
-        id: 'Semut',
-        emoji: '🐜',
-        example: { en: 'The ant carries a heavy leaf.', id: 'Semut membawa daun yang berat.', emoji: '🍃' },
+        en: 'Wrench',
+        id: 'Kunci Inggris',
+        emoji: '🔧',
+        example: { en: 'I use the wrench to fix the bike.', id: 'Aku memakai kunci Inggris untuk memperbaiki sepeda.', emoji: '🚲' },
         question: {
-          en: 'What does the ant carry?',
-          id: 'Apa yang dibawa semut?',
+          en: 'What does he fix with the wrench?',
+          id: 'Apa yang diperbaikinya dengan kunci Inggris?',
           options: [
-            { emoji: '🍃', text: 'A Leaf', ok: true },
-            { emoji: '🪨', text: 'A Rock', ok: false },
-            { emoji: '🥖', text: 'A Stick', ok: false },
-            { emoji: '🌸', text: 'A Flower', ok: false },
+            { emoji: '🚲', text: 'The Bike', ok: true },
+            { emoji: '🚗', text: 'The Car', ok: false },
+            { emoji: '📺', text: 'The TV', ok: false },
+            { emoji: '🚪', text: 'The Door', ok: false },
           ],
         },
       },
       {
-        en: 'Ladybug',
-        id: 'Kepik',
-        emoji: '🐞',
-        example: { en: 'The ladybug has red wings.', id: 'Kepik punya sayap merah.', emoji: '🔴' },
+        en: 'Saw',
+        id: 'Gergaji',
+        emoji: '🪚',
+        example: { en: 'The saw cuts the wood.', id: 'Gergaji memotong kayu.', emoji: '🪵' },
         question: {
-          en: 'What color are the ladybug’s wings?',
-          id: 'Apa warna sayap kepik itu?',
+          en: 'What does the saw cut?',
+          id: 'Apa yang dipotong gergaji?',
           options: [
-            { emoji: '🔴', text: 'Red', ok: true },
-            { emoji: '🔵', text: 'Blue', ok: false },
-            { emoji: '🟢', text: 'Green', ok: false },
-            { emoji: '🟡', text: 'Yellow', ok: false },
+            { emoji: '🪵', text: 'Wood', ok: true },
+            { emoji: '🍞', text: 'Bread', ok: false },
+            { emoji: '🧵', text: 'Thread', ok: false },
+            { emoji: '📄', text: 'Paper', ok: false },
           ],
         },
       },
       {
-        en: 'Spider',
-        id: 'Laba-laba',
-        emoji: '🕷️',
-        example: { en: 'The spider spins a web at night.', id: 'Laba-laba membuat sarang di malam hari.', emoji: '🕸️' },
+        en: 'Ladder',
+        id: 'Tangga',
+        emoji: '🪜',
+        example: { en: 'I climb the ladder to paint the wall.', id: 'Aku memanjat tangga untuk mengecat dinding.', emoji: '🎨' },
         question: {
-          en: 'When does the spider spin a web?',
-          id: 'Kapan laba-laba membuat sarang?',
+          en: 'Why does he climb the ladder?',
+          id: 'Kenapa dia memanjat tangga?',
           options: [
-            { emoji: '🌙', text: 'Night', ok: true },
-            { emoji: '🌅', text: 'Morning', ok: false },
-            { emoji: '☀️', text: 'Noon', ok: false },
-            { emoji: '🏫', text: 'School Time', ok: false },
+            { emoji: '🎨', text: 'To Paint the Wall', ok: true },
+            { emoji: '🍽️', text: 'To Eat Dinner', ok: false },
+            { emoji: '😴', text: 'To Sleep', ok: false },
+            { emoji: '📖', text: 'To Read a Book', ok: false },
           ],
         },
       },
       {
-        en: 'Snail',
-        id: 'Siput',
-        emoji: '🐌',
-        example: { en: 'The snail carries its house.', id: 'Siput membawa rumahnya.', emoji: '🏠' },
+        en: 'Toolbox',
+        id: 'Kotak Perkakas',
+        emoji: '🧰',
+        example: { en: 'Dad keeps his tools in the toolbox.', id: 'Ayah menyimpan perkakasnya di kotak perkakas.', emoji: '🧰' },
         question: {
-          en: 'What does the snail carry?',
-          id: 'Apa yang dibawa siput?',
+          en: 'Where does dad keep his tools?',
+          id: 'Di mana ayah menyimpan perkakasnya?',
           options: [
-            { emoji: '🏠', text: 'Its House', ok: true },
-            { emoji: '🍱', text: 'Its Food', ok: false },
-            { emoji: '👶', text: 'Its Baby', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'Its Friend', ok: false },
+            { emoji: '🧰', text: 'In the Toolbox', ok: true },
+            { emoji: '🎒', text: 'In the Backpack', ok: false },
+            { emoji: '🗄️', text: 'In the Cupboard', ok: false },
+            { emoji: '📦', text: 'In a Big Box', ok: false },
           ],
         },
       },
       {
-        en: 'Frog',
-        id: 'Katak',
-        emoji: '🐸',
-        example: { en: 'The frog jumps into the pond.', id: 'Katak melompat ke dalam kolam.', emoji: '💦' },
+        en: 'Bucket',
+        id: 'Ember',
+        emoji: '🪣',
+        example: { en: 'I carry water in the bucket.', id: 'Aku membawa air di dalam ember.', emoji: '💧' },
         question: {
-          en: 'Where does the frog jump?',
-          id: 'Ke mana katak melompat?',
+          en: 'What is in the bucket?',
+          id: 'Apa yang ada di dalam ember?',
           options: [
-            { emoji: '💦', text: 'Into the Pond', ok: true },
-            { emoji: '🏠', text: 'Onto the Roof', ok: false },
-            { emoji: '📦', text: 'Into the Box', ok: false },
-            { emoji: '🌳', text: 'Onto the Tree', ok: false },
+            { emoji: '💧', text: 'Water', ok: true },
+            { emoji: '🍎', text: 'Apples', ok: false },
+            { emoji: '🧸', text: 'Toys', ok: false },
+            { emoji: '🪨', text: 'Rocks', ok: false },
           ],
         },
       },
       {
-        en: 'Turtle',
-        id: 'Kura-kura',
-        emoji: '🐢',
-        example: { en: 'The turtle hides in its shell.', id: 'Kura-kura bersembunyi di cangkangnya.', emoji: '🐢' },
+        en: 'Bolt',
+        id: 'Baut',
+        emoji: '🔩',
+        example: { en: 'The bolt holds the chair together.', id: 'Baut itu menyatukan kursi.', emoji: '🪑' },
         question: {
-          en: 'Where does the turtle hide?',
-          id: 'Di mana kura-kura bersembunyi?',
+          en: 'What does the bolt hold together?',
+          id: 'Apa yang disatukan baut itu?',
           options: [
-            { emoji: '🐢', text: 'In Its Shell', ok: true },
-            { emoji: '🕳️', text: 'In a Cave', ok: false },
-            { emoji: '💧', text: 'In the Water', ok: false },
-            { emoji: '📦', text: 'In a Box', ok: false },
+            { emoji: '🪑', text: 'A Chair', ok: true },
+            { emoji: '🚪', text: 'A Door', ok: false },
+            { emoji: '🪟', text: 'A Window', ok: false },
+            { emoji: '📦', text: 'A Box', ok: false },
           ],
         },
       },
       {
-        en: 'Crab',
-        id: 'Kepiting',
-        emoji: '🦀',
-        example: { en: 'The crab walks sideways on the sand.', id: 'Kepiting berjalan menyamping di pasir.', emoji: '🏖️' },
+        en: 'Rope',
+        id: 'Tali',
+        emoji: '🪢',
+        example: { en: 'I tie the rope around the box.', id: 'Aku mengikat tali di sekeliling kotak.', emoji: '📦' },
         question: {
-          en: 'How does the crab walk?',
-          id: 'Bagaimana kepiting berjalan?',
+          en: 'What does he tie the rope around?',
+          id: 'Di sekeliling apa dia mengikat tali?',
           options: [
-            { emoji: '↔️', text: 'Sideways', ok: true },
-            { emoji: '⬅️', text: 'Backwards', ok: false },
-            { emoji: '➡️', text: 'Forwards', ok: false },
-            { emoji: '🙃', text: 'Upside Down', ok: false },
+            { emoji: '📦', text: 'A Box', ok: true },
+            { emoji: '🪑', text: 'A Chair', ok: false },
+            { emoji: '🚪', text: 'A Door', ok: false },
+            { emoji: '🎈', text: 'A Balloon', ok: false },
           ],
         },
       },
       {
-        en: 'Worm',
-        id: 'Cacing',
-        emoji: '🪱',
-        example: { en: 'The worm digs under the ground.', id: 'Cacing menggali di bawah tanah.', emoji: '⛏️' },
+        en: 'Flashlight',
+        id: 'Senter',
+        emoji: '🔦',
+        example: { en: 'I use the flashlight in the dark.', id: 'Aku memakai senter dalam gelap.', emoji: '🌙' },
         question: {
-          en: 'Where does the worm dig?',
-          id: 'Di mana cacing menggali?',
+          en: 'When do you use the flashlight?',
+          id: 'Kapan kamu memakai senter?',
           options: [
-            { emoji: '⛏️', text: 'Under the Ground', ok: true },
-            { emoji: '🌳', text: 'In the Tree', ok: false },
-            { emoji: '💧', text: 'In the Water', ok: false },
-            { emoji: '🏠', text: 'On the Roof', ok: false },
+            { emoji: '🌙', text: 'In the Dark', ok: true },
+            { emoji: '☀️', text: 'In the Sun', ok: false },
+            { emoji: '🏫', text: 'At School', ok: false },
+            { emoji: '🍽️', text: 'At Dinner', ok: false },
           ],
         },
       },
@@ -5541,7 +5676,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
           id: 'Di mana kami makan kue?',
           options: [
             { emoji: '🎂', text: 'The Birthday Party', ok: true },
-            { emoji: '🦓', text: 'The Zoo', ok: false },
+            { emoji: '🐼', text: 'The Zoo', ok: false },
             { emoji: '🏖️', text: 'The Beach', ok: false },
             { emoji: '🏫', text: 'School', ok: false },
           ],
@@ -5567,12 +5702,12 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'Chocolate',
         id: 'Cokelat',
         emoji: '🍫',
-        example: { en: 'I share chocolate with my friend.', id: 'Aku berbagi cokelat dengan temanku.', emoji: '🧑‍🤝‍🧑' },
+        example: { en: 'I share chocolate with my friend.', id: 'Aku berbagi cokelat dengan temanku.', emoji: '👥' },
         question: {
           en: 'Who does she share chocolate with?',
           id: 'Dengan siapa dia berbagi cokelat?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: true },
+            { emoji: '👥', text: 'Her Friend', ok: true },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
             { emoji: '🐶', text: 'Her Dog', ok: false },
             { emoji: '🏘️', text: 'Her Neighbor', ok: false },
@@ -5812,7 +5947,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
           options: [
             { emoji: '🧑‍🏫', text: 'The Teacher', ok: true },
             { emoji: '🧑‍💼', text: 'The Principal', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'A Friend', ok: false },
+            { emoji: '👥', text: 'A Friend', ok: false },
             { emoji: '🧑‍🎓', text: 'A Classmate', ok: false },
           ],
         },
@@ -5836,13 +5971,13 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
       {
         en: 'Friend',
         id: 'Teman',
-        emoji: '🧑‍🤝‍🧑',
+        emoji: '👥',
         example: { en: 'I share my pencil with my friend.', id: 'Aku berbagi pensil dengan temanku.', emoji: '✏️' },
         question: {
           en: 'Who does she share her pencil with?',
           id: 'Dengan siapa dia berbagi pensil?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: true },
+            { emoji: '👥', text: 'Her Friend', ok: true },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
             { emoji: '👧', text: 'Her Sister', ok: false },
             { emoji: '🧑‍💼', text: 'The Principal', ok: false },
@@ -5861,7 +5996,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
             { emoji: '🧑‍💼', text: 'The Principal', ok: true },
             { emoji: '🧑‍🏫', text: 'The Teacher', ok: false },
             { emoji: '📚', text: 'The Librarian', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'A Friend', ok: false },
+            { emoji: '👥', text: 'A Friend', ok: false },
           ],
         },
       },
@@ -6362,7 +6497,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
             { emoji: '👨', text: 'Her Dad', ok: true },
             { emoji: '👩', text: 'Her Mom', ok: false },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: false },
+            { emoji: '👥', text: 'Her Friend', ok: false },
           ],
         },
       },
@@ -6410,7 +6545,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
             { emoji: '👴', text: 'Her Grandpa', ok: true },
             { emoji: '👵', text: 'Her Grandma', ok: false },
             { emoji: '🧔', text: 'Her Uncle', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: false },
+            { emoji: '👥', text: 'Her Friend', ok: false },
           ],
         },
       },
@@ -6973,7 +7108,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Far',
         id: 'Jauh',
         emoji: '🛣️',
-        example: { en: 'The zoo is far from here.', id: 'Kebun binatangnya jauh dari sini.', emoji: '🦓' },
+        example: { en: 'The zoo is far from here.', id: 'Kebun binatangnya jauh dari sini.', emoji: '🐼' },
         question: {
           en: 'How far is the zoo?',
           id: 'Seberapa jauh kebun binatangnya?',
@@ -7028,7 +7163,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
           options: [
             { emoji: '🏦', text: 'Between the Bank and the School', ok: true },
             { emoji: '🏞️', text: 'Behind the Park', ok: false },
-            { emoji: '🦓', text: 'In Front of the Zoo', ok: false },
+            { emoji: '🐼', text: 'In Front of the Zoo', ok: false },
             { emoji: '🏟️', text: 'Near the Stadium', ok: false },
           ],
         },
@@ -7044,7 +7179,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
           options: [
             { emoji: '🚌', text: 'In Front of the School', ok: true },
             { emoji: '🏦', text: 'Behind the Bank', ok: false },
-            { emoji: '🦓', text: 'Near the Zoo', ok: false },
+            { emoji: '🐼', text: 'Near the Zoo', ok: false },
             { emoji: '↔️', text: 'Between Two Shops', ok: false },
           ],
         },
@@ -7116,7 +7251,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
             { emoji: '👧', text: 'Her Sister', ok: true },
             { emoji: '👦', text: 'Her Brother', ok: false },
             { emoji: '👩', text: 'Her Mom', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: false },
+            { emoji: '👥', text: 'Her Friend', ok: false },
           ],
         },
       },
@@ -7196,7 +7331,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
             { emoji: '👴', text: 'Her Grandpa', ok: true },
             { emoji: '👵', text: 'Her Grandma', ok: false },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: false },
+            { emoji: '👥', text: 'Her Friend', ok: false },
           ],
         },
       },
@@ -7412,12 +7547,12 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Shout',
         id: 'Berteriak',
         emoji: '📢',
-        example: { en: 'I shout for my friend to wait.', id: 'Aku berteriak minta temanku menunggu.', emoji: '🧑‍🤝‍🧑' },
+        example: { en: 'I shout for my friend to wait.', id: 'Aku berteriak minta temanku menunggu.', emoji: '👥' },
         question: {
           en: 'What does she shout?',
           id: 'Dia berteriak apa?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'For Her Friend to Wait', ok: true },
+            { emoji: '👥', text: 'For Her Friend to Wait', ok: true },
             { emoji: '🆘', text: 'For Help', ok: false },
             { emoji: '⚽', text: 'For a Ball', ok: false },
             { emoji: '🍦', text: 'For Ice Cream', ok: false },
@@ -7578,7 +7713,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
           id: 'Dia mengirim surel pada siapa?',
           options: [
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: true },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: false },
+            { emoji: '👥', text: 'Her Friend', ok: false },
             { emoji: '👩', text: 'Her Mom', ok: false },
             { emoji: '👧', text: 'Her Sister', ok: false },
           ],
@@ -7724,7 +7859,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Kind',
         id: 'Baik Hati',
         emoji: '🤗',
-        example: { en: 'My best friend is very kind.', id: 'Sahabatku sangat baik hati.', emoji: '🧑‍🤝‍🧑' },
+        example: { en: 'My best friend is very kind.', id: 'Sahabatku sangat baik hati.', emoji: '👥' },
         question: {
           en: 'What is her best friend like?',
           id: 'Bagaimana sahabatnya?',
@@ -8655,7 +8790,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
             { emoji: '👧', text: 'Her Sister', ok: true },
             { emoji: '👦', text: 'Her Brother', ok: false },
             { emoji: '👩', text: 'Her Mom', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: false },
+            { emoji: '👥', text: 'Her Friend', ok: false },
           ],
         },
       },
@@ -8687,7 +8822,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
             { emoji: '💻', text: 'Online', ok: true },
             { emoji: '🏦', text: 'At the Counter', ok: false },
             { emoji: '📞', text: 'By Phone', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'From a Friend', ok: false },
+            { emoji: '👥', text: 'From a Friend', ok: false },
           ],
         },
       },
@@ -8781,7 +8916,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           en: 'Who does she translate the letter for?',
           id: 'Untuk siapa dia menerjemahkan surat itu?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: true },
+            { emoji: '👥', text: 'Her Friend', ok: true },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
             { emoji: '👩', text: 'Her Mom', ok: false },
             { emoji: '🏘️', text: 'Her Neighbor', ok: false },
@@ -8968,7 +9103,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         question: 'How does Leo practice speaking with native speakers?',
         questionId: 'Bagaimana Leo berlatih bicara dengan penutur asli?',
         options: [
-          { emoji: '🧑‍🤝‍🧑', text: 'Through a Language Partner', ok: true },
+          { emoji: '👥', text: 'Through a Language Partner', ok: true },
           { emoji: '📕', text: 'Through a Dictionary App', ok: false },
           { emoji: '📚', text: 'Through Grammar Books', ok: false },
           { emoji: '🏫', text: 'Through School Class', ok: false },
@@ -9048,7 +9183,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
       {
         en: 'Customer',
         id: 'Pelanggan',
-        emoji: '🧑‍🤝‍🧑',
+        emoji: '👥',
         example: { en: 'The customer waits patiently in line.', id: 'Pelanggan itu menunggu dengan sabar di antrean.', emoji: '⏳' },
         question: {
           en: 'How does the customer wait?',
@@ -9490,7 +9625,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           options: [
             { emoji: '📚', text: 'The Library', ok: true },
             { emoji: '🏪', text: 'The Bookstore', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: false },
+            { emoji: '👥', text: 'Her Friend', ok: false },
             { emoji: '🧑‍🏫', text: 'The Teacher', ok: false },
           ],
         },
@@ -9537,7 +9672,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           id: 'Dia menunjukkan rapornya pada siapa?',
           options: [
             { emoji: '👨‍👩‍👧', text: 'Her Parents', ok: true },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friends', ok: false },
+            { emoji: '👥', text: 'Her Friends', ok: false },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
             { emoji: '🧑‍🎓', text: 'Her Classmate', ok: false },
           ],
@@ -9547,7 +9682,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         en: 'Study',
         id: 'Belajar',
         emoji: '📖',
-        example: { en: 'I study with my friends at the library.', id: 'Aku belajar dengan teman-temanku di perpustakaan.', emoji: '🧑‍🤝‍🧑' },
+        example: { en: 'I study with my friends at the library.', id: 'Aku belajar dengan teman-temanku di perpustakaan.', emoji: '👥' },
         question: {
           en: 'Where does she study with friends?',
           id: 'Di mana dia belajar dengan teman-temannya?',
@@ -9731,7 +9866,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           options: [
             { emoji: '⭐', text: 'Her Favorite Actor', ok: true },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: false },
+            { emoji: '👥', text: 'Her Friend', ok: false },
             { emoji: '🏘️', text: 'Her Neighbor', ok: false },
           ],
         },
@@ -9756,12 +9891,12 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         en: 'Premiere',
         id: 'Pemutaran Perdana',
         emoji: '🎥',
-        example: { en: 'We go to the movie premiere together.', id: 'Kami pergi ke pemutaran perdana film itu bersama.', emoji: '🧑‍🤝‍🧑' },
+        example: { en: 'We go to the movie premiere together.', id: 'Kami pergi ke pemutaran perdana film itu bersama.', emoji: '👥' },
         question: {
           en: 'How do they go to the premiere?',
           id: 'Bagaimana mereka pergi ke pemutaran perdana?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'Together', ok: true },
+            { emoji: '👥', text: 'Together', ok: true },
             { emoji: '🧍', text: 'Alone', ok: false },
             { emoji: '🚌', text: 'By Bus', ok: false },
             { emoji: '🚲', text: 'By Bike', ok: false },
@@ -9869,12 +10004,12 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         en: 'Recommend',
         id: 'Merekomendasikan',
         emoji: '👉',
-        example: { en: 'I recommend this book to my friend.', id: 'Aku merekomendasikan buku ini pada temanku.', emoji: '🧑‍🤝‍🧑' },
+        example: { en: 'I recommend this book to my friend.', id: 'Aku merekomendasikan buku ini pada temanku.', emoji: '👥' },
         question: {
           en: 'Who does she recommend the book to?',
           id: 'Dia merekomendasikan buku itu pada siapa?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Friend', ok: true },
+            { emoji: '👥', text: 'Her Friend', ok: true },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
             { emoji: '👧', text: 'Her Sister', ok: false },
             { emoji: '🏘️', text: 'Her Neighbor', ok: false },
@@ -9970,7 +10105,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           en: 'What does she find interesting?',
           id: 'Apa yang dia rasa menarik?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'The Characters', ok: true },
+            { emoji: '👥', text: 'The Characters', ok: true },
             { emoji: '📕', text: 'The Cover', ok: false },
             { emoji: '💵', text: 'The Price', ok: false },
             { emoji: '🔤', text: 'The Font', ok: false },
@@ -10575,13 +10710,13 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
       {
         en: 'Colleague',
         id: 'Rekan Kerja',
-        emoji: '🧑‍🤝‍🧑',
+        emoji: '👥',
         example: { en: 'My colleague helps me with the project.', id: 'Rekan kerjaku membantuku dengan proyek itu.', emoji: '📋' },
         question: {
           en: 'Who helps her with the project?',
           id: 'Siapa yang membantunya dengan proyek itu?',
           options: [
-            { emoji: '🧑‍🤝‍🧑', text: 'Her Colleague', ok: true },
+            { emoji: '👥', text: 'Her Colleague', ok: true },
             { emoji: '🧑‍💼', text: 'Her Employer', ok: false },
             { emoji: '🧑‍🏫', text: 'Her Teacher', ok: false },
             { emoji: '🏘️', text: 'Her Neighbor', ok: false },
@@ -10722,12 +10857,12 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
     items: [
       { en: 'Dog', id: 'Anjing', emoji: '🐶', phrase: { en: 'The dog says woof!', id: 'Anjingnya bilang guk guk!', emoji: '🐶' } },
       { en: 'Cat', id: 'Kucing', emoji: '🐱', phrase: { en: 'The cat says meow!', id: 'Kucingnya bilang meong!', emoji: '🐱' } },
-      { en: 'Fish', id: 'Ikan', emoji: '🐟', phrase: { en: 'The fish can swim!', id: 'Ikannya bisa berenang!', emoji: '🐟' } },
-      { en: 'Bird', id: 'Burung', emoji: '🐦', phrase: { en: 'The bird can fly!', id: 'Burungnya bisa terbang!', emoji: '🐦' } },
-      { en: 'Cow', id: 'Sapi', emoji: '🐄', phrase: { en: 'The cow says moo!', id: 'Sapinya bilang moo!', emoji: '🐄' } },
-      { en: 'Duck', id: 'Bebek', emoji: '🦆', phrase: { en: 'The duck says quack!', id: 'Bebeknya bilang kwek!', emoji: '🦆' } },
+      { en: 'Lion', id: 'Singa', emoji: '🦁', phrase: { en: 'The lion says roar!', id: 'Singanya bilang auum!', emoji: '🦁' } },
+      { en: 'Hamster', id: 'Hamster', emoji: '🐹', phrase: { en: 'The hamster runs in its wheel!', id: 'Hamsternya lari di rodanya!', emoji: '🐹' } },
+      { en: 'Cow', id: 'Sapi', emoji: '🐮', phrase: { en: 'The cow says moo!', id: 'Sapinya bilang moo!', emoji: '🐮' } },
+      { en: 'Frog', id: 'Katak', emoji: '🐸', phrase: { en: 'The frog says ribbit!', id: 'Kataknya bilang kwak kwak!', emoji: '🐸' } },
       { en: 'Horse', id: 'Kuda', emoji: '🐴', phrase: { en: 'The horse can run!', id: 'Kudanya bisa berlari!', emoji: '🐴' } },
-      { en: 'Sheep', id: 'Domba', emoji: '🐑', phrase: { en: 'The sheep says baa!', id: 'Dombanya bilang mbee!', emoji: '🐑' } },
+      { en: 'Mouse', id: 'Tikus', emoji: '🐭', phrase: { en: 'The mouse says squeak!', id: 'Tikusnya bilang cit cit!', emoji: '🐭' } },
       { en: 'Pig', id: 'Babi', emoji: '🐷', phrase: { en: 'The pig says oink!', id: 'Babinya bilang oink!', emoji: '🐷' } },
       { en: 'Rabbit', id: 'Kelinci', emoji: '🐰', phrase: { en: 'The rabbit can hop!', id: 'Kelincinya bisa melompat!', emoji: '🐰' } },
     ],
@@ -10865,7 +11000,7 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
       { en: 'Drum', id: 'Drum', emoji: '🥁', phrase: { en: 'I play the drum.', id: 'Aku main drum.', emoji: '🥁' } },
       { en: 'Blocks', id: 'Balok', emoji: '🧱', phrase: { en: 'I build with blocks.', id: 'Aku membangun dengan balok.', emoji: '🧱' } },
       { en: 'Yoyo', id: 'Yoyo', emoji: '🪀', phrase: { en: 'I play with a yoyo.', id: 'Aku main yoyo.', emoji: '🪀' } },
-      { en: 'Teddy', id: 'Boneka Beruang', emoji: '🧸', phrase: { en: 'I hug my teddy.', id: 'Aku memeluk boneka beruangku.', emoji: '🧸' } },
+      { en: 'Car', id: 'Mobil-mobilan', emoji: '🚗', phrase: { en: 'I play with a car.', id: 'Aku main mobil-mobilan.', emoji: '🚗' } },
     ],
   },
   {
@@ -10925,16 +11060,16 @@ export const SPEAKING_TOPICS_STARTER: SpeakingPhraseTopic[] = [
     title: 'Sebut Angkanya (Numbers 11–20)',
     desc: '10 ucapan',
     items: [
-      { en: 'Eleven', id: 'Sebelas', emoji: '1️⃣1️⃣', phrase: { en: 'I count eleven stars.', id: 'Aku menghitung sebelas bintang.', emoji: '1️⃣1️⃣' } },
-      { en: 'Twelve', id: 'Dua Belas', emoji: '1️⃣2️⃣', phrase: { en: 'I have twelve stickers.', id: 'Aku punya dua belas stiker.', emoji: '1️⃣2️⃣' } },
-      { en: 'Thirteen', id: 'Tiga Belas', emoji: '1️⃣3️⃣', phrase: { en: 'I see thirteen birds.', id: 'Aku lihat tiga belas burung.', emoji: '1️⃣3️⃣' } },
-      { en: 'Fourteen', id: 'Empat Belas', emoji: '1️⃣4️⃣', phrase: { en: 'I have fourteen coins.', id: 'Aku punya empat belas koin.', emoji: '1️⃣4️⃣' } },
-      { en: 'Fifteen', id: 'Lima Belas', emoji: '1️⃣5️⃣', phrase: { en: 'I count fifteen candies.', id: 'Aku menghitung lima belas permen.', emoji: '1️⃣5️⃣' } },
-      { en: 'Sixteen', id: 'Enam Belas', emoji: '1️⃣6️⃣', phrase: { en: 'I see sixteen ants.', id: 'Aku lihat enam belas semut.', emoji: '1️⃣6️⃣' } },
-      { en: 'Seventeen', id: 'Tujuh Belas', emoji: '1️⃣7️⃣', phrase: { en: 'I have seventeen crayons.', id: 'Aku punya tujuh belas krayon.', emoji: '1️⃣7️⃣' } },
-      { en: 'Eighteen', id: 'Delapan Belas', emoji: '1️⃣8️⃣', phrase: { en: 'I count eighteen flowers.', id: 'Aku menghitung delapan belas bunga.', emoji: '1️⃣8️⃣' } },
-      { en: 'Nineteen', id: 'Sembilan Belas', emoji: '1️⃣9️⃣', phrase: { en: 'I have nineteen books.', id: 'Aku punya sembilan belas buku.', emoji: '1️⃣9️⃣' } },
-      { en: 'Twenty', id: 'Dua Puluh', emoji: '2️⃣0️⃣', phrase: { en: 'Let’s count to twenty!', id: 'Ayo hitung sampai dua puluh!', emoji: '2️⃣0️⃣' } },
+      { en: 'Eleven', id: 'Sebelas', emoji: '11', phrase: { en: 'I count eleven stars.', id: 'Aku menghitung sebelas bintang.', emoji: '11' } },
+      { en: 'Twelve', id: 'Dua Belas', emoji: '12', phrase: { en: 'I have twelve stickers.', id: 'Aku punya dua belas stiker.', emoji: '12' } },
+      { en: 'Thirteen', id: 'Tiga Belas', emoji: '13', phrase: { en: 'I see thirteen birds.', id: 'Aku lihat tiga belas burung.', emoji: '13' } },
+      { en: 'Fourteen', id: 'Empat Belas', emoji: '14', phrase: { en: 'I have fourteen coins.', id: 'Aku punya empat belas koin.', emoji: '14' } },
+      { en: 'Fifteen', id: 'Lima Belas', emoji: '15', phrase: { en: 'I count fifteen candies.', id: 'Aku menghitung lima belas permen.', emoji: '15' } },
+      { en: 'Sixteen', id: 'Enam Belas', emoji: '16', phrase: { en: 'I see sixteen ants.', id: 'Aku lihat enam belas semut.', emoji: '16' } },
+      { en: 'Seventeen', id: 'Tujuh Belas', emoji: '17', phrase: { en: 'I have seventeen crayons.', id: 'Aku punya tujuh belas krayon.', emoji: '17' } },
+      { en: 'Eighteen', id: 'Delapan Belas', emoji: '18', phrase: { en: 'I count eighteen flowers.', id: 'Aku menghitung delapan belas bunga.', emoji: '18' } },
+      { en: 'Nineteen', id: 'Sembilan Belas', emoji: '19', phrase: { en: 'I have nineteen books.', id: 'Aku punya sembilan belas buku.', emoji: '19' } },
+      { en: 'Twenty', id: 'Dua Puluh', emoji: '20', phrase: { en: 'Let’s count to twenty!', id: 'Ayo hitung sampai dua puluh!', emoji: '20' } },
     ],
   },
   {
@@ -10961,7 +11096,7 @@ export const SPEAKING_TOPICS_STARTER: SpeakingPhraseTopic[] = [
     items: [
       { en: 'Coach', id: 'Pelatih', emoji: '📣', phrase: { en: 'The coach helps us play.', id: 'Pelatih membantu kami bermain.', emoji: '📣' } },
       { en: 'Classroom', id: 'Ruang Kelas', emoji: '🏫', phrase: { en: 'I learn in the classroom.', id: 'Aku belajar di ruang kelas.', emoji: '🏫' } },
-      { en: 'Friend', id: 'Teman', emoji: '🧑‍🤝‍🧑', phrase: { en: 'She is my friend.', id: 'Dia temanku.', emoji: '🧑‍🤝‍🧑' } },
+      { en: 'Friend', id: 'Teman', emoji: '👥', phrase: { en: 'She is my friend.', id: 'Dia temanku.', emoji: '👥' } },
       { en: 'Principal', id: 'Kepala Sekolah', emoji: '🧑‍💼', phrase: { en: 'I greet the principal.', id: 'Aku menyapa kepala sekolah.', emoji: '🧑‍💼' } },
       { en: 'Library', id: 'Perpustakaan', emoji: '📚', phrase: { en: 'I read in the library.', id: 'Aku membaca di perpustakaan.', emoji: '📚' } },
       { en: 'Lunchbox', id: 'Kotak Bekal', emoji: '🍱', phrase: { en: 'I bring my lunchbox.', id: 'Aku membawa kotak bekalku.', emoji: '🍱' } },
@@ -10989,20 +11124,20 @@ export const SPEAKING_TOPICS_STARTER: SpeakingPhraseTopic[] = [
     ],
   },
   {
-    id: 'makhluk-kecil',
-    title: 'Makhluk Kecil (Insects & Small Creatures)',
+    id: 'alat-tukang',
+    title: 'Alat Tukang (Tools & Equipment)',
     desc: '10 ucapan',
     items: [
-      { en: 'Butterfly', id: 'Kupu-kupu', emoji: '🦋', phrase: { en: 'The butterfly is beautiful.', id: 'Kupu-kupunya cantik.', emoji: '🦋' } },
-      { en: 'Bee', id: 'Lebah', emoji: '🐝', phrase: { en: 'The bee makes honey.', id: 'Lebah membuat madu.', emoji: '🐝' } },
-      { en: 'Ant', id: 'Semut', emoji: '🐜', phrase: { en: 'I see a tiny ant.', id: 'Aku lihat semut kecil.', emoji: '🐜' } },
-      { en: 'Ladybug', id: 'Kepik', emoji: '🐞', phrase: { en: 'I found a ladybug.', id: 'Aku menemukan kepik.', emoji: '🐞' } },
-      { en: 'Spider', id: 'Laba-laba', emoji: '🕷️', phrase: { en: 'The spider spins a web.', id: 'Laba-laba memintal sarang.', emoji: '🕷️' } },
-      { en: 'Snail', id: 'Siput', emoji: '🐌', phrase: { en: 'The snail moves slowly.', id: 'Siputnya bergerak lambat.', emoji: '🐌' } },
-      { en: 'Frog', id: 'Katak', emoji: '🐸', phrase: { en: 'The frog can jump high.', id: 'Katak bisa melompat tinggi.', emoji: '🐸' } },
-      { en: 'Turtle', id: 'Kura-kura', emoji: '🐢', phrase: { en: 'The turtle has a shell.', id: 'Kura-kura punya cangkang.', emoji: '🐢' } },
-      { en: 'Crab', id: 'Kepiting', emoji: '🦀', phrase: { en: 'The crab walks sideways.', id: 'Kepiting berjalan menyamping.', emoji: '🦀' } },
-      { en: 'Worm', id: 'Cacing', emoji: '🪱', phrase: { en: 'The worm lives in the soil.', id: 'Cacing hidup di dalam tanah.', emoji: '🪱' } },
+      { en: 'Hammer', id: 'Palu', emoji: '🔨', phrase: { en: 'I use a hammer.', id: 'Aku memakai palu.', emoji: '🔨' } },
+      { en: 'Screwdriver', id: 'Obeng', emoji: '🪛', phrase: { en: 'I need a screwdriver.', id: 'Aku butuh obeng.', emoji: '🪛' } },
+      { en: 'Wrench', id: 'Kunci Inggris', emoji: '🔧', phrase: { en: 'This is a wrench.', id: 'Ini kunci Inggris.', emoji: '🔧' } },
+      { en: 'Saw', id: 'Gergaji', emoji: '🪚', phrase: { en: 'The saw is sharp.', id: 'Gergaji itu tajam.', emoji: '🪚' } },
+      { en: 'Ladder', id: 'Tangga', emoji: '🪜', phrase: { en: 'I climb the ladder.', id: 'Aku memanjat tangga.', emoji: '🪜' } },
+      { en: 'Toolbox', id: 'Kotak Perkakas', emoji: '🧰', phrase: { en: 'Open the toolbox.', id: 'Buka kotak perkakasnya.', emoji: '🧰' } },
+      { en: 'Bucket', id: 'Ember', emoji: '🪣', phrase: { en: 'Fill the bucket.', id: 'Isi embernya.', emoji: '🪣' } },
+      { en: 'Bolt', id: 'Baut', emoji: '🔩', phrase: { en: 'Tighten the bolt.', id: 'Kencangkan bautnya.', emoji: '🔩' } },
+      { en: 'Rope', id: 'Tali', emoji: '🪢', phrase: { en: 'Hold the rope.', id: 'Pegang talinya.', emoji: '🪢' } },
+      { en: 'Flashlight', id: 'Senter', emoji: '🔦', phrase: { en: 'Turn on the flashlight.', id: 'Nyalakan senternya.', emoji: '🔦' } },
     ],
   },
   {
@@ -11011,7 +11146,7 @@ export const SPEAKING_TOPICS_STARTER: SpeakingPhraseTopic[] = [
     desc: '10 ucapan',
     items: [
       { en: 'Park', id: 'Taman', emoji: '🏞️', phrase: { en: 'Let’s go to the park!', id: 'Ayo pergi ke taman!', emoji: '🏞️' } },
-      { en: 'Zoo', id: 'Kebun Binatang', emoji: '🦓', phrase: { en: 'I want to visit the zoo.', id: 'Aku mau mengunjungi kebun binatang.', emoji: '🦓' } },
+      { en: 'Zoo', id: 'Kebun Binatang', emoji: '🐼', phrase: { en: 'I want to visit the zoo.', id: 'Aku mau mengunjungi kebun binatang.', emoji: '🐼' } },
       { en: 'Beach', id: 'Pantai', emoji: '🏖️', phrase: { en: 'We swim at the beach.', id: 'Kami berenang di pantai.', emoji: '🏖️' } },
       { en: 'Market', id: 'Pasar', emoji: '🛒', phrase: { en: 'Mom shops at the market.', id: 'Ibu belanja di pasar.', emoji: '🛒' } },
       { en: 'Hospital', id: 'Rumah Sakit', emoji: '🏥', phrase: { en: 'The doctor works at the hospital.', id: 'Dokter bekerja di rumah sakit.', emoji: '🏥' } },
@@ -11819,7 +11954,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
       { en: 'Drum', id: 'Drum', emoji: '🥁', formA: { en: 'This is a drum.', id: 'Ini drum.' }, formB: { en: 'That is a drum.', id: 'Itu drum.' } },
       { en: 'Blocks', id: 'Balok', emoji: '🧱', formA: { en: 'This is a block.', id: 'Ini balok.' }, formB: { en: 'That is a block.', id: 'Itu balok.' } },
       { en: 'Yoyo', id: 'Yoyo', emoji: '🪀', formA: { en: 'This is a yoyo.', id: 'Ini yoyo.' }, formB: { en: 'That is a yoyo.', id: 'Itu yoyo.' } },
-      { en: 'Teddy', id: 'Boneka Beruang', emoji: '🧸', formA: { en: 'This is a teddy.', id: 'Ini boneka beruang.' }, formB: { en: 'That is a teddy.', id: 'Itu boneka beruang.' } },
+      { en: 'Car', id: 'Mobil-mobilan', emoji: '🚗', formA: { en: 'This is a car.', id: 'Ini mobil-mobilan.' }, formB: { en: 'That is a car.', id: 'Itu mobil-mobilan.' } },
     ],
   },
   /**
@@ -11995,12 +12130,12 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
     items: [
       { en: 'Dog', id: 'Anjing', emoji: '🐶', formA: { en: 'There is a dog.', id: 'Ada anjing.' }, formB: { en: 'There is no dog.', id: 'Tidak ada anjing.' } },
       { en: 'Cat', id: 'Kucing', emoji: '🐱', formA: { en: 'There is a cat.', id: 'Ada kucing.' }, formB: { en: 'There is no cat.', id: 'Tidak ada kucing.' } },
-      { en: 'Fish', id: 'Ikan', emoji: '🐟', formA: { en: 'There is a fish.', id: 'Ada ikan.' }, formB: { en: 'There is no fish.', id: 'Tidak ada ikan.' } },
-      { en: 'Bird', id: 'Burung', emoji: '🐦', formA: { en: 'There is a bird.', id: 'Ada burung.' }, formB: { en: 'There is no bird.', id: 'Tidak ada burung.' } },
-      { en: 'Cow', id: 'Sapi', emoji: '🐄', formA: { en: 'There is a cow.', id: 'Ada sapi.' }, formB: { en: 'There is no cow.', id: 'Tidak ada sapi.' } },
-      { en: 'Duck', id: 'Bebek', emoji: '🦆', formA: { en: 'There is a duck.', id: 'Ada bebek.' }, formB: { en: 'There is no duck.', id: 'Tidak ada bebek.' } },
+      { en: 'Lion', id: 'Singa', emoji: '🦁', formA: { en: 'There is a lion.', id: 'Ada singa.' }, formB: { en: 'There is no lion.', id: 'Tidak ada singa.' } },
+      { en: 'Hamster', id: 'Hamster', emoji: '🐹', formA: { en: 'There is a hamster.', id: 'Ada hamster.' }, formB: { en: 'There is no hamster.', id: 'Tidak ada hamster.' } },
+      { en: 'Cow', id: 'Sapi', emoji: '🐮', formA: { en: 'There is a cow.', id: 'Ada sapi.' }, formB: { en: 'There is no cow.', id: 'Tidak ada sapi.' } },
+      { en: 'Frog', id: 'Katak', emoji: '🐸', formA: { en: 'There is a frog.', id: 'Ada katak.' }, formB: { en: 'There is no frog.', id: 'Tidak ada katak.' } },
       { en: 'Horse', id: 'Kuda', emoji: '🐴', formA: { en: 'There is a horse.', id: 'Ada kuda.' }, formB: { en: 'There is no horse.', id: 'Tidak ada kuda.' } },
-      { en: 'Sheep', id: 'Domba', emoji: '🐑', formA: { en: 'There is a sheep.', id: 'Ada domba.' }, formB: { en: 'There is no sheep.', id: 'Tidak ada domba.' } },
+      { en: 'Mouse', id: 'Tikus', emoji: '🐭', formA: { en: 'There is a mouse.', id: 'Ada tikus.' }, formB: { en: 'There is no mouse.', id: 'Tidak ada tikus.' } },
       { en: 'Pig', id: 'Babi', emoji: '🐷', formA: { en: 'There is a pig.', id: 'Ada babi.' }, formB: { en: 'There is no pig.', id: 'Tidak ada babi.' } },
       { en: 'Rabbit', id: 'Kelinci', emoji: '🐰', formA: { en: 'There is a rabbit.', id: 'Ada kelinci.' }, formB: { en: 'There is no rabbit.', id: 'Tidak ada kelinci.' } },
     ],
@@ -12051,9 +12186,14 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
    * SAMA dgn `satu-banyak` Little Stars, cuma frame kalimatnya beda ("there
    * is/are" vs "it's/they're"). Dipetakan dari `VOCAB_TOPICS_STARTER`
    * `serangga` (Insects, belum diklaim topik lain). Lokasi "here" DIBUAT
-   * KONSTAN di semua item (bukan divariasikan per serangga) — kalau
+   * KONSTAN di semua item (bukan divariasikan per item) — kalau
    * lokasinya beda-beda per item, itu jadi sinyal kedua yang bocor,
-   * pelajaran yang sama dgn §8/§13.
+   * pelajaran yang sama dgn §8/§13. Domainnya sendiri sempat `serangga`
+   * (Insects) lalu DIGANTI TOTAL ke `perkakas` (Tools) menyusul permintaan
+   * user — emoji serangga/makhluk kecil nyaris semua "tubuh utuh" tanpa
+   * varian "kepala saja" di Unicode (CLAUDE.md "Emoji Hewan/Makhluk Hidup
+   * WAJIB Kepala SAJA"), jadi domainnya dipindah ke benda mati yang bebas
+   * dari masalah itu sama sekali (`materi/vocab.md` §3B.4).
    */
   {
     id: 'ada-apa-di-sini',
@@ -12061,16 +12201,16 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
     desc: '10 kata',
     contrastVisual: 'quantity',
     items: [
-      { en: 'Butterfly', id: 'Kupu-kupu', emoji: '🦋', formA: { en: 'There is a butterfly here.', id: 'Ada satu kupu-kupu di sini.' }, formB: { en: 'There are butterflies here.', id: 'Ada banyak kupu-kupu di sini.' } },
-      { en: 'Bee', id: 'Lebah', emoji: '🐝', formA: { en: 'There is a bee here.', id: 'Ada satu lebah di sini.' }, formB: { en: 'There are bees here.', id: 'Ada banyak lebah di sini.' } },
-      { en: 'Ant', id: 'Semut', emoji: '🐜', formA: { en: 'There is an ant here.', id: 'Ada satu semut di sini.' }, formB: { en: 'There are ants here.', id: 'Ada banyak semut di sini.' } },
-      { en: 'Ladybug', id: 'Kepik', emoji: '🐞', formA: { en: 'There is a ladybug here.', id: 'Ada satu kepik di sini.' }, formB: { en: 'There are ladybugs here.', id: 'Ada banyak kepik di sini.' } },
-      { en: 'Spider', id: 'Laba-laba', emoji: '🕷️', formA: { en: 'There is a spider here.', id: 'Ada satu laba-laba di sini.' }, formB: { en: 'There are spiders here.', id: 'Ada banyak laba-laba di sini.' } },
-      { en: 'Snail', id: 'Siput', emoji: '🐌', formA: { en: 'There is a snail here.', id: 'Ada satu siput di sini.' }, formB: { en: 'There are snails here.', id: 'Ada banyak siput di sini.' } },
-      { en: 'Frog', id: 'Katak', emoji: '🐸', formA: { en: 'There is a frog here.', id: 'Ada satu katak di sini.' }, formB: { en: 'There are frogs here.', id: 'Ada banyak katak di sini.' } },
-      { en: 'Turtle', id: 'Kura-kura', emoji: '🐢', formA: { en: 'There is a turtle here.', id: 'Ada satu kura-kura di sini.' }, formB: { en: 'There are turtles here.', id: 'Ada banyak kura-kura di sini.' } },
-      { en: 'Crab', id: 'Kepiting', emoji: '🦀', formA: { en: 'There is a crab here.', id: 'Ada satu kepiting di sini.' }, formB: { en: 'There are crabs here.', id: 'Ada banyak kepiting di sini.' } },
-      { en: 'Worm', id: 'Cacing', emoji: '🪱', formA: { en: 'There is a worm here.', id: 'Ada satu cacing di sini.' }, formB: { en: 'There are worms here.', id: 'Ada banyak cacing di sini.' } },
+      { en: 'Hammer', id: 'Palu', emoji: '🔨', formA: { en: 'There is a hammer here.', id: 'Ada satu palu di sini.' }, formB: { en: 'There are hammers here.', id: 'Ada banyak palu di sini.' } },
+      { en: 'Screwdriver', id: 'Obeng', emoji: '🪛', formA: { en: 'There is a screwdriver here.', id: 'Ada satu obeng di sini.' }, formB: { en: 'There are screwdrivers here.', id: 'Ada banyak obeng di sini.' } },
+      { en: 'Wrench', id: 'Kunci Inggris', emoji: '🔧', formA: { en: 'There is a wrench here.', id: 'Ada satu kunci Inggris di sini.' }, formB: { en: 'There are wrenches here.', id: 'Ada banyak kunci Inggris di sini.' } },
+      { en: 'Saw', id: 'Gergaji', emoji: '🪚', formA: { en: 'There is a saw here.', id: 'Ada satu gergaji di sini.' }, formB: { en: 'There are saws here.', id: 'Ada banyak gergaji di sini.' } },
+      { en: 'Ladder', id: 'Tangga', emoji: '🪜', formA: { en: 'There is a ladder here.', id: 'Ada satu tangga di sini.' }, formB: { en: 'There are ladders here.', id: 'Ada banyak tangga di sini.' } },
+      { en: 'Toolbox', id: 'Kotak Perkakas', emoji: '🧰', formA: { en: 'There is a toolbox here.', id: 'Ada satu kotak perkakas di sini.' }, formB: { en: 'There are toolboxes here.', id: 'Ada banyak kotak perkakas di sini.' } },
+      { en: 'Bucket', id: 'Ember', emoji: '🪣', formA: { en: 'There is a bucket here.', id: 'Ada satu ember di sini.' }, formB: { en: 'There are buckets here.', id: 'Ada banyak ember di sini.' } },
+      { en: 'Bolt', id: 'Baut', emoji: '🔩', formA: { en: 'There is a bolt here.', id: 'Ada satu baut di sini.' }, formB: { en: 'There are bolts here.', id: 'Ada banyak baut di sini.' } },
+      { en: 'Rope', id: 'Tali', emoji: '🪢', formA: { en: 'There is a rope here.', id: 'Ada satu tali di sini.' }, formB: { en: 'There are ropes here.', id: 'Ada banyak tali di sini.' } },
+      { en: 'Flashlight', id: 'Senter', emoji: '🔦', formA: { en: 'There is a flashlight here.', id: 'Ada satu senter di sini.' }, formB: { en: 'There are flashlights here.', id: 'Ada banyak senter di sini.' } },
     ],
   },
   /**
@@ -12166,7 +12306,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
     contrastVisual: 'proximity',
     items: [
       { en: 'Park', id: 'Taman', emoji: '🏞️', formA: { en: 'The park is here.', id: 'Tamannya ada di sini.' }, formB: { en: 'The park is there.', id: 'Tamannya ada di sana.' } },
-      { en: 'Zoo', id: 'Kebun Binatang', emoji: '🦓', formA: { en: 'The zoo is here.', id: 'Kebun binatangnya ada di sini.' }, formB: { en: 'The zoo is there.', id: 'Kebun binatangnya ada di sana.' } },
+      { en: 'Zoo', id: 'Kebun Binatang', emoji: '🐼', formA: { en: 'The zoo is here.', id: 'Kebun binatangnya ada di sini.' }, formB: { en: 'The zoo is there.', id: 'Kebun binatangnya ada di sana.' } },
       { en: 'Beach', id: 'Pantai', emoji: '🏖️', formA: { en: 'The beach is here.', id: 'Pantainya ada di sini.' }, formB: { en: 'The beach is there.', id: 'Pantainya ada di sana.' } },
       { en: 'Market', id: 'Pasar', emoji: '🛒', formA: { en: 'The market is here.', id: 'Pasarnya ada di sini.' }, formB: { en: 'The market is there.', id: 'Pasarnya ada di sana.' } },
       { en: 'Hospital', id: 'Rumah Sakit', emoji: '🏥', formA: { en: 'The hospital is here.', id: 'Rumah sakitnya ada di sini.' }, formB: { en: 'The hospital is there.', id: 'Rumah sakitnya ada di sana.' } },
@@ -12252,7 +12392,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
     items: [
       { en: 'Coach', id: 'Pelatih', emoji: '📣', formA: { en: 'I need a coach.', id: 'Aku perlu pelatih.' }, formB: { en: "I don't need a coach.", id: 'Aku tidak perlu pelatih.' } },
       { en: 'Classroom', id: 'Ruang Kelas', emoji: '🏫', formA: { en: 'I need the classroom.', id: 'Aku perlu ruang kelas itu.' }, formB: { en: "I don't need the classroom.", id: 'Aku tidak perlu ruang kelas itu.' } },
-      { en: 'Friend', id: 'Teman', emoji: '🧑‍🤝‍🧑', formA: { en: 'I need a friend.', id: 'Aku perlu teman.' }, formB: { en: "I don't need a friend.", id: 'Aku tidak perlu teman.' } },
+      { en: 'Friend', id: 'Teman', emoji: '👥', formA: { en: 'I need a friend.', id: 'Aku perlu teman.' }, formB: { en: "I don't need a friend.", id: 'Aku tidak perlu teman.' } },
       { en: 'Principal', id: 'Kepala Sekolah', emoji: '🧑‍💼', formA: { en: 'I need the principal.', id: 'Aku perlu kepala sekolah.' }, formB: { en: "I don't need the principal.", id: 'Aku tidak perlu kepala sekolah.' } },
       { en: 'Library', id: 'Perpustakaan', emoji: '📚', formA: { en: 'I need the library.', id: 'Aku perlu perpustakaan.' }, formB: { en: "I don't need the library.", id: 'Aku tidak perlu perpustakaan.' } },
       { en: 'Lunchbox', id: 'Kotak Bekal', emoji: '🍱', formA: { en: 'I need my lunchbox.', id: 'Aku perlu kotak bekalku.' }, formB: { en: "I don't need my lunchbox.", id: 'Aku tidak perlu kotak bekalku.' } },
@@ -14153,12 +14293,12 @@ export const READING_TOPICS_LITTLE_STARS: ReadingWordTopic[] = [
     items: [
       { en: 'Dog', id: 'Anjing', emoji: '🐶' },
       { en: 'Cat', id: 'Kucing', emoji: '🐱' },
-      { en: 'Fish', id: 'Ikan', emoji: '🐟' },
-      { en: 'Bird', id: 'Burung', emoji: '🐦' },
-      { en: 'Cow', id: 'Sapi', emoji: '🐄' },
-      { en: 'Duck', id: 'Bebek', emoji: '🦆' },
+      { en: 'Lion', id: 'Singa', emoji: '🦁' },
+      { en: 'Hamster', id: 'Hamster', emoji: '🐹' },
+      { en: 'Cow', id: 'Sapi', emoji: '🐮' },
+      { en: 'Frog', id: 'Katak', emoji: '🐸' },
       { en: 'Horse', id: 'Kuda', emoji: '🐴' },
-      { en: 'Sheep', id: 'Domba', emoji: '🐑' },
+      { en: 'Mouse', id: 'Tikus', emoji: '🐭' },
       { en: 'Pig', id: 'Babi', emoji: '🐷' },
       { en: 'Rabbit', id: 'Kelinci', emoji: '🐰' },
     ],
@@ -14274,7 +14414,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingWordTopic[] = [
   {
     id: 'kata-mainan',
     title: 'Membaca Kata: Mainan (Reading Toy Words)',
-    scene: '🧸',
+    scene: '🚗',
     desc: '10 kata',
     items: [
       { en: 'Ball', id: 'Bola', emoji: '⚽' },
@@ -14286,7 +14426,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingWordTopic[] = [
       { en: 'Drum', id: 'Drum', emoji: '🥁' },
       { en: 'Blocks', id: 'Balok', emoji: '🧱' },
       { en: 'Yoyo', id: 'Yoyo', emoji: '🪀' },
-      { en: 'Teddy', id: 'Boneka Beruang', emoji: '🧸' },
+      { en: 'Car', id: 'Mobil-mobilan', emoji: '🚗' },
     ],
   },
   {
@@ -14350,7 +14490,9 @@ export const READING_TOPICS_LITTLE_STARS: ReadingWordTopic[] = [
  * makanan`/`baca-barang`/`baca-sekolah`/`baca-orang`/`baca-alam`/`baca-
  * hobi`, dipetakan dari `angka-11-20`/`hari-dalam-seminggu`/`serangga`/
  * `makanan-favoritku`/`barang-di-rumah`/`di-sekolah`/`orang-di-sekitarku`/
- * `alam-sekitar`/`hobi`. **Frasa 2-3 kata DIKONSTRUKSI natural per-item**
+ * `alam-sekitar`/`hobi`. (Koreksi sesi lanjutan: `baca-serangga` & Vocab
+ * `serangga` sumbernya SEKARANG diganti total jadi `baca-perkakas`/
+ * `perkakas` — domain benda mati Tools, bukan lagi serangga, lihat §3B.4.) **Frasa 2-3 kata DIKONSTRUKSI natural per-item**
  * (bukan cuma copy `item.en` mentah spt Little Stars, krn Starter emang
  * wajib naik ke unit FRASA) — pola bervariasi per domain sesuai kealamian
  * bahasa Inggrisnya sendiri (sama prinsip `baca-tempat` yg SUDAH mencampur
@@ -14373,7 +14515,7 @@ export const READING_TOPICS_STARTER: ReadingWordTopic[] = [
     desc: '10 frasa',
     items: [
       { en: 'At The Park', id: 'Di Taman', emoji: '🏞️' },
-      { en: 'At The Zoo', id: 'Di Kebun Binatang', emoji: '🦓' },
+      { en: 'At The Zoo', id: 'Di Kebun Binatang', emoji: '🐼' },
       { en: 'At The Beach', id: 'Di Pantai', emoji: '🏖️' },
       { en: 'At The Market', id: 'Di Pasar', emoji: '🛒' },
       { en: 'At The Hospital', id: 'Di Rumah Sakit', emoji: '🏥' },
@@ -14387,19 +14529,19 @@ export const READING_TOPICS_STARTER: ReadingWordTopic[] = [
   {
     id: 'baca-angka',
     title: 'Membaca Frasa: Angka (Reading Number Phrases)',
-    scene: '1️⃣1️⃣',
+    scene: '11',
     desc: '10 frasa',
     items: [
-      { en: 'Eleven Stickers', id: 'Sebelas Stiker', emoji: '1️⃣1️⃣' },
-      { en: 'Twelve Apples', id: 'Dua Belas Apel', emoji: '1️⃣2️⃣' },
-      { en: 'Thirteen Balloons', id: 'Tiga Belas Balon', emoji: '1️⃣3️⃣' },
-      { en: 'Fourteen Birds', id: 'Empat Belas Burung', emoji: '1️⃣4️⃣' },
-      { en: 'Fifteen Candies', id: 'Lima Belas Permen', emoji: '1️⃣5️⃣' },
-      { en: 'Sixteen Ants', id: 'Enam Belas Semut', emoji: '1️⃣6️⃣' },
-      { en: 'Seventeen Coins', id: 'Tujuh Belas Koin', emoji: '1️⃣7️⃣' },
-      { en: 'Eighteen Flowers', id: 'Delapan Belas Bunga', emoji: '1️⃣8️⃣' },
-      { en: 'Nineteen Crackers', id: 'Sembilan Belas Biskuit', emoji: '1️⃣9️⃣' },
-      { en: 'Twenty Fish', id: 'Dua Puluh Ikan', emoji: '2️⃣0️⃣' },
+      { en: 'Eleven Stickers', id: 'Sebelas Stiker', emoji: '11' },
+      { en: 'Twelve Apples', id: 'Dua Belas Apel', emoji: '12' },
+      { en: 'Thirteen Balloons', id: 'Tiga Belas Balon', emoji: '13' },
+      { en: 'Fourteen Birds', id: 'Empat Belas Burung', emoji: '14' },
+      { en: 'Fifteen Candies', id: 'Lima Belas Permen', emoji: '15' },
+      { en: 'Sixteen Ants', id: 'Enam Belas Semut', emoji: '16' },
+      { en: 'Seventeen Coins', id: 'Tujuh Belas Koin', emoji: '17' },
+      { en: 'Eighteen Flowers', id: 'Delapan Belas Bunga', emoji: '18' },
+      { en: 'Nineteen Crackers', id: 'Sembilan Belas Biskuit', emoji: '19' },
+      { en: 'Twenty Fish', id: 'Dua Puluh Ikan', emoji: '20' },
     ],
   },
   {
@@ -14421,21 +14563,21 @@ export const READING_TOPICS_STARTER: ReadingWordTopic[] = [
     ],
   },
   {
-    id: 'baca-serangga',
-    title: 'Membaca Frasa: Serangga (Reading Insect Phrases)',
-    scene: '🦋',
+    id: 'baca-perkakas',
+    title: 'Membaca Frasa: Perkakas (Reading Tool Phrases)',
+    scene: '🧰',
     desc: '10 frasa',
     items: [
-      { en: 'The Butterfly', id: 'Kupu-kupu Itu', emoji: '🦋' },
-      { en: 'The Bee', id: 'Lebah Itu', emoji: '🐝' },
-      { en: 'The Ant', id: 'Semut Itu', emoji: '🐜' },
-      { en: 'The Ladybug', id: 'Kepik Itu', emoji: '🐞' },
-      { en: 'The Spider', id: 'Laba-laba Itu', emoji: '🕷️' },
-      { en: 'The Snail', id: 'Siput Itu', emoji: '🐌' },
-      { en: 'The Frog', id: 'Katak Itu', emoji: '🐸' },
-      { en: 'The Turtle', id: 'Kura-kura Itu', emoji: '🐢' },
-      { en: 'The Crab', id: 'Kepiting Itu', emoji: '🦀' },
-      { en: 'The Worm', id: 'Cacing Itu', emoji: '🪱' },
+      { en: 'The Hammer', id: 'Palu Itu', emoji: '🔨' },
+      { en: 'The Screwdriver', id: 'Obeng Itu', emoji: '🪛' },
+      { en: 'The Wrench', id: 'Kunci Inggris Itu', emoji: '🔧' },
+      { en: 'The Saw', id: 'Gergaji Itu', emoji: '🪚' },
+      { en: 'The Ladder', id: 'Tangga Itu', emoji: '🪜' },
+      { en: 'The Toolbox', id: 'Kotak Perkakas Itu', emoji: '🧰' },
+      { en: 'The Bucket', id: 'Ember Itu', emoji: '🪣' },
+      { en: 'The Bolt', id: 'Baut Itu', emoji: '🔩' },
+      { en: 'The Rope', id: 'Tali Itu', emoji: '🪢' },
+      { en: 'The Flashlight', id: 'Senter Itu', emoji: '🔦' },
     ],
   },
   {
@@ -14482,7 +14624,7 @@ export const READING_TOPICS_STARTER: ReadingWordTopic[] = [
     items: [
       { en: 'The Coach', id: 'Pelatih Itu', emoji: '📣' },
       { en: 'The Classroom', id: 'Ruang Kelas Itu', emoji: '🏫' },
-      { en: 'My Friend', id: 'Temanku', emoji: '🧑‍🤝‍🧑' },
+      { en: 'My Friend', id: 'Temanku', emoji: '👥' },
       { en: 'The Principal', id: 'Kepala Sekolah Itu', emoji: '🧑‍💼' },
       { en: 'The Library', id: 'Perpustakaan Itu', emoji: '📚' },
       { en: 'My Lunchbox', id: 'Kotak Bekalku', emoji: '🍱' },
@@ -15161,7 +15303,7 @@ export const READING_TOPICS_EXPLORER: ReadingCheckTopic[] = [
       { emoji: '✉️', trueSentence: 'This is a card.', falseSentence: 'This is a candle.', id: 'Ini kartu.' },
       { emoji: '💌', trueSentence: 'This is an invitation.', falseSentence: 'This is a surprise.', id: 'Ini undangan.' },
       { emoji: '😲', trueSentence: 'This is a surprise.', falseSentence: 'This is an invitation.', id: 'Ini kejutan.' },
-      { emoji: '🧑‍🤝‍🧑', trueSentence: 'This is a guest.', falseSentence: 'This is a celebration.', id: 'Ini tamu.' },
+      { emoji: '👥', trueSentence: 'This is a guest.', falseSentence: 'This is a celebration.', id: 'Ini tamu.' },
       { emoji: '🥳', trueSentence: 'This is a celebration.', falseSentence: 'This is a guest.', id: 'Ini perayaan.' },
     ],
   },

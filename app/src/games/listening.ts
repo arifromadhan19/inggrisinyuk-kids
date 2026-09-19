@@ -26,7 +26,18 @@ import {
   resetSectionPlan,
   setSectionCursor,
 } from '../progress';
-import { listenAndRecordOnce, playCorrectTone, playTryAgainTone, speak, speakLocalized, speakSequence, sttSupported, wordMatchDetail } from '../speech';
+import {
+  listenAndRecordOnce,
+  playCorrectTone,
+  playTryAgainTone,
+  playWrongTone,
+  speak,
+  speakLocalized,
+  speakSequence,
+  sttSupported,
+  vibrateDevice,
+  wordMatchDetail,
+} from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { shuffle } from '../util';
 
@@ -136,7 +147,8 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
           fb.className = 'feedback good';
         } else {
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = 'Dengar lagi, yuk 💪';
           fb.className = 'feedback bad';
         }
@@ -192,7 +204,8 @@ export function runTantangan(container: HTMLElement, topic: ListeningTopic, onDo
           fb.className = 'feedback good';
         } else {
           btn.classList.add('wrong');
-          playTryAgainTone();
+          playWrongTone();
+          vibrateDevice(160);
           fb.textContent = 'Coba putar & dengar lagi 💪';
           fb.className = 'feedback bad';
         }
@@ -251,7 +264,8 @@ function wireQuizNav(goTo: (i: number) => void): void {
   setHandlers({ quizJump: (payload) => goTo(Number(payload)) });
 }
 
-const ANSWER_CARD_LETTERS = ['A', 'B', 'C', 'D'];
+/** 🔒 Lencana huruf A/B/C/D DIHAPUS TOTAL (permintaan user "hilangkan
+ *  A,B,C,D") — gambar+label sudah cukup jelas. */
 function answerCardsHtml(options: { emoji: string; label: string }[], action: string): string {
   return `<div class="opt-grid">
     ${options
@@ -261,7 +275,6 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
         <span class="answer-card-emoji" aria-hidden="true">${o.emoji}</span>
         <span class="answer-card-bottom">
           <span class="answer-card-label">${o.label}</span>
-          <span class="answer-card-badge" aria-hidden="true">${ANSWER_CARD_LETTERS[i] ?? i + 1}</span>
         </span>
       </button>`
       )
@@ -345,7 +358,7 @@ export function renderKenalanSentence(container: HTMLElement, topic: ListeningIt
           .map(
             (it, i) => `
           <div class="primer-item">
-            <div style="font-size:26px">${it.emoji}</div>
+            <div class="primer-ic">${it.emoji}</div>
             <div class="txt"><b>${it.example.en}</b><span>${it.example.id}</span></div>
             <div class="mini-play${doneCls(i, 'listen')}" data-action="playSentence" data-payload="${i}">🔊</div>
             ${sttSupported ? `<div class="mini-play${doneCls(i, 'mic')}" id="micMini${i}" data-action="micSentence" data-payload="${i}">🎤</div>` : ''}
@@ -568,6 +581,8 @@ function runItemMiniGame(
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
+      playWrongTone();
+      vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
     }
@@ -708,6 +723,8 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningI
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
+      playWrongTone();
+      vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
     }
@@ -941,7 +958,6 @@ function runSusunKalimatSentence(
         <span class="stage-badge">🎧 Dengar &amp; Susun</span>
         ${quizNavHtml(round, items.length, susunStatus)}
         <div class="id-text">Dengarkan kalimatnya, lalu susun jadi kalimat yang kamu dengar · ${round + 1} dari ${items.length}</div>
-        <div class="big-emoji" style="font-size:36px;">${ex.emoji}</div>
         <div class="speak-row">
           <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button>
           ${answered ? '' : petunjukButtonHtml(revealed)}
@@ -1016,7 +1032,6 @@ function runSusunKalimatSentence(
       const correct = built.toLowerCase() === words.join(' ').toLowerCase();
       if (correct) {
         recordAttempt(true);
-        container.querySelector<HTMLElement>('.big-emoji')?.classList.add('win-burst');
         playCorrectTone();
         fireConfetti();
         fb.textContent = pickPraise(level);
@@ -1198,7 +1213,8 @@ export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTop
             fb.textContent = pickPraise(level);
             fb.className = 'feedback good';
           } else {
-            playTryAgainTone();
+            playWrongTone();
+            vibrateDevice(160);
             fb.textContent = pickEncourage(level);
             fb.className = 'feedback bad';
           }
@@ -1341,7 +1357,8 @@ export function runTantanganDialogue(container: HTMLElement, topic: ListeningDia
             fb.textContent = pickPraise(level);
             fb.className = 'feedback good';
           } else {
-            playTryAgainTone();
+            playWrongTone();
+            vibrateDevice(160);
             fb.textContent = pickEncourage(level);
             fb.className = 'feedback bad';
           }

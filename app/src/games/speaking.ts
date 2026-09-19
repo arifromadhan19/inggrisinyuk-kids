@@ -13,7 +13,18 @@ import {
   resetSectionPlan,
   setSectionCursor,
 } from '../progress';
-import { listenAndRecordOnce, playCorrectTone, playTryAgainTone, speak, speakLocalized, speakSequence, sttSupported, wordMatchDetail } from '../speech';
+import {
+  listenAndRecordOnce,
+  playCorrectTone,
+  playTryAgainTone,
+  playWrongTone,
+  speak,
+  speakLocalized,
+  speakSequence,
+  sttSupported,
+  vibrateDevice,
+  wordMatchDetail,
+} from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
 import { shuffle } from '../util';
@@ -174,7 +185,7 @@ export function runTantangan(container: HTMLElement, topic: SpeakingTopic, onDon
     const q = topic.roleplay[turn];
     container.innerHTML = `
       <span class="stage-badge">🌟 Mini-Roleplay</span>
-      <div class="turn-dots">${topic.roleplay.map((_, i) => `<div class="turn-dot ${i <= turn ? 'on' : ''}"></div>`).join('')}</div>
+      <div class="turn-dots">${topic.roleplay.map((_, i) => `<div class="turn-dot ${i <= turn ? 'on' : ''}${i === turn ? ' current' : ''}"></div>`).join('')}</div>
       <div class="id-text">Giliran ${turn + 1} dari ${topic.roleplay.length}</div>
       <div class="en-text">🦁 "${q}"</div>
       <div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar Lagi</button></div>
@@ -341,7 +352,8 @@ function buildPhrasePlan(topic: SpeakingPhraseTopic): LatihanPlanSlot[] {
   return shuffle(topic.items.map((_, i) => i)).map((item) => ({ kind: 'hear', item }));
 }
 
-const ANSWER_CARD_LETTERS = ['A', 'B', 'C', 'D'];
+/** 🔒 Lencana huruf A/B/C/D DIHAPUS TOTAL (permintaan user "hilangkan
+ *  A,B,C,D") — gambar+label sudah cukup jelas. */
 function answerCardsHtml(options: { emoji: string; label: string }[], action: string): string {
   return `<div class="opt-grid">
     ${options
@@ -351,7 +363,6 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
         <span class="answer-card-emoji" aria-hidden="true">${o.emoji}</span>
         <span class="answer-card-bottom">
           <span class="answer-card-label">${o.label}</span>
-          <span class="answer-card-badge" aria-hidden="true">${ANSWER_CARD_LETTERS[i] ?? i + 1}</span>
         </span>
       </button>`
       )
@@ -435,7 +446,7 @@ export function renderKenalanPhrase(container: HTMLElement, topic: SpeakingPhras
           .map(
             (it, i) => `
           <div class="primer-item">
-            <div style="font-size:26px">${it.emoji}</div>
+            <div class="primer-ic">${it.emoji}</div>
             <div class="txt"><b>${it.phrase.en}</b><span>${it.phrase.id}</span></div>
             <div class="mini-play${doneCls(i, 'listen')}" data-action="playPhrase" data-payload="${i}">🔊</div>
             ${sttSupported ? `<div class="mini-play${doneCls(i, 'mic')}" id="micMini${i}" data-action="micPhrase" data-payload="${i}">🎤</div>` : ''}
@@ -602,6 +613,8 @@ function runPhraseMiniGame(container: HTMLElement, topic: SpeakingPhraseTopic, i
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
+      playWrongTone();
+      vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
     }
@@ -1321,7 +1334,7 @@ export function renderKenalanStory(container: HTMLElement, topic: SpeakingStoryT
           .map(
             (s, i) => `
           <div class="primer-item" style="align-items:flex-start">
-            <div style="font-size:26px">${s.emoji}</div>
+            <div class="primer-ic">${s.emoji}</div>
             <div class="txt">
               ${s.lines.map((l) => `<div><b>${l.en}</b><span>${l.id}</span></div>`).join('')}
               <div class="dialogue-line" style="margin-top:6px">❓ ${s.question.en}</div>
@@ -1505,6 +1518,8 @@ function runStoryMiniGame(
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
+      playWrongTone();
+      vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
     }

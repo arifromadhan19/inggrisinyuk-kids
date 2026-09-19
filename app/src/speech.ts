@@ -646,10 +646,17 @@ function getAudioCtx(): AudioContext | null {
   }
 }
 
-function playTone(ctx: AudioContext, freq: number, startOffset: number, duration: number, peakGain: number): void {
+function playTone(
+  ctx: AudioContext,
+  freq: number,
+  startOffset: number,
+  duration: number,
+  peakGain: number,
+  type: OscillatorType = 'sine'
+): void {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  osc.type = 'sine';
+  osc.type = type;
   osc.frequency.value = freq;
   const t0 = ctx.currentTime + startOffset;
   gain.gain.setValueAtTime(0, t0);
@@ -674,13 +681,35 @@ export function playCorrectTone(): void {
   }
 }
 
-/** Nada jawaban kurang tepat — 1 nada rendah & lembut (BUKAN buzzer/alarm
- *  yang mengagetkan — CLAUDE.md poin 1: hindari nuansa menegangkan). */
+/** Nada jawaban kurang tepat versi LEMBUT (BUKAN buzzer/alarm) — SEKARANG
+ *  KHUSUS jalur skor mic/Speaking (`scoreMic`/`wordMatchDetail`, "Latihan
+ *  Penggunaan") yang TETAP non-punitive (CLAUDE.md "🔒 Aturan Wajib:
+ *  Notifikasi Jawaban Salah" — pengecualian eksplisit Speaking, krn ucapan
+ *  tidak pernah biner benar/salah). Semua jalur LAIN (MCQ/eja/susun kalimat/
+ *  match) pakai `playWrongTone()` di bawah, bukan ini lagi. */
 export function playTryAgainTone(): void {
   const ctx = getAudioCtx();
   if (!ctx) return;
   try {
     playTone(ctx, 293.66, 0, 0.22, 0.1); // D4, lembut
+  } catch {
+    /* diabaikan dengan sengaja — animasi & teks tetap tampil tanpa nada */
+  }
+}
+
+/** Nada jawaban SALAH — "tetot", 2 nada pendek turun bertekstur square (buzzer
+ *  ringan, BUKAN sine lembut lagi) — permintaan user membalik kebijakan lama
+ *  ("hindari buzzer/alarm"): sekarang notifikasi salah WAJIB jelas kedengaran
+ *  beda dari benar, dipasangkan SELALU dgn `vibrateDevice()` + flash merah
+ *  CSS (`.wrong`/`.is-wrong`) di tiap call site — lihat CLAUDE.md "🔒 Aturan
+ *  Wajib: Notifikasi Jawaban Salah". TIDAK dipakai di jalur skor mic/Speaking
+ *  (tetap `playTryAgainTone()` di atas, satu-satunya pengecualian). */
+export function playWrongTone(): void {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  try {
+    playTone(ctx, 329.63, 0, 0.11, 0.16, 'square'); // "te"
+    playTone(ctx, 220, 0.1, 0.16, 0.16, 'square'); // "tot"
   } catch {
     /* diabaikan dengan sengaja — animasi & teks tetap tampil tanpa nada */
   }

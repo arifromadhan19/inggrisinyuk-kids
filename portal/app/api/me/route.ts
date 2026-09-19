@@ -45,7 +45,7 @@ export const GET = withErrorHandling(async (): Promise<NextResponse> => {
   }
 
   return NextResponse.json({
-    parent: { id: parent.id, phone: parent.phone, email: parent.email },
+    parent: { id: parent.id, phone: parent.phone, email: parent.email, createdAt: parent.createdAt.toISOString() },
     child: child
       ? {
           id: child.id,

@@ -36,7 +36,7 @@
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
-import { playCorrectTone, playTryAgainTone } from '../speech';
+import { playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
@@ -194,6 +194,9 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
   let opened: number[] = [];
   let score = 0;
   let busy = false;
+  // 🔒 Indeks 2 kartu yang lagi di-flash MERAH (CLAUDE.md "🔒 Aturan Wajib:
+  // Notifikasi Jawaban Salah") — kosong lagi begitu ditutup.
+  let wrongPair: number[] = [];
 
   function buildCards(w: MemoryWord[]): MemoryCard[] {
     return shuffle(
@@ -223,7 +226,7 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
             const isOpen = c.matched || opened.includes(i);
             const label = cardLabel(c);
             return `
-            <button class="mm-card ${isOpen ? 'is-open' : ''} ${c.matched ? 'is-matched' : ''}" type="button"
+            <button class="mm-card ${isOpen ? 'is-open' : ''} ${c.matched ? 'is-matched' : ''} ${wrongPair.includes(i) ? 'is-wrong' : ''}" type="button"
               data-action="flip" data-payload="${i}" ${isOpen ? 'disabled' : ''} aria-label="${isOpen ? label.text : 'Kartu tertutup'}">
               ${
                 isOpen
@@ -263,11 +266,23 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
         }
       } else {
         recordAttempt(false, GAME_KEY);
-        playTryAgainTone();
+        playWrongTone();
+        vibrateDevice(160);
         if (fb) {
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
+        // Flash merah dulu selagi 2 kartu masih terbuka, baru ditutup lagi
+        // (CLAUDE.md "🔒 Aturan Wajib: Notifikasi Jawaban Salah").
+        wrongPair = [a, b];
+        paint();
+        setTimeout(() => {
+          wrongPair = [];
+          opened = [];
+          busy = false;
+          paint();
+        }, 380);
+        return;
       }
       opened = [];
       busy = false;
@@ -351,7 +366,7 @@ export function runMemoryMatch(container: HTMLElement, onDone: OnDone, level: Le
       const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
       const meta = DIFFICULTY_META[node.difficulty];
       return `
-      <button class="raja-card map-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-speak)">
+      <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-speak)">
         ${badge}
         <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${node.emoji}</span></span>
         <h3>${node.place}</h3>
@@ -359,15 +374,21 @@ export function runMemoryMatch(container: HTMLElement, onDone: OnDone, level: Le
       </button>`;
     }).join('');
 
+    // 🔒 `current` = markas berikutnya yang belum ditaklukkan (posisi anak
+    // sekarang), permintaan user "beri pembeda di progress yang sedang
+    // disinggahi" — lihat komentar `.game-progress-dot.current` styles.css.
+    const nextIdx = JOURNEY_NODES.findIndex((_, i) => !visited.has(i));
     const dots = JOURNEY_NODES.map((_, i) => {
       const done = visited.has(i);
-      return `<span class="game-progress-dot${done ? ' done' : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
+      const cls = [done ? 'done' : '', i === nextIdx ? 'current' : ''].filter(Boolean).join(' ');
+      return `<span class="game-progress-dot${cls ? ' ' + cls : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
     }).join('');
 
     container.innerHTML = `
       <div class="raja-map-wrap">
         ${GAME_STAR_FIELD}
         <div class="card game-progress-card">
+          ${GAME_STAR_FIELD}
           <h2>Taklukkan markas satu per satu, ya!</h2>
           <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${visited.size} dari ${total}</span></div>
         </div>
