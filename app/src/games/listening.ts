@@ -1151,6 +1151,20 @@ export function runLatihanIntiSentence(
       fireConfetti();
       fb.textContent = pickPraise(level);
       fb.className = 'feedback good';
+      // Permintaan user: munculkan teks Inggris+Indonesia begitu jawaban
+      // BENAR (independen dari "💡 Petunjuk" pra-jawab) — skip kalau Petunjuk
+      // sudah dipakai (teks yg sama sudah tampil di atas, jangan duplikat).
+      // Teks Inggris dikecilkan sedikit drpd `.en-text` default (clamp
+      // 1.25–1.625rem) — permintaan user "kecilkan sedikit".
+      if (!revealedThisSlot) {
+        const line = item.practice ?? item.example;
+        const en = activity === 'hear' ? `${line.en} ${item.question.en}` : line.en;
+        const id = activity === 'hear' ? `${line.id} ${item.question.id}` : line.id;
+        fb.insertAdjacentHTML(
+          'beforebegin',
+          `<div class="en-text" style="font-size:1.05rem">${en}</div><div class="id-text">${id}</div>`
+        );
+      }
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
@@ -1501,7 +1515,12 @@ function runSusunKalimatSentence(
         // Permintaan user: selain audio, terjemahan Indonesia-nya jg
         // ditampilkan sbg teks — DI BAWAH section susun kalimat (bank-row),
         // sebelum feedback pujian, cuma muncul begitu jawabannya BENAR.
-        fb.insertAdjacentHTML('beforebegin', `<div class="id-text" style="margin-top:6px">${ex.id}</div>`);
+        // Ukuran disamakan dgn `.feedback` (1.0625rem) — permintaan user
+        // "sedikit di besarkan setara ukuran pujian".
+        fb.insertAdjacentHTML(
+          'beforebegin',
+          `<div class="id-text" style="margin-top:6px;font-size:1.0625rem">${ex.id}</div>`
+        );
       } else {
         recordAttempt(false);
         // Permintaan user: "kasih getar dan sound tetot seperti di susun
