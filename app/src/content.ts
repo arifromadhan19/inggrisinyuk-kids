@@ -2665,14 +2665,14 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Head',
         id: 'Kepala',
-        emoji: '🙂',
-        example: { en: 'I nod my head.', id: 'Aku menganggukkan kepalaku.', emoji: '🙂' },
+        emoji: '🙇',
+        example: { en: 'I nod my head.', id: 'Aku menganggukkan kepalaku.', emoji: '🙇' },
         practice: { en: 'She nods her head up and down.', id: 'Dia mengangguk-anggukkan kepalanya.' },
         question: {
           en: 'What does she nod?',
           id: 'Apa yang dia anggukkan?',
           options: [
-            { emoji: '🙂', text: 'Head', ok: true },
+            { emoji: '🙇', text: 'Head', ok: true },
             { emoji: '🙌', text: 'Hands', ok: false },
             { emoji: '👣', text: 'Feet', ok: false },
             { emoji: '👃', text: 'Nose', ok: false },
@@ -2725,7 +2725,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           options: [
             { emoji: '🦶', text: 'Toes', ok: true },
             { emoji: '👣', text: 'Feet', ok: false },
-            { emoji: '🫣', text: 'Eyes', ok: false },
+            { emoji: '👀', text: 'Eyes', ok: false },
             { emoji: '👂', text: 'Ears', ok: false },
           ],
         },
@@ -2758,7 +2758,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           id: 'Apa yang dia tutup?',
           options: [
             { emoji: '👂', text: 'Ears', ok: true },
-            { emoji: '🫣', text: 'Eyes', ok: false },
+            { emoji: '👀', text: 'Eyes', ok: false },
             { emoji: '👃', text: 'Nose', ok: false },
             { emoji: '👣', text: 'Feet', ok: false },
           ],
@@ -2775,7 +2775,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           id: 'Apa yang dia buka?',
           options: [
             { emoji: '👄', text: 'Mouth', ok: true },
-            { emoji: '🫣', text: 'Eyes', ok: false },
+            { emoji: '👀', text: 'Eyes', ok: false },
             { emoji: '🙌', text: 'Hands', ok: false },
             { emoji: '🤷', text: 'Shoulders', ok: false },
           ],
