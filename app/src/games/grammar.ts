@@ -250,6 +250,37 @@ function wireQuizNav(goTo: (i: number) => void): void {
   setHandlers({ quizJump: (payload) => goTo(Number(payload)) });
 }
 
+/**
+ * "Selesai ✅" di `roundActionsHtml` HANYA boleh muncul kalau SEMUA soal di
+ * section ini sudah dikerjakan — bukan cuma soal yang SEDANG dijawab
+ * kebetulan berada di posisi TERAKHIR (permintaan user, bug: quiz-dot boleh
+ * dilompat bebas ke soal mana pun, jadi anak yang lompat langsung ke soal
+ * terakhir & menjawabnya BISA dapat "Selesai" walau soal 1–9 belum pernah
+ * disentuh). Cek lewat `statusOf` yang SAMA dgn yang dikirim ke
+ * `quizNavHtml` (st===2 tiap slot), BUKAN `round === total - 1` lagi —
+ * berlaku di SEMUA skill (Vocab/Listening/Reading/Grammar/Speaking) yang
+ * punya quiz-dot bebas lompat.
+ */
+function allSlotsDone(total: number, statusOf: (i: number) => 0 | 1 | 2): boolean {
+  for (let i = 0; i < total; i++) if (statusOf(i) !== 2) return false;
+  return true;
+}
+
+/**
+ * Tombol "Lanjut" (soal INI sudah dijawab) pindah ke soal BELUM dikerjakan
+ * berikutnya — bukan cuma `round + 1` polos, krn quiz-dot boleh dilompat
+ * bebas (mis. anak sempat jawab soal 10 duluan, 1–9 belum). Kalau SEMUA
+ * slot (0..total-1) sudah `st===2`, kembalikan `total` (sinyal section ini
+ * kelar — `draw()` akan panggil `onDone()`, pola SAMA persis sblm fix ini).
+ */
+function nextUnfinishedRound(round: number, total: number, statusOf: (i: number) => 0 | 1 | 2): number {
+  for (let step = 1; step <= total; step++) {
+    const i = (round + step) % total;
+    if (statusOf(i) !== 2) return i;
+  }
+  return total;
+}
+
 /** Ambil `count` item dari `items`, SEMUA item muncul dulu sebelum ada yang
  *  berulang — duplikat lokal dari pola `pickItemsForCount` Vocab/Listening/
  *  Reading. */
@@ -656,11 +687,11 @@ export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatt
           activity: 'hear-to-qty',
           correct,
         });
-        fb.insertAdjacentHTML('afterend', roundActionsHtml(round === order.length - 1));
+        fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
         setHandlers({
           tryAgainRound: () => redraw(),
           nextRound: () => {
-            round += 1;
+            round = nextUnfinishedRound(round, order.length, slotStatus);
             setSectionCursor('grammar', topic.id, 'latihan', Math.min(round, order.length - 1));
             draw();
           },
@@ -792,11 +823,11 @@ export function runTantanganPattern(container: HTMLElement, topic: GrammarPatter
         activity: 'qty-to-hear',
         correct,
       });
-      fb.insertAdjacentHTML('afterend', roundActionsHtml(round === order.length - 1));
+      fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
       setHandlers({
         tryAgainRound: () => redraw(),
         nextRound: () => {
-          round += 1;
+          round = nextUnfinishedRound(round, order.length, slotStatus);
           setSectionCursor('grammar', topic.id, 'tantangan-pola', Math.min(round, order.length - 1));
           draw();
         },
@@ -1010,11 +1041,11 @@ export function runLatihanIntiTransform(container: HTMLElement, topic: GrammarTr
           correct,
           hintUsed: hintUsedThisSlot,
         });
-        fb.insertAdjacentHTML('afterend', roundActionsHtml(round === order.length - 1));
+        fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
         setHandlers({
           tryAgainRound: () => redraw(),
           nextRound: () => {
-            round += 1;
+            round = nextUnfinishedRound(round, order.length, slotStatus);
             setSectionCursor('grammar', topic.id, 'latihan', Math.min(round, order.length - 1));
             draw();
           },
@@ -1130,11 +1161,11 @@ export function runTantanganTransform(container: HTMLElement, topic: GrammarTran
           correct: correctPick,
           hintUsed: hintUsedThisSlot,
         });
-        fb.insertAdjacentHTML('afterend', roundActionsHtml(round === order.length - 1));
+        fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
         setHandlers({
           tryAgainRound: () => redraw(),
           nextRound: () => {
-            round += 1;
+            round = nextUnfinishedRound(round, order.length, slotStatus);
             setSectionCursor('grammar', topic.id, 'tantangan-transform', Math.min(round, order.length - 1));
             draw();
           },

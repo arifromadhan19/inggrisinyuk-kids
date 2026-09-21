@@ -146,6 +146,37 @@ function wireQuizNav(goTo: (i: number) => void): void {
   });
 }
 
+/**
+ * "Selesai ✅" di `roundActionsHtml` HANYA boleh muncul kalau SEMUA soal di
+ * section ini sudah dikerjakan — bukan cuma soal yang SEDANG dijawab
+ * kebetulan berada di posisi TERAKHIR (permintaan user, bug: quiz-dot boleh
+ * dilompat bebas ke soal mana pun, jadi anak yang lompat langsung ke soal
+ * terakhir & menjawabnya BISA dapat "Selesai" walau soal 1–9 belum pernah
+ * disentuh). Cek lewat `statusOf` yang SAMA dgn yang dikirim ke
+ * `quizNavHtml` (st===2 tiap slot), BUKAN `round === total - 1` lagi —
+ * berlaku di SEMUA skill (Vocab/Listening/Reading/Grammar/Speaking) yang
+ * punya quiz-dot bebas lompat.
+ */
+function allSlotsDone(total: number, statusOf: (i: number) => 0 | 1 | 2): boolean {
+  for (let i = 0; i < total; i++) if (statusOf(i) !== 2) return false;
+  return true;
+}
+
+/**
+ * Tombol "Lanjut" (soal INI sudah dijawab) pindah ke soal BELUM dikerjakan
+ * berikutnya — bukan cuma `round + 1` polos, krn quiz-dot boleh dilompat
+ * bebas (mis. anak sempat jawab soal 10 duluan, 1–9 belum). Kalau SEMUA
+ * slot (0..total-1) sudah `st===2`, kembalikan `total` (sinyal section ini
+ * kelar — `draw()` akan panggil `onDone()`, pola SAMA persis sblm fix ini).
+ */
+function nextUnfinishedRound(round: number, total: number, statusOf: (i: number) => 0 | 1 | 2): number {
+  for (let step = 1; step <= total; step++) {
+    const i = (round + step) % total;
+    if (statusOf(i) !== 2) return i;
+  }
+  return total;
+}
+
 export function renderKenalan(container: HTMLElement, topic: VocabTopic, level: LevelKey): void {
   // Warna tombol berubah begitu sudah ditap (permintaan user) — status murni
   // visual "sudah dicoba" dari `hasWordInteraction` (progress.ts), TIDAK
@@ -1404,14 +1435,14 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
       correct,
       hintUsed: hintUsedThisSlot,
     });
-    fb.insertAdjacentHTML('afterend', roundActionsHtml(round === order.length - 1));
+    fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
     setHandlers({
       tryAgainRound: () => redraw(),
       // BEDA dari `goTo` (nav bebas, di-clamp ke slot terakhir) — tombol
       // pasca-jawab di soal TERAKHIR harus benar-benar menutup section
       // (round jadi >= order.length, ketangkap guard di `draw()`).
       nextRound: () => {
-        round += 1;
+        round = nextUnfinishedRound(round, order.length, slotStatus);
         setSectionCursor('vocabulary', topic.id, 'latihan', Math.min(round, order.length - 1));
         draw();
       },
@@ -1994,7 +2025,7 @@ export function runEjaKata(
             activity: 'eja',
             correct,
           });
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(round === items.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(items.length, slotStatus)));
           setHandlers({
             tryAgainRound: () => {
               // `answered` HARUS direset SEBELUM `paint(it)` (bug: kalau
@@ -2007,7 +2038,7 @@ export function runEjaKata(
               paint(it);
             },
             nextRound: () => {
-              round += 1;
+              round = nextUnfinishedRound(round, items.length, slotStatus);
               setSectionCursor('vocabulary', topicId, 'tantangan-eja', Math.min(round, items.length - 1));
               draw();
             },
@@ -2046,7 +2077,7 @@ function runUcapan(container: HTMLElement, topicId: string, allItems: VocabItem[
   }
 
   function advance(): void {
-    round += 1;
+    round = nextUnfinishedRound(round, items.length, ucapStatus);
     setSectionCursor('vocabulary', topicId, 'tantangan-ucap', Math.min(round, items.length - 1));
     draw();
   }
@@ -2122,7 +2153,7 @@ function runUcapan(container: HTMLElement, topicId: string, allItems: VocabItem[
             const fb = container.querySelector<HTMLElement>('#fb')!;
             fb.textContent = perfect ? pickPraise(level) : pickEncourage(level);
             fb.className = 'feedback good';
-            fb.insertAdjacentHTML('afterend', roundActionsHtml(round === items.length - 1));
+            fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(items.length, ucapStatus)));
             setHandlers({
               tryAgainRound: () => drawUcap(it),
               nextRound: advance,
@@ -2391,7 +2422,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
         activity: 'susun',
         correct,
       });
-      fb.insertAdjacentHTML('afterend', roundActionsHtml(round === items.length - 1));
+      fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(items.length, susunStatus)));
       setHandlers({
         tryAgainRound: () => {
           answered = false;
@@ -2405,7 +2436,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
           paint();
         },
         nextRound: () => {
-          round += 1;
+          round = nextUnfinishedRound(round, items.length, susunStatus);
           setSectionCursor('vocabulary', topicId, 'tantangan-susun', Math.min(round, items.length - 1));
           draw();
         },

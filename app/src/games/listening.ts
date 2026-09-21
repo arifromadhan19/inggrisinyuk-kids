@@ -427,6 +427,37 @@ function wireQuizNav(goTo: (i: number) => void): void {
 }
 
 /**
+ * "Selesai ✅" di `roundActionsHtml` HANYA boleh muncul kalau SEMUA soal di
+ * section ini sudah dikerjakan — bukan cuma soal yang SEDANG dijawab
+ * kebetulan berada di posisi TERAKHIR (permintaan user, bug: quiz-dot boleh
+ * dilompat bebas ke soal mana pun, jadi anak yang lompat langsung ke soal
+ * terakhir & menjawabnya BISA dapat "Selesai" walau soal 1–9 belum pernah
+ * disentuh). Cek lewat `statusOf` yang SAMA dgn yang dikirim ke
+ * `quizNavHtml` (st===2 tiap slot), BUKAN posisi `round === total - 1` lagi
+ * — berlaku di SEMUA skill (Vocab/Listening/Reading/Grammar/Speaking) yang
+ * punya quiz-dot bebas lompat.
+ */
+function allSlotsDone(total: number, statusOf: (i: number) => 0 | 1 | 2): boolean {
+  for (let i = 0; i < total; i++) if (statusOf(i) !== 2) return false;
+  return true;
+}
+
+/**
+ * Tombol "Lanjut" (soal INI sudah dijawab) pindah ke soal BELUM dikerjakan
+ * berikutnya — bukan cuma `round + 1` polos, krn quiz-dot boleh dilompat
+ * bebas (mis. anak sempat jawab soal 10 duluan, 1–9 belum). Kalau SEMUA
+ * slot (0..total-1) sudah `st===2`, kembalikan `total` (sinyal section ini
+ * kelar — `draw()` akan panggil `onDone()`, pola SAMA persis sblm fix ini).
+ */
+function nextUnfinishedRound(round: number, total: number, statusOf: (i: number) => 0 | 1 | 2): number {
+  for (let step = 1; step <= total; step++) {
+    const i = (round + step) % total;
+    if (statusOf(i) !== 2) return i;
+  }
+  return total;
+}
+
+/**
  * 🔒 Revisi user: "ketika jawabannya warna maka mudah mencari icon nya,
  * maka ketika mudah tambahkan icon, ini berlaku untuk yang lain juga" —
  * `LEAKY_EMOJI_WORDS`/`isLeakyEmojiWord`/`correctOptionIsLeaky` (port dari
@@ -752,6 +783,8 @@ function runItemMiniGame(
   // `eliminatedThisSlot` di Latihan Inti).
   let eliminated: number[] = [];
 
+  const kenalanStatus = (i: number): 0 | 1 | 2 => getSlot('listening', topic.id, 'kenalan', i)?.st ?? 0;
+
   const playPrompt = () => {
     const item = topic.items[current];
     speakSequence([item.example.en, item.question.en]);
@@ -780,7 +813,7 @@ function runItemMiniGame(
       </div>
       ${
         isLittleStars
-          ? quizNavHtml(current, topic.items.length, (i) => getSlot('listening', topic.id, 'kenalan', i)?.st ?? 0)
+          ? quizNavHtml(current, topic.items.length, kenalanStatus)
           : ''
       }
       <div class="speak-row">
@@ -855,7 +888,7 @@ function runItemMiniGame(
       fb.className = 'feedback bad';
     }
     recordEvent({ kind: 'answer', skill: 'listening', topicId: topic.id, itemRef: item.example.en, activity: 'sentence-mini', correct });
-    const isLast = !isLittleStars || current === topic.items.length - 1;
+    const isLast = !isLittleStars || allSlotsDone(topic.items.length, kenalanStatus);
     fb.insertAdjacentHTML('afterend', roundActionsHtml(isLast));
     setHandlers({
       tryAgainRound: () => {
@@ -863,7 +896,8 @@ function runItemMiniGame(
         paint();
       },
       nextRound: () => {
-        if (isLittleStars && current < topic.items.length - 1) goTo(current + 1);
+        const next = isLittleStars ? nextUnfinishedRound(current, topic.items.length, kenalanStatus) : topic.items.length;
+        if (next < topic.items.length) goTo(next);
         else onBack();
       },
     });
@@ -1078,11 +1112,11 @@ export function runLatihanIntiSentence(
       correct,
       hintUsed: hintUsedThisSlot,
     });
-    fb.insertAdjacentHTML('afterend', roundActionsHtml(round === order.length - 1));
+    fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
     setHandlers({
       tryAgainRound: () => redraw(),
       nextRound: () => {
-        round += 1;
+        round = nextUnfinishedRound(round, order.length, slotStatus);
         setSectionCursor('listening', topic.id, 'latihan', Math.min(round, order.length - 1));
         draw();
       },
@@ -1421,7 +1455,7 @@ function runSusunKalimatSentence(
         activity: 'susun',
         correct,
       });
-      fb.insertAdjacentHTML('afterend', roundActionsHtml(round === items.length - 1));
+      fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(items.length, susunStatus)));
       setHandlers({
         tryAgainRound: () => {
           answered = false;
@@ -1430,7 +1464,7 @@ function runSusunKalimatSentence(
           paint();
         },
         nextRound: () => {
-          round += 1;
+          round = nextUnfinishedRound(round, items.length, susunStatus);
           setSectionCursor('listening', topicId, 'tantangan-susun', Math.min(round, items.length - 1));
           draw();
         },
@@ -1619,7 +1653,7 @@ export function runTantanganNote(
             fb.textContent = pickEncourage(level);
             fb.className = 'feedback bad';
           }
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(cursor === gaps.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(gaps.length, gapStatus)));
           setHandlers({
             tryAgainRound: () => {
               answered = false;
@@ -1627,7 +1661,7 @@ export function runTantanganNote(
               paint();
             },
             nextRound: () => {
-              cursor += 1;
+              cursor = nextUnfinishedRound(cursor, gaps.length, gapStatus);
               setSectionCursor('listening', topicId, section, Math.min(cursor, gaps.length - 1));
               draw();
             },
@@ -1785,7 +1819,7 @@ export function runTantanganDialogue(
             fb.textContent = pickEncourage(level);
             fb.className = 'feedback bad';
           }
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(cursor === qs.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(qs.length, qStatus)));
           setHandlers({
             tryAgainRound: () => {
               answered = false;
@@ -1793,7 +1827,7 @@ export function runTantanganDialogue(
               paint();
             },
             nextRound: () => {
-              cursor += 1;
+              cursor = nextUnfinishedRound(cursor, qs.length, qStatus);
               setSectionCursor('listening', topicId, section, Math.min(cursor, qs.length - 1));
               draw();
             },

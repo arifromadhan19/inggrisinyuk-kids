@@ -343,6 +343,37 @@ function wireQuizNav(goTo: (i: number) => void): void {
   setHandlers({ quizJump: (payload) => goTo(Number(payload)) });
 }
 
+/**
+ * "Selesai ✅" di `roundActionsHtml` HANYA boleh muncul kalau SEMUA soal di
+ * section ini sudah dikerjakan — bukan cuma soal yang SEDANG dijawab
+ * kebetulan berada di posisi TERAKHIR (permintaan user, bug: quiz-dot boleh
+ * dilompat bebas ke soal mana pun, jadi anak yang lompat langsung ke soal
+ * terakhir & menjawabnya BISA dapat "Selesai" walau soal 1–9 belum pernah
+ * disentuh). Cek lewat `statusOf` yang SAMA dgn yang dikirim ke
+ * `quizNavHtml` (st===2 tiap slot), BUKAN `round === total - 1` lagi —
+ * berlaku di SEMUA skill (Vocab/Listening/Reading/Grammar/Speaking) yang
+ * punya quiz-dot bebas lompat.
+ */
+function allSlotsDone(total: number, statusOf: (i: number) => 0 | 1 | 2): boolean {
+  for (let i = 0; i < total; i++) if (statusOf(i) !== 2) return false;
+  return true;
+}
+
+/**
+ * Tombol "Lanjut" (soal INI sudah dijawab) pindah ke soal BELUM dikerjakan
+ * berikutnya — bukan cuma `round + 1` polos, krn quiz-dot boleh dilompat
+ * bebas (mis. anak sempat jawab soal 10 duluan, 1–9 belum). Kalau SEMUA
+ * slot (0..total-1) sudah `st===2`, kembalikan `total` (sinyal section ini
+ * kelar — `draw()` akan panggil `onDone()`, pola SAMA persis sblm fix ini).
+ */
+function nextUnfinishedRound(round: number, total: number, statusOf: (i: number) => 0 | 1 | 2): number {
+  for (let step = 1; step <= total; step++) {
+    const i = (round + step) % total;
+    if (statusOf(i) !== 2) return i;
+  }
+  return total;
+}
+
 /** Plan `topic.items.length` slot diacak SEKALI & dipersist — supaya urutan
  *  soal STABIL lintas resume/lompat quiz-dot (bukan shuffle baru tiap
  *  render). Dipakai `runLatihanIntiPhrase`/`runTantanganPhrase` — masing²
@@ -739,7 +770,7 @@ export function runLatihanIntiPhrase(container: HTMLElement, topic: SpeakingPhra
           const fb = container.querySelector<HTMLElement>('#fb')!;
           fb.textContent = s.perfect ? pickPraise(level) : pickEncourage(level);
           fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(round === order.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
           setHandlers({
             replay: () => speak(target.phrase.en),
             playMine: () => {
@@ -747,7 +778,7 @@ export function runLatihanIntiPhrase(container: HTMLElement, topic: SpeakingPhra
             },
             tryAgainRound: () => draw(),
             nextRound: () => {
-              round += 1;
+              round = nextUnfinishedRound(round, order.length, slotStatus);
               setSectionCursor('speaking', topic.id, 'latihan', Math.min(round, order.length - 1));
               draw();
             },
@@ -888,7 +919,7 @@ export function runTantanganPhrase(container: HTMLElement, topic: SpeakingPhrase
           const fb = container.querySelector<HTMLElement>('#fb')!;
           fb.textContent = s.perfect ? pickPraise(level) : pickEncourage(level);
           fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(round === order.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
           setHandlers({
             playMine: () => {
               if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
@@ -898,7 +929,7 @@ export function runTantanganPhrase(container: HTMLElement, topic: SpeakingPhrase
               paint();
             },
             nextRound: () => {
-              round += 1;
+              round = nextUnfinishedRound(round, order.length, slotStatus);
               setSectionCursor('speaking', topic.id, 'tantangan-recall', Math.min(round, order.length - 1));
               draw();
             },
@@ -1108,14 +1139,14 @@ export function runLatihanIntiInterview(container: HTMLElement, topic: SpeakingI
           const fb = container.querySelector<HTMLElement>('#fb')!;
           fb.textContent = pickPraise(level);
           fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(round === topic.turns.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(topic.turns.length, slotStatus)));
           setHandlers({
             playMine: () => {
               if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
             },
             tryAgainRound: () => draw(),
             nextRound: () => {
-              round += 1;
+              round = nextUnfinishedRound(round, topic.turns.length, slotStatus);
               setSectionCursor('speaking', topic.id, 'latihan', Math.min(round, topic.turns.length - 1));
               draw();
             },
@@ -1225,7 +1256,7 @@ export function runTantanganInterview(container: HTMLElement, topic: SpeakingInt
           const fb = container.querySelector<HTMLElement>('#fb')!;
           fb.textContent = pickPraise(level);
           fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(round === topic.turns.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(topic.turns.length, slotStatus)));
           setHandlers({
             playMine: () => {
               if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
@@ -1235,7 +1266,7 @@ export function runTantanganInterview(container: HTMLElement, topic: SpeakingInt
               paint();
             },
             nextRound: () => {
-              round += 1;
+              round = nextUnfinishedRound(round, topic.turns.length, slotStatus);
               setSectionCursor('speaking', topic.id, 'tantangan', Math.min(round, topic.turns.length - 1));
               draw();
             },
@@ -1627,7 +1658,7 @@ export function runLatihanIntiStory(container: HTMLElement, topic: SpeakingStory
           const fb = container.querySelector<HTMLElement>('#fb')!;
           fb.textContent = sc.perfect ? pickPraise(level) : pickEncourage(level);
           fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(round === topic.stories.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(topic.stories.length, slotStatus)));
           setHandlers({
             replay: () => speakSequence([...s.lines.map((l) => l.en), s.question.en]),
             playMine: () => {
@@ -1635,7 +1666,7 @@ export function runLatihanIntiStory(container: HTMLElement, topic: SpeakingStory
             },
             tryAgainRound: () => draw(),
             nextRound: () => {
-              round += 1;
+              round = nextUnfinishedRound(round, topic.stories.length, slotStatus);
               setSectionCursor('speaking', topic.id, 'latihan', Math.min(round, topic.stories.length - 1));
               draw();
             },
@@ -1750,14 +1781,14 @@ export function runTantanganStory(container: HTMLElement, topic: SpeakingStoryTo
           const fb = container.querySelector<HTMLElement>('#fb')!;
           fb.textContent = sc.perfect ? pickPraise(level) : pickEncourage(level);
           fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(round === topic.stories.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(topic.stories.length, slotStatus)));
           setHandlers({
             playMine: () => {
               if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
             },
             tryAgainRound: () => draw(),
             nextRound: () => {
-              round += 1;
+              round = nextUnfinishedRound(round, topic.stories.length, slotStatus);
               setSectionCursor('speaking', topic.id, 'tantangan', Math.min(round, topic.stories.length - 1));
               draw();
             },
