@@ -783,7 +783,6 @@ function runItemMiniGame(
           ? quizNavHtml(current, topic.items.length, (i) => getSlot('listening', topic.id, 'kenalan', i)?.st ?? 0)
           : ''
       }
-      <div class="id-text">Dengarkan dulu, lalu jawab pertanyaannya</div>
       <div class="speak-row">
         <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button>
         ${!isLittleStars && !answered ? petunjukButtonHtml(revealed) : ''}
