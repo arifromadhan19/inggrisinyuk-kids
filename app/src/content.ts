@@ -2665,14 +2665,14 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Head',
         id: 'Kepala',
-        emoji: '👤',
-        example: { en: 'I nod my head.', id: 'Aku menganggukkan kepalaku.', emoji: '👤' },
+        emoji: '🙂',
+        example: { en: 'I nod my head.', id: 'Aku menganggukkan kepalaku.', emoji: '🙂' },
         practice: { en: 'She nods her head up and down.', id: 'Dia mengangguk-anggukkan kepalanya.' },
         question: {
           en: 'What does she nod?',
           id: 'Apa yang dia anggukkan?',
           options: [
-            { emoji: '👤', text: 'Head', ok: true },
+            { emoji: '🙂', text: 'Head', ok: true },
             { emoji: '🙌', text: 'Hands', ok: false },
             { emoji: '👣', text: 'Feet', ok: false },
             { emoji: '👃', text: 'Nose', ok: false },
@@ -2708,7 +2708,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           options: [
             { emoji: '🦵', text: 'Knees', ok: true },
             { emoji: '🦶', text: 'Toes', ok: false },
-            { emoji: '👤', text: 'Head', ok: false },
+            { emoji: '🙂', text: 'Head', ok: false },
             { emoji: '🙌', text: 'Hands', ok: false },
           ],
         },
@@ -2794,7 +2794,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
             { emoji: '👃', text: 'Nose', ok: true },
             { emoji: '👂', text: 'Ears', ok: false },
             { emoji: '🦶', text: 'Toes', ok: false },
-            { emoji: '👤', text: 'Head', ok: false },
+            { emoji: '🙂', text: 'Head', ok: false },
           ],
         },
       },
@@ -2827,7 +2827,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           options: [
             { emoji: '👣', text: 'Feet', ok: true },
             { emoji: '🙌', text: 'Hands', ok: false },
-            { emoji: '👤', text: 'Head', ok: false },
+            { emoji: '🙂', text: 'Head', ok: false },
             { emoji: '👄', text: 'Mouth', ok: false },
           ],
         },
