@@ -1498,8 +1498,19 @@ function runSusunKalimatSentence(
         fb.textContent = pickPraise(level);
         fb.className = 'feedback good';
         speak(ex.en);
+        // Permintaan user: selain audio, terjemahan Indonesia-nya jg
+        // ditampilkan sbg teks — DI BAWAH section susun kalimat (bank-row),
+        // sebelum feedback pujian, cuma muncul begitu jawabannya BENAR.
+        fb.insertAdjacentHTML('beforebegin', `<div class="id-text" style="margin-top:6px">${ex.id}</div>`);
       } else {
         recordAttempt(false);
+        // Permintaan user: "kasih getar dan sound tetot seperti di susun
+        // kalimat di vocab" — pola SAMA PERSIS `runSusunKalimat` Vocab
+        // (CLAUDE.md "Notifikasi Jawaban Salah"), yang sebelumnya TIDAK
+        // ikut dipasang sesi format lama Listening ini.
+        container.querySelector('.answer-row')?.classList.add('is-wrong');
+        playWrongTone();
+        vibrateDevice(160);
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';
       }
