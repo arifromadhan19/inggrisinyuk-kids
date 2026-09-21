@@ -99,7 +99,7 @@ import {
 import type { AppState, LevelKey, LevelMeta, NavKey, RajaKey, Screen, SkillKey, SkillMeta } from './types';
 import { escapeHtml, qs } from './util';
 import { renderVoicePanel } from './voice-panel';
-import { applyDefaultRate, DEFAULT_RATE } from './speech';
+import { applyDefaultRate, DEFAULT_RATE, stopSpeaking } from './speech';
 
 const STEP_LABELS = ['Kenalan', 'Latihan Inti', 'Tantangan'];
 
@@ -683,6 +683,13 @@ function go(screen: Screen, extra?: Partial<AppState>): void {
 }
 
 function render(): void {
+  // Setiap pindah screen/step (back, keluar, tab lain, jumpStep/prevStep/
+  // nextStep — SEMUA lewat sini) WAJIB hentikan TTS yang mungkin masih
+  // bicara (mis. dialog/cerita panjang Listening yang belum selesai
+  // diputar) — permintaan user, `speech.ts` `stopSpeaking()`. Transisi soal
+  // ke soal DALAM 1 stage (games/*.ts `draw()`/`paint()` lokal) TIDAK lewat
+  // `render()`, jadi pujian TTS di jawaban benar tetap aman tidak keputus.
+  stopSpeaking();
   clearHandlers();
   setHandlers({
     navigate: (payload) => {
