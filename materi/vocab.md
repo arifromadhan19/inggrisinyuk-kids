@@ -577,6 +577,13 @@ Vocabulary sekarang **tuntas di 6 dari 6 level** — semua gap yang tersisa ada 
 
 **Urutan bertahap yang disarankan berikutnya** (belum dikerjakan, murni rekomendasi urutan, SEMUA di luar skill Vocabulary): (1) Listening Starter & Little Stars — menutup skill kedua yang PRD §4.1 janjikan utk kedua level ini, (2) Speaking/Grammar Starter — melengkapi 4 skill penuh level ini, (3) Listening/Speaking/Grammar/Reading Explorer/Adventurer/Achiever digenapkan ke ≥10 topik masing-masing.
 
+### 6.1 Backlog Mekanik Kesulitan (bukan gap konten — dicatat, belum dikerjakan)
+
+Beda dari §6 di atas (gap JUMLAH TOPIK), ini backlog soal MEKANIK/interaksi — sesi "analisis kesulitan setiap level" (2026) sudah membedakan Explorer/Adventurer/Achiever/Trailblazer via 4 sumbu (icon-removal Latihan Inti, kata jebakan Susun Kalimat, jumlah opsi MCQ, jumlah eliminasi Petunjuk, ambang reveal jawaban — SEMUA sudah diimplementasi & bertingkat sesuai tier Movers→Flyers→KET/PET, lihat `games/vocabulary.ts` `isAboveStarter`/`isFlyersOrAbove` & fungsi turunannya). SATU kandidat besar SENGAJA belum dikerjakan, dijadikan backlog atas permintaan user eksplisit:
+
+- **Recall murni (typed/diketik, bukan MCQ) di Trailblazer Latihan Inti** — niru "open cloze"/"note completion" Cambridge A2 Key(KET)/B1 Preliminary(PET): isi 1 kata TANPA pilihan ganda sama sekali, bukan cuma "hilangkan gambar" atau "nambah opsi/jebakan" (yang SEMUANYA tetap MCQ). Ini pembeda TERBESAR yang real institusi pakai justru di tier PALING atas (KET/PET), tapi BELUM diimplementasi krn 2 alasan: (1) app ini SENGAJA tap-based di semua level ("target tap besar", non-typing, kid-friendly) — memasukkan free-text typing di 1 level butuh keputusan produk eksplisit dulu (apakah Trailblazer 12+ th sudah pantas keluar dari pola ini, atau tetap tap-based tapi dgn mekanik lain yang setara "no options"), bukan penyesuaian kecil spt 4 sumbu yang sudah jalan; (2) perlu dipikirkan fallback utk perangkat/anak yang belum nyaman mengetik (spt `sttSupported` fallback di fitur mic) supaya tidak jadi dead-end.
+- Kalau user minta lanjut: mulai dari RISET dulu (spt pola sesi-sesi sebelumnya di dokumen ini) — cek exact task-shape "open cloze"/"note completion" KET/PET, baru desain mekanik tap-based yang setara (mis. drag-huruf ke slot kosong, bukan keyboard penuh) sebelum implementasi.
+
 ---
 
 ## 7. Verifikasi

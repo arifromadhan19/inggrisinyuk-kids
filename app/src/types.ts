@@ -46,6 +46,11 @@ export interface ListeningOption {
 
 export interface ListeningDrill {
   en: string;
+  /** Terjemahan Indonesia `en` — permintaan user "tambahkan petunjuk berupa
+   *  text en dan id" di Latihan Inti format LAMA, berlaku semua level
+   *  (Explorer/Adventurer): field BARU, diauthoring manual utk semua drill
+   *  existing (lihat `runLatihanInti` `games/listening.ts`). */
+  id: string;
   opts: ListeningOption[];
 }
 
@@ -57,7 +62,18 @@ export interface ListeningTopic {
   primer: { en: string; id: string }[];
   drill: ListeningDrill[];
   story: string[];
-  question: { en: string; opts: ListeningOption[] };
+  /** Opsional — kalau `story` ditulis sbg DIALOG 2 penutur, gender suara TTS
+   *  tiap baris (sejajar index `story`). Kosong = narasi 1 suara. */
+  storyVoices?: ('female' | 'male')[];
+  question: {
+    en: string;
+    id: string;
+    opts: ListeningOption[];
+    /** Kandidat opsi "jebakan" yang TIDAK disebut di audio (emoji+lbl wajib) —
+     *  Tantangan mengambil 1 acak tiap sesi & menyisipkannya ke kartu jawaban
+     *  (`runTantangan`). Opsional; kosong = tanpa jebakan acak. */
+    decoys?: ListeningOption[];
+  };
 }
 
 /**
@@ -86,6 +102,12 @@ export interface ListeningSentenceItem {
   id: string;
   emoji: string;
   example: VocabExample;
+  /** Kalimat ALTERNATIF utk Latihan Inti (bukan Kenalan/Tantangan) — inti
+   *  makna & jawaban `question` SAMA dgn `example`, tapi teks beda supaya
+   *  Latihan Inti bukan pengulangan persis Kenalan. Wajib ada di ≥7 dari 10
+   *  item/topik (`verify-content-duplicates.mjs`), sisanya boleh pakai
+   *  `example` apa adanya. */
+  practice?: { en: string; id: string };
   question: {
     en: string;
     id: string;
@@ -128,6 +150,9 @@ export interface ListeningNoteGap {
   options: string[];
   /** Jawaban benar — WAJIB salah satu isi `options`. */
   answer: string;
+  /** Kandidat opsi "jebakan" yang TIDAK disebut di audio — Tantangan
+   *  menyisipkan 1 acak ke kartu jawaban (`runTantanganNote`). Opsional. */
+  decoys?: string[];
 }
 
 export interface ListeningNoteTopic {
@@ -138,8 +163,10 @@ export interface ListeningNoteTopic {
   items: ListeningSentenceItem[];
   /** Judul catatan/form yang ditampilkan di Tantangan, mis. "📝 Catatan Kunjungan Dokter". */
   noteHeading: string;
-  /** 3–5 kalimat percakapan/monolog pendek yang diputar TTS — sumber jawaban semua gap. */
-  notePassage: { en: string; id: string }[];
+  /** 3–5 kalimat percakapan/monolog pendek yang diputar TTS — sumber jawaban semua gap.
+   *  `speaker` opsional: kalau SEMUA baris punya `speaker`, catatan dibacakan
+   *  sbg dialog 2 suara (wanita+pria); tanpa `speaker` = narasi 1 suara. */
+  notePassage: { en: string; id: string; speaker?: string }[];
   /** Field yang harus dilengkapi anak, urut sesuai urutan info di `notePassage`. */
   noteGaps: ListeningNoteGap[];
 }
@@ -180,6 +207,9 @@ export interface ListeningInferenceQuestion {
   questionId: string;
   /** Tepat 4 opsi, tepat 1 `ok:true` — sama kontrak dgn `ListeningQuestionOption`. */
   options: ListeningInferenceOption[];
+  /** Kandidat opsi "jebakan" (semua `ok:false`, TIDAK disebut di dialog) —
+   *  Tantangan menyisipkan 1 acak ke kartu jawaban (`runTantanganDialogue`). */
+  decoys?: ListeningInferenceOption[];
 }
 
 export interface ListeningDialogueTopic {

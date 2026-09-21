@@ -151,6 +151,117 @@ function checkSpeakingStoryDuplicates(topicsByLevel, errors) {
   }
 }
 
+/** Listening format `items` (Little Stars/Starter/Achiever/Trailblazer) —
+ *  Latihan Inti WAJIB pakai kalimat BEDA dari Kenalan/Tantangan (`example`)
+ *  untuk ≥70% item per topik (`practice`, inti makna & jawaban sama, teks
+ *  beda). ≤30% item boleh tanpa `practice` (pakai `example` apa adanya). */
+function checkListeningPracticeVariants(topicsByLevel, errors) {
+  for (const [level, topics] of Object.entries(topicsByLevel ?? {})) {
+    for (const topic of topics ?? []) {
+      if (!('items' in topic)) continue;
+      const need = Math.ceil(topic.items.length * 0.7);
+      let have = 0;
+      topic.items.forEach((it, i) => {
+        if (!it.practice) return;
+        have += 1;
+        if (!it.practice.en?.trim() || !it.practice.id?.trim()) {
+          errors.push(`Listening "${topic.id}" (${level}) item #${i}: practice.en/id kosong.`);
+        } else if (norm(it.practice.en) === norm(it.example.en)) {
+          errors.push(`Listening "${topic.id}" (${level}) item #${i}: practice "${it.practice.en}" 100% sama dgn example — ubah kalimatnya (konteks & jawaban tetap sama) atau hapus practice.`);
+        }
+      });
+      if (have < need) {
+        errors.push(`Listening "${topic.id}" (${level}): baru ${have}/${topic.items.length} item punya practice (min ${need}) — Latihan Inti tidak boleh mengulang kalimat Kenalan utk >30% soal.`);
+      }
+    }
+  }
+}
+
+/** Kalimat utuh Listening (stimulus yang didengar & pertanyaannya) TIDAK
+ *  BOLEH sama persis antar topik MAUPUN antar level — permintaan user audit
+ *  Listening. Yang dibanding = kalimat UTUH (≥2 kata, dinormalisasi tanpa
+ *  tanda baca/kapital); kata/frasa yang sebagian sama boleh. */
+function checkListeningGlobalUnique(topicsByLevel, errors) {
+  const stim = new Map();
+  const ques = new Map();
+  const add = (map, text, where) => {
+    if (!isSentenceLike(text)) return;
+    const key = norm(text.replace(/[“”‘’]/g, ''));
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push({ text, where });
+  };
+  for (const [level, topics] of Object.entries(topicsByLevel ?? {})) {
+    for (const t of topics ?? []) {
+      const w = (x) => `${level}/${t.id}/${x}`;
+      if (!('items' in t)) {
+        (t.primer ?? []).forEach((p, i) => add(stim, p.en, w(`primer[${i}]`)));
+        (t.drill ?? []).forEach((d, i) => add(stim, d.en, w(`drill[${i}]`)));
+        (t.story ?? []).forEach((l, i) => add(stim, l, w(`story[${i}]`)));
+        if (t.question?.en) add(ques, t.question.en, w('question'));
+        continue;
+      }
+      t.items.forEach((it, i) => {
+        add(stim, it.example.en, w(`items[${i}].example`));
+        if (it.practice) add(stim, it.practice.en, w(`items[${i}].practice`));
+        add(ques, it.question.en, w(`items[${i}].question`));
+      });
+      (t.notePassage ?? []).forEach((l, i) => add(stim, l.en, w(`notePassage[${i}]`)));
+      (t.noteGaps ?? []).forEach((g, i) => add(ques, g.question, w(`noteGaps[${i}]`)));
+      (t.dialogueLines ?? []).forEach((l, i) => add(stim, l.en, w(`dialogueLines[${i}]`)));
+      (t.inferenceQuestions ?? []).forEach((q, i) => add(ques, q.question, w(`inferenceQuestions[${i}]`)));
+    }
+  }
+  for (const [label, map] of [['kalimat', stim], ['pertanyaan', ques]]) {
+    for (const group of map.values()) {
+      if (group.length < 2) continue;
+      errors.push(`Listening: ${label} "${group[0].text.trim()}" 100% sama di ${group.length} tempat (${group.map((g) => g.where).join(', ')}) — kalimat utuh Listening tidak boleh kembar antar tahap/topik/level.`);
+    }
+  }
+}
+
+/** Integritas data Tantangan Listening di atas Starter (materi/pembeda_level.md):
+ *  suara dialog (`storyVoices`/`speaker`) & kandidat jebakan acak (`decoys`). */
+const DECOY_STOP = new Set(['the','a','an','her','his','my','of','in','to','for','on','at','with','from','after','before','is','it','and','by','near','behind','front','between','one','two','very','every','each','new','old','all','no','not','was','too','only','their','they','he','she','we','i','you','are','have','has','o','clock']);
+const decoyCore = (t) => t.toLowerCase().replace(/[^a-z' ]/g, ' ').split(/\s+/).filter((w) => w && !DECOY_STOP.has(w)).map((w) => w.replace(/(ing|es|ed|s)$/, ''));
+function checkListeningTantanganData(topicsByLevel, errors) {
+  const checkDecoys = (where, decoys, existing, audioText, needLabel = true) => {
+    if (!decoys?.length) { errors.push(`${where}: belum ada kandidat jebakan (decoys).`); return; }
+    const have = new Set(existing.map((e) => e.toLowerCase()));
+    const heard = new Set(decoyCore(audioText));
+    const cores = existing.map((e) => new Set(decoyCore(e)));
+    const frame = cores.length ? [...cores[0]].filter((w) => cores.every((c) => c.has(w))) : [];
+    const isHeard = (label) => {
+      const words = decoyCore(label).filter((w) => !frame.includes(w));
+      return words.filter((w) => heard.has(w)).length > words.length / 2;
+    };
+    let usable = 0;
+    for (const d of decoys) {
+      const label = d.label;
+      if (!label) { errors.push(`${where}: decoy tanpa label/teks.`); continue; }
+      if (have.has(label.toLowerCase())) errors.push(`${where}: decoy "${label}" sama dgn opsi yang sudah ada.`);
+      else if (!isHeard(label)) usable += 1;
+      if (d.ok === true) errors.push(`${where}: decoy "${label}" bertanda ok:true.`);
+    }
+    if (usable === 0) errors.push(`${where}: semua decoy katanya muncul di audio — tidak ada yang bisa jadi jebakan "tidak disebut".`);
+  };
+  for (const [level, topics] of Object.entries(topicsByLevel ?? {})) {
+    for (const t of topics ?? []) {
+      const at = `Listening "${t.id}" (${level})`;
+      if (!('items' in t)) {
+        if (t.storyVoices && t.storyVoices.length !== t.story.length) errors.push(`${at}: storyVoices (${t.storyVoices.length}) ≠ jumlah baris story (${t.story.length}).`);
+        checkDecoys(`${at} soal akhir`, (t.question.decoys ?? []).map((d) => ({ label: d.lbl, ok: d.ok })), t.question.opts.map((o) => o.lbl ?? ''), t.story.join(' '));
+      } else if ('noteGaps' in t) {
+        const withSpeaker = t.notePassage.filter((p) => p.speaker).length;
+        if (withSpeaker && withSpeaker !== t.notePassage.length) errors.push(`${at}: notePassage campur baris ber-speaker & tanpa speaker — harus semua atau tidak sama sekali.`);
+        if (withSpeaker && new Set(t.notePassage.map((p) => p.speaker)).size < 2) errors.push(`${at}: dialog notePassage butuh ≥2 penutur berbeda.`);
+        t.noteGaps.forEach((g, i) => checkDecoys(`${at} gap #${i}`, (g.decoys ?? []).map((d) => ({ label: d })), g.options, t.notePassage.map((p) => p.en).join(' ')));
+      } else if ('dialogueLines' in t) {
+        t.inferenceQuestions.forEach((q, i) => checkDecoys(`${at} soal #${i}`, (q.decoys ?? []).map((d) => ({ label: d.text, ok: d.ok })), q.options.map((o) => o.text), t.dialogueLines.map((l) => l.en).join(' ')));
+      }
+    }
+  }
+}
+
 function checkTopics(skillLabel, topicsByLevel, isOldFormat, extract, errors) {
   for (const [level, topics] of Object.entries(topicsByLevel ?? {})) {
     for (const topic of topics ?? []) {
@@ -196,6 +307,9 @@ async function main() {
   checkTopics('Speaking', mod.SPEAKING_TOPICS_BY_LEVEL, isOldSpeaking, stimuliSpeaking, errors);
   checkTopics('Grammar', mod.GRAMMAR_TOPICS_BY_LEVEL, isOldGrammar, stimuliGrammar, errors);
   checkSpeakingStoryDuplicates(mod.SPEAKING_TOPICS_BY_LEVEL, errors);
+  checkListeningPracticeVariants(mod.LISTENING_TOPICS_BY_LEVEL, errors);
+  checkListeningGlobalUnique(mod.LISTENING_TOPICS_BY_LEVEL, errors);
+  checkListeningTantanganData(mod.LISTENING_TOPICS_BY_LEVEL, errors);
 
   if (errors.length > 0) {
     console.error(`\n❌ Verifikasi duplikat kalimat GAGAL (${errors.length} masalah):\n`);
@@ -204,7 +318,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('✅ Verifikasi duplikat kalimat lolos — tidak ada kalimat soal yang 100% sama antar tahap dalam 1 topik (format lama Listening/Reading/Speaking/Grammar).');
+  console.log('✅ Verifikasi duplikat kalimat lolos — tidak ada kalimat soal yang 100% sama antar tahap dalam 1 topik (format lama Listening/Reading/Speaking/Grammar), Latihan Inti Listening (items) ≥70% pakai kalimat practice beda dari Kenalan, & kalimat utuh Listening unik antar topik/level.');
 }
 
 main().catch((err) => {

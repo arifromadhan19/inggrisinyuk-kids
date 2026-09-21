@@ -221,7 +221,13 @@ body.is-placement-test .tabbar{ display:none; }
    ditoggle app.ts (render()) berdasar state.screen. */
 body.is-game-play .topline,
 body.is-game-play .rail,
-body.is-game-play .tabbar{ display:none; }
+body.is-game-play .tabbar,
+/* Markas Raja / Tantangan Bos (screen 'boss') — halaman berdiri sendiri jg
+   (permintaan user: "ketika test di markas raja maka open halaman baru
+   seperti fitur game"), pola SAMA PERSIS is-game-play/is-placement-test. */
+body.is-boss-play .topline,
+body.is-boss-play .rail,
+body.is-boss-play .tabbar{ display:none; }
 
 /* 🔒 Latar kelap-kelip bintang Map Kerajaan tiap Raja (`GAME_STAR_FIELD`,
    scenery.ts) — permintaan user "analisis /game/raja-kata... background
@@ -734,6 +740,26 @@ body.is-game-play .tabbar{ display:none; }
   background:rgba(255,255,255,.78); border-radius:var(--r-pill);
   padding:5px 11px; font-size:var(--fs-eyebrow); font-weight:800; color:#7A4A08;
 }
+/* 🔒 Permintaan user: "test ini per materi... button vocab/listening/dst
+   bisa diklik, ketika berada dalam materi test warnanya dibuat pekat/
+   dibedakan" — dirender sbg `<button>` beneran (`games/boss.ts`
+   `skillPillsHtml()`) supaya anak bebas pilih urutan kegiatan sendiri,
+   bukan gauntlet linear terkunci (preview statis `<span>` yang dulu ada di
+   Arena, `app.ts`, SUDAH DIHAPUS — redundan, ini SEKARANG satu-satunya
+   pemakai `.boss-phase`, jadi reset tombol boleh langsung di kelas dasar). */
+.boss-phase{ border:2px solid var(--line); cursor:pointer; font-family:inherit; transition:transform .12s ease, background .15s ease, color .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.boss-phase:active{ transform:scale(.96); }
+/* Kegiatan yang SEDANG dikerjakan — warna pekat/solid (permintaan user),
+   beda jelas dari pill lain yang masih pucat/translusen. Border ikut warna
+   isian (bukan `--line` netral lagi) spy tidak ada cincin nyempil di dalam
+   box-shadow. */
+.boss-phase.active{ background:var(--brand-500); border-color:var(--brand-500); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
+/* Kegiatan yang SUDAH tuntas semua rondenya — hijau checkmark, pola sama
+   `.quiz-dot.done`, supaya anak lihat sekilas sisa berapa yang belum. Border
+   sendiri (di atas) SUDAH jadi cincinnya — tidak perlu box-shadow lagi di
+   sini (beda dari `.quiz-dot.done` yg dasarnya `border:none`). */
+.boss-phase.done{ background:var(--ok-bg); border-color:var(--ok); color:var(--ok); }
+.boss-phase.active.done{ background:var(--ok); border-color:var(--ok); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
 
 /* ------------------------------------------------------- daftar materi --- */
 .screen-head{ display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s4); }
@@ -1902,6 +1928,14 @@ body.is-game-play .tabbar{ display:none; }
   margin:var(--s4) auto 0; max-width:520px;
 }
 .opt-grid.three{ grid-template-columns:repeat(3,1fr); }
+/* 🔒 5 opsi (Latihan Inti Achiever/Trailblazer, `latihanDistractorCount`) —
+   kartu TERAKHIR yang sekaligus JUMLAH GANJIL (selector `:last-child:nth-
+   child(odd)` — cuma match kalau total anak ganjil, mis. 3 atau 5) melebar
+   1 baris penuh, bukan nyisa sendirian di kolom kiri dgn ruang kosong di
+   kanan (CLAUDE.md "hitung kolom yang bikin jumlah item rapi"). Kasus 4
+   kartu (paling umum) TIDAK kena selector ini (kartu ke-4 genap), tetap
+   2×2 spt sebelumnya. */
+.opt-grid > *:last-child:nth-child(odd){ grid-column:1 / -1; }
 .opt-btn{
   background:var(--surface); border:3px solid var(--line); border-radius:var(--r-md);
   /* 🔒 Permintaan user: gambar/kartu Kenalan "Main" WAJIB ukuran SAMA PERSIS

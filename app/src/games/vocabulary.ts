@@ -28,6 +28,73 @@ import {
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { shuffle } from '../util';
+import { LEVELS } from '../content';
+
+/**
+ * Level KONTEN topik yang lagi dimainkan (`contentLevel`, param BARU di
+ * `runLatihanInti`/`runTantangan`/`runSusunKalimat`) — BUKAN `level`
+ * (praise language, `app.ts` `praiseLevel = currentLevelMeta().key`, badge
+ * ASLI anak, dipertahankan APA ADANYA di semua fungsi ini) — permintaan
+ * user "analisis kesulitan setiap level ... di atas level starter": makin
+ * tinggi level KONTEN-nya (bukan level badge anak), makin sedikit bantuan
+ * visual yang wajar, sama filosofi Reading (TTS dicabut mulai Adventurer)/
+ * Speaking (produktif sejak Explorer). `contentLevel` HARUS dari `app.ts`
+ * `contentLevel`/`browsingLevel()` (topik yang SEDANG ditampilkan), BUKAN
+ * `praiseLevel` — 2 hal beda, CLAUDE.md sudah catat bug serupa pernah
+ * kejadian krn ketuker (`renderKenalan`), jangan diulang di sini.
+ */
+function isAboveStarter(contentLevel: LevelKey): boolean {
+  const starterIdx = LEVELS.findIndex((l) => l.key === 'starter');
+  const idx = LEVELS.findIndex((l) => l.key === contentLevel);
+  return idx > starterIdx;
+}
+
+/**
+ * 4 pembeda kesulitan TAMBAHAN antar level "di atas Starter" (permintaan
+ * user langsung, riset acuan Cambridge YLE/KET nyata — bukan cuma
+ * "Explorer=Adventurer=Achiever=Trailblazer" 1 tier rata spt fix
+ * icon-removal/decoy-word sebelumnya): Movers→Flyers→KET/PET progresif
+ * mengurangi TIGA hal sekaligus seiring tier naik — opsi jawaban makin
+ * banyak (odds nebak makin kecil), opsi berlebih/jebakan makin banyak, dan
+ * bantuan (hint/reveal) makin pelit/telat. Explorer≈Movers & Adventurer≈A1
+ * Movers penuh TETAP dapat treatment "ringan" (spt semula: 2 jebakan/3
+ * distraktor/hint 2-eliminasi/reveal-2x-salah), Achiever≈A2 Flyers &
+ * Trailblazer≈KET/PET dapat treatment "berat" — SATU tier lagi di ATAS
+ * `isAboveStarter`, bukan gantiin.
+ */
+function isFlyersOrAbove(contentLevel: LevelKey): boolean {
+  return contentLevel === 'achiever' || contentLevel === 'trailblazer';
+}
+
+/** #1 — jumlah kata jebakan Susun Kalimat: 2 (Explorer/Adventurer) → 3
+ *  (Achiever) → 4 (Trailblazer), bukan flat 2 di semua 4 level. */
+function susunDecoyCount(contentLevel: LevelKey): number {
+  if (contentLevel === 'trailblazer') return 4;
+  if (contentLevel === 'achiever') return 3;
+  return 2;
+}
+
+/** #2 — jumlah distraktor MCQ Latihan Inti: 3 (4 opsi total, Explorer/
+ *  Adventurer, spt semula) → 4 (5 opsi total, Achiever/Trailblazer). */
+function latihanDistractorCount(contentLevel: LevelKey): number {
+  return isFlyersOrAbove(contentLevel) ? 4 : 3;
+}
+
+/** #4 — jumlah opsi salah yang dieliminasi tombol "💡 Petunjuk" Latihan
+ *  Inti: 2 (Explorer/Adventurer, spt semula — dari 4 opsi nyisa 2) → 1
+ *  (Achiever/Trailblazer — dari 5 opsi nyisa 4, bantuan lebih pelit).
+ *  KHUSUS Latihan Inti (bukan Kenalan Main — itu tetap "pemanasan",
+ *  scaffolding penuh semua level, tidak disentuh permintaan ini). */
+function latihanHintEliminateCount(contentLevel: LevelKey): number {
+  return isFlyersOrAbove(contentLevel) ? 1 : 2;
+}
+
+/** #3 — ambang jumlah salah sebelum jawaban di-reveal otomatis (Eja Kata/
+ *  Susun Kalimat Tantangan): 2x (Explorer/Adventurer, spt semula) → 3x
+ *  (Achiever/Trailblazer, bantuan telat muncul). */
+function tantanganRevealThreshold(contentLevel: LevelKey): number {
+  return isFlyersOrAbove(contentLevel) ? 3 : 2;
+}
 
 /**
  * Tombol "Coba Lagi"/"Lanjut" WAJIB di tiap soal (permintaan user, CLAUDE.md
@@ -497,16 +564,38 @@ function buildNumberQuestion(topic: VocabTopic, item: VocabItem): WordQuestion {
 /** Kartu jawaban 2×2 (permintaan user: layar ini sempat pakai pil teks polos
  *  3-kolom yang nyisa 1 kartu sendirian di baris kedua utk 4 opsi — REUSE
  *  `answerCardsHtml` yang sama dgn Latihan Inti, bukan gaya baru, supaya
- *  konsisten & selalu rapi 2 kartu/baris apa pun jumlah opsinya). */
-function drawWordQuestion(container: HTMLElement, badge: string, idText: string, q: WordQuestion): void {
+ *  konsisten & selalu rapi 2 kartu/baris apa pun jumlah opsinya).
+ *
+ * 🔒 Revisi user (samakan pola header+Petunjuk ke SEMUA varian MCQ 🎮 Main)
+ * — badge pindah ke `.latihan-head` (kiri) + "💡 Petunjuk" (kanan) di ATAS
+ * bullet progress (`navHtml`, param BARU), Petunjuk eliminasi 2 opsi salah
+ * via `wireHintCorrect` (dibandingkan ke `q.target`, bukan referensi objek
+ * — `q.options` bukan `VocabItem[]`).
+ *
+ * 🔒 Revisi user lagi ("samakan konsepnya di kenalan main, latihan inti,
+ * tambahkan image atau text di jawabannya") — `o.emoji` topik Angka SENGAJA
+ * DIHAPUS dari kartu jawaban (`emoji` dikosongkan, TEKS-SAJA), co-alasan
+ * dgn `drawSentence`/`drawAudio` Latihan Inti (numberTopic): `item.emoji`
+ * topik Angka literally DIGIT jawabannya sendiri (mis. "3️⃣" utk "Three") —
+ * bocoran PALING telanjang (anak bisa cocokkan digit tanpa paham kata
+ * Inggrisnya sama sekali), sama kategori dgn swatch warna. Fungsi ini
+ * SATU-SATUNYA pemanggilnya adalah topik Angka (lihat `runWordMiniGame`),
+ * jadi aman di-strip unconditional TANPA perlu cek `isNumberTopic` lagi di
+ * sini. */
+function drawWordQuestion(container: HTMLElement, badge: string, idText: string, q: WordQuestion, navHtml = ''): void {
   container.innerHTML = `
-    <span class="stage-badge">${badge}</span>
+    <div class="latihan-head">
+      <span class="stage-badge">${badge}</span>
+      ${hintButtonHtml}
+    </div>
+    ${navHtml}
     <div class="id-text">${idText}</div>
     ${q.visual}
     <p class="reading-question">${q.prompt}</p>
-    ${answerCardsHtml(q.options.map((o) => ({ emoji: o.emoji, label: o.en })), 'pick')}
+    ${answerCardsHtml(q.options.map((o) => ({ emoji: '', label: o.en })), 'pick')}
     <div class="feedback" id="fb"></div>
   `;
+  wireHintCorrect(container, q.options.map((o) => o.en === q.target));
 }
 
 /**
@@ -528,32 +617,72 @@ function drawWordQuestion(container: HTMLElement, badge: string, idText: string,
  * pemanasan" — bukan tahap uji sungguhan spt Latihan Inti/Tantangan, jadi
  * scaffolding tambahan (teks + gambar + audio sekaligus) di sini WAJAR,
  * beda kebutuhan dari Latihan Inti yang MEMANG harus tetap teks-only murni.
+ *
+ * 🔒 Revisi user lagi — header disamakan pola `.latihan-head` Latihan Inti
+ * ("pindahkan text ... di atas kiri bullet progress ... tambahkan button
+ * 'petunjuk' di kanan atas, di atas bullet progress"): badge kiri + tombol
+ * "💡 Petunjuk" kanan dalam 1 baris (`.latihan-head`), bullet progress
+ * (`navHtml`, param BARU) di bawahnya — persis urutan `drawAudio`/
+ * `drawSentence`. Petunjuk pakai `wireHint()` yang SAMA (eliminasi 2 opsi
+ * salah dari 4, sekali pakai) — makanya opsi jawaban di sini DIBANGUN dari
+ * `VocabItem[]` langsung (`opts`, bukan lagi wrapper `{en,emoji,ok}` custom)
+ * spy bisa reuse `wireHint(container, opts, item)` apa adanya (reference-
+ * equality check `opts[i] !== target`), sama pola `drawAudio`/`drawSentence`.
+ *
+ * 🔒 Revisi user lagi ("samakan konsepnya di kenalan main, latihan inti,
+ * tambahkan image atau text di jawabannya") — topik Warna (`isColorTopic`,
+ * jatuh ke fungsi INI krn tidak py cabang khusus sendiri di dispatcher)
+ * SEMPAT pakai `item.emoji` apa adanya di kartu jawaban — itu SWATCH WARNA
+ * POLOS (mis. "🔴" utk "Red"), bocoran visual paling telanjang (anak bisa
+ * cocokkan warna murni dari mata tanpa paham kata Inggrisnya sama sekali).
+ * Diganti gambar BENDA berwarna (`example.emoji`, mis. 🍓 utk Red — bukan
+ * swatch), sama pola `drawAudio` Latihan Inti.
+ *
+ * 🔒 Revisi user LAGI ("revisi aturan sebelumnya" — sempat gambar-SAJA di
+ * sini tanpa teks, laporan user: "tidak konsisten, kadang gak ada
+ * text/gambar" dibanding tab lain) — teks label warna TIDAK LAGI
+ * dikosongkan, SELALU gambar+teks BERSAMAAN (disamakan ke `drawAudio`
+ * Latihan Inti yang jg sudah direvisi sama, & ke topik biasa di fungsi ini
+ * yang emang dari awal sudah gambar+teks). AMAN krn fungsi ini TIDAK py
+ * `scene` terpisah spt `drawSentence` (lihat komentar `drawAudio` soal
+ * kenapa `drawSentence` beda sendiri, TETAP teks-saja di sana).
  */
 function drawListenPointQuestion(
   container: HTMLElement,
   topic: VocabTopic,
   item: VocabItem,
-  onAnswer: (correct: boolean, btn: HTMLElement) => void
+  onAnswer: (correct: boolean, btn: HTMLElement) => void,
+  navHtml = ''
 ): void {
   const distractorPool = topic.items.filter((i) => i !== item && i.emoji !== item.emoji);
   const distractors = shuffle(distractorPool).slice(0, Math.min(3, distractorPool.length));
-  const options = shuffle([
-    { en: item.en, emoji: item.emoji, ok: true },
-    ...distractors.map((d) => ({ en: d.en, emoji: d.emoji, ok: false })),
-  ]);
+  const opts = shuffle([item, ...distractors]);
+  const colorTopic = isColorTopic(topic);
   container.innerHTML = `
-    <span class="stage-badge">🎮 MAIN · Dengar &amp; Tunjuk</span>
+    <div class="latihan-head">
+      <span class="stage-badge">🎮 MAIN · Dengar &amp; Tunjuk</span>
+      ${hintButtonHtml}
+    </div>
+    ${navHtml}
     <div class="id-text">Dengarkan katanya, lalu tunjuk gambar yang cocok</div>
     <div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar Lagi</button></div>
-    ${answerCardsHtml(options.map((o) => ({ emoji: overrideIconHtml(topic.id, o.en) ?? o.emoji, label: o.en })), 'pick')}
+    ${answerCardsHtml(
+      opts.map((o) =>
+        colorTopic
+          ? { emoji: o.example.emoji, label: o.en }
+          : { emoji: overrideIconHtml(topic.id, o.en) ?? o.emoji, label: o.en }
+      ),
+      'pick'
+    )}
     <div class="feedback" id="fb"></div>
   `;
   speak(item.en);
+  wireHint(container, opts, item);
   setHandlers({
     replay: () => speak(item.en),
     pick: (payload) => {
       const i = Number(payload);
-      onAnswer(options[i].ok, container.querySelectorAll<HTMLElement>('.opt-btn')[i]);
+      onAnswer(opts[i] === item, container.querySelectorAll<HTMLElement>('.opt-btn')[i]);
     },
   });
 }
@@ -572,24 +701,38 @@ function drawListenPointQuestion(
  * span emoji otomatis, pola sama kartu teks-saja topik Warna/Bentuk/Angka).
  * Dicek SEBELUM `topic.iconAmbiguous` generik di `runWordMiniGame` supaya
  * topik hari tidak jatuh ke cabang mic itu duluan.
+ *
+ * 🔒 Revisi user (samakan pola header+Petunjuk ke SEMUA varian MCQ 🎮 Main,
+ * bukan cuma "Dengar & Tunjuk") — badge pindah ke `.latihan-head` (kiri) +
+ * "💡 Petunjuk" (kanan) di ATAS bullet progress (`navHtml`, param BARU),
+ * Petunjuk eliminasi 2 opsi salah via `wireHintCorrect` (opsi di sini bukan
+ * `VocabItem` polos... eh, sebenarnya IYA `VocabItem[]` di sini, tapi tetap
+ * pakai `wireHintCorrect` biar konsisten pola dgn varian MCQ lain di file
+ * ini yang opsinya BUKAN `VocabItem`).
  */
 function drawListenTextQuestion(
   container: HTMLElement,
   topic: VocabTopic,
   item: VocabItem,
-  onAnswer: (correct: boolean, btn: HTMLElement) => void
+  onAnswer: (correct: boolean, btn: HTMLElement) => void,
+  navHtml = ''
 ): void {
   const distractorPool = topic.items.filter((i) => i !== item);
   const distractors = shuffle(distractorPool).slice(0, Math.min(3, distractorPool.length));
   const options = shuffle([item, ...distractors]);
   container.innerHTML = `
-    <span class="stage-badge">🎮 MAIN · Dengar &amp; Pilih</span>
+    <div class="latihan-head">
+      <span class="stage-badge">🎮 MAIN · Dengar &amp; Pilih</span>
+      ${hintButtonHtml}
+    </div>
+    ${navHtml}
     <div class="id-text">Dengarkan katanya, lalu pilih jawaban yang cocok</div>
     <div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar Lagi</button></div>
     ${answerCardsHtml(options.map((o) => ({ emoji: '', label: o.en })), 'pick')}
     <div class="feedback" id="fb"></div>
   `;
   speak(item.en);
+  wireHintCorrect(container, options.map((o) => o === item));
   setHandlers({
     replay: () => speak(item.en),
     pick: (payload) => {
@@ -610,16 +753,36 @@ function drawListenTextQuestion(
  * pedagogis: frasa sapaan/sopan-santun memang fungsinya DIUCAPKAN di situasi
  * sosial, bukan dikenali dari gambar diam. Pola SAMA PERSIS `runUcapan` (di
  * bawah file ini, tab Tantangan "🗣️ Penggunaan") — cuma 1 soal ad-hoc (bukan
- * bagian plan 10-soal), jadi TANPA quiz-nav/section-cursor. TIDAK masuk
+ * bagian plan 10-soal), jadi TANPA section-cursor sendiri (nav dot-nya tetap
+ * ada, dikirim `runWordMiniGame` lewat param `navHtml`). TIDAK masuk
  * `recordAttempt()`/akurasi (`graded:false` di `recordEvent`, non-punitive,
  * SELALU boleh lanjut apa pun skornya) — beda dari `onAnswer` generik yang
  * dipakai 2 tipe soal lain di atas (itu MCQ biner objektif, ASR anak TIDAK
  * selalu akurat jadi tidak boleh disamakan).
+ *
+ * 🔒 Revisi user (samakan pola header ke SEMUA varian 🎮 Main — badge di
+ * ATAS bullet progress) — badge dipindah ke atas `navHtml` (param BARU,
+ * dikirim langsung SEBAGAI BAGIAN render, bukan lagi ditempel dari luar via
+ * `insertAdjacentHTML`, supaya urutannya tetap benar begitu pun soal ini
+ * di-retry lewat `draw()` lokalnya sendiri di bawah). TANPA tombol "💡
+ * Petunjuk" — beda dari SEMUA varian MCQ lain di file ini, soal ini murni
+ * mic (dengar lalu ucapkan), tidak py opsi jawaban salah yang bisa
+ * dieliminasi sama sekali (co-alasan dgn Speaking format lama, CLAUDE.md:
+ * "Speaking TIDAK py hint apa pun... tidak ada opsi salah utk dieliminasi").
  */
-function drawListenSpeakQuestion(container: HTMLElement, topic: VocabTopic, item: VocabItem, onDone: OnDone, level: LevelKey): void {
+function drawListenSpeakQuestion(
+  container: HTMLElement,
+  topic: VocabTopic,
+  item: VocabItem,
+  itemIndex: number,
+  onDone: OnDone,
+  level: LevelKey,
+  navHtml = ''
+): void {
   function draw(): void {
     container.innerHTML = `
       <span class="stage-badge">🎮 MAIN · Dengar &amp; Ucapkan</span>
+      ${navHtml}
       <div class="id-text">Dengarkan katanya, lalu ucapkan lagi ya</div>
       ${isDayTopic(topic) ? '' : `<div class="big-emoji">${item.emoji}</div>`}
       <div class="speak-row">
@@ -655,6 +818,11 @@ function drawListenSpeakQuestion(container: HTMLElement, topic: VocabTopic, item
             const wordsHtml = words.map((w) => `<span class="${w.matched ? 'ok' : 'miss'}">${w.word}</span>`).join('');
             const perfect = stars === 3;
             const score = Math.round(hitRatio * 100);
+            // Dot bullet-progress berubah "done" DI SINI (mic BENERAN
+            // disubmit), bukan pas loncat/tap dot — sama alasan `onAnswer`
+            // MCQ di `runWordMiniGame` (mic tidak biner, non-punitive tetap
+            // menandai dicoba apa pun skornya).
+            markSlotAnswered('vocabulary', topic.id, 'kenalan', itemIndex, perfect, { score, itemRef: item.en });
             if (perfect) {
               btn.classList.add('win-burst');
               playCorrectTone();
@@ -803,18 +971,28 @@ function drawSortQuestion(
  * apa adanya (teks-only, sudah diperbaiki sesi sebelumnya) — TETAP dipakai
  * `runKelompokkan` (ronde terpisah "Raja Kelompok" Game Hub, DI LUAR scope
  * permintaan ini yang cuma soal Kenalan).
+ *
+ * 🔒 Revisi user (samakan pola header+Petunjuk ke SEMUA varian MCQ 🎮 Main)
+ * — badge pindah ke `.latihan-head` (kiri) + "💡 Petunjuk" (kanan) di ATAS
+ * bullet progress (`navHtml`, param BARU), Petunjuk eliminasi 2 opsi salah
+ * via `wireHintCorrect` (dibandingkan ke `option.ok`, bukan referensi objek).
  */
 function drawPictureWordQuestion(
   container: HTMLElement,
   topic: VocabTopic,
   item: VocabItem,
-  onAnswer: (correct: boolean, btn: HTMLElement) => void
+  onAnswer: (correct: boolean, btn: HTMLElement) => void,
+  navHtml = ''
 ): void {
   const distractorPool = topic.items.filter((i) => i !== item && i.en !== item.en);
   const distractors = shuffle(distractorPool).slice(0, Math.min(3, distractorPool.length));
   const options = shuffle([{ en: item.en, ok: true }, ...distractors.map((d) => ({ en: d.en, ok: false }))]);
   container.innerHTML = `
-    <span class="stage-badge">🎮 MAIN · Lihat &amp; Pilih</span>
+    <div class="latihan-head">
+      <span class="stage-badge">🎮 MAIN · Lihat &amp; Pilih</span>
+      ${hintButtonHtml}
+    </div>
+    ${navHtml}
     <div class="id-text">Ini gambar apa? Pilih kata Inggrisnya!</div>
     <div class="big-emoji" style="font-size:clamp(40px,10vw,60px)" aria-hidden="true">${item.emoji}</div>
     <div class="opt-grid ${options.length === 3 ? 'three' : ''}">
@@ -822,6 +1000,7 @@ function drawPictureWordQuestion(
     </div>
     <div class="feedback" id="fb"></div>
   `;
+  wireHintCorrect(container, options.map((o) => o.ok));
   setHandlers({
     pick: (payload) => {
       const i = Number(payload);
@@ -844,39 +1023,67 @@ function runWordMiniGame(container: HTMLElement, topic: VocabTopic, startIndex: 
   // 🔒 Bullet-progress bisa diklik (permintaan user, revisi dari Sebelumnya/
   // Lanjut: "biar bisa coba di urutan berapa pun") — REUSE PERSIS
   // `quizNavHtml`/`wireQuizNav` yang sudah ada (pola sama navigasi soal di
-  // tempat lain, bukan komponen baru). Status "done" per dot pakai
-  // `hasWordInteraction(..., 'game')` yang SUDAH ada (penanda "kata ini
-  // sudah pernah dimainkan 🎮"), jadi loncat via dot HARUS ikut menandai
-  // interaksi juga (`markWordInteraction`+`recordEvent`) — kalau tidak, dot
-  // kata yang dituju via loncat (bukan dari tap 🎮 di daftar) tidak pernah
-  // kebaca "done" walau sudah dicoba.
-  const wordStatus = (i: number): 0 | 1 | 2 => (hasWordInteraction('vocabulary', topic.id, i, 'game') ? 2 : 0);
+  // tempat lain, bukan komponen baru).
+  //
+  // 🔒 REVISI (permintaan user: dot cuma boleh berubah warna begitu anak
+  // BENERAN mengerjakan/submit, BUKAN cuma loncat/tap dot-nya) — dot ini
+  // SEMPAT baca `hasWordInteraction(..., 'game')`, flag yang SAMA dipakai
+  // ikon 🎮 di daftar Kenalan (`doneCls`, sengaja "nyala begitu ditap", lihat
+  // CLAUDE.md) — akibatnya `goToIndex` ikut menandai flag itu supaya dot
+  // yang dituju via loncat juga "done", padahal anak belum jawab apa-apa di
+  // soal itu. Sekarang dot pakai penanda TERPISAH: slot section 'kenalan'
+  // (section yang SAMA dgn tap 🔊/🎤/🎮 di daftar, TAPI field `st` beda —
+  // `markSlotInteraction`/tap cuma naikkan ke `st:1`, `markSlotAnswered` di
+  // `onAnswer`/mic sukses di bawah yang naikkan ke `st:2`), section ini
+  // SUDAH dikecualikan dari persentase topik & insight Rapor (`isGradedSection`
+  // di progress.ts, `=== 'kenalan'`), jadi aman tanpa field/migrasi baru.
+  // `goToIndex` sekarang MURNI pindah tampilan, tidak menyentuh progres.
+  const wordStatus = (i: number): 0 | 1 | 2 => getSlot('vocabulary', topic.id, 'kenalan', i)?.st ?? 0;
 
   function goToIndex(i: number): void {
     if (i < 0 || i >= topic.items.length || i === index) return;
     index = i;
-    markWordInteraction('vocabulary', topic.id, i, 'game', topic.items[i].en);
-    recordEvent({ kind: 'interact', skill: 'vocabulary', topicId: topic.id, section: 'kenalan', slot: i, itemRef: topic.items[i].en, activity: 'game' });
     draw();
   }
 
+  // 🔒 Revisi user (samakan pola header+Petunjuk ke SEMUA varian 🎮 Main,
+  // bukan cuma "Dengar & Tunjuk") — SEMUA cabang sekarang kirim `navHtml`
+  // LANGSUNG sbg parameter tiap fungsi `drawXxxQuestion`, yang merender
+  // navHtml itu SENDIRI di bawah header `.latihan-head` (badge+Petunjuk) di
+  // dalam `innerHTML`-nya masing-masing — BUKAN lagi ditempel dari luar via
+  // `insertAdjacentHTML('afterbegin', ...)` generik (pola LAMA yang taruh
+  // bullet progress di paling atas, SEBELUM badge — urutan yang salah,
+  // makanya harus diganti per-fungsi, bukan cukup direorder di sini saja).
+  // Pengecualian: `drawListenSpeakQuestion` (mic, iconAmbiguous) TETAP TANPA
+  // tombol Petunjuk — soal itu tidak py opsi jawaban salah yang bisa
+  // dieliminasi (mic bebas, bukan MCQ), tapi badge-nya TETAP dipindah ke
+  // atas navHtml (lihat komentar fungsi itu sendiri).
   function draw(): void {
     item = topic.items[index];
+    const navHtml = quizNavHtml(index, topic.items.length, wordStatus);
     if (isDayTopic(topic)) {
       // Topik hari: iconAmbiguous jg (ikon aktivitas sembarang, lihat
       // `isDayTopic`), TAPI user minta MCQ teks di sini (bukan mic spt
       // default `iconAmbiguous` di bawah) — dicek LEBIH DULU supaya tidak
       // jatuh ke cabang mic itu.
-      drawListenTextQuestion(container, topic, item, onAnswer);
+      drawListenTextQuestion(container, topic, item, onAnswer, navHtml);
     } else if (topic.iconAmbiguous) {
       // Emoji topik ini genuinely multi-tafsir (lihat komentar
       // `drawListenSpeakQuestion`) — soal tunjuk-gambar bisa salah baca
       // ikon, bukan salah paham materi. Dengar & Ucapkan (mic) menghindari
       // masalah itu total krn tidak ada ikon yang perlu ditafsirkan.
-      drawListenSpeakQuestion(container, topic, item, onBack, level);
+      drawListenSpeakQuestion(container, topic, item, index, onBack, level, navHtml);
     } else if (isNumberTopic(topic)) {
+      // 🔒 Revisi user ("samakan konsepnya di kenalan main, latihan inti,
+      // tambahkan image atau text di jawabannya") — badge SEMPAT literally
+      // menaruh `item.en` (mis. "🎮 MAIN · One", jawaban soal "Ada berapa
+      // pisang ini?" itu SENDIRI) di headernya — bocoran paling telanjang
+      // (bukan cuma di kartu jawaban, tapi di judul layarnya), ditemukan
+      // dari audit sesi sebelumnya. Ganti ke label generik netral, konsisten
+      // pola badge tipe soal lain di file ini (`🎮 MAIN · Dengar & Tunjuk`
+      // dst — tidak pernah menyebut jawaban).
       const q = buildNumberQuestion(topic, item);
-      drawWordQuestion(container, `🎮 MAIN · ${item.en}`, 'Yuk coba!', q);
+      drawWordQuestion(container, '🎮 MAIN · Hitung Yuk!', 'Yuk coba!', q, navHtml);
       setHandlers({
         pick: (payload) => {
           const i = Number(payload);
@@ -884,17 +1091,19 @@ function runWordMiniGame(container: HTMLElement, topic: VocabTopic, startIndex: 
         },
       });
     } else if (isSortableTopic(topic)) {
-      drawPictureWordQuestion(container, topic, item, onAnswer);
+      drawPictureWordQuestion(container, topic, item, onAnswer, navHtml);
     } else {
-      drawListenPointQuestion(container, topic, item, onAnswer);
+      drawListenPointQuestion(container, topic, item, onAnswer, navHtml);
     }
-    container.insertAdjacentHTML('afterbegin', quizNavHtml(index, topic.items.length, wordStatus));
     wireQuizNav(goToIndex);
   }
 
   function onAnswer(correct: boolean, btn: HTMLElement): void {
     lockOptionButtons(container);
     const fb = container.querySelector<HTMLElement>('#fb')!;
+    // Dot bullet-progress baru berubah "done" DI SINI (soal beneran dijawab),
+    // bukan pas loncat/tap dot — lihat komentar `wordStatus` di atas.
+    markSlotAnswered('vocabulary', topic.id, 'kenalan', index, correct, { itemRef: item.en });
     if (correct) {
       recordAttempt(true);
       btn.classList.add('correct', 'win-burst');
@@ -988,13 +1197,47 @@ function buildLatihanOrder(topic: VocabTopic): LatihanQuestion[] {
  *  opsi salah, sisa 3 pilihan — bukan 50/50): sekali tap, matiin 2 opsi
  *  SALAH acak (dim, tidak bisa ditap) dari 4 opsi, sisa PERSIS 2 (1 benar +
  *  1 salah) — tombolnya sendiri lalu nonaktif (sekali pakai per soal). */
-function wireHint(container: HTMLElement, opts: VocabItem[], target: VocabItem, onUsed?: () => void): void {
+/** `eliminateCount` (param BARU, default 2 — SEMUA pemanggil lama TIDAK
+ *  berubah) — Latihan Inti Achiever/Trailblazer kirim 1 (`latihanHintEliminateCount`,
+ *  permintaan user "pembeda antar level di atas starter": bantuan makin
+ *  pelit seiring tier naik, dari 5 opsi nyisa 4 bukan nyisa 2). */
+function wireHint(container: HTMLElement, opts: VocabItem[], target: VocabItem, onUsed?: () => void, eliminateCount = 2): void {
   let used = false;
   setHandlers({
     hint: () => {
       if (used) return;
       const btns = container.querySelectorAll<HTMLButtonElement>('.opt-btn');
       const wrongIdx = opts.map((_, i) => i).filter((i) => opts[i] !== target && !btns[i].disabled);
+      if (wrongIdx.length) {
+        used = true;
+        const toEliminate = shuffle(wrongIdx).slice(0, Math.min(eliminateCount, wrongIdx.length));
+        toEliminate.forEach((pick) => {
+          btns[pick].disabled = true;
+          btns[pick].classList.add('eliminated');
+        });
+        const hintBtn = container.querySelector<HTMLButtonElement>('#hintBtn');
+        if (hintBtn) hintBtn.disabled = true;
+        onUsed?.();
+      }
+    },
+  });
+}
+
+/** Versi generik `wireHint` (permintaan user: samakan pola Petunjuk-eliminasi
+ *  ke SEMUA varian 🎮 Main Kenalan yang berbentuk MCQ, bukan cuma "Dengar &
+ *  Tunjuk") — beberapa varian ini opsinya BUKAN `VocabItem[]` polos (mis.
+ *  `WordQuestion.options` cuma `{en,emoji}`, `drawPictureWordQuestion` cuma
+ *  `{en,ok}`), jadi tidak bisa reuse `wireHint` yang butuh cocok referensi
+ *  objek `target`. Di sini cukup kirim array boolean "opsi ke-i ini benar?"
+ *  (SEARAH index dgn tombol `.opt-btn` yang dirender) — perilaku eliminasi
+ *  (2 opsi salah acak dari sisa, sekali pakai) IDENTIK `wireHint`. */
+function wireHintCorrect(container: HTMLElement, isCorrect: boolean[], onUsed?: () => void): void {
+  let used = false;
+  setHandlers({
+    hint: () => {
+      if (used) return;
+      const btns = container.querySelectorAll<HTMLButtonElement>('.opt-btn');
+      const wrongIdx = isCorrect.map((_, i) => i).filter((i) => !isCorrect[i] && !btns[i].disabled);
       if (wrongIdx.length) {
         used = true;
         const toEliminate = shuffle(wrongIdx).slice(0, Math.min(2, wrongIdx.length));
@@ -1063,8 +1306,14 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
  * & disimpan permanen utk topik ini; dibaca ulang (bukan di-acak lagi) tiap
  * kali Latihan Inti dibuka. Distraktor TETAP boleh beda tiap render — yang
  * harus stabil cuma identitas soal (kind + kata target), bukan posisi opsi.
+ *
+ * `contentLevel` (param BARU, lihat komentar `isAboveStarter`) — Explorer ke
+ * atas kartu jawaban `drawAudio`/`drawSentence` jadi TEKS-SAJA (permintaan
+ * user "analisis kesulitan ... di latihan inti dihilangkan icon/image nya
+ * supaya mengurangi menebak"), Little Stars/Starter TETAP gambar+teks apa
+ * adanya (permintaan user eksplisit "masih seperti saat ini").
  */
-export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone: OnDone, level: LevelKey): void {
+export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
   const buildPlan = (): LatihanPlanSlot[] =>
     buildLatihanOrder(topic).map((q) => ({ kind: q.kind, item: topic.items.indexOf(q.target) }));
   let section = ensureSection('vocabulary', topic.id, 'latihan', buildPlan);
@@ -1086,9 +1335,14 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
     resetSectionPlan('vocabulary', topic.id, 'latihan', buildPlan());
     section = ensureSection('vocabulary', topic.id, 'latihan');
   }
+  // 🔒 Jumlah distraktor naik di Achiever/Trailblazer (`latihanDistractorCount`,
+  // 3→4, jadi 5 opsi bukan 4 — permintaan user "pembeda antar level di atas
+  // starter", riset Cambridge Flyers/KET: opsi jawaban makin banyak seiring
+  // tier naik, odds nebak makin kecil).
+  const distractorCount = latihanDistractorCount(contentLevel);
   const order: LatihanQuestion[] = (section.plan ?? []).map((slot) => {
     const target = topic.items[slot.item] ?? topic.items[0];
-    return { kind: slot.kind, target, distractors: shuffle(topic.items.filter((i) => i !== target)).slice(0, 3) };
+    return { kind: slot.kind, target, distractors: shuffle(topic.items.filter((i) => i !== target)).slice(0, distractorCount) };
   });
   let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
   let hintUsedThisSlot = false;
@@ -1184,32 +1438,46 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
    */
   function drawAudio(q: LatihanQuestion): void {
     const opts = shuffle([q.target, ...q.distractors]);
-    // Topik warna: teks label yang bocor (anak bisa cocok BUNYI kata yang
-    // didengar ke EJAAN tertulisnya di kartu tanpa paham artinya sama sekali
-    // — apalagi Little Stars belum bisa baca kalimat sama sekali) — permintaan
-    // user, koreksi dari percobaan sebelumnya (teks-saja, ternyata salah
-    // arah). Sekarang GAMBAR kid-friendly (`example.emoji` — benda/binatang/
-    // buah/bintang konkret, mis. 🍓/⭐/🐻, BUKAN swatch warna polos) TANPA
-    // teks label (`.picture-only`, `answerCardsHtml` skip render bottom
-    // kalau `label` kosong) — anak WAJIB genuinely paham makna kata yang
-    // didengar buat pilih gambar yang cocok, bukan cocok-cocokkan ejaan.
-    // Topik lain TIDAK disentuh (item.emoji-nya sendiri gambar konkret objek
-    // yg DITANYA, teksnya jg tidak literally = bunyi yg didengar, beda
-    // bahasa 'toEn'/'toId' — tidak py celah yg sama).
+    // Topik warna: gambar kid-friendly (`example.emoji` — benda/binatang/
+    // buah/bintang konkret, mis. 🍓/⭐/🐻, BUKAN swatch warna polos) SUPAYA
+    // anak genuinely paham makna kata yang didengar, bukan cocok-cocok
+    // warna murni dari mata (leak swatch, ditemukan sesi lalu). Topik lain
+    // TIDAK disentuh (item.emoji-nya sendiri gambar konkret objek yg
+    // DITANYA, aman apa adanya).
     // Topik angka: `item.emoji`-nya SENDIRI adalah digit (mis. "2️⃣" utk
-    // "Two") — bocor lebih parah dari swatch warna (bukan cuma asosiasi,
-    // tapi literally angkanya sendiri, anak bisa cocokkan tanpa paham kata
-    // Inggrisnya sama sekali) — laporan user. Beda dari topik warna:
-    // teksnya (`o.en`/`o.id`) TIDAK diapa-apakan, cukup ikon digitnya yang
-    // dihapus (kartu jadi teks-saja, bukan gambar-saja spt warna — angka
-    // TIDAK py "gambar benda konkret" pengganti yang aman/relevan spt
-    // 🍓/⭐ warna, ilustrasi hitung sudah ada di scene `drawSentence`).
+    // "Two") — bocor literally angkanya sendiri, anak bisa cocokkan tanpa
+    // paham kata Inggrisnya sama sekali — laporan user. Ikon digitnya
+    // dihapus (kartu jadi teks-saja — angka TIDAK py "gambar benda konkret"
+    // pengganti yang aman/relevan spt 🍓/⭐ warna, ilustrasi hitung sudah
+    // ada di scene `drawSentence`).
+    //
+    // 🔒 Revisi user ("revisi aturan sebelumnya" — topik warna sempat
+    // GAMBAR-SAJA di sini/tab 'hear'/'toEn'/'toId' TAPI teks-saja di
+    // `drawSentence`, dianggap tidak konsisten: "kadang gak ada text, kadang
+    // gak ada gambar") — teks label warna TIDAK LAGI dikosongkan di sini,
+    // SELALU gambar+teks BERSAMAAN persis topik biasa (kartu 'hear' topik
+    // biasa MEMANG sudah lama begini — audio Inggris + teks Inggris yang
+    // SAMA, jadi warna dulu sengaja beda sendiri, sekarang disamakan).
+    // AMAN krn gambar yang dipakai tetap ilustrasi (bukan swatch) — beda
+    // dari `drawSentence` (poin di bawah, TIDAK ikut diubah): topik warna/
+    // angka/bentuk di SANA py `scene` (gambar milik jawaban BENAR SAJA
+    // ditampilkan duluan di atas kalimat) — kalau kartu jawaban di situ IKUT
+    // dikasih gambar per-opsi, anak tinggal cocokkan gambar scene vs gambar
+    // kartu (leak match-gambar yang lebih parah dari leak lama), makanya
+    // `drawSentence` WAJIB tetap teks-saja utk 3 topik itu, TIDAK sama dgn
+    // fungsi ini yang TIDAK py scene sama sekali.
     const colorTopic = isColorTopic(topic);
     const numberTopic = isNumberTopic(topic);
     const shapeTopic = isShapeTopic(topic);
     const dayTopic = isDayTopic(topic);
-    const optEmoji = (o: VocabItem) => (colorTopic ? o.example.emoji : numberTopic || shapeTopic || dayTopic ? '' : itemGlyph(topic.id, o));
-    const optLabel = (text: string) => (colorTopic ? '' : text);
+    // 🔒 Explorer ke atas: SEMUA kartu jawaban teks-saja tanpa terkecuali
+    // (permintaan user, lihat komentar `isAboveStarter`) — dicek PALING
+    // DULU sebelum cabang per-topik lain, supaya konsisten "harder tier"
+    // menang drpd treatment khusus warna/dst (yang notabene topiknya cuma
+    // ada di Little Stars/Starter, jadi tidak akan pernah tabrakan nyata).
+    const aboveStarter = isAboveStarter(contentLevel);
+    const optEmoji = (o: VocabItem) =>
+      aboveStarter ? '' : colorTopic ? o.example.emoji : numberTopic || shapeTopic || dayTopic ? '' : itemGlyph(topic.id, o);
 
     let promptHtml: string;
     let cardsHtml: string;
@@ -1220,11 +1488,11 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
       // lewat cocok-gambar tanpa perlu paham arti kata (permintaan user:
       // gambar sbg analogi per PILIHAN, bukan bocoran jawaban).
       promptHtml = `<p class="reading-question">Apa bahasa Inggrisnya <b>"${q.target.id}"</b>?</p><div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar Lagi</button></div>`;
-      cardsHtml = answerCardsHtml(opts.map((o) => ({ emoji: optEmoji(o), label: optLabel(o.en) })), 'pick');
+      cardsHtml = answerCardsHtml(opts.map((o) => ({ emoji: optEmoji(o), label: o.en })), 'pick');
       playPrompt = () => speakLocalized(q.target.id, 'id-ID');
     } else if (q.kind === 'toId') {
       promptHtml = `<p class="reading-question">Apa bahasa Indonesianya <b>"${q.target.en}"</b>?</p><div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar Lagi</button></div>`;
-      cardsHtml = answerCardsHtml(opts.map((o) => ({ emoji: optEmoji(o), label: optLabel(o.id) })), 'pick');
+      cardsHtml = answerCardsHtml(opts.map((o) => ({ emoji: optEmoji(o), label: o.id })), 'pick');
       playPrompt = () => speak(q.target.en);
     } else {
       // Kartu SELALU emoji+teks (permintaan user) — bekas cabang
@@ -1234,7 +1502,7 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
       // Indonesia di topik `iconAmbiguous` tetap dipertahankan sbg konteks
       // TAMBAHAN (bukan pengganti kartu).
       promptHtml = `<div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar Lagi</button></div>${topic.iconAmbiguous ? `<div class="id-text">${q.target.id}</div>` : ''}`;
-      cardsHtml = answerCardsHtml(opts.map((o) => ({ emoji: optEmoji(o), label: optLabel(o.en) })), 'pick');
+      cardsHtml = answerCardsHtml(opts.map((o) => ({ emoji: optEmoji(o), label: o.en })), 'pick');
       playPrompt = () => speak(q.target.en);
     }
 
@@ -1250,7 +1518,7 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
       <div class="feedback" id="fb"></div>
     `;
     playPrompt();
-    wireHint(container, opts, q.target, () => (hintUsedThisSlot = true));
+    wireHint(container, opts, q.target, () => (hintUsedThisSlot = true), latihanHintEliminateCount(contentLevel));
     wireQuizNav(goTo);
 
     setHandlers({
@@ -1287,6 +1555,14 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
     const numberTopic = isNumberTopic(topic);
     const shapeTopic = isShapeTopic(topic);
     const dayTopic = isDayTopic(topic);
+    // 🔒 Explorer ke atas: kartu jawaban teks-saja jg di sini (co-alasan dgn
+    // `drawAudio`, lihat komentar `isAboveStarter`) — topik biasa (non
+    // color/number/shape/day) di level ini TIDAK PERNAH py `scene` sama
+    // sekali (lihat blok if/else di bawah, cuma 3 topik itu yang py scene),
+    // jadi aman, tidak ada risiko leak match-gambar spt yang dijelaskan di
+    // `drawAudio` (itu KHUSUS 3 topik yang py scene, semuanya cuma ada di
+    // Little Stars/Starter — tidak pernah kena `aboveStarter` scr nyata).
+    const aboveStarter = isAboveStarter(contentLevel);
     let scene = '';
     if (colorTopic) {
       scene = `<div class="big-emoji" aria-hidden="true">${q.target.example.emoji}</div>`;
@@ -1317,12 +1593,12 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
         // tetap dihapus krn cuma dekorasi tidak relevan yg berpotensi
         // mengajarkan asosiasi keliru, BUKAN diganti scene apa pun (topik hari
         // tidak py ilustrasi pengganti yg aman/relevan spt warna/bentuk).
-        opts.map((o) => ({ emoji: colorTopic || numberTopic || shapeTopic || dayTopic ? '' : itemGlyph(topic.id, o), label: o.en })),
+        opts.map((o) => ({ emoji: aboveStarter || colorTopic || numberTopic || shapeTopic || dayTopic ? '' : itemGlyph(topic.id, o), label: o.en })),
         'pickWord'
       )}
       <div class="feedback" id="fb"></div>
     `;
-    wireHint(container, opts, q.target, () => (hintUsedThisSlot = true));
+    wireHint(container, opts, q.target, () => (hintUsedThisSlot = true), latihanHintEliminateCount(contentLevel));
     wireQuizNav(goTo);
 
     setHandlers({
@@ -1374,7 +1650,7 @@ function ensureTantanganPlan(topicId: string, section: SectionName, eligible: Vo
   return (getSection('vocabulary', topicId, section)!.plan ?? []).map((slot) => eligible[slot.item] ?? eligible[0]);
 }
 
-export function runTantangan(container: HTMLElement, topic: VocabTopic, onDone: OnDone, level: LevelKey): void {
+export function runTantangan(container: HTMLElement, topic: VocabTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
   function shellHtml(active: 'eja' | 'susun' | 'penggunaan'): string {
     return `
       <div class="tantangan-tabs">
@@ -1408,7 +1684,8 @@ export function runTantangan(container: HTMLElement, topic: VocabTopic, onDone: 
         requestSync();
         openSusun();
       },
-      level
+      level,
+      contentLevel
     );
   }
 
@@ -1423,7 +1700,8 @@ export function runTantangan(container: HTMLElement, topic: VocabTopic, onDone: 
         requestSync();
         openPenggunaan();
       },
-      level
+      level,
+      contentLevel
     );
   }
 
@@ -1484,8 +1762,20 @@ function isEasyOnboardingTopic(topicId: string): boolean {
 /** Bagian 1 dari Tantangan: eja kata lewat chip huruf acak — TANPA hint
  *  (permintaan user: Tantangan sengaja tanpa clue, beda dari Latihan Inti).
  *  PERSIS `TANTANGAN_TAB_SIZE` soal, kata tunggal saja (`ensureTantanganPlan`
- *  + `singleWordItems`). */
-export function runEjaKata(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey): void {
+ *  + `singleWordItems`).
+ *
+ * `contentLevel` (param BARU, lihat komentar `tantanganRevealThreshold`) —
+ * ambang reveal otomatis "💡 Jawabannya" mundur dari 2x salah jadi 3x salah
+ * di Achiever/Trailblazer (permintaan user "pembeda antar level di atas
+ * starter"), Explorer/Adventurer TETAP 2x spt semula. */
+export function runEjaKata(
+  container: HTMLElement,
+  topicId: string,
+  allItems: VocabItem[],
+  onDone: OnDone,
+  level: LevelKey,
+  contentLevel: LevelKey
+): void {
   const dayItems = isDayItems(allItems);
   const items = ensureTantanganPlan(topicId, 'tantangan-eja', singleWordItems(allItems));
   let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-eja')?.cursor ?? 0, 0), items.length - 1);
@@ -1582,7 +1872,7 @@ export function runEjaKata(container: HTMLElement, topicId: string, allItems: Vo
     // permintaan user: tahap pengenalan biar anak lihat langsung
     // jawabannya di bawah tombol "🔊 Dengar Kata", papan susun tetap wajib
     // diisi manual (bukan otomatis terisi penuh).
-    const showAnswer = isEasyOnboardingTopic(topicId) || wrongSoFar >= 2;
+    const showAnswer = isEasyOnboardingTopic(topicId) || wrongSoFar >= tantanganRevealThreshold(contentLevel);
     const answerHintHtml =
       showAnswer ? `<p class="meta" style="margin:4px 0 0;text-align:center">💡 Jawabannya: <b>${it.en.toUpperCase()}</b></p>` : '';
 
@@ -1862,13 +2152,54 @@ function runUcapan(container: HTMLElement, topicId: string, allItems: VocabItem[
 }
 
 /**
+ * Kata "jebakan" (decoy) ACAK ≥2 dari kata SIBLING (kalimat contoh item LAIN
+ * di topik yang sama) — permintaan user: "pada susun kalimat di atas level
+ * starter tambahkan min 2 kata random tambahan untuk jebakan" (Explorer ke
+ * atas: bank kata TIDAK LAGI persis sejumlah kata jawaban, jadi anak tidak
+ * bisa asal taruh SEMUA kata yg tersedia — WAJIB paham urutan/makna kalimat
+ * buat menyisihkan kata yg tidak relevan). Diambil dari kata SIBLING (bukan
+ * kosakata acak di luar topik) — konsisten pola distraktor MCQ lain di file
+ * ini (SELALU dari topik yang sama, sudah dikenal anak lewat kata lain di
+ * topik ini, bukan kosakata baru yg membingungkan). Kata yang SUDAH ada di
+ * kalimat target (case-insensitive) DIKECUALIKAN, biar tidak ada 2 chip
+ * kembar yg membingungkan mana yang "asli". Little Stars/Starter TIDAK
+ * PERNAH manggil fungsi ini (caller cek `isAboveStarter` dulu) — tetap SAMA
+ * PERSIS spt sebelumnya (permintaan user eksplisit "masih seperti sekarang").
+ *
+ * 🔒 `count` (param BARU) — jumlahnya naik bertahap per level (`susunDecoyCount`,
+ * 2 Explorer/Adventurer → 3 Achiever → 4 Trailblazer), bukan flat 2 di semua
+ * 4 level "di atas Starter" (permintaan user: "pembeda antar level di atas
+ * starter", riset Cambridge Movers→Flyers→KET progresif nambah opsi
+ * berlebih/jebakan seiring tier naik).
+ */
+function pickDecoyWords(allItems: VocabItem[], current: VocabItem, targetWords: string[], count: number): string[] {
+  const exclude = new Set(targetWords.map((w) => w.toLowerCase()));
+  const pool = new Set<string>();
+  allItems
+    .filter((it) => it !== current)
+    .forEach((it) => {
+      it.example.en
+        .replace('.', '')
+        .split(' ')
+        .forEach((w) => {
+          if (!exclude.has(w.toLowerCase())) pool.add(w);
+        });
+    });
+  return shuffle(Array.from(pool)).slice(0, Math.min(count, pool.size));
+}
+
+/**
  * Tab "🔤 Susun Kalimat" — kalimat Indonesia (`example.id`) ditampilkan sbg
  * soal, anak susun kata Inggris (`example.en`) jadi terjemahannya lewat word
  * bank. TANPA hint sebelum 2x gagal (Tantangan). Dulu "fase susun" di dalam
  * Contoh Penggunaan (`runContohPenggunaan`) — sekarang tab BERDIRI SENDIRI
  * (permintaan user: 3 tab terpisah, 5 soal masing-masing).
+ *
+ * `contentLevel` (param BARU, lihat komentar `isAboveStarter`/
+ * `pickDecoyWords`) — Explorer ke atas bank kata dapat ≥2 kata jebakan
+ * tambahan, Little Stars/Starter TETAP persis kata jawaban saja spt semula.
  */
-export function runSusunKalimat(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey): void {
+export function runSusunKalimat(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
   const items = ensureTantanganPlan(topicId, 'tantangan-susun', allItems);
   let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-susun')?.cursor ?? 0, 0), items.length - 1);
 
@@ -1888,8 +2219,21 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
   function drawSusun(it: VocabItem): void {
     const ex = it.example;
     const words = ex.en.replace('.', '').split(' ');
+    // 🔒 Kata jebakan (permintaan user, lihat komentar `pickDecoyWords`) —
+    // dihitung SEKALI per soal (bukan di-reroll tiap `paint()`/hint), idx-nya
+    // MULAI dari `words.length` supaya tidak pernah tabrakan dgn idx kata
+    // jawaban asli (0..words.length-1) yang dipakai `applyHint()`/`unpick`/
+    // `removeLastWord` buat cocok-cocokkan tile.
+    const decoyWords = isAboveStarter(contentLevel)
+      ? pickDecoyWords(allItems, it, words, susunDecoyCount(contentLevel))
+      : [];
+    function buildBank(): { w: string; used: boolean; idx: number }[] {
+      const real = words.map((w, i) => ({ w, used: false, idx: i }));
+      const decoys = decoyWords.map((w, i) => ({ w, used: false, idx: words.length + i }));
+      return shuffle([...real, ...decoys]);
+    }
     let answer: { w: string; idx: number }[] = [];
-    let bank = shuffle(words.map((w, i) => ({ w, used: false, idx: i })));
+    let bank = buildBank();
     let answered = false;
     // 🔒 "💡 Petunjuk" BARU (permintaan user "tambahkan petunjuk di susun
     // kalimat" — dulu di sini TANPA hint eksplisit sama sekali, cuma reveal
@@ -1907,7 +2251,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
     function applyHint(): void {
       hintUsed = true;
       hintCount = Math.round(words.length * 0.6);
-      bank = shuffle(words.map((w, i) => ({ w, used: false, idx: i })));
+      bank = buildBank();
       answer = [];
       for (let i = 0; i < hintCount; i++) {
         const tile = bank.find((b) => b.idx === i)!;
@@ -1929,7 +2273,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
       // Sama pola Eja Kata di atas — 7 topik pengenalan Little Stars
       // tampilkan jawaban ini sejak awal, di bawah teks soal (`.en-text`),
       // papan susun kata tetap wajib diisi manual oleh anak.
-      const showAnswer = isEasyOnboardingTopic(topicId) || wrongSoFar >= 2;
+      const showAnswer = isEasyOnboardingTopic(topicId) || wrongSoFar >= tantanganRevealThreshold(contentLevel);
       const answerHintHtml =
         showAnswer ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Jawabannya: <b>${ex.en}</b></p>` : '';
 

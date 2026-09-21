@@ -466,8 +466,8 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       { en: 'I want to buy an apple.', id: 'Saya mau beli apel.' },
     ],
     drill: [
-      { en: 'I want a red apple.', opts: [{ emoji: '🍎', ok: true }, { emoji: '🍌' }, { emoji: '🍇' }] },
-      { en: 'Can I have a banana?', opts: [{ emoji: '🍌', ok: true }, { emoji: '🍉' }, { emoji: '🍎' }] },
+      { en: 'I want a red apple.', id: 'Aku mau apel merah.', opts: [{ emoji: '🍎', ok: true }, { emoji: '🍌' }, { emoji: '🍇' }] },
+      { en: 'Can I have a banana?', id: 'Bolehkah aku minta pisang?', opts: [{ emoji: '🍌', ok: true }, { emoji: '🍉' }, { emoji: '🍎' }] },
     ],
     // `story` di 3 topik Listening ini (+ READING_TOPICS_ADVENTURER di
     // bawah) SENGAJA menyebut distraktor JUGA di teks (mis. "sees a
@@ -479,7 +479,9 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     story: ['Andi sees a banana.', 'He buys a red apple.', 'The apple is one dollar.'],
     question: {
       en: 'What did Andi buy?',
+      id: 'Apa yang dibeli Andi?',
       opts: [{ emoji: '🍎', lbl: 'Apple', ok: true }, { emoji: '🍌', lbl: 'Banana' }, { emoji: '🍇', lbl: 'Grape' }],
+      decoys: [{ emoji: '🍊', lbl: 'Orange' }, { emoji: '🍉', lbl: 'Watermelon' }],
     },
   },
   {
@@ -488,12 +490,12 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     scene: '👋',
     desc: 'Cerita kenalan',
     primer: [{ en: 'What is your name?', id: 'Siapa namamu?' }],
-    drill: [{ en: 'She is my sister.', opts: [{ emoji: '👧', ok: true }, { emoji: '👴' }] }],
+    drill: [{ en: 'She is my sister.', id: 'Dia kakak perempuanku.', opts: [{ emoji: '👧', ok: true }, { emoji: '👦' }] }],
     // Distraktor "red" disebut lewat NEGASI ("does not like") — anak wajib
     // proses "does not" dulu, bukan cuma menangkap kata warna pertama yang
     // kedengaran.
     story: ['This is Ara.', 'Ara does not like red.', 'Ara likes blue.'],
-    question: { en: 'What color does Ara like?', opts: [{ emoji: '🔵', lbl: 'Blue', ok: true }, { emoji: '🔴', lbl: 'Red' }] },
+    question: { en: 'What color does Ara like?', id: 'Warna apa yang disukai Ara?', opts: [{ emoji: '🔵', lbl: 'Blue', ok: true }, { emoji: '🔴', lbl: 'Red' }, { emoji: '🟢', lbl: 'Green' }], decoys: [{ emoji: '🟡', lbl: 'Yellow' }, { emoji: '🟣', lbl: 'Purple' }] },
   },
   {
     id: 'sekolah',
@@ -501,11 +503,11 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     scene: '🏫',
     desc: 'Cerita sekolah',
     primer: [{ en: 'This is my classroom.', id: 'Ini kelasku.' }],
-    drill: [{ en: 'I have a pencil.', opts: [{ emoji: '✏️', ok: true }, { emoji: '📕' }] }],
+    drill: [{ en: 'I have a pencil.', id: 'Aku punya pensil.', opts: [{ emoji: '✏️', ok: true }, { emoji: '📕' }] }],
     // "green" dilekatkan ke tas TEMANNYA (bukan tas Budi) — anak wajib
     // bedakan SIAPA pemilik tas warna apa, bukan cuma tangkap 1 kata warna.
-    story: ['Budi is at school.', 'His friend has a green bag.', 'Budi has a blue bag.'],
-    question: { en: "What color is Budi's bag?", opts: [{ emoji: '🔵', lbl: 'Blue', ok: true }, { emoji: '🟢', lbl: 'Green' }] },
+    story: ['Budi is at school.', 'His friend has a green bag, but Budi does not.', 'Budi has a blue bag.'],
+    question: { en: "What color is Budi's bag?", id: 'Apa warna tas Budi?', opts: [{ emoji: '🔵', lbl: 'Blue', ok: true }, { emoji: '🟢', lbl: 'Green' }], decoys: [{ emoji: '🔴', lbl: 'Red' }, { emoji: '🟡', lbl: 'Yellow' }] },
   },
   /**
    * 7 topik tambahan (sesi ini) — menggenapkan Listening Explorer dari 3
@@ -533,11 +535,12 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       { en: 'I have a fever.', id: 'Aku demam.' },
     ],
     drill: [
-      { en: 'I have a headache.', opts: [{ emoji: '🤕', ok: true }, { emoji: '😷' }, { emoji: '🤒' }] },
-      { en: 'The doctor gives me medicine.', opts: [{ emoji: '💊', ok: true }, { emoji: '💉' }] },
+      { en: 'I have a headache.', id: 'Aku sakit kepala.', opts: [{ emoji: '🤕', ok: true }, { emoji: '😷' }, { emoji: '🤒' }] },
+      { en: 'The doctor gives me medicine.', id: 'Dokter memberiku obat.', opts: [{ emoji: '💊', ok: true }, { emoji: '💉' }] },
     ],
-    story: ['Rani is at the clinic.', 'Her brother has a cough.', 'Rani has a fever.'],
-    question: { en: 'What does Rani have?', opts: [{ emoji: '🤒', lbl: 'Fever', ok: true }, { emoji: '😷', lbl: 'Cough' }] },
+    story: ['Rani, what is wrong?', 'I do not have a cough. I have a fever.', 'Okay. I will give you medicine.'],
+    storyVoices: ['male', 'female', 'male'],
+    question: { en: 'What does Rani have?', id: 'Rani sedang sakit apa?', opts: [{ emoji: '🤒', lbl: 'Fever', ok: true }, { emoji: '😷', lbl: 'Cough' }], decoys: [{ emoji: '🤕', lbl: 'Headache' }, { emoji: '🦷', lbl: 'Toothache' }] },
   },
   {
     id: 'kebun-binatang',
@@ -549,11 +552,11 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       { en: 'It is very big.', id: 'Itu sangat besar.' },
     ],
     drill: [
-      { en: 'The elephant is big.', opts: [{ emoji: '🐘', ok: true }, { emoji: '🐭' }] },
-      { en: 'The turtle is slow.', opts: [{ emoji: '🐢', ok: true }, { emoji: '🐆' }] },
+      { en: 'The elephant is big.', id: 'Gajahnya besar.', opts: [{ emoji: '⛰️', ok: true }, { emoji: '🐭' }] },
+      { en: 'The turtle is slow.', id: 'Kura-kuranya lambat.', opts: [{ emoji: '⏳', ok: true }, { emoji: '🏎️' }] },
     ],
     story: ['Dimas sees a turtle first.', 'It moves very slowly.', 'Then he sees a cheetah, and it is fast.'],
-    question: { en: 'Which animal is fast?', opts: [{ emoji: '🐆', lbl: 'Cheetah', ok: true }, { emoji: '🐢', lbl: 'Turtle' }] },
+    question: { en: 'Which animal is fast?', id: 'Hewan mana yang cepat?', opts: [{ emoji: '🏎️', lbl: 'Cheetah', ok: true }, { emoji: '⏳', lbl: 'Turtle' }], decoys: [{ emoji: '🐵', lbl: 'Monkey' }, { emoji: '🐻', lbl: 'Bear' }] },
   },
   {
     id: 'di-kasir',
@@ -565,11 +568,11 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       { en: 'Here is my money.', id: 'Ini uangku.' },
     ],
     drill: [
-      { en: 'I pay with a coin.', opts: [{ emoji: '🪙', ok: true }, { emoji: '💵' }] },
-      { en: 'The cashier gives me a receipt.', opts: [{ emoji: '🧾', ok: true }, { emoji: '👛' }] },
+      { en: 'I pay with a coin.', id: 'Aku membayar dengan koin.', opts: [{ emoji: '🪙', ok: true }, { emoji: '💵' }] },
+      { en: 'The cashier gives me a receipt.', id: 'Kasir memberiku struk.', opts: [{ emoji: '🧾', ok: true }, { emoji: '👛' }] },
     ],
-    story: ['Sinta goes to the cashier.', 'Her friend pays with a coin.', 'Sinta pays with paper money.'],
-    question: { en: 'How does Sinta pay?', opts: [{ emoji: '💵', lbl: 'Paper Money', ok: true }, { emoji: '🪙', lbl: 'Coin' }] },
+    story: ['Sinta goes to the cashier.', 'Her friend pays with a coin, but Sinta has paper money.', 'Sinta pays with paper money.'],
+    question: { en: 'How does Sinta pay?', id: 'Bagaimana Sinta membayar?', opts: [{ emoji: '💵', lbl: 'Paper Money', ok: true }, { emoji: '🪙', lbl: 'Coin' }], decoys: [{ emoji: '💳', lbl: 'Card' }, { emoji: '📱', lbl: 'Phone' }] },
   },
   {
     id: 'jadwal-harian',
@@ -578,11 +581,11 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     desc: 'Cerita jadwal',
     primer: [{ en: 'What do you do in the morning?', id: 'Apa yang kamu lakukan di pagi hari?' }],
     drill: [
-      { en: 'I wake up in the morning.', opts: [{ emoji: '🌅', ok: true }, { emoji: '🌃' }] },
-      { en: 'I eat lunch at noon.', opts: [{ emoji: '🕛', ok: true }, { emoji: '🌇' }] },
+      { en: 'I wake up in the morning.', id: 'Aku bangun di pagi hari.', opts: [{ emoji: '🌅', ok: true }, { emoji: '🌃' }] },
+      { en: 'I eat lunch at noon.', id: 'Aku makan siang saat tengah hari.', opts: [{ emoji: '🕛', ok: true }, { emoji: '🌇' }] },
     ],
     story: ['Farah wakes up in the morning.', 'Her sister sleeps in the afternoon.', 'Farah plays in the evening.'],
-    question: { en: 'When does Farah play?', opts: [{ emoji: '🌇', lbl: 'Evening', ok: true }, { emoji: '☀️', lbl: 'Afternoon' }] },
+    question: { en: 'When does Farah play?', id: 'Kapan Farah bermain?', opts: [{ emoji: '🌇', lbl: 'Evening', ok: true }, { emoji: '☀️', lbl: 'Afternoon' }], decoys: [{ emoji: '🌅', lbl: 'Morning' }, { emoji: '🌙', lbl: 'Night' }] },
   },
   {
     id: 'dari-mana',
@@ -594,11 +597,12 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       { en: 'I am from Indonesia.', id: 'Aku dari Indonesia.' },
     ],
     drill: [
-      { en: 'She is from Japan.', opts: [{ emoji: '🇯🇵', ok: true }, { emoji: '🇰🇷' }] },
-      { en: 'He is from France.', opts: [{ emoji: '🇫🇷', ok: true }, { emoji: '🇩🇪' }] },
+      { en: 'She is from Japan.', id: 'Dia dari Jepang.', opts: [{ emoji: '🇯🇵', ok: true }, { emoji: '🇰🇷' }] },
+      { en: 'He is from France.', id: 'Dia dari Prancis.', opts: [{ emoji: '🇫🇷', ok: true }, { emoji: '🇩🇪' }] },
     ],
-    story: ['Leo has a new friend.', 'His friend is from Korea.', 'Leo is from Indonesia.'],
-    question: { en: 'Where is Leo from?', opts: [{ emoji: '🇮🇩', lbl: 'Indonesia', ok: true }, { emoji: '🇰🇷', lbl: 'Korea' }] },
+    story: ['Leo, where is your new friend from?', 'My friend is from Korea. I am from Indonesia.', 'Nice! Two friends from two countries.'],
+    storyVoices: ['female', 'male', 'female'],
+    question: { en: 'Where is Leo from?', id: 'Leo berasal dari mana?', opts: [{ emoji: '🇮🇩', lbl: 'Indonesia', ok: true }, { emoji: '🇰🇷', lbl: 'Korea' }], decoys: [{ emoji: '🇯🇵', lbl: 'Japan' }, { emoji: '🇫🇷', lbl: 'France' }] },
   },
   {
     id: 'pesta-ulang-tahun',
@@ -610,11 +614,11 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       { en: 'I have a present for you.', id: 'Aku punya hadiah untukmu.' },
     ],
     drill: [
-      { en: 'I blow the candle.', opts: [{ emoji: '🕯️', ok: true }, { emoji: '🎁' }] },
-      { en: 'We sing a song at the party.', opts: [{ emoji: '🎵', ok: true }, { emoji: '🎂' }] },
+      { en: 'I blow the candle.', id: 'Aku meniup lilinnya.', opts: [{ emoji: '🕯️', ok: true }, { emoji: '🎁' }] },
+      { en: 'We sing a song at the party.', id: 'Kami menyanyikan lagu di pesta.', opts: [{ emoji: '🎵', ok: true }, { emoji: '🎂' }] },
     ],
     story: ['Today is Nina’s birthday.', 'Her friend brings a card.', 'Nina opens her present.'],
-    question: { en: 'What does Nina open?', opts: [{ emoji: '🎁', lbl: 'Present', ok: true }, { emoji: '✉️', lbl: 'Card' }] },
+    question: { en: 'What does Nina open?', id: 'Apa yang dibuka Nina?', opts: [{ emoji: '🎁', lbl: 'Present', ok: true }, { emoji: '✉️', lbl: 'Card' }], decoys: [{ emoji: '🎂', lbl: 'Cake' }, { emoji: '🎈', lbl: 'Balloon' }] },
   },
   {
     id: 'di-dapur',
@@ -626,11 +630,11 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       { en: 'I am cooking soup.', id: 'Aku memasak sup.' },
     ],
     drill: [
-      { en: 'I eat soup with a spoon.', opts: [{ emoji: '🥄', ok: true }, { emoji: '🍴' }] },
-      { en: 'Mom cuts vegetables with a knife.', opts: [{ emoji: '🔪', ok: true }, { emoji: '🍽️' }] },
+      { en: 'I eat soup with a spoon.', id: 'Aku makan sup dengan sendok.', opts: [{ emoji: '🥄', ok: true }, { emoji: '🍴' }] },
+      { en: 'Mom cuts vegetables with a knife.', id: 'Ibu memotong sayuran dengan pisau.', opts: [{ emoji: '🔪', ok: true }, { emoji: '🍽️' }] },
     ],
     story: ['Mom cooks in the kitchen.', 'Dad washes the fork.', 'Mom washes the spoon.'],
-    question: { en: 'What does Mom wash?', opts: [{ emoji: '🥄', lbl: 'Spoon', ok: true }, { emoji: '🍴', lbl: 'Fork' }] },
+    question: { en: 'What does Mom wash?', id: 'Apa yang dicuci Ibu?', opts: [{ emoji: '🥄', lbl: 'Spoon', ok: true }, { emoji: '🍴', lbl: 'Fork' }], decoys: [{ emoji: '🔪', lbl: 'Knife' }, { emoji: '🍽️', lbl: 'Plate' }] },
   },
 ];
 
@@ -779,13 +783,13 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
         answer: { en: 'The bag is blue.', id: 'Tasnya biru.' },
       },
       {
-        emoji: '🦒',
+        emoji: '🐰',
         lines: [
           { en: 'Budi sees a lion at the zoo.', id: 'Budi melihat singa di kebun binatang.' },
-          { en: 'Budi feeds a giraffe.', id: 'Budi memberi makan jerapah.' },
+          { en: 'Budi feeds a rabbit.', id: 'Budi memberi makan kelinci.' },
         ],
         question: { en: 'What does Budi feed?', id: 'Budi memberi makan apa?' },
-        answer: { en: 'The animal is a giraffe.', id: 'Hewannya jerapah.' },
+        answer: { en: 'The animal is a rabbit.', id: 'Hewannya kelinci.' },
       },
       {
         emoji: '🏀',
@@ -816,7 +820,7 @@ export const GRAMMAR_TOPICS: GrammarTopic[] = [
     desc: 'To be — perkenalan',
     examples: [{ en: 'This is a cat.', emoji: '🐱' }, { en: 'This is a dog.', emoji: '🐶' }],
     scramble: [
-      { emoji: '🐦', target: ['This', 'is', 'a', 'bird'] },
+      { emoji: '🐰', target: ['This', 'is', 'a', 'rabbit'] },
       { emoji: '⚽', target: ['This', 'is', 'a', 'ball'] },
     ],
     fill: {
@@ -1025,8 +1029,8 @@ export const GRAMMAR_TOPICS: GrammarTopic[] = [
       after: [],
       options: [
         { word: 'sing', emoji: '🎤' },
-        { word: 'dance', emoji: '💃' },
-        { word: 'run', emoji: '🏃' },
+        { word: 'dance', emoji: '🎵' },
+        { word: 'run', emoji: '💨' },
       ],
     },
   },
@@ -1256,7 +1260,7 @@ export const VOCAB_TOPICS_ADVENTURER: VocabTopic[] = [
     items: [
       { en: 'Football', id: 'Sepak Bola', emoji: '⚽', example: { en: 'I play football.', id: 'Aku main sepak bola.', emoji: '⚽' } },
       { en: 'Basketball', id: 'Bola Basket', emoji: '🏀', example: { en: 'He plays basketball.', id: 'Dia main bola basket.', emoji: '🏀' } },
-      { en: 'Swimming', id: 'Berenang', emoji: '🏊', example: { en: 'She likes swimming.', id: 'Dia suka berenang.', emoji: '🏊' } },
+      { en: 'Swimming', id: 'Berenang', emoji: '🌊', example: { en: 'She likes swimming.', id: 'Dia suka berenang.', emoji: '🏊' } },
       { en: 'Golf', id: 'Golf', emoji: '⛳', example: { en: 'He plays golf.', id: 'Dia main golf.', emoji: '⛳' } },
       { en: 'Badminton', id: 'Bulu Tangkis', emoji: '🏸', example: { en: 'We play badminton.', id: 'Kami main bulu tangkis.', emoji: '🏸' } },
       { en: 'Volleyball', id: 'Bola Voli', emoji: '🏐', example: { en: 'They play volleyball.', id: 'Mereka main bola voli.', emoji: '🏐' } },
@@ -1364,17 +1368,20 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'My flight is delayed.', id: 'Penerbanganku tertunda.' },
     ],
     drill: [
-      { en: 'The plane is blue and white.', opts: [{ emoji: '✈️', ok: true }, { emoji: '🚗' }, { emoji: '🚢' }] },
-      { en: 'I need to check in my bag.', opts: [{ emoji: '🧳', ok: true }, { emoji: '🎒' }, { emoji: '📱' }] },
+      { en: 'The plane is blue and white.', id: 'Pesawatnya berwarna biru dan putih.', opts: [{ emoji: '✈️', ok: true }, { emoji: '🚗' }, { emoji: '🚢' }] },
+      { en: 'I need to check in my bag.', id: 'Aku perlu check-in tasku.', opts: [{ emoji: '🧳', ok: true }, { emoji: '🎒' }, { emoji: '📱' }] },
     ],
     // "10 o'clock" dilekatkan ke penerbangan TEMANNYA (bukan Rio) — anak
     // wajib bedakan penerbangan siapa yang ditanya, bukan cuma tangkap 1
     // angka jam yang kebetulan kedengaran (lihat komentar prinsip yang
     // sama di LISTENING_TOPICS di atas).
-    story: ['Rio is at the airport.', 'His friend’s flight is at ten o’clock.', 'Rio’s flight is at nine o’clock.'],
+    story: ['Rio, my flight is at ten o’clock. What about yours?', 'Mine is at nine o’clock.', 'Then we must hurry!'],
+    storyVoices: ['female', 'male', 'female'],
     question: {
       en: 'What time is Rio’s flight?',
+      id: 'Pukul berapa penerbangan Rio?',
       opts: [{ emoji: '9️⃣', lbl: '9 o’clock', ok: true }, { emoji: '🔟', lbl: '10 o’clock' }],
+      decoys: [{ emoji: '8️⃣', lbl: '8 o’clock' }, { emoji: '🕚', lbl: '11 o’clock' }],
     },
   },
   /**
@@ -1403,27 +1410,28 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'I want to be a doctor.', id: 'Aku mau jadi dokter.' },
     ],
     drill: [
-      { en: 'The firefighter puts out fires.', opts: [{ emoji: '👩‍🚒', ok: true }, { emoji: '👮' }, { emoji: '🧑‍🍳' }] },
-      { en: 'The pilot flies the plane.', opts: [{ emoji: '🧑‍✈️', ok: true }, { emoji: '🧑‍🚀' }] },
+      { en: 'The firefighter puts out fires.', id: 'Petugas pemadam kebakaran memadamkan api.', opts: [{ emoji: '👩‍🚒', ok: true }, { emoji: '👮' }, { emoji: '🧑‍🍳' }] },
+      { en: 'The pilot flies the plane.', id: 'Pilot menerbangkan pesawat.', opts: [{ emoji: '🧑‍✈️', ok: true }, { emoji: '🧑‍🚀' }] },
     ],
-    story: ['Sari visits the doctor.', 'Her mom is a teacher.', 'Sari wants to be a doctor too.'],
-    question: { en: 'What does Sari want to be?', opts: [{ emoji: '🧑‍⚕️', lbl: 'Doctor', ok: true }, { emoji: '🧑‍🏫', lbl: 'Teacher' }] },
+    story: ['Sari, do you want to be a teacher like your mom?', 'No, I want to be a doctor.', 'That is a great dream!'],
+    storyVoices: ['male', 'female', 'male'],
+    question: { en: 'What does Sari want to be?', id: 'Sari mau jadi apa?', opts: [{ emoji: '🧑‍⚕️', lbl: 'Doctor', ok: true }, { emoji: '🧑‍🏫', lbl: 'Teacher' }, { emoji: '🧑‍✈️', lbl: 'Pilot' }], decoys: [{ emoji: '🧑‍🍳', lbl: 'Chef' }, { emoji: '🧑‍🚒', lbl: 'Firefighter' }] },
   },
   {
     id: 'petualangan-safari',
     title: 'Petualangan Safari (Safari Adventure)',
-    scene: '🦒',
+    scene: '🦁',
     desc: 'Cerita safari',
     primer: [
       { en: 'Look, an elephant!', id: 'Lihat, ada gajah!' },
-      { en: 'It is very big.', id: 'Itu sangat besar.' },
+      { en: 'It is a very big animal.', id: 'Itu hewan yang sangat besar.' },
     ],
     drill: [
-      { en: 'The giraffe has a long neck.', opts: [{ emoji: '🦒', ok: true }, { emoji: '🦓' }] },
-      { en: 'The monkey climbs the tree.', opts: [{ emoji: '🐒', ok: true }, { emoji: '🐻' }] },
+      { en: 'The giraffe has a long neck.', id: 'Jerapah punya leher yang panjang.', opts: [{ emoji: '📏', ok: true }, { emoji: '🐾' }] },
+      { en: 'The monkey climbs the tree.', id: 'Monyet memanjat pohon.', opts: [{ emoji: '🐵', ok: true }, { emoji: '🐻' }] },
     ],
-    story: ['Toni goes on a safari.', 'He sees a zebra first.', 'Then he sees a lion resting.'],
-    question: { en: 'What does Toni see resting?', opts: [{ emoji: '🦁', lbl: 'Lion', ok: true }, { emoji: '🦓', lbl: 'Zebra' }] },
+    story: ['Toni goes on a safari.', 'He thinks he sees a zebra, but it is a lion resting.', 'The lion is very big.'],
+    question: { en: 'What does Toni see resting?', id: 'Apa yang Toni lihat sedang istirahat?', opts: [{ emoji: '🦁', lbl: 'Lion', ok: true }, { emoji: '🐾', lbl: 'Zebra' }], decoys: [{ emoji: '🐵', lbl: 'Monkey' }, { emoji: '🐯', lbl: 'Tiger' }] },
   },
   {
     id: 'makan-malam',
@@ -1435,11 +1443,12 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'We have rice and soup.', id: 'Kami makan nasi dan sup.' },
     ],
     drill: [
-      { en: 'Mom cooks vegetable soup.', opts: [{ emoji: '🥦', ok: true }, { emoji: '🍞' }] },
-      { en: 'I drink a glass of milk.', opts: [{ emoji: '🥛', ok: true }, { emoji: '💧' }] },
+      { en: 'Mom cooks vegetable soup.', id: 'Ibu memasak sup sayur.', opts: [{ emoji: '🥦', ok: true }, { emoji: '🍞' }] },
+      { en: 'I drink a glass of milk.', id: 'Aku minum segelas susu.', opts: [{ emoji: '🥛', ok: true }, { emoji: '💧' }] },
     ],
-    story: ['Dad brings bread home.', 'Mom cooks noodle soup.', 'The family eats noodle soup together.'],
-    question: { en: 'What does the family eat?', opts: [{ emoji: '🍜', lbl: 'Noodle Soup', ok: true }, { emoji: '🍞', lbl: 'Bread' }] },
+    story: ['I brought some bread, but we are not eating bread tonight.', 'That is fine. I cooked noodle soup.', 'Great! Let us eat noodle soup together.'],
+    storyVoices: ['male', 'female', 'male'],
+    question: { en: 'What does the family eat?', id: 'Apa yang dimakan keluarga itu?', opts: [{ emoji: '🍜', lbl: 'Noodle Soup', ok: true }, { emoji: '🍞', lbl: 'Bread' }], decoys: [{ emoji: '🍚', lbl: 'Rice' }, { emoji: '🥗', lbl: 'Salad' }] },
   },
   {
     id: 'kelas-seni',
@@ -1451,11 +1460,12 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'I need paint and crayons.', id: 'Aku butuh cat dan krayon.' },
     ],
     drill: [
-      { en: 'I draw a line with a ruler.', opts: [{ emoji: '📏', ok: true }, { emoji: '✂️' }] },
-      { en: 'I cut paper with scissors.', opts: [{ emoji: '✂️', ok: true }, { emoji: '🖍️' }] },
+      { en: 'I draw a line with a ruler.', id: 'Aku menggambar garis dengan penggaris.', opts: [{ emoji: '📏', ok: true }, { emoji: '✂️' }] },
+      { en: 'I cut paper with scissors.', id: 'Aku memotong kertas dengan gunting.', opts: [{ emoji: '✂️', ok: true }, { emoji: '🖍️' }] },
     ],
-    story: ['Kiki brings a notebook.', 'Her friend brings crayons.', 'Kiki paints a picture.'],
-    question: { en: 'What does Kiki use to paint?', opts: [{ emoji: '🎨', lbl: 'Paint', ok: true }, { emoji: '🖍️', lbl: 'Crayons' }] },
+    story: ['Kiki, do you use crayons to paint?', 'No, I use paint on my picture.', 'Beautiful picture, Kiki!'],
+    storyVoices: ['male', 'female', 'male'],
+    question: { en: 'What does Kiki use to paint?', id: 'Apa yang Kiki pakai untuk melukis?', opts: [{ emoji: '🎨', lbl: 'Paint', ok: true }, { emoji: '🖍️', lbl: 'Crayons' }, { emoji: '✏️', lbl: 'Pencil' }], decoys: [{ emoji: '✂️', lbl: 'Scissors' }, { emoji: '🖊️', lbl: 'Pen' }] },
   },
   {
     id: 'ramalan-cuaca',
@@ -1467,11 +1477,11 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'It is sunny and hot.', id: 'Cuacanya cerah dan panas.' },
     ],
     drill: [
-      { en: 'It is rainy today.', opts: [{ emoji: '🌧️', ok: true }, { emoji: '☀️' }] },
-      { en: 'The wind is strong and windy.', opts: [{ emoji: '💨', ok: true }, { emoji: '❄️' }] },
+      { en: 'It is rainy today.', id: 'Hari ini hujan.', opts: [{ emoji: '🌧️', ok: true }, { emoji: '☀️' }] },
+      { en: 'The wind is strong and windy.', id: 'Anginnya kencang dan berangin.', opts: [{ emoji: '💨', ok: true }, { emoji: '❄️' }] },
     ],
     story: ['Yesterday was cloudy.', 'Today the sky is sunny.', 'Tomorrow it will be rainy.'],
-    question: { en: 'What is the weather like today?', opts: [{ emoji: '☀️', lbl: 'Sunny', ok: true }, { emoji: '☁️', lbl: 'Cloudy' }] },
+    question: { en: 'What is the weather like today?', id: 'Bagaimana cuaca hari ini?', opts: [{ emoji: '☀️', lbl: 'Sunny', ok: true }, { emoji: '☁️', lbl: 'Cloudy' }, { emoji: '💨', lbl: 'Windy' }], decoys: [{ emoji: '⛈️', lbl: 'Stormy' }, { emoji: '🌫️', lbl: 'Foggy' }] },
   },
   {
     id: 'depan-cermin',
@@ -1483,11 +1493,11 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'I am brushing my tooth.', id: 'Aku sedang menyikat gigiku.' },
     ],
     drill: [
-      { en: 'I wash my hand.', opts: [{ emoji: '✋', ok: true }, { emoji: '🦶' }] },
-      { en: 'I point with my finger.', opts: [{ emoji: '👆', ok: true }, { emoji: '💪' }] },
+      { en: 'I wash my hand.', id: 'Aku mencuci tanganku.', opts: [{ emoji: '✋', ok: true }, { emoji: '🦶' }] },
+      { en: 'I point with my finger.', id: 'Aku menunjuk dengan jariku.', opts: [{ emoji: '👆', ok: true }, { emoji: '💪' }] },
     ],
-    story: ['Budi looks in the mirror.', 'He washes his hand first.', 'Then he brushes his tooth.'],
-    question: { en: 'What does Budi do first?', opts: [{ emoji: '✋', lbl: 'Wash His Hand', ok: true }, { emoji: '🦷', lbl: 'Brush His Tooth' }] },
+    story: ['Budi looks in the mirror.', 'He does not brush his tooth first.', 'He washes his hand first.'],
+    question: { en: 'What does Budi do first?', id: 'Apa yang dilakukan Budi lebih dulu?', opts: [{ emoji: '✋', lbl: 'Wash His Hand', ok: true }, { emoji: '🦷', lbl: 'Brush His Tooth' }], decoys: [{ emoji: '💇', lbl: 'Comb His Hair' }, { emoji: '👕', lbl: 'Change His Shirt' }] },
   },
   {
     id: 'stasiun-kereta',
@@ -1499,11 +1509,11 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'The train is fast.', id: 'Keretanya cepat.' },
     ],
     drill: [
-      { en: 'I ride a bicycle to the station.', opts: [{ emoji: '🚲', ok: true }, { emoji: '🚗' }] },
-      { en: 'The taxi waits outside.', opts: [{ emoji: '🚕', ok: true }, { emoji: '🚚' }] },
+      { en: 'I ride a bicycle to the station.', id: 'Aku naik sepeda ke stasiun.', opts: [{ emoji: '🚲', ok: true }, { emoji: '🚗' }] },
+      { en: 'The taxi waits outside.', id: 'Taksinya menunggu di luar.', opts: [{ emoji: '🚕', ok: true }, { emoji: '🚚' }] },
     ],
     story: ['Dewi takes a taxi to the station.', 'Her brother rides a bus.', 'Dewi boards the train.'],
-    question: { en: 'What does Dewi board?', opts: [{ emoji: '🚆', lbl: 'The Train', ok: true }, { emoji: '🚌', lbl: 'The Bus' }] },
+    question: { en: 'What does Dewi board?', id: 'Apa yang dinaiki Dewi?', opts: [{ emoji: '🚆', lbl: 'The Train', ok: true }, { emoji: '🚌', lbl: 'The Bus' }], decoys: [{ emoji: '✈️', lbl: 'The Plane' }, { emoji: '🚲', lbl: 'The Bike' }] },
   },
   {
     id: 'hari-olahraga',
@@ -1515,11 +1525,11 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'I like playing football.', id: 'Aku suka main sepak bola.' },
     ],
     drill: [
-      { en: 'She plays basketball well.', opts: [{ emoji: '🏀', ok: true }, { emoji: '🎾' }] },
-      { en: 'He enjoys cycling every weekend.', opts: [{ emoji: '🚴', ok: true }, { emoji: '🏊' }] },
+      { en: 'She plays basketball well.', id: 'Dia bermain bola basket dengan baik.', opts: [{ emoji: '🏀', ok: true }, { emoji: '🎾' }] },
+      { en: 'He enjoys cycling every weekend.', id: 'Dia suka bersepeda setiap akhir pekan.', opts: [{ emoji: '🚲', ok: true }, { emoji: '🌊' }] },
     ],
     story: ['Rio plays badminton first.', 'His friend plays tennis.', 'Then Rio goes swimming.'],
-    question: { en: 'What does Rio do after badminton?', opts: [{ emoji: '🏊', lbl: 'Swimming', ok: true }, { emoji: '🎾', lbl: 'Tennis' }] },
+    question: { en: 'What does Rio do after badminton?', id: 'Apa yang dilakukan Rio setelah bulu tangkis?', opts: [{ emoji: '🌊', lbl: 'Swimming', ok: true }, { emoji: '🎾', lbl: 'Tennis' }], decoys: [{ emoji: '🏃', lbl: 'Running' }, { emoji: '⚽', lbl: 'Football' }] },
   },
   {
     id: 'beres-beres',
@@ -1531,11 +1541,11 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       { en: 'I will sweep the floor.', id: 'Aku akan menyapu lantai.' },
     ],
     drill: [
-      { en: 'I open the window.', opts: [{ emoji: '🪟', ok: true }, { emoji: '🚪' }] },
-      { en: 'She waters the garden.', opts: [{ emoji: '🌻', ok: true }, { emoji: '🧱' }] },
+      { en: 'I open the window.', id: 'Aku membuka jendela.', opts: [{ emoji: '🪟', ok: true }, { emoji: '🚪' }] },
+      { en: 'She waters the garden.', id: 'Dia menyirami taman.', opts: [{ emoji: '🌻', ok: true }, { emoji: '🧱' }] },
     ],
     story: ['Ani cleans the living room.', 'Her sister cleans the bedroom.', 'Ani sweeps the kitchen floor.'],
-    question: { en: 'What does Ani sweep?', opts: [{ emoji: '🍳', lbl: 'The Kitchen Floor', ok: true }, { emoji: '🛏️', lbl: 'The Bedroom' }] },
+    question: { en: 'What does Ani sweep?', id: 'Apa yang disapu Ani?', opts: [{ emoji: '🍳', lbl: 'The Kitchen Floor', ok: true }, { emoji: '🛏️', lbl: 'The Bedroom' }, { emoji: '🛁', lbl: 'The Bathroom' }], decoys: [{ emoji: '🌿', lbl: 'The Garden' }, { emoji: '🪜', lbl: 'The Stairs' }] },
   },
 ];
 
@@ -1569,14 +1579,15 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kucing',
         emoji: '🐱',
         example: { en: 'The cat is sleeping.', id: 'Kucingnya sedang tidur.', emoji: '😴' },
+        practice: { en: 'The little cat sleeps on the bed.', id: 'Kucing kecil itu tidur di atas kasur.' },
         question: {
           en: 'What is the cat doing?',
           id: 'Kucing itu sedang apa?',
           options: [
-            { emoji: '😴', text: 'Sleeping', ok: true },
-            { emoji: '🏃', text: 'Running', ok: false },
-            { emoji: '🍽️', text: 'Eating', ok: false },
-            { emoji: '🤸', text: 'Jumping', ok: false },
+            { emoji: '', text: 'Sleeping', ok: true },
+            { emoji: '', text: 'Running', ok: false },
+            { emoji: '', text: 'Eating', ok: false },
+            { emoji: '', text: 'Jumping', ok: false },
           ],
         },
       },
@@ -1584,15 +1595,16 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         en: 'Dog',
         id: 'Anjing',
         emoji: '🐶',
-        example: { en: 'The dog can run fast.', id: 'Anjing itu bisa lari cepat.', emoji: '🏃' },
+        example: { en: 'The dog can run fast.', id: 'Anjing itu bisa lari cepat.', emoji: '💨' },
+        practice: { en: 'Wow! My dog can run.', id: 'Wow! Anjingku bisa berlari.' },
         question: {
           en: 'What can the dog do?',
           id: 'Anjing itu bisa apa?',
           options: [
-            { emoji: '🏃', text: 'Run', ok: true },
-            { emoji: '✈️', text: 'Fly', ok: false },
-            { emoji: '🏊', text: 'Swim', ok: false },
-            { emoji: '🎤', text: 'Sing', ok: false },
+            { emoji: '', text: 'Run', ok: true },
+            { emoji: '', text: 'Fly', ok: false },
+            { emoji: '', text: 'Swim', ok: false },
+            { emoji: '', text: 'Sing', ok: false },
           ],
         },
       },
@@ -1601,6 +1613,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Apel',
         emoji: '🍎',
         example: { en: 'I eat a red apple.', id: 'Aku makan apel merah.', emoji: '🍎' },
+        practice: { en: 'She has a big red apple.', id: 'Dia punya apel merah yang besar.' },
         question: {
           en: 'What color is the apple?',
           id: 'Apa warna apelnya?',
@@ -1617,6 +1630,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Susu',
         emoji: '🥛',
         example: { en: 'I drink milk every day.', id: 'Aku minum susu setiap hari.', emoji: '🥛' },
+        practice: { en: 'She drinks a glass of milk.', id: 'Dia minum segelas susu.' },
         question: {
           en: 'What does she drink?',
           id: 'Dia minum apa?',
@@ -1633,6 +1647,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Buku',
         emoji: '📖',
         example: { en: 'I read a book at night.', id: 'Aku membaca buku di malam hari.', emoji: '📖' },
+        practice: { en: 'She reads a story every night.', id: 'Dia membaca cerita setiap malam.' },
         question: {
           en: 'When does she read?',
           id: 'Kapan dia membaca?',
@@ -1649,6 +1664,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bola',
         emoji: '⚽',
         example: { en: 'We play with a ball.', id: 'Kami bermain dengan bola.', emoji: '⚽' },
+        practice: { en: 'Let\'s play with the ball!', id: 'Ayo bermain dengan bola!' },
         question: {
           en: 'What do we play with?',
           id: 'Kami bermain dengan apa?',
@@ -1661,18 +1677,19 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         },
       },
       {
-        en: 'Bird',
-        id: 'Burung',
-        emoji: '🐦',
-        example: { en: 'The bird can sing.', id: 'Burung itu bisa bernyanyi.', emoji: '🎤' },
+        en: 'Rabbit',
+        id: 'Kelinci',
+        emoji: '🐰',
+        example: { en: 'The rabbit can hop.', id: 'Kelinci itu bisa melompat.', emoji: '🐰' },
+        practice: { en: 'Look! The rabbit can hop and hop.', id: 'Lihat! Kelinci itu bisa melompat dan melompat.' },
         question: {
-          en: 'What can the bird do?',
-          id: 'Burung itu bisa apa?',
+          en: 'What can the rabbit do?',
+          id: 'Kelinci itu bisa apa?',
           options: [
-            { emoji: '🎤', text: 'Sing', ok: true },
-            { emoji: '🏊', text: 'Swim', ok: false },
-            { emoji: '🍳', text: 'Cook', ok: false },
-            { emoji: '🤸', text: 'Jump', ok: false },
+            { emoji: '', text: 'Hop', ok: true },
+            { emoji: '', text: 'Swim', ok: false },
+            { emoji: '', text: 'Cook', ok: false },
+            { emoji: '', text: 'Sleep', ok: false },
           ],
         },
       },
@@ -1680,15 +1697,16 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         en: 'Frog',
         id: 'Katak',
         emoji: '🐸',
-        example: { en: 'The frog can jump high.', id: 'Katak itu bisa melompat tinggi.', emoji: '🤸' },
+        example: { en: 'The frog can jump high.', id: 'Katak itu bisa melompat tinggi.', emoji: '🐸' },
+        practice: { en: 'The green frog can jump.', id: 'Katak hijau itu bisa melompat.' },
         question: {
           en: 'What can the frog do?',
           id: 'Katak itu bisa apa?',
           options: [
-            { emoji: '🤸', text: 'Jump', ok: true },
-            { emoji: '✈️', text: 'Fly', ok: false },
-            { emoji: '🎤', text: 'Sing', ok: false },
-            { emoji: '😴', text: 'Sleep', ok: false },
+            { emoji: '', text: 'Jump', ok: true },
+            { emoji: '', text: 'Fly', ok: false },
+            { emoji: '', text: 'Sing', ok: false },
+            { emoji: '', text: 'Sleep', ok: false },
           ],
         },
       },
@@ -1697,6 +1715,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Tangan',
         emoji: '🙌',
         example: { en: 'He washes his hands.', id: 'Dia mencuci tangannya.', emoji: '🙌' },
+        practice: { en: 'Before lunch, he washes his hands.', id: 'Sebelum makan siang, dia mencuci tangannya.' },
         question: {
           en: 'What does he wash?',
           id: 'Dia mencuci apa?',
@@ -1713,6 +1732,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bahagia',
         emoji: '😊',
         example: { en: 'She smiles because she is happy.', id: 'Dia tersenyum karena dia bahagia.', emoji: '😊' },
+        practice: { en: 'Look at her smile. She is so happy!', id: 'Lihat senyumnya. Dia senang sekali!' },
         question: {
           en: 'How does she feel?',
           id: 'Bagaimana perasaannya?',
@@ -1751,6 +1771,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         // yang cocok (buku/pensil/bola/boneka), tidak bergantung asumsi
         // warna sembarang emoji.
         example: { en: 'I put my book in the bag.', id: 'Aku memasukkan bukuku ke dalam tas.', emoji: '🎒' },
+        practice: { en: 'She puts a book in her school bag.', id: 'Dia memasukkan buku ke tas sekolahnya.' },
         question: {
           en: 'What does she put in the bag?',
           id: 'Dia memasukkan apa ke dalam tas?',
@@ -1767,6 +1788,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Pensil',
         emoji: '✏️',
         example: { en: 'I write with a pencil.', id: 'Aku menulis dengan pensil.', emoji: '✏️' },
+        practice: { en: 'She writes her name with a pencil.', id: 'Dia menulis namanya dengan pensil.' },
         question: {
           en: 'What does she write with?',
           id: 'Dia menulis dengan apa?',
@@ -1783,6 +1805,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kursi',
         emoji: '🪑',
         example: { en: 'I sit on a chair.', id: 'Aku duduk di kursi.', emoji: '🪑' },
+        practice: { en: 'She sits on a small chair.', id: 'Dia duduk di kursi kecil.' },
         question: {
           en: 'What does she sit on?',
           id: 'Dia duduk di atas apa?',
@@ -1799,6 +1822,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Baik Hati',
         emoji: '🤗',
         example: { en: 'The teacher is kind.', id: 'Gurunya baik hati.', emoji: '🤗' },
+        practice: { en: 'Our teacher is very kind.', id: 'Guru kami sangat baik hati.' },
         question: {
           en: 'How is the teacher?',
           id: 'Bagaimana gurunya?',
@@ -1815,6 +1839,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Teman',
         emoji: '👥',
         example: { en: 'I play with my friend.', id: 'Aku bermain dengan temanku.', emoji: '👥' },
+        practice: { en: 'She plays with her good friend.', id: 'Dia bermain dengan sahabat baiknya.' },
         question: {
           en: 'Who does she play with?',
           id: 'Dia bermain dengan siapa?',
@@ -1831,6 +1856,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Menggambar',
         emoji: '🎨',
         example: { en: 'I can draw a cat.', id: 'Aku bisa menggambar kucing.', emoji: '🐱' },
+        practice: { en: 'She draws a little cat on paper.', id: 'Dia menggambar kucing kecil di kertas.' },
         question: {
           en: 'What can she draw?',
           id: 'Dia bisa menggambar apa?',
@@ -1847,6 +1873,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Lima',
         emoji: '5️⃣',
         example: { en: 'I count to five.', id: 'Aku menghitung sampai lima.', emoji: '5️⃣' },
+        practice: { en: 'She counts all the way to five.', id: 'Dia menghitung sampai ke angka lima.' },
         question: {
           en: 'What number does she count to?',
           id: 'Dia menghitung sampai angka berapa?',
@@ -1863,6 +1890,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Tangan',
         emoji: '👏',
         example: { en: 'We clap our hands.', id: 'Kami bertepuk tangan.', emoji: '👏' },
+        practice: { en: 'Let\'s clap our hands!', id: 'Ayo kita bertepuk tangan!' },
         question: {
           en: 'What do we clap?',
           id: 'Kami bertepuk apa?',
@@ -1879,6 +1907,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Lingkaran',
         emoji: '⭕',
         example: { en: 'We sit in a circle.', id: 'Kami duduk melingkar.', emoji: '⭕' },
+        practice: { en: 'Together, we sit in a big circle.', id: 'Bersama-sama, kami duduk dalam lingkaran besar.' },
         question: {
           en: 'How do we sit?',
           id: 'Bagaimana kami duduk?',
@@ -1895,6 +1924,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Lagu',
         emoji: '🎵',
         example: { en: 'We sing a song together.', id: 'Kami menyanyikan lagu bersama.', emoji: '🎵' },
+        practice: { en: 'We love to sing a happy song.', id: 'Kami suka menyanyikan lagu yang riang.' },
         question: {
           en: 'What do we sing?',
           id: 'Kami menyanyikan apa?',
@@ -1929,6 +1959,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Halo',
         emoji: '🙋',
         example: { en: 'I wave and say hello.', id: 'Aku melambai dan mengucapkan halo.', emoji: '👋' },
+        practice: { en: 'She waves her hand and says hello.', id: 'Dia melambaikan tangan dan bilang halo.' },
         question: {
           en: 'What does she say?',
           id: 'Dia mengucapkan apa?',
@@ -1944,7 +1975,8 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         en: 'Goodbye',
         id: 'Sampai Jumpa',
         emoji: '👋',
-        example: { en: 'I say goodbye to my teacher.', id: 'Aku mengucapkan sampai jumpa pada guruku.', emoji: '🚶' },
+        example: { en: 'I say goodbye to my teacher.', id: 'Aku mengucapkan sampai jumpa pada guruku.', emoji: '👣' },
+        practice: { en: 'She waves goodbye to her teacher.', id: 'Dia melambai sampai jumpa pada gurunya.' },
         question: {
           en: 'Who does she say goodbye to?',
           id: 'Dia mengucapkan sampai jumpa pada siapa?',
@@ -1961,6 +1993,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Tolong',
         emoji: '🙏',
         example: { en: 'I say please when I ask.', id: 'Aku mengucapkan tolong saat meminta.', emoji: '🙏' },
+        practice: { en: 'She says please when she asks for help.', id: 'Dia bilang tolong saat meminta bantuan.' },
         question: {
           en: 'What does she say when she asks?',
           id: 'Dia mengucapkan apa saat meminta?',
@@ -1977,6 +2010,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Terima Kasih',
         emoji: '🤗',
         example: { en: 'I say thank you for the gift.', id: 'Aku mengucapkan terima kasih atas hadiahnya.', emoji: '🎁' },
+        practice: { en: 'She says thank you for the present.', id: 'Dia bilang terima kasih untuk hadiahnya.' },
         question: {
           en: 'What does she say for the gift?',
           id: 'Dia mengucapkan apa atas hadiahnya?',
@@ -1993,6 +2027,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Maaf',
         emoji: '😔',
         example: { en: 'I say sorry to my friend.', id: 'Aku mengucapkan maaf pada temanku.', emoji: '😔' },
+        practice: { en: 'Oops! She says sorry to her friend.', id: 'Ups! Dia minta maaf pada temannya.' },
         question: {
           en: 'Who does she say sorry to?',
           id: 'Dia mengucapkan maaf pada siapa?',
@@ -2009,6 +2044,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Permisi',
         emoji: '✋',
         example: { en: 'I say excuse me to pass by.', id: 'Aku mengucapkan permisi untuk lewat.', emoji: '✋' },
+        practice: { en: 'She says excuse me to walk by.', id: 'Dia bilang permisi untuk lewat.' },
         question: {
           en: 'What does she say to pass by?',
           id: 'Dia mengucapkan apa untuk lewat?',
@@ -2025,6 +2061,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Ya',
         emoji: '👍',
         example: { en: 'I say yes when I agree.', id: 'Aku mengucapkan ya saat setuju.', emoji: '👍' },
+        practice: { en: 'She nods and says yes.', id: 'Dia mengangguk dan bilang ya.' },
         question: {
           en: 'What does she say when she agrees?',
           id: 'Dia mengucapkan apa saat setuju?',
@@ -2041,6 +2078,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Tidak',
         emoji: '👎',
         example: { en: 'I say no when I disagree.', id: 'Aku mengucapkan tidak saat tidak setuju.', emoji: '👎' },
+        practice: { en: 'She shakes her head and says no.', id: 'Dia menggelengkan kepala dan bilang tidak.' },
         question: {
           en: 'What does she say when she disagrees?',
           id: 'Dia mengucapkan apa saat tidak setuju?',
@@ -2057,6 +2095,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Selamat Pagi',
         emoji: '🌅',
         example: { en: 'I say good morning to my mom.', id: 'Aku mengucapkan selamat pagi pada ibuku.', emoji: '🌅' },
+        practice: { en: 'She hugs her mom and says good morning.', id: 'Dia memeluk ibunya dan bilang selamat pagi.' },
         question: {
           en: 'Who does she say good morning to?',
           id: 'Dia mengucapkan selamat pagi pada siapa?',
@@ -2073,6 +2112,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Selamat Malam',
         emoji: '🌙',
         example: { en: 'I say good night before I sleep.', id: 'Aku mengucapkan selamat malam sebelum tidur.', emoji: '🌙' },
+        practice: { en: 'Before she sleeps, she says good night.', id: 'Sebelum tidur, dia bilang selamat malam.' },
         question: {
           en: 'When does she say good night?',
           id: 'Kapan dia mengucapkan selamat malam?',
@@ -2096,6 +2136,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Merah',
         emoji: '🔴',
         example: { en: 'The ball is red.', id: 'Bolanya berwarna merah.', emoji: '🔴' },
+        practice: { en: 'Look at the red ball!', id: 'Lihat bola merah itu!' },
         question: {
           en: 'What color is the ball?',
           id: 'Apa warna bolanya?',
@@ -2112,6 +2153,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Oranye',
         emoji: '🟠',
         example: { en: 'The pumpkin is orange.', id: 'Labunya berwarna oranye.', emoji: '🟠' },
+        practice: { en: 'We have an orange pumpkin.', id: 'Kami punya labu berwarna oranye.' },
         question: {
           en: 'What color is the pumpkin?',
           id: 'Apa warna labunya?',
@@ -2128,6 +2170,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kuning',
         emoji: '🟡',
         example: { en: 'The banana is yellow.', id: 'Pisangnya berwarna kuning.', emoji: '🟡' },
+        practice: { en: 'I see a yellow banana.', id: 'Aku melihat pisang kuning.' },
         question: {
           en: 'What color is the banana?',
           id: 'Apa warna pisangnya?',
@@ -2144,6 +2187,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Hijau',
         emoji: '🟢',
         example: { en: 'The leaf is green.', id: 'Daunnya berwarna hijau.', emoji: '🟢' },
+        practice: { en: 'A green leaf falls down.', id: 'Sehelai daun hijau jatuh.' },
         question: {
           en: 'What color is the leaf?',
           id: 'Apa warna daunnya?',
@@ -2160,6 +2204,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Biru',
         emoji: '🔵',
         example: { en: 'The sky is blue.', id: 'Langitnya berwarna biru.', emoji: '🔵' },
+        practice: { en: 'Above us is a big blue sky.', id: 'Di atas kita ada langit biru yang luas.' },
         question: {
           en: 'What color is the sky?',
           id: 'Apa warna langitnya?',
@@ -2176,6 +2221,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Ungu',
         emoji: '🟣',
         example: { en: 'The grapes are purple.', id: 'Anggurnya berwarna ungu.', emoji: '🟣' },
+        practice: { en: 'I eat sweet purple grapes.', id: 'Aku makan anggur ungu yang manis.' },
         question: {
           en: 'What color are the grapes?',
           id: 'Apa warna anggurnya?',
@@ -2192,6 +2238,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Cokelat',
         emoji: '🟤',
         example: { en: 'The tree trunk is brown.', id: 'Batang pohonnya berwarna cokelat.', emoji: '🟤' },
+        practice: { en: 'The trunk of the tree looks brown.', id: 'Batang pohon itu terlihat cokelat.' },
         question: {
           en: 'What color is the tree trunk?',
           id: 'Apa warna batang pohonnya?',
@@ -2208,6 +2255,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Hitam',
         emoji: '⚫',
         example: { en: 'The cat is black.', id: 'Kucingnya berwarna hitam.', emoji: '⚫' },
+        practice: { en: 'My cat has black fur.', id: 'Kucingku berbulu hitam.' },
         question: {
           en: 'What color is the cat?',
           id: 'Apa warna kucingnya?',
@@ -2224,6 +2272,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Putih',
         emoji: '⚪',
         example: { en: 'The cloud is white.', id: 'Awannya berwarna putih.', emoji: '⚪' },
+        practice: { en: 'A white cloud floats in the sky.', id: 'Awan putih melayang di langit.' },
         question: {
           en: 'What color is the cloud?',
           id: 'Apa warna awannya?',
@@ -2240,6 +2289,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Merah Muda',
         emoji: '🩷',
         example: { en: 'The flower is pink.', id: 'Bunganya berwarna merah muda.', emoji: '🩷' },
+        practice: { en: 'She picks a pink flower.', id: 'Dia memetik bunga merah muda.' },
         question: {
           en: 'What color is the flower?',
           id: 'Apa warna bunganya?',
@@ -2263,6 +2313,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Lingkaran',
         emoji: '⭕',
         example: { en: 'The clock is a circle.', id: 'Jamnya berbentuk lingkaran.', emoji: '⭕' },
+        practice: { en: 'Our wall clock is a circle.', id: 'Jam dinding kami berbentuk lingkaran.' },
         question: {
           en: 'What shape is the clock?',
           id: 'Apa bentuk jamnya?',
@@ -2279,6 +2330,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Persegi',
         emoji: '⬜',
         example: { en: 'The window is a square.', id: 'Jendelanya berbentuk persegi.', emoji: '⬜' },
+        practice: { en: 'We have a square window.', id: 'Kami punya jendela berbentuk persegi.' },
         question: {
           en: 'What shape is the window?',
           id: 'Apa bentuk jendelanya?',
@@ -2295,6 +2347,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Segitiga',
         emoji: '🔺',
         example: { en: 'The mountain is a triangle.', id: 'Gunungnya berbentuk segitiga.', emoji: '🔺' },
+        practice: { en: 'The mountain looks like a triangle.', id: 'Gunung itu tampak seperti segitiga.' },
         question: {
           en: 'What shape is the mountain?',
           id: 'Apa bentuk gunungnya?',
@@ -2311,6 +2364,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bintang',
         emoji: '⭐',
         example: { en: 'The sky has a star.', id: 'Langitnya ada bintang.', emoji: '⭐' },
+        practice: { en: 'I see a star in the sky.', id: 'Aku melihat bintang di langit.' },
         question: {
           en: 'What shape is in the sky?',
           id: 'Apa bentuk yang ada di langit?',
@@ -2327,6 +2381,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Hati',
         emoji: '❤️',
         example: { en: 'The card has a heart.', id: 'Kartunya ada gambar hati.', emoji: '❤️' },
+        practice: { en: 'There is a heart on the card.', id: 'Ada gambar hati di kartu itu.' },
         question: {
           en: 'What shape is on the card?',
           id: 'Apa bentuk yang ada di kartunya?',
@@ -2343,6 +2398,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Wajik',
         emoji: '💎',
         example: { en: 'The kite is a diamond.', id: 'Layangannya berbentuk wajik.', emoji: '💎' },
+        practice: { en: 'My kite is shaped like a diamond.', id: 'Layanganku berbentuk seperti wajik.' },
         question: {
           en: 'What shape is the kite?',
           id: 'Apa bentuk layangannya?',
@@ -2359,6 +2415,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Oval',
         emoji: '🥚',
         example: { en: 'The egg is an oval.', id: 'Telurnya berbentuk oval.', emoji: '🥚' },
+        practice: { en: 'An egg looks like an oval.', id: 'Telur tampak seperti bentuk oval.' },
         question: {
           en: 'What shape is the egg?',
           id: 'Apa bentuk telurnya?',
@@ -2375,6 +2432,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bulan Sabit',
         emoji: '🌙',
         example: { en: 'The moon is a crescent tonight.', id: 'Bulannya berbentuk sabit malam ini.', emoji: '🌙' },
+        practice: { en: 'Look at the crescent moon tonight!', id: 'Lihat bulan sabit malam ini!' },
         question: {
           en: 'What shape is the moon tonight?',
           id: 'Apa bentuk bulan malam ini?',
@@ -2391,6 +2449,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Silang',
         emoji: '➕',
         example: { en: 'This sticker is a cross.', id: 'Stikernya berbentuk silang.', emoji: '➕' },
+        practice: { en: 'The sticker has a cross shape.', id: 'Stiker itu berbentuk silang.' },
         question: {
           en: 'What shape is the sticker?',
           id: 'Apa bentuk stikernya?',
@@ -2407,6 +2466,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Panah',
         emoji: '➡️',
         example: { en: 'The sign is an arrow.', id: 'Rambunya berbentuk panah.', emoji: '➡️' },
+        practice: { en: 'The sign shows an arrow.', id: 'Rambu itu menunjukkan tanda panah.' },
         question: {
           en: 'What shape is the sign?',
           id: 'Apa bentuk rambunya?',
@@ -2430,6 +2490,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Ibu',
         emoji: '👩',
         example: { en: 'My mom cooks dinner.', id: 'Ibuku memasak makan malam.', emoji: '🍳' },
+        practice: { en: 'Mom makes dinner in the kitchen.', id: 'Ibu membuat makan malam di dapur.' },
         question: {
           en: 'Who cooks dinner?',
           id: 'Siapa yang memasak makan malam?',
@@ -2446,6 +2507,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Ayah',
         emoji: '👨',
         example: { en: 'My dad drives the car.', id: 'Ayahku mengemudikan mobil.', emoji: '🚗' },
+        practice: { en: 'Dad is driving the car.', id: 'Ayah sedang mengemudikan mobil.' },
         question: {
           en: 'Who drives the car?',
           id: 'Siapa yang mengemudikan mobil?',
@@ -2462,6 +2524,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kakak/Adik Perempuan',
         emoji: '👧',
         example: { en: 'My sister sings a song.', id: 'Kakak perempuanku menyanyikan lagu.', emoji: '🎤' },
+        practice: { en: 'Listen! My sister is singing.', id: 'Dengar! Kakak perempuanku sedang bernyanyi.' },
         question: {
           en: 'Who sings a song?',
           id: 'Siapa yang menyanyikan lagu?',
@@ -2478,6 +2541,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kakak/Adik Laki-laki',
         emoji: '👦',
         example: { en: 'My brother rides a bike.', id: 'Kakak laki-lakiku mengendarai sepeda.', emoji: '🚲' },
+        practice: { en: 'My brother goes out on his bike.', id: 'Kakak laki-lakiku pergi naik sepedanya.' },
         question: {
           en: 'Who rides a bike?',
           id: 'Siapa yang mengendarai sepeda?',
@@ -2494,6 +2558,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Nenek',
         emoji: '👵',
         example: { en: 'My grandma tells a story.', id: 'Nenekku bercerita.', emoji: '📖' },
+        practice: { en: 'Grandma tells me a story at night.', id: 'Nenek bercerita padaku di malam hari.' },
         question: {
           en: 'Who tells a story?',
           id: 'Siapa yang bercerita?',
@@ -2510,6 +2575,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kakek',
         emoji: '👴',
         example: { en: 'My grandpa waters the plants.', id: 'Kakekku menyiram tanaman.', emoji: '🌱' },
+        practice: { en: 'Grandpa waters the flowers in the garden.', id: 'Kakek menyiram bunga-bunga di kebun.' },
         question: {
           en: 'Who waters the plants?',
           id: 'Siapa yang menyiram tanaman?',
@@ -2526,6 +2592,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bayi',
         emoji: '👶',
         example: { en: 'The baby sleeps all day.', id: 'Bayinya tidur sepanjang hari.', emoji: '😴' },
+        practice: { en: 'The little baby sleeps for a long time.', id: 'Bayi kecil itu tidur lama sekali.' },
         question: {
           en: 'Who sleeps all day?',
           id: 'Siapa yang tidur sepanjang hari?',
@@ -2542,6 +2609,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Paman',
         emoji: '🧔',
         example: { en: 'My uncle plays guitar.', id: 'Pamanku bermain gitar.', emoji: '🎸' },
+        practice: { en: 'Uncle plays a song on his guitar.', id: 'Paman memainkan lagu dengan gitarnya.' },
         question: {
           en: 'Who plays guitar?',
           id: 'Siapa yang bermain gitar?',
@@ -2558,6 +2626,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bibi',
         emoji: '👩‍🦰',
         example: { en: 'My aunt bakes a cake.', id: 'Bibiku membuat kue.', emoji: '🎂' },
+        practice: { en: 'Aunt bakes a big cake in the oven.', id: 'Bibi memanggang kue besar di oven.' },
         question: {
           en: 'Who bakes a cake?',
           id: 'Siapa yang membuat kue?',
@@ -2574,6 +2643,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Sepupu',
         emoji: '🧑',
         example: { en: 'My cousin flies a kite.', id: 'Sepupuku menerbangkan layangan.', emoji: '🪁' },
+        practice: { en: 'My cousin has a kite and flies it high.', id: 'Sepupuku punya layangan dan menerbangkannya tinggi.' },
         question: {
           en: 'Who flies a kite?',
           id: 'Siapa yang menerbangkan layangan?',
@@ -2597,6 +2667,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kepala',
         emoji: '👤',
         example: { en: 'I nod my head.', id: 'Aku menganggukkan kepalaku.', emoji: '👤' },
+        practice: { en: 'She nods her head up and down.', id: 'Dia mengangguk-anggukkan kepalanya.' },
         question: {
           en: 'What does she nod?',
           id: 'Apa yang dia anggukkan?',
@@ -2613,6 +2684,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Pundak',
         emoji: '🤷',
         example: { en: 'I shrug my shoulders.', id: 'Aku mengangkat pundakku.', emoji: '🤷' },
+        practice: { en: 'She moves her shoulders up.', id: 'Dia mengangkat pundaknya ke atas.' },
         question: {
           en: 'What does she shrug?',
           id: 'Apa yang dia angkat?',
@@ -2629,6 +2701,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Lutut',
         emoji: '🦵',
         example: { en: 'I bend my knees.', id: 'Aku menekuk lututku.', emoji: '🦵' },
+        practice: { en: 'She bends her knees to sit down.', id: 'Dia menekuk lututnya untuk duduk.' },
         question: {
           en: 'What does she bend?',
           id: 'Apa yang dia tekuk?',
@@ -2645,6 +2718,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Jari Kaki',
         emoji: '🦶',
         example: { en: 'I wiggle my toes.', id: 'Aku menggoyangkan jari kakiku.', emoji: '🦶' },
+        practice: { en: 'She wiggles her toes in the sand.', id: 'Dia menggoyangkan jari kakinya di pasir.' },
         question: {
           en: 'What does she wiggle?',
           id: 'Apa yang dia goyangkan?',
@@ -2661,6 +2735,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Mata',
         emoji: '👀',
         example: { en: 'I close my eyes.', id: 'Aku menutup mataku.', emoji: '👀' },
+        practice: { en: 'She closes her eyes to sleep.', id: 'Dia menutup matanya untuk tidur.' },
         question: {
           en: 'What does she close?',
           id: 'Apa yang dia tutup?',
@@ -2677,6 +2752,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Telinga',
         emoji: '👂',
         example: { en: 'I cover my ears.', id: 'Aku menutup telingaku.', emoji: '👂' },
+        practice: { en: 'It is loud, so she covers her ears.', id: 'Berisik sekali, jadi dia menutup telinganya.' },
         question: {
           en: 'What does she cover?',
           id: 'Apa yang dia tutup?',
@@ -2693,6 +2769,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Mulut',
         emoji: '👄',
         example: { en: 'I open my mouth.', id: 'Aku membuka mulutku.', emoji: '👄' },
+        practice: { en: 'She opens her mouth wide.', id: 'Dia membuka mulutnya lebar-lebar.' },
         question: {
           en: 'What does she open?',
           id: 'Apa yang dia buka?',
@@ -2709,6 +2786,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Hidung',
         emoji: '👃',
         example: { en: 'I touch my nose.', id: 'Aku menyentuh hidungku.', emoji: '👃' },
+        practice: { en: 'She touches her nose with one finger.', id: 'Dia menyentuh hidungnya dengan satu jari.' },
         question: {
           en: 'What does she touch?',
           id: 'Apa yang dia sentuh?',
@@ -2725,6 +2803,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Tangan',
         emoji: '🙌',
         example: { en: 'I clap my hands loudly.', id: 'Aku bertepuk tangan dengan keras.', emoji: '🙌' },
+        practice: { en: 'Clap, clap! She claps her hands.', id: 'Prok, prok! Dia bertepuk tangan.' },
         question: {
           en: 'What does she clap?',
           id: 'Apa yang dia tepuk?',
@@ -2741,6 +2820,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kaki',
         emoji: '👣',
         example: { en: 'I stomp my feet.', id: 'Aku menghentakkan kakiku.', emoji: '👣' },
+        practice: { en: 'She stomps her feet on the floor.', id: 'Dia menghentakkan kakinya di lantai.' },
         question: {
           en: 'What does she stomp?',
           id: 'Apa yang dia hentakkan?',
@@ -2764,6 +2844,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kemeja',
         emoji: '👕',
         example: { en: 'I wear a blue shirt.', id: 'Aku memakai kemeja biru.', emoji: '👕' },
+        practice: { en: 'Today she wears a nice shirt.', id: 'Hari ini dia memakai kemeja yang bagus.' },
         question: {
           en: 'What does she wear?',
           id: 'Dia memakai apa?',
@@ -2780,9 +2861,10 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Celana Panjang',
         emoji: '👖',
         example: { en: 'I wear long pants.', id: 'Aku memakai celana panjang.', emoji: '👖' },
+        practice: { en: 'She wears pants to school.', id: 'Dia memakai celana ke sekolah.' },
         question: {
-          en: 'What does she wear?',
-          id: 'Dia memakai apa?',
+          en: 'What long clothes does she wear?',
+          id: 'Pakaian panjang apa yang dia pakai?',
           options: [
             { emoji: '👖', text: 'Pants', ok: true },
             { emoji: '🩳', text: 'Shorts', ok: false },
@@ -2796,9 +2878,10 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Gaun',
         emoji: '👗',
         example: { en: 'She wears a pink dress.', id: 'Dia memakai gaun merah muda.', emoji: '👗' },
+        practice: { en: 'She puts on a pretty dress.', id: 'Dia mengenakan gaun yang cantik.' },
         question: {
-          en: 'What does she wear?',
-          id: 'Dia memakai apa?',
+          en: 'What is she wearing?',
+          id: 'Dia sedang memakai apa?',
           options: [
             { emoji: '👗', text: 'Dress', ok: true },
             { emoji: '👕', text: 'Shirt', ok: false },
@@ -2812,6 +2895,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Sepatu',
         emoji: '👟',
         example: { en: 'I put on my shoes.', id: 'Aku memakai sepatuku.', emoji: '👟' },
+        practice: { en: 'She puts her shoes on her feet.', id: 'Dia memakai sepatu di kakinya.' },
         question: {
           en: 'What does she put on?',
           id: 'Dia memakai apa?',
@@ -2828,9 +2912,10 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kaus Kaki',
         emoji: '🧦',
         example: { en: 'I wear warm socks.', id: 'Aku memakai kaus kaki hangat.', emoji: '🧦' },
+        practice: { en: 'She wears socks to keep her feet warm.', id: 'Dia memakai kaus kaki supaya kakinya hangat.' },
         question: {
-          en: 'What does she wear?',
-          id: 'Dia memakai apa?',
+          en: 'What warm clothes does she wear?',
+          id: 'Pakaian hangat apa yang dia pakai?',
           options: [
             { emoji: '🧦', text: 'Socks', ok: true },
             { emoji: '👟', text: 'Shoes', ok: false },
@@ -2844,6 +2929,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Topi',
         emoji: '🧢',
         example: { en: 'I wear a hat on a sunny day.', id: 'Aku memakai topi saat matahari terik.', emoji: '🧢' },
+        practice: { en: 'On a sunny day, she puts on a hat.', id: 'Saat hari cerah, dia memakai topi.' },
         question: {
           en: 'When does she wear a hat?',
           id: 'Kapan dia memakai topi?',
@@ -2860,6 +2946,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Jaket',
         emoji: '🧥',
         example: { en: 'I wear a jacket when it is cold.', id: 'Aku memakai jaket saat dingin.', emoji: '🧥' },
+        practice: { en: 'It is cold outside, so she wears a jacket.', id: 'Di luar dingin, jadi dia memakai jaket.' },
         question: {
           en: 'When does she wear a jacket?',
           id: 'Kapan dia memakai jaket?',
@@ -2876,6 +2963,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Celana Pendek',
         emoji: '🩳',
         example: { en: 'I wear shorts at the beach.', id: 'Aku memakai celana pendek di pantai.', emoji: '🩳' },
+        practice: { en: 'She goes to the beach in her shorts.', id: 'Dia pergi ke pantai memakai celana pendek.' },
         question: {
           en: 'Where does she wear shorts?',
           id: 'Di mana dia memakai celana pendek?',
@@ -2892,6 +2980,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Syal',
         emoji: '🧣',
         example: { en: 'I wear a scarf in winter.', id: 'Aku memakai syal saat musim dingin.', emoji: '🧣' },
+        practice: { en: 'Winter is cold, so she wears a scarf.', id: 'Musim dingin itu dingin, jadi dia memakai syal.' },
         question: {
           en: 'When does she wear a scarf?',
           id: 'Kapan dia memakai syal?',
@@ -2908,13 +2997,14 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Sarung Tangan',
         emoji: '🧤',
         example: { en: 'I wear gloves to keep warm.', id: 'Aku memakai sarung tangan agar hangat.', emoji: '🧤' },
+        practice: { en: 'She wears gloves so her hands stay warm.', id: 'Dia memakai sarung tangan supaya tangannya tetap hangat.' },
         question: {
           en: 'Why does she wear gloves?',
           id: 'Kenapa dia memakai sarung tangan?',
           options: [
             { emoji: '🥶', text: 'To Keep Warm', ok: true },
             { emoji: '🎨', text: 'To Paint', ok: false },
-            { emoji: '🏊', text: 'To Swim', ok: false },
+            { emoji: '🌊', text: 'To Swim', ok: false },
             { emoji: '🎮', text: 'To Play', ok: false },
           ],
         },
@@ -2931,6 +3021,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Mobil',
         emoji: '🚗',
         example: { en: 'We drive to the park in a car.', id: 'Kami naik mobil ke taman.', emoji: '🚗' },
+        practice: { en: 'Our car goes to the park.', id: 'Mobil kami pergi ke taman.' },
         question: {
           en: 'Where do we drive to?',
           id: 'Kami mengemudi ke mana?',
@@ -2947,6 +3038,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bus',
         emoji: '🚌',
         example: { en: 'I ride the bus to school.', id: 'Aku naik bus ke sekolah.', emoji: '🚌' },
+        practice: { en: 'She takes the bus to school every day.', id: 'Dia naik bus ke sekolah setiap hari.' },
         question: {
           en: 'Where does she ride the bus to?',
           id: 'Dia naik bus ke mana?',
@@ -2963,6 +3055,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Sepeda',
         emoji: '🚲',
         example: { en: 'I ride my bike in the park.', id: 'Aku bersepeda di taman.', emoji: '🚲' },
+        practice: { en: 'She rides her bike around the park.', id: 'Dia bersepeda keliling taman.' },
         question: {
           en: 'Where does she ride her bike?',
           id: 'Dia bersepeda di mana?',
@@ -2979,6 +3072,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Kereta',
         emoji: '🚂',
         example: { en: 'We travel by train to the city.', id: 'Kami naik kereta ke kota.', emoji: '🚂' },
+        practice: { en: 'The train takes us to the city.', id: 'Kereta membawa kami ke kota.' },
         question: {
           en: 'Where do we travel to?',
           id: 'Kami bepergian ke mana?',
@@ -2995,6 +3089,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Pesawat',
         emoji: '✈️',
         example: { en: 'We fly in a plane to visit grandma.', id: 'Kami naik pesawat untuk mengunjungi nenek.', emoji: '🛫' },
+        practice: { en: 'We take a plane to see grandma.', id: 'Kami naik pesawat untuk bertemu nenek.' },
         question: {
           en: 'Who do we visit by plane?',
           id: 'Kami mengunjungi siapa naik pesawat?',
@@ -3011,13 +3106,14 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Perahu',
         emoji: '⛵',
         example: { en: 'We sail on a boat in the sea.', id: 'Kami berlayar naik perahu di laut.', emoji: '⛵' },
+        practice: { en: 'Our boat sails across the sea.', id: 'Perahu kami berlayar menyeberangi laut.' },
         question: {
           en: 'Where do we sail?',
           id: 'Kami berlayar di mana?',
           options: [
             { emoji: '🌊', text: 'Sea', ok: true },
             { emoji: '🏞️', text: 'River', ok: false },
-            { emoji: '🏊', text: 'Pool', ok: false },
+            { emoji: '💦', text: 'Pool', ok: false },
             { emoji: '💧', text: 'Lake', ok: false },
           ],
         },
@@ -3027,6 +3123,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Motor',
         emoji: '🏍️',
         example: { en: 'Dad rides a motorcycle to work.', id: 'Ayah naik motor ke kantor.', emoji: '🏍️' },
+        practice: { en: 'Dad goes to work on his motorcycle.', id: 'Ayah pergi kerja naik motornya.' },
         question: {
           en: 'Who rides a motorcycle?',
           id: 'Siapa yang naik motor?',
@@ -3043,6 +3140,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Taksi',
         emoji: '🚕',
         example: { en: 'We take a taxi to the airport.', id: 'Kami naik taksi ke bandara.', emoji: '🚕' },
+        practice: { en: 'The taxi takes us to the airport.', id: 'Taksi membawa kami ke bandara.' },
         question: {
           en: 'Where do we take a taxi to?',
           id: 'Kami naik taksi ke mana?',
@@ -3059,12 +3157,13 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Truk',
         emoji: '🚚',
         example: { en: 'The truck carries big boxes.', id: 'Truk itu membawa kotak-kotak besar.', emoji: '🚚' },
+        practice: { en: 'A big truck brings many boxes.', id: 'Truk besar membawa banyak kotak.' },
         question: {
           en: 'What does the truck carry?',
           id: 'Truk itu membawa apa?',
           options: [
             { emoji: '📦', text: 'Boxes', ok: true },
-            { emoji: '🐄', text: 'Animals', ok: false },
+            { emoji: '🐾', text: 'Animals', ok: false },
             { emoji: '🧑', text: 'People', ok: false },
             { emoji: '🍎', text: 'Food', ok: false },
           ],
@@ -3075,6 +3174,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Helikopter',
         emoji: '🚁',
         example: { en: 'The helicopter flies over the city.', id: 'Helikopter itu terbang di atas kota.', emoji: '🚁' },
+        practice: { en: 'Look! A helicopter is flying above the city.', id: 'Lihat! Ada helikopter terbang di atas kota.' },
         question: {
           en: 'Where does the helicopter fly?',
           id: 'Helikopter itu terbang di mana?',
@@ -3098,6 +3198,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bahagia',
         emoji: '😊',
         example: { en: 'I feel happy on my birthday.', id: 'Aku merasa bahagia saat ulang tahunku.', emoji: '😊' },
+        practice: { en: 'Her birthday makes her feel happy.', id: 'Ulang tahunnya membuatnya merasa bahagia.' },
         question: {
           en: 'How does she feel on her birthday?',
           id: 'Bagaimana perasaannya saat ulang tahun?',
@@ -3114,6 +3215,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Sedih',
         emoji: '😢',
         example: { en: 'I feel sad when I lose my toy.', id: 'Aku merasa sedih saat kehilangan mainanku.', emoji: '😢' },
+        practice: { en: 'She is sad because her toy is lost.', id: 'Dia sedih karena mainannya hilang.' },
         question: {
           en: 'How does she feel when she loses her toy?',
           id: 'Bagaimana perasaannya saat kehilangan mainan?',
@@ -3130,6 +3232,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Marah',
         emoji: '😠',
         example: { en: 'I feel angry when I lose a game.', id: 'Aku merasa marah saat kalah bermain.', emoji: '😠' },
+        practice: { en: 'She loses the game and gets angry.', id: 'Dia kalah main dan jadi marah.' },
         question: {
           en: 'How does she feel when she loses a game?',
           id: 'Bagaimana perasaannya saat kalah bermain?',
@@ -3146,6 +3249,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Takut',
         emoji: '😱',
         example: { en: 'I feel scared in the dark.', id: 'Aku merasa takut dalam gelap.', emoji: '😱' },
+        practice: { en: 'The dark room makes her scared.', id: 'Ruangan gelap itu membuatnya takut.' },
         question: {
           en: 'How does she feel in the dark?',
           id: 'Bagaimana perasaannya dalam gelap?',
@@ -3162,6 +3266,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bersemangat',
         emoji: '🤩',
         example: { en: 'I feel excited to go to the zoo.', id: 'Aku merasa bersemangat pergi ke kebun binatang.', emoji: '🤩' },
+        practice: { en: 'She is very excited about the zoo trip.', id: 'Dia sangat bersemangat soal pergi ke kebun binatang.' },
         question: {
           en: 'How does she feel about the zoo?',
           id: 'Bagaimana perasaannya tentang kebun binatang?',
@@ -3178,6 +3283,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Lelah',
         emoji: '😴',
         example: { en: 'I feel tired after playing all day.', id: 'Aku merasa lelah setelah bermain seharian.', emoji: '😴' },
+        practice: { en: 'She played all day, so now she is tired.', id: 'Dia bermain seharian, jadi sekarang dia lelah.' },
         question: {
           en: 'How does she feel after playing?',
           id: 'Bagaimana perasaannya setelah bermain?',
@@ -3194,6 +3300,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Terkejut',
         emoji: '😲',
         example: { en: 'I feel surprised by the gift.', id: 'Aku merasa terkejut oleh hadiahnya.', emoji: '😲' },
+        practice: { en: 'She opens the box and is surprised.', id: 'Dia membuka kotak itu dan terkejut.' },
         question: {
           en: 'How does she feel about the gift?',
           id: 'Bagaimana perasaannya tentang hadiahnya?',
@@ -3210,6 +3317,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Malu',
         emoji: '😳',
         example: { en: 'I feel shy in front of new people.', id: 'Aku merasa malu di depan orang baru.', emoji: '😳' },
+        practice: { en: 'She is shy when she meets new people.', id: 'Dia malu saat bertemu orang baru.' },
         question: {
           en: 'How does she feel in front of new people?',
           id: 'Bagaimana perasaannya di depan orang baru?',
@@ -3226,6 +3334,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bangga',
         emoji: '😤',
         example: { en: 'I feel proud of my drawing.', id: 'Aku merasa bangga dengan gambarku.', emoji: '😤' },
+        practice: { en: 'She shows her drawing and feels proud.', id: 'Dia menunjukkan gambarnya dan merasa bangga.' },
         question: {
           en: 'What is she proud of?',
           id: 'Dia bangga akan apa?',
@@ -3242,6 +3351,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         id: 'Bosan',
         emoji: '😑',
         example: { en: 'I feel bored on a rainy day.', id: 'Aku merasa bosan di hari hujan.', emoji: '😑' },
+        practice: { en: 'It rains all day, so she is bored.', id: 'Hujan seharian, jadi dia bosan.' },
         question: {
           en: 'How does she feel on a rainy day?',
           id: 'Bagaimana perasaannya di hari hujan?',
@@ -3380,7 +3490,7 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
     fill: {
       before: ['Yesterday,', 'I'],
       after: [],
-      options: [{ word: 'played', emoji: '⚽' }, { word: 'walked', emoji: '🚶' }, { word: 'cooked', emoji: '🍳' }],
+      options: [{ word: 'played', emoji: '⚽' }, { word: 'walked', emoji: '👣' }, { word: 'cooked', emoji: '🍳' }],
     },
   },
   /**
@@ -3398,9 +3508,9 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
     title: 'Kata Sifat Perbandingan (Comparatives)',
     desc: 'Bigger / Smaller / Taller Than',
     examples: [
-      { en: 'The elephant is bigger than the monkey.', emoji: '🐘' },
-      { en: 'The giraffe is taller than the zebra.', emoji: '🦒' },
-      { en: 'The monkey is smaller than the lion.', emoji: '🐒' },
+      { en: 'The elephant is bigger than the monkey.', emoji: '⛰️' },
+      { en: 'The giraffe is taller than the zebra.', emoji: '📏' },
+      { en: 'The monkey is smaller than the lion.', emoji: '🐵' },
     ],
     scramble: [
       { emoji: '🦁', target: ['The', 'lion', 'is', 'bigger', 'than', 'the', 'monkey'] },
@@ -3410,9 +3520,9 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
       before: ['The', 'elephant', 'is', 'bigger', 'than', 'the'],
       after: [],
       options: [
-        { word: 'zebra', emoji: '🦓' },
+        { word: 'bear', emoji: '🐻' },
         { word: 'panda', emoji: '🐼' },
-        { word: 'penguin', emoji: '🐧' },
+        { word: 'tiger', emoji: '🐯' },
       ],
     },
   },
@@ -3448,20 +3558,20 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
     title: 'Kata Sifat Superlatif (Superlatives)',
     desc: 'The Biggest / The Fastest',
     examples: [
-      { en: 'The elephant is the biggest animal.', emoji: '🐘' },
-      { en: 'The cheetah is the fastest animal.', emoji: '🐆' },
-      { en: 'The snail is the slowest animal.', emoji: '🐌' },
+      { en: 'The elephant is the biggest animal.', emoji: '⛰️' },
+      { en: 'The cheetah is the fastest animal.', emoji: '🏎️' },
+      { en: 'The snail is the slowest animal.', emoji: '⏳' },
     ],
     scramble: [
-      { emoji: '🦒', target: ['The', 'giraffe', 'is', 'the', 'tallest', 'animal'] },
-      { emoji: '🐜', target: ['The', 'ant', 'is', 'the', 'smallest', 'animal'] },
+      { emoji: '📏', target: ['The', 'giraffe', 'is', 'the', 'tallest', 'animal'] },
+      { emoji: '🐭', target: ['The', 'ant', 'is', 'the', 'smallest', 'animal'] },
     ],
     fill: {
       before: ['The', 'giraffe', 'is', 'the'],
       after: ['animal', 'in', 'the', 'zoo'],
       options: [
-        { word: 'tallest', emoji: '🦒' },
-        { word: 'biggest', emoji: '🐘' },
+        { word: 'tallest', emoji: '📏' },
+        { word: 'biggest', emoji: '⛰️' },
         { word: 'smallest', emoji: '🐭' },
       ],
     },
@@ -3478,13 +3588,13 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
     title: 'Kata Kerja Lampau Tidak Beraturan (Irregular Past Simple)',
     desc: 'Went, Ate, Saw, Wrote...',
     examples: [
-      { en: 'I went to school yesterday.', emoji: '🚶' },
+      { en: 'I went to school yesterday.', emoji: '👣' },
       { en: 'She ate breakfast this morning.', emoji: '🍳' },
-      { en: 'He saw a bird in the tree.', emoji: '🐦' },
+      { en: 'He saw a rabbit in the garden.', emoji: '🐰' },
     ],
     scramble: [
       { emoji: '✍️', target: ['She', 'wrote', 'a', 'letter', 'to', 'her', 'friend'] },
-      { emoji: '🏃', target: ['They', 'ran', 'to', 'the', 'park'] },
+      { emoji: '💨', target: ['They', 'ran', 'to', 'the', 'park'] },
     ],
     fill: {
       before: ['Yesterday,', 'I'],
@@ -3507,21 +3617,21 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
     title: 'Bisa di Masa Lalu (Could)',
     desc: 'Dulu Aku Bisa...',
     examples: [
-      { en: 'I could swim when I was five.', emoji: '🏊' },
-      { en: 'She could run fast last year.', emoji: '🏃' },
+      { en: 'I could swim when I was five.', emoji: '🌊' },
+      { en: 'She could run fast last year.', emoji: '💨' },
       { en: 'He could catch the ball yesterday.', emoji: '⚾' },
     ],
     scramble: [
       { emoji: '🎤', target: ['He', 'could', 'sing', 'very', 'well'] },
-      { emoji: '🤸', target: ['They', 'could', 'jump', 'high', 'last', 'summer'] },
+      { emoji: '🐸', target: ['They', 'could', 'jump', 'high', 'last', 'summer'] },
     ],
     fill: {
       before: ['Last', 'year', 'I', 'could'],
       after: ['every', 'morning'],
       options: [
-        { word: 'swim', emoji: '🏊' },
-        { word: 'run', emoji: '🏃' },
-        { word: 'jump', emoji: '🤸' },
+        { word: 'swim', emoji: '🌊' },
+        { word: 'run', emoji: '💨' },
+        { word: 'jump', emoji: '🐸' },
       ],
     },
   },
@@ -3542,7 +3652,7 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
     ],
     scramble: [
       { emoji: '👕', target: ['You', 'must', 'wear', 'your', 'uniform'] },
-      { emoji: '🏃', target: ["You", "mustn't", 'run', 'in', 'the', 'hallway'] },
+      { emoji: '💨', target: ["You", "mustn't", 'run', 'in', 'the', 'hallway'] },
     ],
     fill: {
       before: ['In', 'class,', 'you', 'must', 'bring', 'your'],
@@ -3571,14 +3681,14 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
     ],
     scramble: [
       { emoji: '⛸️', target: ['He', 'went', 'skating', 'at', 'the', 'park'] },
-      { emoji: '🏊', target: ['She', 'went', 'swimming', 'at', 'the', 'beach'] },
+      { emoji: '🌊', target: ['She', 'went', 'swimming', 'at', 'the', 'beach'] },
     ],
     fill: {
       before: ['Last', 'weekend,', 'we', 'went'],
       after: ['near', 'the', 'lake'],
       options: [
         { word: 'fishing', emoji: '🎣' },
-        { word: 'swimming', emoji: '🏊' },
+        { word: 'swimming', emoji: '🌊' },
         { word: 'camping', emoji: '⛺' },
       ],
     },
@@ -3600,7 +3710,7 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
     ],
     scramble: [
       { emoji: '⚽', target: ['The', 'ball', 'rolled', 'along', 'the', 'street'] },
-      { emoji: '🐦', target: ['The', 'bird', 'flew', 'across', 'the', 'sky'] },
+      { emoji: '🪁', target: ['The', 'kite', 'flew', 'across', 'the', 'sky'] },
     ],
     fill: {
       before: ['The', 'boat', 'sailed'],
@@ -3636,7 +3746,7 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
       after: ['across', 'the', 'room'],
       options: [
         { word: 'quietly', emoji: '🤫' },
-        { word: 'slowly', emoji: '🐢' },
+        { word: 'slowly', emoji: '⏳' },
         { word: 'happily', emoji: '😊' },
       ],
     },
@@ -3704,14 +3814,14 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
         id: 'Zoe membawa apel untuk cemilan. Jerapah itu makan daun dari pohon.',
         question: 'What does the giraffe eat?',
         questionId: 'Apa yang dimakan jerapah itu?',
-        opts: [{ emoji: '🍃', lbl: 'Leaves', ok: true }, { emoji: '🍎', lbl: 'Apple' }, { emoji: '🐟', lbl: 'Fish' }],
+        opts: [{ emoji: '🍃', lbl: 'Leaves', ok: true }, { emoji: '🍎', lbl: 'Apple' }, { emoji: '🌊', lbl: 'Fish' }],
       },
       {
         passage: ['The lion is sleeping under a tree.', 'The monkey jumps from branch to branch.'],
         id: 'Singanya sedang tidur di bawah pohon. Monyet itu melompat dari dahan ke dahan.',
         question: 'What is the monkey doing?',
         questionId: 'Apa yang sedang dilakukan monyet itu?',
-        opts: [{ emoji: '🐒', lbl: 'Jumping', ok: true }, { emoji: '😴', lbl: 'Sleeping' }, { emoji: '🍽️', lbl: 'Eating' }],
+        opts: [{ emoji: '🐵', lbl: 'Jumping', ok: true }, { emoji: '😴', lbl: 'Sleeping' }, { emoji: '🍽️', lbl: 'Eating' }],
       },
     ],
     story: ['Zoe and her family go to the zoo.', 'They see elephants, lions, and monkeys.', 'Her favorite animal is the panda.'],
@@ -3719,7 +3829,7 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
     question: {
       text: 'What is Zoe’s favorite animal?',
       id: 'Apa hewan favorit Zoe?',
-      opts: [{ emoji: '🐼', lbl: 'Panda', ok: true }, { emoji: '🦁', lbl: 'Lion' }, { emoji: '🐘', lbl: 'Elephant' }],
+      opts: [{ emoji: '🐼', lbl: 'Panda', ok: true }, { emoji: '🦁', lbl: 'Lion' }, { emoji: '🐾', lbl: 'Elephant' }],
     },
   },
   {
@@ -3747,7 +3857,7 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
         id: 'Rio mandi sebelum makan siang. Lalu dia berenang di laut.',
         question: 'Where does Rio swim?',
         questionId: 'Di mana Rio berenang?',
-        opts: [{ emoji: '🌊', lbl: 'Sea', ok: true }, { emoji: '🏊', lbl: 'Pool' }, { emoji: '🚿', lbl: 'Shower' }],
+        opts: [{ emoji: '🌊', lbl: 'Sea', ok: true }, { emoji: '💦', lbl: 'Pool' }, { emoji: '🚿', lbl: 'Shower' }],
       },
     ],
     story: ['Rio and his family go to the beach.', 'His sister has strawberry ice cream.', 'Rio has chocolate ice cream.'],
@@ -3794,7 +3904,7 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
     question: {
       text: 'What is Zara’s favorite book about?',
       id: 'Buku tentang apa yang jadi favorit Zara?',
-      opts: [{ emoji: '🌙', lbl: 'The moon', ok: true }, { emoji: '🦕', lbl: 'Dinosaurs' }, { emoji: '🐘', lbl: 'Animals' }],
+      opts: [{ emoji: '🌙', lbl: 'The moon', ok: true }, { emoji: '🦴', lbl: 'Dinosaurs' }, { emoji: '🐾', lbl: 'Animals' }],
     },
   },
   {
@@ -3860,7 +3970,7 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
     question: {
       text: 'Why does mother not buy fish?',
       id: 'Kenapa ibu tidak membeli ikan?',
-      opts: [{ emoji: '🏠', lbl: 'They already have fish at home', ok: true }, { emoji: '💰', lbl: 'It is too expensive' }, { emoji: '🐟', lbl: 'It is not fresh' }],
+      opts: [{ emoji: '🏠', lbl: 'They already have fish at home', ok: true }, { emoji: '💰', lbl: 'It is too expensive' }, { emoji: '🌊', lbl: 'It is not fresh' }],
     },
   },
   {
@@ -3878,7 +3988,7 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
         id: 'Dito melompati genangan air besar dekat gerbang sekolah. Kakaknya malah berjalan mengitari genangan air kecil.',
         question: 'What does Dito do at the puddle?',
         questionId: 'Apa yang dilakukan Dito di genangan air itu?',
-        opts: [{ emoji: '🦘', lbl: 'Jumps over it', ok: true }, { emoji: '🚶', lbl: 'Walks around it' }, { emoji: '🛑', lbl: 'Stops there' }],
+        opts: [{ emoji: '🐸', lbl: 'Jumps over it', ok: true }, { emoji: '👣', lbl: 'Walks around it' }, { emoji: '🛑', lbl: 'Stops there' }],
       },
       {
         passage: ['Thunder booms loudly, and Dito’s little brother feels scared.', 'Dito hugs his brother and says it is okay.'],
@@ -3911,7 +4021,7 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
         id: 'Rian ikut lomba lari, dan temannya Budi ikut lomba lompat. Rian menyelesaikan lomba di posisi kedua.',
         question: 'What race does Rian join?',
         questionId: 'Lomba apa yang diikuti Rian?',
-        opts: [{ emoji: '🏃', lbl: 'Running', ok: true }, { emoji: '🤸', lbl: 'Jumping' }, { emoji: '🏊', lbl: 'Swimming' }],
+        opts: [{ emoji: '💨', lbl: 'Running', ok: true }, { emoji: '🐸', lbl: 'Jumping' }, { emoji: '🌊', lbl: 'Swimming' }],
       },
       {
         passage: ['The red team scores two points, and the blue team scores three points.', 'The blue team wins the game.'],
@@ -3984,7 +4094,7 @@ export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
         id: 'Tiga anak antre untuk jungkat-jungkit. Maya dan kakaknya malah menunggu giliran panjatan monyet.',
         question: 'What do Maya and her brother wait for?',
         questionId: 'Apa yang ditunggu Maya dan kakaknya?',
-        opts: [{ emoji: '🐒', lbl: 'The monkey bars', ok: true }, { emoji: '⚖️', lbl: 'The seesaw' }, { emoji: '🛝', lbl: 'The slide' }],
+        opts: [{ emoji: '🐵', lbl: 'The monkey bars', ok: true }, { emoji: '⚖️', lbl: 'The seesaw' }, { emoji: '🛝', lbl: 'The slide' }],
       },
     ],
     story: ['After playing for an hour, Maya feels thirsty.', 'She asks her brother to share his water bottle.', 'They sit on a bench and rest before going home.'],
@@ -4939,6 +5049,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Sebelas',
         emoji: '11',
         example: { en: 'I have eleven marbles.', id: 'Aku punya sebelas kelereng.', emoji: '🔴' },
+        practice: { en: 'She has eleven marbles in a jar.', id: 'Dia punya sebelas kelereng dalam toples.' },
         question: {
           en: 'How many marbles does she have?',
           id: 'Berapa kelereng yang dia punya?',
@@ -4954,10 +5065,11 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'Twelve',
         id: 'Dua Belas',
         emoji: '12',
-        example: { en: 'I see twelve ducks.', id: 'Aku lihat dua belas bebek.', emoji: '🦆' },
+        example: { en: 'I see twelve books.', id: 'Aku lihat dua belas buku.', emoji: '📚' },
+        practice: { en: 'She sees twelve books on the shelf.', id: 'Dia melihat dua belas buku di rak.' },
         question: {
-          en: 'How many ducks does she see?',
-          id: 'Berapa bebek yang dia lihat?',
+          en: 'How many books does she see?',
+          id: 'Berapa buku yang dia lihat?',
           options: [
             { emoji: '12', text: 'Twelve', ok: true },
             { emoji: '11', text: 'Eleven', ok: false },
@@ -4971,6 +5083,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Tiga Belas',
         emoji: '13',
         example: { en: 'I count thirteen shells.', id: 'Aku menghitung tiga belas kerang.', emoji: '🐚' },
+        practice: { en: 'She counts thirteen shells on the sand.', id: 'Dia menghitung tiga belas kerang di pasir.' },
         question: {
           en: 'How many shells does she count?',
           id: 'Berapa kerang yang dia hitung?',
@@ -4987,6 +5100,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Empat Belas',
         emoji: '14',
         example: { en: 'I have fourteen crayons.', id: 'Aku punya empat belas krayon.', emoji: '🖍️' },
+        practice: { en: 'She has fourteen crayons in a box.', id: 'Dia punya empat belas krayon dalam kotak.' },
         question: {
           en: 'How many crayons does she have?',
           id: 'Berapa krayon yang dia punya?',
@@ -5003,6 +5117,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Lima Belas',
         emoji: '15',
         example: { en: 'I see fifteen kites.', id: 'Aku lihat lima belas layangan.', emoji: '🪁' },
+        practice: { en: 'She sees fifteen kites in the sky.', id: 'Dia melihat lima belas layangan di langit.' },
         question: {
           en: 'How many kites does she see?',
           id: 'Berapa layangan yang dia lihat?',
@@ -5019,6 +5134,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Enam Belas',
         emoji: '16',
         example: { en: 'I count sixteen candles.', id: 'Aku menghitung enam belas lilin.', emoji: '🕯️' },
+        practice: { en: 'She counts sixteen candles on the cake.', id: 'Dia menghitung enam belas lilin di atas kue.' },
         question: {
           en: 'How many candles does she count?',
           id: 'Berapa lilin yang dia hitung?',
@@ -5035,6 +5151,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Tujuh Belas',
         emoji: '17',
         example: { en: 'I have seventeen buttons.', id: 'Aku punya tujuh belas kancing.', emoji: '🔘' },
+        practice: { en: 'She has seventeen buttons in her sewing box.', id: 'Dia punya tujuh belas kancing di kotak jahitnya.' },
         question: {
           en: 'How many buttons does she have?',
           id: 'Berapa kancing yang dia punya?',
@@ -5051,6 +5168,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Delapan Belas',
         emoji: '18',
         example: { en: 'I see eighteen leaves.', id: 'Aku lihat delapan belas daun.', emoji: '🍂' },
+        practice: { en: 'She sees eighteen leaves on the ground.', id: 'Dia melihat delapan belas daun di tanah.' },
         question: {
           en: 'How many leaves does she see?',
           id: 'Berapa daun yang dia lihat?',
@@ -5067,6 +5185,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Sembilan Belas',
         emoji: '19',
         example: { en: 'I count nineteen bricks.', id: 'Aku menghitung sembilan belas bata.', emoji: '🧱' },
+        practice: { en: 'She counts nineteen bricks in the wall.', id: 'Dia menghitung sembilan belas bata di dinding.' },
         question: {
           en: 'How many bricks does she count?',
           id: 'Berapa bata yang dia hitung?',
@@ -5083,6 +5202,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Dua Puluh',
         emoji: '20',
         example: { en: 'I have twenty balloons.', id: 'Aku punya dua puluh balon.', emoji: '🎈' },
+        practice: { en: 'She has twenty balloons for the party.', id: 'Dia punya dua puluh balon untuk pesta.' },
         question: {
           en: 'How many balloons does she have?',
           id: 'Berapa balon yang dia punya?',
@@ -5106,6 +5226,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Senin',
         emoji: '🏫',
         example: { en: 'School starts on Monday.', id: 'Sekolah dimulai hari Senin.', emoji: '🏫' },
+        practice: { en: 'The school week begins on Monday.', id: 'Pekan sekolah dimulai hari Senin.' },
         question: {
           en: 'When does school start?',
           id: 'Kapan sekolah dimulai?',
@@ -5122,6 +5243,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Selasa',
         emoji: '🎨',
         example: { en: 'We have art class on Tuesday.', id: 'Kami ada kelas seni hari Selasa.', emoji: '🎨' },
+        practice: { en: 'On Tuesday, we draw and paint in art class.', id: 'Hari Selasa, kami menggambar dan melukis di kelas seni.' },
         question: {
           en: 'When do we have art class?',
           id: 'Kapan kami ada kelas seni?',
@@ -5138,6 +5260,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Rabu',
         emoji: '🎵',
         example: { en: 'We sing songs on Wednesday.', id: 'Kami menyanyi hari Rabu.', emoji: '🎵' },
+        practice: { en: 'Every Wednesday, we sing together.', id: 'Setiap hari Rabu, kami menyanyi bersama.' },
         question: {
           en: 'When do we sing songs?',
           id: 'Kapan kami menyanyi?',
@@ -5154,6 +5277,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kamis',
         emoji: '⚽',
         example: { en: 'We play sports on Thursday.', id: 'Kami berolahraga hari Kamis.', emoji: '⚽' },
+        practice: { en: 'Thursday is our day for sports.', id: 'Hari Kamis adalah hari olahraga kami.' },
         question: {
           en: 'When do we play sports?',
           id: 'Kapan kami berolahraga?',
@@ -5170,6 +5294,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Jumat',
         emoji: '🎈',
         example: { en: 'Friday is my favorite day.', id: 'Hari Jumat itu hari favoritku.', emoji: '😊' },
+        practice: { en: 'She loves Friday the most.', id: 'Dia paling suka hari Jumat.' },
         question: {
           en: 'What is her favorite day?',
           id: 'Apa hari favoritnya?',
@@ -5186,6 +5311,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Sabtu',
         emoji: '🎉',
         example: { en: 'We visit grandma on Saturday.', id: 'Kami mengunjungi nenek hari Sabtu.', emoji: '👵' },
+        practice: { en: 'On Saturday, we go to grandma\'s house.', id: 'Hari Sabtu, kami pergi ke rumah nenek.' },
         question: {
           en: 'When do we visit grandma?',
           id: 'Kapan kami mengunjungi nenek?',
@@ -5202,6 +5328,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Minggu',
         emoji: '🌳',
         example: { en: 'We rest on Sunday.', id: 'Kami beristirahat hari Minggu.', emoji: '😴' },
+        practice: { en: 'Sunday is a day to relax at home.', id: 'Hari Minggu adalah hari bersantai di rumah.' },
         question: {
           en: 'When do we rest?',
           id: 'Kapan kami beristirahat?',
@@ -5218,6 +5345,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Hari Ini',
         emoji: '👉',
         example: { en: 'Today is a sunny day.', id: 'Hari ini hari yang cerah.', emoji: '☀️' },
+        practice: { en: 'The sun is shining today.', id: 'Matahari bersinar hari ini.' },
         question: {
           en: 'What day is sunny?',
           id: 'Hari apa yang cerah?',
@@ -5233,7 +5361,8 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'Tomorrow',
         id: 'Besok',
         emoji: '🌅',
-        example: { en: 'I will go swimming tomorrow.', id: 'Aku akan berenang besok.', emoji: '🏊' },
+        example: { en: 'I will go swimming tomorrow.', id: 'Aku akan berenang besok.', emoji: '🌊' },
+        practice: { en: 'She is going to swim tomorrow.', id: 'Dia akan berenang besok.' },
         question: {
           en: 'When will she go swimming?',
           id: 'Kapan dia akan berenang?',
@@ -5250,6 +5379,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kemarin',
         emoji: '🌇',
         example: { en: 'It rained yesterday.', id: 'Hujan turun kemarin.', emoji: '🌧️' },
+        practice: { en: 'Yesterday, the rain came down all day.', id: 'Kemarin, hujan turun sepanjang hari.' },
         question: {
           en: 'When did it rain?',
           id: 'Kapan hujan turun?',
@@ -5273,6 +5403,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Taman',
         emoji: '🏞️',
         example: { en: 'We fly kites at the park.', id: 'Kami main layangan di taman.', emoji: '🪁' },
+        practice: { en: 'The park is a good place to fly kites.', id: 'Taman adalah tempat yang bagus untuk main layangan.' },
         question: {
           en: 'Where do we fly kites?',
           id: 'Di mana kami main layangan?',
@@ -5289,6 +5420,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kebun Binatang',
         emoji: '🐼',
         example: { en: 'We see lions at the zoo.', id: 'Kami lihat singa di kebun binatang.', emoji: '🦁' },
+        practice: { en: 'At the zoo, we look at big lions.', id: 'Di kebun binatang, kami melihat singa besar.' },
         question: {
           en: 'Where do we see lions?',
           id: 'Di mana kami lihat singa?',
@@ -5305,6 +5437,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Pantai',
         emoji: '🏖️',
         example: { en: 'We build sandcastles at the beach.', id: 'Kami membangun istana pasir di pantai.', emoji: '🏰' },
+        practice: { en: 'On the beach, we make sandcastles.', id: 'Di pantai, kami membuat istana pasir.' },
         question: {
           en: 'Where do we build sandcastles?',
           id: 'Di mana kami membangun istana pasir?',
@@ -5321,6 +5454,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Pasar',
         emoji: '🛒',
         example: { en: 'We buy vegetables at the market.', id: 'Kami membeli sayur di pasar.', emoji: '🥕' },
+        practice: { en: 'Mom and I shop for vegetables at the market.', id: 'Ibu dan aku belanja sayur di pasar.' },
         question: {
           en: 'Where do we buy vegetables?',
           id: 'Di mana kami membeli sayur?',
@@ -5337,6 +5471,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Rumah Sakit',
         emoji: '🏥',
         example: { en: 'The nurse works at the hospital.', id: 'Perawat bekerja di rumah sakit.', emoji: '👩‍⚕️' },
+        practice: { en: 'You can find the nurse at the hospital.', id: 'Kamu bisa menemukan perawat itu di rumah sakit.' },
         question: {
           en: 'Where does the nurse work?',
           id: 'Di mana perawat bekerja?',
@@ -5352,7 +5487,8 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'Farm',
         id: 'Ladang',
         emoji: '🚜',
-        example: { en: 'We feed cows on the farm.', id: 'Kami memberi makan sapi di ladang.', emoji: '🐄' },
+        example: { en: 'We feed cows on the farm.', id: 'Kami memberi makan sapi di ladang.', emoji: '🐮' },
+        practice: { en: 'On the farm, we give food to the cows.', id: 'Di ladang, kami memberi makan sapi-sapi.' },
         question: {
           en: 'Where do we feed cows?',
           id: 'Di mana kami memberi makan sapi?',
@@ -5368,7 +5504,8 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'Bridge',
         id: 'Jembatan',
         emoji: '🌉',
-        example: { en: 'We walk across the bridge.', id: 'Kami berjalan menyeberangi jembatan.', emoji: '🚶' },
+        example: { en: 'We walk across the bridge.', id: 'Kami berjalan menyeberangi jembatan.', emoji: '👣' },
+        practice: { en: 'We cross the long bridge on foot.', id: 'Kami menyeberangi jembatan panjang dengan berjalan kaki.' },
         question: {
           en: 'What do we walk across?',
           id: 'Apa yang kami seberangi?',
@@ -5385,6 +5522,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Taman Bermain',
         emoji: '🛝',
         example: { en: 'We slide at the playground.', id: 'Kami merosot di taman bermain.', emoji: '🛝' },
+        practice: { en: 'The playground has a slide for us.', id: 'Taman bermain punya perosotan untuk kami.' },
         question: {
           en: 'Where do we slide?',
           id: 'Di mana kami merosot?',
@@ -5401,6 +5539,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Jalan',
         emoji: '🛣️',
         example: { en: 'Cars honk on the street.', id: 'Mobil membunyikan klakson di jalan.', emoji: '📯' },
+        practice: { en: 'On the street, cars go beep beep.', id: 'Di jalan, mobil-mobil berbunyi tin tin.' },
         question: {
           en: 'Where do cars honk?',
           id: 'Di mana mobil membunyikan klakson?',
@@ -5417,6 +5556,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Gunung',
         emoji: '⛰️',
         example: { en: 'We hike up the mountain.', id: 'Kami mendaki gunung.', emoji: '🥾' },
+        practice: { en: 'We walk up the tall mountain.', id: 'Kami berjalan naik gunung yang tinggi.' },
         question: {
           en: 'What do we hike up?',
           id: 'Apa yang kami daki?',
@@ -5440,6 +5580,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Palu',
         emoji: '🔨',
         example: { en: 'Dad uses the hammer to build a chair.', id: 'Ayah memakai palu untuk membuat kursi.', emoji: '🪑' },
+        practice: { en: 'With his hammer, dad makes a new chair.', id: 'Dengan palunya, ayah membuat kursi baru.' },
         question: {
           en: 'What does dad build?',
           id: 'Apa yang dibuat ayah?',
@@ -5456,6 +5597,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Obeng',
         emoji: '🪛',
         example: { en: 'Mom fixes the toy with a screwdriver.', id: 'Ibu memperbaiki mainan dengan obeng.', emoji: '🧸' },
+        practice: { en: 'Mom uses a screwdriver to fix the toy.', id: 'Ibu memakai obeng untuk memperbaiki mainan.' },
         question: {
           en: 'What does mom fix?',
           id: 'Apa yang diperbaiki ibu?',
@@ -5472,6 +5614,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kunci Inggris',
         emoji: '🔧',
         example: { en: 'I use the wrench to fix the bike.', id: 'Aku memakai kunci Inggris untuk memperbaiki sepeda.', emoji: '🚲' },
+        practice: { en: 'He fixes his bike with a wrench.', id: 'Dia memperbaiki sepedanya dengan kunci Inggris.' },
         question: {
           en: 'What does he fix with the wrench?',
           id: 'Apa yang diperbaikinya dengan kunci Inggris?',
@@ -5488,6 +5631,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Gergaji',
         emoji: '🪚',
         example: { en: 'The saw cuts the wood.', id: 'Gergaji memotong kayu.', emoji: '🪵' },
+        practice: { en: 'We use a saw to cut wood.', id: 'Kami memakai gergaji untuk memotong kayu.' },
         question: {
           en: 'What does the saw cut?',
           id: 'Apa yang dipotong gergaji?',
@@ -5504,6 +5648,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Tangga',
         emoji: '🪜',
         example: { en: 'I climb the ladder to paint the wall.', id: 'Aku memanjat tangga untuk mengecat dinding.', emoji: '🎨' },
+        practice: { en: 'He climbs up the ladder so he can paint the wall.', id: 'Dia naik tangga supaya bisa mengecat dinding.' },
         question: {
           en: 'Why does he climb the ladder?',
           id: 'Kenapa dia memanjat tangga?',
@@ -5520,6 +5665,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kotak Perkakas',
         emoji: '🧰',
         example: { en: 'Dad keeps his tools in the toolbox.', id: 'Ayah menyimpan perkakasnya di kotak perkakas.', emoji: '🧰' },
+        practice: { en: 'The tools stay inside the toolbox.', id: 'Alat-alat itu disimpan di dalam kotak perkakas.' },
         question: {
           en: 'Where does dad keep his tools?',
           id: 'Di mana ayah menyimpan perkakasnya?',
@@ -5536,6 +5682,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Ember',
         emoji: '🪣',
         example: { en: 'I carry water in the bucket.', id: 'Aku membawa air di dalam ember.', emoji: '💧' },
+        practice: { en: 'The bucket is full of water.', id: 'Ember itu penuh dengan air.' },
         question: {
           en: 'What is in the bucket?',
           id: 'Apa yang ada di dalam ember?',
@@ -5552,6 +5699,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Baut',
         emoji: '🔩',
         example: { en: 'The bolt holds the chair together.', id: 'Baut itu menyatukan kursi.', emoji: '🪑' },
+        practice: { en: 'A strong bolt keeps the chair together.', id: 'Baut yang kuat menjaga kursi tetap menyatu.' },
         question: {
           en: 'What does the bolt hold together?',
           id: 'Apa yang disatukan baut itu?',
@@ -5568,6 +5716,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Tali',
         emoji: '🪢',
         example: { en: 'I tie the rope around the box.', id: 'Aku mengikat tali di sekeliling kotak.', emoji: '📦' },
+        practice: { en: 'He wraps the rope around the box.', id: 'Dia melilitkan tali di sekeliling kotak.' },
         question: {
           en: 'What does he tie the rope around?',
           id: 'Di sekeliling apa dia mengikat tali?',
@@ -5584,6 +5733,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Senter',
         emoji: '🔦',
         example: { en: 'I use the flashlight in the dark.', id: 'Aku memakai senter dalam gelap.', emoji: '🌙' },
+        practice: { en: 'When it is dark, he turns on the flashlight.', id: 'Saat gelap, dia menyalakan senter.' },
         question: {
           en: 'When do you use the flashlight?',
           id: 'Kapan kamu memakai senter?',
@@ -5607,6 +5757,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Pizza',
         emoji: '🍕',
         example: { en: 'We share a pizza on Friday.', id: 'Kami berbagi pizza hari Jumat.', emoji: '🍕' },
+        practice: { en: 'Every Friday, we eat pizza together.', id: 'Setiap hari Jumat, kami makan pizza bersama.' },
         question: {
           en: 'When do we share pizza?',
           id: 'Kapan kami berbagi pizza?',
@@ -5623,6 +5774,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Burger',
         emoji: '🍔',
         example: { en: 'I eat a burger for lunch.', id: 'Aku makan burger saat makan siang.', emoji: '🍔' },
+        practice: { en: 'She has a burger at lunch time.', id: 'Dia makan burger saat jam makan siang.' },
         question: {
           en: 'When does she eat a burger?',
           id: 'Kapan dia makan burger?',
@@ -5639,6 +5791,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Sandwich',
         emoji: '🥪',
         example: { en: 'Mom makes a sandwich for me.', id: 'Ibu membuatkan sandwich untukku.', emoji: '👩' },
+        practice: { en: 'Mom makes me a tasty sandwich.', id: 'Ibu membuatkanku sandwich yang enak.' },
         question: {
           en: 'Who makes the sandwich?',
           id: 'Siapa yang membuat sandwich?',
@@ -5655,6 +5808,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Es Krim',
         emoji: '🍦',
         example: { en: 'I eat ice cream on a hot day.', id: 'Aku makan es krim saat hari panas.', emoji: '🍦' },
+        practice: { en: 'When it is hot, she eats ice cream.', id: 'Saat panas, dia makan es krim.' },
         question: {
           en: 'When does she eat ice cream?',
           id: 'Kapan dia makan es krim?',
@@ -5671,6 +5825,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kue',
         emoji: '🍰',
         example: { en: 'We eat cake at the birthday party.', id: 'Kami makan kue di pesta ulang tahun.', emoji: '🎂' },
+        practice: { en: 'There is cake at the birthday party.', id: 'Ada kue di pesta ulang tahun.' },
         question: {
           en: 'Where do we eat cake?',
           id: 'Di mana kami makan kue?',
@@ -5687,6 +5842,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Biskuit',
         emoji: '🍪',
         example: { en: 'I bake a cookie with grandma.', id: 'Aku membuat biskuit bersama nenek.', emoji: '👵' },
+        practice: { en: 'She bakes cookies with her grandma.', id: 'Dia membuat biskuit bersama neneknya.' },
         question: {
           en: 'Who bakes the cookie with her?',
           id: 'Siapa yang membuat biskuit bersamanya?',
@@ -5703,6 +5859,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Cokelat',
         emoji: '🍫',
         example: { en: 'I share chocolate with my friend.', id: 'Aku berbagi cokelat dengan temanku.', emoji: '👥' },
+        practice: { en: 'She gives some chocolate to her friend.', id: 'Dia memberi sedikit cokelat pada temannya.' },
         question: {
           en: 'Who does she share chocolate with?',
           id: 'Dengan siapa dia berbagi cokelat?',
@@ -5719,6 +5876,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Keju',
         emoji: '🧀',
         example: { en: 'The mouse likes cheese.', id: 'Tikus itu suka keju.', emoji: '🐭' },
+        practice: { en: 'A little mouse loves to eat cheese.', id: 'Seekor tikus kecil suka makan keju.' },
         question: {
           en: 'Who likes cheese?',
           id: 'Siapa yang suka keju?',
@@ -5726,7 +5884,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
             { emoji: '🐭', text: 'The Mouse', ok: true },
             { emoji: '🐱', text: 'The Cat', ok: false },
             { emoji: '🐶', text: 'The Dog', ok: false },
-            { emoji: '🐦', text: 'The Bird', ok: false },
+            { emoji: '🐾', text: 'The Bird', ok: false },
           ],
         },
       },
@@ -5735,6 +5893,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Jus',
         emoji: '🧃',
         example: { en: 'I drink orange juice for breakfast.', id: 'Aku minum jus jeruk saat sarapan.', emoji: '🧃' },
+        practice: { en: 'She drinks juice at breakfast.', id: 'Dia minum jus saat sarapan.' },
         question: {
           en: 'When does she drink juice?',
           id: 'Kapan dia minum jus?',
@@ -5751,6 +5910,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Yogurt',
         emoji: '🥣',
         example: { en: 'I eat yogurt with fruit.', id: 'Aku makan yogurt dengan buah.', emoji: '🍓' },
+        practice: { en: 'She puts fruit in her yogurt.', id: 'Dia menaruh buah di yogurtnya.' },
         question: {
           en: 'What does she eat yogurt with?',
           id: 'Dengan apa dia makan yogurt?',
@@ -5774,6 +5934,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Meja',
         emoji: '🍽️',
         example: { en: 'We eat dinner at the table.', id: 'Kami makan malam di meja.', emoji: '🍽️' },
+        practice: { en: 'Our family has dinner at the table.', id: 'Keluarga kami makan malam di meja.' },
         question: {
           en: 'Where do we eat dinner?',
           id: 'Di mana kami makan malam?',
@@ -5790,6 +5951,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Tempat Tidur',
         emoji: '🛏️',
         example: { en: 'I sleep in my bed.', id: 'Aku tidur di tempat tidurku.', emoji: '🛏️' },
+        practice: { en: 'At night, she sleeps in her soft bed.', id: 'Malam hari, dia tidur di tempat tidurnya yang empuk.' },
         question: {
           en: 'Where does she sleep?',
           id: 'Di mana dia tidur?',
@@ -5806,6 +5968,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Sofa',
         emoji: '🛋️',
         example: { en: 'We watch movies on the sofa.', id: 'Kami menonton film di sofa.', emoji: '🎬' },
+        practice: { en: 'We sit on the sofa and watch a movie.', id: 'Kami duduk di sofa dan menonton film.' },
         question: {
           en: 'Where do we watch movies?',
           id: 'Di mana kami menonton film?',
@@ -5822,6 +5985,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Lampu',
         emoji: '💡',
         example: { en: 'I turn on the lamp at night.', id: 'Aku menyalakan lampu di malam hari.', emoji: '💡' },
+        practice: { en: 'It is dark at night, so she turns on the lamp.', id: 'Malam hari gelap, jadi dia menyalakan lampu.' },
         question: {
           en: 'When does she turn on the lamp?',
           id: 'Kapan dia menyalakan lampu?',
@@ -5838,6 +6002,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Televisi',
         emoji: '📺',
         example: { en: 'We watch cartoons on television.', id: 'Kami menonton kartun di televisi.', emoji: '📺' },
+        practice: { en: 'We love the funny cartoons on TV.', id: 'Kami suka kartun lucu di TV.' },
         question: {
           en: 'What do we watch on television?',
           id: 'Apa yang kami tonton di televisi?',
@@ -5854,6 +6019,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kulkas',
         emoji: '🧊',
         example: { en: 'I put the milk in the fridge.', id: 'Aku memasukkan susu ke kulkas.', emoji: '🥛' },
+        practice: { en: 'She keeps the milk in the fridge.', id: 'Dia menyimpan susu di kulkas.' },
         question: {
           en: 'What does she put in the fridge?',
           id: 'Apa yang dia masukkan ke kulkas?',
@@ -5870,6 +6036,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Cermin',
         emoji: '🪞',
         example: { en: 'I look at my mirror every morning.', id: 'Aku bercermin setiap pagi.', emoji: '🪞' },
+        practice: { en: 'She checks the mirror each morning.', id: 'Dia bercermin tiap pagi.' },
         question: {
           en: 'When does she look in the mirror?',
           id: 'Kapan dia bercermin?',
@@ -5886,6 +6053,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Telepon',
         emoji: '📱',
         example: { en: 'Dad talks on the phone.', id: 'Ayah berbicara lewat telepon.', emoji: '👨' },
+        practice: { en: 'Dad is on the phone right now.', id: 'Ayah sedang menelepon sekarang.' },
         question: {
           en: 'Who talks on the phone?',
           id: 'Siapa yang berbicara lewat telepon?',
@@ -5902,6 +6070,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Lemari',
         emoji: '🗄️',
         example: { en: 'The plates are in the cupboard.', id: 'Piring-piring ada di lemari.', emoji: '🗄️' },
+        practice: { en: 'We keep the plates inside the cupboard.', id: 'Kami menyimpan piring di dalam lemari.' },
         question: {
           en: 'Where are the plates?',
           id: 'Di mana piring-piring itu?',
@@ -5918,6 +6087,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Jam',
         emoji: '🕐',
         example: { en: 'I check the clock before school.', id: 'Aku melihat jam sebelum sekolah.', emoji: '🕐' },
+        practice: { en: 'She looks at the clock before she goes to school.', id: 'Dia melihat jam sebelum pergi ke sekolah.' },
         question: {
           en: 'When does she check the clock?',
           id: 'Kapan dia melihat jam?',
@@ -5941,6 +6111,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Guru',
         emoji: '🧑‍🏫',
         example: { en: 'My teacher explains the lesson.', id: 'Guruku menjelaskan pelajaran.', emoji: '🧑‍🏫' },
+        practice: { en: 'The teacher tells us about the lesson.', id: 'Guru itu menerangkan pelajaran pada kami.' },
         question: {
           en: 'Who explains the lesson?',
           id: 'Siapa yang menjelaskan pelajaran?',
@@ -5957,6 +6128,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Ruang Kelas',
         emoji: '🏫',
         example: { en: 'We learn new words in the classroom.', id: 'Kami belajar kata baru di ruang kelas.', emoji: '🏫' },
+        practice: { en: 'In the classroom, we study new words.', id: 'Di ruang kelas, kami mempelajari kata-kata baru.' },
         question: {
           en: 'Where do we learn new words?',
           id: 'Di mana kami belajar kata baru?',
@@ -5973,6 +6145,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Teman',
         emoji: '👥',
         example: { en: 'I share my pencil with my friend.', id: 'Aku berbagi pensil dengan temanku.', emoji: '✏️' },
+        practice: { en: 'She lets her friend use her pencil.', id: 'Dia meminjamkan pensilnya pada temannya.' },
         question: {
           en: 'Who does she share her pencil with?',
           id: 'Dengan siapa dia berbagi pensil?',
@@ -5989,6 +6162,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kepala Sekolah',
         emoji: '🧑‍💼',
         example: { en: 'The principal welcomes new students.', id: 'Kepala sekolah menyambut murid baru.', emoji: '🧑‍💼' },
+        practice: { en: 'The principal says welcome to the new students.', id: 'Kepala sekolah menyambut hangat murid-murid baru.' },
         question: {
           en: 'Who welcomes new students?',
           id: 'Siapa yang menyambut murid baru?',
@@ -6005,6 +6179,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Perpustakaan',
         emoji: '📚',
         example: { en: 'I borrow a book from the library.', id: 'Aku meminjam buku dari perpustakaan.', emoji: '📚' },
+        practice: { en: 'The library lets her borrow a book.', id: 'Perpustakaan meminjamkan sebuah buku padanya.' },
         question: {
           en: 'Where does she borrow a book?',
           id: 'Di mana dia meminjam buku?',
@@ -6021,6 +6196,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Kotak Bekal',
         emoji: '🍱',
         example: { en: 'I open my lunchbox at noon.', id: 'Aku membuka kotak bekalku saat siang.', emoji: '🍱' },
+        practice: { en: 'At noon, she opens her lunchbox to eat.', id: 'Siang hari, dia membuka kotak bekalnya untuk makan.' },
         question: {
           en: 'What does she open at noon?',
           id: 'Apa yang dia buka saat siang?',
@@ -6037,6 +6213,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Seragam',
         emoji: '👕',
         example: { en: 'I wear my uniform every school day.', id: 'Aku memakai seragam setiap hari sekolah.', emoji: '👕' },
+        practice: { en: 'She puts on her uniform on each school day.', id: 'Dia memakai seragamnya pada setiap hari sekolah.' },
         question: {
           en: 'When does she wear her uniform?',
           id: 'Kapan dia memakai seragamnya?',
@@ -6053,6 +6230,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Bel',
         emoji: '🔔',
         example: { en: 'The bell rings at the end of class.', id: 'Bel berbunyi di akhir pelajaran.', emoji: '🔔' },
+        practice: { en: 'When class is over, the bell rings.', id: 'Saat pelajaran selesai, bel berbunyi.' },
         question: {
           en: 'When does the bell ring?',
           id: 'Kapan bel berbunyi?',
@@ -6069,6 +6247,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'PR',
         emoji: '📓',
         example: { en: 'I finish my homework before dinner.', id: 'Aku menyelesaikan PR-ku sebelum makan malam.', emoji: '📓' },
+        practice: { en: 'Her homework is done before dinner time.', id: 'PR-nya selesai sebelum waktu makan malam.' },
         question: {
           en: 'When does she finish her homework?',
           id: 'Kapan dia menyelesaikan PR-nya?',
@@ -6084,12 +6263,13 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'Recess',
         id: 'Istirahat',
         emoji: '🥪',
-        example: { en: 'We play tag during recess.', id: 'Kami main kejar-kejaran saat istirahat.', emoji: '🏃' },
+        example: { en: 'We play tag during recess.', id: 'Kami main kejar-kejaran saat istirahat.', emoji: '💨' },
+        practice: { en: 'At recess, we run and play tag.', id: 'Saat istirahat, kami berlari dan main kejar-kejaran.' },
         question: {
           en: 'When do we play tag?',
           id: 'Kapan kami main kejar-kejaran?',
           options: [
-            { emoji: '🏃', text: 'Recess', ok: true },
+            { emoji: '💨', text: 'Recess', ok: true },
             { emoji: '🏫', text: 'Class Time', ok: false },
             { emoji: '📓', text: 'Homework Time', ok: false },
             { emoji: '😴', text: 'Bedtime', ok: false },
@@ -6108,6 +6288,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Tetangga',
         emoji: '🏘️',
         example: { en: 'My neighbor waters her plants every morning.', id: 'Tetanggaku menyiram tanamannya setiap pagi.', emoji: '🌱' },
+        practice: { en: 'Every morning, the neighbor gives water to her plants.', id: 'Setiap pagi, tetangga memberi air pada tanamannya.' },
         question: {
           en: 'When does the neighbor water her plants?',
           id: 'Kapan tetangga itu menyiram tanamannya?',
@@ -6124,6 +6305,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Teman Sekelas',
         emoji: '🧑‍🎓',
         example: { en: 'My classmate sits next to me.', id: 'Teman sekelasku duduk di sebelahku.', emoji: '🪑' },
+        practice: { en: 'My classmate has a seat next to mine.', id: 'Teman sekelasku punya tempat duduk di sebelahku.' },
         question: {
           en: 'Where does the classmate sit?',
           id: 'Di mana teman sekelas itu duduk?',
@@ -6140,6 +6322,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Anak Laki-laki',
         emoji: '👦',
         example: { en: 'The boy kicks the ball.', id: 'Anak laki-laki itu menendang bola.', emoji: '⚽' },
+        practice: { en: 'The boy gives the ball a big kick.', id: 'Anak laki-laki itu menendang bola dengan kuat.' },
         question: {
           en: 'What does the boy kick?',
           id: 'Apa yang ditendang anak laki-laki itu?',
@@ -6156,6 +6339,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Anak Perempuan',
         emoji: '👧',
         example: { en: 'The girl draws a rainbow.', id: 'Anak perempuan itu menggambar pelangi.', emoji: '🌈' },
+        practice: { en: 'The girl is drawing a pretty rainbow.', id: 'Anak perempuan itu sedang menggambar pelangi yang cantik.' },
         question: {
           en: 'What does the girl draw?',
           id: 'Apa yang digambar anak perempuan itu?',
@@ -6172,6 +6356,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Pria',
         emoji: '👨',
         example: { en: 'The man carries a big bag.', id: 'Pria itu membawa tas besar.', emoji: '🎒' },
+        practice: { en: 'The man has a big bag in his hands.', id: 'Pria itu membawa tas besar di tangannya.' },
         question: {
           en: 'What does the man carry?',
           id: 'Apa yang dibawa pria itu?',
@@ -6188,6 +6373,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Wanita',
         emoji: '👩',
         example: { en: 'The woman waters the garden.', id: 'Wanita itu menyiram kebun.', emoji: '🌻' },
+        practice: { en: 'The woman gives water to the garden.', id: 'Wanita itu menyirami kebun.' },
         question: {
           en: 'What does the woman water?',
           id: 'Apa yang disiram wanita itu?',
@@ -6204,6 +6390,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Bayi',
         emoji: '👶',
         example: { en: 'The baby laughs at the puppet show.', id: 'Bayi itu tertawa melihat pertunjukan boneka.', emoji: '🎭' },
+        practice: { en: 'The puppet show makes the baby laugh.', id: 'Pertunjukan boneka itu membuat bayi tertawa.' },
         question: {
           en: 'What does the baby laugh at?',
           id: 'Apa yang membuat bayi itu tertawa?',
@@ -6220,6 +6407,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Supir',
         emoji: '🚕',
         example: { en: 'The driver stops at the red light.', id: 'Supir itu berhenti di lampu merah.', emoji: '🚦' },
+        practice: { en: 'The red light tells the driver to stop.', id: 'Lampu merah menyuruh sopir berhenti.' },
         question: {
           en: 'Where does the driver stop?',
           id: 'Di mana supir itu berhenti?',
@@ -6236,6 +6424,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Sahabat',
         emoji: '🤝',
         example: { en: 'My best friend saves a seat for me.', id: 'Sahabatku menyisakan kursi untukku.', emoji: '💺' },
+        practice: { en: 'My best friend keeps a seat for me.', id: 'Sahabatku menyimpankan tempat duduk untukku.' },
         question: {
           en: 'What does her best friend save?',
           id: 'Apa yang disisakan sahabatnya?',
@@ -6250,8 +6439,9 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
       {
         en: 'Twin',
         id: 'Anak Kembar',
-        emoji: '👯',
+        emoji: '👥',
         example: { en: 'My twin wears the same shirt as me.', id: 'Kembaranku memakai baju yang sama denganku.', emoji: '👕' },
+        practice: { en: 'My twin and I wear the same shirt.', id: 'Kembaranku dan aku memakai baju yang sama.' },
         question: {
           en: 'What does her twin wear?',
           id: 'Apa yang dipakai kembarannya?',
@@ -6275,6 +6465,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Matahari',
         emoji: '☀️',
         example: { en: 'The sun warms the earth.', id: 'Matahari menghangatkan bumi.', emoji: '🌍' },
+        practice: { en: 'The earth gets warm from the sun.', id: 'Bumi jadi hangat karena matahari.' },
         question: {
           en: 'What does the sun do?',
           id: 'Apa yang dilakukan matahari?',
@@ -6291,6 +6482,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Bulan',
         emoji: '🌙',
         example: { en: 'The moon shines at night.', id: 'Bulan bersinar di malam hari.', emoji: '🌙' },
+        practice: { en: 'At night, we can see the moon shine.', id: 'Malam hari, kita bisa melihat bulan bersinar.' },
         question: {
           en: 'When does the moon shine?',
           id: 'Kapan bulan bersinar?',
@@ -6306,15 +6498,16 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'Sky',
         id: 'Langit',
         emoji: '🌤️',
-        example: { en: 'Birds fly across the sky.', id: 'Burung terbang melintasi langit.', emoji: '🐦' },
+        example: { en: 'Kites fly across the sky.', id: 'Layangan terbang melintasi langit.', emoji: '🪁' },
+        practice: { en: 'Look at the kites in the sky!', id: 'Lihat layangan-layangan di langit!' },
         question: {
           en: 'What flies across the sky?',
           id: 'Apa yang terbang melintasi langit?',
           options: [
-            { emoji: '🐦', text: 'Birds', ok: true },
-            { emoji: '🐟', text: 'Fish', ok: false },
+            { emoji: '🪁', text: 'Kites', ok: true },
+            { emoji: '🌊', text: 'Fish', ok: false },
             { emoji: '🐸', text: 'Frogs', ok: false },
-            { emoji: '🐢', text: 'Turtles', ok: false },
+            { emoji: '🐾', text: 'Turtles', ok: false },
           ],
         },
       },
@@ -6323,6 +6516,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Awan',
         emoji: '☁️',
         example: { en: 'The cloud covers the sun.', id: 'Awan menutupi matahari.', emoji: '☁️' },
+        practice: { en: 'A big cloud hides the sun.', id: 'Awan besar menyembunyikan matahari.' },
         question: {
           en: 'What does the cloud cover?',
           id: 'Apa yang ditutupi awan?',
@@ -6339,6 +6533,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Pohon',
         emoji: '🌳',
         example: { en: 'The bird builds a nest in the tree.', id: 'Burung membuat sarang di pohon.', emoji: '🪹' },
+        practice: { en: 'The bird makes a nest up in the tree.', id: 'Burung membuat sarang di atas pohon.' },
         question: {
           en: 'Where does the bird build a nest?',
           id: 'Di mana burung membuat sarang?',
@@ -6354,7 +6549,8 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'Flower',
         id: 'Bunga',
         emoji: '🌸',
-        example: { en: 'The bee lands on the flower.', id: 'Lebah hinggap di bunga.', emoji: '🐝' },
+        example: { en: 'The bee lands on the flower.', id: 'Lebah hinggap di bunga.', emoji: '🌸' },
+        practice: { en: 'The bee sits on a pretty flower.', id: 'Lebah itu hinggap di bunga yang cantik.' },
         question: {
           en: 'Where does the bee land?',
           id: 'Di mana lebah hinggap?',
@@ -6371,6 +6567,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Rumput',
         emoji: '🌿',
         example: { en: 'We sit on the soft grass.', id: 'Kami duduk di rumput yang lembut.', emoji: '🧺' },
+        practice: { en: 'The grass is soft, and we sit down on it.', id: 'Rumputnya lembut, dan kami duduk di atasnya.' },
         question: {
           en: 'What do we sit on?',
           id: 'Kami duduk di atas apa?',
@@ -6386,7 +6583,8 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         en: 'River',
         id: 'Sungai',
         emoji: '🌊',
-        example: { en: 'Fish swim in the river.', id: 'Ikan berenang di sungai.', emoji: '🐟' },
+        example: { en: 'Fish swim in the river.', id: 'Ikan berenang di sungai.', emoji: '🌊' },
+        practice: { en: 'Many fish swim around in the river.', id: 'Banyak ikan berenang di sungai.' },
         question: {
           en: 'Where do fish swim?',
           id: 'Di mana ikan berenang?',
@@ -6403,6 +6601,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Batu',
         emoji: '🪨',
         example: { en: 'I skip a stone across the water.', id: 'Aku melempar batu memantul di air.', emoji: '💦' },
+        practice: { en: 'She throws a stone and it skips on the water.', id: 'Dia melempar batu dan batu itu memantul di air.' },
         question: {
           en: 'What does she skip across the water?',
           id: 'Apa yang dia lempar memantul di air?',
@@ -6419,6 +6618,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Bintang-bintang',
         emoji: '⭐',
         example: { en: 'I count the stars in the sky.', id: 'Aku menghitung bintang di langit.', emoji: '⭐' },
+        practice: { en: 'At night, she counts the stars.', id: 'Malam hari, dia menghitung bintang-bintang.' },
         question: {
           en: 'What does she count?',
           id: 'Apa yang dia hitung?',
@@ -6442,6 +6642,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Menggambar',
         emoji: '🎨',
         example: { en: 'I like drawing animals.', id: 'Aku suka menggambar hewan.', emoji: '🐾' },
+        practice: { en: 'She loves to draw animals.', id: 'Dia suka sekali menggambar hewan.' },
         question: {
           en: 'What does she like drawing?',
           id: 'Apa yang suka dia gambar?',
@@ -6458,6 +6659,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Bernyanyi',
         emoji: '🎤',
         example: { en: 'I like singing in the choir.', id: 'Aku suka bernyanyi di paduan suara.', emoji: '🎤' },
+        practice: { en: 'She enjoys singing with the choir.', id: 'Dia senang bernyanyi bersama paduan suara.' },
         question: {
           en: 'Where does she like singing?',
           id: 'Di mana dia suka bernyanyi?',
@@ -6474,6 +6676,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Membaca',
         emoji: '📖',
         example: { en: 'I like reading storybooks.', id: 'Aku suka membaca buku cerita.', emoji: '📖' },
+        practice: { en: 'She loves to read storybooks.', id: 'Dia suka membaca buku cerita.' },
         question: {
           en: 'What does she like reading?',
           id: 'Apa yang suka dia baca?',
@@ -6490,6 +6693,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Melukis',
         emoji: '🖌️',
         example: { en: 'I like painting with my dad.', id: 'Aku suka melukis bersama ayahku.', emoji: '👨' },
+        practice: { en: 'She paints pictures with her dad.', id: 'Dia melukis gambar bersama ayahnya.' },
         question: {
           en: 'Who does she paint with?',
           id: 'Dengan siapa dia melukis?',
@@ -6506,6 +6710,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Memasak',
         emoji: '🍳',
         example: { en: 'I like cooking pasta with mom.', id: 'Aku suka memasak pasta bersama ibu.', emoji: '🍝' },
+        practice: { en: 'She loves to cook pasta.', id: 'Dia suka masak pasta.' },
         question: {
           en: 'What does she like cooking?',
           id: 'Apa yang suka dia masak?',
@@ -6522,6 +6727,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Berkemah',
         emoji: '⛺',
         example: { en: 'I like camping by the lake.', id: 'Aku suka berkemah di dekat danau.', emoji: '🏕️' },
+        practice: { en: 'She enjoys camping near the lake.', id: 'Dia senang berkemah di dekat danau.' },
         question: {
           en: 'Where does she like camping?',
           id: 'Di mana dia suka berkemah?',
@@ -6538,6 +6744,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Memancing',
         emoji: '🎣',
         example: { en: 'I like fishing with my grandpa.', id: 'Aku suka memancing bersama kakekku.', emoji: '👴' },
+        practice: { en: 'She goes fishing with her grandpa.', id: 'Dia pergi memancing bersama kakeknya.' },
         question: {
           en: 'Who does she fish with?',
           id: 'Dengan siapa dia memancing?',
@@ -6554,6 +6761,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Berkebun',
         emoji: '🌱',
         example: { en: 'I like gardening in the morning.', id: 'Aku suka berkebun di pagi hari.', emoji: '🌅' },
+        practice: { en: 'She likes to garden early in the morning.', id: 'Dia suka berkebun pagi-pagi.' },
         question: {
           en: 'When does she like gardening?',
           id: 'Kapan dia suka berkebun?',
@@ -6570,6 +6778,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Mengoleksi',
         emoji: '🪙',
         example: { en: 'I like collecting seashells at the beach.', id: 'Aku suka mengoleksi kerang di pantai.', emoji: '🐚' },
+        practice: { en: 'She loves to collect seashells.', id: 'Dia suka mengumpulkan kerang.' },
         question: {
           en: 'What does she like collecting?',
           id: 'Apa yang suka dia koleksi?',
@@ -6586,6 +6795,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
         id: 'Membangun',
         emoji: '🧱',
         example: { en: 'I like building towers with blocks.', id: 'Aku suka membangun menara dari balok.', emoji: '🧱' },
+        practice: { en: 'She builds tall towers with her blocks.', id: 'Dia membangun menara tinggi dengan baloknya.' },
         question: {
           en: 'What does she build with blocks?',
           id: 'Apa yang dia bangun dari balok?',
@@ -6627,14 +6837,15 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Tall',
         id: 'Tinggi',
-        emoji: '🦒',
-        example: { en: 'My uncle is very tall.', id: 'Pamanku sangat tinggi.', emoji: '👴' },
+        emoji: '📏',
+        example: { en: 'My uncle is very tall.', id: 'Pamanku sangat tinggi.', emoji: '👨' },
+        practice: { en: 'Look at my uncle. He is very tall!', id: 'Lihat pamanku. Dia sangat tinggi!' },
         question: {
           en: 'What is her uncle like?',
           id: 'Bagaimana pamannya?',
           options: [
-            { emoji: '🦒', text: 'Very Tall', ok: true },
-            { emoji: '🧍', text: 'Very Short', ok: false },
+            { emoji: '📏', text: 'Very Tall', ok: true },
+            { emoji: '✏️', text: 'Very Short', ok: false },
             { emoji: '👶', text: 'Very Young', ok: false },
             { emoji: '📅', text: 'Very Old', ok: false },
           ],
@@ -6645,6 +6856,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Cantik',
         emoji: '😍',
         example: { en: 'The princess in the story is beautiful.', id: 'Sang putri dalam cerita itu cantik.', emoji: '👸' },
+        practice: { en: 'In the story, the princess looks beautiful.', id: 'Dalam cerita itu, sang putri tampak cantik.' },
         question: {
           en: 'What is the princess like?',
           id: 'Bagaimana sang putri?',
@@ -6652,7 +6864,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
             { emoji: '😍', text: 'Beautiful', ok: true },
             { emoji: '📅', text: 'Old', ok: false },
             { emoji: '💪', text: 'Strong', ok: false },
-            { emoji: '🧍', text: 'Slim', ok: false },
+            { emoji: '🧵', text: 'Slim', ok: false },
           ],
         },
       },
@@ -6661,13 +6873,14 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Tampan',
         emoji: '😎',
         example: { en: 'The actor looks handsome.', id: 'Aktor itu terlihat tampan.', emoji: '🎬' },
+        practice: { en: 'The actor is a handsome man.', id: 'Aktor itu adalah pria yang tampan.' },
         question: {
           en: 'How does the actor look?',
           id: 'Bagaimana penampilan aktor itu?',
           options: [
             { emoji: '😎', text: 'Handsome', ok: true },
             { emoji: '👶', text: 'Young', ok: false },
-            { emoji: '🦒', text: 'Tall', ok: false },
+            { emoji: '📏', text: 'Tall', ok: false },
             { emoji: '🥰', text: 'Cute', ok: false },
           ],
         },
@@ -6677,6 +6890,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Muda',
         emoji: '👶',
         example: { en: 'My little cousin is young.', id: 'Sepupu kecilku masih muda.', emoji: '🧒' },
+        practice: { en: 'My cousin is still very young.', id: 'Sepupuku masih sangat muda.' },
         question: {
           en: 'What is her cousin like?',
           id: 'Bagaimana sepupunya?',
@@ -6684,15 +6898,16 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
             { emoji: '👶', text: 'Young', ok: true },
             { emoji: '📅', text: 'Old', ok: false },
             { emoji: '💪', text: 'Strong', ok: false },
-            { emoji: '🧍', text: 'Slim', ok: false },
+            { emoji: '🧵', text: 'Slim', ok: false },
           ],
         },
       },
       {
         en: 'Old',
         id: 'Tua',
-        emoji: '👴',
+        emoji: '📕',
         example: { en: 'The library book is very old.', id: 'Buku perpustakaan itu sangat tua.', emoji: '📕' },
+        practice: { en: 'The library has a book that is very old.', id: 'Perpustakaan punya buku yang sangat tua.' },
         question: {
           en: 'How old is the book?',
           id: 'Seberapa tua bukunya?',
@@ -6700,20 +6915,21 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
             { emoji: '📕', text: 'Very Old', ok: true },
             { emoji: '✨', text: 'Very New', ok: false },
             { emoji: '🐭', text: 'Very Small', ok: false },
-            { emoji: '🐘', text: 'Very Big', ok: false },
+            { emoji: '⛰️', text: 'Very Big', ok: false },
           ],
         },
       },
       {
         en: 'Curly Hair',
         id: 'Rambut Keriting',
-        emoji: '🦱',
+        emoji: '🧑‍🦱',
         example: { en: 'My sister has curly hair.', id: 'Kakak perempuanku punya rambut keriting.', emoji: '👧' },
+        practice: { en: 'My sister\'s hair is curly.', id: 'Rambut kakak perempuanku keriting.' },
         question: {
           en: "What kind of hair does her sister have?",
           id: 'Rambut kakak perempuannya seperti apa?',
           options: [
-            { emoji: '🦱', text: 'Curly', ok: true },
+            { emoji: '🧑‍🦱', text: 'Curly', ok: true },
             { emoji: '💇', text: 'Straight', ok: false },
             { emoji: '✂️', text: 'Short', ok: false },
             { emoji: '📏', text: 'Long', ok: false },
@@ -6725,12 +6941,13 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Rambut Lurus',
         emoji: '💇',
         example: { en: 'My brother has straight hair.', id: 'Kakak laki-lakiku punya rambut lurus.', emoji: '👦' },
+        practice: { en: 'My brother\'s hair is straight.', id: 'Rambut kakak laki-lakiku lurus.' },
         question: {
           en: "What kind of hair does her brother have?",
           id: 'Rambut kakak laki-lakinya seperti apa?',
           options: [
             { emoji: '💇', text: 'Straight', ok: true },
-            { emoji: '🦱', text: 'Curly', ok: false },
+            { emoji: '🧑‍🦱', text: 'Curly', ok: false },
             { emoji: '✂️', text: 'Short', ok: false },
             { emoji: '📏', text: 'Long', ok: false },
           ],
@@ -6739,13 +6956,14 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Slim',
         id: 'Langsing',
-        emoji: '🧍',
-        example: { en: 'The dancer is slim.', id: 'Penari itu langsing.', emoji: '💃' },
+        emoji: '🧵',
+        example: { en: 'The dancer is slim.', id: 'Penari itu langsing.', emoji: '🧵' },
+        practice: { en: 'The dancer has a slim body.', id: 'Penari itu bertubuh langsing.' },
         question: {
           en: 'What is the dancer like?',
           id: 'Bagaimana penari itu?',
           options: [
-            { emoji: '🧍', text: 'Slim', ok: true },
+            { emoji: '🧵', text: 'Slim', ok: true },
             { emoji: '💪', text: 'Strong', ok: false },
             { emoji: '📅', text: 'Old', ok: false },
             { emoji: '👶', text: 'Young', ok: false },
@@ -6756,13 +6974,14 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Strong',
         id: 'Kuat',
         emoji: '💪',
-        example: { en: 'The wrestler is very strong.', id: 'Pegulat itu sangat kuat.', emoji: '🤼' },
+        example: { en: 'The wrestler is very strong.', id: 'Pegulat itu sangat kuat.', emoji: '💪' },
+        practice: { en: 'The wrestler can lift heavy things because he is very strong.', id: 'Pegulat itu bisa mengangkat barang berat karena dia sangat kuat.' },
         question: {
           en: 'What is the wrestler like?',
           id: 'Bagaimana pegulat itu?',
           options: [
             { emoji: '💪', text: 'Very Strong', ok: true },
-            { emoji: '🧍', text: 'Very Slim', ok: false },
+            { emoji: '🧵', text: 'Very Slim', ok: false },
             { emoji: '📅', text: 'Very Old', ok: false },
             { emoji: '👶', text: 'Very Young', ok: false },
           ],
@@ -6773,6 +6992,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Lucu',
         emoji: '🥰',
         example: { en: 'The kitten looks cute.', id: 'Anak kucing itu terlihat lucu.', emoji: '🐱' },
+        practice: { en: 'The little kitten is so cute.', id: 'Anak kucing kecil itu lucu sekali.' },
         question: {
           en: 'How does the kitten look?',
           id: 'Bagaimana penampilan anak kucing itu?',
@@ -6780,7 +7000,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
             { emoji: '🥰', text: 'Cute', ok: true },
             { emoji: '📅', text: 'Old', ok: false },
             { emoji: '💪', text: 'Strong', ok: false },
-            { emoji: '🦒', text: 'Tall', ok: false },
+            { emoji: '📏', text: 'Tall', ok: false },
           ],
         },
       },
@@ -6788,8 +7008,8 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     noteHeading: '📝 Catatan Perkenalan Teman Baru',
     notePassage: [
       { en: 'This is Rani, a new student.', id: 'Ini Rani, murid baru.' },
-      { en: 'She is tall and has curly hair.', id: 'Dia tinggi dan punya rambut keriting.' },
-      { en: 'She is twelve years old.', id: 'Usianya dua belas tahun.' },
+      { en: 'She is tall, not short, and she has curly hair.', id: 'Dia tinggi, bukan pendek, dan punya rambut keriting.' },
+      { en: 'Some people think she is eleven, but she is twelve years old.', id: 'Ada yang mengira dia sebelas tahun, tapi usianya dua belas tahun.' },
       { en: 'Everyone thinks she is very friendly.', id: 'Semua orang pikir dia sangat ramah.' },
     ],
     noteGaps: [
@@ -6800,6 +7020,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Siapa nama murid baru itu?',
         options: ['Rani', 'Sari', 'Dina'],
         answer: 'Rani',
+        decoys: ['Mira', 'Nita'],
       },
       {
         label: 'Tinggi Badan',
@@ -6808,6 +7029,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Rani tinggi atau pendek?',
         options: ['Tall', 'Short', 'Slim'],
         answer: 'Tall',
+        decoys: ['Small', 'Strong'],
       },
       {
         label: 'Jenis Rambut',
@@ -6816,6 +7038,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Rambut Rani seperti apa?',
         options: ['Curly', 'Straight', 'Short'],
         answer: 'Curly',
+        decoys: ['Wavy', 'Braided'],
       },
       {
         label: 'Usia',
@@ -6824,6 +7047,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Berapa usia Rani?',
         options: ['Twelve', 'Ten', 'Eleven'],
         answer: 'Twelve',
+        decoys: ['Nine', 'Thirteen'],
       },
     ],
   },
@@ -6837,6 +7061,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Bank',
         emoji: '🏦',
         example: { en: 'I save my money at the bank.', id: 'Aku menabung uangku di bank.', emoji: '🏦' },
+        practice: { en: 'She puts her money in the bank.', id: 'Dia menyimpan uangnya di bank.' },
         question: {
           en: 'Where does she save money?',
           id: 'Di mana dia menabung?',
@@ -6853,6 +7078,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Kantor Pos',
         emoji: '📮',
         example: { en: 'I send a letter at the post office.', id: 'Aku mengirim surat di kantor pos.', emoji: '✉️' },
+        practice: { en: 'She goes to the post office to send a letter.', id: 'Dia pergi ke kantor pos untuk mengirim surat.' },
         question: {
           en: 'Where does she send a letter?',
           id: 'Di mana dia mengirim surat?',
@@ -6869,6 +7095,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Kantor Polisi',
         emoji: '🚓',
         example: { en: 'The police station keeps the town safe.', id: 'Kantor polisi menjaga keamanan kota.', emoji: '🚓' },
+        practice: { en: 'Our town is safe because of the police station.', id: 'Kota kami aman karena ada kantor polisi.' },
         question: {
           en: 'What keeps the town safe?',
           id: 'Apa yang menjaga keamanan kota?',
@@ -6885,6 +7112,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Restoran',
         emoji: '🍽️',
         example: { en: 'We eat pizza at the restaurant.', id: 'Kami makan pizza di restoran.', emoji: '🍕' },
+        practice: { en: 'At the restaurant, we enjoy a hot pizza.', id: 'Di restoran, kami menikmati pizza yang panas.' },
         question: {
           en: 'What do we eat at the restaurant?',
           id: 'Kami makan apa di restoran?',
@@ -6901,6 +7129,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Bioskop',
         emoji: '🎬',
         example: { en: 'I watch a new movie at the cinema.', id: 'Aku menonton film baru di bioskop.', emoji: '🎬' },
+        practice: { en: 'She sees a new film at the cinema.', id: 'Dia menonton film baru di bioskop.' },
         question: {
           en: 'Where does she watch a movie?',
           id: 'Di mana dia menonton film?',
@@ -6917,6 +7146,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Museum',
         emoji: '🏛️',
         example: { en: 'We see old paintings at the museum.', id: 'Kami melihat lukisan tua di museum.', emoji: '🖼️' },
+        practice: { en: 'The museum shows us many old paintings.', id: 'Museum itu memperlihatkan banyak lukisan tua.' },
         question: {
           en: 'What do we see at the museum?',
           id: 'Apa yang kami lihat di museum?',
@@ -6933,6 +7163,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Stadion',
         emoji: '🏟️',
         example: { en: 'We watch the football game at the stadium.', id: 'Kami menonton pertandingan sepak bola di stadion.', emoji: '⚽' },
+        practice: { en: 'We go to the stadium to watch football.', id: 'Kami pergi ke stadion untuk menonton sepak bola.' },
         question: {
           en: 'Where do we watch the game?',
           id: 'Di mana kami menonton pertandingan?',
@@ -6949,6 +7180,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Supermarket',
         emoji: '🏬',
         example: { en: 'Mom buys vegetables at the supermarket.', id: 'Ibu membeli sayur di supermarket.', emoji: '🥦' },
+        practice: { en: 'Mom goes to the supermarket to buy vegetables.', id: 'Ibu pergi ke supermarket untuk membeli sayur.' },
         question: {
           en: 'What does mom buy?',
           id: 'Ibu membeli apa?',
@@ -6965,6 +7197,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Bandara',
         emoji: '✈️',
         example: { en: 'We fly to Bali from the airport.', id: 'Kami terbang ke Bali dari bandara.', emoji: '✈️' },
+        practice: { en: 'Our plane to Bali leaves from the airport.', id: 'Pesawat kami ke Bali berangkat dari bandara.' },
         question: {
           en: 'Where do we fly from?',
           id: 'Kami terbang dari mana?',
@@ -6981,6 +7214,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Toko Roti',
         emoji: '🥖',
         example: { en: 'I smell fresh bread at the bakery.', id: 'Aku mencium roti segar di toko roti.', emoji: '🍞' },
+        practice: { en: 'The bakery has the smell of fresh bread.', id: 'Toko roti itu berbau roti segar.' },
         question: {
           en: 'What does she smell?',
           id: 'Dia mencium bau apa?',
@@ -6995,10 +7229,10 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     ],
     noteHeading: '📝 Catatan Jalan-jalan Akhir Pekan',
     notePassage: [
-      { en: 'Dito goes to town with his dad on Saturday.', id: 'Dito pergi ke kota bersama ayahnya hari Sabtu.' },
-      { en: 'First they visit the bakery to buy bread.', id: 'Pertama mereka mengunjungi toko roti untuk membeli roti.' },
-      { en: 'Then they watch a movie at the cinema.', id: 'Lalu mereka menonton film di bioskop.' },
-      { en: 'After that, they eat dinner at a restaurant.', id: 'Setelah itu, mereka makan malam di restoran.' },
+      { en: 'Dito, are we going to town on Sunday?', id: 'Dito, apakah kita pergi ke kota hari Minggu?', speaker: 'Mom' },
+      { en: 'No, on Saturday. First we visit the bakery to buy bread.', id: 'Bukan, hari Sabtu. Pertama kita mengunjungi toko roti untuk membeli roti.', speaker: 'Dito' },
+      { en: 'And after that?', id: 'Dan setelah itu?', speaker: 'Mom' },
+      { en: 'Then we watch a movie at the cinema, not at the museum. After that, we eat dinner at a restaurant.', id: 'Lalu kita menonton film di bioskop, bukan di museum. Setelah itu, kita makan malam di restoran.', speaker: 'Dito' },
     ],
     noteGaps: [
       {
@@ -7008,6 +7242,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Hari apa mereka pergi ke kota?',
         options: ['Saturday', 'Sunday', 'Monday'],
         answer: 'Saturday',
+        decoys: ['Friday', 'Tuesday'],
       },
       {
         label: 'Tempat Pertama',
@@ -7016,6 +7251,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Ke mana mereka pergi pertama?',
         options: ['The Bakery', 'The Cinema', 'The Restaurant'],
         answer: 'The Bakery',
+        decoys: ['The Bank', 'The Park'],
       },
       {
         label: 'Tempat Kedua',
@@ -7024,6 +7260,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Di mana mereka nonton film?',
         options: ['The Cinema', 'The Museum', 'The Stadium'],
         answer: 'The Cinema',
+        decoys: ['The Library', 'The Mall'],
       },
       {
         label: 'Tempat Makan',
@@ -7032,6 +7269,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Di mana mereka makan malam?',
         options: ['The Restaurant', 'The Bakery', 'The Supermarket'],
         answer: 'The Restaurant',
+        decoys: ['The Cafeteria', 'The Hotel'],
       },
     ],
   },
@@ -7045,6 +7283,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Kiri',
         emoji: '⬅️',
         example: { en: 'Turn left at the bakery.', id: 'Belok kiri di toko roti.', emoji: '⬅️' },
+        practice: { en: 'At the bakery, you must turn left.', id: 'Di toko roti, kamu harus belok kiri.' },
         question: {
           en: 'Which way do we turn?',
           id: 'Kami belok ke arah mana?',
@@ -7061,9 +7300,10 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Kanan',
         emoji: '➡️',
         example: { en: 'Turn right at the bank.', id: 'Belok kanan di bank.', emoji: '➡️' },
+        practice: { en: 'Please turn right when you see the bank.', id: 'Tolong belok kanan saat kamu melihat bank.' },
         question: {
-          en: 'Which way do we turn?',
-          id: 'Kami belok ke arah mana?',
+          en: 'Which way do we turn at the bank?',
+          id: 'Kita belok ke arah mana di bank?',
           options: [
             { emoji: '➡️', text: 'Right', ok: true },
             { emoji: '⬅️', text: 'Left', ok: false },
@@ -7077,6 +7317,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Lurus',
         emoji: '⬆️',
         example: { en: 'Go straight past the school.', id: 'Jalan terus lurus melewati sekolah.', emoji: '🏫' },
+        practice: { en: 'Keep going straight when you pass the school.', id: 'Terus jalan lurus saat kamu melewati sekolah.' },
         question: {
           en: 'How do we go past the school?',
           id: 'Bagaimana kami melewati sekolah?',
@@ -7093,6 +7334,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Dekat',
         emoji: '📍',
         example: { en: 'The park is near my house.', id: 'Tamannya dekat rumahku.', emoji: '🏞️' },
+        practice: { en: 'You can walk to the park because it is near.', id: 'Kamu bisa jalan kaki ke taman karena dekat.' },
         question: {
           en: 'How far is the park?',
           id: 'Seberapa jauh tamannya?',
@@ -7109,6 +7351,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Jauh',
         emoji: '🛣️',
         example: { en: 'The zoo is far from here.', id: 'Kebun binatangnya jauh dari sini.', emoji: '🐼' },
+        practice: { en: 'We need a bus to the zoo because it is far.', id: 'Kita butuh bus ke kebun binatang karena jauh.' },
         question: {
           en: 'How far is the zoo?',
           id: 'Seberapa jauh kebun binatangnya?',
@@ -7125,6 +7368,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Belok',
         emoji: '🔄',
         example: { en: 'You turn at the second corner.', id: 'Kamu belok di sudut kedua.', emoji: '📐' },
+        practice: { en: 'Go to the second corner and turn there.', id: 'Pergi ke sudut kedua dan belok di situ.' },
         question: {
           en: 'Where do you turn?',
           id: 'Di mana kamu belok?',
@@ -7140,7 +7384,8 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Corner',
         id: 'Sudut',
         emoji: '📐',
-        example: { en: 'Wait for me at the corner.', id: 'Tunggu aku di sudut jalan.', emoji: '🧍' },
+        example: { en: 'Wait for me at the corner.', id: 'Tunggu aku di sudut jalan.', emoji: '📍' },
+        practice: { en: 'She waits for her friend at the corner.', id: 'Dia menunggu temannya di sudut jalan.' },
         question: {
           en: 'Where does she wait?',
           id: 'Di mana dia menunggu?',
@@ -7157,6 +7402,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Di Antara',
         emoji: '↔️',
         example: { en: 'The bakery is between the bank and the school.', id: 'Toko roti ada di antara bank dan sekolah.', emoji: '🏦' },
+        practice: { en: 'You can find the bakery between the school and the bank.', id: 'Kamu bisa menemukan toko roti di antara sekolah dan bank.' },
         question: {
           en: 'Where is the bakery?',
           id: 'Di mana toko rotinya?',
@@ -7173,6 +7419,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Di Depan',
         emoji: '👉',
         example: { en: 'The bus stops in front of the school.', id: 'Bus berhenti di depan sekolah.', emoji: '🚌' },
+        practice: { en: 'The bus stop is in front of the school.', id: 'Halte bus ada di depan sekolah.' },
         question: {
           en: 'Where does the bus stop?',
           id: 'Di mana bus berhenti?',
@@ -7189,6 +7436,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Di Belakang',
         emoji: '👈',
         example: { en: 'My house is behind the park.', id: 'Rumahku ada di belakang taman.', emoji: '🏡' },
+        practice: { en: 'Her house stands behind the park.', id: 'Rumahnya berdiri di belakang taman.' },
         question: {
           en: 'Where is her house?',
           id: 'Di mana rumahnya?',
@@ -7203,9 +7451,10 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     ],
     noteHeading: '📝 Catatan Arah ke Rumah Nenek',
     notePassage: [
-      { en: "To get to grandma's house, turn left at the bakery.", id: 'Untuk sampai ke rumah nenek, belok kiri di toko roti.' },
-      { en: 'Then go straight for two blocks.', id: 'Lalu jalan terus lurus dua blok.' },
-      { en: "Her house is between the school and the park.", id: 'Rumahnya ada di antara sekolah dan taman.' },
+      { en: 'Excuse me, do I turn right at the bakery to get to grandma’s house?', id: 'Permisi, apakah aku belok kanan di toko roti untuk sampai ke rumah nenek?', speaker: 'Ana' },
+      { en: 'No, turn left at the bakery. Then go straight for two blocks.', id: 'Bukan, belok kiri di toko roti. Lalu jalan terus lurus dua blok.', speaker: 'Pak Budi' },
+      { en: 'And where is her house?', id: 'Dan di mana rumahnya?', speaker: 'Ana' },
+      { en: 'It is between the school and the park, not behind the bakery.', id: 'Rumahnya ada di antara sekolah dan taman, bukan di belakang toko roti.', speaker: 'Pak Budi' },
     ],
     noteGaps: [
       {
@@ -7215,6 +7464,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Belok ke mana di toko roti?',
         options: ['Left', 'Right', 'Straight'],
         answer: 'Left',
+        decoys: ['Back', 'Around'],
       },
       {
         label: 'Setelah Belok',
@@ -7223,6 +7473,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Apa yang dilakukan setelah belok?',
         options: ['Go Straight', 'Turn Again', 'Stop'],
         answer: 'Go Straight',
+        decoys: ['Go Back', 'Wait'],
       },
       {
         label: 'Lokasi Rumah',
@@ -7231,6 +7482,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Di mana rumah nenek?',
         options: ['Between the School and the Park', 'Behind the Bakery', 'In Front of the Bank'],
         answer: 'Between the School and the Park',
+        decoys: ['Next to the Bank', 'Behind the Museum'],
       },
     ],
   },
@@ -7244,6 +7496,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Konser',
         emoji: '🎤',
         example: { en: 'I watch a concert with my sister.', id: 'Aku menonton konser bersama kakak perempuanku.', emoji: '👧' },
+        practice: { en: 'She goes to a concert with her sister.', id: 'Dia pergi ke konser bersama kakak perempuannya.' },
         question: {
           en: 'Who does she watch the concert with?',
           id: 'Dengan siapa dia menonton konser?',
@@ -7260,6 +7513,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Teater',
         emoji: '🎭',
         example: { en: 'We watch a play at the theater.', id: 'Kami menonton pertunjukan di teater.', emoji: '🎭' },
+        practice: { en: 'At the theater, we see a play.', id: 'Di teater, kami menonton sebuah drama.' },
         question: {
           en: 'What do we watch at the theater?',
           id: 'Kami menonton apa di teater?',
@@ -7276,6 +7530,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Taman Hiburan',
         emoji: '🎡',
         example: { en: 'I ride the roller coaster at the amusement park.', id: 'Aku naik roller coaster di taman hiburan.', emoji: '🎢' },
+        practice: { en: 'At the amusement park, she rides a roller coaster.', id: 'Di taman hiburan, dia naik roller coaster.' },
         question: {
           en: 'What does she ride?',
           id: 'Dia naik apa?',
@@ -7292,6 +7547,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Permainan Papan',
         emoji: '🎲',
         example: { en: 'We play a board game on rainy days.', id: 'Kami main permainan papan saat hari hujan.', emoji: '🌧️' },
+        practice: { en: 'On a rainy day, we sit inside and play a board game.', id: 'Saat hari hujan, kami duduk di dalam dan main permainan papan.' },
         question: {
           en: 'When do we play a board game?',
           id: 'Kapan kami main permainan papan?',
@@ -7308,6 +7564,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Gim Video',
         emoji: '🕹️',
         example: { en: 'My brother plays a video game after school.', id: 'Kakak laki-lakiku main gim video sepulang sekolah.', emoji: '🏫' },
+        practice: { en: 'My brother has time for a video game after school.', id: 'Kakak laki-lakiku punya waktu main gim video sepulang sekolah.' },
         question: {
           en: 'When does he play a video game?',
           id: 'Kapan dia main gim video?',
@@ -7324,6 +7581,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Catur',
         emoji: '♟️',
         example: { en: 'I play chess with my grandpa.', id: 'Aku main catur bersama kakekku.', emoji: '👴' },
+        practice: { en: 'She loves to play chess with her grandpa.', id: 'Dia suka main catur dengan kakeknya.' },
         question: {
           en: 'Who does she play chess with?',
           id: 'Dengan siapa dia main catur?',
@@ -7340,6 +7598,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Papan Seluncur',
         emoji: '🛹',
         example: { en: 'He rides his skateboard at the park.', id: 'Dia main papan seluncur di taman.', emoji: '🏞️' },
+        practice: { en: 'He goes to the park to ride his skateboard.', id: 'Dia pergi ke taman untuk main papan seluncur.' },
         question: {
           en: 'Where does he ride his skateboard?',
           id: 'Di mana dia main papan seluncur?',
@@ -7356,6 +7615,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Kamera',
         emoji: '📷',
         example: { en: 'I take photos with my camera.', id: 'Aku memotret dengan kameraku.', emoji: '📷' },
+        practice: { en: 'She uses her camera to take photos.', id: 'Dia memakai kameranya untuk memotret.' },
         question: {
           en: 'What does she take photos with?',
           id: 'Dia memotret dengan apa?',
@@ -7370,8 +7630,9 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Comic Book',
         id: 'Buku Komik',
-        emoji: '🦸',
+        emoji: '🎭',
         example: { en: 'I read a comic book before bed.', id: 'Aku membaca buku komik sebelum tidur.', emoji: '🛏️' },
+        practice: { en: 'Before she goes to bed, she reads a comic book.', id: 'Sebelum tidur, dia membaca buku komik.' },
         question: {
           en: 'When does she read a comic book?',
           id: 'Kapan dia membaca buku komik?',
@@ -7388,6 +7649,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Majalah',
         emoji: '📰',
         example: { en: 'My mom reads a magazine on the weekend.', id: 'Ibuku membaca majalah di akhir pekan.', emoji: '📅' },
+        practice: { en: 'On the weekend, mom sits down and reads a magazine.', id: 'Di akhir pekan, ibu duduk dan membaca majalah.' },
         question: {
           en: 'When does mom read a magazine?',
           id: 'Kapan ibu membaca majalah?',
@@ -7402,10 +7664,12 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     ],
     noteHeading: '📝 Catatan Rencana Akhir Pekan',
     notePassage: [
-      { en: 'This weekend, Bimo wants to go to the amusement park.', id: 'Akhir pekan ini, Bimo mau pergi ke taman hiburan.' },
-      { en: 'He will ride the roller coaster with his brother.', id: 'Dia akan naik roller coaster bersama kakak laki-lakinya.' },
-      { en: 'After that, they will play chess together.', id: 'Setelah itu, mereka akan main catur bersama.' },
-      { en: 'In the evening, Bimo will read his new comic book.', id: 'Di malam hari, Bimo akan membaca buku komik barunya.' },
+      { en: 'Bimo, do you want to go to the theater this weekend?', id: 'Bimo, apakah kamu mau pergi ke teater akhir pekan ini?', speaker: 'Mom' },
+      { en: 'No, I want to go to the amusement park. I will ride the roller coaster with my brother.', id: 'Tidak, aku mau pergi ke taman hiburan. Aku akan naik roller coaster bersama kakak laki-lakiku.', speaker: 'Bimo' },
+      { en: 'What will you do after the ride?', id: 'Apa yang akan kamu lakukan setelah naik wahana?', speaker: 'Mom' },
+      { en: 'We want to play a video game, but we will play chess together.', id: 'Kami ingin main gim video, tapi kami akan main catur bersama.', speaker: 'Bimo' },
+      { en: 'And in the evening?', id: 'Dan di malam hari?', speaker: 'Mom' },
+      { en: 'I will read my new comic book, not a magazine.', id: 'Aku akan membaca buku komik baruku, bukan majalah.', speaker: 'Bimo' },
     ],
     noteGaps: [
       {
@@ -7415,6 +7679,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Bimo mau pergi ke mana?',
         options: ['The Amusement Park', 'The Theater', 'The Museum'],
         answer: 'The Amusement Park',
+        decoys: ['The Zoo', 'The Cinema'],
       },
       {
         label: 'Naik Bersama',
@@ -7423,6 +7688,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Siapa yang naik roller coaster bersamanya?',
         options: ['His Brother', 'His Sister', 'His Friend'],
         answer: 'His Brother',
+        decoys: ['His Cousin', 'His Dad'],
       },
       {
         label: 'Setelah Itu',
@@ -7431,6 +7697,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Mereka main apa setelah naik wahana?',
         options: ['Chess', 'Video Game', 'Board Game'],
         answer: 'Chess',
+        decoys: ['Cards', 'Football'],
       },
       {
         label: 'Malam Hari',
@@ -7439,6 +7706,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Bimo membaca apa di malam hari?',
         options: ['His Comic Book', 'A Magazine', 'A Newspaper'],
         answer: 'His Comic Book',
+        decoys: ['A Storybook', 'A Textbook'],
       },
     ],
   },
@@ -7450,8 +7718,9 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Climb',
         id: 'Memanjat',
-        emoji: '🧗',
+        emoji: '🛝',
         example: { en: 'I climb the tall slide.', id: 'Aku memanjat perosotan yang tinggi.', emoji: '🛝' },
+        practice: { en: 'She goes up the slide step by step.', id: 'Dia naik perosotan langkah demi langkah.' },
         question: {
           en: 'What does she climb?',
           id: 'Dia memanjat apa?',
@@ -7466,8 +7735,9 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Catch',
         id: 'Menangkap',
-        emoji: '🤲',
+        emoji: '⚽',
         example: { en: 'I catch the ball my friend throws.', id: 'Aku menangkap bola yang dilempar temanku.', emoji: '⚽' },
+        practice: { en: 'Her friend throws a ball, and she catches it.', id: 'Temannya melempar bola, dan dia menangkapnya.' },
         question: {
           en: 'What does she catch?',
           id: 'Dia menangkap apa?',
@@ -7482,8 +7752,9 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Throws',
         id: 'Melempar',
-        emoji: '🤾',
+        emoji: '🏐',
         example: { en: 'He throws the ball to his friend.', id: 'Dia melempar bola pada temannya.', emoji: '🏐' },
+        practice: { en: 'His friend gets the ball he throws.', id: 'Temannya mendapat bola yang dia lempar.' },
         question: {
           en: 'What does he throw?',
           id: 'Dia melempar apa?',
@@ -7500,6 +7771,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Bersembunyi',
         emoji: '🙈',
         example: { en: 'I hide behind the big tree.', id: 'Aku bersembunyi di belakang pohon besar.', emoji: '🌳' },
+        practice: { en: 'She stays behind the big tree so no one sees her.', id: 'Dia bersembunyi di belakang pohon besar supaya tidak terlihat.' },
         question: {
           en: 'Where does she hide?',
           id: 'Di mana dia bersembunyi?',
@@ -7516,6 +7788,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Tertawa',
         emoji: '😂',
         example: { en: 'We laugh at the funny clown.', id: 'Kami tertawa melihat badut yang lucu.', emoji: '🤡' },
+        practice: { en: 'The clown is so funny that we laugh.', id: 'Badutnya sangat lucu sampai kami tertawa.' },
         question: {
           en: 'What do we laugh at?',
           id: 'Kami tertawa melihat apa?',
@@ -7532,6 +7805,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Menangis',
         emoji: '😭',
         example: { en: 'The baby cries because he is hungry.', id: 'Bayi itu menangis karena lapar.', emoji: '👶' },
+        practice: { en: 'The baby is hungry, so he cries.', id: 'Bayinya lapar, jadi dia menangis.' },
         question: {
           en: 'Why does the baby cry?',
           id: 'Kenapa bayi itu menangis?',
@@ -7548,6 +7822,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Berteriak',
         emoji: '📢',
         example: { en: 'I shout for my friend to wait.', id: 'Aku berteriak minta temanku menunggu.', emoji: '👥' },
+        practice: { en: 'She shouts, “Please wait!” to her friend.', id: 'Dia berteriak, “Tolong tunggu!” pada temannya.' },
         question: {
           en: 'What does she shout?',
           id: 'Dia berteriak apa?',
@@ -7564,6 +7839,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Berbisik',
         emoji: '🤫',
         example: { en: 'She whispers a secret to me.', id: 'Dia berbisik rahasia padaku.', emoji: '🤫' },
+        practice: { en: 'She whispers to me because it is a secret.', id: 'Dia berbisik padaku karena itu rahasia.' },
         question: {
           en: 'What does she whisper?',
           id: 'Dia berbisik apa?',
@@ -7578,8 +7854,9 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Jump',
         id: 'Melompat',
-        emoji: '🤸',
+        emoji: '💧',
         example: { en: 'The kids jump over the puddle.', id: 'Anak-anak melompati genangan air.', emoji: '💧' },
+        practice: { en: 'After the rain, the kids jump over a big puddle.', id: 'Setelah hujan, anak-anak melompati genangan besar.' },
         question: {
           en: 'What do the kids jump over?',
           id: 'Anak-anak melompati apa?',
@@ -7594,8 +7871,9 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Flies',
         id: 'Terbang',
-        emoji: '🕊️',
+        emoji: '🪁',
         example: { en: 'The kite flies high in the sky.', id: 'Layangan itu terbang tinggi di langit.', emoji: '🪁' },
+        practice: { en: 'The wind lifts the kite high in the sky.', id: 'Angin mengangkat layangan tinggi di langit.' },
         question: {
           en: 'Where does the kite fly?',
           id: 'Layangan itu terbang di mana?',
@@ -7612,8 +7890,8 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     notePassage: [
       { en: 'Kiki and her friends play at the playground.', id: 'Kiki dan teman-temannya bermain di taman.' },
       { en: 'She climbs the tall slide first.', id: 'Dia memanjat perosotan tinggi lebih dulu.' },
-      { en: 'Then she hides behind the big tree.', id: 'Lalu dia bersembunyi di belakang pohon besar.' },
-      { en: 'Her friend shouts her name loudly.', id: 'Temannya berteriak keras memanggil namanya.' },
+      { en: 'Then she wants to hide under the slide, but she hides behind the big tree instead.', id: 'Lalu dia ingin bersembunyi di bawah perosotan, tapi dia malah bersembunyi di belakang pohon besar.' },
+      { en: 'Her friend shouts her name loudly, but her mom does not hear.', id: 'Temannya berteriak keras memanggil namanya, tapi ibunya tidak mendengar.' },
     ],
     noteGaps: [
       {
@@ -7623,6 +7901,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Siapa namanya?',
         options: ['Kiki', 'Rani', 'Dina'],
         answer: 'Kiki',
+        decoys: ['Nina', 'Mira'],
       },
       {
         label: 'Dipanjat Dulu',
@@ -7631,14 +7910,16 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Apa yang dia panjat dulu?',
         options: ['The Slide', 'The Tree', 'The Fence'],
         answer: 'The Slide',
+        decoys: ['The Swing', 'The Ladder'],
       },
       {
         label: 'Sembunyi Di',
         emoji: '🙈',
-        question: 'Where does she hide?',
-        questionId: 'Di mana dia bersembunyi?',
+        question: 'Where is she hiding?',
+        questionId: 'Di mana dia sedang bersembunyi?',
         options: ['Behind the Tree', 'Under the Slide', 'Inside a Box'],
         answer: 'Behind the Tree',
+        decoys: ['Behind the Bench', 'Under the Table'],
       },
       {
         label: 'Yang Berteriak',
@@ -7647,6 +7928,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Siapa yang berteriak memanggil namanya?',
         options: ['Her Friend', 'Her Mom', 'Her Teacher'],
         answer: 'Her Friend',
+        decoys: ['Her Dad', 'Her Brother'],
       },
     ],
   },
@@ -7660,6 +7942,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Komputer',
         emoji: '💻',
         example: { en: 'I use a computer in the lab.', id: 'Aku memakai komputer di lab.', emoji: '💻' },
+        practice: { en: 'She works on a computer in the lab.', id: 'Dia bekerja di komputer di lab.' },
         question: {
           en: 'Where does she use a computer?',
           id: 'Di mana dia memakai komputer?',
@@ -7676,6 +7959,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Internet',
         emoji: '🌐',
         example: { en: 'I search for information on the internet.', id: 'Aku mencari informasi di internet.', emoji: '🌐' },
+        practice: { en: 'She looks for information online.', id: 'Dia mencari informasi lewat internet.' },
         question: {
           en: 'What does she search for?',
           id: 'Dia mencari apa?',
@@ -7692,6 +7976,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Situs Web',
         emoji: '🔗',
         example: { en: 'I visit a website about animals.', id: 'Aku mengunjungi situs web tentang hewan.', emoji: '🐾' },
+        practice: { en: 'She opens a website that is about animals.', id: 'Dia membuka situs web yang membahas hewan.' },
         question: {
           en: 'What is the website about?',
           id: 'Situs webnya tentang apa?',
@@ -7708,6 +7993,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Surel',
         emoji: '📧',
         example: { en: 'I send an email to my teacher.', id: 'Aku mengirim surel pada guruku.', emoji: '🧑‍🏫' },
+        practice: { en: 'She sends her teacher an email.', id: 'Dia mengirimi gurunya sebuah surel.' },
         question: {
           en: 'Who does she send an email to?',
           id: 'Dia mengirim surel pada siapa?',
@@ -7724,6 +8010,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Kata Sandi',
         emoji: '🔑',
         example: { en: 'I type my password carefully.', id: 'Aku mengetik kata sandiku dengan hati-hati.', emoji: '🔑' },
+        practice: { en: 'She is careful when she types her password.', id: 'Dia berhati-hati saat mengetik kata sandinya.' },
         question: {
           en: 'What does she type carefully?',
           id: 'Dia mengetik apa dengan hati-hati?',
@@ -7740,6 +8027,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Unduh',
         emoji: '⬇️',
         example: { en: 'I download a song to listen to.', id: 'Aku mengunduh lagu untuk didengarkan.', emoji: '🎵' },
+        practice: { en: 'She downloads a song so she can listen.', id: 'Dia mengunduh lagu supaya bisa mendengarkannya.' },
         question: {
           en: 'What does she download?',
           id: 'Dia mengunduh apa?',
@@ -7756,6 +8044,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Unggah',
         emoji: '⬆️',
         example: { en: 'I upload my homework file.', id: 'Aku mengunggah berkas PR-ku.', emoji: '📓' },
+        practice: { en: 'She uploads the file for her homework.', id: 'Dia mengunggah berkas untuk PR-nya.' },
         question: {
           en: 'What does she upload?',
           id: 'Dia mengunggah apa?',
@@ -7772,6 +8061,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Layar',
         emoji: '🖥️',
         example: { en: 'The screen is very bright.', id: 'Layarnya sangat terang.', emoji: '🖥️' },
+        practice: { en: 'It is hard to look at the screen because it is very bright.', id: 'Sulit menatap layarnya karena sangat terang.' },
         question: {
           en: 'What is very bright?',
           id: 'Apa yang sangat terang?',
@@ -7788,6 +8078,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Papan Ketik',
         emoji: '⌨️',
         example: { en: 'I type fast on the keyboard.', id: 'Aku mengetik cepat di papan ketik.', emoji: '⌨️' },
+        practice: { en: 'Her fingers are fast on the keyboard.', id: 'Jarinya cepat di papan ketik.' },
         question: {
           en: 'What does she type fast on?',
           id: 'Dia mengetik cepat di apa?',
@@ -7804,6 +8095,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Tetikus',
         emoji: '🖱️',
         example: { en: 'I click the mouse to open the file.', id: 'Aku mengklik tetikus untuk membuka berkas.', emoji: '🖱️' },
+        practice: { en: 'She clicks the mouse and the file opens.', id: 'Dia mengklik tetikus dan berkasnya terbuka.' },
         question: {
           en: 'What does she click?',
           id: 'Dia mengklik apa?',
@@ -7818,10 +8110,11 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     ],
     noteHeading: '📝 Catatan Kelas Komputer',
     notePassage: [
-      { en: 'Today the class learns to use the computer lab.', id: 'Hari ini kelas belajar memakai lab komputer.' },
-      { en: 'First, they type a password to log in.', id: 'Pertama, mereka mengetik kata sandi untuk masuk.' },
-      { en: 'Then, they visit a website about space.', id: 'Lalu, mereka mengunjungi situs web tentang luar angkasa.' },
-      { en: 'At the end, they upload their homework file.', id: 'Di akhir, mereka mengunggah berkas PR mereka.' },
+      { en: 'First we type a password to log in, not an email.', id: 'Pertama kita mengetik kata sandi untuk masuk, bukan surel.', speaker: 'Ms. Lina' },
+      { en: 'Then what do we do?', id: 'Lalu apa yang kita lakukan?', speaker: 'Doni' },
+      { en: 'Then we visit a website about space.', id: 'Lalu kita mengunjungi situs web tentang luar angkasa.', speaker: 'Ms. Lina' },
+      { en: 'And at the end?', id: 'Dan di akhir?', speaker: 'Doni' },
+      { en: 'At the end, the students upload their homework file. They do not download a song today.', id: 'Di akhir, para murid mengunggah berkas PR mereka. Mereka tidak mengunduh lagu hari ini.', speaker: 'Ms. Lina' },
     ],
     noteGaps: [
       {
@@ -7831,14 +8124,16 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Apa yang mereka ketik pertama?',
         options: ['A Password', 'An Email', 'A Website'],
         answer: 'A Password',
+        decoys: ['A Username', 'A Message'],
       },
       {
         label: 'Topik Situs Web',
         emoji: '🌐',
-        question: 'What is the website about?',
-        questionId: 'Situs webnya tentang apa?',
+        question: 'What topic is the website about?',
+        questionId: 'Situs webnya bertopik apa?',
         options: ['Space', 'Animals', 'Sports'],
         answer: 'Space',
+        decoys: ['Music', 'Cooking'],
       },
       {
         label: 'Langkah Terakhir',
@@ -7847,6 +8142,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Apa yang dilakukan di akhir?',
         options: ['Upload Their Homework', 'Download a Song', 'Send an Email'],
         answer: 'Upload Their Homework',
+        decoys: ['Print a Photo', 'Play a Game'],
       },
     ],
   },
@@ -7860,6 +8156,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Baik Hati',
         emoji: '🤗',
         example: { en: 'My best friend is very kind.', id: 'Sahabatku sangat baik hati.', emoji: '👥' },
+        practice: { en: 'My best friend is so kind to everyone.', id: 'Sahabatku sangat baik pada semua orang.' },
         question: {
           en: 'What is her best friend like?',
           id: 'Bagaimana sahabatnya?',
@@ -7875,7 +8172,8 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Brave',
         id: 'Berani',
         emoji: '🦁',
-        example: { en: 'He is brave when he sees a spider.', id: 'Dia berani saat melihat laba-laba.', emoji: '🕷️' },
+        example: { en: 'He is brave when he sees a spider.', id: 'Dia berani saat melihat laba-laba.', emoji: '🕸️' },
+        practice: { en: 'Even with a spider, he stays brave.', id: 'Bahkan dengan laba-laba, dia tetap berani.' },
         question: {
           en: 'What is he like with a spider?',
           id: 'Bagaimana dia menghadapi laba-laba?',
@@ -7892,6 +8190,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Jujur',
         emoji: '🤝',
         example: { en: 'She is honest and never lies.', id: 'Dia jujur dan tidak pernah bohong.', emoji: '🤝' },
+        practice: { en: 'She always tells the truth because she is honest.', id: 'Dia selalu berkata jujur karena dia orang yang jujur.' },
         question: {
           en: 'What is she like?',
           id: 'Bagaimana dia?',
@@ -7908,6 +8207,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Lucu',
         emoji: '😂',
         example: { en: 'My friend tells funny jokes.', id: 'Temanku bercerita lelucon yang lucu.', emoji: '😂' },
+        practice: { en: 'My friend has many funny jokes to tell.', id: 'Temanku punya banyak lelucon lucu untuk diceritakan.' },
         question: {
           en: 'What kind of jokes does her friend tell?',
           id: 'Lelucon seperti apa yang diceritakan temannya?',
@@ -7924,6 +8224,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Pintar',
         emoji: '🧠',
         example: { en: 'She is clever at solving puzzles.', id: 'Dia pintar memecahkan teka-teki.', emoji: '🧩' },
+        practice: { en: 'She can solve puzzles because she is clever.', id: 'Dia bisa memecahkan teka-teki karena dia pintar.' },
         question: {
           en: 'What is she clever at?',
           id: 'Dia pintar dalam hal apa?',
@@ -7940,6 +8241,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Ramah',
         emoji: '😊',
         example: { en: 'The new student is very friendly.', id: 'Murid baru itu sangat ramah.', emoji: '🧑‍🎓' },
+        practice: { en: 'The new student smiles at everyone and is very friendly.', id: 'Murid baru itu tersenyum pada semua orang dan sangat ramah.' },
         question: {
           en: 'What is the new student like?',
           id: 'Bagaimana murid baru itu?',
@@ -7956,6 +8258,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Dermawan',
         emoji: '🎁',
         example: { en: 'He is generous and shares his snacks.', id: 'Dia dermawan dan berbagi camilannya.', emoji: '🍪' },
+        practice: { en: 'He gives his snacks to others because he is generous.', id: 'Dia memberikan camilannya pada orang lain karena dia dermawan.' },
         question: {
           en: 'What does he share?',
           id: 'Dia berbagi apa?',
@@ -7972,13 +8275,14 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Sabar',
         emoji: '⏳',
         example: { en: 'My teacher is patient with us.', id: 'Guruku sabar menghadapi kami.', emoji: '🧑‍🏫' },
+        practice: { en: 'My teacher waits for us because she is patient.', id: 'Guruku menunggu kami karena dia sabar.' },
         question: {
           en: 'What is her teacher like?',
           id: 'Bagaimana gurunya?',
           options: [
             { emoji: '⏳', text: 'Patient', ok: true },
             { emoji: '😠', text: 'Strict', ok: false },
-            { emoji: '🏃', text: 'Busy', ok: false },
+            { emoji: '⏰', text: 'Busy', ok: false },
             { emoji: '😴', text: 'Tired', ok: false },
           ],
         },
@@ -7988,14 +8292,15 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Sopan',
         emoji: '🙏',
         example: { en: 'She is polite and says thank you.', id: 'Dia sopan dan mengucapkan terima kasih.', emoji: '🙏' },
+        practice: { en: 'When someone helps her, she says thank you.', id: 'Saat seseorang membantunya, dia bilang terima kasih.' },
         question: {
-          en: 'What does she say?',
-          id: 'Dia mengucapkan apa?',
+          en: 'What does she say to be polite?',
+          id: 'Apa yang dia ucapkan agar sopan?',
           options: [
             { emoji: '🙏', text: 'Thank You', ok: true },
             { emoji: '😔', text: 'Sorry', ok: false },
             { emoji: '👋', text: 'Goodbye', ok: false },
-            { emoji: '🤲', text: 'Please', ok: false },
+            { emoji: '🥺', text: 'Please', ok: false },
           ],
         },
       },
@@ -8004,6 +8309,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Percaya Diri',
         emoji: '💪',
         example: { en: 'He feels confident before the test.', id: 'Dia merasa percaya diri sebelum ujian.', emoji: '📝' },
+        practice: { en: 'He studied a lot, so he is confident about the test.', id: 'Dia banyak belajar, jadi dia percaya diri untuk ujiannya.' },
         question: {
           en: 'How does he feel before the test?',
           id: 'Bagaimana perasaannya sebelum ujian?',
@@ -8020,8 +8326,8 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     notePassage: [
       { en: 'My best friend is named Fajar.', id: 'Sahabatku bernama Fajar.' },
       { en: 'He is kind and always shares his snacks with me.', id: 'Dia baik hati dan selalu berbagi camilan denganku.' },
-      { en: 'He is also brave — he is not afraid of the dark.', id: 'Dia juga berani — dia tidak takut gelap.' },
-      { en: 'Everyone says he is very funny too.', id: 'Semua orang bilang dia juga sangat lucu.' },
+      { en: 'He is also brave — he is not afraid of the dark, but he does not like heights.', id: 'Dia juga berani — dia tidak takut gelap, tapi dia tidak suka ketinggian.' },
+      { en: 'Everyone says he is very funny, not shy.', id: 'Semua orang bilang dia sangat lucu, bukan pemalu.' },
     ],
     noteGaps: [
       {
@@ -8031,14 +8337,16 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Siapa nama teman baikku?',
         options: ['Fajar', 'Budi', 'Rian'],
         answer: 'Fajar',
+        decoys: ['Rizal', 'Dani'],
       },
       {
         label: 'Berbagi',
         emoji: '🎁',
-        question: 'What does he share?',
-        questionId: 'Apa yang dia bagikan?',
+        question: 'What is he sharing?',
+        questionId: 'Apa yang sedang dia bagikan?',
         options: ['His Snacks', 'His Toys', 'His Books'],
         answer: 'His Snacks',
+        decoys: ['His Lunch', 'His Pens'],
       },
       {
         label: 'Tidak Takut Akan',
@@ -8047,6 +8355,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Dia tidak takut apa?',
         options: ['The Dark', 'Spiders', 'Heights'],
         answer: 'The Dark',
+        decoys: ['Water', 'Storms'],
       },
       {
         label: 'Sifat Lain',
@@ -8055,6 +8364,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Apa lagi sifat yang orang bilang tentang dia?',
         options: ['Funny', 'Shy', 'Quiet'],
         answer: 'Funny',
+        decoys: ['Serious', 'Sleepy'],
       },
     ],
   },
@@ -8068,6 +8378,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Matematika',
         emoji: '🔢',
         example: { en: 'I solve math problems every day.', id: 'Aku menyelesaikan soal matematika setiap hari.', emoji: '🔢' },
+        practice: { en: 'She solves a few math problems each day.', id: 'Dia menyelesaikan beberapa soal matematika tiap hari.' },
         question: {
           en: 'What does she solve every day?',
           id: 'Dia menyelesaikan apa setiap hari?',
@@ -8084,6 +8395,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Sains',
         emoji: '🔬',
         example: { en: 'We do a science experiment in class.', id: 'Kami melakukan eksperimen sains di kelas.', emoji: '🔬' },
+        practice: { en: 'In class, we try a science experiment.', id: 'Di kelas, kami mencoba eksperimen sains.' },
         question: {
           en: 'What do we do in class?',
           id: 'Kami melakukan apa di kelas?',
@@ -8100,6 +8412,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Bahasa Inggris',
         emoji: '🇬🇧',
         example: { en: 'I practice speaking English every week.', id: 'Aku berlatih bicara Bahasa Inggris setiap minggu.', emoji: '🗣️' },
+        practice: { en: 'Each week, she practices speaking English.', id: 'Tiap minggu, dia berlatih berbicara Bahasa Inggris.' },
         question: {
           en: 'What does she practice every week?',
           id: 'Dia berlatih apa setiap minggu?',
@@ -8116,6 +8429,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Sejarah',
         emoji: '📜',
         example: { en: 'We learn about old kingdoms in history class.', id: 'Kami belajar kerajaan kuno di kelas sejarah.', emoji: '🏰' },
+        practice: { en: 'In history class, we study old kingdoms.', id: 'Di kelas sejarah, kami mempelajari kerajaan kuno.' },
         question: {
           en: 'What do we learn about?',
           id: 'Kami belajar tentang apa?',
@@ -8123,7 +8437,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
             { emoji: '🏰', text: 'Old Kingdoms', ok: true },
             { emoji: '💻', text: 'New Computers', ok: false },
             { emoji: '🚗', text: 'Fast Cars', ok: false },
-            { emoji: '🐘', text: 'Big Animals', ok: false },
+            { emoji: '🐾', text: 'Big Animals', ok: false },
           ],
         },
       },
@@ -8132,6 +8446,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Seni',
         emoji: '🎨',
         example: { en: 'I paint a picture in art class.', id: 'Aku melukis gambar di kelas seni.', emoji: '🖼️' },
+        practice: { en: 'In art class, she paints a nice picture.', id: 'Di kelas seni, dia melukis gambar yang bagus.' },
         question: {
           en: 'What does she paint?',
           id: 'Dia melukis apa?',
@@ -8148,6 +8463,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Musik',
         emoji: '🎵',
         example: { en: 'We sing songs in music class.', id: 'Kami menyanyikan lagu di kelas musik.', emoji: '🎤' },
+        practice: { en: 'Music class is when we sing songs.', id: 'Kelas musik adalah saat kami menyanyikan lagu.' },
         question: {
           en: 'What do we do in music class?',
           id: 'Kami melakukan apa di kelas musik?',
@@ -8164,6 +8480,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Geografi',
         emoji: '🗺️',
         example: { en: 'I study maps in geography class.', id: 'Aku mempelajari peta di kelas geografi.', emoji: '🗺️' },
+        practice: { en: 'In geography class, she learns about maps.', id: 'Di kelas geografi, dia belajar tentang peta.' },
         question: {
           en: 'What does she study?',
           id: 'Dia mempelajari apa?',
@@ -8179,12 +8496,13 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Physical Education',
         id: 'Olahraga (PJOK)',
         emoji: '⚽',
-        example: { en: 'We run and play sports in Physical Education.', id: 'Kami lari dan berolahraga di kelas PJOK.', emoji: '🏃' },
+        example: { en: 'We run and play sports in Physical Education.', id: 'Kami lari dan berolahraga di kelas PJOK.', emoji: '💨' },
+        practice: { en: 'Physical Education is where we run and play sports.', id: 'PJOK adalah saat kami berlari dan berolahraga.' },
         question: {
           en: 'What do we do in Physical Education?',
           id: 'Kami melakukan apa di kelas PJOK?',
           options: [
-            { emoji: '🏃', text: 'Run and Play Sports', ok: true },
+            { emoji: '💨', text: 'Run and Play Sports', ok: true },
             { emoji: '🎤', text: 'Sing Songs', ok: false },
             { emoji: '🎨', text: 'Paint Pictures', ok: false },
             { emoji: '🗺️', text: 'Study Maps', ok: false },
@@ -8196,14 +8514,15 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'IPS',
         emoji: '🌏',
         example: { en: 'We learn about our community in Social Studies.', id: 'Kami belajar tentang komunitas kami di kelas IPS.', emoji: '🏘️' },
+        practice: { en: 'Social Studies teaches us about our community.', id: 'IPS mengajari kami tentang komunitas kami.' },
         question: {
-          en: 'What do we learn about?',
-          id: 'Kami belajar tentang apa?',
+          en: 'What do we learn about in Social Studies?',
+          id: 'Kita belajar tentang apa di kelas IPS?',
           options: [
             { emoji: '🏘️', text: 'Our Community', ok: true },
             { emoji: '🏰', text: 'Old Kingdoms', ok: false },
             { emoji: '🚗', text: 'Fast Cars', ok: false },
-            { emoji: '🐘', text: 'Big Animals', ok: false },
+            { emoji: '🐾', text: 'Big Animals', ok: false },
           ],
         },
       },
@@ -8212,6 +8531,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'PPKn',
         emoji: '⚖️',
         example: { en: 'We learn about good citizens in Civics.', id: 'Kami belajar tentang warga negara yang baik di kelas PPKn.', emoji: '⚖️' },
+        practice: { en: 'Civics teaches us how to be good citizens.', id: 'PPKn mengajari kami menjadi warga negara yang baik.' },
         question: {
           en: 'What do we learn about in Civics?',
           id: 'Kami belajar tentang apa di kelas PPKn?',
@@ -8226,10 +8546,10 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     ],
     noteHeading: '📝 Catatan Jadwal Hari Ini',
     notePassage: [
-      { en: 'Today, Vino has four classes.', id: 'Hari ini, Vino punya empat pelajaran.' },
-      { en: "His first class is Math at eight o'clock.", id: 'Pelajaran pertamanya Matematika jam delapan.' },
-      { en: 'His second class is Science.', id: 'Pelajaran keduanya Sains.' },
-      { en: 'His last class of the day is Physical Education.', id: 'Pelajaran terakhirnya hari ini PJOK.' },
+      { en: 'Vino, do you have Art first today?', id: 'Vino, apakah hari ini kamu ada Seni pertama?', speaker: 'Mom' },
+      { en: 'No, my first class is Math at eight o’clock, not nine.', id: 'Bukan, pelajaran pertamaku Matematika jam delapan, bukan jam sembilan.', speaker: 'Vino' },
+      { en: 'And then?', id: 'Lalu?', speaker: 'Mom' },
+      { en: 'My second class is Science. My last class is Physical Education, not History.', id: 'Pelajaran keduaku Sains. Pelajaran terakhirku PJOK, bukan Sejarah.', speaker: 'Vino' },
     ],
     noteGaps: [
       {
@@ -8239,6 +8559,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Pelajaran pertamanya apa?',
         options: ['Math', 'Science', 'Art'],
         answer: 'Math',
+        decoys: ['Music', 'English'],
       },
       {
         label: 'Jam Pelajaran Pertama',
@@ -8247,6 +8568,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Jam berapa pelajaran pertamanya?',
         options: ["Eight O'Clock", "Nine O'Clock", "Seven O'Clock"],
         answer: "Eight O'Clock",
+        decoys: ['Ten O\'Clock', 'Six O\'Clock'],
       },
       {
         label: 'Pelajaran Kedua',
@@ -8255,6 +8577,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Pelajaran keduanya apa?',
         options: ['Science', 'English', 'Music'],
         answer: 'Science',
+        decoys: ['Geography', 'Drawing'],
       },
       {
         label: 'Pelajaran Terakhir',
@@ -8263,6 +8586,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Pelajaran terakhirnya apa?',
         options: ['Physical Education', 'History', 'Civics'],
         answer: 'Physical Education',
+        decoys: ['Music', 'Geography'],
       },
     ],
   },
@@ -8276,6 +8600,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Tiga Puluh',
         emoji: '3️⃣0️⃣',
         example: { en: 'I have thirty stickers in my album.', id: 'Aku punya tiga puluh stiker di albumku.', emoji: '🏷️' },
+        practice: { en: 'She has thirty stickers in her sticker book.', id: 'Dia punya tiga puluh stiker di buku stikernya.' },
         question: {
           en: 'How many stickers does she have?',
           id: 'Berapa stiker yang dia punya?',
@@ -8292,9 +8617,10 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Empat Puluh',
         emoji: '4️⃣0️⃣',
         example: { en: 'I have forty marbles in my bag.', id: 'Aku punya empat puluh kelereng di tasku.', emoji: '🔵' },
+        practice: { en: 'She keeps forty marbles in a bag.', id: 'Dia menyimpan empat puluh kelereng dalam tas.' },
         question: {
-          en: 'How many marbles does she have?',
-          id: 'Berapa kelereng yang dia punya?',
+          en: 'How many marbles are in her bag?',
+          id: 'Ada berapa kelereng di tasnya?',
           options: [
             { emoji: '🔵', text: 'Forty', ok: true },
             { emoji: '3️⃣0️⃣', text: 'Thirty', ok: false },
@@ -8308,6 +8634,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Lima Puluh',
         emoji: '5️⃣0️⃣',
         example: { en: 'I save fifty coins every month.', id: 'Aku menabung lima puluh koin setiap bulan.', emoji: '🪙' },
+        practice: { en: 'She puts fifty coins in her piggy bank every month.', id: 'Dia memasukkan lima puluh koin ke celengannya setiap bulan.' },
         question: {
           en: 'How many coins does she save?',
           id: 'Berapa koin yang dia tabung?',
@@ -8324,6 +8651,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Enam Puluh',
         emoji: '6️⃣0️⃣',
         example: { en: 'I have sixty candies to share.', id: 'Aku punya enam puluh permen untuk dibagi.', emoji: '🍬' },
+        practice: { en: 'She has sixty candies for her friends.', id: 'Dia punya enam puluh permen untuk teman-temannya.' },
         question: {
           en: 'How many candies does she have?',
           id: 'Berapa permen yang dia punya?',
@@ -8340,6 +8668,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Tujuh Puluh',
         emoji: '7️⃣0️⃣',
         example: { en: 'I read seventy pages last night.', id: 'Aku membaca tujuh puluh halaman semalam.', emoji: '📖' },
+        practice: { en: 'Last night, she read seventy pages of a book.', id: 'Semalam, dia membaca tujuh puluh halaman buku.' },
         question: {
           en: 'How many pages did she read?',
           id: 'Berapa halaman yang dia baca?',
@@ -8356,6 +8685,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Delapan Puluh',
         emoji: '8️⃣0️⃣',
         example: { en: 'I scored eighty points in the game.', id: 'Aku dapat delapan puluh poin di permainan itu.', emoji: '⭐' },
+        practice: { en: 'She got eighty points in the game.', id: 'Dia mendapat delapan puluh poin dalam permainan.' },
         question: {
           en: 'How many points did she score?',
           id: 'Berapa poin yang dia dapat?',
@@ -8372,6 +8702,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Sembilan Puluh',
         emoji: '9️⃣0️⃣',
         example: { en: 'I collected ninety stamps this year.', id: 'Aku mengumpulkan sembilan puluh perangko tahun ini.', emoji: '📮' },
+        practice: { en: 'This year, she has ninety stamps in her collection.', id: 'Tahun ini, dia punya sembilan puluh perangko dalam koleksinya.' },
         question: {
           en: 'How many stamps did she collect?',
           id: 'Berapa perangko yang dia kumpulkan?',
@@ -8388,6 +8719,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Seratus',
         emoji: '💯',
         example: { en: 'I have one hundred books at home.', id: 'Aku punya seratus buku di rumah.', emoji: '📚' },
+        practice: { en: 'She has one hundred books in her room.', id: 'Dia punya seratus buku di kamarnya.' },
         question: {
           en: 'How many books does she have?',
           id: 'Berapa buku yang dia punya?',
@@ -8404,6 +8736,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Seribu',
         emoji: '🔢',
         example: { en: 'There are one thousand people at the concert.', id: 'Ada seribu orang di konser itu.', emoji: '👥' },
+        practice: { en: 'One thousand people come to watch the concert.', id: 'Seribu orang datang menonton konser itu.' },
         question: {
           en: 'How many people are at the concert?',
           id: 'Berapa orang yang ada di konser itu?',
@@ -8420,6 +8753,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Sejuta',
         emoji: '🌌',
         example: { en: 'There are a million stars in the sky.', id: 'Ada sejuta bintang di langit.', emoji: '🌌' },
+        practice: { en: 'The sky is full of a million stars.', id: 'Langit dipenuhi sejuta bintang.' },
         question: {
           en: 'How many stars are in the sky?',
           id: 'Berapa bintang yang ada di langit?',
@@ -8435,9 +8769,9 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     noteHeading: '📝 Catatan Uang Saku Minggu Ini',
     notePassage: [
       { en: 'Sinta counts her allowance.', id: 'Sinta menghitung uang sakunya.' },
-      { en: 'She has seventy coins in her piggy bank.', id: 'Dia punya tujuh puluh koin di celengannya.' },
+      { en: 'She thinks she has sixty coins, but she has seventy in her piggy bank.', id: 'Dia mengira punya enam puluh koin, tapi ternyata ada tujuh puluh di celengannya.' },
       { en: 'She gives thirty coins to her little brother.', id: 'Dia memberi tiga puluh koin pada adik laki-lakinya.' },
-      { en: 'Now she has forty coins left.', id: 'Sekarang dia punya empat puluh koin tersisa.' },
+      { en: 'Now she has forty coins left, not fifty.', id: 'Sekarang dia punya empat puluh koin tersisa, bukan lima puluh.' },
     ],
     noteGaps: [
       {
@@ -8447,6 +8781,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Berapa koin yang dia punya di awal?',
         options: ['Seventy', 'Sixty', 'Eighty'],
         answer: 'Seventy',
+        decoys: ['Ninety', 'Fifty'],
       },
       {
         label: 'Diberikan',
@@ -8455,6 +8790,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Berapa koin yang dia berikan ke adiknya?',
         options: ['Thirty', 'Forty', 'Twenty'],
         answer: 'Thirty',
+        decoys: ['Ten', 'Fifty'],
       },
       {
         label: 'Sisa',
@@ -8463,6 +8799,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Berapa koin yang tersisa?',
         options: ['Forty', 'Fifty', 'Thirty'],
         answer: 'Forty',
+        decoys: ['Twenty', 'Ten'],
       },
     ],
   },
@@ -8476,6 +8813,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Basah',
         emoji: '💦',
         example: { en: 'The clay is wet and soft.', id: 'Tanah liatnya basah dan lembut.', emoji: '🏺' },
+        practice: { en: 'The clay is wet, so we can shape it.', id: 'Tanah liatnya basah, jadi bisa kami bentuk.' },
         question: {
           en: 'What is the clay like?',
           id: 'Bagaimana tanah liatnya?',
@@ -8492,6 +8830,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Kering',
         emoji: '☀️',
         example: { en: 'The paint is already dry.', id: 'Catnya sudah kering.', emoji: '🎨' },
+        practice: { en: 'You can touch the paint now because it is dry.', id: 'Kamu boleh menyentuh catnya sekarang karena sudah kering.' },
         question: {
           en: 'What is the paint like?',
           id: 'Bagaimana catnya?',
@@ -8508,6 +8847,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Lembut',
         emoji: '🧸',
         example: { en: 'This cotton feels soft.', id: 'Kapas ini terasa lembut.', emoji: '🧶' },
+        practice: { en: 'The cotton is very soft to touch.', id: 'Kapas itu sangat lembut saat disentuh.' },
         question: {
           en: 'What does the cotton feel like?',
           id: 'Kapasnya terasa seperti apa?',
@@ -8524,6 +8864,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Keras',
         emoji: '🪨',
         example: { en: 'The wooden block is hard.', id: 'Balok kayunya keras.', emoji: '🧱' },
+        practice: { en: 'The wooden block feels very hard.', id: 'Balok kayu itu terasa sangat keras.' },
         question: {
           en: 'What is the wooden block like?',
           id: 'Bagaimana balok kayunya?',
@@ -8540,6 +8881,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Tajam',
         emoji: '🔪',
         example: { en: 'Be careful, the scissors are sharp.', id: 'Hati-hati, guntingnya tajam.', emoji: '✂️' },
+        practice: { en: 'Watch out! The scissors are very sharp.', id: 'Awas! Guntingnya sangat tajam.' },
         question: {
           en: 'What are the scissors like?',
           id: 'Bagaimana guntingnya?',
@@ -8556,6 +8898,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Halus',
         emoji: '👘',
         example: { en: 'This silk ribbon feels smooth.', id: 'Pita sutra ini terasa halus.', emoji: '🎀' },
+        practice: { en: 'The ribbon is smooth like silk.', id: 'Pitanya halus seperti sutra.' },
         question: {
           en: 'What does the ribbon feel like?',
           id: 'Pitanya terasa seperti apa?',
@@ -8572,6 +8915,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Kasar',
         emoji: '🌵',
         example: { en: 'The sandpaper feels rough.', id: 'Ampelasnya terasa kasar.', emoji: '🪵' },
+        practice: { en: 'The sandpaper is very rough to touch.', id: 'Ampelasnya sangat kasar saat disentuh.' },
         question: {
           en: 'What does the sandpaper feel like?',
           id: 'Ampelasnya terasa seperti apa?',
@@ -8588,6 +8932,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Keras (Suara)',
         emoji: '📢',
         example: { en: 'The hammer makes a loud sound.', id: 'Palunya membuat suara yang keras.', emoji: '🔨' },
+        practice: { en: 'Bang! The hammer sounds very loud.', id: 'Dhuk! Palunya berbunyi sangat keras.' },
         question: {
           en: 'What kind of sound does the hammer make?',
           id: 'Suara seperti apa yang dibuat palu itu?',
@@ -8604,6 +8949,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Tenang',
         emoji: '🤫',
         example: { en: 'The craft shop is quiet in the morning.', id: 'Toko kerajinan tenang di pagi hari.', emoji: '🏪' },
+        practice: { en: 'Not many people come in the morning, so the shop is quiet.', id: 'Tidak banyak orang datang di pagi hari, jadi toko itu tenang.' },
         question: {
           en: 'What is the shop like in the morning?',
           id: 'Bagaimana toko itu di pagi hari?',
@@ -8620,6 +8966,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         id: 'Terang',
         emoji: '💡',
         example: { en: 'The glitter looks bright.', id: 'Glitternya terlihat terang.', emoji: '✨' },
+        practice: { en: 'The glitter shines and looks bright.', id: 'Glitternya berkilau dan terlihat terang.' },
         question: {
           en: 'What does the glitter look like?',
           id: 'Glitternya terlihat seperti apa?',
@@ -8635,9 +8982,9 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
     noteHeading: '📝 Catatan Belanja di Toko Kerajinan',
     notePassage: [
       { en: 'Made goes to the craft shop.', id: 'Made pergi ke toko kerajinan.' },
-      { en: 'He buys soft cotton for a project.', id: 'Dia membeli kapas lembut untuk sebuah proyek.' },
+      { en: 'He wants cotton that is soft, not hard, for a project.', id: 'Dia mau kapas yang lembut, bukan keras, untuk sebuah proyek.' },
       { en: 'He also buys sharp scissors to cut paper.', id: 'Dia juga membeli gunting tajam untuk memotong kertas.' },
-      { en: 'The glitter he picks is very bright.', id: 'Glitter yang dia pilih sangat terang.' },
+      { en: 'The first glitter looks dark, so the glitter he picks is very bright.', id: 'Glitter pertama terlihat gelap, jadi glitter yang dia pilih sangat terang.' },
     ],
     noteGaps: [
       {
@@ -8647,22 +8994,25 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         questionId: 'Kapasnya seperti apa?',
         options: ['Soft', 'Hard', 'Wet'],
         answer: 'Soft',
+        decoys: ['Rough', 'Heavy'],
       },
       {
         label: 'Gunting',
         emoji: '✂️',
-        question: 'What are the scissors like?',
-        questionId: 'Guntingnya seperti apa?',
+        question: 'How would you describe the scissors?',
+        questionId: 'Bagaimana kamu menggambarkan guntingnya?',
         options: ['Sharp', 'Smooth', 'Quiet'],
         answer: 'Sharp',
+        decoys: ['Loud', 'Wet'],
       },
       {
         label: 'Glitter',
         emoji: '✨',
-        question: 'What does the glitter look like?',
-        questionId: 'Glitternya seperti apa?',
+        question: 'How is the glitter that Made picks?',
+        questionId: 'Bagaimana glitter yang dipilih Made?',
         options: ['Bright', 'Dark', 'Rough'],
         answer: 'Bright',
+        decoys: ['Colorful', 'Sticky'],
       },
     ],
   },
@@ -8703,6 +9053,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Paspor',
         emoji: '🛂',
         example: { en: 'I show my passport at the airport.', id: 'Aku menunjukkan pasporku di bandara.', emoji: '🛂' },
+        practice: { en: 'She shows her passport when she arrives at the airport.', id: 'Dia menunjukkan paspornya saat tiba di bandara.' },
         question: {
           en: 'Where does she show her passport?',
           id: 'Di mana dia menunjukkan pasporny?',
@@ -8719,6 +9070,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Koper',
         emoji: '🧳',
         example: { en: 'I pack my luggage the night before.', id: 'Aku mengemas koperku malam sebelumnya.', emoji: '🧳' },
+        practice: { en: 'The night before the trip, she packs her luggage.', id: 'Malam sebelum perjalanan, dia mengemas kopernya.' },
         question: {
           en: 'When does she pack her luggage?',
           id: 'Kapan dia mengemas kopernya?',
@@ -8735,6 +9087,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Perjalanan',
         emoji: '🗺️',
         example: { en: 'We enjoy the long journey by train.', id: 'Kami menikmati perjalanan panjang naik kereta.', emoji: '🚆' },
+        practice: { en: 'We travel by train, and the journey is long.', id: 'Kami bepergian naik kereta, dan perjalanannya panjang.' },
         question: {
           en: 'How do we travel?',
           id: 'Bagaimana kami bepergian?',
@@ -8751,6 +9104,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Tujuan',
         emoji: '📍',
         example: { en: 'Bali is our final destination.', id: 'Bali adalah tujuan akhir kami.', emoji: '🏝️' },
+        practice: { en: 'We are going to Bali, and that is where the trip ends.', id: 'Kami akan ke Bali, dan di sanalah perjalanan berakhir.' },
         question: {
           en: 'What is our destination?',
           id: 'Apa tujuan kami?',
@@ -8767,6 +9121,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Turis',
         emoji: '📸',
         example: { en: 'The tourist takes many photos.', id: 'Turis itu memotret banyak foto.', emoji: '📸' },
+        practice: { en: 'The tourist takes lots of photos of the city.', id: 'Turis itu mengambil banyak foto kota.' },
         question: {
           en: 'What does the tourist take?',
           id: 'Apa yang diambil turis itu?',
@@ -8783,6 +9138,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Oleh-oleh',
         emoji: '🎁',
         example: { en: 'I buy a souvenir for my sister.', id: 'Aku membeli oleh-oleh untuk kakak perempuanku.', emoji: '🎁' },
+        practice: { en: 'She picks a souvenir as a gift for her sister.', id: 'Dia memilih oleh-oleh sebagai hadiah untuk kakak perempuannya.' },
         question: {
           en: 'Who does she buy a souvenir for?',
           id: 'Untuk siapa dia membeli oleh-oleh?',
@@ -8799,6 +9155,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Peta',
         emoji: '🧭',
         example: { en: 'I read the map to find the hotel.', id: 'Aku membaca peta untuk menemukan hotel.', emoji: '🧭' },
+        practice: { en: 'She looks at the map because she wants to find the hotel.', id: 'Dia melihat peta karena ingin menemukan hotel.' },
         question: {
           en: 'Why does she read the map?',
           id: 'Kenapa dia membaca peta?',
@@ -8815,6 +9172,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Tiket',
         emoji: '🎫',
         example: { en: 'I buy a ticket online.', id: 'Aku membeli tiket secara daring.', emoji: '💻' },
+        practice: { en: 'She buys the ticket online, so she does not need to queue.', id: 'Dia membeli tiket secara daring, jadi tidak perlu antre.' },
         question: {
           en: 'How does she buy a ticket?',
           id: 'Bagaimana dia membeli tiket?',
@@ -8831,6 +9189,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Hotel',
         emoji: '🏨',
         example: { en: 'We stay at a hotel near the beach.', id: 'Kami menginap di hotel dekat pantai.', emoji: '🏖️' },
+        practice: { en: 'The hotel where we stay is near the beach.', id: 'Hotel tempat kami menginap dekat pantai.' },
         question: {
           en: 'Where is the hotel?',
           id: 'Di mana hotelnya?',
@@ -8847,6 +9206,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Wisata',
         emoji: '🏞️',
         example: { en: 'We go sightseeing after breakfast.', id: 'Kami pergi berwisata setelah sarapan.', emoji: '🥞' },
+        practice: { en: 'After we eat breakfast, we go out to see the city.', id: 'Setelah kami sarapan, kami keluar melihat kota.' },
         question: {
           en: 'When do we go sightseeing?',
           id: 'Kapan kami pergi berwisata?',
@@ -8862,11 +9222,11 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
     dialogueHeading: 'Rencana Liburan',
     dialogueLines: [
       { speaker: 'Rani', en: 'Are you excited about the trip to Bali?', id: 'Kamu senang soal perjalanan ke Bali?' },
-      { speaker: 'Dimas', en: 'Yes! I already packed my luggage and printed the ticket.', id: 'Ya! Aku sudah mengemas koper dan mencetak tiketnya.' },
+      { speaker: 'Dimas', en: 'Yes! Last year I was worried about flying, but now I am excited. I already packed my luggage and printed the ticket.', id: 'Ya! Tahun lalu aku khawatir soal terbang, tapi sekarang aku senang. Aku sudah mengemas koper dan mencetak tiketnya.' },
       { speaker: 'Rani', en: "Great. Don't forget your passport, we need it at the airport.", id: 'Bagus. Jangan lupa paspormu, kita butuh itu di bandara.' },
       { speaker: 'Dimas', en: 'I have it right here. What time is our flight?', id: 'Ada di sini. Jam berapa penerbangan kita?' },
       { speaker: 'Rani', en: "It's at nine in the morning, so we should leave early.", id: 'Jam sembilan pagi, jadi kita harus berangkat awal.' },
-      { speaker: 'Dimas', en: 'Perfect. I really want to go sightseeing on the first day.', id: 'Bagus. Aku benar-benar mau berwisata di hari pertama.' },
+      { speaker: 'Dimas', en: 'Perfect. I want to buy a souvenir, but first I really want to go sightseeing on the first day.', id: 'Bagus. Aku mau beli oleh-oleh, tapi pertama-tama aku benar-benar mau berwisata di hari pertama.' },
       { speaker: 'Rani', en: 'Me too! I heard the beach near our hotel is beautiful.', id: 'Aku juga! Aku dengar pantai dekat hotel kita indah.' },
     ],
     inferenceQuestions: [
@@ -8879,6 +9239,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '💼', text: 'A Job Interview', ok: false },
           { emoji: '🎬', text: 'A New Movie', ok: false },
         ],
+        decoys: [
+          { emoji: '🎂', text: 'A Birthday Party', ok: false },
+          { emoji: '⚽', text: 'A Football Match', ok: false },
+        ],
       },
       {
         question: 'How does Dimas feel about the trip?',
@@ -8889,6 +9253,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '😑', text: 'Bored', ok: false },
           { emoji: '😠', text: 'Angry', ok: false },
         ],
+        decoys: [
+          { emoji: '😴', text: 'Tired', ok: false },
+          { emoji: '😲', text: 'Surprised', ok: false },
+        ],
       },
       {
         question: 'What will they probably do first on the trip?',
@@ -8898,6 +9266,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🎁', text: 'Buy a Souvenir', ok: false },
           { emoji: '🧭', text: 'Read a Map', ok: false },
           { emoji: '📸', text: 'Take a Photo', ok: false },
+        ],
+        decoys: [
+          { emoji: '🚗', text: 'Rent a Car', ok: false },
+          { emoji: '🏛️', text: 'Visit a Museum', ok: false },
         ],
       },
     ],
@@ -8912,6 +9284,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Menerjemahkan',
         emoji: '🔤',
         example: { en: 'I translate the letter for my friend.', id: 'Aku menerjemahkan surat itu untuk temanku.', emoji: '✉️' },
+        practice: { en: 'She translates a letter to help her friend.', id: 'Dia menerjemahkan surat untuk membantu temannya.' },
         question: {
           en: 'Who does she translate the letter for?',
           id: 'Untuk siapa dia menerjemahkan surat itu?',
@@ -8928,6 +9301,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Penerjemah Lisan',
         emoji: '🗣️',
         example: { en: 'The interpreter helps the tourists talk.', id: 'Penerjemah lisan itu membantu turis-turis bicara.', emoji: '📸' },
+        practice: { en: 'The tourists can talk because the interpreter helps them.', id: 'Para turis bisa berbicara karena penerjemah lisan membantu mereka.' },
         question: {
           en: 'Who does the interpreter help?',
           id: 'Siapa yang dibantu penerjemah lisan itu?',
@@ -8944,6 +9318,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Fasih',
         emoji: '💬',
         example: { en: 'She becomes fluent after one year.', id: 'Dia jadi fasih setelah satu tahun.', emoji: '📅' },
+        practice: { en: 'One year later, she is fluent.', id: 'Satu tahun kemudian, dia sudah fasih.' },
         question: {
           en: 'When does she become fluent?',
           id: 'Kapan dia menjadi fasih?',
@@ -8960,6 +9335,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Aksen',
         emoji: '🎤',
         example: { en: 'He has a strong French accent.', id: 'Dia punya aksen Prancis yang kental.', emoji: '🇫🇷' },
+        practice: { en: 'When he speaks, you can hear a French accent.', id: 'Saat dia bicara, terdengar aksen Prancis.' },
         question: {
           en: 'What kind of accent does he have?',
           id: 'Aksen apa yang dia punya?',
@@ -8976,6 +9352,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Pengucapan',
         emoji: '👄',
         example: { en: 'I practice pronunciation every morning.', id: 'Aku berlatih pengucapan setiap pagi.', emoji: '🌅' },
+        practice: { en: 'Each morning, she works on her pronunciation.', id: 'Tiap pagi, dia melatih pengucapannya.' },
         question: {
           en: 'When does she practice pronunciation?',
           id: 'Kapan dia berlatih pengucapan?',
@@ -8992,6 +9369,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Kosakata',
         emoji: '📖',
         example: { en: 'I learn ten new vocabulary words a day.', id: 'Aku belajar sepuluh kosakata baru sehari.', emoji: '🔟' },
+        practice: { en: 'Every day, she learns ten new words.', id: 'Setiap hari, dia belajar sepuluh kata baru.' },
         question: {
           en: 'How many words does she learn a day?',
           id: 'Berapa kata yang dia pelajari sehari?',
@@ -9008,6 +9386,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Kamus',
         emoji: '📕',
         example: { en: 'I check the dictionary for hard words.', id: 'Aku memeriksa kamus untuk kata-kata sulit.', emoji: '📕' },
+        practice: { en: 'She uses a dictionary when a word is hard.', id: 'Dia memakai kamus saat sebuah kata sulit.' },
         question: {
           en: 'What does she check the dictionary for?',
           id: 'Untuk apa dia memeriksa kamus?',
@@ -9024,6 +9403,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Dwibahasa',
         emoji: '🌍',
         example: { en: 'My cousin is bilingual in English and Japanese.', id: 'Sepupuku dwibahasa, Inggris dan Jepang.', emoji: '🌍' },
+        practice: { en: 'Her cousin speaks two languages, English and Japanese.', id: 'Sepupunya berbicara dua bahasa, Inggris dan Jepang.' },
         question: {
           en: 'What languages is her cousin bilingual in?',
           id: 'Sepupunya dwibahasa apa saja?',
@@ -9040,6 +9420,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Tata Bahasa',
         emoji: '✏️',
         example: { en: 'I study grammar before the test.', id: 'Aku belajar tata bahasa sebelum ujian.', emoji: '📝' },
+        practice: { en: 'She reviews grammar before she takes the test.', id: 'Dia mengulang tata bahasa sebelum mengikuti ujian.' },
         question: {
           en: 'When does she study grammar?',
           id: 'Kapan dia belajar tata bahasa?',
@@ -9056,6 +9437,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Penutur Asli',
         emoji: '🎙️',
         example: { en: 'I talk to a native speaker online.', id: 'Aku bicara dengan penutur asli secara daring.', emoji: '💻' },
+        practice: { en: 'She has an online chat with a native speaker.', id: 'Dia mengobrol secara daring dengan penutur asli.' },
         question: {
           en: 'Where does she talk to a native speaker?',
           id: 'Di mana dia bicara dengan penutur asli?',
@@ -9071,9 +9453,9 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
     dialogueHeading: 'Belajar Bahasa Baru',
     dialogueLines: [
       { speaker: 'Sari', en: 'How long have you been learning Indonesian, Leo?', id: 'Sudah berapa lama kamu belajar Bahasa Indonesia, Leo?' },
-      { speaker: 'Leo', en: 'About six months. My pronunciation is still not perfect.', id: 'Sekitar enam bulan. Pengucapanku masih belum sempurna.' },
+      { speaker: 'Leo', en: 'About six months. My pronunciation is not perfect yet, but it is not bad.', id: 'Sekitar enam bulan. Pengucapanku belum sempurna, tapi juga tidak buruk.' },
       { speaker: 'Sari', en: "Don't worry, your vocabulary is already really good.", id: 'Tidak usah khawatir, kosakatamu sudah sangat bagus.' },
-      { speaker: 'Leo', en: 'Thanks! I use a dictionary app every day to learn new words.', id: 'Terima kasih! Aku pakai aplikasi kamus setiap hari untuk belajar kata baru.' },
+      { speaker: 'Leo', en: 'Thanks! I use a dictionary app every day, but that is only for new words.', id: 'Terima kasih! Aku pakai aplikasi kamus setiap hari, tapi itu hanya untuk kata baru.' },
       { speaker: 'Sari', en: 'That’s smart. Do you talk to native speakers often?', id: 'Cerdas. Kamu sering bicara dengan penutur asli?' },
       { speaker: 'Leo', en: 'Yes, I have a language partner. She helps me practice grammar too.', id: 'Ya, aku punya teman belajar bahasa. Dia juga membantuku berlatih tata bahasa.' },
       { speaker: 'Sari', en: "That's great. You'll be fluent very soon!", id: 'Bagus sekali. Kamu akan segera fasih!' },
@@ -9088,6 +9470,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '📝', text: 'A School Exam', ok: false },
           { emoji: '🎬', text: 'Choosing a Movie', ok: false },
         ],
+        decoys: [
+          { emoji: '🍳', text: 'Cooking Dinner', ok: false },
+          { emoji: '🎫', text: 'Buying a Ticket', ok: false },
+        ],
       },
       {
         question: 'How does Leo feel about his pronunciation?',
@@ -9098,6 +9484,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '😢', text: 'Very Bad', ok: false },
           { emoji: '😐', text: "He Doesn't Care", ok: false },
         ],
+        decoys: [
+          { emoji: '😠', text: 'He Is Angry About It', ok: false },
+          { emoji: '🛑', text: 'He Wants to Quit', ok: false },
+        ],
       },
       {
         question: 'How does Leo practice speaking with native speakers?',
@@ -9107,6 +9497,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '📕', text: 'Through a Dictionary App', ok: false },
           { emoji: '📚', text: 'Through Grammar Books', ok: false },
           { emoji: '🏫', text: 'Through School Class', ok: false },
+        ],
+        decoys: [
+          { emoji: '🎵', text: 'Through Songs', ok: false },
+          { emoji: '🎬', text: 'Through Movies', ok: false },
         ],
       },
     ],
@@ -9121,6 +9515,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Struk',
         emoji: '🧾',
         example: { en: 'I keep the receipt in my wallet.', id: 'Aku menyimpan struk di dompetku.', emoji: '👛' },
+        practice: { en: 'The receipt stays in her wallet.', id: 'Struknya disimpan di dompetnya.' },
         question: {
           en: 'Where does she keep the receipt?',
           id: 'Di mana dia menyimpan struknya?',
@@ -9137,6 +9532,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Perbaikan',
         emoji: '🔧',
         example: { en: 'The technician will repair my laptop tomorrow.', id: 'Teknisi itu akan memperbaiki laptopku besok.', emoji: '💻' },
+        practice: { en: 'Tomorrow, the technician is going to fix her laptop.', id: 'Besok, teknisi itu akan memperbaiki laptopnya.' },
         question: {
           en: 'When will the technician repair it?',
           id: 'Kapan teknisi itu akan memperbaikinya?',
@@ -9153,6 +9549,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Mengirim',
         emoji: '📦',
         example: { en: 'They deliver the package in two days.', id: 'Mereka mengirim paket dalam dua hari.', emoji: '📦' },
+        practice: { en: 'The package will arrive in two days.', id: 'Paketnya akan tiba dalam dua hari.' },
         question: {
           en: 'How long until they deliver it?',
           id: 'Berapa lama sampai mereka mengirimnya?',
@@ -9169,6 +9566,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Janji Temu',
         emoji: '📅',
         example: { en: 'I make an appointment for Monday.', id: 'Aku membuat janji temu untuk hari Senin.', emoji: '📅' },
+        practice: { en: 'She books an appointment on Monday.', id: 'Dia memesan janji temu pada hari Senin.' },
         question: {
           en: 'What day is the appointment?',
           id: 'Hari apa janji temunya?',
@@ -9185,6 +9583,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Pelanggan',
         emoji: '👥',
         example: { en: 'The customer waits patiently in line.', id: 'Pelanggan itu menunggu dengan sabar di antrean.', emoji: '⏳' },
+        practice: { en: 'The customer stands in line and waits patiently.', id: 'Pelanggan itu berdiri di antrean dan menunggu dengan sabar.' },
         question: {
           en: 'How does the customer wait?',
           id: 'Bagaimana pelanggan itu menunggu?',
@@ -9201,6 +9600,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Pengembalian Dana',
         emoji: '💵',
         example: { en: 'I ask for a refund because it broke.', id: 'Aku meminta pengembalian dana karena itu rusak.', emoji: '💔' },
+        practice: { en: 'She wants her money back because it broke.', id: 'Dia ingin uangnya kembali karena barangnya rusak.' },
         question: {
           en: 'Why does she ask for a refund?',
           id: 'Kenapa dia meminta pengembalian dana?',
@@ -9217,6 +9617,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Keluhan',
         emoji: '😤',
         example: { en: 'She makes a complaint about the noise.', id: 'Dia mengajukan keluhan tentang kebisingan.', emoji: '📢' },
+        practice: { en: 'She complains to the manager about the noise.', id: 'Dia mengeluh pada manajer soal kebisingan.' },
         question: {
           en: 'What is the complaint about?',
           id: 'Keluhannya tentang apa?',
@@ -9233,6 +9634,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Permintaan Maaf',
         emoji: '🙏',
         example: { en: 'The manager gives an apology for the delay.', id: 'Manajer itu meminta maaf atas keterlambatan.', emoji: '⏰' },
+        practice: { en: 'The manager says sorry for the delay.', id: 'Manajer itu minta maaf atas keterlambatan.' },
         question: {
           en: 'What does the manager apologize for?',
           id: 'Manajer itu meminta maaf soal apa?',
@@ -9249,6 +9651,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Permintaan',
         emoji: '🙋',
         example: { en: 'I make a request for a later time.', id: 'Aku mengajukan permintaan untuk waktu yang lebih siang.', emoji: '🕒' },
+        practice: { en: 'She asks for a later time on the phone.', id: 'Dia meminta waktu yang lebih siang lewat telepon.' },
         question: {
           en: 'What does she request?',
           id: 'Apa yang dia minta?',
@@ -9265,6 +9668,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Layanan',
         emoji: '🛎️',
         example: { en: 'The hotel service is very fast.', id: 'Layanan hotel itu sangat cepat.', emoji: '🏨' },
+        practice: { en: 'The service at the hotel is really fast.', id: 'Layanan di hotel itu cepat sekali.' },
         question: {
           en: 'What is very fast?',
           id: 'Apa yang sangat cepat?',
@@ -9280,12 +9684,12 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
     dialogueHeading: 'Menelpon Jasa Reparasi',
     dialogueLines: [
       { speaker: 'Mira', en: 'Hello, my washing machine is broken. Can someone repair it?', id: 'Halo, mesin cuciku rusak. Apa ada yang bisa memperbaikinya?' },
-      { speaker: 'Pak Joko', en: 'Of course. Can I make an appointment for tomorrow afternoon?', id: 'Tentu. Bolehkah saya buatkan janji temu untuk besok siang?' },
+      { speaker: 'Pak Joko', en: 'Of course. We cannot come today, but can I make an appointment for tomorrow afternoon?', id: 'Tentu. Kami tidak bisa datang hari ini, tapi bolehkah saya buatkan janji temu untuk besok siang?' },
       { speaker: 'Mira', en: 'That works for me. How long will the repair take?', id: 'Itu cocok untukku. Berapa lama perbaikannya?' },
       { speaker: 'Pak Joko', en: 'Usually about one hour, but it depends on the problem.', id: 'Biasanya sekitar satu jam, tapi tergantung masalahnya.' },
       { speaker: 'Mira', en: 'Okay. Also, I still have the receipt from when I bought it.', id: 'Baik. Aku juga masih punya struk dari waktu membelinya.' },
       { speaker: 'Pak Joko', en: 'Great, please keep that ready for our technician.', id: 'Bagus, tolong siapkan itu untuk teknisi kami.' },
-      { speaker: 'Mira', en: 'Thank you, I really appreciate the quick service.', id: 'Terima kasih, aku sangat menghargai layanan yang cepat.' },
+      { speaker: 'Mira', en: 'Thank you, I was a little angry this morning, but now I really appreciate the quick service.', id: 'Terima kasih, tadi pagi aku agak marah, tapi sekarang aku sangat menghargai layanan yang cepat.' },
     ],
     inferenceQuestions: [
       {
@@ -9297,6 +9701,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🛒', text: 'A Wrong Order', ok: false },
           { emoji: '💼', text: 'A Job Interview', ok: false },
         ],
+        decoys: [
+          { emoji: '👛', text: 'A Lost Wallet', ok: false },
+          { emoji: '🏨', text: 'A Hotel Booking', ok: false },
+        ],
       },
       {
         question: 'When will the technician come?',
@@ -9307,6 +9715,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🗓️', text: 'Next Week', ok: false },
           { emoji: '🌙', text: 'Tonight', ok: false },
         ],
+        decoys: [
+          { emoji: '🌆', text: 'Yesterday Evening', ok: false },
+          { emoji: '📅', text: 'Next Month', ok: false },
+        ],
       },
       {
         question: 'How does Mira feel about the service?',
@@ -9316,6 +9728,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '😠', text: 'Angry', ok: false },
           { emoji: '😕', text: 'Confused', ok: false },
           { emoji: '😑', text: 'Bored', ok: false },
+        ],
+        decoys: [
+          { emoji: '😟', text: 'Worried', ok: false },
+          { emoji: '😢', text: 'Sad', ok: false },
         ],
       },
     ],
@@ -9330,6 +9746,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Menukar',
         emoji: '🔁',
         example: { en: 'I want to exchange this shirt for a bigger size.', id: 'Aku mau menukar kemeja ini dengan ukuran lebih besar.', emoji: '👕' },
+        practice: { en: 'This shirt is too small, so she wants a bigger size.', id: 'Kemeja ini terlalu kecil, jadi dia mau ukuran yang lebih besar.' },
         question: {
           en: 'Why does she want to exchange it?',
           id: 'Kenapa dia mau menukarnya?',
@@ -9346,6 +9763,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Diskon',
         emoji: '🏷️',
         example: { en: 'I get a discount because of the sale.', id: 'Aku dapat diskon karena diskon besar.', emoji: '🎉' },
+        practice: { en: 'The sale gives her a discount.', id: 'Obral itu memberinya diskon.' },
         question: {
           en: 'Why does she get a discount?',
           id: 'Kenapa dia dapat diskon?',
@@ -9362,6 +9780,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Ukuran',
         emoji: '📏',
         example: { en: 'This shoe is the wrong size for me.', id: 'Sepatu ini ukurannya salah untukku.', emoji: '👟' },
+        practice: { en: 'The size of this shoe is wrong for her.', id: 'Ukuran sepatu ini tidak cocok untuknya.' },
         question: {
           en: 'What is wrong with the shoe?',
           id: 'Apa yang salah dengan sepatunya?',
@@ -9378,13 +9797,14 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Ruang Pas',
         emoji: '🚪',
         example: { en: 'I try on the dress in the fitting room.', id: 'Aku mencoba gaun itu di ruang pas.', emoji: '👗' },
+        practice: { en: 'She goes to the fitting room to try on a dress.', id: 'Dia pergi ke ruang pas untuk mencoba gaun.' },
         question: {
           en: 'Where does she try on the dress?',
           id: 'Di mana dia mencoba gaunnya?',
           options: [
             { emoji: '🚪', text: 'The Fitting Room', ok: true },
             { emoji: '🧑‍💼', text: 'The Cashier', ok: false },
-            { emoji: '🚶', text: 'The Entrance', ok: false },
+            { emoji: '👣', text: 'The Entrance', ok: false },
             { emoji: '🅿️', text: 'The Parking Lot', ok: false },
           ],
         },
@@ -9394,6 +9814,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Obral',
         emoji: '🎉',
         example: { en: 'The store has a big sale this weekend.', id: 'Toko itu ada obral besar akhir pekan ini.', emoji: '🏬' },
+        practice: { en: 'Come to the store this weekend for its big sale.', id: 'Datanglah ke toko itu akhir pekan ini untuk obral besarnya.' },
         question: {
           en: 'When is the sale?',
           id: 'Kapan obralnya?',
@@ -9410,6 +9831,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Barang Murah',
         emoji: '💰',
         example: { en: 'I found a great bargain at the market.', id: 'Aku menemukan barang murah bagus di pasar.', emoji: '🛒' },
+        practice: { en: 'At the market, she found a very good bargain.', id: 'Di pasar, dia menemukan barang murah yang sangat bagus.' },
         question: {
           en: 'Where did she find a bargain?',
           id: 'Di mana dia menemukan barang murah?',
@@ -9426,6 +9848,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Label Harga',
         emoji: '🏷️',
         example: { en: 'I check the price tag before I buy it.', id: 'Aku memeriksa label harga sebelum membelinya.', emoji: '🏷️' },
+        practice: { en: 'Before buying, she looks at the price tag.', id: 'Sebelum membeli, dia melihat label harga.' },
         question: {
           en: 'What does she check?',
           id: 'Apa yang dia periksa?',
@@ -9442,6 +9865,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Kasir',
         emoji: '🧑‍💼',
         example: { en: 'The cashier scans my items quickly.', id: 'Kasir itu memindai barangku dengan cepat.', emoji: '🛍️' },
+        practice: { en: 'The cashier scans every item on the counter.', id: 'Kasir itu memindai setiap barang di meja.' },
         question: {
           en: 'What does the cashier do?',
           id: 'Apa yang dilakukan kasir itu?',
@@ -9458,6 +9882,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Garansi',
         emoji: '📜',
         example: { en: 'This laptop has a one-year warranty.', id: 'Laptop ini punya garansi satu tahun.', emoji: '💻' },
+        practice: { en: 'The warranty for this laptop lasts one year.', id: 'Garansi laptop ini berlaku satu tahun.' },
         question: {
           en: 'How long is the warranty?',
           id: 'Berapa lama garansinya?',
@@ -9474,6 +9899,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Mengembalikan',
         emoji: '↩️',
         example: { en: "I return the shoes because they don't fit.", id: 'Aku mengembalikan sepatu itu karena tidak pas.', emoji: '📦' },
+        practice: { en: 'The shoes don\'t fit her, so she returns them.', id: 'Sepatu itu tidak pas untuknya, jadi dia mengembalikannya.' },
         question: {
           en: 'Why does she return the shoes?',
           id: 'Kenapa dia mengembalikan sepatunya?',
@@ -9488,11 +9914,11 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
     ],
     dialogueHeading: 'Menukar Barang di Toko',
     dialogueLines: [
-      { speaker: 'Dina', en: "Excuse me, I'd like to exchange this jacket. The size is too small.", id: 'Permisi, aku mau menukar jaket ini. Ukurannya terlalu kecil.' },
+      { speaker: 'Dina', en: 'Excuse me, I’d like to exchange this jacket, not get a refund. The size is too small, not the color.', id: 'Permisi, aku mau menukar jaket ini, bukan minta uang kembali. Ukurannya yang terlalu kecil, bukan warnanya.' },
       { speaker: 'Kak Rian', en: 'Sure, do you have the receipt and the price tag?', id: 'Tentu, apakah kamu punya struk dan label harganya?' },
       { speaker: 'Dina', en: 'Yes, here they are. Is there a bigger size available?', id: 'Ya, ini dia. Apakah ada ukuran yang lebih besar?' },
       { speaker: 'Kak Rian', en: 'Let me check... Yes, we have one size bigger in the fitting room.', id: 'Aku periksa dulu... Ya, kami punya satu ukuran lebih besar di ruang pas.' },
-      { speaker: 'Dina', en: 'Great, can I try it on first?', id: 'Bagus, boleh aku coba dulu?' },
+      { speaker: 'Dina', en: 'Great, can I try it on first? I do not want a refund.', id: 'Bagus, boleh aku coba dulu? Aku tidak mau uang kembali.' },
       { speaker: 'Kak Rian', en: 'Of course, the fitting room is right over there.', id: 'Tentu, ruang pasnya ada di sana.' },
       { speaker: 'Dina', en: 'Perfect, thank you for your help.', id: 'Sempurna, terima kasih atas bantuannya.' },
     ],
@@ -9506,6 +9932,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '😤', text: 'Make a Complaint', ok: false },
           { emoji: '🏷️', text: 'Ask for a Discount', ok: false },
         ],
+        decoys: [
+          { emoji: '🎁', text: 'Buy a Gift', ok: false },
+          { emoji: '💵', text: 'Pay the Bill', ok: false },
+        ],
       },
       {
         question: "What is wrong with Dina's jacket?",
@@ -9516,6 +9946,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🎨', text: 'It Is the Wrong Color', ok: false },
           { emoji: '💵', text: 'It Is Too Expensive', ok: false },
         ],
+        decoys: [
+          { emoji: '🧺', text: 'It Is Dirty', ok: false },
+          { emoji: '🏋️', text: 'It Is Too Heavy', ok: false },
+        ],
       },
       {
         question: 'What will Dina probably do next?',
@@ -9523,8 +9957,12 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         options: [
           { emoji: '🚪', text: 'Try On a Bigger Size', ok: true },
           { emoji: '💵', text: 'Ask for a Refund', ok: false },
-          { emoji: '🚶', text: 'Leave the Store', ok: false },
+          { emoji: '👣', text: 'Leave the Store', ok: false },
           { emoji: '👕', text: 'Buy a New Shirt', ok: false },
+        ],
+        decoys: [
+          { emoji: '💳', text: 'Pay at the Cashier', ok: false },
+          { emoji: '📞', text: 'Call the Manager', ok: false },
         ],
       },
     ],
@@ -9539,6 +9977,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Ujian',
         emoji: '📝',
         example: { en: 'The exam starts at eight o’clock.', id: 'Ujiannya mulai jam delapan.', emoji: '🕗' },
+        practice: { en: 'Students must be ready because the exam begins at eight o’clock.', id: 'Murid harus siap karena ujian dimulai jam delapan.' },
         question: {
           en: "What time does the exam start?",
           id: 'Jam berapa ujian dimulai?',
@@ -9555,6 +9994,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Meninjau Ulang',
         emoji: '📓',
         example: { en: 'I revise my notes every evening.', id: 'Aku meninjau ulang catatanku setiap sore.', emoji: '🌇' },
+        practice: { en: 'She goes over her notes each evening.', id: 'Dia membaca ulang catatannya tiap sore.' },
         question: {
           en: 'When does she revise her notes?',
           id: 'Kapan dia meninjau ulang catatannya?',
@@ -9571,6 +10011,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Nilai',
         emoji: '🅰️',
         example: { en: 'I get a good grade on the test.', id: 'Aku dapat nilai bagus di ujian itu.', emoji: '✅' },
+        practice: { en: 'Her test result is a good grade.', id: 'Hasil ujiannya adalah nilai yang bagus.' },
         question: {
           en: 'What does she get?',
           id: 'Apa yang dia dapat?',
@@ -9586,7 +10027,8 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         en: 'Homework',
         id: 'PR',
         emoji: '📔',
-        example: { en: 'I finish my homework before dinner.', id: 'Aku menyelesaikan PR-ku sebelum makan malam.', emoji: '🍽️' },
+        example: { en: 'I try to finish my homework before dinner.', id: 'Aku berusaha menyelesaikan PR-ku sebelum makan malam.', emoji: '🍽️' },
+        practice: { en: 'She is done with her homework before dinner.', id: 'Dia selesai mengerjakan PR sebelum makan malam.' },
         question: {
           en: 'When does she finish homework?',
           id: 'Kapan dia menyelesaikan PR-nya?',
@@ -9594,7 +10036,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
             { emoji: '🍽️', text: 'Before Dinner', ok: true },
             { emoji: '🌙', text: 'After Dinner', ok: false },
             { emoji: '🏫', text: 'During Class', ok: false },
-            { emoji: '🚶', text: 'At School', ok: false },
+            { emoji: '👣', text: 'At School', ok: false },
           ],
         },
       },
@@ -9603,6 +10045,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Tenggat Waktu',
         emoji: '⏳',
         example: { en: 'The deadline for the essay is Friday.', id: 'Tenggat waktu esai itu hari Jumat.', emoji: '📅' },
+        practice: { en: 'The essay must be ready by Friday.', id: 'Esai itu harus sudah siap paling lambat hari Jumat.' },
         question: {
           en: 'When is the deadline?',
           id: 'Kapan tenggat waktunya?',
@@ -9619,6 +10062,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Buku Pelajaran',
         emoji: '📚',
         example: { en: 'I borrow a textbook from the library.', id: 'Aku meminjam buku pelajaran dari perpustakaan.', emoji: '📚' },
+        practice: { en: 'She gets a textbook on loan from the library.', id: 'Dia meminjam buku pelajaran dari perpustakaan.' },
         question: {
           en: 'Where does she borrow a textbook?',
           id: 'Di mana dia meminjam buku pelajaran?',
@@ -9635,6 +10079,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Teman Sekelas',
         emoji: '🧑‍🎓',
         example: { en: 'My classmate helps me with math.', id: 'Teman sekelasku membantuku dengan matematika.', emoji: '🔢' },
+        practice: { en: 'Her classmate explains the math to her.', id: 'Teman sekelasnya menjelaskan matematika padanya.' },
         question: {
           en: 'Who helps her with math?',
           id: 'Siapa yang membantunya dengan matematika?',
@@ -9651,13 +10096,14 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Tugas',
         emoji: '📄',
         example: { en: 'I submit my assignment online.', id: 'Aku mengirim tugasku secara daring.', emoji: '💻' },
+        practice: { en: 'She hands in the assignment online.', id: 'Dia mengumpulkan tugasnya secara daring.' },
         question: {
           en: 'How does she submit her assignment?',
           id: 'Bagaimana dia mengirim tugasnya?',
           options: [
             { emoji: '💻', text: 'Online', ok: true },
             { emoji: '✉️', text: 'By Mail', ok: false },
-            { emoji: '🚶', text: 'In Person', ok: false },
+            { emoji: '👣', text: 'In Person', ok: false },
             { emoji: '📞', text: 'By Phone', ok: false },
           ],
         },
@@ -9667,6 +10113,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Rapor',
         emoji: '📋',
         example: { en: 'I show my report card to my parents.', id: 'Aku menunjukkan raporku pada orang tuaku.', emoji: '👨‍👩‍👧' },
+        practice: { en: 'She takes her report card home to show her parents.', id: 'Dia membawa pulang raportnya untuk menunjukkannya pada orang tuanya.' },
         question: {
           en: 'Who does she show her report card to?',
           id: 'Dia menunjukkan rapornya pada siapa?',
@@ -9683,6 +10130,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Belajar',
         emoji: '📖',
         example: { en: 'I study with my friends at the library.', id: 'Aku belajar dengan teman-temanku di perpustakaan.', emoji: '👥' },
+        practice: { en: 'She and her friends study together at the library.', id: 'Dia dan teman-temannya belajar bersama di perpustakaan.' },
         question: {
           en: 'Where does she study with friends?',
           id: 'Di mana dia belajar dengan teman-temannya?',
@@ -9699,8 +10147,8 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
     dialogueLines: [
       { speaker: 'Fajar', en: 'Are you ready for the exam tomorrow?', id: 'Kamu sudah siap untuk ujian besok?' },
       { speaker: 'Nadia', en: "Almost. I've been revising my notes every evening this week.", id: 'Hampir. Aku sudah meninjau ulang catatanku setiap sore minggu ini.' },
-      { speaker: 'Fajar', en: "Same here, but I'm still worried about the math section.", id: 'Sama, tapi aku masih khawatir soal bagian matematika.' },
-      { speaker: 'Nadia', en: 'Don’t worry, we can study together at the library after school.', id: 'Tenang saja, kita bisa belajar bersama di perpustakaan sepulang sekolah.' },
+      { speaker: 'Fajar', en: 'Same here, but I’m not confident about the math section. I’m still worried.', id: 'Sama, tapi aku tidak percaya diri soal bagian matematika. Aku masih khawatir.' },
+      { speaker: 'Nadia', en: 'Don’t worry, we can study together at the library after school. No movie tonight, and no sports either.', id: 'Tenang saja, kita bisa belajar bersama di perpustakaan sepulang sekolah. Malam ini tidak ada film, dan tidak ada olahraga juga.' },
       { speaker: 'Fajar', en: 'That would help a lot. Did you finish the homework too?', id: 'Itu akan sangat membantu. Kamu sudah selesaikan PR juga?' },
       { speaker: 'Nadia', en: 'Yes, I submitted the assignment online last night before the deadline.', id: 'Ya, aku mengirim tugas secara daring semalam sebelum tenggat waktu.' },
       { speaker: 'Fajar', en: "Great, let's meet at four o'clock then.", id: 'Bagus, ayo kita bertemu jam empat.' },
@@ -9715,6 +10163,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🎬', text: 'Choosing a Movie', ok: false },
           { emoji: '💻', text: 'Fixing a Computer', ok: false },
         ],
+        decoys: [
+          { emoji: '🍳', text: 'Cooking Dinner', ok: false },
+          { emoji: '🎁', text: 'Choosing a Gift', ok: false },
+        ],
       },
       {
         question: 'How does Fajar feel about the math section?',
@@ -9725,6 +10177,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🤩', text: 'Excited', ok: false },
           { emoji: '😑', text: 'Bored', ok: false },
         ],
+        decoys: [
+          { emoji: '😠', text: 'Angry', ok: false },
+          { emoji: '😴', text: 'Sleepy', ok: false },
+        ],
       },
       {
         question: 'What will they do after school?',
@@ -9734,6 +10190,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🎬', text: 'Watch a Movie', ok: false },
           { emoji: '🛍️', text: 'Go Shopping', ok: false },
           { emoji: '⚽', text: 'Play Sports', ok: false },
+        ],
+        decoys: [
+          { emoji: '🎉', text: 'Go to a Party', ok: false },
+          { emoji: '👵', text: 'Visit Grandma', ok: false },
         ],
       },
     ],
@@ -9748,6 +10208,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Genre',
         emoji: '🎬',
         example: { en: 'I like the action genre the most.', id: 'Aku paling suka genre aksi.', emoji: '💥' },
+        practice: { en: 'Her favorite genre is action.', id: 'Genre favoritnya adalah aksi.' },
         question: {
           en: 'What genre does she like most?',
           id: 'Genre apa yang paling dia suka?',
@@ -9764,6 +10225,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Cuplikan Film',
         emoji: '🎞️',
         example: { en: 'I watch the trailer before buying a ticket.', id: 'Aku menonton cuplikan filmnya sebelum membeli tiket.', emoji: '🎫' },
+        practice: { en: 'She always watches the trailer first, before buying a ticket.', id: 'Dia selalu menonton cuplikannya dulu, sebelum membeli tiket.' },
         question: {
           en: 'When does she watch the trailer?',
           id: 'Kapan dia menonton cuplikan filmnya?',
@@ -9780,6 +10242,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Subtitel',
         emoji: '💬',
         example: { en: "I read the subtitle because it's in French.", id: 'Aku membaca subtitel karena filmnya berbahasa Prancis.', emoji: '🇫🇷' },
+        practice: { en: 'The movie is in French, so she reads the subtitles.', id: 'Filmnya berbahasa Prancis, jadi dia membaca subtitelnya.' },
         question: {
           en: 'Why does she read the subtitle?',
           id: 'Kenapa dia membaca subtitel?',
@@ -9796,6 +10259,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Layanan Streaming',
         emoji: '📺',
         example: { en: 'I watch movies on a streaming app.', id: 'Aku menonton film di aplikasi streaming.', emoji: '📱' },
+        practice: { en: 'She uses a streaming app to watch movies.', id: 'Dia memakai aplikasi streaming untuk menonton film.' },
         question: {
           en: 'Where does she watch movies?',
           id: 'Di mana dia menonton film?',
@@ -9812,6 +10276,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Episode',
         emoji: '📀',
         example: { en: 'I watch one episode every night.', id: 'Aku menonton satu episode setiap malam.', emoji: '🌙' },
+        practice: { en: 'Every night, she watches just one episode.', id: 'Setiap malam, dia hanya menonton satu episode.' },
         question: {
           en: 'How many episodes does she watch a night?',
           id: 'Berapa episode yang dia tonton per malam?',
@@ -9828,6 +10293,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Ulasan',
         emoji: '⭐',
         example: { en: 'I read the review before choosing a movie.', id: 'Aku membaca ulasan sebelum memilih film.', emoji: '📝' },
+        practice: { en: 'She reads the review first, before she chooses a movie.', id: 'Dia membaca ulasannya dulu, sebelum memilih film.' },
         question: {
           en: 'When does she read the review?',
           id: 'Kapan dia membaca ulasannya?',
@@ -9844,6 +10310,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Alur Cerita',
         emoji: '📖',
         example: { en: 'The plot of the movie is very exciting.', id: 'Alur cerita film itu sangat menegangkan.', emoji: '😲' },
+        practice: { en: 'The movie has a very exciting plot.', id: 'Film itu punya alur cerita yang sangat menegangkan.' },
         question: {
           en: 'What is very exciting?',
           id: 'Apa yang sangat menegangkan?',
@@ -9860,6 +10327,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Aktor',
         emoji: '🧑‍🎤',
         example: { en: 'My favorite actor is in the new movie.', id: 'Aktor favoritku ada di film baru itu.', emoji: '⭐' },
+        practice: { en: 'The new movie stars her favorite actor.', id: 'Film baru itu dibintangi aktor favoritnya.' },
         question: {
           en: 'Who is in the new movie?',
           id: 'Siapa yang ada di film baru itu?',
@@ -9876,6 +10344,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Musik Latar',
         emoji: '🎵',
         example: { en: 'I love the soundtrack of that film.', id: 'Aku suka musik latar film itu.', emoji: '🎧' },
+        practice: { en: 'That film has a soundtrack she loves.', id: 'Film itu punya musik latar yang dia sukai.' },
         question: {
           en: 'What does she love about the film?',
           id: 'Apa yang dia suka dari film itu?',
@@ -9892,12 +10361,13 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Pemutaran Perdana',
         emoji: '🎥',
         example: { en: 'We go to the movie premiere together.', id: 'Kami pergi ke pemutaran perdana film itu bersama.', emoji: '👥' },
+        practice: { en: 'They attend the movie premiere together.', id: 'Mereka menghadiri pemutaran perdana film itu bersama-sama.' },
         question: {
           en: 'How do they go to the premiere?',
           id: 'Bagaimana mereka pergi ke pemutaran perdana?',
           options: [
             { emoji: '👥', text: 'Together', ok: true },
-            { emoji: '🧍', text: 'Alone', ok: false },
+            { emoji: '1️⃣', text: 'Alone', ok: false },
             { emoji: '🚌', text: 'By Bus', ok: false },
             { emoji: '🚲', text: 'By Bike', ok: false },
           ],
@@ -9909,9 +10379,9 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
       { speaker: 'Yoga', en: 'What movie should we watch tonight?', id: 'Film apa yang harus kita tonton malam ini?' },
       { speaker: 'Kiki', en: 'I saw the trailer for a new action movie. It looks exciting.', id: 'Aku lihat cuplikan film aksi baru. Kelihatannya seru.' },
       { speaker: 'Yoga', en: 'I read a review that said the plot is really good.', id: 'Aku baca ulasan yang bilang alur ceritanya bagus sekali.' },
-      { speaker: 'Kiki', en: 'Perfect, and my favorite actor is in it too.', id: 'Sempurna, dan aktor favoritku juga ada di situ.' },
+      { speaker: 'Kiki', en: 'Perfect, and my favorite actor is in it too. It is not free, but it is worth it.', id: 'Sempurna, dan aktor favoritku juga ada di situ. Filmnya tidak gratis, tapi sepadan.' },
       { speaker: 'Yoga', en: 'Great, should we watch it on a streaming app or go to the cinema?', id: 'Bagus, kita tonton di aplikasi streaming atau ke bioskop?' },
-      { speaker: 'Kiki', en: "Let's go to the cinema, it's more fun with popcorn.", id: 'Ayo ke bioskop, lebih seru dengan popcorn.' },
+      { speaker: 'Kiki', en: 'Not a streaming app tonight. Let’s go to the cinema, it’s more fun with popcorn.', id: 'Bukan aplikasi streaming malam ini. Ayo ke bioskop, lebih seru dengan popcorn.' },
       { speaker: 'Yoga', en: "Sounds good, let's go after dinner.", id: 'Boleh, ayo pergi setelah makan malam.' },
     ],
     inferenceQuestions: [
@@ -9924,6 +10394,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '📚', text: 'Where to Study', ok: false },
           { emoji: '📖', text: 'What Book to Read', ok: false },
         ],
+        decoys: [
+          { emoji: '🎮', text: 'Which Game to Play', ok: false },
+          { emoji: '✈️', text: 'Where to Travel', ok: false },
+        ],
       },
       {
         question: 'Why does Kiki want to watch the movie?',
@@ -9934,6 +10408,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🆓', text: 'It Is Free', ok: false },
           { emoji: '⏱️', text: 'It Is Short', ok: false },
         ],
+        decoys: [
+          { emoji: '🎵', text: 'It Has Funny Songs', ok: false },
+          { emoji: '⏱️', text: 'It Is Very Long', ok: false },
+        ],
       },
       {
         question: 'Where will they watch the movie?',
@@ -9943,6 +10421,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '📱', text: 'A Streaming App', ok: false },
           { emoji: '🏠', text: "Kiki's House", ok: false },
           { emoji: '📚', text: 'The Library', ok: false },
+        ],
+        decoys: [
+          { emoji: '🏠', text: 'Yoga’s House', ok: false },
+          { emoji: '🌳', text: 'The Park', ok: false },
         ],
       },
     ],
@@ -9957,6 +10439,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Pendapat',
         emoji: '💭',
         example: { en: 'I share my opinion about the book.', id: 'Aku berbagi pendapatku tentang buku itu.', emoji: '📖' },
+        practice: { en: 'She tells her opinion of the book.', id: 'Dia menyampaikan pendapatnya tentang buku itu.' },
         question: {
           en: 'What does she share?',
           id: 'Apa yang dia bagikan?',
@@ -9973,6 +10456,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Setuju',
         emoji: '👍',
         example: { en: 'I agree with her about the ending.', id: 'Aku setuju dengannya tentang akhir ceritanya.', emoji: '🏁' },
+        practice: { en: 'She agrees with her friend about the ending.', id: 'Dia setuju dengan temannya soal akhir ceritanya.' },
         question: {
           en: 'What does she agree about?',
           id: 'Dia setuju tentang apa?',
@@ -9989,6 +10473,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Tidak Setuju',
         emoji: '👎',
         example: { en: 'I disagree with the negative review.', id: 'Aku tidak setuju dengan ulasan negatif itu.', emoji: '⭐' },
+        practice: { en: 'She does not agree with the negative review.', id: 'Dia tidak setuju dengan ulasan negatif itu.' },
         question: {
           en: 'What does she disagree with?',
           id: 'Dia tidak setuju dengan apa?',
@@ -10005,6 +10490,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Merekomendasikan',
         emoji: '👉',
         example: { en: 'I recommend this book to my friend.', id: 'Aku merekomendasikan buku ini pada temanku.', emoji: '👥' },
+        practice: { en: 'This is a book she recommends to her friend.', id: 'Ini buku yang dia rekomendasikan pada temannya.' },
         question: {
           en: 'Who does she recommend the book to?',
           id: 'Dia merekomendasikan buku itu pada siapa?',
@@ -10021,6 +10507,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Terkesan',
         emoji: '😍',
         example: { en: 'I am impressed by the ending.', id: 'Aku terkesan dengan akhir ceritanya.', emoji: '🏆' },
+        practice: { en: 'She is very impressed by how the story ends.', id: 'Dia sangat terkesan dengan cara cerita itu berakhir.' },
         question: {
           en: 'What is she impressed by?',
           id: 'Dia terkesan dengan apa?',
@@ -10036,12 +10523,13 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         en: 'Disappointed',
         id: 'Kecewa',
         emoji: '😞',
-        example: { en: 'I am disappointed by the slow start.', id: 'Aku kecewa dengan awal cerita yang lambat.', emoji: '🐌' },
+        example: { en: 'I am disappointed by the slow start.', id: 'Aku kecewa dengan awal cerita yang lambat.', emoji: '⏳' },
+        practice: { en: 'The start of the story is slow, and she is disappointed.', id: 'Awal ceritanya lambat, dan dia kecewa.' },
         question: {
           en: 'What is she disappointed by?',
           id: 'Dia kecewa dengan apa?',
           options: [
-            { emoji: '🐌', text: 'The Slow Start', ok: true },
+            { emoji: '⏳', text: 'The Slow Start', ok: true },
             { emoji: '🏁', text: 'The Ending', ok: false },
             { emoji: '📕', text: 'The Cover', ok: false },
             { emoji: '💵', text: 'The Price', ok: false },
@@ -10053,6 +10541,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Penasaran',
         emoji: '🤔',
         example: { en: 'I am curious about the next chapter.', id: 'Aku penasaran dengan bab selanjutnya.', emoji: '❓' },
+        practice: { en: 'She wants to know what happens in the next chapter because she is curious.', id: 'Dia ingin tahu apa yang terjadi di bab selanjutnya karena penasaran.' },
         question: {
           en: 'What is she curious about?',
           id: 'Dia penasaran tentang apa?',
@@ -10069,6 +10558,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Menyenangkan',
         emoji: '😊',
         example: { en: 'The story is very enjoyable.', id: 'Ceritanya sangat menyenangkan.', emoji: '📚' },
+        practice: { en: 'It is very enjoyable to read this story.', id: 'Sangat menyenangkan membaca cerita ini.' },
         question: {
           en: 'What is very enjoyable?',
           id: 'Apa yang sangat menyenangkan?',
@@ -10085,6 +10575,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Favorit',
         emoji: '❤️',
         example: { en: 'This is my favorite book this year.', id: 'Ini buku favoritku tahun ini.', emoji: '❤️' },
+        practice: { en: 'Of all the books she read this year, this one is her favorite.', id: 'Dari semua buku yang dia baca tahun ini, yang ini favoritnya.' },
         question: {
           en: 'What is her favorite book?',
           id: 'Apa buku favoritnya?',
@@ -10101,6 +10592,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Menarik',
         emoji: '✨',
         example: { en: 'I find the characters very interesting.', id: 'Aku merasa tokoh-tokohnya sangat menarik.', emoji: '🎭' },
+        practice: { en: 'The characters in the book are very interesting to her.', id: 'Tokoh-tokoh dalam buku itu sangat menarik baginya.' },
         question: {
           en: 'What does she find interesting?',
           id: 'Apa yang dia rasa menarik?',
@@ -10118,7 +10610,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
       { speaker: 'Tania', en: 'Have you finished the book I recommended?', id: 'Kamu sudah selesai baca buku yang aku rekomendasikan?' },
       { speaker: 'Bima', en: 'Yes! I was disappointed by the slow start, but the ending impressed me.', id: 'Ya! Aku kecewa dengan awal yang lambat, tapi akhirnya membuatku terkesan.' },
       { speaker: 'Tania', en: 'Really? I actually really enjoyed it from the beginning.', id: 'Benarkah? Aku malah menikmatinya sejak awal.' },
-      { speaker: 'Bima', en: 'I guess we disagree a little then. What was your favorite part?', id: 'Berarti kita sedikit tidak sependapat. Bagian favoritmu apa?' },
+      { speaker: 'Bima', en: 'I guess we disagree a little then, not about the author, but about the beginning. What was your favorite part?', id: 'Berarti kita sedikit tidak sependapat, bukan soal penulisnya, tapi soal awal cerita. Bagian favoritmu apa?' },
       { speaker: 'Tania', en: 'My favorite part was the middle, when the characters became close friends.', id: 'Bagian favoritku adalah pertengahan, saat tokoh-tokohnya jadi sahabat dekat.' },
       { speaker: 'Bima', en: "That's true, the characters were very interesting.", id: 'Benar, tokoh-tokohnya sangat menarik.' },
       { speaker: 'Tania', en: "I'm curious what you think about the next book in the series.", id: 'Aku penasaran pendapatmu soal buku berikutnya di seri ini.' },
@@ -10133,6 +10625,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '📝', text: 'An Upcoming Exam', ok: false },
           { emoji: '🏝️', text: 'A Weekend Trip', ok: false },
         ],
+        decoys: [
+          { emoji: '🍳', text: 'A Cooking Recipe', ok: false },
+          { emoji: '⚽', text: 'A Football Game', ok: false },
+        ],
       },
       {
         question: 'How does Bima feel about the ending of the book?',
@@ -10143,15 +10639,23 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '😑', text: 'Bored', ok: false },
           { emoji: '😕', text: 'Confused', ok: false },
         ],
+        decoys: [
+          { emoji: '😴', text: 'Sleepy', ok: false },
+          { emoji: '😒', text: 'Jealous', ok: false },
+        ],
       },
       {
         question: 'What do Tania and Bima disagree about?',
         questionId: 'Tania dan Bima tidak sependapat soal apa?',
         options: [
-          { emoji: '🐌', text: 'The Beginning of the Book', ok: true },
+          { emoji: '⏳', text: 'The Beginning of the Book', ok: true },
           { emoji: '🔤', text: 'The Title of the Book', ok: false },
           { emoji: '💵', text: 'The Price of the Book', ok: false },
           { emoji: '✍️', text: 'The Author of the Book', ok: false },
+        ],
+        decoys: [
+          { emoji: '📕', text: 'The Cover of the Book', ok: false },
+          { emoji: '📏', text: 'The Length of the Book', ok: false },
         ],
       },
     ],
@@ -10166,6 +10670,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Lingkungan Sekitar',
         emoji: '🏘️',
         example: { en: 'I live in a quiet neighborhood.', id: 'Aku tinggal di lingkungan yang tenang.', emoji: '🤫' },
+        practice: { en: 'Her neighborhood is quiet.', id: 'Lingkungan tempat tinggalnya tenang.' },
         question: {
           en: 'What kind of neighborhood does she live in?',
           id: 'Lingkungan seperti apa tempat dia tinggal?',
@@ -10182,6 +10687,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Tengara',
         emoji: '🗼',
         example: { en: 'The clock tower is a famous landmark.', id: 'Menara jam itu tengara yang terkenal.', emoji: '🕰️' },
+        practice: { en: 'Tourists come to see the clock tower, a famous landmark.', id: 'Turis datang melihat menara jam, tengara yang terkenal.' },
         question: {
           en: 'What is a famous landmark?',
           id: 'Apa tengara yang terkenal?',
@@ -10198,6 +10704,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Ramai',
         emoji: '🚦',
         example: { en: 'The café is very crowded on weekends.', id: 'Kafe itu sangat ramai di akhir pekan.', emoji: '☕' },
+        practice: { en: 'On weekends, there are many people at the café.', id: 'Di akhir pekan, ada banyak orang di kafe itu.' },
         question: {
           en: 'When is the café crowded?',
           id: 'Kapan kafe itu ramai?',
@@ -10214,6 +10721,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Di Dekat Situ',
         emoji: '📍',
         example: { en: 'There is a bakery nearby the café.', id: 'Ada toko roti di dekat kafe itu.', emoji: '🥖' },
+        practice: { en: 'A bakery is close to the café.', id: 'Sebuah toko roti dekat dengan kafe itu.' },
         question: {
           en: 'What is nearby the café?',
           id: 'Apa yang ada di dekat kafe itu?',
@@ -10230,6 +10738,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Petunjuk Arah',
         emoji: '🧭',
         example: { en: 'I ask for directions to the café.', id: 'Aku meminta petunjuk arah ke kafe itu.', emoji: '🙋' },
+        practice: { en: 'She needs directions to the café, so she asks.', id: 'Dia butuh petunjuk arah ke kafe itu, jadi dia bertanya.' },
         question: {
           en: 'What does she ask for?',
           id: 'Apa yang dia minta?',
@@ -10246,6 +10755,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Persimpangan',
         emoji: '🚸',
         example: { en: 'Turn left at the intersection.', id: 'Belok kiri di persimpangan.', emoji: '⬅️' },
+        practice: { en: 'She turns left when she reaches the intersection.', id: 'Dia belok kiri saat sampai di persimpangan.' },
         question: {
           en: 'Where does she turn left?',
           id: 'Di mana dia belok kiri?',
@@ -10262,6 +10772,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Pusat Kota',
         emoji: '🏙️',
         example: { en: 'The new café is downtown.', id: 'Kafe baru itu ada di pusat kota.', emoji: '🏙️' },
+        practice: { en: 'You can find the new café downtown.', id: 'Kamu bisa menemukan kafe baru itu di pusat kota.' },
         question: {
           en: 'Where is the new café?',
           id: 'Di mana kafe barunya?',
@@ -10276,13 +10787,14 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
       {
         en: 'Sidewalk',
         id: 'Trotoar',
-        emoji: '🚶',
+        emoji: '👣',
         example: { en: 'We walk along the sidewalk to the café.', id: 'Kami berjalan di sepanjang trotoar menuju kafe.', emoji: '👣' },
+        practice: { en: 'They walk to the café on the sidewalk.', id: 'Mereka berjalan ke kafe di trotoar.' },
         question: {
           en: 'What do they walk along?',
           id: 'Mereka berjalan di sepanjang apa?',
           options: [
-            { emoji: '🚶', text: 'The Sidewalk', ok: true },
+            { emoji: '👣', text: 'The Sidewalk', ok: true },
             { emoji: '🛣️', text: 'The Road', ok: false },
             { emoji: '🏖️', text: 'The Beach', ok: false },
             { emoji: '🌉', text: 'The Bridge', ok: false },
@@ -10294,6 +10806,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Papan Penunjuk',
         emoji: '🪧',
         example: { en: 'I look for a signpost with the café name.', id: 'Aku mencari papan penunjuk dengan nama kafenya.', emoji: '🔎' },
+        practice: { en: 'She searches for a signpost that shows the café’s name.', id: 'Dia mencari papan penunjuk yang menampilkan nama kafe.' },
         question: {
           en: 'What does she look for?',
           id: 'Apa yang dia cari?',
@@ -10310,6 +10823,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Berlokasi',
         emoji: '📌',
         example: { en: 'The café is located near the park.', id: 'Kafe itu berlokasi dekat taman.', emoji: '🏞️' },
+        practice: { en: 'You will find the café near the park.', id: 'Kamu akan menemukan kafe itu dekat taman.' },
         question: {
           en: 'Where is the café located?',
           id: 'Di mana kafe itu berlokasi?',
@@ -10325,11 +10839,11 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
     dialogueHeading: 'Mencari Kafe Baru',
     dialogueLines: [
       { speaker: 'Putri', en: 'Do you know where the new café downtown is?', id: 'Kamu tahu di mana kafe baru di pusat kota itu?' },
-      { speaker: 'Andi', en: "I think it's located near the park, close to the old clock tower landmark.", id: 'Kurasa berlokasi dekat taman, dekat tengara menara jam tua.' },
+      { speaker: 'Andi', en: 'I think it’s located near the park, not near the station, close to the old clock tower landmark.', id: 'Kurasa berlokasi dekat taman, bukan dekat stasiun, dekat tengara menara jam tua.' },
       { speaker: 'Putri', en: 'Okay, should we ask for directions when we get there?', id: 'Baik, apakah kita perlu tanya arah kalau sudah sampai sana?' },
       { speaker: 'Andi', en: 'We might need to. The neighborhood has a lot of small streets.', id: 'Mungkin perlu. Lingkungan itu punya banyak jalan kecil.' },
       { speaker: 'Putri', en: "True. I heard the café gets really crowded on weekends.", id: 'Benar. Aku dengar kafe itu sangat ramai di akhir pekan.' },
-      { speaker: 'Andi', en: "Let's go early then, before it gets too busy.", id: 'Ayo berangkat lebih awal, sebelum terlalu ramai.' },
+      { speaker: 'Andi', en: 'Let’s go early then, before it gets too busy. Going at night is too late, not a good idea.', id: 'Ayo berangkat lebih awal, sebelum terlalu ramai. Pergi malam hari terlalu larut, bukan ide bagus.' },
       { speaker: 'Putri', en: 'Good idea, we can walk along the sidewalk from here.', id: 'Ide bagus, kita bisa jalan kaki di trotoar dari sini.' },
     ],
     inferenceQuestions: [
@@ -10342,6 +10856,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '📝', text: 'Studying for an Exam', ok: false },
           { emoji: '🔁', text: 'Returning an Item', ok: false },
         ],
+        decoys: [
+          { emoji: '🛒', text: 'Buying Groceries', ok: false },
+          { emoji: '🎉', text: 'Planning a Party', ok: false },
+        ],
       },
       {
         question: 'Where is the new café located?',
@@ -10352,6 +10870,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🏖️', text: 'Near the Beach', ok: false },
           { emoji: '🚉', text: 'Near the Station', ok: false },
         ],
+        decoys: [
+          { emoji: '🏦', text: 'Near the Bank', ok: false },
+          { emoji: '🏥', text: 'Near the Hospital', ok: false },
+        ],
       },
       {
         question: 'What will they do to avoid the crowd?',
@@ -10361,6 +10883,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🌙', text: 'Go at Night', ok: false },
           { emoji: '📞', text: 'Call First', ok: false },
           { emoji: '📅', text: 'Go a Different Day', ok: false },
+        ],
+        decoys: [
+          { emoji: '🚕', text: 'Take a Taxi', ok: false },
+          { emoji: '📱', text: 'Order Online', ok: false },
         ],
       },
     ],
@@ -10375,6 +10901,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Daur Ulang',
         emoji: '♻️',
         example: { en: 'We recycle plastic bottles every week.', id: 'Kami mendaur ulang botol plastik setiap minggu.', emoji: '📅' },
+        practice: { en: 'Each week, they take plastic bottles to be recycled.', id: 'Tiap minggu, mereka membawa botol plastik untuk didaur ulang.' },
         question: {
           en: 'How often do they recycle?',
           id: 'Seberapa sering mereka mendaur ulang?',
@@ -10391,6 +10918,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Lingkungan',
         emoji: '🌍',
         example: { en: 'We protect the environment together.', id: 'Kami menjaga lingkungan bersama-sama.', emoji: '🌍' },
+        practice: { en: 'Together, they take care of the environment.', id: 'Bersama-sama, mereka menjaga lingkungan.' },
         question: {
           en: 'What do they protect?',
           id: 'Apa yang mereka jaga?',
@@ -10407,6 +10935,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Polusi',
         emoji: '🏭',
         example: { en: 'The river has less pollution now.', id: 'Sungai itu kini lebih sedikit polusinya.', emoji: '🏞️' },
+        practice: { en: 'There is less pollution in the river these days.', id: 'Sekarang ada lebih sedikit polusi di sungai.' },
         question: {
           en: 'What has less pollution?',
           id: 'Apa yang lebih sedikit polusinya?',
@@ -10423,6 +10952,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Plastik',
         emoji: '🧴',
         example: { en: 'I avoid using plastic bags.', id: 'Aku menghindari pemakaian kantong plastik.', emoji: '🛍️' },
+        practice: { en: 'She tries not to use plastic bags.', id: 'Dia berusaha tidak memakai kantong plastik.' },
         question: {
           en: 'What does she avoid using?',
           id: 'Apa yang dia hindari?',
@@ -10439,6 +10969,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Kompos',
         emoji: '🍂',
         example: { en: 'We compost our food waste.', id: 'Kami mengomposkan sisa makanan kami.', emoji: '🍽️' },
+        practice: { en: 'They turn their food waste into compost.', id: 'Mereka mengubah sisa makanan mereka jadi kompos.' },
         question: {
           en: 'What do they compost?',
           id: 'Apa yang mereka komposkan?',
@@ -10455,6 +10986,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Bisa Dipakai Ulang',
         emoji: '🔄',
         example: { en: 'I bring a reusable water bottle.', id: 'Aku membawa botol minum yang bisa dipakai ulang.', emoji: '🚰' },
+        practice: { en: 'She carries a bottle that she can reuse.', id: 'Dia membawa botol yang bisa dia pakai ulang.' },
         question: {
           en: 'What does she bring?',
           id: 'Apa yang dia bawa?',
@@ -10469,13 +11001,14 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
       {
         en: 'Wildlife',
         id: 'Satwa Liar',
-        emoji: '🦌',
+        emoji: '🐾',
         example: { en: 'The forest protects a lot of wildlife.', id: 'Hutan itu melindungi banyak satwa liar.', emoji: '🌲' },
+        practice: { en: 'The forest is a safe home for wildlife.', id: 'Hutan adalah rumah yang aman bagi satwa liar.' },
         question: {
           en: 'What does the forest protect?',
           id: 'Apa yang dilindungi hutan itu?',
           options: [
-            { emoji: '🦌', text: 'Wildlife', ok: true },
+            { emoji: '🐾', text: 'Wildlife', ok: true },
             { emoji: '🏢', text: 'Buildings', ok: false },
             { emoji: '🛣️', text: 'Roads', ok: false },
             { emoji: '🏪', text: 'Shops', ok: false },
@@ -10487,6 +11020,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Konservasi',
         emoji: '🌱',
         example: { en: 'The school teaches conservation to students.', id: 'Sekolah mengajarkan konservasi pada murid-murid.', emoji: '🧑‍🎓' },
+        practice: { en: 'Students learn about conservation at school.', id: 'Murid-murid belajar tentang konservasi di sekolah.' },
         question: {
           en: 'What does the school teach?',
           id: 'Apa yang diajarkan sekolah itu?',
@@ -10503,6 +11037,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Terbarukan',
         emoji: '☀️',
         example: { en: 'We use renewable energy at home.', id: 'Kami memakai energi terbarukan di rumah.', emoji: '🏠' },
+        practice: { en: 'At home, they use energy that is renewable.', id: 'Di rumah, mereka memakai energi yang terbarukan.' },
         question: {
           en: 'What kind of energy do they use?',
           id: 'Energi seperti apa yang mereka pakai?',
@@ -10519,6 +11054,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Sampah Berserakan',
         emoji: '🗑️',
         example: { en: "Please don't litter in the park.", id: 'Tolong jangan membuang sampah sembarangan di taman.', emoji: '🗑️' },
+        practice: { en: 'People should keep the park clean and not litter there.', id: 'Orang-orang harus menjaga taman tetap bersih dan tidak membuang sampah di sana.' },
         question: {
           en: 'Where should people not litter?',
           id: 'Di mana orang tidak boleh membuang sampah sembarangan?',
@@ -10536,10 +11072,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
       { speaker: 'Rio', en: 'Sasa, why do you always bring a reusable water bottle?', id: 'Sasa, kenapa kamu selalu bawa botol minum yang bisa dipakai ulang?' },
       { speaker: 'Sasa', en: 'Because I want to reduce plastic waste and help the environment.', id: 'Karena aku mau mengurangi sampah plastik dan membantu lingkungan.' },
       { speaker: 'Rio', en: "That's a good idea. My family started to recycle plastic bottles too.", id: 'Ide yang bagus. Keluargaku juga mulai mendaur ulang botol plastik.' },
-      { speaker: 'Sasa', en: 'Great! We also compost our food waste at home now.', id: 'Bagus! Kami juga sudah mengomposkan sisa makanan di rumah sekarang.' },
+      { speaker: 'Sasa', en: 'Great! We also compost our food waste at home now. We do not throw it away anymore.', id: 'Bagus! Kami juga sudah mengomposkan sisa makanan di rumah sekarang. Kami tidak membuangnya lagi.' },
       { speaker: 'Rio', en: 'Really? Does that help reduce pollution?', id: 'Benarkah? Apakah itu membantu mengurangi polusi?' },
       { speaker: 'Sasa', en: 'Yes, and it also protects wildlife in the nearby forest.', id: 'Ya, dan itu juga melindungi satwa liar di hutan dekat sini.' },
-      { speaker: 'Rio', en: 'I should start doing that too. It sounds easy.', id: 'Aku juga harus mulai melakukannya. Kedengarannya mudah.' },
+      { speaker: 'Rio', en: 'I should start doing that too. I was a little confused before, but now it sounds easy.', id: 'Aku juga harus mulai melakukannya. Tadinya aku agak bingung, tapi sekarang kedengarannya mudah.' },
     ],
     inferenceQuestions: [
       {
@@ -10551,6 +11087,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🎬', text: 'Choosing a Movie', ok: false },
           { emoji: '📝', text: 'Studying for an Exam', ok: false },
         ],
+        decoys: [
+          { emoji: '👕', text: 'Buying New Clothes', ok: false },
+          { emoji: '🍳', text: 'Learning to Cook', ok: false },
+        ],
       },
       {
         question: "What does Sasa's family do with food waste?",
@@ -10561,6 +11101,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🗑️', text: 'They Throw It Away', ok: false },
           { emoji: '💰', text: 'They Sell It', ok: false },
         ],
+        decoys: [
+          { emoji: '🎁', text: 'They Give It Away', ok: false },
+          { emoji: '📦', text: 'They Put It in a Box', ok: false },
+        ],
       },
       {
         question: 'How does Rio feel about starting these habits?',
@@ -10570,6 +11114,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '😐', text: 'Uninterested', ok: false },
           { emoji: '😤', text: 'Annoyed', ok: false },
           { emoji: '😕', text: 'Confused', ok: false },
+        ],
+        decoys: [
+          { emoji: '😴', text: 'Tired', ok: false },
+          { emoji: '😢', text: 'Sad', ok: false },
         ],
       },
     ],
@@ -10584,6 +11132,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Wawancara',
         emoji: '🎙️',
         example: { en: 'I have a job interview tomorrow.', id: 'Aku ada wawancara kerja besok.', emoji: '📅' },
+        practice: { en: 'Tomorrow, she will go to a job interview.', id: 'Besok, dia akan pergi wawancara kerja.' },
         question: {
           en: 'When is her interview?',
           id: 'Kapan wawancaranya?',
@@ -10600,6 +11149,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Resume',
         emoji: '📄',
         example: { en: 'I update my resume before applying.', id: 'Aku memperbarui resumeku sebelum melamar.', emoji: '✏️' },
+        practice: { en: 'Before she applies for a job, she updates her resume.', id: 'Sebelum melamar kerja, dia memperbarui resumenya.' },
         question: {
           en: 'When does she update her resume?',
           id: 'Kapan dia memperbarui resumenya?',
@@ -10616,6 +11166,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Keahlian',
         emoji: '💡',
         example: { en: 'I list my computer skill on the form.', id: 'Aku mencantumkan keahlian komputerku di formulir.', emoji: '💻' },
+        practice: { en: 'On the form, she writes down her computer skill.', id: 'Di formulir, dia menuliskan keahlian komputernya.' },
         question: {
           en: 'What does she list?',
           id: 'Apa yang dia cantumkan?',
@@ -10632,6 +11183,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Pengalaman',
         emoji: '📈',
         example: { en: 'I have two years of experience.', id: 'Aku punya pengalaman dua tahun.', emoji: '2️⃣' },
+        practice: { en: 'She has worked for two years, so she has experience.', id: 'Dia sudah bekerja selama dua tahun, jadi dia berpengalaman.' },
         question: {
           en: 'How many years of experience does she have?',
           id: 'Berapa tahun pengalaman yang dia punya?',
@@ -10648,13 +11200,14 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Atasan',
         emoji: '🧑‍💼',
         example: { en: 'My employer is very kind.', id: 'Atasanku sangat baik hati.', emoji: '🤗' },
+        practice: { en: 'Her employer is a very kind person.', id: 'Atasannya adalah orang yang sangat baik hati.' },
         question: {
           en: 'What is her employer like?',
           id: 'Bagaimana atasannya?',
           options: [
             { emoji: '🤗', text: 'Very Kind', ok: true },
             { emoji: '😠', text: 'Very Strict', ok: false },
-            { emoji: '🏃', text: 'Very Busy', ok: false },
+            { emoji: '⏰', text: 'Very Busy', ok: false },
             { emoji: '🤫', text: 'Very Quiet', ok: false },
           ],
         },
@@ -10664,6 +11217,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Gaji',
         emoji: '💰',
         example: { en: 'We discuss the salary at the end.', id: 'Kami membahas gaji di akhir.', emoji: '🏁' },
+        practice: { en: 'At the end of the talk, they discuss the salary.', id: 'Di akhir pembicaraan, mereka membahas gaji.' },
         question: {
           en: 'When do they discuss the salary?',
           id: 'Kapan mereka membahas gaji?',
@@ -10680,6 +11234,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Karier',
         emoji: '🚀',
         example: { en: 'I want a career in design.', id: 'Aku ingin berkarier di bidang desain.', emoji: '🎨' },
+        practice: { en: 'She dreams of a career in design.', id: 'Dia bercita-cita berkarier di bidang desain.' },
         question: {
           en: 'What career does she want?',
           id: 'Karier apa yang dia inginkan?',
@@ -10696,6 +11251,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Kualifikasi',
         emoji: '🎓',
         example: { en: 'I have the right qualification for this job.', id: 'Aku punya kualifikasi yang tepat untuk pekerjaan ini.', emoji: '✅' },
+        practice: { en: 'This job needs a qualification, and she has the right one.', id: 'Pekerjaan ini butuh kualifikasi, dan dia punya yang tepat.' },
         question: {
           en: 'What does she have?',
           id: 'Apa yang dia punya?',
@@ -10712,6 +11268,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Rekan Kerja',
         emoji: '👥',
         example: { en: 'My colleague helps me with the project.', id: 'Rekan kerjaku membantuku dengan proyek itu.', emoji: '📋' },
+        practice: { en: 'Her colleague works with her on the project.', id: 'Rekan kerjanya bekerja bersamanya dalam proyek itu.' },
         question: {
           en: 'Who helps her with the project?',
           id: 'Siapa yang membantunya dengan proyek itu?',
@@ -10728,6 +11285,7 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
         id: 'Posisi',
         emoji: '📋',
         example: { en: 'I apply for a new position at the company.', id: 'Aku melamar posisi baru di perusahaan itu.', emoji: '🏢' },
+        practice: { en: 'The company has a new position, and she applies for it.', id: 'Perusahaan itu punya posisi baru, dan dia melamarnya.' },
         question: {
           en: 'What does she apply for?',
           id: 'Apa yang dia lamar?',
@@ -10743,11 +11301,11 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
     dialogueHeading: 'Wawancara Kerja',
     dialogueLines: [
       { speaker: 'Kak Wulan', en: 'Thank you for coming, Doni. Can you tell me about your experience?', id: 'Terima kasih sudah datang, Doni. Bisa ceritakan pengalamanmu?' },
-      { speaker: 'Doni', en: 'Of course. I have two years of experience in graphic design.', id: 'Tentu. Aku punya pengalaman dua tahun di desain grafis.' },
+      { speaker: 'Doni', en: 'Of course. I have two years of experience in graphic design, not five, but I learn fast.', id: 'Tentu. Aku punya pengalaman dua tahun di desain grafis, bukan lima, tapi aku cepat belajar.' },
       { speaker: 'Kak Wulan', en: "That's great. What skill do you think is your strongest?", id: 'Bagus sekali. Menurutmu keahlian apa yang paling kuat kamu punya?' },
       { speaker: 'Doni', en: 'I think my strongest skill is working well with a team.', id: 'Menurutku keahlian terkuatku adalah bekerja baik dengan tim.' },
       { speaker: 'Kak Wulan', en: 'Good to know. Do you have any questions about the position?', id: 'Baik untuk diketahui. Apakah kamu punya pertanyaan soal posisinya?' },
-      { speaker: 'Doni', en: "Yes, I'd like to know more about the salary and the team I'd work with.", id: 'Ya, aku ingin tahu lebih soal gaji dan tim yang akan aku kerjakan bersama.' },
+      { speaker: 'Doni', en: 'Yes, I’d like to know more about the salary and the team. I do not need the company address.', id: 'Ya, aku ingin tahu lebih soal gaji dan tim. Aku tidak perlu alamat perusahaan.' },
       { speaker: 'Kak Wulan', en: "Sure, let's discuss that now.", id: 'Tentu, mari kita bahas sekarang.' },
     ],
     inferenceQuestions: [
@@ -10760,6 +11318,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🛍️', text: 'A Shopping Trip', ok: false },
           { emoji: '🏝️', text: 'A Holiday Plan', ok: false },
         ],
+        decoys: [
+          { emoji: '🎂', text: 'A Birthday Party', ok: false },
+          { emoji: '🏥', text: 'A Doctor Visit', ok: false },
+        ],
       },
       {
         question: 'How much experience does Doni have?',
@@ -10770,6 +11332,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '5️⃣', text: 'Five Years', ok: false },
           { emoji: '🚫', text: 'No Experience', ok: false },
         ],
+        decoys: [
+          { emoji: '3️⃣', text: 'Three Years', ok: false },
+          { emoji: '🔟', text: 'Ten Years', ok: false },
+        ],
       },
       {
         question: 'What does Doni want to know more about?',
@@ -10779,6 +11345,10 @@ export const LISTENING_TOPICS_TRAILBLAZER: ListeningDialogueTopic[] = [
           { emoji: '🏢', text: 'The Company Address', ok: false },
           { emoji: '🧑‍💼', text: "The Interviewer's Name", ok: false },
           { emoji: '📄', text: 'The Application Form', ok: false },
+        ],
+        decoys: [
+          { emoji: '🍱', text: 'The Lunch Menu', ok: false },
+          { emoji: '🅿️', text: 'The Office Parking', ok: false },
         ],
       },
     ],
@@ -10822,7 +11392,7 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
     desc: '10 ucapan',
     items: [
       { en: 'Hello', id: 'Halo', emoji: '👋', phrase: { en: 'Hello, everyone!', id: 'Halo, semuanya!', emoji: '👋' } },
-      { en: 'Goodbye', id: 'Dadah', emoji: '🚶', phrase: { en: 'Goodbye, see you!', id: 'Dadah, sampai jumpa!', emoji: '🚶' } },
+      { en: 'Goodbye', id: 'Dadah', emoji: '👣', phrase: { en: 'Goodbye, see you!', id: 'Dadah, sampai jumpa!', emoji: '👣' } },
       { en: 'Please', id: 'Tolong', emoji: '🥺', phrase: { en: 'Please, sit down.', id: 'Tolong, duduklah.', emoji: '🥺' } },
       { en: 'Thank You', id: 'Terima Kasih', emoji: '🙏', phrase: { en: 'Thank you so much!', id: 'Terima kasih banyak!', emoji: '🙏' } },
       { en: 'Sorry', id: 'Maaf', emoji: '😔', phrase: { en: 'Sorry, my friend.', id: 'Maaf, temanku.', emoji: '😔' } },
@@ -11120,7 +11690,7 @@ export const SPEAKING_TOPICS_STARTER: SpeakingPhraseTopic[] = [
       { en: 'Baby', id: 'Bayi', emoji: '👶', phrase: { en: 'The baby is cute.', id: 'Bayinya lucu.', emoji: '👶' } },
       { en: 'Driver', id: 'Supir', emoji: '🚕', phrase: { en: 'The driver drives safely.', id: 'Supir itu mengemudi dengan hati-hati.', emoji: '🚕' } },
       { en: 'Best Friend', id: 'Sahabat', emoji: '🤝', phrase: { en: 'You are my best friend!', id: 'Kamu sahabatku!', emoji: '🤝' } },
-      { en: 'Twin', id: 'Anak Kembar', emoji: '👯', phrase: { en: 'This is my twin.', id: 'Ini kembaranku.', emoji: '👯' } },
+      { en: 'Twin', id: 'Anak Kembar', emoji: '👥', phrase: { en: 'This is my twin.', id: 'Ini kembaranku.', emoji: '👥' } },
     ],
   },
   {
@@ -12342,7 +12912,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
       { en: 'Baby', id: 'Bayi', emoji: '👶', formA: { en: 'We are babies.', id: 'Kami bayi.' }, formB: { en: 'They are babies.', id: 'Mereka bayi.' } },
       { en: 'Driver', id: 'Supir', emoji: '🚕', formA: { en: 'We are drivers.', id: 'Kami supir.' }, formB: { en: 'They are drivers.', id: 'Mereka supir.' } },
       { en: 'Best Friend', id: 'Sahabat', emoji: '🤝', formA: { en: 'We are best friends.', id: 'Kami sahabat.' }, formB: { en: 'They are best friends.', id: 'Mereka sahabat.' } },
-      { en: 'Twin', id: 'Anak Kembar', emoji: '👯', formA: { en: 'We are twins.', id: 'Kami anak kembar.' }, formB: { en: 'They are twins.', id: 'Mereka anak kembar.' } },
+      { en: 'Twin', id: 'Anak Kembar', emoji: '👥', formA: { en: 'We are twins.', id: 'Kami anak kembar.' }, formB: { en: 'They are twins.', id: 'Mereka anak kembar.' } },
     ],
   },
   /**
@@ -12365,10 +12935,10 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
-      { en: 'Jump', id: 'Lompat', emoji: '🤸', formA: { en: 'Jump!', id: 'Lompat!' }, formB: { en: "Don't jump!", id: 'Jangan lompat!' } },
-      { en: 'Run', id: 'Lari', emoji: '🏃', formA: { en: 'Run!', id: 'Lari!' }, formB: { en: "Don't run!", id: 'Jangan lari!' } },
+      { en: 'Jump', id: 'Lompat', emoji: '🐸', formA: { en: 'Jump!', id: 'Lompat!' }, formB: { en: "Don't jump!", id: 'Jangan lompat!' } },
+      { en: 'Run', id: 'Lari', emoji: '💨', formA: { en: 'Run!', id: 'Lari!' }, formB: { en: "Don't run!", id: 'Jangan lari!' } },
       { en: 'Sit Down', id: 'Duduk', emoji: '🪑', formA: { en: 'Sit down!', id: 'Duduk!' }, formB: { en: "Don't sit down!", id: 'Jangan duduk!' } },
-      { en: 'Stand Up', id: 'Berdiri', emoji: '🧍', formA: { en: 'Stand up!', id: 'Berdiri!' }, formB: { en: "Don't stand up!", id: 'Jangan berdiri!' } },
+      { en: 'Stand Up', id: 'Berdiri', emoji: '⬆️', formA: { en: 'Stand up!', id: 'Berdiri!' }, formB: { en: "Don't stand up!", id: 'Jangan berdiri!' } },
       { en: 'Clap', id: 'Tepuk Tangan', emoji: '👏', formA: { en: 'Clap your hands!', id: 'Tepuk tanganmu!' }, formB: { en: "Don't clap your hands!", id: 'Jangan tepuk tanganmu!' } },
       { en: 'Open the Door', id: 'Buka Pintu', emoji: '🚪', formA: { en: 'Open the door!', id: 'Buka pintunya!' }, formB: { en: "Don't open the door!", id: 'Jangan buka pintunya!' } },
       { en: 'Close the Window', id: 'Tutup Jendela', emoji: '🪟', formA: { en: 'Close the window!', id: 'Tutup jendelanya!' }, formB: { en: "Don't close the window!", id: 'Jangan tutup jendelanya!' } },
@@ -12454,13 +13024,13 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
       { en: 'School', id: 'Sekolah', emoji: '🏫', formA: { en: 'I go to school.', id: 'Aku pergi ke sekolah.' }, formB: { en: "I don't go to school.", id: 'Aku tidak pergi ke sekolah.' } },
       { en: 'Home', id: 'Rumah', emoji: '🏠', formA: { en: 'I go home.', id: 'Aku pulang ke rumah.' }, formB: { en: "I don't go home.", id: 'Aku tidak pulang ke rumah.' } },
       { en: 'Mall', id: 'Mal', emoji: '🛍️', formA: { en: 'I go to the mall.', id: 'Aku pergi ke mal.' }, formB: { en: "I don't go to the mall.", id: 'Aku tidak pergi ke mal.' } },
-      { en: 'Swimming Pool', id: 'Kolam Renang', emoji: '🏊', formA: { en: 'I go to the swimming pool.', id: 'Aku pergi ke kolam renang.' }, formB: { en: "I don't go to the swimming pool.", id: 'Aku tidak pergi ke kolam renang.' } },
+      { en: 'Swimming Pool', id: 'Kolam Renang', emoji: '🌊', formA: { en: 'I go to the swimming pool.', id: 'Aku pergi ke kolam renang.' }, formB: { en: "I don't go to the swimming pool.", id: 'Aku tidak pergi ke kolam renang.' } },
       { en: 'Dentist', id: 'Dokter Gigi', emoji: '🦷', formA: { en: 'I go to the dentist.', id: 'Aku pergi ke dokter gigi.' }, formB: { en: "I don't go to the dentist.", id: 'Aku tidak pergi ke dokter gigi.' } },
       { en: 'Cinema', id: 'Bioskop', emoji: '🎬', formA: { en: 'I go to the cinema.', id: 'Aku pergi ke bioskop.' }, formB: { en: "I don't go to the cinema.", id: 'Aku tidak pergi ke bioskop.' } },
       { en: 'Countryside', id: 'Pedesaan', emoji: '🌾', formA: { en: 'I go to the countryside.', id: 'Aku pergi ke pedesaan.' }, formB: { en: "I don't go to the countryside.", id: 'Aku tidak pergi ke pedesaan.' } },
       { en: 'Downtown', id: 'Pusat Kota', emoji: '🏙️', formA: { en: 'I go downtown.', id: 'Aku pergi ke pusat kota.' }, formB: { en: "I don't go downtown.", id: 'Aku tidak pergi ke pusat kota.' } },
       { en: "Grandma's House", id: 'Rumah Nenek', emoji: '👵', formA: { en: "I go to grandma's house.", id: 'Aku pergi ke rumah nenek.' }, formB: { en: "I don't go to grandma's house.", id: 'Aku tidak pergi ke rumah nenek.' } },
-      { en: 'Gym', id: 'Pusat Kebugaran', emoji: '🏋️', formA: { en: 'I go to the gym.', id: 'Aku pergi ke pusat kebugaran.' }, formB: { en: "I don't go to the gym.", id: 'Aku tidak pergi ke pusat kebugaran.' } },
+      { en: 'Gym', id: 'Pusat Kebugaran', emoji: '💪', formA: { en: 'I go to the gym.', id: 'Aku pergi ke pusat kebugaran.' }, formB: { en: "I don't go to the gym.", id: 'Aku tidak pergi ke pusat kebugaran.' } },
     ],
   },
 ];
@@ -12482,13 +13052,13 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarTopic[] = [
     title: 'Sedang vs Biasa Dilakukan (Present Continuous vs Simple)',
     desc: 'Kontras -ing vs Sehari-hari',
     examples: [
-      { en: 'I climb the tree every day.', emoji: '🧗' },
-      { en: 'I am climbing the tree right now.', emoji: '🧗' },
+      { en: 'I climb the tree every day.', emoji: '🪜' },
+      { en: 'I am climbing the tree right now.', emoji: '🪜' },
       { en: 'She laughs at jokes every day.', emoji: '😂' },
       { en: 'She is laughing right now.', emoji: '😂' },
     ],
     scramble: [
-      { emoji: '🤸', target: ['She', 'is', 'jumping', 'right', 'now'] },
+      { emoji: '🐸', target: ['She', 'is', 'jumping', 'right', 'now'] },
       { emoji: '📢', target: ['He', 'shouts', 'every', 'morning'] },
     ],
     fill: {
@@ -12689,7 +13259,7 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarTopic[] = [
       { en: 'He is very honest, so people trust him.', emoji: '🤝' },
     ],
     scramble: [
-      { emoji: '🦸', target: ['Andi', 'is', 'very', 'brave', 'so', 'he', 'helps', 'others'] },
+      { emoji: '🎭', target: ['Andi', 'is', 'very', 'brave', 'so', 'he', 'helps', 'others'] },
       { emoji: '🎁', target: ['Maya', 'is', 'very', 'generous', 'so', 'she', 'shares', 'her', 'toys'] },
     ],
     fill: {
@@ -12773,9 +13343,9 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarTopic[] = [
     title: 'Kalau... Maka... (Zero Conditional)',
     desc: 'If + Present Simple',
     examples: [
-      { en: 'If I climb the tree, I feel happy.', emoji: '🧗' },
+      { en: 'If I climb the tree, I feel happy.', emoji: '🪜' },
       { en: 'If she hears a joke, she laughs.', emoji: '😂' },
-      { en: 'If the ball comes, he catches it.', emoji: '🤲' },
+      { en: 'If the ball comes, he catches it.', emoji: '⚽' },
     ],
     scramble: [
       { emoji: '📝', target: ['If', 'he', 'studies', 'hard', 'he', 'passes', 'the', 'test'] },
@@ -12806,12 +13376,12 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarTopic[] = [
     title: 'Banyak yang Bisa Dihitung vs Tidak (Many vs Much)',
     desc: 'Kontras Many vs Much',
     examples: [
-      { en: 'I have many friends at school.', emoji: '👫' },
+      { en: 'I have many friends at school.', emoji: '👥' },
       { en: "We don't have much water left.", emoji: '💧' },
       { en: 'How many students are in your class?', emoji: '🏫' },
     ],
     scramble: [
-      { emoji: '👫', target: ['I', 'have', 'many', 'friends'] },
+      { emoji: '👥', target: ['I', 'have', 'many', 'friends'] },
       { emoji: '💧', target: ['We', "don't", 'have', 'much', 'water'] },
     ],
     fill: {
@@ -13115,7 +13685,7 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
       },
       {
         speaker: 'Fajar',
-        emoji: '💃',
+        emoji: '🎵',
         original: 'I am dancing to my favorite song.',
         originalId: 'Aku sedang menari mengikuti lagu favoritku.',
         reportedOptions: [
@@ -13314,7 +13884,7 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
       },
       {
         speaker: 'Lina',
-        emoji: '🏊',
+        emoji: '🌊',
         original: 'I can swim across the pool.',
         originalId: 'Aku bisa berenang menyeberangi kolam itu.',
         reportedOptions: [
@@ -13386,7 +13956,7 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
       },
       {
         speaker: 'Dimas',
-        emoji: '🏃',
+        emoji: '💨',
         original: 'I may join the running club.',
         originalId: 'Aku mungkin akan ikut klub lari.',
         reportedOptions: [
@@ -13957,7 +14527,7 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
     transforms: [
       {
         speaker: 'Rani',
-        emoji: '🐒',
+        emoji: '🐵',
         original: "Don't feed the monkeys!",
         originalId: 'Jangan kasih makan monyet-monyetnya!',
         reportedOptions: [
@@ -14041,14 +14611,14 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
       },
       {
         speaker: 'Maya',
-        emoji: '🦋',
-        original: "Don't chase the butterflies in the garden.",
-        originalId: 'Jangan kejar kupu-kupu di taman itu.',
+        emoji: '🐶',
+        original: "Don't chase the puppies in the garden.",
+        originalId: 'Jangan kejar anak-anak anjing di taman itu.',
         reportedOptions: [
-          { text: 'Maya told the tourists not to chase the butterflies in the garden.', ok: true },
-          { text: 'Maya told the tourists to chase the butterflies in the garden.', ok: false },
-          { text: 'Maya told him not to chase the butterflies in the garden.', ok: false },
-          { text: 'Maya told the tourists to not chase the butterflies in the garden.', ok: false },
+          { text: 'Maya told the tourists not to chase the puppies in the garden.', ok: true },
+          { text: 'Maya told the tourists to chase the puppies in the garden.', ok: false },
+          { text: 'Maya told him not to chase the puppies in the garden.', ok: false },
+          { text: 'Maya told the tourists to not chase the puppies in the garden.', ok: false },
         ],
       },
       {
@@ -14065,7 +14635,7 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
       },
       {
         speaker: 'Rani',
-        emoji: '🏊',
+        emoji: '🌊',
         original: "Don't swim too far from the shore.",
         originalId: 'Jangan berenang terlalu jauh dari pantai.',
         reportedOptions: [
@@ -14649,7 +15219,7 @@ export const READING_TOPICS_STARTER: ReadingWordTopic[] = [
       { en: 'The Baby', id: 'Bayi Itu', emoji: '👶' },
       { en: 'The Driver', id: 'Supir Itu', emoji: '🚕' },
       { en: 'My Best Friend', id: 'Sahabatku', emoji: '🤝' },
-      { en: 'My Twin', id: 'Kembaranku', emoji: '👯' },
+      { en: 'My Twin', id: 'Kembaranku', emoji: '👥' },
     ],
   },
   {
@@ -14765,7 +15335,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTopic[] = [
     question: {
       text: 'What most likely happened to the sandwiches?',
       id: 'Apa yang kemungkinan besar terjadi pada sandwich-nya?',
-      opts: [{ emoji: '🦆', lbl: 'The ducks ate them', ok: true }, { emoji: '🎒', lbl: 'Lani forgot to pack them' }, { emoji: '🏠', lbl: 'They left them at home' }],
+      opts: [{ emoji: '🐾', lbl: 'The ducks ate them', ok: true }, { emoji: '🎒', lbl: 'Lani forgot to pack them' }, { emoji: '🏠', lbl: 'They left them at home' }],
     },
   },
   {
@@ -14879,7 +15449,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTopic[] = [
     question: {
       text: 'Why did Sinta go to the wrong place first?',
       id: 'Kenapa Sinta pergi ke tempat yang salah di awal?',
-      opts: [{ emoji: '🛣️', lbl: 'She went to the Melati Street near the market, not the school', ok: true }, { emoji: '📱', lbl: 'Her phone map was broken' }, { emoji: '🐕', lbl: 'A dog led her the wrong way' }],
+      opts: [{ emoji: '🛣️', lbl: 'She went to the Melati Street near the market, not the school', ok: true }, { emoji: '📱', lbl: 'Her phone map was broken' }, { emoji: '🐶', lbl: 'A dog led her the wrong way' }],
     },
   },
   {
@@ -15018,7 +15588,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTopic[] = [
         id: 'Seorang anak laki-laki tidak sengaja menjatuhkan buku-bukunya di lorong. Kevin langsung berlutut dan membantu mengambil semuanya.',
         question: 'What does Kevin do when the boy drops his books?',
         questionId: 'Apa yang dilakukan Kevin saat anak itu menjatuhkan bukunya?',
-        opts: [{ emoji: '🤝', lbl: 'Helps pick them up', ok: true }, { emoji: '😂', lbl: 'Laughs at him' }, { emoji: '🚶', lbl: 'Walks away' }],
+        opts: [{ emoji: '🤝', lbl: 'Helps pick them up', ok: true }, { emoji: '😂', lbl: 'Laughs at him' }, { emoji: '👣', lbl: 'Walks away' }],
       },
     ],
     story: [
@@ -15148,14 +15718,14 @@ export const READING_TOPICS_EXPLORER: ReadingCheckTopic[] = [
   {
     id: 'baca-dan-cek',
     title: 'Baca & Cek: Sifat Benda (Read & Check: Descriptions)',
-    scene: '🐘',
+    scene: '⛰️',
     desc: '10 kalimat',
     checks: [
-      { emoji: '🐘', trueSentence: 'The elephant is big.', falseSentence: 'The elephant is small.', id: 'Gajahnya besar.' },
+      { emoji: '⛰️', trueSentence: 'The elephant is big.', falseSentence: 'The elephant is small.', id: 'Gajahnya besar.' },
       { emoji: '🐭', trueSentence: 'The mouse is small.', falseSentence: 'The mouse is big.', id: 'Tikusnya kecil.' },
-      { emoji: '🐆', trueSentence: 'The cheetah is fast.', falseSentence: 'The cheetah is slow.', id: 'Citahnya cepat.' },
-      { emoji: '🐢', trueSentence: 'The turtle is slow.', falseSentence: 'The turtle is fast.', id: 'Kura-kuranya lambat.' },
-      { emoji: '🐍', trueSentence: 'The snake is long.', falseSentence: 'The snake is short.', id: 'Ularnya panjang.' },
+      { emoji: '🏎️', trueSentence: 'The cheetah is fast.', falseSentence: 'The cheetah is slow.', id: 'Citahnya cepat.' },
+      { emoji: '⏳', trueSentence: 'The turtle is slow.', falseSentence: 'The turtle is fast.', id: 'Kura-kuranya lambat.' },
+      { emoji: '🪢', trueSentence: 'The snake is long.', falseSentence: 'The snake is short.', id: 'Ularnya panjang.' },
       { emoji: '✏️', trueSentence: 'The pencil is short.', falseSentence: 'The pencil is long.', id: 'Pensilnya pendek.' },
       { emoji: '🪨', trueSentence: 'The rock is heavy.', falseSentence: 'The rock is light.', id: 'Batunya berat.' },
       { emoji: '🪶', trueSentence: 'The feather is light.', falseSentence: 'The feather is heavy.', id: 'Bulunya ringan.' },
@@ -15212,7 +15782,7 @@ export const READING_TOPICS_EXPLORER: ReadingCheckTopic[] = [
       { emoji: '🍊', trueSentence: 'The orange is orange.', falseSentence: 'The orange is purple.', id: 'Jeruknya berwarna oranye.' },
       { emoji: '🍇', trueSentence: 'The grapes are purple.', falseSentence: 'The grapes are green.', id: 'Anggurnya ungu.' },
       { emoji: '👗', trueSentence: 'Her dress is pink.', falseSentence: 'Her dress is black.', id: 'Gaunnya merah muda.' },
-      { emoji: '🐈‍⬛', trueSentence: 'The cat is black.', falseSentence: 'The cat is white.', id: 'Kucingnya hitam.' },
+      { emoji: '🐱', trueSentence: 'The cat is black.', falseSentence: 'The cat is white.', id: 'Kucingnya hitam.' },
       { emoji: '☁️', trueSentence: 'The cloud is white.', falseSentence: 'The cloud is pink.', id: 'Awannya putih.' },
       { emoji: '🐻', trueSentence: 'The bear is brown.', falseSentence: 'The bear is red.', id: 'Beruangnya cokelat.' },
     ],
@@ -15593,7 +16163,7 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTopic[] = [
     question: {
       text: 'Why does Vino make the team instead of Doni?',
       id: 'Kenapa Vino masuk tim, bukan Doni?',
-      opts: [{ emoji: '🏃', lbl: 'The coach values speed and passing over height', ok: true }, { emoji: '📏', lbl: 'Doni is too tall for the team' }, { emoji: '😢', lbl: 'Doni decided not to try out' }],
+      opts: [{ emoji: '💨', lbl: 'The coach values speed and passing over height', ok: true }, { emoji: '📏', lbl: 'Doni is too tall for the team' }, { emoji: '😢', lbl: 'Doni decided not to try out' }],
     },
   },
   {
@@ -15611,7 +16181,7 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTopic[] = [
         id: 'Sehari sebelum pameran, Citra tidak sengaja menumpahkan cat oranye di sudut lukisannya. Dia panik sesaat, namun dia cepat memutuskan mengubah nodanya jadi matahari kecil di langit.',
         question: 'What does Citra turn the paint stain into?',
         questionId: 'Noda catnya diubah jadi apa oleh Citra?',
-        opts: [{ emoji: '☀️', lbl: 'A small sun', ok: true }, { emoji: '🌸', lbl: 'A flower' }, { emoji: '🐦', lbl: 'A bird' }],
+        opts: [{ emoji: '☀️', lbl: 'A small sun', ok: true }, { emoji: '🌸', lbl: 'A flower' }, { emoji: '🐾', lbl: 'A bird' }],
       },
       {
         passage: ['At the exhibition, three teachers walk past Citra’s painting without stopping.', 'But the fourth teacher, the school principal, stops and stares at it for almost a minute.'],
@@ -15732,7 +16302,7 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTopic[] = [
         id: 'Tetangga Arya menawarkan membayarnya untuk menyiram tanaman setiap pagi sebelum sekolah. Arya setuju, meski itu berarti bangun lima belas menit lebih awal.',
         question: 'What job does Arya’s neighbor offer him?',
         questionId: 'Pekerjaan apa yang ditawarkan tetangga Arya?',
-        opts: [{ emoji: '🌱', lbl: 'Watering plants', ok: true }, { emoji: '🚗', lbl: 'Washing the car' }, { emoji: '🐕', lbl: 'Walking the dog' }],
+        opts: [{ emoji: '🌱', lbl: 'Watering plants', ok: true }, { emoji: '🚗', lbl: 'Washing the car' }, { emoji: '🐶', lbl: 'Walking the dog' }],
       },
     ],
     story: [

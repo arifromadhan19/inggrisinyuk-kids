@@ -23,8 +23,19 @@ let onVoicesReady: (() => void) | null = null;
 export function getPlaybackRate(): number {
   return playbackRate;
 }
+/** true begitu anak/ortu menekan pill kecepatan sendiri — sejak itu default
+ *  per level/skill (`applyDefaultRate`) TIDAK boleh menimpa pilihannya. */
+let rateChosenByUser = false;
+/** Dipanggil dari pill kecepatan (`voice-panel.ts`) — pilihan MANUAL user. */
 export function setPlaybackRate(rate: number): void {
   playbackRate = rate;
+  rateChosenByUser = true;
+}
+/** Default kecepatan per skill/level (mis. Listening makin tinggi makin
+ *  mendekati tempo alami). No-op kalau user sudah pilih kecepatan sendiri.
+ *  `rate` HARUS salah satu nilai `SPEEDS` supaya pill-nya tertandai aktif. */
+export function applyDefaultRate(rate: (typeof SPEEDS)[number]): void {
+  if (!rateChosenByUser) playbackRate = rate;
 }
 export function getVoiceGender(): VoiceGender {
   return selectedGender;
@@ -253,6 +264,37 @@ export function speakSequence(lines: string[], gapMs = 1600): void {
     u.lang = utteranceLang();
     u.rate = playbackRate;
     if (selectedVoice) u.voice = selectedVoice;
+    const timerId = setTimeout(() => window.speechSynthesis.speak(u), SPEAK_SAFETY_DELAY_MS + i * gap);
+    pendingTimers.push(timerId);
+  });
+}
+
+export interface DialogueLine {
+  text: string;
+  gender: VoiceGender;
+}
+
+/** Dialog 2 penutur: tiap baris pakai suara gender-nya sendiri (Cambridge YLE:
+ *  penutur "clearly differentiated by age or gender"). Kalau device cuma punya
+ *  1 voice Inggris (voice wanita & pria resolve ke voice yang sama), penutur
+ *  dibedakan lewat `pitch`. Pilihan gender global user (Wanita/Pria) sengaja
+ *  TIDAK dipakai di sini — 2 penutur HARUS beda suara. */
+export function speakDialogue(lines: DialogueLine[], gapMs = 1600): void {
+  if (!ttsSupported || lines.length === 0) return;
+  stopListening();
+  clearPendingTimers();
+  window.speechSynthesis.cancel();
+  const female = pickVoice(selectedAccent, 'female');
+  const male = pickVoice(selectedAccent, 'male');
+  const distinct = !!female && !!male && female.voiceURI !== male.voiceURI;
+  const gap = gapMs / playbackRate;
+  lines.forEach((line, i) => {
+    const u = new SpeechSynthesisUtterance(stripEmojiForSpeech(line.text));
+    u.lang = utteranceLang();
+    u.rate = playbackRate;
+    const voice = line.gender === 'female' ? female : male;
+    if (voice) u.voice = voice;
+    if (!distinct) u.pitch = line.gender === 'female' ? 1.25 : 0.75;
     const timerId = setTimeout(() => window.speechSynthesis.speak(u), SPEAK_SAFETY_DELAY_MS + i * gap);
     pendingTimers.push(timerId);
   });

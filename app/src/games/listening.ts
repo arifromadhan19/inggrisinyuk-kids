@@ -1,10 +1,13 @@
 import type {
   LevelKey,
+  ListeningDialogueLine,
   ListeningDialogueTopic,
   ListeningInferenceQuestion,
+  ListeningInferenceOption,
   ListeningItemsTopic,
   ListeningNoteGap,
   ListeningNoteTopic,
+  ListeningOption,
   ListeningQuestionOption,
   ListeningSentenceItem,
   ListeningSentenceTopic,
@@ -32,14 +35,103 @@ import {
   playTryAgainTone,
   playWrongTone,
   speak,
-  speakLocalized,
+  speakDialogue,
   speakSequence,
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
 } from '../speech';
+import type { VoiceGender } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { shuffle } from '../util';
+
+/* ---------- Tier mekanik Listening (materi/pembeda_level.md, section Listening) ----------
+ * Semua dihitung dari `contentLevel` (level TOPIK yang tampil), BUKAN `level`
+ * (badge anak / bahasa pujian). Tahap Kenalan sengaja tidak ikut ditier. */
+
+function isFlyersOrAbove(contentLevel: LevelKey): boolean {
+  return contentLevel === 'achiever' || contentLevel === 'trailblazer';
+}
+
+/** Default kecepatan suara di Latihan Inti/Tantangan — CEFR: A1 "very slow" →
+ *  B1 mendekati tempo alami. Pill kecepatan user tetap menang (`applyDefaultRate`). */
+export function listeningDefaultRate(contentLevel: LevelKey): 0.75 | 1 {
+  return contentLevel === 'adventurer' || isFlyersOrAbove(contentLevel) ? 1 : 0.75;
+}
+
+/** Jarak antar kalimat (ms, start-ke-start) — makin tinggi level makin rapat. */
+function listeningGapMs(contentLevel: LevelKey): number {
+  return isFlyersOrAbove(contentLevel) ? 1200 : 2000;
+}
+
+/** Petunjuk Latihan Inti: level Dasar/Menengah = teks + eliminasi 2 opsi;
+ *  Achiever/Trailblazer = teks saja (bantuan lebih pelit, ala ujian KET/PET). */
+function hintEliminatesOptions(contentLevel: LevelKey): boolean {
+  return !isFlyersOrAbove(contentLevel);
+}
+
+// Nama tokoh dialog Trailblazer → gender suara. Dipakai `dialogueGenders`;
+// nama yang tidak terdaftar dianggap wanita, dan 2 tokoh yang kebetulan
+// sama gender otomatis dipaksa beda (penutur harus terdengar berbeda).
+const MALE_SPEAKERS = new Set(['Dimas', 'Leo', 'Pak Joko', 'Kak Rian', 'Fajar', 'Yoga', 'Bima', 'Andi', 'Rio', 'Doni', 'Dito', 'Pak Budi', 'Bimo', 'Vino']);
+
+function dialogueGenders(lines: ListeningDialogueLine[]): Map<string, VoiceGender> {
+  const genders = new Map<string, VoiceGender>();
+  for (const l of lines) {
+    if (!genders.has(l.speaker)) genders.set(l.speaker, MALE_SPEAKERS.has(l.speaker) ? 'male' : 'female');
+  }
+  const names = [...genders.keys()];
+  if (names.length >= 2 && new Set(genders.values()).size === 1) {
+    genders.set(names[1], genders.get(names[0]) === 'female' ? 'male' : 'female');
+  }
+  return genders;
+}
+
+/** Primer format lama berbentuk tanya-jawab (baris pertama diakhiri "?") →
+ *  baris genap dibacakan suara wanita, baris ganjil pria; selain itu null
+ *  (1 penutur, pakai suara pilihan user). */
+function primerGender(topic: ListeningTopic, i: number): VoiceGender | null {
+  if (topic.primer.length < 2 || !topic.primer[0].en.trim().endsWith('?')) return null;
+  return i % 2 === 0 ? 'female' : 'male';
+}
+
+const STOP_WORDS = new Set([
+  'the', 'a', 'an', 'her', 'his', 'my', 'of', 'in', 'to', 'for', 'on', 'at', 'with', 'from', 'after', 'before', 'is',
+  'it', 'and', 'by', 'near', 'behind', 'front', 'between', 'one', 'two', 'very', 'every', 'each', 'new', 'old', 'all',
+  'no', 'not', 'was', 'too', 'only', 'their', 'they', 'he', 'she', 'we', 'i', 'you', 'are', 'have', 'has',
+  'o', 'clock',
+]);
+
+function coreWords(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z' ]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w && !STOP_WORDS.has(w))
+    .map((w) => w.replace(/(ing|es|ed|s)$/, ''));
+}
+
+/** Opsi jebakan acak dari daftar kandidat: buang yang sama dgn opsi yang ada
+ *  (case-insensitive) atau yang "disebut" di audio (lebih dari separuh kata
+ *  intinya terdengar; kata yang ada di SEMUA opsi yang sudah ada — mis.
+ *  "Book" di "The Title of the Book" — diabaikan) supaya tetap "tidak
+ *  disebut" & tidak jadi jawaban kedua yang benar. */
+function isDecoyHeard(label: string, existing: string[], audioText: string): boolean {
+  const heard = new Set(coreWords(audioText));
+  const cores = existing.map((e) => new Set(coreWords(e)));
+  const frame = cores.length ? [...cores[0]].filter((w) => cores.every((c) => c.has(w))) : [];
+  const words = coreWords(label).filter((w) => !frame.includes(w));
+  return words.filter((w) => heard.has(w)).length > words.length / 2;
+}
+
+function pickDecoy<T>(candidates: T[], label: (c: T) => string, existing: string[], audioText: string): T | null {
+  const have = new Set(existing.map((e) => e.toLowerCase()));
+  const usable = candidates.filter((c) => {
+    const l = label(c);
+    return l && !have.has(l.toLowerCase()) && !isDecoyHeard(l, existing, audioText);
+  });
+  return usable.length ? usable[Math.floor(Math.random() * usable.length)] : null;
+}
 
 export function renderKenalan(container: HTMLElement, topic: ListeningTopic, onNext: OnDone): void {
   container.innerHTML = `
@@ -59,20 +151,23 @@ export function renderKenalan(container: HTMLElement, topic: ListeningTopic, onN
     <button class="primary-btn" data-action="advance">Lanjut ke Latihan Inti →</button>
   `;
   setHandlers({
-    play: (payload) => speak(topic.primer[Number(payload)].en),
+    play: (payload) => {
+      const i = Number(payload);
+      const gender = primerGender(topic, i);
+      if (gender) speakDialogue([{ text: topic.primer[i].en, gender }]);
+      else speak(topic.primer[i].en);
+    },
     advance: () => onNext(),
   });
 }
 
 /**
- * 💡 Petunjuk utk format LAMA (`ListeningDrill`/`question.opts`, keduanya
- * `ListeningOption[]` — cuma py `.ok`, beda dari `ListeningQuestionOption`
- * yg format baru pakai lewat `wireHint`) — logic-nya IDENTIK `wireHint` di
- * bawah (eliminasi sampai 2 opsi salah), tapi diduplikasi jadi fungsi kecil
- * sendiri drpd maksa `wireHint` nerima tipe yg beda field-nya, biar tidak
- * ganggu fungsi yg sudah diverifikasi di format baru (§CLAUDE.md "Listening
- * — 4 Format Berdampingan": helper generik DIDUPLIKASI, bukan dishare,
- * supaya tidak ada risiko regresi silang format).
+ * 💡 Petunjuk (eliminasi 2 opsi salah) utk `runTantangan` FORMAT LAMA
+ * SAJA ("🌟 Dengar Cerita Mini", `ListeningOption[]` — cuma py `.ok`,
+ * beda dari `ListeningQuestionOption` yg format baru pakai) — TIDAK
+ * dipakai lagi di `runLatihanInti` (Latihan Inti format lama SEKARANG
+ * gabung teks+eliminasi dalam 1 handler `hint`, lihat komentar di sana),
+ * cuma tersisa di `runTantangan` yg tidak disentuh sesi itu.
  */
 function wireOldFormatHint(container: HTMLElement, opts: { ok?: boolean }[]): void {
   let used = false;
@@ -104,39 +199,85 @@ function wireOldFormatHint(container: HTMLElement, opts: { ok?: boolean }[]): vo
  * non-punitive yg sudah jadi standar app (Vocab/format baru Listening):
  * tombol manual 🔁 Coba Lagi/➡️ Lanjut (`roundActionsHtml`), 💡 Petunjuk
  * (`wireOldFormatHint`), nada+confetti benar mengikuti aturan wajib di atas.
- * Konten (`drill`/`story`/`question`) TIDAK diubah sama sekali — murni
- * modernisasi interaksi, bukan migrasi format (`'items' in topic` tetap
- * `false` utk topik ini, `app.ts` dispatch tidak berubah).
+ *
+ * 🔒 Revisi lanjutan (permintaan user "tambahkan petunjuk berupa text en
+ * dan id... berlaku semua level") — format LAMA (Explorer/Adventurer) dulu
+ * TIDAK PERNAH py cara menampilkan teks/terjemahan kalimat drill sama
+ * sekali. Butuh `ListeningDrill.id`/`ListeningTopic.question.id` BARU
+ * (types.ts, diauthoring manual utk semua topik existing Explorer+
+ * Adventurer).
+ *
+ * 🔒 Revisi lanjutan LAGI (permintaan user: "remove 'tampilkan text' jadi
+ * ketika klik 'petunjuk' maka 1. menampilkan text inggris dan indonesia
+ * 2. eliminasi 2 jawaban salah") — "📖 Tampilkan Teks" & 💡 Petunjuk
+ * (eliminasi) yg SEBELUMNYA 2 tombol terpisah SEKARANG DIGABUNG jadi SATU
+ * tombol "💡 Petunjuk" (`hintButtonHtml`) — sekali tap langsung ungkap
+ * teks EN+ID SEKALIGUS **DAN** eliminasi 2 opsi salah. `eliminated`
+ * (indeks opsi yg dieliminasi) DIHITUNG sekali saat tap & DISIMPAN
+ * (bukan lagi dihitung ulang tiap render kayak `wireOldFormatHint` lama)
+ * supaya tetap konsisten kalau di-redraw (mis. "Coba Lagi") — direset di
+ * `draw()` (soal BARU), TAPI TIDAK di `redraw()` (retry soal SAMA),
+ * SAMA PERSIS pola `revealed`. `wireOldFormatHint` (versi lama, tanpa
+ * reveal) TIDAK dipakai lagi di sini — TETAP dipakai apa adanya di
+ * `runTantangan` (format lama, di atas) yg tidak disentuh sesi ini.
  */
 export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, onDone: OnDone): void {
   let round = 0;
+  let revealed = false;
+  let eliminated: number[] = [];
+  // Opsi drill diauthoring dgn jawaban benar di indeks 0 — WAJIB diacak, kalau
+  // tidak anak bisa selalu tap kartu pertama. Diacak sekali per soal (`draw`),
+  // TIDAK diacak ulang di `redraw` (Coba Lagi/Petunjuk) supaya posisi stabil.
+  let opts: ListeningOption[] = [];
 
   function draw(): void {
     if (round >= topic.drill.length) return onDone();
+    revealed = false;
+    eliminated = [];
+    opts = shuffle(topic.drill[round].opts);
+    redraw();
+  }
+
+  function redraw(): void {
     const d = topic.drill[round];
     const play = () => speak(d.en);
     container.innerHTML = `
       <div class="latihan-head">
         <span class="stage-badge">🎯 Dengar &amp; Pilih</span>
-        ${hintButtonHtml}
+        ${hintButtonHtml(revealed)}
       </div>
       <div class="id-text">Soal ${round + 1} dari ${topic.drill.length}</div>
-      <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Putar Kalimat</button></div>
-      <div class="opt-grid ${d.opts.length > 2 ? 'three' : ''}">
-        ${d.opts.map((o, i) => `<button class="opt-btn" type="button" data-action="pick" data-payload="${i}">${o.emoji}</button>`).join('')}
+      <div class="speak-row">
+        <button class="speak-btn" data-action="replay">🔊 Putar Kalimat</button>
+      </div>
+      ${revealed ? `<div class="en-text">${d.en}</div><div class="id-text">${d.id}</div>` : ''}
+      <div class="opt-grid ${opts.length > 2 ? 'three' : ''}">
+        ${opts
+          .map(
+            (o, i) =>
+              `<button class="opt-btn ${eliminated.includes(i) ? 'eliminated' : ''}" type="button" data-action="pick" data-payload="${i}" ${eliminated.includes(i) ? 'disabled' : ''}>${o.emoji}</button>`
+          )
+          .join('')}
       </div>
       <div class="feedback" id="fb"></div>
     `;
     play();
-    wireOldFormatHint(container, d.opts);
 
     setHandlers({
       replay: play,
+      hint: () => {
+        if (revealed) return;
+        revealed = true;
+        speak(d.en);
+        const wrongIdx = opts.map((_, i) => i).filter((i) => !opts[i].ok);
+        eliminated = shuffle(wrongIdx).slice(0, Math.min(2, wrongIdx.length));
+        redraw();
+      },
       pick: (payload) => {
         const i = Number(payload);
         const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
         const fb = container.querySelector<HTMLElement>('#fb')!;
-        const correct = !!d.opts[i].ok;
+        const correct = !!opts[i].ok;
         lockOptionButtons(container);
         recordAttempt(correct);
         if (correct) {
@@ -154,7 +295,7 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
         }
         fb.insertAdjacentHTML('afterend', roundActionsHtml(round === topic.drill.length - 1));
         setHandlers({
-          tryAgainRound: () => draw(),
+          tryAgainRound: () => redraw(),
           nextRound: () => {
             round += 1;
             draw();
@@ -168,24 +309,45 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
 }
 
 export function runTantangan(container: HTMLElement, topic: ListeningTopic, onDone: OnDone): void {
+  // Opsi = opsi authored + 1 jebakan acak (`question.decoys`, tidak disebut di
+  // audio), diacak sekali per sesi — jawaban benar authored di indeks 0, jadi
+  // WAJIB diacak; "Coba Lagi" memakai susunan yang sama.
+  const decoy = pickDecoy(
+    topic.question.decoys ?? [],
+    (d) => d.lbl ?? '',
+    topic.question.opts.map((o) => o.lbl ?? ''),
+    topic.story.join(' ')
+  );
+  const opts: ListeningOption[] = shuffle(decoy ? [...topic.question.opts, { ...decoy, ok: false }] : [...topic.question.opts]);
+
   function draw(): void {
-    const playStory = () => speakSequence(topic.story, 1900);
+    const playStory = () => {
+      const voices = topic.storyVoices;
+      if (voices && voices.length === topic.story.length) {
+        speakDialogue(
+          topic.story.map((text, i) => ({ text, gender: voices[i] })),
+          1900
+        );
+      } else {
+        speakSequence(topic.story, 1900);
+      }
+    };
     container.innerHTML = `
       <div class="latihan-head">
         <span class="stage-badge">🌟 Dengar Cerita Mini</span>
-        ${hintButtonHtml}
+        ${hintButtonHtml(false)}
       </div>
       <div class="big-emoji">${topic.scene}</div>
       <div class="speak-row"><button class="speak-btn" data-action="playStory">▶️ Putar Ceritanya</button></div>
       <div class="en-text" style="margin-top:10px;">${topic.question.en}</div>
       ${answerCardsHtml(
-        topic.question.opts.map((o) => ({ emoji: o.emoji, label: o.lbl ?? '' })),
+        opts.map((o) => ({ emoji: o.emoji, label: o.lbl ?? '' })),
         'answer'
       )}
       <div class="feedback" id="fb"></div>
     `;
     playStory();
-    wireOldFormatHint(container, topic.question.opts);
+    wireOldFormatHint(container, opts);
 
     setHandlers({
       playStory,
@@ -193,7 +355,7 @@ export function runTantangan(container: HTMLElement, topic: ListeningTopic, onDo
         const i = Number(payload);
         const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
         const fb = container.querySelector<HTMLElement>('#fb')!;
-        const correct = !!topic.question.opts[i].ok;
+        const correct = !!opts[i].ok;
         lockOptionButtons(container);
         recordAttempt(correct);
         if (correct) {
@@ -264,6 +426,26 @@ function wireQuizNav(goTo: (i: number) => void): void {
   setHandlers({ quizJump: (payload) => goTo(Number(payload)) });
 }
 
+/**
+ * 🔒 Revisi user: "ketika jawabannya warna maka mudah mencari icon nya,
+ * maka ketika mudah tambahkan icon, ini berlaku untuk yang lain juga" —
+ * `LEAKY_EMOJI_WORDS`/`isLeakyEmojiWord`/`correctOptionIsLeaky` (port dari
+ * `games/vocabulary.ts`'s `isColorTopic`/`isNumberTopic`/dst, sesi
+ * `games/boss.ts` audit — strip SEMUA ikon kalau jawaban benarnya kata
+ * warna/angka/bentuk/hari) DIHAPUS TOTAL dari file ini, BUKAN dipertahankan
+ * dormant. User dikonfirmasi eksplisit (ditanya dulu krn ini kontradiksi
+ * langsung dgn "Aturan Wajib: Soal Tidak Boleh Ditebak" CLAUDE.md) — utk
+ * Listening SPESIFIK, swatch warna/dst diterima krn prompt soalnya AUDIO
+ * (tidak ada gambar warna/bentuk di soal utk dicocokkan langsung spt di
+ * Vocab's matching-game), jadi risiko "tebak-lewat-cocok-ikon" jauh lebih
+ * kecil drpd konteks Vocab yang jadi asal rule ini. `answerCardsHtml`
+ * SEKARANG dipanggil dgn `o.emoji` APA ADANYA lagi di SEMUA titik file ini
+ * (Kenalan Main, Latihan Inti 2 jenis soal, Tantangan Dialogue+Inferensi,
+ * `runTantangan` format lama) — TIDAK ada lagi conditional `leaky ? '' :`.
+ * Aturan Vocab (`games/vocabulary.ts`) TIDAK berubah — scope revisi ini
+ * CUMA `games/listening.ts`.
+ */
+
 /** 🔒 Lencana huruf A/B/C/D DIHAPUS TOTAL (permintaan user "hilangkan
  *  A,B,C,D") — gambar+label sudah cukup jelas. */
 function answerCardsHtml(options: { emoji: string; label: string }[], action: string): string {
@@ -272,7 +454,7 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
       .map(
         (o, i) => `
       <button class="opt-btn answer-card" type="button" data-action="${action}" data-payload="${i}">
-        <span class="answer-card-emoji" aria-hidden="true">${o.emoji}</span>
+        ${o.emoji ? `<span class="answer-card-emoji" aria-hidden="true">${o.emoji}</span>` : ''}
         <span class="answer-card-bottom">
           <span class="answer-card-label">${o.label}</span>
         </span>
@@ -282,69 +464,79 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
   </div>`;
 }
 
-const hintButtonHtml = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint">💡 Petunjuk</button>`;
+/** `disabled` eksplisit di template (bukan cuma dimatiin manual via DOM
+ *  sesudah render) — dibutuhkan sejak Latihan Inti Petunjuk digabung jadi
+ *  1 aksi (teks+eliminasi, lihat komentar `textClueButtonHtml` di bawah)
+ *  yang state-nya WAJIB persis lewat `redraw()`. Titik yang TIDAK butuh
+ *  persist (`runTantangan` format lama, elimination-only tanpa reveal
+ *  state) cukup panggil `hintButtonHtml(false)`. */
+function hintButtonHtml(disabled: boolean): string {
+  return `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint" ${disabled ? 'disabled' : ''}>💡 Petunjuk</button>`;
+}
 
 /**
- * Clue "Tampilkan Teks"/"Tampilkan Terjemahan" (permintaan user) — dipakai
- * di Kenalan "Main" & KEDUA jenis soal Latihan Inti. Beda dari 💡 Petunjuk
- * (`wireHint`, tersedia dari awal, eliminasi 2 opsi salah): clue ini
- * TERKUNCI sampai anak sudah 1x mencoba jawab soal ini (`attempted`,
- * permintaan user "dengan syarat harus 1x mencoba dulu") — dengar-dulu jadi
- * jalur UTAMA, teks/terjemahan jadi bantuan yang DIPEROLEH lewat usaha,
- * bukan langsung kelihatan. Sekali dipakai per soal (tombolnya nonaktif
- * begitu ditap), TAPI tetap kelihatan (non-punitive) begitu "Coba Lagi" —
- * caller WAJIB redraw pakai fungsi yang TIDAK me-reset `attempted`/
- * `showText`/`showTranslation` (lihat `redraw()` vs `draw()` di
- * `runLatihanIntiSentence`), kalau tidak clue-nya kekunci lagi stlh retry.
+ * 🔒 Revisi user LANJUTAN: "remove 'tampilkan text' jadi ketika klik
+ * 'petunjuk' maka 1. menampilkan text inggris dan indonesia 2. eliminasi
+ * 2 jawaban salah" — tombol teks terpisah ("📖 Tampilkan Teks", sempat ada
+ * di sini) DIHAPUS TOTAL, DIGABUNG ke `hintButtonHtml` ("💡 Petunjuk") di
+ * SEMUA titik Latihan Inti (format lama `runLatihanInti` & format baru
+ * `drawAskQuestion`/`drawTrueFalse`) — sekali tap SEKARANG ungkap teks
+ * EN+ID **DAN** eliminasi 2 opsi salah (kalau ada opsi yang bisa
+ * dieliminasi — `drawTrueFalse` biner, cuma reveal teks, TIDAK ada yang
+ * dieliminasi). Lihat komentar `hintButtonHtml` & `applyElimination` di
+ * atas utk detail state persist-nya.
  */
-function clueButtonsHtml(attempted: boolean, showText: boolean, showTranslation: boolean): string {
-  if (!attempted) return '';
-  return `<div class="letter-actions">
-    <button class="ghost-btn slim" type="button" data-action="clueText" ${showText ? 'disabled' : ''}>📝 Tampilkan Teks</button>
-    <button class="ghost-btn slim" type="button" data-action="clueTranslate" ${showTranslation ? 'disabled' : ''}>🌐 Tampilkan Terjemahan</button>
-  </div>`;
-}
 
 /**
  * Petunjuk SEDERHANA "💡 Petunjuk" (permintaan user, revisi khusus utk
  * Kenalan "Main" & Tantangan: "simplify jadi button petunjuk jadi
  * tampilkan text dan tampilkan terjemahan... ketika diklik maka muncul
  * text serta terjemahannya... dimana petunjuk langsung ada di depan tidak
- * perlu nunggu sekali coba dulu") — BEDA dari `clueButtonsHtml` di atas
- * (2 tombol terpisah, terkunci sampai 1x attempt, dipakai Latihan Inti —
- * TIDAK diubah, user tidak minta itu disentuh sesi ini): di sini SATU
- * tombol, TERSEDIA SEJAK AWAL (tanpa gating), sekali tap langsung ungkap
- * teks Inggris + terjemahan Indonesia SEKALIGUS. Dipakai `runItemMiniGame`
- * (Kenalan) & `runSusunKalimatSentence`/`drawSusun` (Tantangan).
+ * perlu nunggu sekali coba dulu") — SATU tombol, TERSEDIA SEJAK AWAL
+ * (tanpa gating), sekali tap langsung ungkap teks Inggris + terjemahan
+ * Indonesia SEKALIGUS. Dipakai `runItemMiniGame` (Kenalan, non-Little
+ * Stars — Little Stars py hint eliminasi SENDIRI, lihat `hintButtonHtml`
+ * di `paint()`-nya) & `runSusunKalimatSentence`/`drawSusun`/
+ * `runTantanganNote`/`runTantanganDialogue` (Tantangan).
  *
- * Posisi & ukuran (revisi user berikutnya: "update posisi petunjuk sebelah
- * kanan button dengarkan... ukurannya di samakan") — ditaruh DI DALAM
- * `.speak-row` yang sama dgn "🔊 Dengar Lagi" (sebelah kanannya, bukan di
- * `.letter-actions` terpisah lagi), pakai class `.speak-btn-ghost`
- * (styles.css) — SAMA UKURAN (padding/font-size/border-radius pill) dgn
- * `.speak-btn`, cuma beda warna (ghost/outline, bukan solid) biar tetap
- * kebeda sbg aksi sekunder.
+ * Posisi & ukuran — 2 VARIAN, dipilih via param `compact`:
+ * - `compact=false` (default, Kenalan Main) — DI DALAM `.speak-row` yang
+ *   sama dgn "🔊 Dengar" (sebelah kanannya), pakai class `.speak-btn-ghost`
+ *   (styles.css) — SAMA UKURAN (padding/font-size/border-radius pill) dgn
+ *   `.speak-btn`, cuma beda warna (ghost/outline, bukan solid) biar tetap
+ *   kebeda sbg aksi sekunder.
+ * - `compact=true` (permintaan user lanjutan: "pindahkan button petunjuk
+ *   di kanan atas di atas bullet progress sama seperti yang sudah
+ *   dilakukan di section latihan inti") — dipindah ke HEADER (`.latihan-
+ *   head`, sejajar `.stage-badge`, DI ATAS `quizNavHtml`), pakai class
+ *   `.ghost-btn.hint-chip` — SAMA PERSIS `hintButtonHtml` Latihan Inti,
+ *   krn sekarang posisinya jg identik (kanan atas, atas bullet progress).
+ *   Dipakai 3 fungsi Tantangan di atas (SEMUA py bullet progress).
  */
-function petunjukButtonHtml(revealed: boolean): string {
-  return `<button class="speak-btn-ghost" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}>💡 Petunjuk</button>`;
-}
-
-/** Ucapkan teks Inggris DULU, baru terjemahan Indonesia SETELAH jeda
- *  (permintaan user: "muncul text serta terjemahannya") — tidak bisa pakai
- *  `speakSequence` (1 bahasa saja utk semua baris), jadi 2 panggilan
- *  terpisah (`speak` lalu `speakLocalized`) dgn `setTimeout` spt jeda
- *  `speakSequence` (1600ms) supaya utterance pertama tidak langsung
- *  ke-cancel oleh yang kedua (`speak()`/`speakLocalized()` sama2 manggil
- *  `speechSynthesis.cancel()` di awal). */
-function speakBilingual(en: string, id: string): void {
-  speak(en);
-  setTimeout(() => speakLocalized(id, 'id-ID'), 1600);
+function petunjukButtonHtml(revealed: boolean, compact = false): string {
+  const cls = compact ? 'ghost-btn hint-chip' : 'speak-btn-ghost';
+  return `<button class="${cls}" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}>💡 Petunjuk</button>`;
 }
 
 /** Kenalan — 1 baris per kalimat: 🔊 dengar, 🎤 ucap ulang (skor proporsional
  *  + Play Suaramu, Aturan Wajib Speaking CLAUDE.md), 🎮 main (1 soal
- *  komprehensi fokus kalimat itu, balik ke daftar sesudahnya). */
-export function renderKenalanSentence(container: HTMLElement, topic: ListeningItemsTopic, level: LevelKey): void {
+ *  komprehensi fokus kalimat itu, balik ke daftar sesudahnya).
+ *
+ * 🔒 `level` (=`praiseLevel`, badge ASLI anak) vs `contentLevel` (topik yang
+ * SEDANG ditampilkan) SENGAJA 2 parameter beda (pola sama `runStage`
+ * `app.ts` — lihat komentarnya) — bug yang sempat kejadian: `runItemMiniGame`
+ * pakai `level` buat cek "ini Little Stars atau bukan", jadi behavior
+ * bullet-dot/tanpa-Petunjuk cuma nyala kalau BADGE anak literally Little
+ * Stars, BUKAN pas topik Little Stars yang ditampilkan (mis. anak level
+ * lain jelajah/fallback ke topik Little Stars). WAJIB pakai `contentLevel`
+ * utk itu, `level` TETAP cuma buat bahasa pujian (`pickPraise`/
+ * `pickEncourage`) — jangan gabung lagi. */
+export function renderKenalanSentence(
+  container: HTMLElement,
+  topic: ListeningItemsTopic,
+  level: LevelKey,
+  contentLevel: LevelKey
+): void {
   const doneCls = (i: number, action: 'listen' | 'mic' | 'game'): string =>
     hasWordInteraction('listening', topic.id, i, action) ? ' done' : '';
 
@@ -402,7 +594,7 @@ export function renderKenalanSentence(container: HTMLElement, topic: ListeningIt
           itemRef: topic.items[i].example.en,
           activity: 'game',
         });
-        runItemMiniGame(container, topic, topic.items[i], drawList, level);
+        runItemMiniGame(container, topic, i, drawList, level, contentLevel);
       },
     });
   }
@@ -509,34 +701,92 @@ export function renderKenalanSentence(container: HTMLElement, topic: ListeningIt
  * tambahkan pertanyaan di akhir kalimat" (balik pakai `item.question`,
  * bukan picture-tap murni spt sesi sebelumnya) + "buat jawabannya 2 card
  * 2 card" (`answerCardsHtml`, kartu 2×2, sama visual dgn Latihan Inti
- * "Dengar & Jawab"). Beda dari Latihan Inti TETAP ada — bukan dari bentuk
- * soal lagi, tapi dari: (a) 1 soal casual per-kalimat, balik ke daftar
- * sesudahnya, BUKAN bagian dari urutan 10-soal quiz-dot Latihan Inti; (b)
- * teks kalimat/pertanyaan default TERSEMBUNYI (audio-only) — cuma
- * kelihatan lewat "💡 Petunjuk" (`petunjukButtonHtml()` di atas — revisi
- * user: SATU tombol, TERSEDIA SEJAK AWAL, TIDAK menunggu 1x attempt lagi
- * spt versi clue sebelumnya).
+ * "Dengar & Jawab").
+ *
+ * 🔒 Revisi user lanjutan, KHUSUS Little Stars ("tidak perlu button
+ * petunjuk tapi langsung tampilkan tekstnya saja... tambahkan bullet
+ * progress dan bedakan warna untuk yang sedang dibuka") — level ini
+ * TIDAK PAKAI Petunjuk sama sekali (`revealed` dikunci `true` terus,
+ * teks kalimat+pertanyaan SELALU tampil dari awal, anak paling kecil
+ * butuh scaffold lebih drpd audio-only) DAN dapat navigasi bullet-dot
+ * (`quizNavHtml`/`wireQuizNav`, pola sama Latihan Inti) lintas SEMUA
+ * kalimat topik via `goTo` — dot "sedang dibuka" beda warna (`.current`,
+ * CSS sudah ada), dot yang sudah pernah dimainkan ditandai `.done`
+ * (`hasWordInteraction` action 'game'). "Lanjut ➡️" jadi advance ke
+ * kalimat berikutnya (bukan balik ke daftar lagi tiap soal — biar bullet
+ * progress-nya genuinely berarti), "Selesai ✅" di kalimat terakhir baru
+ * balik ke daftar Kenalan.
+ *
+ * Level LAIN (Starter/Explorer/dst) TETAP pola lama: 1 kalimat casual per
+ * tap 🎮, balik ke daftar sesudahnya (BUKAN bagian urutan quiz-dot), teks
+ * default TERSEMBUNYI — cuma kelihatan lewat "💡 Petunjuk" SATU tombol
+ * (`petunjukButtonHtml()`, TERSEDIA SEJAK AWAL, tanpa gating attempt).
+ *
+ * 🔒 Audio Petunjuk SEKARANG Inggris SAJA di KEDUA jalur (permintaan user
+ * "cukup audio bahasa inggris nya saja tidak perlu audio bahasa
+ * indonesia") — `speak()` polos, BUKAN `speakBilingual()` lagi. Teks
+ * Indonesia TETAP tampil visual (tidak dihapus, cuma audionya).
  */
 function runItemMiniGame(
   container: HTMLElement,
   topic: ListeningItemsTopic,
-  item: ListeningSentenceItem,
+  startIndex: number,
   onBack: OnDone,
-  level: LevelKey
+  level: LevelKey,
+  contentLevel: LevelKey
 ): void {
-  const opts = shuffle(item.question.options);
-  let revealed = false;
+  const isLittleStars = contentLevel === 'little-stars';
+  let current = startIndex;
+  let opts = shuffle(topic.items[current].question.options);
+  let revealed = isLittleStars;
   let answered = false;
+  // 💡 Petunjuk eliminasi-SAJA, KHUSUS Little Stars (permintaan user:
+  // "pada kenalan main, tambahkan petunjuk di kanan atas di atas bullet
+  // progress sama seperti yang sudah dilakukan di section latihan inti,
+  // ketika di klik maka eliminasi 2 jawaban salah") — teks EN+ID di sini
+  // SUDAH selalu tampil dari awal (`revealed` dikunci `true`), jadi
+  // Petunjuk TIDAK perlu ungkap apa-apa lagi, cuma eliminasi. Level lain
+  // TETAP pakai `petunjukButtonHtml`/`revealed` di speak-row (tidak
+  // disentuh). Direset di `goTo()` (soal BARU), TAPI TIDAK di
+  // `tryAgainRound` (non-punitive, sama pola `eliminated`/
+  // `eliminatedThisSlot` di Latihan Inti).
+  let eliminated: number[] = [];
 
-  const playPrompt = () => speakSequence([item.example.en, item.question.en]);
+  const playPrompt = () => {
+    const item = topic.items[current];
+    speakSequence([item.example.en, item.question.en]);
+  };
+
+  // 🔒 Dot bullet-progress cuma boleh "done" begitu soal itu BENERAN dijawab
+  // (permintaan user), bukan pas anak loncat/tap dot ke soal itu — pakai
+  // slot section 'kenalan' (section YANG SAMA dgn tap 🔊/🎤/🎮 di daftar,
+  // TAPI `st` dinaikkan ke 2 lewat `markSlotAnswered` di `onAnswer`, BUKAN
+  // `markSlotInteraction`/tap yang cuma naikkan ke `st:1`) — section ini
+  // sudah dikecualikan dari persentase topik & insight Rapor
+  // (`isGradedSection` progress.ts, `=== 'kenalan'`), aman tanpa field/
+  // migrasi baru. Ikon 🎮 di DAFTAR Kenalan (`doneCls`, `drawList` di atas)
+  // TETAP pakai `hasWordInteraction` yang ditandai saat tap 🎮 di daftar
+  // (sebelum fungsi ini dipanggil) — dua penanda ini SENGAJA independen.
+  function markAnswered(i: number, correct: boolean, itemRef: string): void {
+    markSlotAnswered('listening', topic.id, 'kenalan', i, correct, { itemRef });
+  }
 
   function paint(): void {
+    const item = topic.items[current];
     container.innerHTML = `
-      <span class="stage-badge">🎮 Main · Dengar &amp; Jawab</span>
+      <div class="latihan-head">
+        <span class="stage-badge">🎮 Main · Dengar &amp; Jawab</span>
+        ${isLittleStars ? hintButtonHtml(eliminated.length > 0) : ''}
+      </div>
+      ${
+        isLittleStars
+          ? quizNavHtml(current, topic.items.length, (i) => getSlot('listening', topic.id, 'kenalan', i)?.st ?? 0)
+          : ''
+      }
       <div class="id-text">Dengarkan dulu, lalu jawab pertanyaannya</div>
       <div class="speak-row">
         <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button>
-        ${answered ? '' : petunjukButtonHtml(revealed)}
+        ${!isLittleStars && !answered ? petunjukButtonHtml(revealed) : ''}
       </div>
       ${
         revealed
@@ -549,12 +799,20 @@ function runItemMiniGame(
       )}
       <div class="feedback" id="fb"></div>
     `;
+    if (isLittleStars) wireQuizNav(goTo);
+    applyElimination(container, eliminated);
     setHandlers({
       replay: playPrompt,
       petunjuk: () => {
         if (revealed || answered) return;
         revealed = true;
-        speakBilingual(`${item.example.en} ${item.question.en}`, `${item.example.id} ${item.question.id}`);
+        speak(`${item.example.en} ${item.question.en}`);
+        paint();
+      },
+      hint: () => {
+        if (eliminated.length) return;
+        const wrongIdx = opts.map((_, i) => i).filter((i) => !opts[i].ok);
+        eliminated = shuffle(wrongIdx).slice(0, Math.min(2, wrongIdx.length));
         paint();
       },
       pick: (payload) => {
@@ -565,8 +823,19 @@ function runItemMiniGame(
     });
   }
 
+  function goTo(i: number): void {
+    current = i;
+    opts = shuffle(topic.items[current].question.options);
+    answered = false;
+    eliminated = [];
+    playPrompt();
+    paint();
+  }
+
   function onAnswer(correct: boolean, i: number): void {
+    const item = topic.items[current];
     answered = true;
+    markAnswered(current, correct, item.example.en);
     lockOptionButtons(container);
     container.querySelector('.letter-actions')?.remove();
     const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
@@ -587,13 +856,17 @@ function runItemMiniGame(
       fb.className = 'feedback bad';
     }
     recordEvent({ kind: 'answer', skill: 'listening', topicId: topic.id, itemRef: item.example.en, activity: 'sentence-mini', correct });
-    fb.insertAdjacentHTML('afterend', roundActionsHtml(true));
+    const isLast = !isLittleStars || current === topic.items.length - 1;
+    fb.insertAdjacentHTML('afterend', roundActionsHtml(isLast));
     setHandlers({
       tryAgainRound: () => {
         answered = false;
         paint();
       },
-      nextRound: () => onBack(),
+      nextRound: () => {
+        if (isLittleStars && current < topic.items.length - 1) goTo(current + 1);
+        else onBack();
+      },
     });
   }
 
@@ -601,25 +874,20 @@ function runItemMiniGame(
   paint();
 }
 
-function wireHint(container: HTMLElement, opts: ListeningQuestionOption[], onUsed?: () => void): void {
-  let used = false;
-  setHandlers({
-    hint: () => {
-      if (used) return;
-      const btns = container.querySelectorAll<HTMLButtonElement>('.opt-btn');
-      const wrongIdx = opts.map((_, i) => i).filter((i) => !opts[i].ok && !btns[i].disabled);
-      if (wrongIdx.length) {
-        used = true;
-        const toEliminate = shuffle(wrongIdx).slice(0, Math.min(2, wrongIdx.length));
-        toEliminate.forEach((pick) => {
-          btns[pick].disabled = true;
-          btns[pick].classList.add('eliminated');
-        });
-        const hintBtn = container.querySelector<HTMLButtonElement>('#hintBtn');
-        if (hintBtn) hintBtn.disabled = true;
-        onUsed?.();
-      }
-    },
+/** Terapkan eliminasi yang SUDAH dihitung/disimpan (`indices`) ke tombol
+ *  `.opt-btn` yang BARU dirender — dipakai bareng state `eliminated`/
+ *  `eliminatedThisSlot` yang persist lintas `redraw()`/`paint()` (indeks
+ *  dihitung SEKALI saat tap "💡 Petunjuk", lalu diterapkan ulang di
+ *  SETIAP render soal itu selama belum pindah ke soal lain — non-punitive,
+ *  sama pola `revealed`). */
+function applyElimination(container: HTMLElement, indices: number[]): void {
+  if (!indices.length) return;
+  const btns = container.querySelectorAll<HTMLButtonElement>('.opt-btn');
+  indices.forEach((i) => {
+    if (btns[i]) {
+      btns[i].disabled = true;
+      btns[i].classList.add('eliminated');
+    }
   });
 }
 
@@ -629,6 +897,52 @@ function pickItemsForCount(items: ListeningSentenceItem[], count: number): Liste
   let pool: ListeningSentenceItem[] = [];
   while (pool.length < count) pool = pool.concat(shuffle(items));
   return pool.slice(0, count);
+}
+
+/** Jarak edit (Levenshtein) antara 2 string, case-insensitive — dipakai
+ *  `pickDecoyWords` buat ranking "seberapa mirip" 2 kata, BUKAN cek
+ *  identik (itu sudah difilter terpisah lewat exact-match lowercase). */
+function editDistance(a: string, b: string): number {
+  const al = a.length;
+  const bl = b.length;
+  const dp: number[][] = Array.from({ length: al + 1 }, () => new Array(bl + 1).fill(0));
+  for (let i = 0; i <= al; i++) dp[i][0] = i;
+  for (let j = 0; j <= bl; j++) dp[0][j] = j;
+  for (let i = 1; i <= al; i++) {
+    for (let j = 1; j <= bl; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[al][bl];
+}
+
+/**
+ * Ambil `count` kata "jebakan" (permintaan user: "tambahkan 2 kata sebagai
+ * jebakan"). Kata diambil dari kalimat item LAIN di topik yang SAMA (bukan
+ * dikarang bebas — biar tetap sewarna/masuk akal dgn tema topiknya),
+ * difilter TIDAK boleh ada di kalimat target (`excludeWords`, case-
+ * insensitive — kalau ikut masuk, chip jebakan akan identik dgn chip asli)
+ * & dideduplikasi antar-sesama jebakan.
+ *
+ * 🔒 Revisi user: "cari kata yang mirip sehingga semakin menjebak" — dari
+ * versi awal (`shuffle().slice()`, ACAK polos) jadi DIURUTKAN pakai
+ * `editDistance` ke kata target TERDEKAT (bukan diacak lagi) — kandidat
+ * yang secara EJAAN paling mirip salah satu kata target (mis. "read" vs
+ * "red", "was" vs "has") diprioritaskan duluan, supaya chip jebakan
+ * genuinely menggoda (anak yang tidak dengar teliti bisa salah pilih),
+ * bukan cuma kata acak yang jelas beda.
+ */
+function pickDecoyWords(pool: ListeningSentenceItem[], current: ListeningSentenceItem, excludeWords: string[], count: number): string[] {
+  const excludeLower = new Set(excludeWords.map((w) => w.toLowerCase()));
+  const candidates = pool
+    .filter((it) => it !== current)
+    .flatMap((it) => it.example.en.replace('.', '').split(' '))
+    .filter((w) => !excludeLower.has(w.toLowerCase()));
+  const unique = [...new Map(candidates.map((w) => [w.toLowerCase(), w])).values()];
+  const ranked = unique
+    .map((w) => ({ w, dist: Math.min(...excludeWords.map((t) => editDistance(w.toLowerCase(), t.toLowerCase()))) }))
+    .sort((a, b) => a.dist - b.dist);
+  return ranked.slice(0, count).map((r) => r.w);
 }
 
 const LATIHAN_ROUND_SIZE = 10;
@@ -654,7 +968,13 @@ const LATIHAN_ROUND_SIZE = 10;
 type ListeningLatihanKind = 'hear' | 'toId';
 const LATIHAN_KIND_MIX: ListeningLatihanKind[] = [...Array(5).fill('hear'), ...Array(5).fill('toId')];
 
-export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningItemsTopic, onDone: OnDone, level: LevelKey): void {
+export function runLatihanIntiSentence(
+  container: HTMLElement,
+  topic: ListeningItemsTopic,
+  onDone: OnDone,
+  level: LevelKey,
+  contentLevel: LevelKey
+): void {
   const buildPlan = (): LatihanPlanSlot[] => {
     const targets = pickItemsForCount(topic.items, LATIHAN_ROUND_SIZE);
     const kinds = shuffle(LATIHAN_KIND_MIX);
@@ -676,14 +996,33 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningI
   }));
   let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
   let hintUsedThisSlot = false;
-  // Clue "Tampilkan Teks"/"Tampilkan Terjemahan" (permintaan user, lihat
-  // `clueButtonsHtml`) — state per SOAL, direset di `draw()` (soal BARU),
-  // TAPI TIDAK direset di `redraw()` (redraw soal yang SAMA, dipakai
-  // "Coba Lagi") — kalau ikut direset di situ, clue yang baru saja
-  // "diperoleh" lewat 1x mencoba bakal terkunci lagi begitu diulang.
-  let attemptedThisSlot = false;
-  let showTextThisSlot = false;
-  let showTranslationThisSlot = false;
+  // "💡 Petunjuk" gabungan (permintaan user: "ketika klik petunjuk maka 1.
+  // menampilkan text inggris dan indonesia 2. eliminasi 2 jawaban salah")
+  // — state per SOAL, direset di `draw()` (soal BARU), TAPI TIDAK direset
+  // di `redraw()` (redraw soal yang SAMA, dipakai "Coba Lagi") — kalau
+  // ikut direset di situ, hint yang baru saja "diperoleh" bakal terkunci
+  // lagi begitu diulang. `eliminatedThisSlot` (indeks opsi tereliminasi,
+  // KOSONG utk `drawTrueFalse` krn biner — eliminasi tidak relevan)
+  // DIHITUNG sekali saat tap, bukan dihitung ulang tiap render, supaya
+  // tetap konsisten lintas redraw. `optsCache` (dipakai `drawAskQuestion`
+  // saja) MENGUNCI urutan shuffle opsi per SOAL — tanpa ini, tiap
+  // `redraw()` (termasuk yang dipicu tap Petunjuk sendiri) bakal
+  // nge-shuffle ULANG opsinya, bikin indeks `eliminatedThisSlot` nyasar ke
+  // opsi yang salah setelah redraw.
+  //
+  // 🔒 BUG DITEMUKAN (permintaan user: "no 6 dan 10, ketika di klik
+  // petunjuk, icon dan text pertanyaan nya berubah") — `drawTrueFalse`
+  // (kind 'toId') dulu MEMILIH `claim` (klaim Benar/Salah yang ditampilkan
+  // — icon+teks pertanyaannya) via `Math.random()` LANGSUNG di badan
+  // fungsi, BUKAN dicache spt `optsCache` di atas — jadi tiap `redraw()`
+  // (dipicu tap "💡 Petunjuk" ATAU "🔁 Coba Lagi") nge-roll ULANG klaim
+  // BARU, icon/teks yang tadi kelihatan berubah jadi klaim lain padahal
+  // masih soal yang sama. `claimCache` di bawah MENGUNCI klaim per SOAL,
+  // pola SAMA PERSIS `optsCache` — reset di `draw()`, TIDAK di `redraw()`.
+  let revealedThisSlot = false;
+  let eliminatedThisSlot: number[] = [];
+  let optsCache: ListeningQuestionOption[] | null = null;
+  let claimCache: ListeningQuestionOption | null = null;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('listening', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -696,9 +1035,10 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningI
   function draw(): void {
     if (round >= order.length) return onDone();
     hintUsedThisSlot = false;
-    attemptedThisSlot = false;
-    showTextThisSlot = false;
-    showTranslationThisSlot = false;
+    revealedThisSlot = false;
+    eliminatedThisSlot = [];
+    optsCache = null;
+    claimCache = null;
     redraw();
   }
 
@@ -709,7 +1049,6 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningI
   }
 
   function onAnswer(correct: boolean, btn: HTMLElement, item: ListeningSentenceItem, activity: string): void {
-    attemptedThisSlot = true;
     lockOptionButtons(container);
     container.querySelector('.letter-actions')?.remove();
     const fb = container.querySelector<HTMLElement>('#fb')!;
@@ -752,20 +1091,26 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningI
   }
 
   function drawAskQuestion(item: ListeningSentenceItem): void {
-    const opts = shuffle(item.question.options);
-    const playPrompt = () => speakSequence([item.example.en, item.question.en]);
+    if (!optsCache) optsCache = shuffle(item.question.options);
+    const opts = optsCache;
+    const line = item.practice ?? item.example;
+    const playPrompt = () => speakSequence([line.en, item.question.en], listeningGapMs(contentLevel));
 
     container.innerHTML = `
       <div class="latihan-head">
         <span class="stage-badge">🎧 Dengar &amp; Jawab</span>
-        ${hintButtonHtml}
+        ${hintButtonHtml(revealedThisSlot)}
       </div>
       ${quizNavHtml(round, order.length, slotStatus)}
       <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
-      <div class="speak-row"><button class="speak-btn pt-cta" data-action="replay">🔊 Dengar</button></div>
-      ${showTextThisSlot ? `<div class="en-text">${item.example.en}</div><p class="reading-question">${item.question.en}</p>` : ''}
-      ${showTranslationThisSlot ? `<div class="id-text">${item.example.id}</div><div class="id-text">${item.question.id}</div>` : ''}
-      ${clueButtonsHtml(attemptedThisSlot, showTextThisSlot, showTranslationThisSlot)}
+      <div class="speak-row">
+        <button class="speak-btn pt-cta" data-action="replay">🔊 Dengar</button>
+      </div>
+      ${
+        revealedThisSlot
+          ? `<div class="en-text">${line.en} ${item.question.en}</div><div class="id-text">${line.id} ${item.question.id}</div>`
+          : ''
+      }
       ${answerCardsHtml(
         opts.map((o) => ({ emoji: o.emoji, label: o.text })),
         'pick'
@@ -773,21 +1118,20 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningI
       <div class="feedback" id="fb"></div>
     `;
     playPrompt();
-    wireHint(container, opts, () => (hintUsedThisSlot = true));
+    applyElimination(container, eliminatedThisSlot);
     wireQuizNav(goTo);
 
     setHandlers({
       replay: playPrompt,
-      clueText: () => {
-        if (!attemptedThisSlot || showTextThisSlot) return;
-        showTextThisSlot = true;
-        speak(`${item.example.en} ${item.question.en}`);
-        redraw();
-      },
-      clueTranslate: () => {
-        if (!attemptedThisSlot || showTranslationThisSlot) return;
-        showTranslationThisSlot = true;
-        speakLocalized(`${item.example.id} ${item.question.id}`, 'id-ID');
+      hint: () => {
+        if (revealedThisSlot) return;
+        revealedThisSlot = true;
+        hintUsedThisSlot = true;
+        speak(`${line.en} ${item.question.en}`);
+        if (hintEliminatesOptions(contentLevel)) {
+          const wrongIdx = opts.map((_, i) => i).filter((i) => !opts[i].ok);
+          eliminatedThisSlot = shuffle(wrongIdx).slice(0, Math.min(2, wrongIdx.length));
+        }
         redraw();
       },
       pick: (payload) => {
@@ -803,19 +1147,22 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningI
    *  Benar/Salah lewat 2 tombol besar (bukan kartu 2×2) — bentuk task-nya
    *  genuinely beda dari "Dengar & Jawab" (bukan cuma re-skin). */
   function drawTrueFalse(item: ListeningSentenceItem): void {
-    const claim = item.question.options[Math.floor(Math.random() * item.question.options.length)];
-    const playPrompt = () => speak(item.example.en);
+    if (!claimCache) claimCache = item.question.options[Math.floor(Math.random() * item.question.options.length)];
+    const claim = claimCache;
+    const line = item.practice ?? item.example;
+    const playPrompt = () => speak(line.en);
 
     container.innerHTML = `
       <div class="latihan-head">
         <span class="stage-badge">🤔 Benar atau Salah?</span>
+        ${hintButtonHtml(revealedThisSlot)}
       </div>
       ${quizNavHtml(round, order.length, slotStatus)}
       <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
-      <div class="speak-row"><button class="speak-btn pt-cta" data-action="replay">🔊 Dengar</button></div>
-      ${showTextThisSlot ? `<div class="en-text">${item.example.en}</div>` : ''}
-      ${showTranslationThisSlot ? `<div class="id-text">${item.example.id}</div>` : ''}
-      ${clueButtonsHtml(attemptedThisSlot, showTextThisSlot, showTranslationThisSlot)}
+      <div class="speak-row">
+        <button class="speak-btn pt-cta" data-action="replay">🔊 Dengar</button>
+      </div>
+      ${revealedThisSlot ? `<div class="en-text">${line.en}</div><div class="id-text">${line.id}</div>` : ''}
       <div class="big-emoji" style="font-size:44px">${claim.emoji}</div>
       <p class="reading-question">${claim.text}?</p>
       <div class="opt-grid">
@@ -835,16 +1182,10 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: ListeningI
 
     setHandlers({
       replay: playPrompt,
-      clueText: () => {
-        if (!attemptedThisSlot || showTextThisSlot) return;
-        showTextThisSlot = true;
-        speak(item.example.en);
-        redraw();
-      },
-      clueTranslate: () => {
-        if (!attemptedThisSlot || showTranslationThisSlot) return;
-        showTranslationThisSlot = true;
-        speakLocalized(item.example.id, 'id-ID');
+      hint: () => {
+        if (revealedThisSlot) return;
+        revealedThisSlot = true;
+        speak(line.en);
         redraw();
       },
       pick: (payload) => {
@@ -887,8 +1228,14 @@ function ensureTantanganPlan(topicId: string, section: SectionName, eligible: Li
  * Penggunaan). Tab bar dihapus juga krn cuma 1 aktivitas tersisa — tab
  * bar 1-tombol cuma noise visual, bukan navigasi yang berguna.
  */
-export function runTantanganSentence(container: HTMLElement, topic: ListeningSentenceTopic, onDone: OnDone, level: LevelKey): void {
-  runSusunKalimatSentence(container, topic.id, topic.items, onDone, level);
+export function runTantanganSentence(
+  container: HTMLElement,
+  topic: ListeningSentenceTopic,
+  onDone: OnDone,
+  level: LevelKey,
+  contentLevel: LevelKey
+): void {
+  runSusunKalimatSentence(container, topic.id, topic.items, onDone, level, contentLevel);
 }
 
 /**
@@ -912,8 +1259,23 @@ function runSusunKalimatSentence(
   topicId: string,
   allItems: ListeningSentenceItem[],
   onDone: OnDone,
-  level: LevelKey
+  level: LevelKey,
+  contentLevel: LevelKey
 ): void {
+  // 🔒 Revisi user: "jebakan 2 kata berlaku untuk level di atas starter...
+  // untuk level little star dan starter tidak ada kata random sebagai
+  // tambahan" — `contentLevel` (topik yang SEDANG ditampilkan, BUKAN
+  // `level`/praiseLevel badge anak — pola sama bug yg sudah pernah
+  // ditemukan & diperbaiki di `runItemMiniGame`) yang nentuin gate ini.
+  // Catatan penting: SAAT INI cuma Little Stars & Starter yang benar²
+  // pakai `runSusunKalimatSentence` (Explorer/Adventurer format lama beda
+  // total, Achiever/Trailblazer format Note/Dialogue tanpa word bank) —
+  // jadi praktiknya `applyDecoys` di bawah SELALU `false` utk konten yang
+  // ada SEKARANG, TAPI kode ini tetap ditulis level-aware (bukan
+  // dihapus/dihardcode) supaya begitu ADA level baru di atas Starter yang
+  // pakai format ini nanti, jebakan otomatis aktif tanpa perlu disentuh
+  // lagi.
+  const applyDecoys = contentLevel !== 'little-stars' && contentLevel !== 'starter';
   const items = ensureTantanganPlan(topicId, 'tantangan-susun', allItems);
   let round = Math.min(Math.max(getSection('listening', topicId, 'tantangan-susun')?.cursor ?? 0, 0), items.length - 1);
 
@@ -933,8 +1295,13 @@ function runSusunKalimatSentence(
   function drawSusun(it: ListeningSentenceItem): void {
     const ex = it.example;
     const words = ex.en.replace('.', '').split(' ');
+    // 2 kata "jebakan" (permintaan user, lihat `pickDecoyWords`) — DIHITUNG
+    // SEKALI per soal (bukan tiap `paint()`/reset), supaya tetap konsisten
+    // lintas "🔄 Bersihkan"/"Coba Lagi" (posisinya di bank boleh acak ulang,
+    // TAPI kata jebakannya sendiri jangan ganti-ganti).
+    const bankWords = applyDecoys ? [...words, ...pickDecoyWords(allItems, it, words, 2)] : words;
     let answer: { w: string; idx: number }[] = [];
-    let bank = shuffle(words.map((w, i) => ({ w, used: false, idx: i })));
+    let bank = shuffle(bankWords.map((w, i) => ({ w, used: false, idx: i })));
     let answered = false;
     // "💡 Petunjuk" (permintaan user: "ini berlaku di fitur kenalan dan
     // tantangan... petunjuk langsung ada di depan tidak perlu nunggu sekali
@@ -955,12 +1322,14 @@ function runSusunKalimatSentence(
         wrongSoFar >= 2 ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Jawabannya: <b>${ex.en}</b></p>` : '';
 
       container.innerHTML = `
-        <span class="stage-badge">🎧 Dengar &amp; Susun</span>
+        <div class="latihan-head">
+          <span class="stage-badge">🎧 Dengar &amp; Susun</span>
+          ${answered ? '' : petunjukButtonHtml(revealed, true)}
+        </div>
         ${quizNavHtml(round, items.length, susunStatus)}
-        <div class="id-text">Dengarkan kalimatnya, lalu susun jadi kalimat yang kamu dengar · ${round + 1} dari ${items.length}</div>
+        <div class="id-text">Dengarkan kalimatnya, lalu susun jadi kalimat</div>
         <div class="speak-row">
           <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button>
-          ${answered ? '' : petunjukButtonHtml(revealed)}
         </div>
         ${revealed ? `<div class="en-text">${ex.en}</div><div class="id-text">${ex.id}</div>` : ''}
         ${answerHintHtml}
@@ -987,13 +1356,13 @@ function runSusunKalimatSentence(
         petunjuk: () => {
           if (revealed || answered) return;
           revealed = true;
-          speakBilingual(ex.en, ex.id);
+          speak(ex.en);
           paint();
         },
         clear: () => {
           if (answered) return;
           answer = [];
-          bank = shuffle(words.map((w, i) => ({ w, used: false, idx: i })));
+          bank = shuffle(bankWords.map((w, i) => ({ w, used: false, idx: i })));
           paint();
         },
         removeLastWord: () => {
@@ -1058,7 +1427,7 @@ function runSusunKalimatSentence(
         tryAgainRound: () => {
           answered = false;
           answer = [];
-          bank = shuffle(words.map((w, i) => ({ w, used: false, idx: i })));
+          bank = shuffle(bankWords.map((w, i) => ({ w, used: false, idx: i })));
           paint();
         },
         nextRound: () => {
@@ -1096,7 +1465,13 @@ function runSusunKalimatSentence(
  * lewat parameter `tantangan` baru (`progress.ts`, `app.ts`
  * `topicProgressPercent`).
  */
-export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTopic, onDone: OnDone, level: LevelKey): void {
+export function runTantanganNote(
+  container: HTMLElement,
+  topic: ListeningNoteTopic,
+  onDone: OnDone,
+  level: LevelKey,
+  contentLevel: LevelKey
+): void {
   const topicId = topic.id;
   const section = 'tantangan-note';
   const gaps = topic.noteGaps;
@@ -1105,8 +1480,23 @@ export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTop
   const gapStatus = (i: number): 0 | 1 | 2 => getSlot('listening', topicId, section, i)?.st ?? 0;
   const filledAnswer = (i: number): string | null => (gapStatus(i) === 2 ? gaps[i].answer : null);
 
+  const passageSpeakers = topic.notePassage.every((p) => p.speaker);
+  const passageGenders = passageSpeakers
+    ? dialogueGenders(topic.notePassage.map((p) => ({ speaker: p.speaker as string, en: p.en, id: p.id })))
+    : null;
+
   function playPassage(): void {
-    speakSequence(topic.notePassage.map((p) => p.en));
+    if (passageGenders) {
+      speakDialogue(
+        topic.notePassage.map((p) => ({ text: p.en, gender: passageGenders.get(p.speaker as string) ?? 'female' })),
+        listeningGapMs(contentLevel)
+      );
+    } else {
+      speakSequence(
+        topic.notePassage.map((p) => p.en),
+        listeningGapMs(contentLevel)
+      );
+    }
   }
 
   /** `activeUnanswered` — sembunyikan jawaban gap yang SEDANG ditanya ulang
@@ -1150,20 +1540,31 @@ export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTop
     // menjawab tepat).
     let answered = false;
     let revealed = false;
-    let order = shuffle(gap.options.map((_, i) => i));
+    // Opsi authored + 1 jebakan acak (`gap.decoys`) yang tidak disebut di audio.
+    const decoy = pickDecoy(gap.decoys ?? [], (d) => d, gap.options, topic.notePassage.map((p) => p.en).join(' '));
+    const options = decoy ? [...gap.options, decoy] : gap.options;
+    let order = shuffle(options.map((_, i) => i));
 
     function paint(): void {
       container.innerHTML = `
-        <span class="stage-badge">📝 Lengkapi Catatan</span>
+        <div class="latihan-head">
+          <span class="stage-badge">📝 Lengkapi Catatan</span>
+          ${answered ? '' : petunjukButtonHtml(revealed, true)}
+        </div>
         ${quizNavHtml(cursor, gaps.length, gapStatus)}
         <div class="id-text">Dengar percakapannya, lalu lengkapi catatannya · ${cursor + 1} dari ${gaps.length}</div>
         <div class="speak-row">
           <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar Percakapan</button>
-          ${answered ? '' : petunjukButtonHtml(revealed)}
         </div>
         ${
           revealed
-            ? topic.notePassage.map((p) => `<div class="en-text">${p.en}</div><div class="id-text">${p.id}</div>`).join('')
+            ? topic.notePassage
+                .map((p) =>
+                  p.speaker
+                    ? `<div class="dialogue-line"><span class="dialogue-speaker">${p.speaker}:</span> ${p.en}</div><div class="id-text" style="margin:0 0 6px">${p.id}</div>`
+                    : `<div class="en-text">${p.en}</div><div class="id-text">${p.id}</div>`
+                )
+                .join('')
             : ''
         }
         ${noteCardHtml(!answered)}
@@ -1172,7 +1573,7 @@ export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTop
             ? ''
             : `<p class="reading-question">${gap.question}</p>
                ${answerCardsHtml(
-                 order.map((i) => ({ emoji: gap.emoji, label: gap.options[i] })),
+                 order.map((i) => ({ emoji: gap.emoji, label: options[i] })),
                  'pick'
                )}`
         }
@@ -1185,11 +1586,12 @@ export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTop
         petunjuk: () => {
           if (revealed || answered) return;
           revealed = true;
+          playPassage();
           paint();
         },
         pick: (payload) => {
           if (answered) return;
-          const picked = gap.options[order[Number(payload)]];
+          const picked = options[order[Number(payload)]];
           const correct = picked === gap.answer;
           answered = true;
 
@@ -1222,7 +1624,7 @@ export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTop
           setHandlers({
             tryAgainRound: () => {
               answered = false;
-              order = shuffle(gap.options.map((_, i) => i));
+              order = shuffle(options.map((_, i) => i));
               paint();
             },
             nextRound: () => {
@@ -1257,7 +1659,13 @@ export function runTantanganNote(container: HTMLElement, topic: ListeningNoteTop
  * `revealed` Achiever, BUKAN krn dialognya berubah, sekadar konsistensi UX
  * lintas format baru).
  */
-export function runTantanganDialogue(container: HTMLElement, topic: ListeningDialogueTopic, onDone: OnDone, level: LevelKey): void {
+export function runTantanganDialogue(
+  container: HTMLElement,
+  topic: ListeningDialogueTopic,
+  onDone: OnDone,
+  level: LevelKey,
+  contentLevel: LevelKey
+): void {
   const topicId = topic.id;
   const section = 'tantangan-dialog';
   const qs = topic.inferenceQuestions;
@@ -1265,8 +1673,13 @@ export function runTantanganDialogue(container: HTMLElement, topic: ListeningDia
 
   const qStatus = (i: number): 0 | 1 | 2 => getSlot('listening', topicId, section, i)?.st ?? 0;
 
+  const genders = dialogueGenders(topic.dialogueLines);
+
   function playDialogue(): void {
-    speakSequence(topic.dialogueLines.map((l) => l.en));
+    speakDialogue(
+      topic.dialogueLines.map((l) => ({ text: l.en, gender: genders.get(l.speaker) ?? 'female' })),
+      listeningGapMs(contentLevel)
+    );
   }
 
   function transcriptHtml(): string {
@@ -1300,21 +1713,31 @@ export function runTantanganDialogue(container: HTMLElement, topic: ListeningDia
     // (termasuk yang sudah dijawab) selalu render ulang soal blank baru.
     let answered = false;
     let revealed = false;
-    let order = shuffle(q.options.map((_, i) => i));
+    // Jebakan acak: 1 dari `q.decoys` (authored, tidak disebut di dialog).
+    const decoy = pickDecoy(
+      q.decoys ?? [],
+      (o) => o.text,
+      q.options.map((o) => o.text),
+      topic.dialogueLines.map((l) => l.en).join(' ')
+    );
+    const options: ListeningInferenceOption[] = decoy ? [...q.options, { ...decoy, ok: false }] : q.options;
+    let order = shuffle(options.map((_, i) => i));
 
     function paint(): void {
       container.innerHTML = `
-        <span class="stage-badge">🧩 Dengar &amp; Simpulkan</span>
+        <div class="latihan-head">
+          <span class="stage-badge">🧩 Dengar &amp; Simpulkan</span>
+          ${petunjukButtonHtml(revealed, true)}
+        </div>
         ${quizNavHtml(cursor, qs.length, qStatus)}
         <div class="id-text">Dengar percakapannya, lalu jawab pertanyaannya · ${cursor + 1} dari ${qs.length}</div>
         <div class="speak-row">
           <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar Percakapan</button>
-          ${petunjukButtonHtml(revealed)}
         </div>
         ${revealed ? transcriptHtml() : ''}
         <p class="reading-question">${q.question}</p>
         ${answerCardsHtml(
-          order.map((i) => ({ emoji: q.options[i].emoji, label: q.options[i].text })),
+          order.map((i) => ({ emoji: options[i].emoji, label: options[i].text })),
           'pick'
         )}
         <div class="feedback" id="fb"></div>
@@ -1326,12 +1749,13 @@ export function runTantanganDialogue(container: HTMLElement, topic: ListeningDia
         petunjuk: () => {
           if (revealed || answered) return;
           revealed = true;
+          playDialogue();
           paint();
         },
         pick: (payload) => {
           if (answered) return;
           const idx = Number(payload);
-          const opt = q.options[order[idx]];
+          const opt = options[order[idx]];
           const correct = opt.ok;
           answered = true;
 
@@ -1366,7 +1790,7 @@ export function runTantanganDialogue(container: HTMLElement, topic: ListeningDia
           setHandlers({
             tryAgainRound: () => {
               answered = false;
-              order = shuffle(q.options.map((_, i) => i));
+              order = shuffle(options.map((_, i) => i));
               paint();
             },
             nextRound: () => {

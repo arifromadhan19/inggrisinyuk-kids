@@ -99,6 +99,7 @@ import {
 import type { AppState, LevelKey, LevelMeta, NavKey, RajaKey, Screen, SkillKey, SkillMeta } from './types';
 import { escapeHtml, qs } from './util';
 import { renderVoicePanel } from './voice-panel';
+import { applyDefaultRate, DEFAULT_RATE } from './speech';
 
 const STEP_LABELS = ['Kenalan', 'Latihan Inti', 'Tantangan'];
 
@@ -284,10 +285,14 @@ function syncUnlocksFromAccount(): void {
  * soal dijawab). SEKARANG localStorage MURNI jadi sumber kebenaran selama
  * anak masih mengerjakan section — request PUT ke server cuma terjadi kalau
  * `requestSync()` (progress.ts) dipanggil EKSPLISIT dari titik section
- * BENERAN selesai (lihat pemanggil `requestSync` di `runStage`'s case
- * `'vocabulary'` & `games/vocabulary.ts` `runTantangan` — Latihan Inti +
- * tiap tab Tantangan [Eja Kata/Susun Kalimat/Penggunaan], bukan skill lain
- * dulu utk saat ini). 1 flush = 1 request PUT berisi snapshot `Store`
+ * BENERAN selesai — 🔒 REVISI (permintaan user "sama konsepnya dgn vocab,
+ * untuk listening/speaking/grammar/reading dan game juga"): tadinya cuma
+ * scope Vocab (`runStage`'s case `'vocabulary'` & `games/vocabulary.ts`
+ * `runTantangan`'s 3 tab), SEKARANG generik lintas SEMUA skill lewat
+ * `nextStepWithSync()` (dipasang di step Latihan Inti & Tantangan tiap
+ * skill di `runStage`, SEMUA format) + Game Hub (`runRajaRound`'s
+ * `onRoundDone`, 1 titik dipakai ke-7 Raja) + Tantangan Besar Raja Kerajaan
+ * (`renderBoss`'s `runBoss` win callback). 1 flush = 1 request PUT berisi snapshot `Store`
  * TERBARU (`snapshot()`) + outbox event yang belum terkirim — event yang
  * sukses dikirim baru dihapus dari outbox (`clearOutboxIds`), supaya gagal
  * kirim tidak menghilangkan detailnya. Debounce 1.5s dipertahankan sbg
@@ -732,6 +737,11 @@ function render(): void {
   // hilang") — pola SAMA PERSIS is-placement-test, keluar tetap lewat
   // tombol balik yang digerbang konfirmasi (`renderGamePlay`).
   document.body.classList.toggle('is-game-play', state.screen === 'gamePlay');
+  // Markas Raja / Tantangan Bos JUGA halaman tersendiri (permintaan user:
+  // "ketika test di markas raja maka open halaman baru seperti fitur
+  // game") — pola SAMA PERSIS is-game-play, keluar tetap lewat tombol balik
+  // yang sekarang jg digerbang pop up konfirmasi (`renderBoss`).
+  document.body.classList.toggle('is-boss-play', state.screen === 'boss');
 
   syncNav();
   renderCrumb();
@@ -1962,6 +1972,11 @@ function renderActivity(): void {
   // types.ts) — cuma itu yang panelnya benar-benar tidak relevan.
   const showVoicePanel = key !== 'reading';
 
+  // Default kecepatan suara: Listening Latihan Inti/Tantangan ikut level topik
+  // (`listeningDefaultRate`), sisanya (termasuk Kenalan) 0.75x. Tidak menimpa
+  // pill kecepatan yang sudah dipilih user sendiri.
+  applyDefaultRate(key === 'listening' && state.step > 0 ? listeningGame.listeningDefaultRate(level.key) : DEFAULT_RATE);
+
   const steps = STEP_LABELS.map((label, i) => {
     const cls = i === state.step ? 'active' : i < state.step ? 'done' : '';
     // Semua langkah boleh diklik bebas (permintaan user: Latihan Inti &
@@ -2056,6 +2071,20 @@ function nextStep(): void {
   }
 }
 
+/** Sync eksplisit tiap Latihan Inti/Tantangan BENERAN tuntas — perluasan
+ *  pola yang tadinya cuma Vocab (`requestSync()` di step Latihan Inti +
+ *  3 tab Tantangan `games/vocabulary.ts`) ke SEMUA skill (Listening/
+ *  Reading/Grammar/Speaking, semua format) & Game Hub/Tantangan Besar Raja
+ *  (`runRajaRound`/`renderBoss`) — permintaan user "sama konsepnya dgn
+ *  vocab, section selesai baru disimpan ke db". Dipakai gantikan `nextStep`
+ *  polos DI STEP 1 (Latihan Inti) & STEP 2 (Tantangan) SAJA — step 0
+ *  (Kenalan) TETAP `nextStep` tanpa sync, konsisten CLAUDE.md poin 6
+ *  (Kenalan tidak pernah dihitung ke progress). */
+function nextStepWithSync(): void {
+  requestSync();
+  nextStep();
+}
+
 function runStage(key: SkillKey, stage: HTMLElement): void {
   // Dua level BEDA sengaja dipisah di sini:
   //  - `contentLevel` (browsing, bisa override lewat Peta Level/pemilih di
@@ -2073,20 +2102,12 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
     case 'vocabulary': {
       const topic = vocabTopicsForLevel(contentLevel)[state.topicIndex];
       if (state.step === 0) vocabularyGame.renderKenalan(stage, topic, praiseLevel);
-      // requestSync() di sini (bukan generik semua skill) — permintaan user
-      // eksplisit scope Vocab dulu "untuk saat ini" (4 titik: Latihan Inti +
-      // 3 tab Tantangan, yang terakhir di games/vocabulary.ts runTantangan).
-      else if (state.step === 1)
-        vocabularyGame.runLatihanInti(
-          stage,
-          topic,
-          () => {
-            requestSync();
-            nextStep();
-          },
-          praiseLevel
-        );
-      else vocabularyGame.runTantangan(stage, topic, nextStep, praiseLevel);
+      // Tantangan (step 2) TIDAK dibungkus `nextStepWithSync` di sini —
+      // `games/vocabulary.ts` `runTantangan` sudah requestSync() sendiri di
+      // TIAP 3 tab (Eja Kata/Susun Kalimat/Penggunaan), termasuk tab
+      // terakhir tepat sebelum manggil `onDone` (=nextStep) ini.
+      else if (state.step === 1) vocabularyGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+      else vocabularyGame.runTantangan(stage, topic, nextStep, praiseLevel, contentLevel);
       return;
     }
     case 'listening': {
@@ -2101,15 +2122,15 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
       // Kenalan/Latihan Inti generik utk SEMUA varian format baru
       // (`ListeningItemsTopic`, types.ts).
       if ('items' in topic) {
-        if (state.step === 0) listeningGame.renderKenalanSentence(stage, topic, praiseLevel);
-        else if (state.step === 1) listeningGame.runLatihanIntiSentence(stage, topic, nextStep, praiseLevel);
-        else if ('noteGaps' in topic) listeningGame.runTantanganNote(stage, topic, nextStep, praiseLevel);
-        else if ('dialogueLines' in topic) listeningGame.runTantanganDialogue(stage, topic, nextStep, praiseLevel);
-        else listeningGame.runTantanganSentence(stage, topic, nextStep, praiseLevel);
+        if (state.step === 0) listeningGame.renderKenalanSentence(stage, topic, praiseLevel, contentLevel);
+        else if (state.step === 1) listeningGame.runLatihanIntiSentence(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+        else if ('noteGaps' in topic) listeningGame.runTantanganNote(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+        else if ('dialogueLines' in topic) listeningGame.runTantanganDialogue(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+        else listeningGame.runTantanganSentence(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       } else {
         if (state.step === 0) listeningGame.renderKenalan(stage, topic, nextStep);
-        else if (state.step === 1) listeningGame.runLatihanInti(stage, topic, nextStep);
-        else listeningGame.runTantangan(stage, topic, nextStep);
+        else if (state.step === 1) listeningGame.runLatihanInti(stage, topic, nextStepWithSync);
+        else listeningGame.runTantangan(stage, topic, nextStepWithSync);
       }
       return;
     }
@@ -2127,20 +2148,20 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
       // sini tanpa arahan baru user.
       if ('items' in topic) {
         if (state.step === 0) speakingGame.renderKenalanPhrase(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) speakingGame.runLatihanIntiPhrase(stage, topic, nextStep, praiseLevel);
-        else speakingGame.runTantanganPhrase(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) speakingGame.runLatihanIntiPhrase(stage, topic, nextStepWithSync, praiseLevel);
+        else speakingGame.runTantanganPhrase(stage, topic, nextStepWithSync, praiseLevel);
       } else if ('turns' in topic) {
         if (state.step === 0) speakingGame.renderKenalanInterview(stage, topic, nextStep);
-        else if (state.step === 1) speakingGame.runLatihanIntiInterview(stage, topic, nextStep, praiseLevel);
-        else speakingGame.runTantanganInterview(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) speakingGame.runLatihanIntiInterview(stage, topic, nextStepWithSync, praiseLevel);
+        else speakingGame.runTantanganInterview(stage, topic, nextStepWithSync, praiseLevel);
       } else if ('stories' in topic) {
         if (state.step === 0) speakingGame.renderKenalanStory(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) speakingGame.runLatihanIntiStory(stage, topic, nextStep, praiseLevel);
-        else speakingGame.runTantanganStory(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) speakingGame.runLatihanIntiStory(stage, topic, nextStepWithSync, praiseLevel);
+        else speakingGame.runTantanganStory(stage, topic, nextStepWithSync, praiseLevel);
       } else {
         if (state.step === 0) speakingGame.renderKenalan(stage, topic, nextStep);
-        else if (state.step === 1) speakingGame.runLatihanInti(stage, topic, nextStep, praiseLevel);
-        else speakingGame.runTantangan(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) speakingGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
+        else speakingGame.runTantangan(stage, topic, nextStepWithSync, praiseLevel);
       }
       return;
     }
@@ -2156,16 +2177,16 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
       // migrasi format lama ke sini tanpa arahan baru user.
       if ('items' in topic) {
         if (state.step === 0) readingGame.renderKenalanWord(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) readingGame.runLatihanIntiWord(stage, topic, nextStep, praiseLevel);
-        else readingGame.runTantanganWord(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) readingGame.runLatihanIntiWord(stage, topic, nextStepWithSync, praiseLevel);
+        else readingGame.runTantanganWord(stage, topic, nextStepWithSync, praiseLevel);
       } else if ('checks' in topic) {
         if (state.step === 0) readingGame.renderKenalanCheck(stage, topic, nextStep);
-        else if (state.step === 1) readingGame.runLatihanIntiCheck(stage, topic, nextStep, praiseLevel);
-        else readingGame.runTantanganCheck(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) readingGame.runLatihanIntiCheck(stage, topic, nextStepWithSync, praiseLevel);
+        else readingGame.runTantanganCheck(stage, topic, nextStepWithSync, praiseLevel);
       } else {
         if (state.step === 0) readingGame.renderKenalan(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) readingGame.runLatihanInti(stage, topic, nextStep, praiseLevel);
-        else readingGame.runTantangan(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) readingGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
+        else readingGame.runTantangan(stage, topic, nextStepWithSync, praiseLevel);
       }
       return;
     }
@@ -2181,16 +2202,16 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
       // sini tanpa arahan baru user.
       if ('items' in topic) {
         if (state.step === 0) grammarGame.renderKenalanPattern(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) grammarGame.runLatihanIntiPattern(stage, topic, nextStep, praiseLevel);
-        else grammarGame.runTantanganPattern(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) grammarGame.runLatihanIntiPattern(stage, topic, nextStepWithSync, praiseLevel);
+        else grammarGame.runTantanganPattern(stage, topic, nextStepWithSync, praiseLevel);
       } else if ('transforms' in topic) {
         if (state.step === 0) grammarGame.renderKenalanTransform(stage, topic, nextStep);
-        else if (state.step === 1) grammarGame.runLatihanIntiTransform(stage, topic, nextStep, praiseLevel);
-        else grammarGame.runTantanganTransform(stage, topic, nextStep, praiseLevel);
+        else if (state.step === 1) grammarGame.runLatihanIntiTransform(stage, topic, nextStepWithSync, praiseLevel);
+        else grammarGame.runTantanganTransform(stage, topic, nextStepWithSync, praiseLevel);
       } else {
         if (state.step === 0) grammarGame.renderKenalan(stage, topic, nextStep);
-        else if (state.step === 1) grammarGame.runLatihanInti(stage, topic, nextStep);
-        else grammarGame.runTantangan(stage, topic, nextStep);
+        else if (state.step === 1) grammarGame.runLatihanInti(stage, topic, nextStepWithSync);
+        else grammarGame.runTantangan(stage, topic, nextStepWithSync);
       }
       return;
     }
@@ -2522,7 +2543,8 @@ function renderLandingPage(): void {
       </section>
 
       <section class="landing-section" id="level">
-        <h2 class="h2">6 Level, Ikuti Standar CEFR/Cambridge</h2>
+        <h2 class="h2" style="margin-bottom:8px">6 Level, Ikuti Standar CEFR/Cambridge</h2>
+        <p class="lede" style="text-align:center;max-width:60ch;margin:0 auto var(--s5)">Tiap level makin menantang, bukan materi yang itu-itu saja diulang — soal & format latihan ikut naik tingkat di tiap level, sama seperti ujian Cambridge asli.</p>
         <div class="landing-levels">${levelCards}</div>
       </section>
 
@@ -2940,23 +2962,46 @@ function renderBoss(): void {
     return;
   }
 
-  // Arena = kepala panggung Bos: siapa bosnya + peta 4 babak yang akan dilewati.
+  // Arena = kepala panggung Bos: siapa bosnya + peta babak yang akan dilewati.
   // Sengaja diberitahu di depan — anak tahu persis apa yang datang (tenang, bukan
   // kejutan menegangkan), dan tidak ada satu pun angka/nyawa yang bisa berkurang.
-  const phases = [
-    ['📚', 'Vocabulary'],
-    ['🎧', 'Listening'],
-    ['✏️', 'Grammar'],
-    ['🗣️', 'Speaking'],
-  ]
-    .map(([emoji, label]) => `<span class="boss-phase">${emoji} ${label}</span>`)
-    .join('');
+  // 🔒 Redesain "test per level" (`materi/test_perlevel.md`) — babak Reading +
+  // estimasi waktu (info saja, BUKAN hitung mundur, PRD §4.6 tetap berlaku)
+  // HANYA utk `PILOT_LEVELS` (`games/boss.ts`, skrg cuma Little Stars,
+  // permintaan user "coba terapkan dulu di bos little star") — level lain
+  // TETAP tampilan LAMA (4 babak, tanpa baris estimasi waktu) apa adanya.
+  const pilot = bossGame.isPilotLevel(levelKey);
+  // 🔒 Permintaan user: baris pill statis di sini DIHAPUS (redundan — pill
+  // yang SAMA sekarang jadi tombol interaktif beneran di dalam `#stage`,
+  // `games/boss.ts` `skillPillsHtml()`, lihat komentar "Navigasi bebas
+  // antar skill" di sana). `phaseList` DIPERTAHANKAN murni utk `.length`
+  // (dipakai `subLine`/"Lima-Empat babak" di bawah), bukan lagi utk render.
+  const phaseList: [string, string][] = pilot
+    ? [
+        ['📚', 'Vocabulary'],
+        ['🎧', 'Listening'],
+        ['📖', 'Reading'],
+        ['✏️', 'Grammar'],
+        ['🗣️', 'Speaking'],
+      ]
+    : [
+        ['📚', 'Vocabulary'],
+        ['🎧', 'Listening'],
+        ['✏️', 'Grammar'],
+        ['🗣️', 'Speaking'],
+      ];
+  const estLine = pilot
+    ? (() => {
+        const [estMin, estMax] = bossGame.estimatedMinutesFor(levelKey);
+        return `<p class="meta" style="margin-top:8px">⏱️ Kira-kira ${estMin}–${estMax} menit, santai aja — tidak ada hitungan mundur, boleh dijeda kapan saja.</p>`;
+      })()
+    : '';
 
   // Kalau level ini belum punya materi sendiri, Bos-nya berperan sebagai uji
   // kemampuan umum (mirip placement test) buat buka jalurnya duluan — soalnya
   // tetap dari materi yang sudah ada, bukan materi level ini (yang belum ada).
   const subLine = level.hasContent
-    ? 'Campuran soal dari 4 kegiatan sekaligus — sekali menang, level berikutnya kebuka!'
+    ? `Campuran soal dari ${phaseList.length} kegiatan sekaligus — sekali menang, level berikutnya kebuka!`
     : 'Uji kemampuan umum, bukan materi level ini (yang belum ada) — sekali menang, jalur ke sini kebuka.';
 
   root.innerHTML = `
@@ -2974,27 +3019,56 @@ function renderBoss(): void {
       <div class="boss-arena-body">
         <span class="eyebrow" style="color:#7A4A08">Arena Tantangan</span>
         <h2>${BOSS_NAME[levelKey]} sudah siap main!</h2>
-        <p>Empat babak, santai saja — boleh diulang sebanyak yang kamu mau.</p>
-        <div class="boss-phases">${phases}</div>
+        <p>${phaseList.length === 5 ? 'Lima' : 'Empat'} babak, santai saja — boleh diulang sebanyak yang kamu mau.</p>
+        ${estLine}
       </div>
     </div>
     <div class="card boss-stage" id="stage"></div>
+    <footer class="standalone-footer">
+      <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
+    </footer>
   `;
 
-  setHandlers({ exitBoss: () => go('home') });
+  // 🔒 Permintaan user: pop up konfirmasi "Lanjut"/"Keluar" sebelum keluar
+  // Markas Raja, SAMA PERSIS pola `renderGamePlay()` (Game Hub) — Arena ini
+  // TIDAK PUNYA layar Map/list terpisah (soal pertama SUDAH langsung tampil
+  // begitu halaman dibuka), jadi ikut konvensi "game TANPA layar Map"
+  // (Kelompok/Story Quest, CLAUDE.md § Pop Up Konfirmasi Keluar Game) — flag
+  // di-set `true` di sini & TIDAK PERNAH di-`false`-kan lagi selama ronde
+  // berjalan, popup SELALU tampil selama masih mengerjakan.
+  setGameRoundActive(true);
+  setHandlers({
+    exitBoss: () => {
+      if (!isGameRoundActive()) {
+        go('home');
+        return;
+      }
+      placementGame.renderExitConfirm(
+        () => {
+          /* "Yuk Lanjut" — overlay sudah menutup dirinya sendiri */
+        },
+        () => go('home')
+      );
+    },
+  });
 
   bossGame.runBoss(
     qs<HTMLDivElement>(root, '#stage'),
-    () => {
+    (result) => {
+      // Sudah menang — tidak ada progres lagi yang bisa hilang, matikan flag
+      // (pola sama `renderMissionComplete()`) supaya tombol kembali di layar
+      // menang TIDAK perlu konfirmasi lagi.
+      setGameRoundActive(false);
       markBossCleared(levelKey);
       addXp(XP_BOSS);
-      renderBossWin(levelKey);
+      requestSync();
+      renderBossWin(levelKey, result);
     },
     levelKey
   );
 }
 
-function renderBossWin(levelKey: LevelKey): void {
+function renderBossWin(levelKey: LevelKey, result: bossGame.BossResult): void {
   const stage = qs<HTMLDivElement>(root, '#stage');
   const index = LEVELS.findIndex((l) => l.key === levelKey);
   const wonLevel = LEVELS[index]!;
@@ -3021,6 +3095,29 @@ function renderBossWin(levelKey: LevelKey): void {
         }</p>`
       : '';
 
+  // 🔒 Redesain "test per level" (`materi/test_perlevel.md` §5/§6) — skor per
+  // skill (percobaan PERTAMA tiap ronde, `games/boss.ts`) dilaporkan sbg 1–5
+  // bintang, REUSE `skillStarsHtml`/`.stat-list` yang sama dgn Rapor (bukan
+  // komponen baru). HANYA utk `PILOT_LEVELS` (skrg cuma Little Stars,
+  // permintaan user "coba terapkan dulu di bos little star") — level lain
+  // TIDAK menampilkan kartu ini sama sekali (persis layar menang LAMA), biar
+  // levelnya tetap 1:1 perilaku sebelum redesain sampai pilot ini divalidasi.
+  // Skill dgn `total===0` (mis. Speaking di browser tanpa STT) disembunyikan,
+  // BUKAN ditampilkan kosong/0 bintang — konsisten pola kartu insight Rapor
+  // yang jg disembunyikan total kalau sinyalnya belum cukup. Skor ini MURNI
+  // pelaporan — TIDAK PERNAH menggerbangi kemenangan.
+  const scoreRows = bossGame.isPilotLevel(levelKey)
+    ? (['vocabulary', 'listening', 'reading', 'grammar', 'speaking'] as SkillKey[])
+        .map((key) => {
+          const s = result[key];
+          if (s.total <= 0) return '';
+          const pct = Math.round((s.correct / s.total) * 100);
+          return `<li><span class="stat-list-ic" aria-hidden="true">${SKILL_META[key].emoji}</span><span class="stat-list-label">${SKILL_META[key].label}</span><span class="stat-list-value">${skillStarsHtml(pct)}</span></li>`;
+        })
+        .join('')
+    : '';
+  const scoreCard = scoreRows ? `<div class="card"><span class="eyebrow">🌟 Hasil Petualanganmu</span><ul class="stat-list">${scoreRows}</ul></div>` : '';
+
   stage.innerHTML = `
     <div class="done-wrap win">
       <div class="boss-burst" aria-hidden="true"><span>⭐</span><span>✨</span><span>⭐</span><span>🎉</span><span>✨</span><span>🎊</span><span>⭐</span><span>🎉</span><span>✨</span></div>
@@ -3030,6 +3127,7 @@ function renderBossWin(levelKey: LevelKey): void {
       <p class="done-sub">Kamu menang lawan ${BOSS_NAME[levelKey]}. <b>+${XP_BOSS} XP</b> ⚡</p>
       ${wonLine}
       ${nextLine}
+      ${scoreCard}
       <button class="primary-btn" type="button" data-action="backToHome">🗺️ Lihat Peta Level</button>
     </div>
   `;
@@ -3504,6 +3602,7 @@ function runRajaRound(key: RajaKey): void {
   const onRoundDone = () => {
     addXp(XP_FREEPLAY);
     addGameXp(key, XP_FREEPLAY);
+    requestSync();
     showRajaDone(key);
   };
 
