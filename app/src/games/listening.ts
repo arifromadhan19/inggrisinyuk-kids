@@ -2,6 +2,7 @@ import type {
   LevelKey,
   ListeningDialogueLine,
   ListeningDialogueTopic,
+  ListeningDrill,
   ListeningInferenceQuestion,
   ListeningInferenceOption,
   ListeningItemsTopic,
@@ -221,8 +222,44 @@ function wireOldFormatHint(container: HTMLElement, opts: { ok?: boolean }[]): vo
  * reveal) TIDAK dipakai lagi di sini — TETAP dipakai apa adanya di
  * `runTantangan` (format lama, di atas) yg tidak disentuh sesi ini.
  */
-export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, onDone: OnDone): void {
-  let round = 0;
+/** `topic.drill` seringkali cuma 1–2 kalimat (jauh dari target ≥10 soal
+ *  CLAUDE.md) — di-cycle via `shuffle()` sampai `LISTENING_OLD_ROUND_SIZE`,
+ *  pola SAMA PERSIS `pickDrillForCount` (`games/reading.ts`). */
+const LISTENING_OLD_ROUND_SIZE = 10;
+function pickOldDrillForCount(items: ListeningDrill[], count: number): ListeningDrill[] {
+  let pool: ListeningDrill[] = [];
+  while (pool.length < count) pool = pool.concat(shuffle(items));
+  return pool.slice(0, count);
+}
+
+/**
+ * 🔒 Redesain (permintaan user, audit "format dot" — quiz-dot Vocab/
+ * Listening Little Stars belum konsisten di semua level/skill): dulu
+ * sequential polos tanpa persist (reload = balik ke soal 1) & `topic.drill`
+ * cuma 1–2 kalimat (jauh dari target ≥10). Sekarang: persist per-soal
+ * (`ensureSection`/`getSlot`/`markSlotAnswered`/`setSectionCursor`),
+ * quiz-dot bisa diklik bebas (`quizNavHtml`/`wireQuizNav`), `topic.drill`
+ * di-cycle ke `LISTENING_OLD_ROUND_SIZE` (`pickOldDrillForCount`, pola
+ * `pickDrillForCount` Reading). `level` param BARU (dulu tidak ada —
+ * feedback hardcode 1 bahasa "Tepat! 🎉", sekarang `pickPraise`/
+ * `pickEncourage` spt skill lain, `app.ts` diupdate). Hint (eliminate 2 +
+ * reveal en/id) & tombol manual TIDAK diubah, sudah ada dari sesi
+ * sebelumnya — cuma dibungkus persist+quiz-dot+cycling. `runTantangan` di
+ * bawah SENGAJA TIDAK disentuh: itu genuinely 1 ronde per topik (1 cerita+
+ * 1 pertanyaan, `topic.story`/`topic.question` bukan array) — tidak ada
+ * "ronde lain" utk quiz-dot dilompati, beda dari `drill` di sini yang
+ * array (walau pendek) sehingga BISA di-cycle.
+ */
+export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, onDone: OnDone, level: LevelKey): void {
+  const buildPlan = (): LatihanPlanSlot[] =>
+    pickOldDrillForCount(topic.drill, LISTENING_OLD_ROUND_SIZE).map((d) => ({ kind: 'hear', item: topic.drill.indexOf(d) }));
+  let section = ensureSection('listening', topic.id, 'latihan', buildPlan);
+  if ((section.plan ?? []).length !== LISTENING_OLD_ROUND_SIZE) {
+    resetSectionPlan('listening', topic.id, 'latihan', buildPlan());
+    section = ensureSection('listening', topic.id, 'latihan');
+  }
+  const order: ListeningDrill[] = (section.plan ?? []).map((slot) => topic.drill[slot.item] ?? topic.drill[0]);
+  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
   let revealed = false;
   let eliminated: number[] = [];
   // Opsi drill diauthoring dgn jawaban benar di indeks 0 — WAJIB diacak, kalau
@@ -230,23 +267,32 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
   // TIDAK diacak ulang di `redraw` (Coba Lagi/Petunjuk) supaya posisi stabil.
   let opts: ListeningOption[] = [];
 
+  const slotStatus = (i: number): 0 | 1 | 2 => getSlot('listening', topic.id, 'latihan', i)?.st ?? 0;
+
+  function goTo(i: number): void {
+    round = Math.min(Math.max(i, 0), order.length - 1);
+    setSectionCursor('listening', topic.id, 'latihan', round);
+    draw();
+  }
+
   function draw(): void {
-    if (round >= topic.drill.length) return onDone();
+    if (round >= order.length) return onDone();
     revealed = false;
     eliminated = [];
-    opts = shuffle(topic.drill[round].opts);
+    opts = shuffle(order[round].opts);
     redraw();
   }
 
   function redraw(): void {
-    const d = topic.drill[round];
+    const d = order[round];
     const play = () => speak(d.en);
     container.innerHTML = `
       <div class="latihan-head">
         <span class="stage-badge">🎯 Dengar &amp; Pilih</span>
         ${hintButtonHtml(revealed)}
       </div>
-      <div class="id-text">Soal ${round + 1} dari ${topic.drill.length}</div>
+      ${quizNavHtml(round, order.length, slotStatus)}
+      <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
       <div class="speak-row">
         <button class="speak-btn" data-action="replay">🔊 Putar Kalimat</button>
       </div>
@@ -262,6 +308,7 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
       <div class="feedback" id="fb"></div>
     `;
     play();
+    wireQuizNav(goTo);
 
     setHandlers({
       replay: play,
@@ -284,20 +331,32 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
           btn.classList.add('correct', 'win-burst');
           playCorrectTone();
           fireConfetti();
-          fb.textContent = 'Tepat! 🎉';
+          fb.textContent = pickPraise(level);
           fb.className = 'feedback good';
         } else {
           btn.classList.add('wrong');
           playWrongTone();
           vibrateDevice(160);
-          fb.textContent = 'Dengar lagi, yuk 💪';
+          fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
-        fb.insertAdjacentHTML('afterend', roundActionsHtml(round === topic.drill.length - 1));
+        markSlotAnswered('listening', topic.id, 'latihan', round, correct, { itemRef: d.en });
+        recordEvent({
+          kind: 'answer',
+          skill: 'listening',
+          topicId: topic.id,
+          section: 'latihan',
+          slot: round,
+          itemRef: d.en,
+          activity: 'old-drill',
+          correct,
+        });
+        fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
         setHandlers({
           tryAgainRound: () => redraw(),
           nextRound: () => {
-            round += 1;
+            round = nextUnfinishedRound(round, order.length, slotStatus);
+            setSectionCursor('listening', topic.id, 'latihan', Math.min(round, order.length - 1));
             draw();
           },
         });

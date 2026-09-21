@@ -2136,7 +2136,7 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
         else listeningGame.runTantanganSentence(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       } else {
         if (state.step === 0) listeningGame.renderKenalan(stage, topic, nextStep);
-        else if (state.step === 1) listeningGame.runLatihanInti(stage, topic, nextStepWithSync);
+        else if (state.step === 1) listeningGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
         else listeningGame.runTantangan(stage, topic, nextStepWithSync);
       }
       return;
@@ -2217,7 +2217,7 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
         else grammarGame.runTantanganTransform(stage, topic, nextStepWithSync, praiseLevel);
       } else {
         if (state.step === 0) grammarGame.renderKenalan(stage, topic, nextStep);
-        else if (state.step === 1) grammarGame.runLatihanInti(stage, topic, nextStepWithSync);
+        else if (state.step === 1) grammarGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
         else grammarGame.runTantangan(stage, topic, nextStepWithSync);
       }
       return;

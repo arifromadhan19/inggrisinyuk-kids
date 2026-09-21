@@ -2245,16 +2245,6 @@ body.is-boss-play .tabbar{ display:none; }
 .word-diff span.ok{ color:var(--ok); border-bottom:2px solid var(--ok); padding-bottom:1px; }
 .word-diff span.miss{ color:var(--ink-3); text-decoration:line-through; text-decoration-color:var(--line); opacity:.7; }
 
-.turn-dots{ display:flex; justify-content:center; gap:7px; margin-bottom:var(--s3); }
-.turn-dot{ width:10px; height:10px; border-radius:50%; background:var(--line); }
-.turn-dot.on{ background:var(--accent); }
-/* 🔒 Permintaan user: giliran yang SEDANG berjalan wajib beda dari
-   giliran yang sudah lewat — sebelumnya SEMUA giliran `<= turn` sama-sama
-   `.on` (warna identik), jadi giliran ke-2 dari 3 tidak kebeda dari
-   giliran ke-1 yang sudah kelar. Titik giliran sekarang SAJA dibesarkan +
-   diberi ring, pola sama "dot lebih besar = posisi sekarang" ala carousel. */
-.turn-dot.current{ width:12px; height:12px; box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
-
 /* ------------------------------------------------------------- selesai --- */
 .done-wrap{ position:relative; text-align:center; padding:var(--s3) 0; }
 .done-mascot{ font-size:clamp(58px,15vw,80px); line-height:1; }

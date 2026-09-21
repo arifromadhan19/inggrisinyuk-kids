@@ -61,78 +61,179 @@ export function renderKenalan(container: HTMLElement, topic: GrammarTopic, onNex
   });
 }
 
-export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDone: OnDone): void {
-  let round = 0;
-  let answer: { w: string; idx: number }[] = [];
-  let bank: { w: string; used: boolean; idx: number }[] = [];
+/** `topic.scramble` seringkali cuma 1–3 kalimat (jauh dari target ≥10 soal
+ *  CLAUDE.md) — di-cycle via `shuffle()` sampai `GRAMMAR_ROUND_SIZE`, pola
+ *  SAMA PERSIS `pickDrillForCount` (`games/reading.ts`) yang sudah dipakai
+ *  utk masalah identik di format lama Reading. */
+const GRAMMAR_ROUND_SIZE = 10;
+function pickScrambleForCount(items: GrammarScramble[], count: number): GrammarScramble[] {
+  let pool: GrammarScramble[] = [];
+  while (pool.length < count) pool = pool.concat(shuffle(items));
+  return pool.slice(0, count);
+}
 
-  function setup(sc: GrammarScramble): void {
-    answer = [];
-    bank = shuffle(sc.target.map((w, i) => ({ w, used: false, idx: i })));
+/**
+ * 🔒 Redesain total (permintaan user, audit "format dot" — quiz-dot
+ * Vocab/Listening Little Stars belum konsisten di semua level/skill):
+ * dulu SATU-SATUNYA screen di app ini yang MASIH auto-advance via
+ * `setTimeout` TANPA hint/quiz-dot/persist sama sekali (CLAUDE.md "Belum
+ * dikerjakan"). Sekarang disamakan ke pola mapan skill lain: quiz-dot bisa
+ * diklik bebas (`quizNavHtml`/`wireQuizNav`), persist per-soal
+ * (`ensureSection`/`getSlot`/`markSlotAnswered`/`setSectionCursor`),
+ * tombol manual "🔁 Coba Lagi"/"Lanjut ➡️" (`roundActionsHtml`, GANTIKAN
+ * `setTimeout(draw,1000)`+tombol "Cek Jawaban ✅" lama — evaluasi otomatis
+ * begitu semua kata tersusun, pola sama `runSusunKalimat` Vocab/
+ * `runSusunKalimatSentence` Listening), "💡 Jawabannya: ..." muncul
+ * setelah 2x salah (`wrongSoFar`, pola SAMA PERSIS 2 fungsi Susun Kalimat
+ * itu — bukan hint eliminate-opsi krn ini bukan MCQ). `topic.scramble`
+ * yang cuma 1–3 kalimat di-cycle ke `GRAMMAR_ROUND_SIZE` via
+ * `pickScrambleForCount` (pola `pickDrillForCount` Reading). `level`
+ * param BARU (dulu tidak ada — feedback hardcode 1 bahasa, sekarang
+ * `pickPraise`/`pickEncourage` spt skill lain, `app.ts` diupdate).
+ */
+export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDone: OnDone, level: LevelKey): void {
+  const buildPlan = (): LatihanPlanSlot[] =>
+    pickScrambleForCount(topic.scramble, GRAMMAR_ROUND_SIZE).map((sc) => ({ kind: 'hear', item: topic.scramble.indexOf(sc) }));
+  let section = ensureSection('grammar', topic.id, 'latihan', buildPlan);
+  const isStalePlan = (section.plan ?? []).length !== GRAMMAR_ROUND_SIZE;
+  if (isStalePlan) {
+    resetSectionPlan('grammar', topic.id, 'latihan', buildPlan());
+    section = ensureSection('grammar', topic.id, 'latihan');
+  }
+  const order: GrammarScramble[] = (section.plan ?? []).map((slot) => topic.scramble[slot.item] ?? topic.scramble[0]);
+  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+
+  const slotStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'latihan', i)?.st ?? 0;
+
+  function goTo(i: number): void {
+    round = Math.min(Math.max(i, 0), order.length - 1);
+    setSectionCursor('grammar', topic.id, 'latihan', round);
+    draw();
   }
 
   function draw(): void {
-    if (round >= topic.scramble.length) return onDone();
-    setup(topic.scramble[round]);
-    paint(topic.scramble[round]);
+    if (round >= order.length) return onDone();
+    redraw();
   }
 
-  function paint(sc: GrammarScramble): void {
-    container.innerHTML = `
-      <span class="stage-badge">🎯 Susun Kalimat</span>
-      <div class="id-text">Soal ${round + 1} dari ${topic.scramble.length}</div>
-      <div class="answer-row ${answer.length ? '' : 'empty'}">
-        ${answer.map((a, ai) => `<span class="chip placed" data-action="unpick" data-payload="${ai}">${a.w}</span>`).join('')}
-      </div>
-      <div class="bank-row">
-        ${bank.map((b, bi) => `<span class="chip ${b.used ? 'hidden' : ''}" data-action="pick" data-payload="${bi}">${b.w}</span>`).join('')}
-      </div>
-      <div class="feedback" id="fb"></div>
-      <button class="primary-btn" data-action="check">Cek Jawaban ✅</button>
-      <button class="ghost-btn" data-action="clear">🔄 Bersihkan</button>
-    `;
+  function redraw(): void {
+    const sc = order[round];
+    let answer: { w: string; idx: number }[] = [];
+    let bank: { w: string; used: boolean; idx: number }[] = shuffle(sc.target.map((w, i) => ({ w, used: false, idx: i })));
+    let answered = false;
 
-    setHandlers({
-      clear: () => {
-        setup(sc);
-        paint(sc);
-      },
-      pick: (payload) => {
-        const bi = Number(payload);
-        if (bank[bi].used) return;
-        bank[bi].used = true;
-        answer.push(bank[bi]);
-        paint(sc);
-      },
-      unpick: (payload) => {
-        const ai = Number(payload);
-        const item = answer[ai];
-        answer.splice(ai, 1);
-        bank.find((b) => b.idx === item.idx)!.used = false;
-        paint(sc);
-      },
-      check: () => {
-        const fb = container.querySelector<HTMLElement>('#fb')!;
-        const built = answer.map((a) => a.w).join(' ');
-        if (built === sc.target.join(' ')) {
-          recordAttempt(true);
-          playCorrectTone();
-          fireConfetti();
-          fb.textContent = 'Kalimatnya pas! 🎉';
-          fb.className = 'feedback good';
-          speak(built);
-          round += 1;
-          setTimeout(draw, 1000);
-        } else {
-          recordAttempt(false);
-          container.querySelector('.answer-row')?.classList.add('is-wrong');
-          playWrongTone();
-          vibrateDevice(160);
-          fb.textContent = 'Urutannya belum pas, coba atur lagi 💪';
-          fb.className = 'feedback bad';
+    function paint(): void {
+      const wrongSoFar = getSlot('grammar', topic.id, 'latihan', round)?.w ?? 0;
+      const answerHintHtml =
+        wrongSoFar >= 2 ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Jawabannya: <b>${sc.target.join(' ')}</b></p>` : '';
+
+      container.innerHTML = `
+        <span class="stage-badge">🎯 Susun Kalimat</span>
+        ${quizNavHtml(round, order.length, slotStatus)}
+        <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
+        <div class="answer-row ${answer.length ? '' : 'empty'}">
+          ${answer.map((a, ai) => `<span class="chip placed" data-action="unpick" data-payload="${ai}">${a.w}</span>`).join('')}
+        </div>
+        ${answerHintHtml}
+        <div class="bank-row">
+          ${bank.map((b, bi) => `<span class="chip ${b.used ? 'hidden' : ''}" data-action="pick" data-payload="${bi}">${b.w}</span>`).join('')}
+        </div>
+        <div class="feedback" id="fb"></div>
+        ${
+          answered
+            ? ''
+            : `<div class="letter-actions">
+          <button class="ghost-btn slim" type="button" data-action="removeLastWord" ${answer.length === 0 ? 'disabled' : ''}>⌫ Hapus Kata</button>
+          <button class="ghost-btn slim" type="button" data-action="clear">🔄 Bersihkan</button>
+        </div>`
         }
-      },
-    });
+      `;
+      wireQuizNav(goTo);
+
+      setHandlers({
+        clear: () => {
+          if (answered) return;
+          answer = [];
+          bank = shuffle(sc.target.map((w, i) => ({ w, used: false, idx: i })));
+          paint();
+        },
+        removeLastWord: () => {
+          if (answered || answer.length === 0) return;
+          const last = answer[answer.length - 1];
+          answer = answer.slice(0, -1);
+          bank.find((b) => b.idx === last.idx)!.used = false;
+          paint();
+        },
+        pick: (payload) => {
+          if (answered) return;
+          const bi = Number(payload);
+          if (bank[bi].used) return;
+          bank[bi].used = true;
+          answer.push(bank[bi]);
+          paint();
+          if (answer.length === sc.target.length) checkAnswer();
+        },
+        unpick: (payload) => {
+          if (answered) return;
+          const ai = Number(payload);
+          const item = answer[ai];
+          answer.splice(ai, 1);
+          bank.find((b) => b.idx === item.idx)!.used = false;
+          paint();
+        },
+      });
+    }
+
+    function checkAnswer(): void {
+      if (answered || !answer.length) return;
+      answered = true;
+      container.querySelector('.letter-actions')?.remove();
+      const fb = container.querySelector<HTMLElement>('#fb')!;
+      const built = answer.map((a) => a.w).join(' ');
+      const correct = built.toLowerCase() === sc.target.join(' ').toLowerCase();
+      if (correct) {
+        recordAttempt(true);
+        playCorrectTone();
+        fireConfetti();
+        fb.textContent = pickPraise(level);
+        fb.className = 'feedback good';
+        speak(built);
+      } else {
+        recordAttempt(false);
+        container.querySelector('.answer-row')?.classList.add('is-wrong');
+        playWrongTone();
+        vibrateDevice(160);
+        fb.textContent = pickEncourage(level);
+        fb.className = 'feedback bad';
+      }
+      markSlotAnswered('grammar', topic.id, 'latihan', round, correct, { itemRef: sc.target.join(' ') });
+      recordEvent({
+        kind: 'answer',
+        skill: 'grammar',
+        topicId: topic.id,
+        section: 'latihan',
+        slot: round,
+        itemRef: sc.target.join(' '),
+        activity: 'scramble',
+        correct,
+      });
+      fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
+      setHandlers({
+        tryAgainRound: () => {
+          answered = false;
+          answer = [];
+          bank = shuffle(sc.target.map((w, i) => ({ w, used: false, idx: i })));
+          paint();
+        },
+        nextRound: () => {
+          round = nextUnfinishedRound(round, order.length, slotStatus);
+          setSectionCursor('grammar', topic.id, 'latihan', Math.min(round, order.length - 1));
+          draw();
+        },
+      });
+    }
+
+    paint();
   }
 
   draw();

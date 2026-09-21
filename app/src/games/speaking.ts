@@ -67,15 +67,59 @@ export function renderKenalan(container: HTMLElement, topic: SpeakingTopic, onNe
  * `runUcapan` yang jadi acuan pola ini). Skor mic TETAP TIDAK masuk
  * `recordAttempt()` (konsisten format baru, alasan sama).
  */
+/** `topic.drill`/`topic.roleplay` seringkali cuma 1–4 kalimat (jauh dari
+ *  target ≥10 soal CLAUDE.md) — di-cycle via `shuffle()` sampai
+ *  `SPEAKING_OLD_ROUND_SIZE`, pola SAMA PERSIS `pickDrillForCount`
+ *  (`games/reading.ts`). */
+const SPEAKING_OLD_ROUND_SIZE = 10;
+function pickOldPhraseForCount(items: string[], count: number): string[] {
+  let pool: string[] = [];
+  while (pool.length < count) pool = pool.concat(shuffle(items));
+  return pool.slice(0, count);
+}
+
+/**
+ * 🔒 Redesain (permintaan user, audit "format dot" — quiz-dot Vocab/
+ * Listening Little Stars belum konsisten di semua level/skill): dulu
+ * sequential polos tanpa persist (reload = balik ke soal 1) & `topic.drill`
+ * cuma 1–4 kalimat (jauh dari target ≥10). Sekarang: persist per-soal
+ * (`ensureSection`/`getSlot`/`markSlotAnswered`/`setSectionCursor`),
+ * quiz-dot bisa diklik bebas (`quizNavHtml`/`wireQuizNav`), `topic.drill`
+ * di-cycle ke `SPEAKING_OLD_ROUND_SIZE` (`pickOldPhraseForCount`). Skor
+ * mic proporsional (`scoreMic`) & nada lembut utk belum-perfect
+ * (`playTryAgainTone`, BUKAN merah/getar/tetot — pengecualian resmi jalur
+ * skor mic, CLAUDE.md "Notifikasi Jawaban Salah" poin 2) TIDAK diubah.
+ * Fallback `sttSupported===false` ("✅ Aku Sudah Coba Ucapkan") sekarang
+ * ikut `markSlotAnswered` (correct:true, non-punitive — device tanpa mic
+ * tidak boleh macet di dot yang tidak pernah "selesai") supaya quiz-dot &
+ * `allSlotsDone` tetap benar di device tanpa STT.
+ */
 export function runLatihanInti(container: HTMLElement, topic: SpeakingTopic, onDone: OnDone, level: LevelKey): void {
-  let round = 0;
+  const buildPlan = (): LatihanPlanSlot[] =>
+    pickOldPhraseForCount(topic.drill, SPEAKING_OLD_ROUND_SIZE).map((p) => ({ kind: 'hear', item: topic.drill.indexOf(p) }));
+  let section = ensureSection('speaking', topic.id, 'latihan', buildPlan);
+  if ((section.plan ?? []).length !== SPEAKING_OLD_ROUND_SIZE) {
+    resetSectionPlan('speaking', topic.id, 'latihan', buildPlan());
+    section = ensureSection('speaking', topic.id, 'latihan');
+  }
+  const order: string[] = (section.plan ?? []).map((slot) => topic.drill[slot.item] ?? topic.drill[0]);
+  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+
+  const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'latihan', i)?.st ?? 0;
+
+  function goTo(i: number): void {
+    round = Math.min(Math.max(i, 0), order.length - 1);
+    setSectionCursor('speaking', topic.id, 'latihan', round);
+    draw();
+  }
 
   function draw(): void {
-    if (round >= topic.drill.length) return onDone();
-    const phrase = topic.drill[round];
+    if (round >= order.length) return onDone();
+    const phrase = order[round];
     container.innerHTML = `
       <span class="stage-badge">🎯 Ucapkan &amp; Cek</span>
-      <div class="id-text">Soal ${round + 1} dari ${topic.drill.length}</div>
+      ${quizNavHtml(round, order.length, slotStatus)}
+      <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
       <div class="en-text">"${phrase}"</div>
       <div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar Contoh</button></div>
       <div class="mic-wrap">
@@ -86,11 +130,14 @@ export function runLatihanInti(container: HTMLElement, topic: SpeakingTopic, onD
       <div class="feedback" id="fb"></div>
       ${sttSupported ? '' : `<button class="ghost-btn" type="button" data-action="skip">✅ Aku Sudah Coba Ucapkan</button>`}
     `;
+    wireQuizNav(goTo);
 
     setHandlers({
       replay: () => speak(phrase),
       skip: () => {
-        round += 1;
+        markSlotAnswered('speaking', topic.id, 'latihan', round, true, { itemRef: phrase });
+        round = nextUnfinishedRound(round, order.length, slotStatus);
+        setSectionCursor('speaking', topic.id, 'latihan', Math.min(round, order.length - 1));
         draw();
       },
       mic: () => micFor(),
@@ -110,6 +157,7 @@ export function runLatihanInti(container: HTMLElement, topic: SpeakingTopic, onD
             playCorrectTone();
             fireConfetti();
           } else playTryAgainTone();
+          markSlotAnswered('speaking', topic.id, 'latihan', round, s.perfect, { score: Math.round(s.hitRatio * 100), itemRef: phrase });
           recordEvent({
             kind: 'speak',
             skill: 'speaking',
@@ -132,7 +180,7 @@ export function runLatihanInti(container: HTMLElement, topic: SpeakingTopic, onD
           const fb = container.querySelector<HTMLElement>('#fb')!;
           fb.textContent = s.perfect ? pickPraise(level) : pickEncourage(level);
           fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(round === topic.drill.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
           setHandlers({
             replay: () => speak(phrase),
             playMine: () => {
@@ -140,7 +188,8 @@ export function runLatihanInti(container: HTMLElement, topic: SpeakingTopic, onD
             },
             tryAgainRound: () => draw(),
             nextRound: () => {
-              round += 1;
+              round = nextUnfinishedRound(round, order.length, slotStatus);
+              setSectionCursor('speaking', topic.id, 'latihan', Math.min(round, order.length - 1));
               draw();
             },
           });
@@ -177,16 +226,42 @@ export function runLatihanInti(container: HTMLElement, topic: SpeakingTopic, onD
  * "Lanjut ➡️" (BUKAN auto-advance `setTimeout` lagi) supaya anak sempat
  * dengar suaranya sendiri dulu kalau mau, baru lanjut giliran berikutnya.
  */
+/**
+ * 🔒 Redesain (permintaan user, audit "format dot"): dulu `turn-dots` cuma
+ * indikator visual (`<div>`, tidak bisa diklik) & `topic.roleplay` (2–3
+ * giliran) tidak pernah di-cycle/persist. Sekarang quiz-dot BENERAN bisa
+ * diklik bebas (`quizNavHtml`/`wireQuizNav`, gantikan `turn-dots`), persist
+ * per-giliran, di-cycle ke `SPEAKING_OLD_ROUND_SIZE`. Jawaban bebas (tidak
+ * py target) tetap SELALU dirayakan positif (`playCorrectTone`+confetti,
+ * TIDAK diubah) — `markSlotAnswered(..., true, ...)` (non-punitive,
+ * "sudah dicoba" = selesai, konsisten filosofi `roleplay` sejak awal).
+ */
 export function runTantangan(container: HTMLElement, topic: SpeakingTopic, onDone: OnDone, level: LevelKey): void {
-  let turn = 0;
+  const buildPlan = (): LatihanPlanSlot[] =>
+    pickOldPhraseForCount(topic.roleplay, SPEAKING_OLD_ROUND_SIZE).map((p) => ({ kind: 'hear', item: topic.roleplay.indexOf(p) }));
+  let section = ensureSection('speaking', topic.id, 'tantangan', buildPlan);
+  if ((section.plan ?? []).length !== SPEAKING_OLD_ROUND_SIZE) {
+    resetSectionPlan('speaking', topic.id, 'tantangan', buildPlan());
+    section = ensureSection('speaking', topic.id, 'tantangan');
+  }
+  const order: string[] = (section.plan ?? []).map((slot) => topic.roleplay[slot.item] ?? topic.roleplay[0]);
+  let turn = Math.min(Math.max(section.cursor, 0), order.length - 1);
+
+  const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'tantangan', i)?.st ?? 0;
+
+  function goTo(i: number): void {
+    turn = Math.min(Math.max(i, 0), order.length - 1);
+    setSectionCursor('speaking', topic.id, 'tantangan', turn);
+    draw();
+  }
 
   function draw(): void {
-    if (turn >= topic.roleplay.length) return onDone();
-    const q = topic.roleplay[turn];
+    if (turn >= order.length) return onDone();
+    const q = order[turn];
     container.innerHTML = `
       <span class="stage-badge">🌟 Mini-Roleplay</span>
-      <div class="turn-dots">${topic.roleplay.map((_, i) => `<div class="turn-dot ${i <= turn ? 'on' : ''}${i === turn ? ' current' : ''}"></div>`).join('')}</div>
-      <div class="id-text">Giliran ${turn + 1} dari ${topic.roleplay.length}</div>
+      ${quizNavHtml(turn, order.length, slotStatus)}
+      <div class="id-text">Giliran ${turn + 1} dari ${order.length}</div>
       <div class="en-text">🦁 "${q}"</div>
       <div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar Lagi</button></div>
       <div class="mic-wrap">
@@ -198,11 +273,14 @@ export function runTantangan(container: HTMLElement, topic: SpeakingTopic, onDon
       ${sttSupported ? '' : `<button class="ghost-btn" type="button" data-action="skip">✅ Aku Sudah Jawab</button>`}
     `;
     speak(q);
+    wireQuizNav(goTo);
 
     setHandlers({
       replay: () => speak(q),
       skip: () => {
-        turn += 1;
+        markSlotAnswered('speaking', topic.id, 'tantangan', turn, true, { itemRef: q });
+        turn = nextUnfinishedRound(turn, order.length, slotStatus);
+        setSectionCursor('speaking', topic.id, 'tantangan', Math.min(turn, order.length - 1));
         draw();
       },
       mic: () => micFor(),
@@ -219,6 +297,7 @@ export function runTantangan(container: HTMLElement, topic: SpeakingTopic, onDon
           btn.setAttribute('disabled', 'true');
           playCorrectTone();
           fireConfetti();
+          markSlotAnswered('speaking', topic.id, 'tantangan', turn, true, { itemRef: q });
           recordEvent({
             kind: 'speak',
             skill: 'speaking',
@@ -237,14 +316,15 @@ export function runTantangan(container: HTMLElement, topic: SpeakingTopic, onDon
           const fb = container.querySelector<HTMLElement>('#fb')!;
           fb.textContent = pickPraise(level);
           fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(turn === topic.roleplay.length - 1));
+          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
           setHandlers({
             playMine: () => {
               if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
             },
             tryAgainRound: () => draw(),
             nextRound: () => {
-              turn += 1;
+              turn = nextUnfinishedRound(turn, order.length, slotStatus);
+              setSectionCursor('speaking', topic.id, 'tantangan', Math.min(turn, order.length - 1));
               draw();
             },
           });
