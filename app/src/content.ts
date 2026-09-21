@@ -2725,7 +2725,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           options: [
             { emoji: '🦶', text: 'Toes', ok: true },
             { emoji: '👣', text: 'Feet', ok: false },
-            { emoji: '👀', text: 'Eyes', ok: false },
+            { emoji: '🫣', text: 'Eyes', ok: false },
             { emoji: '👂', text: 'Ears', ok: false },
           ],
         },
@@ -2733,14 +2733,14 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Eyes',
         id: 'Mata',
-        emoji: '👀',
-        example: { en: 'I close my eyes.', id: 'Aku menutup mataku.', emoji: '👀' },
+        emoji: '🫣',
+        example: { en: 'I close my eyes.', id: 'Aku menutup mataku.', emoji: '🫣' },
         practice: { en: 'She closes her eyes to sleep.', id: 'Dia menutup matanya untuk tidur.' },
         question: {
           en: 'What does she close?',
           id: 'Apa yang dia tutup?',
           options: [
-            { emoji: '👀', text: 'Eyes', ok: true },
+            { emoji: '🫣', text: 'Eyes', ok: true },
             { emoji: '👄', text: 'Mouth', ok: false },
             { emoji: '🙌', text: 'Hands', ok: false },
             { emoji: '🦵', text: 'Knees', ok: false },
@@ -2758,7 +2758,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           id: 'Apa yang dia tutup?',
           options: [
             { emoji: '👂', text: 'Ears', ok: true },
-            { emoji: '👀', text: 'Eyes', ok: false },
+            { emoji: '🫣', text: 'Eyes', ok: false },
             { emoji: '👃', text: 'Nose', ok: false },
             { emoji: '👣', text: 'Feet', ok: false },
           ],
@@ -2775,7 +2775,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           id: 'Apa yang dia buka?',
           options: [
             { emoji: '👄', text: 'Mouth', ok: true },
-            { emoji: '👀', text: 'Eyes', ok: false },
+            { emoji: '🫣', text: 'Eyes', ok: false },
             { emoji: '🙌', text: 'Hands', ok: false },
             { emoji: '🤷', text: 'Shoulders', ok: false },
           ],
