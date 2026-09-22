@@ -426,7 +426,7 @@ function tantanganPool(topic: ReadingTopic): ReadingDrill[] {
 }
 
 function readingHintButtonHtml(revealed: boolean): string {
-  return `<button class="ghost-btn slim pt-cta" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}>💡 Petunjuk</button>`;
+  return `<button class="ghost-btn slim" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>`;
 }
 
 function runReadingQuizSet(
@@ -601,7 +601,7 @@ function wireQuizNav(goTo: (i: number) => void): void {
   setHandlers({ quizJump: (payload) => goTo(Number(payload)) });
 }
 
-const hintButtonHtml = `<button class="ghost-btn hint-chip pt-cta" type="button" id="hintBtn" data-action="hint">💡 Petunjuk</button>`;
+const hintButtonHtml = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint"><span class="hint-bulb">💡</span> Petunjuk</button>`;
 
 /** 💡 Petunjuk — matikan 2 dari opsi salah secara acak, sisa persis 2 pilihan
  *  (pola 50/50 yang sama dgn Vocab/Listening `wireHint`). Sekali pakai per

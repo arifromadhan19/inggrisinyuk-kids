@@ -261,7 +261,7 @@ function runSentencePuzzleRound(
       </div>
       <div class="speak-row">
         <button class="speak-btn pt-cta" type="button" data-action="hearSentence">🔊 Dengar</button>
-        <button class="speak-btn-ghost pt-cta" type="button" data-action="hint" ${hintRevealed || answered ? 'disabled' : ''}>💡 Petunjuk</button>
+        <button class="speak-btn-ghost" type="button" data-action="hint" ${hintRevealed || answered ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>
       </div>
       ${hintRevealed ? `<p class="meta" style="text-align:center;margin:0 0 var(--s3)">💡 <b>${round.targetWords.join(' ')}</b></p>` : ''}
       <div class="sp-pyramid">${rowsHtml()}</div>

@@ -486,7 +486,7 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
  *  minta dengar+lihat frasanya lagi — non-punitive scaffold, pola sama
  *  `games/listening.ts` `petunjukButtonHtml`. */
 function petunjukButtonHtml(revealed: boolean): string {
-  return `<button class="speak-btn-ghost pt-cta" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}>💡 Petunjuk</button>`;
+  return `<button class="speak-btn-ghost" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>`;
 }
 
 /** Ucapkan frasa Inggris DULU, baru terjemahan Indonesia SETELAH jeda —

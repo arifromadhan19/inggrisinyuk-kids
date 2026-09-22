@@ -1911,16 +1911,27 @@ body.is-boss-play .tabbar{ display:none; }
 }
 .pt-cta{ animation:ctaPulse 1.8s ease-in-out infinite; }
 .pt-cta:active{ animation:none; }
-/* Permintaan user: "button petunjuk, icon lampu nya menyala seperti di
-   button dengar" — SEMUA tombol "💡 Petunjuk" app-wide (ghost-btn.hint-chip,
-   speak-btn-ghost, ghost-btn.slim) reuse `.pt-cta` yg sama, BUKAN animasi
-   baru (konsisten "bahasa visual lihat-sini-tap-ini"). Berhenti berkedip
-   otomatis begitu tombolnya `disabled` (hint sekali-pakai sudah dipakai) —
-   berlaku baik `disabled` dari template (mis. `revealed`) MAUPUN dari JS
-   `hintBtn.disabled = true` (`wireHint`/`wireTransformHint`), krn keduanya
-   sama-sama match selector `:disabled`. */
 .pt-cta:disabled{ animation:none; transform:none; }
 @media (prefers-reduced-motion: reduce){ .pt-cta{ animation:none; } }
+
+/* 🔒 Revisi user: "bukan button nya yang terlihat menyala tapi icon 💡" —
+   versi awal (`.pt-cta` di seluruh tombol, ring box-shadow spt "🔊 Dengar")
+   DIBALIK: SEMUA tombol "💡 Petunjuk" app-wide sekarang cuma glow di ICON
+   lampunya SAJA (`<span class="hint-bulb">💡</span>`), bukan lagi seluruh
+   badan tombol — `filter:drop-shadow` (bukan `text-shadow`, drop-shadow
+   ikut bentuk siluet emoji jadi hasilnya lebih mirip cahaya lampu beneran)
+   + scale halus, warna kuning-mango konsisten `--sh-1`/mango palette app
+   ini. Berhenti glow otomatis begitu tombol induknya `disabled` (hint
+   sekali-pakai sudah dipakai/terungkap) via selector `button:disabled
+   .hint-bulb` — berlaku baik `disabled` dari template MAUPUN dari JS
+   (`wireHint`/`wireTransformHint`), sama pola dgn `.pt-cta:disabled`. */
+@keyframes bulbGlow{
+  0%,100%{ filter:drop-shadow(0 0 0 rgba(255,181,61,0)); transform:scale(1); }
+  50%{ filter:drop-shadow(0 0 6px rgba(255,181,61,.95)); transform:scale(1.18); }
+}
+.hint-bulb{ display:inline-block; animation:bulbGlow 1.4s ease-in-out infinite; }
+button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
+@media (prefers-reduced-motion: reduce){ .hint-bulb{ animation:none; } }
 .ghost-btn{
   display:block; width:100%; background:var(--surface); color:var(--accent);
   border:2px solid var(--accent-bg); border-radius:var(--r-md);
