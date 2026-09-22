@@ -483,6 +483,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       opts: [{ emoji: '🍎', lbl: 'Apple', ok: true }, { emoji: '🍌', lbl: 'Banana' }, { emoji: '🍇', lbl: 'Grape' }],
       decoys: [{ emoji: '🍊', lbl: 'Orange' }, { emoji: '🍉', lbl: 'Watermelon' }],
     },
+    kenalanGame: [
+      {
+        en: 'Apple',
+        id: 'Apel',
+        emoji: '🍎',
+        example: { en: 'How much is this? I want to buy an apple.', id: 'Berapa harganya? Saya mau beli apel.', emoji: '🍎' },
+        question: {
+          en: 'What does she want to buy?',
+          id: 'Dia mau membeli apa?',
+          options: [
+            { emoji: '🍎', text: 'Apple', ok: true },
+            { emoji: '🍌', text: 'Banana', ok: false },
+            { emoji: '🍇', text: 'Grape', ok: false },
+            { emoji: '🍊', text: 'Orange', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'perkenalan',
@@ -496,6 +514,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     // kedengaran.
     story: ['This is Ara.', 'Ara does not like red.', 'Ara likes blue.'],
     question: { en: 'What color does Ara like?', id: 'Warna apa yang disukai Ara?', opts: [{ emoji: '🔵', lbl: 'Blue', ok: true }, { emoji: '🔴', lbl: 'Red' }, { emoji: '🟢', lbl: 'Green' }], decoys: [{ emoji: '🟡', lbl: 'Yellow' }, { emoji: '🟣', lbl: 'Purple' }] },
+    kenalanGame: [
+      {
+        en: 'Name',
+        id: 'Nama',
+        emoji: '🏷️',
+        example: { en: 'Can you tell me your name?', id: 'Bisa kasih tahu namamu?', emoji: '🏷️' },
+        question: {
+          en: 'What is being asked?',
+          id: 'Apa yang ditanyakan?',
+          options: [
+            { emoji: '🏷️', text: 'Name', ok: true },
+            { emoji: '🎂', text: 'Age', ok: false },
+            { emoji: '🌈', text: 'Color', ok: false },
+            { emoji: '🏫', text: 'School', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'sekolah',
@@ -508,6 +544,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     // bedakan SIAPA pemilik tas warna apa, bukan cuma tangkap 1 kata warna.
     story: ['Budi is at school.', 'His friend has a green bag, but Budi does not.', 'Budi has a blue bag.'],
     question: { en: "What color is Budi's bag?", id: 'Apa warna tas Budi?', opts: [{ emoji: '🔵', lbl: 'Blue', ok: true }, { emoji: '🟢', lbl: 'Green' }], decoys: [{ emoji: '🔴', lbl: 'Red' }, { emoji: '🟡', lbl: 'Yellow' }] },
+    kenalanGame: [
+      {
+        en: 'Classroom',
+        id: 'Ruang Kelas',
+        emoji: '🏫',
+        example: { en: 'Here is my classroom.', id: 'Ini dia kelasku.', emoji: '🏫' },
+        question: {
+          en: 'What is this?',
+          id: 'Ini apa?',
+          options: [
+            { emoji: '🏫', text: 'Classroom', ok: true },
+            { emoji: '📚', text: 'Library', ok: false },
+            { emoji: '🛝', text: 'Playground', ok: false },
+            { emoji: '🍽️', text: 'Cafeteria', ok: false },
+          ],
+        },
+      },
+    ],
   },
   /**
    * 7 topik tambahan (sesi ini) — menggenapkan Listening Explorer dari 3
@@ -541,6 +595,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     story: ['Rani, what is wrong?', 'I do not have a cough. I have a fever.', 'Okay. I will give you medicine.'],
     storyVoices: ['male', 'female', 'male'],
     question: { en: 'What does Rani have?', id: 'Rani sedang sakit apa?', opts: [{ emoji: '🤒', lbl: 'Fever', ok: true }, { emoji: '😷', lbl: 'Cough' }], decoys: [{ emoji: '🤕', lbl: 'Headache' }, { emoji: '🦷', lbl: 'Toothache' }] },
+    kenalanGame: [
+      {
+        en: 'Fever',
+        id: 'Demam',
+        emoji: '🤒',
+        example: { en: 'What is wrong? I have a fever.', id: 'Ada apa? Aku demam.', emoji: '🤒' },
+        question: {
+          en: 'What does he have?',
+          id: 'Dia sakit apa?',
+          options: [
+            { emoji: '🤒', text: 'Fever', ok: true },
+            { emoji: '🤕', text: 'Headache', ok: false },
+            { emoji: '😷', text: 'Cough', ok: false },
+            { emoji: '🦷', text: 'Toothache', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'kebun-binatang',
@@ -557,6 +629,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     ],
     story: ['Dimas sees a turtle first.', 'It moves very slowly.', 'Then he sees a cheetah, and it is fast.'],
     question: { en: 'Which animal is fast?', id: 'Hewan mana yang cepat?', opts: [{ emoji: '🏎️', lbl: 'Cheetah', ok: true }, { emoji: '⏳', lbl: 'Turtle' }], decoys: [{ emoji: '🐵', lbl: 'Monkey' }, { emoji: '🐻', lbl: 'Bear' }] },
+    kenalanGame: [
+      {
+        en: 'Big',
+        id: 'Besar',
+        emoji: '⛰️',
+        example: { en: 'Look at that animal! It is very big.', id: 'Lihat hewan itu! Itu sangat besar.', emoji: '⛰️' },
+        question: {
+          en: 'How big is the animal?',
+          id: 'Seberapa besar hewan itu?',
+          options: [
+            { emoji: '⛰️', text: 'Big', ok: true },
+            { emoji: '🐭', text: 'Small', ok: false },
+            { emoji: '⏳', text: 'Slow', ok: false },
+            { emoji: '🏎️', text: 'Fast', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'di-kasir',
@@ -573,6 +663,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     ],
     story: ['Sinta goes to the cashier.', 'Her friend pays with a coin, but Sinta has paper money.', 'Sinta pays with paper money.'],
     question: { en: 'How does Sinta pay?', id: 'Bagaimana Sinta membayar?', opts: [{ emoji: '💵', lbl: 'Paper Money', ok: true }, { emoji: '🪙', lbl: 'Coin' }], decoys: [{ emoji: '💳', lbl: 'Card' }, { emoji: '📱', lbl: 'Phone' }] },
+    kenalanGame: [
+      {
+        en: 'Money',
+        id: 'Uang',
+        emoji: '💵',
+        example: { en: 'How much is the total? Here is my money.', id: 'Berapa totalnya? Ini uangku.', emoji: '💵' },
+        question: {
+          en: 'What does he give to pay?',
+          id: 'Apa yang dia berikan untuk membayar?',
+          options: [
+            { emoji: '💵', text: 'Money', ok: true },
+            { emoji: '🧾', text: 'Receipt', ok: false },
+            { emoji: '🪙', text: 'Coin', ok: false },
+            { emoji: '💳', text: 'Card', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'jadwal-harian',
@@ -586,6 +694,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     ],
     story: ['Farah wakes up in the morning.', 'Her sister sleeps in the afternoon.', 'Farah plays in the evening.'],
     question: { en: 'When does Farah play?', id: 'Kapan Farah bermain?', opts: [{ emoji: '🌇', lbl: 'Evening', ok: true }, { emoji: '☀️', lbl: 'Afternoon' }], decoys: [{ emoji: '🌅', lbl: 'Morning' }, { emoji: '🌙', lbl: 'Night' }] },
+    kenalanGame: [
+      {
+        en: 'Morning',
+        id: 'Pagi',
+        emoji: '🌅',
+        example: { en: 'What do you usually do every morning?', id: 'Biasanya kamu ngapain tiap pagi?', emoji: '🌅' },
+        question: {
+          en: 'What time of day is being asked about?',
+          id: 'Waktu apa yang ditanyakan?',
+          options: [
+            { emoji: '🌅', text: 'Morning', ok: true },
+            { emoji: '☀️', text: 'Afternoon', ok: false },
+            { emoji: '🌇', text: 'Evening', ok: false },
+            { emoji: '🌙', text: 'Night', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'dari-mana',
@@ -603,6 +729,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     story: ['Leo, where is your new friend from?', 'My friend is from Korea. I am from Indonesia.', 'Nice! Two friends from two countries.'],
     storyVoices: ['female', 'male', 'female'],
     question: { en: 'Where is Leo from?', id: 'Leo berasal dari mana?', opts: [{ emoji: '🇮🇩', lbl: 'Indonesia', ok: true }, { emoji: '🇰🇷', lbl: 'Korea' }], decoys: [{ emoji: '🇯🇵', lbl: 'Japan' }, { emoji: '🇫🇷', lbl: 'France' }] },
+    kenalanGame: [
+      {
+        en: 'Indonesia',
+        id: 'Indonesia',
+        emoji: '🇮🇩',
+        example: { en: 'Where are you from? I am from Indonesia.', id: 'Kamu dari mana? Aku dari Indonesia.', emoji: '🇮🇩' },
+        question: {
+          en: 'Where is he from?',
+          id: 'Dia berasal dari mana?',
+          options: [
+            { emoji: '🇮🇩', text: 'Indonesia', ok: true },
+            { emoji: '🇯🇵', text: 'Japan', ok: false },
+            { emoji: '🇫🇷', text: 'France', ok: false },
+            { emoji: '🇰🇷', text: 'Korea', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'pesta-ulang-tahun',
@@ -619,6 +763,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     ],
     story: ['Today is Nina’s birthday.', 'Her friend brings a card.', 'Nina opens her present.'],
     question: { en: 'What does Nina open?', id: 'Apa yang dibuka Nina?', opts: [{ emoji: '🎁', lbl: 'Present', ok: true }, { emoji: '✉️', lbl: 'Card' }], decoys: [{ emoji: '🎂', lbl: 'Cake' }, { emoji: '🎈', lbl: 'Balloon' }] },
+    kenalanGame: [
+      {
+        en: 'Present',
+        id: 'Hadiah',
+        emoji: '🎁',
+        example: { en: 'Happy birthday! I have a present for you.', id: 'Selamat ulang tahun! Aku punya hadiah untukmu.', emoji: '🎁' },
+        question: {
+          en: 'What does he have for her?',
+          id: 'Dia punya apa untuknya?',
+          options: [
+            { emoji: '🎁', text: 'Present', ok: true },
+            { emoji: '🕯️', text: 'Candle', ok: false },
+            { emoji: '🎵', text: 'Song', ok: false },
+            { emoji: '🎂', text: 'Cake', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'di-dapur',
@@ -635,6 +797,24 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     ],
     story: ['Mom cooks in the kitchen.', 'Dad washes the fork.', 'Mom washes the spoon.'],
     question: { en: 'What does Mom wash?', id: 'Apa yang dicuci Ibu?', opts: [{ emoji: '🥄', lbl: 'Spoon', ok: true }, { emoji: '🍴', lbl: 'Fork' }], decoys: [{ emoji: '🔪', lbl: 'Knife' }, { emoji: '🍽️', lbl: 'Plate' }] },
+    kenalanGame: [
+      {
+        en: 'Soup',
+        id: 'Sup',
+        emoji: '🍲',
+        example: { en: 'What are you cooking? I am cooking soup.', id: 'Kamu memasak apa? Aku memasak sup.', emoji: '🍲' },
+        question: {
+          en: 'What is she cooking?',
+          id: 'Dia memasak apa?',
+          options: [
+            { emoji: '🍲', text: 'Soup', ok: true },
+            { emoji: '🍚', text: 'Rice', ok: false },
+            { emoji: '🍜', text: 'Noodles', ok: false },
+            { emoji: '🥦', text: 'Vegetables', ok: false },
+          ],
+        },
+      },
+    ],
   },
 ];
 
@@ -1383,6 +1563,24 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       opts: [{ emoji: '9️⃣', lbl: '9 o’clock', ok: true }, { emoji: '🔟', lbl: '10 o’clock' }],
       decoys: [{ emoji: '8️⃣', lbl: '8 o’clock' }, { emoji: '🕚', lbl: '11 o’clock' }],
     },
+    kenalanGame: [
+      {
+        en: 'The Gate',
+        id: 'Gerbang',
+        emoji: '🚪',
+        example: { en: 'Where is the gate? My flight is delayed.', id: 'Di mana gerbangnya? Penerbanganku tertunda.', emoji: '🚪' },
+        question: {
+          en: 'What is he asking about?',
+          id: 'Dia sedang menanyakan apa?',
+          options: [
+            { emoji: '🚪', text: 'The Gate', ok: true },
+            { emoji: '🕐', text: 'The Time', ok: false },
+            { emoji: '🎫', text: 'The Ticket', ok: false },
+            { emoji: '🧳', text: 'The Bag', ok: false },
+          ],
+        },
+      },
+    ],
   },
   /**
    * 9 topik tambahan (sesi ini) — menggenapkan Listening Adventurer dari 1
@@ -1416,6 +1614,24 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     story: ['Sari, do you want to be a teacher like your mom?', 'No, I want to be a doctor.', 'That is a great dream!'],
     storyVoices: ['male', 'female', 'male'],
     question: { en: 'What does Sari want to be?', id: 'Sari mau jadi apa?', opts: [{ emoji: '🧑‍⚕️', lbl: 'Doctor', ok: true }, { emoji: '🧑‍🏫', lbl: 'Teacher' }, { emoji: '🧑‍✈️', lbl: 'Pilot' }], decoys: [{ emoji: '🧑‍🍳', lbl: 'Chef' }, { emoji: '🧑‍🚒', lbl: 'Firefighter' }] },
+    kenalanGame: [
+      {
+        en: 'Doctor',
+        id: 'Dokter',
+        emoji: '🧑‍⚕️',
+        example: { en: 'What do you want to be? I want to be a doctor.', id: 'Kamu mau jadi apa? Aku mau jadi dokter.', emoji: '🧑‍⚕️' },
+        question: {
+          en: 'What does she want to be?',
+          id: 'Dia mau jadi apa?',
+          options: [
+            { emoji: '🧑‍⚕️', text: 'Doctor', ok: true },
+            { emoji: '🧑‍🏫', text: 'Teacher', ok: false },
+            { emoji: '🧑‍✈️', text: 'Pilot', ok: false },
+            { emoji: '🧑‍🍳', text: 'Chef', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'petualangan-safari',
@@ -1432,6 +1648,32 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     ],
     story: ['Toni goes on a safari.', 'He thinks he sees a zebra, but it is a lion resting.', 'The lion is very big.'],
     question: { en: 'What does Toni see resting?', id: 'Apa yang Toni lihat sedang istirahat?', opts: [{ emoji: '🦁', lbl: 'Lion', ok: true }, { emoji: '🐾', lbl: 'Zebra' }], decoys: [{ emoji: '🐵', lbl: 'Monkey' }, { emoji: '🐯', lbl: 'Tiger' }] },
+    // `kenalanGame` opsi TEKS-SAJA (bukan emoji) — "Elephant" tidak py
+    // varian emoji "face"/kepala di Unicode (cuma 🐘 tubuh utuh), CLAUDE.md
+    // "Emoji Hewan WAJIB Kepala SAJA" (poin 3) minta kata itu DIGANTI kalau
+    // dipertahankan berarti bukan representasi kata topik primer aslinya —
+    // di sini "Elephant" MEMANG isi primer-nya sendiri, jadi solusinya
+    // hapus ikon (poin 4 aturan "Ikon WAJIB Relevan": teks-saja kalau tidak
+    // ada ikon yang genuinely representatif), BUKAN ganti kata. Keseragaman
+    // set (poin 9) → SEMUA 4 opsi ikut teks-saja, bukan cuma "Elephant".
+    kenalanGame: [
+      {
+        en: 'Elephant',
+        id: 'Gajah',
+        emoji: '🐘',
+        example: { en: 'Look, an elephant! It is a very big animal.', id: 'Lihat, ada gajah! Itu hewan yang sangat besar.', emoji: '🐘' },
+        question: {
+          en: 'Which animal does he see?',
+          id: 'Hewan apa yang dia lihat?',
+          options: [
+            { emoji: '', text: 'Elephant', ok: true },
+            { emoji: '', text: 'Zebra', ok: false },
+            { emoji: '', text: 'Lion', ok: false },
+            { emoji: '', text: 'Monkey', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'makan-malam',
@@ -1449,6 +1691,24 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     story: ['I brought some bread, but we are not eating bread tonight.', 'That is fine. I cooked noodle soup.', 'Great! Let us eat noodle soup together.'],
     storyVoices: ['male', 'female', 'male'],
     question: { en: 'What does the family eat?', id: 'Apa yang dimakan keluarga itu?', opts: [{ emoji: '🍜', lbl: 'Noodle Soup', ok: true }, { emoji: '🍞', lbl: 'Bread' }], decoys: [{ emoji: '🍚', lbl: 'Rice' }, { emoji: '🥗', lbl: 'Salad' }] },
+    kenalanGame: [
+      {
+        en: 'Rice and Soup',
+        id: 'Nasi dan Sup',
+        emoji: '🍚',
+        example: { en: 'What is for dinner? We have rice and soup.', id: 'Makan malamnya apa? Kami makan nasi dan sup.', emoji: '🍚' },
+        question: {
+          en: 'What do they have for dinner?',
+          id: 'Mereka makan apa untuk makan malam?',
+          options: [
+            { emoji: '🍚', text: 'Rice and Soup', ok: true },
+            { emoji: '🍜', text: 'Noodle Soup', ok: false },
+            { emoji: '🍞', text: 'Bread', ok: false },
+            { emoji: '🥛', text: 'Milk', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'kelas-seni',
@@ -1466,6 +1726,24 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     story: ['Kiki, do you use crayons to paint?', 'No, I use paint on my picture.', 'Beautiful picture, Kiki!'],
     storyVoices: ['male', 'female', 'male'],
     question: { en: 'What does Kiki use to paint?', id: 'Apa yang Kiki pakai untuk melukis?', opts: [{ emoji: '🎨', lbl: 'Paint', ok: true }, { emoji: '🖍️', lbl: 'Crayons' }, { emoji: '✏️', lbl: 'Pencil' }], decoys: [{ emoji: '✂️', lbl: 'Scissors' }, { emoji: '🖊️', lbl: 'Pen' }] },
+    kenalanGame: [
+      {
+        en: 'Paint and Crayons',
+        id: 'Cat dan Krayon',
+        emoji: '🎨',
+        example: { en: 'What do you need for art class? I need paint and crayons.', id: 'Kamu butuh apa untuk kelas seni? Aku butuh cat dan krayon.', emoji: '🎨' },
+        question: {
+          en: 'What does he need?',
+          id: 'Dia butuh apa?',
+          options: [
+            { emoji: '🎨', text: 'Paint and Crayons', ok: true },
+            { emoji: '✂️', text: 'Scissors', ok: false },
+            { emoji: '📏', text: 'Ruler', ok: false },
+            { emoji: '✏️', text: 'Pencil', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'ramalan-cuaca',
@@ -1482,6 +1760,24 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     ],
     story: ['Yesterday was cloudy.', 'Today the sky is sunny.', 'Tomorrow it will be rainy.'],
     question: { en: 'What is the weather like today?', id: 'Bagaimana cuaca hari ini?', opts: [{ emoji: '☀️', lbl: 'Sunny', ok: true }, { emoji: '☁️', lbl: 'Cloudy' }, { emoji: '💨', lbl: 'Windy' }], decoys: [{ emoji: '⛈️', lbl: 'Stormy' }, { emoji: '🌫️', lbl: 'Foggy' }] },
+    kenalanGame: [
+      {
+        en: 'Sunny',
+        id: 'Cerah',
+        emoji: '☀️',
+        example: { en: 'How is the weather today? It is sunny and hot.', id: 'Bagaimana cuaca hari ini? Cuacanya cerah dan panas.', emoji: '☀️' },
+        question: {
+          en: 'How is the weather?',
+          id: 'Bagaimana cuacanya?',
+          options: [
+            { emoji: '☀️', text: 'Sunny', ok: true },
+            { emoji: '🌧️', text: 'Rainy', ok: false },
+            { emoji: '💨', text: 'Windy', ok: false },
+            { emoji: '☁️', text: 'Cloudy', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'depan-cermin',
@@ -1498,6 +1794,24 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     ],
     story: ['Budi looks in the mirror.', 'He does not brush his tooth first.', 'He washes his hand first.'],
     question: { en: 'What does Budi do first?', id: 'Apa yang dilakukan Budi lebih dulu?', opts: [{ emoji: '✋', lbl: 'Wash His Hand', ok: true }, { emoji: '🦷', lbl: 'Brush His Tooth' }], decoys: [{ emoji: '💇', lbl: 'Comb His Hair' }, { emoji: '👕', lbl: 'Change His Shirt' }] },
+    kenalanGame: [
+      {
+        en: 'Brushing Tooth',
+        id: 'Menyikat Gigi',
+        emoji: '🪥',
+        example: { en: 'What are you doing? I am brushing my tooth.', id: 'Kamu sedang apa? Aku sedang menyikat gigiku.', emoji: '🪥' },
+        question: {
+          en: 'What is he doing?',
+          id: 'Dia sedang apa?',
+          options: [
+            { emoji: '🪥', text: 'Brushing Tooth', ok: true },
+            { emoji: '✋', text: 'Washing Hand', ok: false },
+            { emoji: '👆', text: 'Pointing', ok: false },
+            { emoji: '💇', text: 'Combing Hair', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'stasiun-kereta',
@@ -1514,6 +1828,27 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     ],
     story: ['Dewi takes a taxi to the station.', 'Her brother rides a bus.', 'Dewi boards the train.'],
     question: { en: 'What does Dewi board?', id: 'Apa yang dinaiki Dewi?', opts: [{ emoji: '🚆', lbl: 'The Train', ok: true }, { emoji: '🚌', lbl: 'The Bus' }], decoys: [{ emoji: '✈️', lbl: 'The Plane' }, { emoji: '🚲', lbl: 'The Bike' }] },
+    // `kenalanGame` opsi TEKS-SAJA — "Fast/Slow/Big/Old" sifat abstrak
+    // tanpa ikon yang genuinely representatif per-kata tanpa dipaksakan
+    // (CLAUDE.md "Ikon WAJIB Relevan" poin 1/3), keseragaman set poin 9.
+    kenalanGame: [
+      {
+        en: 'Fast',
+        id: 'Cepat',
+        emoji: '🚆',
+        example: { en: 'When does the train leave? The train is fast.', id: 'Kapan keretanya berangkat? Keretanya cepat.', emoji: '🚆' },
+        question: {
+          en: 'How is the train?',
+          id: 'Bagaimana keretanya?',
+          options: [
+            { emoji: '', text: 'Fast', ok: true },
+            { emoji: '', text: 'Slow', ok: false },
+            { emoji: '', text: 'Big', ok: false },
+            { emoji: '', text: 'Old', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'hari-olahraga',
@@ -1530,6 +1865,24 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     ],
     story: ['Rio plays badminton first.', 'His friend plays tennis.', 'Then Rio goes swimming.'],
     question: { en: 'What does Rio do after badminton?', id: 'Apa yang dilakukan Rio setelah bulu tangkis?', opts: [{ emoji: '🌊', lbl: 'Swimming', ok: true }, { emoji: '🎾', lbl: 'Tennis' }], decoys: [{ emoji: '🏃', lbl: 'Running' }, { emoji: '⚽', lbl: 'Football' }] },
+    kenalanGame: [
+      {
+        en: 'Football',
+        id: 'Sepak Bola',
+        emoji: '⚽',
+        example: { en: 'What sport do you like? I like playing football.', id: 'Olahraga apa yang kamu suka? Aku suka main sepak bola.', emoji: '⚽' },
+        question: {
+          en: 'What sport does she like?',
+          id: 'Olahraga apa yang dia suka?',
+          options: [
+            { emoji: '⚽', text: 'Football', ok: true },
+            { emoji: '🏀', text: 'Basketball', ok: false },
+            { emoji: '🏸', text: 'Badminton', ok: false },
+            { emoji: '🎾', text: 'Tennis', ok: false },
+          ],
+        },
+      },
+    ],
   },
   {
     id: 'beres-beres',
@@ -1546,6 +1899,24 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     ],
     story: ['Ani cleans the living room.', 'Her sister cleans the bedroom.', 'Ani sweeps the kitchen floor.'],
     question: { en: 'What does Ani sweep?', id: 'Apa yang disapu Ani?', opts: [{ emoji: '🍳', lbl: 'The Kitchen Floor', ok: true }, { emoji: '🛏️', lbl: 'The Bedroom' }, { emoji: '🛁', lbl: 'The Bathroom' }], decoys: [{ emoji: '🌿', lbl: 'The Garden' }, { emoji: '🪜', lbl: 'The Stairs' }] },
+    kenalanGame: [
+      {
+        en: 'Sweep the Floor',
+        id: 'Menyapu Lantai',
+        emoji: '🧹',
+        example: { en: 'Can you help me clean? I will sweep the floor.', id: 'Bisa bantu aku bersih-bersih? Aku akan menyapu lantai.', emoji: '🧹' },
+        question: {
+          en: 'What will he do?',
+          id: 'Apa yang akan dia lakukan?',
+          options: [
+            { emoji: '🧹', text: 'Sweep the Floor', ok: true },
+            { emoji: '🪟', text: 'Open the Window', ok: false },
+            { emoji: '🌻', text: 'Water the Garden', ok: false },
+            { emoji: '🛏️', text: 'Clean the Bedroom', ok: false },
+          ],
+        },
+      },
+    ],
   },
 ];
 
@@ -5056,7 +5427,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
           options: [
             { emoji: '11', text: 'Eleven', ok: true },
             { emoji: '12', text: 'Twelve', ok: false },
-            { emoji: '🔟', text: 'Ten', ok: false },
+            { emoji: '10', text: 'Ten', ok: false },
             { emoji: '13', text: 'Thirteen', ok: false },
           ],
         },
@@ -5418,7 +5789,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
       {
         en: 'Zoo',
         id: 'Kebun Binatang',
-        emoji: '🐼',
+        emoji: '🦁',
         example: { en: 'We see lions at the zoo.', id: 'Kami lihat singa di kebun binatang.', emoji: '🦁' },
         practice: { en: 'At the zoo, we look at big lions.', id: 'Di kebun binatang, kami melihat singa besar.' },
         question: {

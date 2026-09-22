@@ -480,15 +480,33 @@ function browsingLevel(): LevelMeta {
   return valid(state.viewLevel) ?? valid(getBrowseLevel()) ?? currentPlayableLevel();
 }
 
+/**
+ * 🔒 Level ANAK yang tampil di header/rail/Pengaturan (permintaan user: "itu
+ * level user bukan level materi, tidak akan berubah kecuali naik level").
+ * Berangkat dari level akun (`currentLevelMeta`, hasil placement test), lalu
+ * maju 1 tangga tiap kali Raja level itu sudah ditaklukkan — pola sama
+ * perhentian "Kamu di sini" Peta Level (`currentStopKey`). TIDAK PERNAH ikut
+ * level yang sedang dijelajahi di Menu Belajar (`browsingLevel`) — pilih
+ * Little Stars dari dropdown tidak menurunkan level di header.
+ * Murni tampilan: `currentLevelMeta`/`currentPlayableLevel` (bahasa pujian,
+ * default konten, `topicIndex` resume) SENGAJA tidak diubah.
+ */
+function userLevelMeta(): LevelMeta {
+  const base = currentLevelMeta();
+  let idx = LEVELS.findIndex((l) => l.key === base.key);
+  while (idx >= 0 && idx < LEVELS.length - 1 && isBossCleared(LEVELS[idx].key)) idx += 1;
+  return LEVELS[idx] ?? base;
+}
+
 function paintLevelChips(): void {
-  // Sapaan header — "Hi {nama} : Level" kalau nama sudah diisi (lewat
-  // Pengaturan). Belum ada nama = balik ke chip level polos (bukan "Hi :"
-  // yang ganjil tanpa nama) — nama murni opsional & lokal (progress.ts),
+  // Sapaan header — "{avatar} Hi {nama} {level}" kalau nama sudah diisi
+  // (lewat Pengaturan). Belum ada nama = balik ke chip level polos (bukan
+  // "Hi" yang ganjil tanpa nama) — nama murni opsional & lokal (progress.ts),
   // bukan akun (PRD §5).
   const name = getName();
   const avatar = getAvatar();
-  const level = currentLevelMeta();
-  const chipText = name ? `${avatar} Hi ${escapeHtml(name)} : ${level.emoji} ${level.name}` : `${level.emoji} ${level.name}`;
+  const level = userLevelMeta();
+  const chipText = name ? `${avatar} Hi ${escapeHtml(name)} ${level.emoji} ${level.name}` : `${level.emoji} ${level.name}`;
   qs<HTMLElement>(document, '#topLevel').innerHTML = `
     <span class="level-chip"><b>${chipText}</b></span>
   `;
@@ -2135,7 +2153,7 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
         else if ('dialogueLines' in topic) listeningGame.runTantanganDialogue(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
         else listeningGame.runTantanganSentence(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       } else {
-        if (state.step === 0) listeningGame.renderKenalan(stage, topic, nextStep);
+        if (state.step === 0) listeningGame.renderKenalan(stage, topic, nextStep, praiseLevel, contentLevel);
         else if (state.step === 1) listeningGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
         else listeningGame.runTantangan(stage, topic, nextStepWithSync);
       }
@@ -2283,7 +2301,7 @@ const LEVEL_CAMBRIDGE_REF: Partial<Record<LevelKey, string>> = {
 
 function renderSettings(): void {
   const avatar = getAvatar();
-  const level = currentLevelMeta();
+  const level = userLevelMeta();
   const avatarGrid = ANIMAL_AVATARS.map((a) => {
     const name = ANIMAL_AVATAR_NAMES[a];
     const active = a === avatar;
@@ -3067,6 +3085,7 @@ function renderBoss(): void {
       // menang TIDAK perlu konfirmasi lagi.
       setGameRoundActive(false);
       markBossCleared(levelKey);
+      paintLevelChips(); // naik level → header/rail langsung ikut
       addXp(XP_BOSS);
       requestSync();
       renderBossWin(levelKey, result);

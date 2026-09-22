@@ -74,6 +74,19 @@ export interface ListeningTopic {
      *  (`runTantangan`). Opsional; kosong = tanpa jebakan acak. */
     decoys?: ListeningOption[];
   };
+  /** Kenalan "🎮 Main" utk format LAMA (Explorer/Adventurer) — permintaan
+   *  user "samakan UI kenalan main dengan Little Stars". Reuse tipe
+   *  `ListeningSentenceItem` APA ADANYA (bukan tipe baru) supaya bisa
+   *  diadaptasi langsung jadi `ListeningSentenceTopic` (`{id,title,desc,
+   *  items:kenalanGame}`) & dilempar ke `runItemMiniGame` yang SUDAH ada —
+   *  jadi UI-nya otomatis IDENTIK (bukan re-implementasi terpisah). Isinya
+   *  1 comprehension question per PASANGAN `primer` tanya-jawab (bukan per
+   *  baris — baris pertama primer SUDAH berupa pertanyaan, jadi tidak
+   *  bermakna dibuatkan soal komprehensi sendiri terpisah dari jawabannya).
+   *  Opsional — topik lama yang belum diisi ini otomatis TIDAK tampil
+   *  tombol 🎮 (lihat `renderKenalan`), tidak wajib diisi semua topik
+   *  sekaligus. */
+  kenalanGame?: ListeningSentenceItem[];
 }
 
 /**

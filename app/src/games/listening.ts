@@ -134,32 +134,60 @@ function pickDecoy<T>(candidates: T[], label: (c: T) => string, existing: string
   return usable.length ? usable[Math.floor(Math.random() * usable.length)] : null;
 }
 
-export function renderKenalan(container: HTMLElement, topic: ListeningTopic, onNext: OnDone): void {
-  container.innerHTML = `
-    <div class="big-emoji">${topic.scene}</div>
-    <div class="id-text" style="margin-bottom:10px;">Dengar dulu contoh kalimatnya</div>
-    <div class="primer-list">
-      ${topic.primer
-        .map(
-          (p, i) => `
-        <div class="primer-item">
-          <div class="txt"><b>${p.en}</b><span>${p.id}</span></div>
-          <div class="mini-play" data-action="play" data-payload="${i}">🔊</div>
-        </div>`
-        )
-        .join('')}
-    </div>
-    <button class="primary-btn" data-action="advance">Lanjut ke Latihan Inti →</button>
-  `;
-  setHandlers({
-    play: (payload) => {
-      const i = Number(payload);
-      const gender = primerGender(topic, i);
-      if (gender) speakDialogue([{ text: topic.primer[i].en, gender }]);
-      else speak(topic.primer[i].en);
-    },
-    advance: () => onNext(),
-  });
+/**
+ * 🔒 Revisi user: "samakan UI Listening kenalan 'main' di Starter/Explorer/
+ * Adventurer/Trailblazer dengan Little Stars". Format LAMA (Explorer/
+ * Adventurer) sebelumnya TIDAK PUNYA "🎮 Main" sama sekali — cuma daftar
+ * `primer` + tombol "Lanjut". Sekarang, KALAU topik py `kenalanGame` (data
+ * baru, opsional — lihat komentar tipe di `types.ts`), 1 tombol "🎮 Main"
+ * ditambahkan di bawah daftar primer, membuka `runItemMiniGame` yang SAMA
+ * PERSIS dgn Little Stars/Starter/Trailblazer (bukan re-implementasi baru)
+ * — via adapter `{id,title,desc,items:kenalanGame}` yang structural cocok
+ * dgn `ListeningSentenceTopic`. Cuma 1 tombol (bukan per-baris `primer`)
+ * krn `kenalanGame` isinya 1 soal PER PASANGAN tanya-jawab primer, bukan
+ * per baris — 2 baris primer topik ini SECARA UTUH jadi 1 soal komprehensi.
+ */
+export function renderKenalan(
+  container: HTMLElement,
+  topic: ListeningTopic,
+  onNext: OnDone,
+  level: LevelKey,
+  contentLevel: LevelKey
+): void {
+  drawList();
+
+  function drawList(): void {
+    container.innerHTML = `
+      <div class="big-emoji">${topic.scene}</div>
+      <div class="id-text" style="margin-bottom:10px;">Dengar dulu contoh kalimatnya${topic.kenalanGame?.length ? ', atau tap 🎮 buat main' : ''}</div>
+      <div class="primer-list">
+        ${topic.primer
+          .map(
+            (p, i) => `
+          <div class="primer-item">
+            <div class="txt"><b>${p.en}</b><span>${p.id}</span></div>
+            <div class="mini-play" data-action="play" data-payload="${i}">🔊</div>
+          </div>`
+          )
+          .join('')}
+      </div>
+      ${topic.kenalanGame?.length ? `<button class="ghost-btn" type="button" data-action="game">🎮 Main dengan Kalimat Ini</button>` : ''}
+      <button class="primary-btn" data-action="advance">Lanjut ke Latihan Inti →</button>
+    `;
+    setHandlers({
+      play: (payload) => {
+        const i = Number(payload);
+        const gender = primerGender(topic, i);
+        if (gender) speakDialogue([{ text: topic.primer[i].en, gender }]);
+        else speak(topic.primer[i].en);
+      },
+      game: () => {
+        const adapted: ListeningSentenceTopic = { id: topic.id, title: topic.title, desc: topic.desc, items: topic.kenalanGame! };
+        runItemMiniGame(container, adapted, 0, drawList, level, contentLevel);
+      },
+      advance: () => onNext(),
+    });
+  }
 }
 
 /**
@@ -793,12 +821,12 @@ export function renderKenalanSentence(
  * 2 card" (`answerCardsHtml`, kartu 2×2, sama visual dgn Latihan Inti
  * "Dengar & Jawab").
  *
- * 🔒 Revisi user lanjutan, KHUSUS Little Stars ("tidak perlu button
- * petunjuk tapi langsung tampilkan tekstnya saja... tambahkan bullet
- * progress dan bedakan warna untuk yang sedang dibuka") — level ini
- * TIDAK PAKAI Petunjuk sama sekali (`revealed` dikunci `true` terus,
- * teks kalimat+pertanyaan SELALU tampil dari awal, anak paling kecil
- * butuh scaffold lebih drpd audio-only) DAN dapat navigasi bullet-dot
+ * 🔒 Revisi awal, KHUSUS Little Stars ("tidak perlu button petunjuk tapi
+ * langsung tampilkan tekstnya saja... tambahkan bullet progress dan
+ * bedakan warna untuk yang sedang dibuka") — style ini TIDAK PAKAI
+ * Petunjuk sama sekali (`revealed` dikunci `true` terus, teks
+ * kalimat+pertanyaan SELALU tampil dari awal, anak paling kecil butuh
+ * scaffold lebih drpd audio-only) DAN dapat navigasi bullet-dot
  * (`quizNavHtml`/`wireQuizNav`, pola sama Latihan Inti) lintas SEMUA
  * kalimat topik via `goTo` — dot "sedang dibuka" beda warna (`.current`,
  * CSS sudah ada), dot yang sudah pernah dimainkan ditandai `.done`
@@ -807,8 +835,19 @@ export function renderKenalanSentence(
  * progress-nya genuinely berarti), "Selesai ✅" di kalimat terakhir baru
  * balik ke daftar Kenalan.
  *
- * Level LAIN (Starter/Explorer/dst) TETAP pola lama: 1 kalimat casual per
- * tap 🎮, balik ke daftar sesudahnya (BUKAN bagian urutan quiz-dot), teks
+ * 🔒 Revisi user lanjutan: "samakan UI Listening kenalan 'main' di
+ * Starter/Explorer/Adventurer/Trailblazer dengan Little Stars" — flag
+ * `useLittleStarsFlow` (dulu `isLittleStars`, literal cuma Little Stars)
+ * DIPERLEBAR ke Starter/Explorer/Adventurer/Trailblazer JUGA (Explorer/
+ * Adventurer baru BISA masuk sini sejak `renderKenalan` format lama dapat
+ * tombol 🎮 baru, lihat komentarnya). **Achiever SENGAJA TIDAK ikut** (user
+ * tidak memintanya) — TETAP pakai style lama di bawah (petunjuk reveal-
+ * saja, keluar ke daftar tiap 1 soal). Kalau user minta Achiever ikut
+ * disamakan nanti, cukup tambahkan `'achiever'` ke daftar di bawah, TIDAK
+ * ada logic lain yang perlu diubah.
+ *
+ * Achiever (SATU-SATUNYA sisa) TETAP pola lama: 1 kalimat casual per tap
+ * 🎮, balik ke daftar sesudahnya (BUKAN bagian urutan quiz-dot), teks
  * default TERSEMBUNYI — cuma kelihatan lewat "💡 Petunjuk" SATU tombol
  * (`petunjukButtonHtml()`, TERSEDIA SEJAK AWAL, tanpa gating attempt).
  *
@@ -825,17 +864,22 @@ function runItemMiniGame(
   level: LevelKey,
   contentLevel: LevelKey
 ): void {
-  const isLittleStars = contentLevel === 'little-stars';
+  const useLittleStarsFlow =
+    contentLevel === 'little-stars' ||
+    contentLevel === 'starter' ||
+    contentLevel === 'explorer' ||
+    contentLevel === 'adventurer' ||
+    contentLevel === 'trailblazer';
   let current = startIndex;
   let opts = shuffle(topic.items[current].question.options);
-  let revealed = isLittleStars;
+  let revealed = useLittleStarsFlow;
   let answered = false;
-  // 💡 Petunjuk eliminasi-SAJA, KHUSUS Little Stars (permintaan user:
-  // "pada kenalan main, tambahkan petunjuk di kanan atas di atas bullet
-  // progress sama seperti yang sudah dilakukan di section latihan inti,
-  // ketika di klik maka eliminasi 2 jawaban salah") — teks EN+ID di sini
-  // SUDAH selalu tampil dari awal (`revealed` dikunci `true`), jadi
-  // Petunjuk TIDAK perlu ungkap apa-apa lagi, cuma eliminasi. Level lain
+  // 💡 Petunjuk eliminasi-SAJA (permintaan user: "pada kenalan main,
+  // tambahkan petunjuk di kanan atas di atas bullet progress sama seperti
+  // yang sudah dilakukan di section latihan inti, ketika di klik maka
+  // eliminasi 2 jawaban salah") — teks EN+ID di sini SUDAH selalu tampil
+  // dari awal (`revealed` dikunci `true`), jadi Petunjuk TIDAK perlu
+  // ungkap apa-apa lagi, cuma eliminasi. Achiever tetap style lama
   // TETAP pakai `petunjukButtonHtml`/`revealed` di speak-row (tidak
   // disentuh). Direset di `goTo()` (soal BARU), TAPI TIDAK di
   // `tryAgainRound` (non-punitive, sama pola `eliminated`/
@@ -868,16 +912,16 @@ function runItemMiniGame(
     container.innerHTML = `
       <div class="latihan-head">
         <span class="stage-badge">🎮 Main · Dengar &amp; Jawab</span>
-        ${isLittleStars ? hintButtonHtml(eliminated.length > 0) : ''}
+        ${useLittleStarsFlow ? hintButtonHtml(eliminated.length > 0) : ''}
       </div>
       ${
-        isLittleStars
+        useLittleStarsFlow
           ? quizNavHtml(current, topic.items.length, kenalanStatus)
           : ''
       }
       <div class="speak-row">
         <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button>
-        ${!isLittleStars && !answered ? petunjukButtonHtml(revealed) : ''}
+        ${!useLittleStarsFlow && !answered ? petunjukButtonHtml(revealed) : ''}
       </div>
       ${
         revealed
@@ -890,7 +934,7 @@ function runItemMiniGame(
       )}
       <div class="feedback" id="fb"></div>
     `;
-    if (isLittleStars) wireQuizNav(goTo);
+    if (useLittleStarsFlow) wireQuizNav(goTo);
     applyElimination(container, eliminated);
     setHandlers({
       replay: playPrompt,
@@ -947,7 +991,7 @@ function runItemMiniGame(
       fb.className = 'feedback bad';
     }
     recordEvent({ kind: 'answer', skill: 'listening', topicId: topic.id, itemRef: item.example.en, activity: 'sentence-mini', correct });
-    const isLast = !isLittleStars || allSlotsDone(topic.items.length, kenalanStatus);
+    const isLast = !useLittleStarsFlow || allSlotsDone(topic.items.length, kenalanStatus);
     fb.insertAdjacentHTML('afterend', roundActionsHtml(isLast));
     setHandlers({
       tryAgainRound: () => {
@@ -955,7 +999,7 @@ function runItemMiniGame(
         paint();
       },
       nextRound: () => {
-        const next = isLittleStars ? nextUnfinishedRound(current, topic.items.length, kenalanStatus) : topic.items.length;
+        const next = useLittleStarsFlow ? nextUnfinishedRound(current, topic.items.length, kenalanStatus) : topic.items.length;
         if (next < topic.items.length) goTo(next);
         else onBack();
       },

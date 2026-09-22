@@ -61,6 +61,13 @@ function stimuliListening(topic) {
   for (const d of topic.drill ?? []) out.push({ phase: 'drill', text: d.en });
   for (const line of topic.story ?? []) out.push({ phase: 'story', text: line });
   if (topic.question?.en) out.push({ phase: 'question', text: topic.question.en });
+  // `kenalanGame` (BARU — Kenalan "🎮 Main" format lama, permintaan user
+  // "samakan UI kenalan main dengan Little Stars") — 1 item per topik,
+  // `example.en`/`question.en` masing² dicek spt phase lain di sini.
+  for (const kg of topic.kenalanGame ?? []) {
+    out.push({ phase: 'kenalanGame-example', text: kg.example.en });
+    out.push({ phase: 'kenalanGame-question', text: kg.question.en });
+  }
   return out;
 }
 
@@ -198,6 +205,10 @@ function checkListeningGlobalUnique(topicsByLevel, errors) {
         (t.drill ?? []).forEach((d, i) => add(stim, d.en, w(`drill[${i}]`)));
         (t.story ?? []).forEach((l, i) => add(stim, l, w(`story[${i}]`)));
         if (t.question?.en) add(ques, t.question.en, w('question'));
+        (t.kenalanGame ?? []).forEach((kg, i) => {
+          add(stim, kg.example.en, w(`kenalanGame[${i}].example`));
+          add(ques, kg.question.en, w(`kenalanGame[${i}].question`));
+        });
         continue;
       }
       t.items.forEach((it, i) => {
