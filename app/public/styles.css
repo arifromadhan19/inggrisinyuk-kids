@@ -1911,6 +1911,15 @@ body.is-boss-play .tabbar{ display:none; }
 }
 .pt-cta{ animation:ctaPulse 1.8s ease-in-out infinite; }
 .pt-cta:active{ animation:none; }
+/* Permintaan user: "button petunjuk, icon lampu nya menyala seperti di
+   button dengar" — SEMUA tombol "💡 Petunjuk" app-wide (ghost-btn.hint-chip,
+   speak-btn-ghost, ghost-btn.slim) reuse `.pt-cta` yg sama, BUKAN animasi
+   baru (konsisten "bahasa visual lihat-sini-tap-ini"). Berhenti berkedip
+   otomatis begitu tombolnya `disabled` (hint sekali-pakai sudah dipakai) —
+   berlaku baik `disabled` dari template (mis. `revealed`) MAUPUN dari JS
+   `hintBtn.disabled = true` (`wireHint`/`wireTransformHint`), krn keduanya
+   sama-sama match selector `:disabled`. */
+.pt-cta:disabled{ animation:none; transform:none; }
 @media (prefers-reduced-motion: reduce){ .pt-cta{ animation:none; } }
 .ghost-btn{
   display:block; width:100%; background:var(--surface); color:var(--accent);

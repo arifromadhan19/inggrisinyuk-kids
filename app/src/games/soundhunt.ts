@@ -332,7 +332,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
         <p class="meta" style="margin-top:var(--s3)">🧙‍♂️ "${lvl.guideLine}"</p>
         <div class="speak-row">
           <button class="speak-btn pt-cta" type="button" data-action="listen">🔊 Dengar</button>
-          <button class="speak-btn-ghost" type="button" data-action="hint">💡 Petunjuk</button>
+          <button class="speak-btn-ghost pt-cta" type="button" data-action="hint">💡 Petunjuk</button>
         </div>
         ${revealed ? `<div class="en-text">${lvl.instruction}</div><div class="id-text">${lvl.instructionId}</div>` : ''}
         ${optionCardsHtml(lvl.options)}

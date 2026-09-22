@@ -561,7 +561,7 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
  *  persist (`runTantangan` format lama, elimination-only tanpa reveal
  *  state) cukup panggil `hintButtonHtml(false)`. */
 function hintButtonHtml(disabled: boolean): string {
-  return `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint" ${disabled ? 'disabled' : ''}>💡 Petunjuk</button>`;
+  return `<button class="ghost-btn hint-chip pt-cta" type="button" id="hintBtn" data-action="hint" ${disabled ? 'disabled' : ''}>💡 Petunjuk</button>`;
 }
 
 /**
@@ -604,7 +604,7 @@ function hintButtonHtml(disabled: boolean): string {
  *   Dipakai 3 fungsi Tantangan di atas (SEMUA py bullet progress).
  */
 function petunjukButtonHtml(revealed: boolean, compact = false): string {
-  const cls = compact ? 'ghost-btn hint-chip' : 'speak-btn-ghost';
+  const cls = compact ? 'ghost-btn hint-chip pt-cta' : 'speak-btn-ghost pt-cta';
   return `<button class="${cls}" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}>💡 Petunjuk</button>`;
 }
 

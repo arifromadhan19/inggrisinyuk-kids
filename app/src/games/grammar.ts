@@ -985,7 +985,7 @@ function transformOptionsHtml(options: string[]): string {
   </div>`;
 }
 
-const transformHintButtonHtml = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint">💡 Petunjuk</button>`;
+const transformHintButtonHtml = `<button class="ghost-btn hint-chip pt-cta" type="button" id="hintBtn" data-action="hint">💡 Petunjuk</button>`;
 
 /** 💡 Petunjuk — matikan 2 dari opsi salah secara acak, sisa persis 2
  *  pilihan (pola 50/50 sama Vocab/Listening/Reading `wireHint`). Sekali

@@ -650,7 +650,7 @@ function runStoryBookRound(container: HTMLElement, book: StoryBook, onDone: OnDo
         </div>
         <div class="speak-row">
           <button class="speak-btn-ghost" type="button" data-action="listen">🔊 Dengar</button>
-          ${!answered && !hintUsed ? `<button class="speak-btn-ghost" type="button" data-action="hint">💡 Petunjuk</button>` : ''}
+          ${!answered && !hintUsed ? `<button class="speak-btn-ghost pt-cta" type="button" data-action="hint">💡 Petunjuk</button>` : ''}
         </div>
         ${hintUsed ? `<p class="meta story-clue">💭 ${page.clue}</p>` : ''}
         <div class="story-divider" aria-hidden="true">✨ · · · ✨</div>

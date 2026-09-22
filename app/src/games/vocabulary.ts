@@ -1288,7 +1288,7 @@ function wireHintCorrect(container: HTMLElement, isCorrect: boolean[], onUsed?: 
 // "button petunjuk nya simpan di atas sejajarkan dengan text") — dipasang
 // via `.latihan-head` (flex row), bukan `.hint-row` lama (block penuh di
 // bawah opsi, sekarang tidak dipakai lagi di sini).
-const hintButtonHtml = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint">💡 Petunjuk</button>`;
+const hintButtonHtml = `<button class="ghost-btn hint-chip pt-cta" type="button" id="hintBtn" data-action="hint">💡 Petunjuk</button>`;
 
 /**
  * Kartu jawaban 2×2 dgn gambar + teks + lencana huruf (permintaan user: "ada
@@ -1932,7 +1932,7 @@ export function runEjaKata(
         answered
           ? ''
           : `<div class="letter-actions">
-        <button class="ghost-btn slim" type="button" id="hintBtn" data-action="hint" ${hintUsed ? 'disabled' : ''}>💡 Petunjuk</button>
+        <button class="ghost-btn slim pt-cta" type="button" id="hintBtn" data-action="hint" ${hintUsed ? 'disabled' : ''}>💡 Petunjuk</button>
         <button class="ghost-btn slim" type="button" data-action="removeLast" ${placedOrder.length === 0 ? 'disabled' : ''}>⌫ Hapus Huruf</button>
         <button class="ghost-btn slim" type="button" data-action="clearLetters">🔄 Ulang Susunan</button>
       </div>`
@@ -2325,7 +2325,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
           answered
             ? ''
             : `<div class="letter-actions">
-          <button class="ghost-btn slim" type="button" id="hintBtn" data-action="hint" ${hintUsed ? 'disabled' : ''}>💡 Petunjuk</button>
+          <button class="ghost-btn slim pt-cta" type="button" id="hintBtn" data-action="hint" ${hintUsed ? 'disabled' : ''}>💡 Petunjuk</button>
           <button class="ghost-btn" type="button" data-action="removeLastWord" ${answer.length <= hintCount ? 'disabled' : ''}>⌫ Hapus Kata</button>
           <button class="ghost-btn" type="button" data-action="clear">🔄 Bersihkan</button>
         </div>`
