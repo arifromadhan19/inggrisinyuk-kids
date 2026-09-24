@@ -193,11 +193,19 @@ const SPEAK_SAFETY_DELAY_MS = 120;
  *  diucapkan (emoji di teks tetap tampil normal di layar, ini cuma utk
  *  yang dikirim ke speechSynthesis). */
 function stripEmojiForSpeech(text: string): string {
-  return text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}]/gu, '').trim();
+  const cleaned = text
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}]/gu, '')
+    // Lubang soal ("___") & elipsis tidak boleh ikut dibacakan ("underscore").
+    .replace(/_+|…/g, ' ')
+    .trim();
+  // Teks tanpa huruf/angka sama sekali (mis. sisa "." / "!" setelah kata yang
+  // dilubangi di "Lengkapi Kalimat") JANGAN dibacakan — TTS akan menyebut
+  // "dot"/"full stop". Dikembalikan '' supaya pemanggil melewatinya.
+  return /[\p{L}\p{N}]/u.test(cleaned) ? cleaned : '';
 }
 
 export function speak(text: string): void {
-  if (!ttsSupported) return;
+  if (!ttsSupported || !stripEmojiForSpeech(text)) return;
   stopListening(); // lihat komentar di atas `stopListening()` — cegah race condition mic vs TTS
   clearPendingTimers();
   window.speechSynthesis.cancel();
@@ -237,7 +245,7 @@ const QUALITY_VOICE_HINTS = ['google', 'enhanced', 'premium', 'neural', 'natural
  * utk `lang` itu (masih lebih baik drpd dipaksa voice Inggris).
  */
 export function speakLocalized(text: string, lang: string): void {
-  if (!ttsSupported) return;
+  if (!ttsSupported || !stripEmojiForSpeech(text)) return;
   stopListening();
   clearPendingTimers();
   window.speechSynthesis.cancel();
@@ -253,7 +261,8 @@ export function speakLocalized(text: string, lang: string): void {
 }
 
 /** Ucapkan beberapa kalimat berurutan dengan jeda, mis. untuk cerita mini Listening. */
-export function speakSequence(lines: string[], gapMs = 1600): void {
+export function speakSequence(allLines: string[], gapMs = 1600): void {
+  const lines = allLines.filter((l) => stripEmojiForSpeech(l));
   if (!ttsSupported || lines.length === 0) return;
   stopListening();
   clearPendingTimers();
@@ -279,7 +288,8 @@ export interface DialogueLine {
  *  1 voice Inggris (voice wanita & pria resolve ke voice yang sama), penutur
  *  dibedakan lewat `pitch`. Pilihan gender global user (Wanita/Pria) sengaja
  *  TIDAK dipakai di sini — 2 penutur HARUS beda suara. */
-export function speakDialogue(lines: DialogueLine[], gapMs = 1600): void {
+export function speakDialogue(allLines: DialogueLine[], gapMs = 1600): void {
+  const lines = allLines.filter((l) => stripEmojiForSpeech(l.text));
   if (!ttsSupported || lines.length === 0) return;
   stopListening();
   clearPendingTimers();
