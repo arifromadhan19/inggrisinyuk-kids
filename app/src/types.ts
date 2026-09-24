@@ -59,7 +59,6 @@ export interface ListeningTopic {
   title: string;
   scene: string;
   desc: string;
-  primer: { en: string; id: string }[];
   drill: ListeningDrill[];
   story: string[];
   /** Opsional — kalau `story` ditulis sbg DIALOG 2 penutur, gender suara TTS
@@ -83,10 +82,13 @@ export interface ListeningTopic {
    *  1 comprehension question per PASANGAN `primer` tanya-jawab (bukan per
    *  baris — baris pertama primer SUDAH berupa pertanyaan, jadi tidak
    *  bermakna dibuatkan soal komprehensi sendiri terpisah dari jawabannya).
-   *  Opsional — topik lama yang belum diisi ini otomatis TIDAK tampil
-   *  tombol 🎮 (lihat `renderKenalan`), tidak wajib diisi semua topik
-   *  sekaligus. */
-  kenalanGame?: ListeningSentenceItem[];
+   *
+   *  🔒 Revisi user ("samakan Kenalan Explorer/Adventurer dgn level lain"):
+   *  SEKARANG WAJIB & ≥10 item — ini SATU-SATUNYA isi Kenalan format lama
+   *  (field `primer` lama, cuma 1–2 kalimat, DIHAPUS). Tiap item = 1 kalimat
+   *  Kenalan (ikon + 🔊/🎤/🎮) + 1 soal "🎮 Main". Kalimat tanya-jawab ("…?
+   *  …") otomatis dibacakan 2 suara. Dicek `verify-content-duplicates.mjs`. */
+  kenalanGame: ListeningSentenceItem[];
 }
 
 /**

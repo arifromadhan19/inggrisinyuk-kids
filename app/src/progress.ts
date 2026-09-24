@@ -458,6 +458,21 @@ export function getSlot(skill: SkillKey, topicId: string, section: SectionName, 
   return getSection(skill, topicId, section)?.slots[slot];
 }
 
+/**
+ * 🔒 Soal yang dibuka PERTAMA KALI begitu section ber-bullet-progress dibuka
+ * (permintaan user): slot TERKECIL yang belum pernah dijawab (`st !== 2`) —
+ * pertama kali = soal 1, sudah pernah = cari yang terkecil yang belum. BUKAN
+ * lagi `cursor` terakhir dilihat (anak yang sempat lompat ke soal 10 dulu
+ * dulu dibuka lagi di soal 10 walau 1–9 masih kosong). Semua sudah dijawab
+ * → soal 1 (ulang dari awal). `cursor` tetap ditulis `setSectionCursor`,
+ * cuma tidak lagi dipakai sbg titik buka.
+ */
+export function firstUnansweredSlot(skill: SkillKey, topicId: string, section: SectionName, total: number): number {
+  const slots = getSection(skill, topicId, section)?.slots ?? {};
+  for (let i = 0; i < total; i++) if (slots[i]?.st !== 2) return i;
+  return 0;
+}
+
 /** Ditandai begitu 1 soal DIJAWAB (benar ATAU belum tepat — "setiap mencoba
  *  pakai di save", permintaan user) — bukan syarat lanjut, murni penanda. */
 export function markSlotAnswered(

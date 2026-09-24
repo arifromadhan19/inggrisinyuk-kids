@@ -76,7 +76,6 @@ function escapeRegExp(s) {
 const ACCEPTED_CROSS_TOPIC_DUPLICATES = new Map([
   ['orange', 'homonim beda makna: warna (Little Stars kenal-warna) vs buah (Little Stars buah-buahan)'],
   ['star', 'homonim beda makna: bentuk bintang (Little Stars bentuk) vs benda langit (Starter alam-sekitar)'],
-  ['moon', 'homonim beda makna: bentuk bulan sabit (Little Stars bentuk) vs benda langit (Starter alam-sekitar)'],
   ['mouse', 'homonim beda makna: hewan (Little Stars hewan-peliharaan) vs perangkat komputer (Achiever teknologi-internet), jarak level jauh'],
   ['car', 'translasi sudah dibedakan: "Mobil-mobilan" (mainan, Little Stars mainan) vs "Mobil" (kendaraan asli, Little Stars kendaraan)'],
   ['library', 'jarak level jauh & konteks beda: tempat di sekolah (Starter di-sekolah) vs kehidupan akademik (Trailblazer pendidikan-akademik)'],

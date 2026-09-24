@@ -15,6 +15,7 @@ import type { LatihanPlanSlot } from '../progress';
 import {
   ensureSection,
   getSlot,
+  firstUnansweredSlot,
   hasWordInteraction,
   markSlotAnswered,
   markWordInteraction,
@@ -101,7 +102,7 @@ export function runLatihanInti(container: HTMLElement, topic: GrammarTopic, onDo
     section = ensureSection('grammar', topic.id, 'latihan');
   }
   const order: GrammarScramble[] = (section.plan ?? []).map((slot) => topic.scramble[slot.item] ?? topic.scramble[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('grammar', topic.id, 'latihan', order.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -724,7 +725,7 @@ export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatt
     section = ensureSection('grammar', topic.id, 'latihan');
   }
   const order = (section.plan ?? []).map((slot) => ({ item: topic.items[slot.item] ?? topic.items[0], wantFormB: slot.kind === 'toEn' }));
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('grammar', topic.id, 'latihan', order.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -828,7 +829,7 @@ export function runTantanganPattern(container: HTMLElement, topic: GrammarPatter
     section = ensureSection('grammar', topic.id, 'tantangan-pola');
   }
   const order = (section.plan ?? []).map((slot) => ({ item: topic.items[slot.item] ?? topic.items[0], wantFormB: slot.kind === 'toEn' }));
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('grammar', topic.id, 'tantangan-pola', order.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'tantangan-pola', i)?.st ?? 0;
 
@@ -1066,7 +1067,7 @@ export function runLatihanIntiTransform(container: HTMLElement, topic: GrammarTr
     section = ensureSection('grammar', topic.id, 'latihan');
   }
   const order = (section.plan ?? []).map((slot) => topic.transforms[slot.item] ?? topic.transforms[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('grammar', topic.id, 'latihan', order.length);
   let hintUsedThisSlot = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'latihan', i)?.st ?? 0;
@@ -1184,7 +1185,7 @@ export function runTantanganTransform(container: HTMLElement, topic: GrammarTran
     section = ensureSection('grammar', topic.id, 'tantangan-transform');
   }
   const order = (section.plan ?? []).map((slot) => topic.transforms[slot.item] ?? topic.transforms[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('grammar', topic.id, 'tantangan-transform', order.length);
   let hintUsedThisSlot = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'tantangan-transform', i)?.st ?? 0;

@@ -22,6 +22,7 @@ import {
   ensureSection,
   getSection,
   getSlot,
+  firstUnansweredSlot,
   hasWordInteraction,
   markSlotAnswered,
   markWordInteraction,
@@ -88,12 +89,13 @@ function dialogueGenders(lines: ListeningDialogueLine[]): Map<string, VoiceGende
   return genders;
 }
 
-/** Primer format lama berbentuk tanya-jawab (baris pertama diakhiri "?") →
- *  baris genap dibacakan suara wanita, baris ganjil pria; selain itu null
- *  (1 penutur, pakai suara pilihan user). */
-function primerGender(topic: ListeningTopic, i: number): VoiceGender | null {
-  if (topic.primer.length < 2 || !topic.primer[0].en.trim().endsWith('?')) return null;
-  return i % 2 === 0 ? 'female' : 'male';
+/** Kalimat Kenalan format lama berbentuk tanya-jawab ("Where are you from? I
+ *  am from Indonesia.") → [pertanyaan, jawaban] supaya dibacakan 2 suara
+ *  (wanita tanya, pria jawab — tier Explorer/Adventurer `materi/
+ *  pembeda_level.md`, dulu lewat `primer`). Selain itu null = 1 suara. */
+function splitQuestionAnswer(text: string): [string, string] | null {
+  const m = text.trim().match(/^(.+?\?)\s+(\S.*)$/);
+  return m ? [m[1], m[2]] : null;
 }
 
 const STOP_WORDS = new Set([
@@ -146,48 +148,16 @@ function pickDecoy<T>(candidates: T[], label: (c: T) => string, existing: string
  * dgn `ListeningSentenceTopic`. Cuma 1 tombol (bukan per-baris `primer`)
  * krn `kenalanGame` isinya 1 soal PER PASANGAN tanya-jawab primer, bukan
  * per baris — 2 baris primer topik ini SECARA UTUH jadi 1 soal komprehensi.
+ *
+ * 🔒 Revisi user ("samakan Kenalan Explorer/Adventurer dgn level lain") —
+ * daftar `primer` (cuma 1–2 kalimat, 🔊 saja) DIHAPUS. Kenalan format lama
+ * SEKARANG layar yang SAMA PERSIS dgn level lain (`renderKenalanSentence`):
+ * 10 kalimat `kenalanGame`, ikon + 🔊/🎤/🎮 per kalimat, "🎮 Main" 10 soal.
+ * Tanya-jawab tetap dibacakan 2 suara (`twoVoiceQA`).
  */
-export function renderKenalan(
-  container: HTMLElement,
-  topic: ListeningTopic,
-  onNext: OnDone,
-  level: LevelKey,
-  contentLevel: LevelKey
-): void {
-  drawList();
-
-  function drawList(): void {
-    container.innerHTML = `
-      <div class="big-emoji">${topic.scene}</div>
-      <div class="id-text" style="margin-bottom:10px;">Dengar dulu contoh kalimatnya${topic.kenalanGame?.length ? ', atau tap 🎮 buat main' : ''}</div>
-      <div class="primer-list">
-        ${topic.primer
-          .map(
-            (p, i) => `
-          <div class="primer-item">
-            <div class="txt"><b>${p.en}</b><span>${p.id}</span></div>
-            <div class="mini-play" data-action="play" data-payload="${i}">🔊</div>
-          </div>`
-          )
-          .join('')}
-      </div>
-      ${topic.kenalanGame?.length ? `<button class="ghost-btn" type="button" data-action="game">🎮 Main dengan Kalimat Ini</button>` : ''}
-      <button class="primary-btn" data-action="advance">Lanjut ke Latihan Inti →</button>
-    `;
-    setHandlers({
-      play: (payload) => {
-        const i = Number(payload);
-        const gender = primerGender(topic, i);
-        if (gender) speakDialogue([{ text: topic.primer[i].en, gender }]);
-        else speak(topic.primer[i].en);
-      },
-      game: () => {
-        const adapted: ListeningSentenceTopic = { id: topic.id, title: topic.title, desc: topic.desc, items: topic.kenalanGame! };
-        runItemMiniGame(container, adapted, 0, drawList, level, contentLevel);
-      },
-      advance: () => onNext(),
-    });
-  }
+export function renderKenalan(container: HTMLElement, topic: ListeningTopic, level: LevelKey, contentLevel: LevelKey): void {
+  const adapted: ListeningSentenceTopic = { id: topic.id, title: topic.title, desc: topic.desc, items: topic.kenalanGame };
+  renderKenalanSentence(container, adapted, level, contentLevel, true);
 }
 
 /**
@@ -287,7 +257,7 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
     section = ensureSection('listening', topic.id, 'latihan');
   }
   const order: ListeningDrill[] = (section.plan ?? []).map((slot) => topic.drill[slot.item] ?? topic.drill[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('listening', topic.id, 'latihan', order.length);
   let revealed = false;
   let eliminated: number[] = [];
   // Opsi drill diauthoring dgn jawaban benar di indeks 0 — WAJIB diacak, kalau
@@ -648,12 +618,16 @@ function petunjukButtonHtml(revealed: boolean, compact = false): string {
  * Stars, BUKAN pas topik Little Stars yang ditampilkan (mis. anak level
  * lain jelajah/fallback ke topik Little Stars). WAJIB pakai `contentLevel`
  * utk itu, `level` TETAP cuma buat bahasa pujian (`pickPraise`/
- * `pickEncourage`) — jangan gabung lagi. */
+ * `pickEncourage`) — jangan gabung lagi.
+ *
+ * `twoVoiceQA` — dipakai format lama Explorer/Adventurer (`renderKenalan`):
+ * kalimat tanya-jawab dibacakan wanita (tanya) lalu pria (jawab). */
 export function renderKenalanSentence(
   container: HTMLElement,
   topic: ListeningItemsTopic,
   level: LevelKey,
-  contentLevel: LevelKey
+  contentLevel: LevelKey,
+  twoVoiceQA = false
 ): void {
   const doneCls = (i: number, action: 'listen' | 'mic' | 'game'): string =>
     hasWordInteraction('listening', topic.id, i, action) ? ' done' : '';
@@ -682,7 +656,9 @@ export function renderKenalanSentence(
       playSentence: (payload) => {
         const i = Number(payload);
         markWordInteraction('listening', topic.id, i, 'listen', topic.items[i].example.en);
-        speak(topic.items[i].example.en);
+        const qa = twoVoiceQA ? splitQuestionAnswer(topic.items[i].example.en) : null;
+        if (qa) speakDialogue([{ text: qa[0], gender: 'female' }, { text: qa[1], gender: 'male' }]);
+        else speak(topic.items[i].example.en);
         drawList();
       },
       micSentence: (payload) => {
@@ -1104,6 +1080,23 @@ const LATIHAN_ROUND_SIZE = 10;
 type ListeningLatihanKind = 'hear' | 'toId';
 const LATIHAN_KIND_MIX: ListeningLatihanKind[] = [...Array(5).fill('hear'), ...Array(5).fill('toId')];
 
+/** Teks pertanyaan Latihan Inti — permintaan user: "pertanyaannya suka
+ *  kurang jelas karena seringnya hanya 1 kata, buat seperti di Kenalan
+ *  'Main'". Pertanyaan (`item.question`, EN+ID) SELALU tampil di KEDUA jenis
+ *  soal, format sama Kenalan "Main" (1 `.en-text` + 1 `.id-text`). Beda dgn
+ *  Kenalan "Main": kalimat stimulus (`line`) TETAP audio-only — baru ikut
+ *  tampil di depan pertanyaan kalau "💡 Petunjuk" sudah dibuka, supaya soal
+ *  tetap menguji dengar, bukan baca.
+ *
+ *  🔒 Revisi user: terjemahan Indonesia (`question.id`) JUGA disembunyikan
+ *  sampai Petunjuk dibuka — sebelum itu cuma pertanyaan Inggris. Jawaban
+ *  benar tetap memunculkan terjemahannya (`onAnswer`, lewat
+ *  `data-latihan-q`). */
+function latihanQuestionHtml(line: { en: string; id: string }, question: { en: string; id: string }, revealed: boolean): string {
+  if (!revealed) return `<div class="en-text" data-latihan-q>${question.en}</div>`;
+  return `<div class="en-text" data-latihan-q>${line.en} ${question.en}</div><div class="id-text">${line.id} ${question.id}</div>`;
+}
+
 export function runLatihanIntiSentence(
   container: HTMLElement,
   topic: ListeningItemsTopic,
@@ -1130,7 +1123,7 @@ export function runLatihanIntiSentence(
     item: topic.items[slot.item] ?? topic.items[0],
     kind: slot.kind === 'toId' ? 'toId' : 'hear',
   }));
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('listening', topic.id, 'latihan', order.length);
   let hintUsedThisSlot = false;
   // "💡 Petunjuk" gabungan (permintaan user: "ketika klik petunjuk maka 1.
   // menampilkan text inggris dan indonesia 2. eliminasi 2 jawaban salah")
@@ -1200,13 +1193,17 @@ export function runLatihanIntiSentence(
       // sudah dipakai (teks yg sama sudah tampil di atas, jangan duplikat).
       // Teks Inggris dikecilkan sedikit drpd `.en-text` default (clamp
       // 1.25–1.625rem) — permintaan user "kecilkan sedikit".
+      // Pertanyaan Inggris sudah selalu tampil di atas (`latihanQuestionHtml`)
+      // — yang dimunculkan di sini: terjemahan pertanyaan (di bawahnya) +
+      // kalimat stimulus EN+ID (di bawah kartu).
       if (!revealedThisSlot) {
         const line = item.practice ?? item.example;
-        const en = activity === 'hear' ? `${line.en} ${item.question.en}` : line.en;
-        const id = activity === 'hear' ? `${line.id} ${item.question.id}` : line.id;
+        container
+          .querySelector('[data-latihan-q]')
+          ?.insertAdjacentHTML('afterend', `<div class="id-text">${item.question.id}</div>`);
         fb.insertAdjacentHTML(
           'beforebegin',
-          `<div class="en-text" style="font-size:1.05rem">${en}</div><div class="id-text">${id}</div>`
+          `<div class="en-text" style="font-size:1.05rem">${line.en}</div><div class="id-text">${line.id}</div>`
         );
       }
     } else {
@@ -1256,11 +1253,7 @@ export function runLatihanIntiSentence(
       <div class="speak-row">
         <button class="speak-btn pt-cta" data-action="replay">🔊 Dengar</button>
       </div>
-      ${
-        revealedThisSlot
-          ? `<div class="en-text">${line.en} ${item.question.en}</div><div class="id-text">${line.id} ${item.question.id}</div>`
-          : ''
-      }
+      ${latihanQuestionHtml(line, item.question, revealedThisSlot)}
       ${answerCardsHtml(
         opts.map((o) => ({ emoji: o.emoji, label: o.text })),
         'pick'
@@ -1295,12 +1288,19 @@ export function runLatihanIntiSentence(
    *  data baru: 1 klaim diambil acak dari `item.question.options` (50%
    *  peluang klaim yang BENAR, 50% salah satu yang salah), anak menjawab
    *  Benar/Salah lewat 2 tombol besar (bukan kartu 2×2) — bentuk task-nya
-   *  genuinely beda dari "Dengar & Jawab" (bukan cuma re-skin). */
+   *  genuinely beda dari "Dengar & Jawab" (bukan cuma re-skin).
+   *
+   *  🔒 Revisi user: klaim dulu tampil SENDIRIAN ("Street?", 1 kata) tanpa
+   *  pertanyaannya — tidak jelas apa yang dinilai, & ambigu kalau kalimatnya
+   *  menyebut opsi salah sbg distraktor lisan. Sekarang pertanyaan
+   *  (`latihanQuestionHtml`) tampil + diputar sesudah kalimat, klaim
+   *  dibingkai "Is it X?" (revisi user: dulu "Jawabannya: X?", diminta
+   *  ganti ke "apakah X?" versi Inggris). */
   function drawTrueFalse(item: ListeningSentenceItem): void {
     if (!claimCache) claimCache = item.question.options[Math.floor(Math.random() * item.question.options.length)];
     const claim = claimCache;
     const line = item.practice ?? item.example;
-    const playPrompt = () => speak(line.en);
+    const playPrompt = () => speakSequence([line.en, item.question.en], listeningGapMs(contentLevel));
 
     container.innerHTML = `
       <div class="latihan-head">
@@ -1312,9 +1312,9 @@ export function runLatihanIntiSentence(
       <div class="speak-row">
         <button class="speak-btn pt-cta" data-action="replay">🔊 Dengar</button>
       </div>
-      ${revealedThisSlot ? `<div class="en-text">${line.en}</div><div class="id-text">${line.id}</div>` : ''}
-      <div class="big-emoji" style="font-size:44px">${claim.emoji}</div>
-      <p class="reading-question">${claim.text}?</p>
+      ${latihanQuestionHtml(line, item.question, revealedThisSlot)}
+      ${claim.emoji ? `<div class="big-emoji" style="font-size:44px">${claim.emoji}</div>` : ''}
+      <p class="reading-question">Is it ${claim.text}?</p>
       <div class="opt-grid">
         <button class="opt-btn answer-card" type="button" data-action="pick" data-payload="true">
           <span class="answer-card-emoji" aria-hidden="true">✅</span>
@@ -1427,7 +1427,7 @@ function runSusunKalimatSentence(
   // lagi.
   const applyDecoys = contentLevel !== 'little-stars' && contentLevel !== 'starter';
   const items = ensureTantanganPlan(topicId, 'tantangan-susun', allItems);
-  let round = Math.min(Math.max(getSection('listening', topicId, 'tantangan-susun')?.cursor ?? 0, 0), items.length - 1);
+  let round = firstUnansweredSlot('listening', topicId, 'tantangan-susun', items.length);
 
   const susunStatus = (i: number): 0 | 1 | 2 => getSlot('listening', topicId, 'tantangan-susun', i)?.st ?? 0;
 
@@ -1641,7 +1641,7 @@ export function runTantanganNote(
   const topicId = topic.id;
   const section = 'tantangan-note';
   const gaps = topic.noteGaps;
-  let cursor = Math.min(Math.max(getSection('listening', topicId, section)?.cursor ?? 0, 0), gaps.length - 1);
+  let cursor = firstUnansweredSlot('listening', topicId, section, gaps.length);
 
   const gapStatus = (i: number): 0 | 1 | 2 => getSlot('listening', topicId, section, i)?.st ?? 0;
   const filledAnswer = (i: number): string | null => (gapStatus(i) === 2 ? gaps[i].answer : null);
@@ -1835,7 +1835,7 @@ export function runTantanganDialogue(
   const topicId = topic.id;
   const section = 'tantangan-dialog';
   const qs = topic.inferenceQuestions;
-  let cursor = Math.min(Math.max(getSection('listening', topicId, section)?.cursor ?? 0, 0), qs.length - 1);
+  let cursor = firstUnansweredSlot('listening', topicId, section, qs.length);
 
   const qStatus = (i: number): 0 | 1 | 2 => getSlot('listening', topicId, section, i)?.st ?? 0;
 

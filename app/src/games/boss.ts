@@ -248,7 +248,7 @@ const LEAKY_EMOJI_WORDS = new Set(
     // COLOR_WORDS
     'red', 'blue', 'yellow', 'green', 'orange', 'purple', 'pink', 'black', 'white', 'brown', 'gray', 'grey',
     // SHAPE_WORDS
-    'circle', 'square', 'triangle', 'star', 'heart', 'diamond', 'oval', 'cross', 'arrow', 'moon',
+    'circle', 'square', 'triangle', 'star', 'heart', 'diamond', 'oval', 'cross', 'arrow', 'moon', 'crescent',
     // DAY_WORDS
     'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'today', 'tomorrow', 'yesterday',
   ]

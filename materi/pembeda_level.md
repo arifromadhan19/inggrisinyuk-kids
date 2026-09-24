@@ -120,8 +120,8 @@ Temuan inti:
 |---|---|---|---|---|---|---|
 | Little Stars | Dasar | 0.75x | panjang (≥2000 ms) | 1 suara | tidak ada | teks EN+ID + eliminasi 2 (sudah) |
 | Starter | Dasar | 0.75x | panjang (≥2000 ms) | 1 suara | tidak ada | sama (sudah) |
-| Explorer | Menengah | 0.75x | 1900 ms (cerita) | primer tanya-jawab 2 suara; 2 dari 10 cerita dialog 2 suara | halus 40% + opsi jebakan acak | eliminasi 2 (sudah) |
-| Adventurer | Menengah | 1x | 1900 ms (cerita) | primer tanya-jawab 2 suara; 4 dari 10 cerita dialog 2 suara | halus 60% + 4 dari 10 soal punya opsi ke-3 + jebakan acak | eliminasi 2 (sudah) |
+| Explorer | Menengah | 0.75x | 1900 ms (cerita) | kalimat tanya-jawab Kenalan 2 suara; 3 dari 10 cerita dialog 2 suara | halus 40% + opsi jebakan acak | eliminasi 2 (sudah) |
+| Adventurer | Menengah | 1x | 1900 ms (cerita) | kalimat tanya-jawab Kenalan 2 suara; 4 dari 10 cerita dialog 2 suara | halus 60% + 4 dari 10 soal punya opsi ke-3 + jebakan acak | eliminasi 2 (sudah) |
 | Achiever | Lanjut | 1x | 1200 ms | 5 dari 10 catatan dialog 2 suara, sisanya narasi 1 suara | halus 75% + jebakan acak | teks EN+ID, **tanpa eliminasi** |
 | Trailblazer | Lanjut | 1x | 1200 ms | **2 suara (wanita+pria)**, 10/10 | halus 77% + jebakan acak | teks EN+ID, **tanpa eliminasi** |
 
@@ -210,6 +210,10 @@ Permintaan user langsung: "samakan UI Listening kenalan 'main' di level starter,
 
 **Konsekuensi utk dokumen ini**: poin 5 "Yang SENGAJA Tidak Dibedakan" di atas SEKARANG genuinely akurat — Kenalan Main sama persis di 5 dari 6 level (Achiever adalah SATU-SATUNYA pengecualian, bukan lagi "Little Stars sendirian vs 5 level lain").
 
+### 🔒 Revisi lanjutan — Kenalan format lama = 10 kalimat, `primer` dihapus
+
+Permintaan user: "samakan Kenalan Explorer/Adventurer dgn level lain". Sebelum ini Kenalan 2 level itu justru PALING tipis di seluruh app — 1–2 kalimat `primer` dgn 🔊 saja (tanpa ikon per baris, tanpa 🎤) + 1 tombol "🎮 Main" berisi 1 soal. Sekarang `renderKenalan` memanggil `renderKenalanSentence` yang SAMA dgn level lain: 10 kalimat, ikon + 🔊/🎤/🎮 per baris, Main 10 soal ber-quiz-dot. `kenalanGame` digenapkan jadi 10 item × 20 topik; `primer` dihapus dari types & data; 2 suara tanya-jawab dipertahankan lewat `splitQuestionAnswer`+`twoVoiceQA`. Latihan Inti & Tantangan 2 level ini TIDAK disentuh, jadi proporsi distraktor/dialog/jebakan di tabel Tahap 2 tetap berlaku (cerita dialog Explorer naik 2/10 → 3/10 krn topik `perkenalan` ditulis ulang jadi dialog).
+
 ### Tahap 2 — Proporsi per Level (2026-09-21, keputusan user)
 
 Keputusan: distraktor **halus** = penyangkalan/koreksi diri/lampau ("…, not …", "…, but …", "I was worried, but…"), bukan sekadar menyebut pilihan salah. Target minimum **40/50/60/70%** (Explorer/Adventurer/Achiever/Trailblazer); cerita dialog **20/40/50%** (Explorer/Adventurer/Achiever; Trailblazer sudah 100%); opsi ke-3 authored **20%** Explorer, **40%** Adventurer. Hasil terukur (`node app/scripts/report-listening-distractors.mjs`, heuristik kata — pendekatan, bukan bukti semantik):
@@ -226,7 +230,7 @@ Angka Adventurer/Achiever/Trailblazer sedikit di atas target karena heuristik ik
 - **Temuan penting sebelum tahap 2**: 19 dari 20 topik Explorer & Adventurer SUDAH menyebut kedua pilihan di cerita (100% / 90%) — jadi "proporsi distraktor" hanya bermakna kalau dihitung yang HALUS. Baseline halus sebelum tahap 2: 10% / 10% / 14% / 3%.
 - **Bug lama ditemukan & diperbaiki**: format lama Explorer/Adventurer menaruh jawaban benar SELALU di kartu pertama (28/28 soal latihan + 20/20 soal akhir) — opsi sekarang diacak (Latihan Inti per soal, Tantangan per sesi).
 - **Jebakan acak ("kata random ala Vocab") di Tantangan level di atas Starter**: tiap soal Tantangan menyisipkan 1 opsi jebakan acak dari kandidat authored (`question.decoys` Explorer/Adventurer, `gap.decoys` Achiever, `inferenceQuestion.decoys` Trailblazer) yang TIDAK disebut di audio → total opsi Explorer 3–4, Adventurer 3–4, Achiever 4, Trailblazer 5 (maks 5 = sama dgn tier Lanjut Vocab). Kandidat authored (bukan diambil acak dari topik lain) krn pool lintas topik sempat menghasilkan jebakan yang bisa jadi parafrase jawaban benar (mis. "Returning an Item" utk "Exchange a Jacket"). Aturan "tidak disebut": lebih dari separuh kata inti kandidat tidak boleh ada di audio (kata yang ada di SEMUA opsi, mis. "Book", diabaikan) — dicek runtime (`pickDecoy`) & saat build (`checkListeningTantanganData`).
-- **2 suara di format lama**: `ListeningTopic.storyVoices` (gender per baris `story`); primer tanya-jawab (baris pertama berakhiran "?") otomatis wanita/pria bergantian di Kenalan. Achiever: `notePassage[].speaker` (semua baris atau tidak sama sekali).
+- **2 suara di format lama**: `ListeningTopic.storyVoices` (gender per baris `story`); kalimat Kenalan berbentuk tanya-jawab ("…? …") otomatis wanita (tanya) lalu pria (jawab) lewat `splitQuestionAnswer`/`twoVoiceQA` — dulu lewat `primer`/`primerGender`, keduanya sudah DIHAPUS. Achiever: `notePassage[].speaker` (semua baris atau tidak sama sekali).
 
 ### Detail Implementasi
 

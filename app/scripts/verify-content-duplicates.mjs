@@ -273,6 +273,64 @@ function checkListeningTantanganData(topicsByLevel, errors) {
   }
 }
 
+/** Kenalan Listening (semua level): (1) format lama (Explorer/Adventurer)
+ *  WAJIB ≥10 item `kenalanGame` — sejak `primer` dihapus, itu SATU-SATUNYA
+ *  isi Kenalan-nya (permintaan user "samakan Kenalan dgn level lain"); (2)
+ *  teks pertanyaan `item.question.en` (items & kenalanGame) TIDAK BOLEH
+ *  memuat teks salah satu opsinya — pertanyaan kini SELALU tampil di layar
+ *  (Latihan Inti & Kenalan "Main"), jadi anak bisa asal cocokkan kata
+ *  (CLAUDE.md "Soal Tidak Boleh Bisa Ditebak" pola #2). */
+function checkListeningKenalanData(topicsByLevel, errors) {
+  const wordsOf = (t) => ` ${t.toLowerCase().replace(/’/g, "'").replace(/[^a-z0-9' ]/g, ' ').replace(/\s+/g, ' ').trim()} `;
+  for (const [level, topics] of Object.entries(topicsByLevel ?? {})) {
+    for (const t of topics ?? []) {
+      const at = `Listening "${t.id}" (${level})`;
+      const list = 'items' in t ? t.items : t.kenalanGame ?? [];
+      if (!('items' in t) && list.length < 10) errors.push(`${at}: kenalanGame cuma ${list.length} item (Kenalan format lama wajib ≥10).`);
+      list.forEach((it, i) => {
+        const q = wordsOf(it.question.en);
+        for (const o of it.question.options) {
+          if (o.text && q.includes(wordsOf(o.text))) errors.push(`${at} item #${i}: pertanyaan "${it.question.en}" memuat teks opsi "${o.text}" (jawaban bisa ditebak dari teks).`);
+        }
+      });
+    }
+  }
+}
+
+/**
+ * Listening format `items`: subjek pertanyaan WAJIB muncul di kalimat yang
+ * diputar sebelumnya (`example` di Kenalan "Main", `practice` di Latihan
+ * Inti) — audit Listening menemukan "We recycle…" lalu ditanya "How often
+ * do THEY recycle?" (anak dengar 2 subjek beda). Cuma dicek kalau kedua
+ * kalimat py kata ganti subjek; "Mom and I" → "we" dianggap cocok.
+ */
+function checkListeningSubjectMatch(topicsByLevel, errors) {
+  const PRONOUNS = ['i', 'we', 'they', 'she', 'he', 'you'];
+  const pronounsOf = (s) => {
+    const found = new Set();
+    for (const w of s.toLowerCase().replace(/[^a-z' ]/g, ' ').split(/\s+/)) if (PRONOUNS.includes(w)) found.add(w);
+    return found;
+  };
+  for (const [level, topics] of Object.entries(topicsByLevel)) {
+    for (const topic of topics ?? []) {
+      if (!('items' in topic)) continue;
+      for (const item of topic.items) {
+        const q = pronounsOf(item.question.en);
+        if (q.size === 0) continue;
+        for (const [field, text] of [['example', item.example.en], ['practice', item.practice?.en]]) {
+          if (!text) continue;
+          const s = pronounsOf(text);
+          if (s.size === 0) continue;
+          const missing = [...q].filter((x) => !s.has(x) && !(x === 'we' && s.has('i')));
+          if (missing.length > 0) {
+            errors.push(`Listening ${level}/${topic.id} [${item.en}]: subjek pertanyaan "${item.question.en}" (${missing.join(', ')}) tidak ada di ${field} "${text}"`);
+          }
+        }
+      }
+    }
+  }
+}
+
 function checkTopics(skillLabel, topicsByLevel, isOldFormat, extract, errors) {
   for (const [level, topics] of Object.entries(topicsByLevel ?? {})) {
     for (const topic of topics ?? []) {
@@ -321,6 +379,8 @@ async function main() {
   checkListeningPracticeVariants(mod.LISTENING_TOPICS_BY_LEVEL, errors);
   checkListeningGlobalUnique(mod.LISTENING_TOPICS_BY_LEVEL, errors);
   checkListeningTantanganData(mod.LISTENING_TOPICS_BY_LEVEL, errors);
+  checkListeningKenalanData(mod.LISTENING_TOPICS_BY_LEVEL, errors);
+  checkListeningSubjectMatch(mod.LISTENING_TOPICS_BY_LEVEL, errors);
 
   if (errors.length > 0) {
     console.error(`\n❌ Verifikasi duplikat kalimat GAGAL (${errors.length} masalah):\n`);
@@ -329,7 +389,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('✅ Verifikasi duplikat kalimat lolos — tidak ada kalimat soal yang 100% sama antar tahap dalam 1 topik (format lama Listening/Reading/Speaking/Grammar), Latihan Inti Listening (items) ≥70% pakai kalimat practice beda dari Kenalan, & kalimat utuh Listening unik antar topik/level.');
+  console.log('✅ Verifikasi duplikat kalimat lolos — tidak ada kalimat soal yang 100% sama antar tahap dalam 1 topik (format lama Listening/Reading/Speaking/Grammar), Latihan Inti Listening (items) ≥70% pakai kalimat practice beda dari Kenalan, kalimat utuh Listening unik antar topik/level, & Kenalan Listening ≥10 item tanpa pertanyaan yang memuat teks opsinya, & subjek pertanyaan Listening cocok dgn kalimatnya.');
 }
 
 main().catch((err) => {

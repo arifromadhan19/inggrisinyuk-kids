@@ -64,6 +64,7 @@ import type { LatihanPlanSlot } from '../progress';
 import {
   ensureSection,
   getSlot,
+  firstUnansweredSlot,
   hasWordInteraction,
   markSlotAnswered,
   markWordInteraction,
@@ -452,7 +453,7 @@ function runReadingQuizSet(
     sectionState = ensureSection('reading', topic.id, section);
   }
   const order: ReadingDrill[] = (sectionState.plan ?? []).map((slot) => pool[slot.item] ?? pool[0]);
-  let round = Math.min(Math.max(sectionState.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('reading', topic.id, section, order.length);
   let revealed = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('reading', topic.id, section, i)?.st ?? 0;
@@ -901,7 +902,7 @@ export function runLatihanIntiWord(container: HTMLElement, topic: ReadingWordTop
     section = ensureSection('reading', topic.id, 'latihan');
   }
   const order: ReadingWordItem[] = (section.plan ?? []).map((slot) => topic.items[slot.item] ?? topic.items[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('reading', topic.id, 'latihan', order.length);
   let hintUsedThisSlot = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('reading', topic.id, 'latihan', i)?.st ?? 0;
@@ -1018,7 +1019,7 @@ export function runTantanganWord(container: HTMLElement, topic: ReadingWordTopic
     section = ensureSection('reading', topic.id, 'tantangan-baca');
   }
   const order: ReadingWordItem[] = (section.plan ?? []).map((slot) => topic.items[slot.item] ?? topic.items[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('reading', topic.id, 'tantangan-baca', order.length);
   let hintUsedThisSlot = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('reading', topic.id, 'tantangan-baca', i)?.st ?? 0;
@@ -1193,7 +1194,7 @@ export function runLatihanIntiCheck(container: HTMLElement, topic: ReadingCheckT
     section = ensureSection('reading', topic.id, 'latihan');
   }
   const order: ReadingCheckItem[] = (section.plan ?? []).map((slot) => topic.checks[slot.item] ?? topic.checks[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('reading', topic.id, 'latihan', order.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('reading', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -1307,7 +1308,7 @@ export function runTantanganCheck(container: HTMLElement, topic: ReadingCheckTop
     section = ensureSection('reading', topic.id, 'tantangan-cek');
   }
   const order: ReadingCheckItem[] = (section.plan ?? []).map((slot) => topic.checks[slot.item] ?? topic.checks[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('reading', topic.id, 'tantangan-cek', order.length);
   let hintUsedThisSlot = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('reading', topic.id, 'tantangan-cek', i)?.st ?? 0;

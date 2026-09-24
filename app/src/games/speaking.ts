@@ -3,8 +3,8 @@ import { setHandlers } from '../interaction';
 import type { LatihanPlanSlot } from '../progress';
 import {
   ensureSection,
-  getSection,
   getSlot,
+  firstUnansweredSlot,
   hasWordInteraction,
   markSlotAnswered,
   markWordInteraction,
@@ -103,7 +103,7 @@ export function runLatihanInti(container: HTMLElement, topic: SpeakingTopic, onD
     section = ensureSection('speaking', topic.id, 'latihan');
   }
   const order: string[] = (section.plan ?? []).map((slot) => topic.drill[slot.item] ?? topic.drill[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('speaking', topic.id, 'latihan', order.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -245,7 +245,7 @@ export function runTantangan(container: HTMLElement, topic: SpeakingTopic, onDon
     section = ensureSection('speaking', topic.id, 'tantangan');
   }
   const order: string[] = (section.plan ?? []).map((slot) => topic.roleplay[slot.item] ?? topic.roleplay[0]);
-  let turn = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let turn = firstUnansweredSlot('speaking', topic.id, 'tantangan', order.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'tantangan', i)?.st ?? 0;
 
@@ -770,7 +770,7 @@ export function runLatihanIntiPhrase(container: HTMLElement, topic: SpeakingPhra
     section = ensureSection('speaking', topic.id, 'latihan');
   }
   const order = (section.plan ?? []).map((slot) => topic.items[slot.item] ?? topic.items[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('speaking', topic.id, 'latihan', order.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -911,7 +911,7 @@ export function runTantanganPhrase(container: HTMLElement, topic: SpeakingPhrase
     section = ensureSection('speaking', topic.id, 'tantangan-recall');
   }
   const order = (section.plan ?? []).map((slot) => topic.items[slot.item] ?? topic.items[0]);
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('speaking', topic.id, 'tantangan-recall', order.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'tantangan-recall', i)?.st ?? 0;
 
@@ -1156,7 +1156,7 @@ export function renderKenalanInterview(container: HTMLElement, topic: SpeakingIn
  * urutannya memang sudah tetap).
  */
 export function runLatihanIntiInterview(container: HTMLElement, topic: SpeakingInterviewTopic, onDone: OnDone, level: LevelKey): void {
-  let round = Math.min(Math.max(getSection('speaking', topic.id, 'latihan')?.cursor ?? 0, 0), topic.turns.length - 1);
+  let round = firstUnansweredSlot('speaking', topic.id, 'latihan', topic.turns.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -1263,7 +1263,7 @@ export function runLatihanIntiInterview(container: HTMLElement, topic: SpeakingI
  * LANGSUNG pakai index `topic.turns` asli.
  */
 export function runTantanganInterview(container: HTMLElement, topic: SpeakingInterviewTopic, onDone: OnDone, level: LevelKey): void {
-  let round = Math.min(Math.max(getSection('speaking', topic.id, 'tantangan')?.cursor ?? 0, 0), topic.turns.length - 1);
+  let round = firstUnansweredSlot('speaking', topic.id, 'tantangan', topic.turns.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'tantangan', i)?.st ?? 0;
 
@@ -1657,7 +1657,7 @@ function runStoryMiniGame(
  * Suaramu, non-punitive (Lanjut selalu ada apa pun skornya).
  */
 export function runLatihanIntiStory(container: HTMLElement, topic: SpeakingStoryTopic, onDone: OnDone, level: LevelKey): void {
-  let round = Math.min(Math.max(getSection('speaking', topic.id, 'latihan')?.cursor ?? 0, 0), topic.stories.length - 1);
+  let round = firstUnansweredSlot('speaking', topic.id, 'latihan', topic.stories.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -1780,7 +1780,7 @@ export function runLatihanIntiStory(container: HTMLElement, topic: SpeakingStory
  * pun skornya, non-punitive) supaya anak tetap belajar dari percobaannya.
  */
 export function runTantanganStory(container: HTMLElement, topic: SpeakingStoryTopic, onDone: OnDone, level: LevelKey): void {
-  let round = Math.min(Math.max(getSection('speaking', topic.id, 'tantangan')?.cursor ?? 0, 0), topic.stories.length - 1);
+  let round = firstUnansweredSlot('speaking', topic.id, 'tantangan', topic.stories.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('speaking', topic.id, 'tantangan', i)?.st ?? 0;
 

@@ -2153,7 +2153,7 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
         else if ('dialogueLines' in topic) listeningGame.runTantanganDialogue(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
         else listeningGame.runTantanganSentence(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       } else {
-        if (state.step === 0) listeningGame.renderKenalan(stage, topic, nextStep, praiseLevel, contentLevel);
+        if (state.step === 0) listeningGame.renderKenalan(stage, topic, praiseLevel, contentLevel);
         else if (state.step === 1) listeningGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
         else listeningGame.runTantangan(stage, topic, nextStepWithSync);
       }

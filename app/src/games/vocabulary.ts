@@ -6,6 +6,7 @@ import {
   ensureSection,
   getSection,
   getSlot,
+  firstUnansweredSlot,
   hasWordInteraction,
   markSlotAnswered,
   markWordInteraction,
@@ -442,7 +443,7 @@ function isColorTopic(topic: VocabTopic): boolean {
  *  ilustrasi di scene (bukan diulang di tiap kartu jawaban) — itu memang
  *  gambar bentuk yang lagi dideskripsikan kalimatnya, aman & perlu utk
  *  konteks visual "This is a ___.". */
-const SHAPE_WORDS = ['circle', 'square', 'triangle', 'star', 'heart', 'diamond', 'oval', 'cross', 'arrow', 'moon'];
+const SHAPE_WORDS = ['circle', 'square', 'triangle', 'star', 'heart', 'diamond', 'oval', 'cross', 'arrow', 'crescent'];
 function isShapeTopic(topic: VocabTopic): boolean {
   return topic.items.every((it) => SHAPE_WORDS.includes(it.en.trim().toLowerCase()));
 }
@@ -1375,7 +1376,7 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
     const target = topic.items[slot.item] ?? topic.items[0];
     return { kind: slot.kind, target, distractors: shuffle(topic.items.filter((i) => i !== target)).slice(0, distractorCount) };
   });
-  let round = Math.min(Math.max(section.cursor, 0), order.length - 1);
+  let round = firstUnansweredSlot('vocabulary', topic.id, 'latihan', order.length);
   let hintUsedThisSlot = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('vocabulary', topic.id, 'latihan', i)?.st ?? 0;
@@ -1766,24 +1767,19 @@ function singleWordItems(items: VocabItem[]): VocabItem[] {
 }
 
 /**
- * 7 topik PERTAMA Little Stars (permintaan user: "biar anak kecil tidak
+ * Topik PENGENALAN Little Stars (permintaan user: "biar anak kecil tidak
  * kaget, dikasih yang mudah dulu sebagai pengenalan") — Eja Kata & Susun
- * Kalimat di Tantangan utk topik-topik ini AUTO nunjukin petunjuk (bukan
- * nunggu tap tombol), dari topik ke-8 (`buah-buahan`) dst kembali ke
- * perilaku normal (petunjuk cuma muncul kalau di-tap). Daftar id EKSPLISIT
- * (bukan "7 pertama di array VOCAB_TOPICS_LITTLE_STARS" yang dihitung
- * runtime) — sengaja, supaya kalau urutan topik di content.ts berubah/ada
- * topik baru disisipkan nanti, cakupan "7 topik pengenalan" ini TETAP
- * merujuk topik yang SAMA persis (bukan ikut geser diam-diam).
+ * Kalimat di Tantangan utk topik ini AUTO nunjukin petunjuk + jawabannya
+ * (bukan nunggu tap tombol/2x salah), topik lain perilaku normal (petunjuk
+ * cuma muncul kalau di-tap). 🔒 Revisi user: dipersempit dari 7 topik
+ * pertama (Salam…Hewan Peliharaan) jadi HANYA topik pertama — topik 2–7
+ * sekarang ikut perilaku normal. Daftar id EKSPLISIT (bukan "N pertama di
+ * array VOCAB_TOPICS_LITTLE_STARS" yang dihitung runtime) — sengaja, supaya
+ * kalau urutan topik di content.ts berubah/ada topik baru disisipkan nanti,
+ * cakupannya TETAP merujuk topik yang SAMA persis (bukan ikut geser diam-diam).
  */
 const EASY_ONBOARDING_TOPIC_IDS = new Set([
   'salam-sopan-santun', // 1. Salam & Sopan Santun (Greetings & Manners)
-  'kenal-warna', // 2. Kenal Warna (Colors)
-  'angka-pertama', // 3. Angka 1–10 (Numbers 1–10)
-  'bentuk', // 4. Bentuk (Shapes)
-  'keluargaku', // 5. Keluargaku (My Family)
-  'tubuhku', // 6. Anggota Tubuhku (My Body)
-  'hewan-peliharaan', // 7. Hewan Peliharaan & Ternak (Pets & Farm Animals)
 ]);
 
 function isEasyOnboardingTopic(topicId: string): boolean {
@@ -1809,7 +1805,7 @@ export function runEjaKata(
 ): void {
   const dayItems = isDayItems(allItems);
   const items = ensureTantanganPlan(topicId, 'tantangan-eja', singleWordItems(allItems));
-  let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-eja')?.cursor ?? 0, 0), items.length - 1);
+  let round = firstUnansweredSlot('vocabulary', topicId, 'tantangan-eja', items.length);
   let slots: (string | null)[] = [];
   let bank: { ch: string; used: boolean; idx: number }[] = [];
   // Jejak huruf yang ditaruh ANAK SENDIRI (bukan hint) — {slot, bi} per
@@ -1833,11 +1829,11 @@ export function runEjaKata(
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('vocabulary', topicId, 'tantangan-eja', i)?.st ?? 0;
 
-  // 🔒 Auto-hint 7 topik pengenalan Little Stars (permintaan user, lihat
+  // 🔒 Auto-hint topik pengenalan Little Stars (permintaan user, lihat
   // komentar `EASY_ONBOARDING_TOPIC_IDS`) — SAMA PERSIS logic tombol "hint"
   // manual di bawah (60% posisi acak), cuma dipicu otomatis tiap kata baru
   // (bukan nunggu tap), supaya anak yang baru pertama kali main tidak
-  // kaget lihat papan huruf kosong. Topik ke-8 dst TIDAK kena ini sama
+  // kaget lihat papan huruf kosong. Topik lain TIDAK kena ini sama
   // sekali — tetap tombol manual apa adanya.
   function maybeAutoHint(it: VocabItem): void {
     if (!isEasyOnboardingTopic(topicId)) return;
@@ -1898,7 +1894,7 @@ export function runEjaKata(
     // gagal); `w` (wrongCount) sudah tersimpan+sinkron per slot
     // (progress.ts), jadi baca dari sana, bukan counter baru.
     const wrongSoFar = getSlot('vocabulary', topicId, 'tantangan-eja', round)?.w ?? 0;
-    // 7 topik pengenalan Little Stars (`isEasyOnboardingTopic`) juga
+    // Topik pengenalan Little Stars (`isEasyOnboardingTopic`) juga
     // menampilkan jawaban ini SEJAK AWAL (bukan cuma setelah 2x gagal) —
     // permintaan user: tahap pengenalan biar anak lihat langsung
     // jawabannya di bawah tombol "🔊 Dengar Kata", papan susun tetap wajib
@@ -2061,7 +2057,7 @@ export function runEjaKata(
  */
 function runUcapan(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey): void {
   const items = ensureTantanganPlan(topicId, 'tantangan-ucap', allItems);
-  let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-ucap')?.cursor ?? 0, 0), items.length - 1);
+  let round = firstUnansweredSlot('vocabulary', topicId, 'tantangan-ucap', items.length);
 
   const ucapStatus = (i: number): 0 | 1 | 2 => getSlot('vocabulary', topicId, 'tantangan-ucap', i)?.st ?? 0;
 
@@ -2232,7 +2228,7 @@ function pickDecoyWords(allItems: VocabItem[], current: VocabItem, targetWords: 
  */
 export function runSusunKalimat(container: HTMLElement, topicId: string, allItems: VocabItem[], onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
   const items = ensureTantanganPlan(topicId, 'tantangan-susun', allItems);
-  let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-susun')?.cursor ?? 0, 0), items.length - 1);
+  let round = firstUnansweredSlot('vocabulary', topicId, 'tantangan-susun', items.length);
 
   const susunStatus = (i: number): 0 | 1 | 2 => getSlot('vocabulary', topicId, 'tantangan-susun', i)?.st ?? 0;
 
@@ -2291,7 +2287,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
       }
     }
 
-    // Auto-hint 7 topik pengenalan Little Stars (permintaan user, lihat
+    // Auto-hint topik pengenalan Little Stars (permintaan user, lihat
     // komentar `EASY_ONBOARDING_TOPIC_IDS`) — sama alasan Eja Kata.
     if (isEasyOnboardingTopic(topicId)) applyHint();
 
@@ -2301,7 +2297,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
       // reveal otomatis ini) — dibaca dari `wrongCount` slot yang sudah
       // tersimpan, bukan counter baru.
       const wrongSoFar = getSlot('vocabulary', topicId, 'tantangan-susun', round)?.w ?? 0;
-      // Sama pola Eja Kata di atas — 7 topik pengenalan Little Stars
+      // Sama pola Eja Kata di atas — topik pengenalan Little Stars
       // tampilkan jawaban ini sejak awal, di bawah teks soal (`.en-text`),
       // papan susun kata tetap wajib diisi manual oleh anak.
       const showAnswer = isEasyOnboardingTopic(topicId) || wrongSoFar >= tantanganRevealThreshold(contentLevel);
@@ -2473,7 +2469,7 @@ export function runKelompokkan(
 ): void {
   const eligible = allItems.filter((it) => it.group === 'a' || it.group === 'b');
   const items = ensureTantanganPlan(topicId, 'tantangan-kelompok', eligible);
-  let round = Math.min(Math.max(getSection('vocabulary', topicId, 'tantangan-kelompok')?.cursor ?? 0, 0), items.length - 1);
+  let round = firstUnansweredSlot('vocabulary', topicId, 'tantangan-kelompok', items.length);
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('vocabulary', topicId, 'tantangan-kelompok', i)?.st ?? 0;
 
