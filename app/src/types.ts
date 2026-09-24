@@ -398,13 +398,31 @@ export interface ReadingCheckTopic {
  *  `ReadingTopic` (Adventurer/Achiever, format lama). */
 export type AnyReadingTopic = ReadingTopic | ReadingWordTopic | ReadingCheckTopic;
 
+/** 1 kalimat Speaking + terjemahannya. Terjemahan WAJIB ada krn alur Speaking
+ *  seragam semua level (`materi/speaking.md` §19): "🧩 Lengkapi Kalimat" butuh
+ *  jangkar arti, 💡 Petunjuk menampilkan arti. */
+export interface SpeakingLine {
+  en: string;
+  id: string;
+}
+
+/** Pertanyaan Tantangan jawaban-bebas + CONTOH jawaban (dibuka lewat 💡
+ *  Petunjuk). Contoh jawaban sengaja sepanjang target level (Explorer ±1
+ *  kalimat, Adventurer + "because", Achiever + opini/penghubung). */
+export interface SpeakingRoleplay {
+  q: SpeakingLine;
+  answer: SpeakingLine;
+}
+
+/** Format lama Explorer/Adventurer/Achiever. `model` = contoh Kenalan,
+ *  `drill` = kalimat latihan terkontrol, `roleplay` = pertanyaan Tantangan. */
 export interface SpeakingTopic {
   id: string;
   title: string;
   desc: string;
-  model: string[];
-  drill: string[];
-  roleplay: string[];
+  model: SpeakingLine[];
+  drill: SpeakingLine[];
+  roleplay: SpeakingRoleplay[];
 }
 
 /**
@@ -444,11 +462,26 @@ export interface SpeakingPhraseItem {
   phrase: VocabExample;
 }
 
+/**
+ * Pertanyaan Tantangan "💬 Ngobrol Yuk!" format frasa (Little Stars/Starter,
+ * `materi/speaking.md` §18–§19): 2 giliran tanya-jawab per gambar (pola
+ * Cambridge Starters Part 3: "What's this?" lalu 1 pertanyaan lanjutan).
+ *  - `nameQ`: giliran 1, jawabannya `item.en` (sebut nama bendanya).
+ *  - `followQ`: giliran 2, jawabannya kalimat utuh (`item.phrase.en` jadi
+ *    contoh, skor dari kata kunci isinya, bukan kalimat persis). WAJIB cocok
+ *    utk SEMUA 10 item topik (1 pertanyaan per topik, bukan per item).
+ */
+export interface SpeakingTalkPrompts {
+  nameQ: { en: string; id: string };
+  followQ: { en: string; id: string };
+}
+
 export interface SpeakingPhraseTopic {
   id: string;
   title: string;
   desc: string;
   items: SpeakingPhraseItem[];
+  talk: SpeakingTalkPrompts;
 }
 
 /**

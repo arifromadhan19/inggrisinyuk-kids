@@ -603,6 +603,65 @@ Semua 5 topik baru pakai 8 giliran (sama scale dgn 5 topik lama), pola SAMA PERS
 
 ---
 
+## 18. Sesi 11 — PILOT "Ngobrol" Little Stars: Bentuk Tugas Tiap Langkah Dibedakan
+
+### 18.1 Audit User
+"Kenalan 'Main' Speaking sama seperti Listening, Latihan Inti & Tantangan mirip." Benar: 🎮 "Dengar & Tunjuk" = anak cuma TAP (tugas Listening), dan Latihan Inti (tirukan) vs Tantangan (ucapkan dari terjemahan) sama² "lihat → ucapkan 1 kalimat target", cuma beda bantuan.
+
+### 18.2 Riset
+- **Cambridge YLE** — tiap part Speaking BEDA bentuk tugas: Starters (tunjuk di gambar besar → jawab pertanyaan pendek soal gambar → "What's this?" kartu benda → pertanyaan pribadi), Movers (cari 4 perbedaan → cerita 4 gambar → odd one out + alasan → pertanyaan pribadi), Flyers/KET (tukar informasi, anak juga BERTANYA).
+- **PPP (Presentation–Practice–Production)** — Practice = terkontrol, jawaban pasti (akurasi); Production = anak memakai bahasanya sendiri (kelancaran). Jadi Latihan Inti & Tantangan harus beda JENIS, bukan beda banyaknya bantuan.
+- **British Council** — information gap/describe & draw/spot the difference = bentuk komunikatif paling efektif utk anak.
+
+### 18.3 Desain (aktif kalau topik py `talk`, types.ts `SpeakingTalkPrompts`)
+| Langkah | Tahap PPP | Bentuk |
+|---|---|---|
+| Kenalan | Presentation | 🔊 dengar + 🎤 tirukan. **🎮 dihapus** (tugas Listening, bukan bicara). |
+| Latihan Inti | Practice | 10 soal campur 5:5 — **🔁 Tirukan** (dengar lalu ulangi) & **🧩 Lengkapi Kalimat** (kalimat berlubang + gambar, mis. "The ___ says woof!", anak ucapkan kalimat UTUH; 🔊 membacakan kalimat dgn jeda di lubang, 💡 Petunjuk membacakan jawabannya). |
+| Tantangan | Production | **💬 Ngobrol Yuk!** — per gambar 2 giliran tanya-jawab (Starters Part 3): (1) `nameQ` mis. "What animal is this?" → sebut 1 kata (arti Indonesia tampil sbg jangkar); (2) `followQ` mis. "What does it do?" → kalimat sendiri, diskor dari **kata kunci isi** (`talkKeywords`: kata fungsi the/a/is/I/my/… dibuang), `phrase.en` cuma jadi "Contoh jawaban". Section `tantangan-ngobrol`. |
+
+**Revisi user: Tantangan TANPA audio pertanyaan** (auto-play & tombol 🔊 dihapus) — tugas dibaca dari layar: giliran 1 = gambar + chip `🇮🇩 Kelinci ➜ 🇬🇧 ?` (slot Inggris putus-putus, terisi kalau 💡 Petunjuk ditap) + "Apa bahasa Inggrisnya? Ucapkan!"; giliran 2 = teks pertanyaan EN/ID + "Jawab pakai kalimat bahasa Inggris, ucapkan!"; tombol 🎤 berdenyut (`.pt-cta`) sbg "tap ini". CSS `.talk-task`/`.talk-chip`/`.talk-instruct`.
+
+Skor proporsional + ▶️ Play Suaramu di semua mic (Aturan Wajib Speaking). 💡 Petunjuk Tantangan cuma membacakan Inggris — `speakBilingual` menunda suara Indonesia 1,6 dtk & `speak()` mematikan mic yang keburu ditap (bug ditemukan saat verifikasi).
+
+### 18.4 Konten
+`talk` ditambahkan ke 12/12 topik Little Stars (1 pasang pertanyaan per topik, wajib cocok utk semua 10 item). 120/120 frasa bisa dilubangi (`phraseBlank` menerima jamak: grape→grapes, strawberry→strawberries). **Starter TIDAK disentuh** (tanpa `talk` → alur lama tetap, 🎮 tetap ada).
+
+### 18.5 Verifikasi
+`npm run build` lolos. Playwright (mic di-mock): Kenalan 0 tombol 🎮/10 🎤; Latihan Inti 10 soal campur Tirukan/Lengkapi; Tantangan 10×2 giliran, jawaban giliran 2 dgn URUTAN KATA DIBALIK tetap 3/3 kata kunci; "Selesai ✅" hanya di soal terakhir; selesai → "Kerja Bagus!"; Starter tetap alur lama; 390px & 1280px; 0 pageerror.
+
+### 18.6 Status — PILOT
+Belum dirollout ke Starter/level lain. Rencana lanjutan (menunggu feedback user): Explorer pertanyaan pribadi + "Where's the…?"; Adventurer cari perbedaan & odd one out + "because"; Achiever cerita 4 gambar & anak BERTANYA ke Bima (info exchange); Trailblazer interview + tanya balik.
+
+---
+
+## 19. Sesi 12 — Audit Materi Semua Level + SATU Alur Speaking + Pembeda Level
+
+Permintaan user: "audit dan update materi yang ada, benarkan struktur/grammar/subject/object, fix kalau tidak relevan dgn level, lalu implementasi pembeda level" + "format dan alur supaya konsisten di setiap level speaking" + "pastikan tidak melanggar aturan makhluk hidup utuh".
+
+### 19.1 Perbaikan materi
+| Level | Perbaikan |
+|---|---|
+| Little Stars | 23 frasa >4 kata dipendekkan ke 2–4 kata (target format ini), mis. "I wear a jacket when it's cold." → "My jacket is warm."; hitung pakai benda mati ("three balls", "eight cars", bukan kucing/ikan); ➡️ "The arrow points **right**" (dulu "up"); "The egg is oval."/"The box is square."; "Please help me." (arti "Tolong"); "Keretanya bunyi tut-tut" (dulu "Ciat ciut") |
+| Starter | hitung pakai benda mati (balloons/pencils/buttons, bukan birds/ants/flowers); "I make a sandwich."; "Can I have some cake?"; "What day is it today?"; "Sopir" (KBBI, dulu "Supir"); topik hari = TANPA ikon (ikon aktivitas tidak merepresentasikan hari); `talk` 10 topik |
+| Explorer | SEMUA kalimat format lama dapat arti Indonesia; 3 topik lama yang cuma 1–2 kalimat latihan digenapkan jadi 3; "What's the matter?" (dulu "What is wrong with you?" — bisa terdengar kasar); "What is the price?" (dulu "How much is the price?" — salah); "I go to school every day" (dulu "every week"); "What time do you go to bed?"; jawaban cerita natural pakai kata ganti ("He has a cat." — dulu "The pet is a cat."), setiap roleplay punya contoh jawaban 1 kalimat |
+| Adventurer | arti Indonesia semua kalimat; "How do you get to school?"; `membuat-janji` dapat kalimat deskripsi + "because" (sebelumnya satu²nya topik Adventurer tanpa itu); contoh jawaban ±8 kata + "because" |
+| Achiever | `deskripsi-orang` naik ke opini/perbandingan ("My dad is taller than my uncle.", "In my opinion…"); `angka-di-sekitarku` pakai **rupiah** (dulu dollars); `benda-favoritku` "a metal bottle" (dulu "a flexible schedule" — bukan benda); `kebiasaan-baikku` subjek konsisten "I"; contoh jawaban 2 kalimat/penghubung ±12 kata |
+| Trailblazer | jawaban Bima 1 → **2 kalimat** tersambung (80 kalimat baru, PET menuntut jawaban panjang); "barongsai" (dulu "baronsai"); "mudah diingat" (dulu "catchy"); "Apakah kamu berolahraga?"; "minggu sekolah" (dulu "minggu kerja") |
+
+**Emoji makhluk hidup**: semua emoji Speaking diaudit — hewan = varian wajah (🐶🐱🦁🐹🐮🐸🐴🐭🐷🐰🐼), orang = bust/kepala; 👵/👴 hanya utk Grandma/Grandpa (pengecualian aturan). Tidak ada yang badan utuh. Denylist `verify-vocab-content.mjs` sekarang ikut mengecek Speaking.
+
+### 19.2 Satu alur semua level
+Kenalan 🔊🎤 (tanpa 🎮) → Latihan Inti "🔁 Tirukan" + "🧩 Lengkapi Kalimat" → Tantangan "💬 Ngobrol Yuk!" tanpa audio pertanyaan. Detail teknis: CLAUDE.md § "Speaking — SATU Alur di Semua Level". Section baru `latihan-pola`/`tantangan-ngobrol` → titik progres per soal Speaking mulai dari awal utk anak yang sudah pernah main (status "selesai" topik tidak terpengaruh, Speaking memakai `isStepVisited`).
+
+### 19.3 Pembeda level
+Usulan #1–#7 `pembeda_level.md` § Speaking diimplementasikan (ambang bintang, target panjang, bonus penghubung, Petunjuk terkunci, jangkar Indonesia, kecepatan, waktu berpikir). #8 (anak bertanya/berpasangan — Flyers/KET) belum.
+
+### 19.4 Verifikasi
+`npm run build` lolos (typecheck + cek konten Vocab & emoji Speaking + cek duplikat termasuk contoh jawaban roleplay). Playwright (mic di-mock) di 7 kasus — Little Stars, Starter, Explorer (format lama + cerita), Adventurer, Achiever, Trailblazer: Kenalan 0 tombol 🎮; Latihan Inti 10 soal 5 Tirukan + 5 Lengkapi; Tantangan tuntas sampai "Kerja Bagus!"; Petunjuk terkunci hanya di Achiever/Trailblazer; lencana panjang & penghubung muncul sesuai tier; 390px & 1280px; 0 pageerror.
+
+---
+
 ## Sumber Riset Web (Sesi 1–8)
 
 ### Institusi Bahasa Inggris Indonesia
@@ -631,3 +690,10 @@ Semua 5 topik baru pakai 8 giliran (sama scale dgn 5 topik lama), pola SAMA PERS
 - https://www.51talk.com/articles/does-an-app-harm-child-pronunciation/
 - https://elsaspeak.com/en/product-learn-english-elsa-speak/
 - https://www.unite.ai/buddy-ai-children-language-learning-speech-recognition/
+
+### Sesi 11 (§18)
+- [Pre A1 Starters Speaking Test – ESL eSchool](https://www.esleschool.com/pre-a1-starters-speaking-test-1/)
+- [A1 Movers Speaking Exam – Exam Seekers](https://exam-seekers.com/2021/06/21/ee-027c-yle-a1-movers-speaking-exam/)
+- [Preparing YLs for A1 Movers Speaking – Helen Chapman](https://helenchapmanelt.wordpress.com/2019/06/27/preparing-yls-for-a1-movers-speaking-test/)
+- [Information gap – British Council TeachingEnglish](https://www.teachingenglish.org.uk/article/information-gap)
+- [PPP Method in TEFL – Essential TEFL](https://www.essentialtefl.com/ppp-teaching-method-tefl)

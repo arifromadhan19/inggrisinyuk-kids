@@ -381,7 +381,7 @@ export function runBoss(container: HTMLElement, onWin: (result: BossResult) => v
           ? t.turns.map((turn) => turn.peerAnswer.en)
           : 'stories' in t
             ? t.stories.map((s) => s.answer.en)
-            : t.drill
+            : t.drill.map((d) => d.en)
     )
   ).slice(0, roundsPerSkill);
   const allVocab = vocabTopics.flatMap((t) => t.items);

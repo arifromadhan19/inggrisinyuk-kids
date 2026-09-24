@@ -87,9 +87,12 @@ function stimuliReading(topic) {
 /** Kumpulkan {phase, text} dari 1 topik `SpeakingTopic` (format LAMA). */
 function stimuliSpeaking(topic) {
   const out = [];
-  for (const line of topic.model ?? []) out.push({ phase: 'model', text: line });
-  for (const line of topic.drill ?? []) out.push({ phase: 'drill', text: line });
-  for (const line of topic.roleplay ?? []) out.push({ phase: 'roleplay', text: line });
+  for (const line of topic.model ?? []) out.push({ phase: 'model', text: line.en });
+  for (const line of topic.drill ?? []) out.push({ phase: 'drill', text: line.en });
+  for (const rp of topic.roleplay ?? []) {
+    out.push({ phase: 'roleplay', text: rp.q.en });
+    out.push({ phase: 'roleplay-answer', text: rp.answer.en });
+  }
   return out;
 }
 

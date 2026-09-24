@@ -95,7 +95,7 @@ Template 2-sumbu di atas GENERIK, bukan spesifik Vocabulary — kalau mau direpl
 3. Pilih dari 3 sumbu nyata Cambridge (opsi makin banyak, jebakan makin banyak, bantuan makin pelit) — sesuaikan mana yang applicable ke mekanik skill itu (mis. Listening mungkin tidak punya "Susun Kalimat", tapi bisa punya "jumlah pilihan jawaban MCQ" atau "ambang reveal transkrip").
 4. Jangan lupa gotcha `contentLevel` vs `level` (praise) — WAJIB dipisah sejak awal, bukan ditambal belakangan.
 
-**Status skill lain**: Listening — riset selesai, usulan ada di section bawah (BELUM diimplementasi). Speaking/Grammar/Reading — placeholder masih kosong, menunggu giliran/permintaan user berikutnya.
+**Status skill lain**: Listening — sudah diimplementasikan (section bawah). Speaking — riset selesai 2026-09-24, usulan di section Speaking (BELUM diimplementasi). Grammar/Reading — placeholder masih kosong.
 
 # Listening
 
@@ -263,6 +263,141 @@ Angka Adventurer/Achiever/Trailblazer sedikit di atas target karena heuristik ik
 - EF (English1): https://english1.co.id/highflyers , https://english1.co.id/trailblazers
 
 # Speaking
+
+Status: **riset selesai 2026-09-24; usulan #1–#7 SUDAH DIIMPLEMENTASIKAN hari yang sama** (`games/speaking.ts`, bersamaan dgn penyeragaman alur Speaking semua level — `speaking.md` §19); #8 (anak bertanya/berpasangan) belum. Angka tetap [U] sampai diuji ke anak & mic sungguhan — semua angka & aturan bertanda **[F]** (fakta dari sumber) atau **[U]** (usulan desain, belum diuji). Pertanyaan yang dijawab: selain FORMAT soal, apa yang membedakan level Speaking di lembaga lain, dan mana yang layak ditiru app ini.
+
+Speaking punya **2 lapis pembeda**, jangan dicampur (pola sama Listening):
+1. **Lapis format & konten (SUDAH ADA)** — 4 format berdampingan (frasa → model/drill/roleplay → cerita → interview) + konten yang naik (sebut benda → deskripsi+"because" → opini+perbandingan → interview). Alasan & riset: [speaking.md](speaking.md) §0, §4, §13–§14, §18 (pilot "Ngobrol" Little Stars). Dokumen ini TIDAK mengulang itu.
+2. **Lapis mekanik (dokumen ini)** — panjang jawaban yang diharapkan, ketatnya skor, banyaknya bantuan/contoh, kecepatan contoh suara, waktu berpikir.
+
+## Ringkasan (High-Level)
+
+Temuan inti:
+1. **[F]** Cambridge membedakan level Speaking lewat 5 hal: (a) **panjang jawaban** (1 kata → frasa/kalimat → "extended responses" → "extended stretches of language"), (b) **banyaknya bantuan penguji** ("help sometimes" → "very little help" → "minimal"), (c) **aspek pelafalan yang dinilai** (Starters: bunyi & tekanan kata saja, intonasi TIDAK dinilai; Movers ke atas + intonasi; KET: "intelligibility is key"; PET: + tekanan kalimat), (d) **kriteria baru yang muncul** (Movers: "extended responses"; Flyers: + grammar & vocabulary; PET: + discourse management/kohesi), (e) **siapa yang bertanya** (Flyers Part 2: anak ikut MEMBUAT pertanyaan; KET/PET: berpasangan).
+2. **[F]** Yang **KONSTAN** di semua level YLE: penguji selalu boleh memberi "help and encouragement" (skrip resmi), pendamping ("usher") menjelaskan tes dalam **bahasa ibu anak**, dan jeda/ragu wajar di band tertinggi pun ("occasional pauses", "minor hesitations"). Jadi instruksi berbahasa Indonesia & retry bebas **bukan** pembeda — tetap di semua level.
+3. **[F]** Handbook YLE memperingatkan anak jangan memaksa "jawaban panjang yang tidak perlu" dan menerima jawaban sederhana ("Here red and here yellow" untuk "find the differences") — panjang jawaban naik PELAN, bukan dipaksakan.
+4. **[F]** TOEFL Primary membagi tugas Speaking jadi 2 skala: tugas pendek (deskripsi, permintaan, bertanya, perasaan/opini — skor 0–3) vs tugas panjang (menceritakan urutan kejadian, memberi arah — skor 0–5, menilai "connecting devices"). Skor terendah = "a single word or a few words", tertinggi = "full and complete... connecting devices".
+5. **Gap terbesar di app sekarang**: mekanik Speaking **identik di 6 level** — ambang bintang (≥80% = ⭐⭐⭐, ≥40% = ⭐⭐), kecepatan contoh suara (0.75x), waktu tunggu mic (1,3 dtk hening / maks 15 dtk), 💡 Petunjuk tersedia sejak awal, jawaban diskor thd frasa target tanpa melihat PANJANG ucapan. Lapis 1 (format/konten) sudah beda, lapis 2 nol.
+
+### Tier yang Diusulkan (semua [U], belum diuji ke anak)
+
+| Level | Tier | Panjang jawaban Tantangan | Ambang ⭐⭐⭐ / ⭐⭐ | 💡 Petunjuk | Jangkar Indonesia | Kecepatan contoh | Hening sebelum mic berhenti |
+|---|---|---|---|---|---|---|---|
+| Little Stars | Dasar | 1 kata → 1 frasa pendek | **60% / 30%** | sejak awal | ada (kata + arti) | 0.75x | **2 dtk** |
+| Starter | Dasar | 1 frasa / kalimat pendek | 60% / 30% | sejak awal | ada | 0.75x | 2 dtk |
+| Explorer | Menengah | 1 kalimat | 80% / 40% (sekarang) | sejak awal | pertanyaan saja | 0.75x | 1,6 dtk |
+| Adventurer | Menengah | 1–2 kalimat + alasan ("because") | 80% / 40% | sejak awal | pertanyaan saja | **1x** | 1,6 dtk |
+| Achiever | Lanjut | 2–3 kalimat + penghubung | 80% / 40% + **bonus penghubung** | **setelah 1x coba** | tidak ada | 1x | 1,3 dtk (sekarang) |
+| Trailblazer | Lanjut | 3+ kalimat (~30 dtk), opini + alasan | 80% / 40% + bonus penghubung | setelah 1x coba | tidak ada | 1x | 1,3 dtk |
+
+Intinya: **Dasar** = skor longgar, waktu berpikir panjang, bantuan penuh (ASR suara anak kecil paling tidak akurat, dan Starters sendiri cuma minta 1 kata). **Menengah** = sama seperti sekarang, tapi jawaban Tantangan mulai dituntut berupa kalimat. **Lanjut** = jawaban lebih panjang & tersambung, bantuan baru dibuka setelah mencoba — mendekati KET/PET ("very little prompting and support").
+
+## Kondisi Sekarang (Baseline di Kode)
+
+| Aspek | Sekarang | Beda per level? |
+|---|---|---|
+| Format & konten | 4 format + konten naik | **Ya** (lapis 1) |
+| Ambang bintang mic | `scoreMic`: ≥0.8 ⭐⭐⭐, ≥0.4 ⭐⭐, min ⭐ (sama di `boss.ts`, `vocabulary.ts`) | Tidak |
+| Yang diskor | rasio kata target yang terdengar (`wordMatchDetail`); pilot "Ngobrol" giliran 2: kata kunci isi (`talkKeywords`) | Tidak |
+| Panjang ucapan | tidak dinilai sama sekali | Tidak |
+| Contoh suara (model) | Latihan Inti selalu auto-play; interview Trailblazer: Bima auto di Latihan Inti, lewat Petunjuk di Tantangan | Sebagian (per format) |
+| 💡 Petunjuk Tantangan | tersedia sejak awal di semua format | Tidak |
+| Kecepatan TTS | `DEFAULT_RATE` 0.75x (Speaking tidak ikut `listeningDefaultRate`) | Tidak |
+| Waktu tunggu mic | `SILENCE_GRACE_MS` 1300, `MAX_LISTEN_MS` 15000 (`speech.ts`, global) | Tidak |
+| Retry / Lanjut / Play Suaramu | tanpa batas, selalu ada | Tidak (sengaja) |
+| Parameter `contentLevel` | TIDAK ADA di `games/speaking.ts` — cuma `level` (praise) | — |
+
+## Bukti Riset per Sumbu
+
+| Sumbu | Temuan | Sumber |
+|---|---|---|
+| **Panjang jawaban** | Starters P3: "answer simple questions about a picture (with one-word answers)" — *What's this? (elephant)*. Movers: dinilai "production of appropriate and **extended** responses", cerita 4 gambar tapi "only expected to say a few words about each picture". Flyers: + cerita 5 gambar; rubrik band 5 "single words, phrases, and long sentences". KET band 5: "constructs **longer utterances**"; band 3: "very short – words or phrases". PET: long turn **1 menit** per kandidat (deskripsi foto); Part 3 = kesempatan utama menilai *discourse management* di "extended speech". CEFR produksi lisan: A1 "simple, mainly isolated phrases" → A2 "series of simple phrases and sentences linked into a list" → B1 "straightforward description... as a linear sequence of points". | Handbook YLE; flyer.us (rubrik YLE); Cambridge A2 Key & B1 Preliminary *Assessing speaking*; CEFR |
+| **Bantuan penguji** | Semua level YLE: skrip "gives examiners scope to offer help and encouragement"; Movers/Flyers: "The examiner will prompt by asking a question if a candidate needs help". Band 5 per level: Starters "requires help sometimes", Movers "very little help", Flyers "minimal assistance... immediate responses". KET: band 5 "very little prompting and support", band 3 "requires prompting and support". | Handbook YLE; flyer.us; A2 Key guide |
+| **Pelafalan** | Starters: bunyi & tekanan kata, **intonasi tidak dinilai**. Movers/Flyers: + intonasi kata & kalimat. KET: "at A2 level **intelligibility** is key". PET: + tekanan kalimat & intonasi "generally appropriate". | flyer.us; A2 Key guide; B1 Preliminary guide |
+| **Kriteria bertambah** | Starters: *interactive listening, production of words and phrases, pronunciation*. Movers: + "extended responses". Flyers: + **grammar and vocabulary**. KET: G&V, pronunciation, interactive communication. PET: + **discourse management** (organisasi, penghubung/"cohesive devices") & G&V band 5 "attempts some complex grammatical forms". TOEFL Primary tugas panjang: "coherence may be assisted by use of connecting devices". | Handbook YLE; A2 Key & B1 Preliminary guides; ETS scoring guide |
+| **Kelancaran / jeda** | Band 5 pun masih boleh ragu: Starters "occasional pauses", Movers "occasional pauses", Flyers "occasionally minor hesitations"; KET band 5 "despite hesitation". Toleransi jeda turun pelan, tidak pernah nol. | flyer.us; A2 Key guide |
+| **Siapa yang bertanya** | Flyers P2: anak menjawab LALU **membuat pertanyaan** ("question-word questions" Who/What/When/Where/How old). KET/PET: berpasangan, "initiates and responds". | Handbook YLE; A2 Key & B1 Preliminary guides |
+| **Bahasa pengantar** | Semua level YLE: usher "explains the test format in the child's first language". | Handbook YLE |
+| **Kurikulum Merdeka** | Fase A: salam, kenalan, info diri. Fase B: "mengubah/mengganti sebagian elemen kalimat" (pola tetap) utk perasaan/kebutuhan/minta tolong. Fase C: + "membuat pertanyaan sederhana, meminta klarifikasi". Fase D: "bertukar ide, pengalaman... memberikan pendapat, membuat perbandingan, menyampaikan preferensi... menjelaskan dan memperjelas jawaban". | CP Kemendikbud (ringkasan pencarian) |
+| **LIA / EF** | LIA GEYL: 6 level per kelas SD, metode storytelling + role-play + proyek (tidak menerbitkan mekanik per level). EF: Small Stars 3–6, High Flyers 7–9/10, Trailblazers 10–14 (presentasi/opini — detail lama di speaking.md §4.2). Keduanya **tidak menerbitkan** rincian skor/bantuan per level. | LIA Depok/Semarang; EF/English1 |
+
+## Rujukan Institusi
+
+**Cambridge — struktur Speaking per tingkat**
+
+| Level app | Backbone | Durasi | Bagian | Yang dinilai |
+|---|---|---|---|---|
+| Little Stars/Starter | (pra-Starters) | — | — | — |
+| Explorer | Pre A1 Starters | 3–5 mnt, 5 bagian, 1 anak + 1 penguji | tunjuk di gambar; taruh kartu; jawab pertanyaan gambar (1 kata); tanya soal kartu benda; pertanyaan pribadi | mendengar-interaktif, kata & frasa, pelafalan (tanpa intonasi) |
+| Adventurer | A1 Movers | 5–7 mnt, 4 bagian | 4 perbedaan; cerita 4 gambar; odd one out + alasan; pertanyaan pribadi | + jawaban panjang ("extended"), + intonasi |
+| Achiever | A2 Flyers | 7–9 mnt, 4 bagian | 6 perbedaan dari pernyataan penguji; **jawab & buat pertanyaan**; cerita 5 gambar; pertanyaan pribadi | + grammar & vocabulary |
+| Trailblazer | A2 Key → B1 Preliminary | KET 8–10 mnt / PET 10–12 mnt, **berpasangan** | KET: interview + diskusi berpasangan. PET: interview, deskripsi foto 1 mnt, diskusi kolaboratif, diskusi umum | G&V, pelafalan, interaksi; PET + discourse management |
+
+**TOEFL Primary Speaking (ETS)** — tugas pendek (skor 0–3): *express emotions/opinions, give simple descriptions, make requests, ask questions*; tugas panjang (skor 0–5): *explain & sequence simple events, give directions*. Skor 1 = "a single word or a few words related to the prompt"; skor 5 = "full and complete... connecting devices... fluid, confident".
+
+## Status Implementasi (2026-09-24)
+
+| # | Status | Di kode |
+|---|---|---|
+| 1 | ✅ | `STAR_CUTS` (Dasar 0.6/0.3) — berlaku semua mic Speaking termasuk Kenalan (keadilan ASR, bukan tingkat kesulitan) |
+| 2 | ✅ | `TARGET_WORDS` (0/0/4/8/12/18 kata) — baris "🎯 Minimal N kata" + lencana "🗣️ N kata"; skor jawaban bebas = panjang/target |
+| 3 | ✅ | `CONNECTORS` — lencana "🔗 Pakai …" + 1 ⭐ bonus (jawaban bebas) di Achiever/Trailblazer |
+| 4 | ✅ | 💡 Petunjuk Tantangan 🔒 sampai 1x coba di tier Lanjut |
+| 5 | ✅ | Dasar: chip kata Indonesia; Menengah: arti pertanyaan tampil; Lanjut: arti disembunyikan sampai Petunjuk. Latihan Inti tetap tampil arti di semua level (jangkar "Lengkapi Kalimat") |
+| 6 | ✅ | `speakingDefaultRate` dipanggil `app.ts` `renderActivity` (Latihan Inti & Tantangan) |
+| 7 | ✅ | `SILENCE_MS` → `listenAndRecordOnce(..., { silenceMs })`, default global tetap 1300 |
+| 8 | ⏳ | belum — butuh format tugas baru |
+
+## Usulan (Riset Awal)
+
+| # | Usulan | Dasar bukti | Usaha | Catatan |
+|---|---|---|---|---|
+| 1 | **Ambang bintang per tier** — Dasar 60%/30%, Menengah & Lanjut tetap 80%/40% | Starters cuma 1 kata & tanpa intonasi; ASR suara anak kecil paling meleset | Rendah | `scoreMic` terima `contentLevel`. **Jangan naikkan** ambang Lanjut — skor app mengukur kata yang dikenali ASR, BUKAN pelafalan, jadi "lebih ketat" hanya menghukum ASR |
+| 2 | **Target panjang jawaban di Tantangan jawaban-bebas** (roleplay, interview, pilot "Ngobrol" giliran 2) — Explorer 1 kalimat, Adventurer 1–2 + "because", Achiever 2–3, Trailblazer 3+ | Movers "extended", KET "longer utterances", PET long turn 1 mnt, CEFR A1→B1 | Sedang | Tampil sbg indikator ramah ("🗣️ 2 kalimat ✓"), bukan syarat lanjut; hitung kata/kalimat dari transkrip |
+| 3 | **Bonus penghubung** (Achiever/Trailblazer): ⭐ ekstra kalau terdengar *because/and/but/so/then/however* | Discourse management PET, "connecting devices" TOEFL Primary | Rendah | Bonus saja, tidak pernah mengurangi bintang |
+| 4 | **Petunjuk bertingkat** — Dasar/Menengah sejak awal; Lanjut baru terbuka setelah 1x coba | KET "very little prompting", Flyers "minimal assistance" | Rendah | Pola sama `clueButtonsHtml` Listening (gated `attempted`) |
+| 5 | **Jangkar Indonesia makin tipis** — Dasar: kata + arti; Menengah: arti pertanyaan saja; Lanjut: Inggris saja (arti via Petunjuk) | Fase A–B masih pola tetap; Fase D bertukar ide dlm Inggris | Rendah | Instruksi layar tetap Indonesia di semua level (usher YLE pakai bahasa ibu) |
+| 6 | **Kecepatan contoh per level** — samakan dgn Listening (0.75x s.d. Explorer, 1x Adventurer ke atas) | CEFR A1 "very slow" → B1 "clearly articulated" | Rendah | `applyDefaultRate` di `renderActivity` sudah ada, tinggal ikutkan Speaking; pill user tetap menang |
+| 7 | **Waktu berpikir** — hening sebelum mic berhenti 2 dtk (Dasar), 1,6 dtk (Menengah), 1,3 dtk (Lanjut, sekarang) | Starters band 5 masih "occasional pauses"; anak kecil butuh waktu mulai bicara | Sedang | `SILENCE_GRACE_MS` sekarang global di `speech.ts` → perlu parameter; dipakai juga Vocab/Placement, jangan ubah default global |
+| 8 | **Anak bertanya** (Flyers P2) & **berpasangan** (KET/PET) | Handbook YLE, KET/PET | Tinggi | Ini lapis 1 (format), sudah dicatat sbg rencana di speaking.md §18.6 |
+
+Urutan yang disarankan kalau dikerjakan: #1, #6, #4, #5 (murah, mekanik saja) → #3, #2 (butuh hitung transkrip) → #7 (menyentuh `speech.ts` bersama) → #8 (format baru, keputusan user).
+
+## Yang SENGAJA Tidak Dibedakan
+
+1. **Retry tanpa batas, "Lanjut" selalu ada, bintang minimal 1, ▶️ Play Suaramu** — Aturan Wajib Speaking & non-punitive (CLAUDE.md); penguji YLE di semua level pun diberi ruang "help and encouragement".
+2. **Instruksi layar berbahasa Indonesia** — usher YLE menjelaskan dalam bahasa ibu di SEMUA level.
+3. **Intonasi & tekanan kalimat** — dinilai Cambridge mulai Movers, tapi Web Speech API tidak mengekspos data pelafalan; app hanya tahu kata apa yang dikenali. Jangan klaim menilai intonasi.
+4. **Skor mic tidak masuk akurasi** (`recordAttempt`) — tetap di semua level (ASR anak tidak selalu akurat).
+5. **Kenalan** — tahap exposure, sama keputusan Vocabulary/Listening.
+
+## Gotcha
+
+- `games/speaking.ts` **belum menerima `contentLevel`** — semua fungsi cuma dapat `level` (badge/praise). Tambahkan parameter terpisah sebelum mengerjakan usulan mana pun (lihat "⚠️ Gotcha" Vocabulary di atas).
+- Ambang `hitRatio >= 0.8 / 0.4` diduplikasi di `speaking.ts`, `boss.ts`, `vocabulary.ts` (3 tempat). Usulan #1 cuma untuk skill Speaking; mic di Vocab/Boss tidak ikut kecuali diputuskan.
+- `SILENCE_GRACE_MS` dipakai semua mic app (termasuk First Placement Test) — usulan #7 harus lewat parameter opsional, default tetap 1300.
+
+## Batasan Riset (Jujur)
+
+- Handbook YLE dibaca langsung (teks penuh diekstrak) & panduan *Assessing speaking* A2 Key dibaca langsung → confidence tinggi. Rubrik band per level YLE (help sometimes/very little/minimal) dari ringkasan pihak ketiga (flyer.us) → confidence sedang.
+- Panduan B1 Preliminary hanya sebagian terbaca (kutipan "attempts some complex grammatical forms", long turn 1 menit, Part 3 = discourse management); deskriptor lengkap tiap band tidak terekstrak.
+- Kurikulum Merdeka dari ringkasan hasil pencarian (situs Kemendikbud tidak bisa diakses dari sesi ini).
+- LIA & EF tidak menerbitkan mekanik speaking per level; Kumon/Cakap tidak dicek ulang (sesi lama tidak menemukan rincian).
+- Semua angka usulan (60/30%, 2 dtk, jumlah kalimat) adalah **desain**, bukan angka dari sumber — wajib diuji ke anak & ASR sungguhan.
+
+## Sumber
+
+- Cambridge YLE Handbook for Teachers: https://www.britishschoolrc.com/userfiles/files/Young_Learners_English_Handbook.pdf
+- Rubrik Speaking Starters/Movers/Flyers (ringkasan): https://flyer.us/cambridge-starters-movers-flyers-speaking-criteria-detailed-band-scores/
+- A2 Key — Assessing speaking (teacher guide): https://www.cambridgeenglish.org/Images/735386-a2-key-teacher-guide-assessing-speaking.pdf
+- B1 Preliminary — Assessing speaking performance: https://www.cambridgeenglish.org/Images/563276-b1-preliminary-assessing-speaking.pdf
+- Cambridge blog, speaking A2 Key & B1 Preliminary: https://www.cambridge.org/elt/blog/2026/01/29/your-guide-to-teaching-speaking-skills-for-a2-key-and-b1-preliminary-exams/
+- TOEFL Primary Speaking scoring guide: https://www.ets.org/s/toefl_primary/pdf/toefl_primary_speaking_scoring_guide.pdf
+- CEFR spoken production (A1/A2/B1): https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions , https://www.kcl.ac.uk/language-centre/assets/can-do-statements-cefr.pdf
+- Kurikulum Merdeka CP Bahasa Inggris: https://guru.kemdikbud.go.id/kurikulum/referensi-penerapan/capaian-pembelajaran/sd-sma/bahasa-inggris/fase-b/ , …/fase-c/ , …/fase-d/
+- LIA GEYL: https://www.lia-depok.ac.id/program/reguler/?id=11 , https://liasemarang.com/programs/untuk-siswa-sd/english-for-chidren-ec/
+- EF (English1): https://english1.co.id/smallstars , https://english1.co.id/highflyers , https://english1.co.id/trailblazers
+
 
 # Grammar
 

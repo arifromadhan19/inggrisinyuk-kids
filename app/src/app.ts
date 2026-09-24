@@ -1997,10 +1997,19 @@ function renderActivity(): void {
   // types.ts) — cuma itu yang panelnya benar-benar tidak relevan.
   const showVoicePanel = key !== 'reading';
 
-  // Default kecepatan suara: Listening Latihan Inti/Tantangan ikut level topik
-  // (`listeningDefaultRate`), sisanya (termasuk Kenalan) 0.75x. Tidak menimpa
+  // Default kecepatan suara: Latihan Inti/Tantangan Listening & Speaking ikut
+  // level topik (`listeningDefaultRate`/`speakingDefaultRate`), sisanya
+  // (termasuk Kenalan) 0.75x. Tidak menimpa
   // pill kecepatan yang sudah dipilih user sendiri.
-  applyDefaultRate(key === 'listening' && state.step > 0 ? listeningGame.listeningDefaultRate(level.key) : DEFAULT_RATE);
+  applyDefaultRate(
+    state.step === 0
+      ? DEFAULT_RATE
+      : key === 'listening'
+        ? listeningGame.listeningDefaultRate(level.key)
+        : key === 'speaking'
+          ? speakingGame.speakingDefaultRate(level.key)
+          : DEFAULT_RATE
+  );
 
   const steps = STEP_LABELS.map((label, i) => {
     const cls = i === state.step ? 'active' : i < state.step ? 'done' : '';
@@ -2161,33 +2170,13 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
     }
     case 'speaking': {
       const topic = speakingTopicsForLevel(contentLevel)[state.topicIndex];
-      // `AnySpeakingTopic` — format lama (Explorer/Adventurer/Achiever,
-      // `model`/`drill`/`roleplay` bebas) vs format KEDUA "py `items`"
-      // (Little Stars/Starter, target tertutup 3-tangga recognize/imitate/
-      // recall) vs format KETIGA "py `turns`" (Trailblazer, simulasi
-      // interview KET/PET) vs format KEEMPAT "py `stories`" (pilot Explorer,
-      // cerita mini + pertanyaan komprehensi dijawab lewat mic) — dibedakan
-      // runtime lewat `'items' in topic` (tingkat-1) lalu `'turns' in topic`
-      // lalu `'stories' in topic` (tingkat-2/3), sama pola persis dgn
-      // `AnyListeningTopic`/`AnyReadingTopic`. JANGAN migrasi format lama ke
-      // sini tanpa arahan baru user.
-      if ('items' in topic) {
-        if (state.step === 0) speakingGame.renderKenalanPhrase(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) speakingGame.runLatihanIntiPhrase(stage, topic, nextStepWithSync, praiseLevel);
-        else speakingGame.runTantanganPhrase(stage, topic, nextStepWithSync, praiseLevel);
-      } else if ('turns' in topic) {
-        if (state.step === 0) speakingGame.renderKenalanInterview(stage, topic, nextStep);
-        else if (state.step === 1) speakingGame.runLatihanIntiInterview(stage, topic, nextStepWithSync, praiseLevel);
-        else speakingGame.runTantanganInterview(stage, topic, nextStepWithSync, praiseLevel);
-      } else if ('stories' in topic) {
-        if (state.step === 0) speakingGame.renderKenalanStory(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) speakingGame.runLatihanIntiStory(stage, topic, nextStepWithSync, praiseLevel);
-        else speakingGame.runTantanganStory(stage, topic, nextStepWithSync, praiseLevel);
-      } else {
-        if (state.step === 0) speakingGame.renderKenalan(stage, topic, nextStep);
-        else if (state.step === 1) speakingGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
-        else speakingGame.runTantangan(stage, topic, nextStepWithSync, praiseLevel);
-      }
+      // Speaking: SATU alur di semua level & semua bentuk data (`games/speaking.ts`
+      // `flowOf`, `materi/speaking.md` §19) — Kenalan 🔊🎤 → Latihan Inti
+      // Tirukan+Lengkapi → Tantangan "Ngobrol Yuk!". Pembeda level lewat
+      // `contentLevel` (tier), bukan format layar yang berbeda.
+      if (state.step === 0) speakingGame.renderKenalan(stage, topic, nextStep, praiseLevel, contentLevel);
+      else if (state.step === 1) speakingGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+      else speakingGame.runTantangan(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       return;
     }
     case 'reading': {

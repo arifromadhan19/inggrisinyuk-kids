@@ -377,7 +377,8 @@ let activeRec: SpeechRecognition | null = null;
 function wireContinuousListen(
   rec: SpeechRecognition,
   onFinal: (transcript: string, confidence: number) => void,
-  onErr: (kind: ListenErrorKind) => void
+  onErr: (kind: ListenErrorKind) => void,
+  silenceMs: number = SILENCE_GRACE_MS
 ): void {
   // Hentikan TTS SEBELUM mulai rekam (dilaporkan user: "Play Suaramu"
   // kedengaran ada gema di awal walau anak bicara normal) — akar masalahnya
@@ -413,7 +414,7 @@ function wireContinuousListen(
   // jeda PERTAMA, bukan nunggu diam beneran).
   const resetSilenceTimer = (): void => {
     clearTimeout(silenceTimer);
-    silenceTimer = setTimeout(stopNow, SILENCE_GRACE_MS);
+    silenceTimer = setTimeout(stopNow, silenceMs);
   };
 
   rec.onresult = (e) => {
@@ -578,7 +579,11 @@ function releaseMicStream(): void {
 export function listenAndRecordOnce(
   onResult: (said: string, confidence: number) => void,
   onError: (kind: ListenErrorKind) => void,
-  onAudioReady: (audioUrl: string) => void
+  onAudioReady: (audioUrl: string) => void,
+  /** Jeda hening sebelum mic berhenti — opsional, default `SILENCE_GRACE_MS`.
+   *  Speaking memperpanjangnya utk level bawah (anak kecil butuh waktu
+   *  berpikir lebih lama, `materi/pembeda_level.md` Speaking usulan #7). */
+  opts: { silenceMs?: number } = {}
 ): void {
   if (!SR) {
     onError('unsupported');
@@ -620,7 +625,8 @@ export function listenAndRecordOnce(
     (kind) => {
       releaseMicStream();
       onError(kind);
-    }
+    },
+    opts.silenceMs
   );
 }
 

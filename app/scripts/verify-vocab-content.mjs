@@ -197,6 +197,24 @@ async function main() {
     }
   }
 
+  // Speaking juga menampilkan emoji makhluk hidup (hewan/keluarga/orang) —
+  // denylist yang SAMA berlaku (CLAUDE.md "Emoji Hewan/Makhluk Hidup WAJIB
+  // Kepala SAJA"), supaya aturan ini tidak cuma terjaga di Vocab.
+  const { SPEAKING_TOPICS_BY_LEVEL } = mod;
+  for (const [level, topics] of Object.entries(SPEAKING_TOPICS_BY_LEVEL ?? {})) {
+    for (const topic of topics) {
+      const checks = [];
+      for (const it of topic.items ?? []) checks.push([it.en, it.emoji], [it.en, it.phrase?.emoji]);
+      for (const st of topic.stories ?? []) checks.push([st.answer?.en ?? '', st.emoji]);
+      for (const [word, val] of checks) {
+        const key = word.trim().toLowerCase();
+        if (val && PROBLEMATIC_EMOJI.has(val) && !ALLOWED_EMOJI_WORD_EXCEPTIONS.has(`${val}::${key}`)) {
+          errors.push(`Speaking "${topic.id}" (${level}) "${word}" (emoji="${val}"): ${PROBLEMATIC_EMOJI.get(val)}.`);
+        }
+      }
+    }
+  }
+
   for (const [word, occurrences] of wordOccurrences.entries()) {
     const uniqueTopics = [...new Set(occurrences.map((o) => `${o.level}:${o.topicId}`))];
     if (uniqueTopics.length > 1 && !ACCEPTED_CROSS_TOPIC_DUPLICATES.has(word)) {
