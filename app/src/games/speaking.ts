@@ -111,7 +111,7 @@ interface PracticeItem {
   emoji: string;
   line: SpeakingLine;
   /** Bagian sebelum/sesudah kata yang dilubangi utk "🧩 Lengkapi Kalimat". */
-  blank: { before: string; after: string } | null;
+  blank: Blank | null;
 }
 
 /** 'target' = kalimat/kata pasti (rasio kata target). 'keywords' = jawaban
@@ -160,13 +160,20 @@ function talkKeywords(text: string): string {
   return words.length ? words.join(' ') : text;
 }
 
-function splitAt(text: string, index: number, length: number): { before: string; after: string } {
-  return { before: text.slice(0, index), after: text.slice(index + length) };
+interface Blank {
+  before: string;
+  /** Kata yang dilubangi — diisikan ke lubangnya saat 💡 Petunjuk dibuka. */
+  word: string;
+  after: string;
+}
+
+function splitAt(text: string, index: number, length: number): Blank {
+  return { before: text.slice(0, index), word: text.slice(index, index + length), after: text.slice(index + length) };
 }
 
 /** Lubang di kata kunci item (terima bentuk jamak: grape→grapes,
  *  mango→mangoes, strawberry→strawberries). */
-function keywordBlank(text: string, keyword: string): { before: string; after: string } | null {
+function keywordBlank(text: string, keyword: string): Blank | null {
   const base = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const variants = [base.replace(/y$/i, 'ies'), `${base}es`, `${base}s`, base];
   const m = new RegExp(`\\b(${variants.join('|')})\\b`, 'i').exec(text);
@@ -182,7 +189,7 @@ const BLANK_SKIP = new Set([
   'think', 'believe', 'opinion', 'like', 'want', 'really',
 ]);
 
-function autoBlank(text: string): { before: string; after: string } | null {
+function autoBlank(text: string): Blank | null {
   let best: RegExpExecArray | null = null;
   let bestIsName = true;
   const re = /[A-Za-z]+/g;
@@ -200,7 +207,7 @@ function autoBlank(text: string): { before: string; after: string } | null {
   return best ? splitAt(text, best.index, best[0].length) : null;
 }
 
-function phraseItemBlank(it: SpeakingPhraseItem): { before: string; after: string } | null {
+function phraseItemBlank(it: SpeakingPhraseItem): Blank | null {
   return keywordBlank(it.phrase.en, it.en) ?? autoBlank(it.phrase.en);
 }
 
@@ -622,13 +629,13 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
           ${quizNavHtml(round, total, slotStatus)}
           <div class="id-text">Soal ${round + 1} dari ${total}</div>
           ${emojiHtml(target.emoji)}
-          <div class="en-text">${blank.before}___${blank.after}</div>
+          <div class="en-text">${blank.before}${revealed ? `<span class="blank-fill">${blank.word}</span>` : '___'}${blank.after}</div>
           <div class="id-text">${target.line.id}</div>
           <div class="speak-row">
             <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button>
             ${petunjukButtonHtml(revealed)}
           </div>
-          ${revealed ? `<div class="en-text">${target.line.en}</div>` : ''}`
+`
         : `
           <span class="stage-badge">🔁 Tirukan</span>
           ${quizNavHtml(round, total, slotStatus)}
