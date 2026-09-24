@@ -845,6 +845,14 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
     let revealed = false;
     let attempted = false;
     let scoreSum = 0;
+    let storyPlayed = false;
+
+    /** Soal bercerita (format cerita): cerita + pertanyaan DIBACAKAN (pengecualian
+     *  "tanpa audio pertanyaan" — permintaan user; anak perlu dengar ceritanya). */
+    const playStory = (): void => {
+      if (!prompt.context) return;
+      speakSequence([...prompt.context.map((c) => c.en), prompt.turns[turnIdx].question.en], 1800);
+    };
 
     const goNextTurn = (): void => {
       turnIdx += 1;
@@ -882,7 +890,12 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
         ${quizNavHtml(round, total, slotStatus)}
         <div class="id-text">Soal ${round + 1} dari ${total}${multi ? ` · Pertanyaan ${turnIdx + 1} dari ${prompt.turns.length}` : ''}</div>
         ${emojiHtml(prompt.emoji)}
-        ${prompt.context ? `<div class="note-card sp-story">${prompt.context.map((c) => `<p>${c.en}</p>`).join('')}</div>` : ''}
+        ${
+          prompt.context
+            ? `<div class="note-card sp-story">${prompt.context.map((c) => `<p>${c.en}</p>`).join('')}</div>
+               <div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="playStory">🔊 Dengar Cerita</button></div>`
+            : ''
+        }
         ${taskHtml}
         ${locked ? '<div class="mic-hint">💡 Petunjuk terbuka setelah kamu mencoba sekali</div>' : ''}
         ${
@@ -899,8 +912,14 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
         ${sttSupported ? '' : `<button class="ghost-btn" type="button" data-action="skip">✅ Aku Sudah Jawab</button>`}
       `;
       wireQuizNav(goTo);
-      // Tanpa audio pertanyaan — tugas dibaca dari layar (permintaan user).
+      // Tanpa audio pertanyaan — tugas dibaca dari layar (permintaan user),
+      // KECUALI soal bercerita: cerita + pertanyaan dibacakan otomatis 1x.
+      if (prompt.context && !storyPlayed) {
+        storyPlayed = true;
+        playStory();
+      }
       setHandlers({
+        playStory: () => playStory(),
         petunjuk: () => {
           if (revealed || (tier === 'lanjut' && !attempted)) return;
           revealed = true;
