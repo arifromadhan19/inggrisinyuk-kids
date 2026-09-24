@@ -2266,6 +2266,13 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 /* Baris Kenalan Speaking: baris cerita & pertanyaan kecil di atas kalimat utama. */
 .primer-item .txt .sp-ctx{ display:block; font-size:var(--fs-meta); color:var(--ink-3); }
 .primer-item .txt .sp-q{ display:block; font-size:var(--fs-meta); color:var(--accent); font-weight:700; margin:2px 0; }
+/* Tantangan Speaking "🎁 Tebak Isi Kotak" (Starter): pilihan gambar yang boleh ditanyakan. */
+.guess-box.solved{ animation:ctaPulse 1.2s ease-in-out 2; }
+.guess-word{ font-size:32px; font-weight:800; color:var(--accent); }
+.guess-chips{ display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:10px 0 4px; }
+.guess-chip{ padding:8px 14px; border-radius:999px; background:var(--surface); border:2px solid var(--line); font-weight:800; color:var(--ink-2); }
+.guess-chip.out{ opacity:.4; text-decoration:line-through; }
+.guess-chip.hit{ border-color:var(--brand-500); background:var(--brand-50); color:var(--accent); }
 .mic-hint{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:10px; }
 .heard-text{ text-align:center; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; margin-top:8px; min-height:20px; }
 /* Skor kata angka — pelengkap bintang, bukan pengganti (bintang tetap yang

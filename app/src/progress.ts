@@ -681,10 +681,10 @@ export function listeningTopicPercent(
  * `listeningTopicPercent` (rata-rata Latihan Inti + Tantangan per soal,
  * Kenalan TIDAK dihitung). Speaking sekarang 1 alur di semua level
  * (`games/speaking.ts`), jadi section-nya sama utk semua bentuk data:
- * `'latihan-pola'` (10 soal) & `'tantangan-ngobrol'` (jumlah soal per topik,
- * `speakingTantanganCount`). Total dibaca dari plan tersimpan kalau ada.
+ * `'latihan-pola'` (10 soal), `'tantangan-ngobrol'` & `'tantangan-tanya'` (jumlah
+ * soal dari `speakingSlotTotals`). Total dibaca dari plan tersimpan kalau ada.
  */
-export function speakingTopicPercent(topicId: string, latihanTotal: number, tantanganTotal: number): number {
+export function speakingTopicPercent(topicId: string, latihanTotal: number, tantanganTotal: number, bertanyaTotal = 0): number {
   const skill: SkillKey = 'speaking';
   const stepPct = (section: SectionName, fallback: number): number => {
     const s = getSection(skill, topicId, section);
@@ -696,7 +696,11 @@ export function speakingTopicPercent(topicId: string, latihanTotal: number, tant
     }
     return done / total;
   };
-  return Math.round(((stepPct('latihan-pola', latihanTotal) + stepPct('tantangan-ngobrol', tantanganTotal)) / 2) * 100);
+  // Tantangan = rata-rata tab-nya (pola sama 3 tab Tantangan Vocab): "Ngobrol"
+  // + "Giliranmu Bertanya" (`'tantangan-tanya'`, tidak ada di Little Stars).
+  const ngobrol = stepPct('tantangan-ngobrol', tantanganTotal);
+  const tantangan = bertanyaTotal > 0 ? (ngobrol + stepPct('tantangan-tanya', bertanyaTotal)) / 2 : ngobrol;
+  return Math.round(((stepPct('latihan-pola', latihanTotal) + tantangan) / 2) * 100);
 }
 
 /**

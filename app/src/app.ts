@@ -934,11 +934,11 @@ function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): 
   if (key === 'speaking') {
     const speakingTopic = speakingTopicsForLevel(level).find((t) => t.id === topicId);
     if (speakingTopic) {
-      const totals = speakingGame.speakingSlotTotals(speakingTopic);
+      const totals = speakingGame.speakingSlotTotals(speakingTopic, level);
       // Per soal, sama Vocab/Listening. Topik yang SUDAH tuntas di alur lama
       // (sebelum 2026-09-24, cuma tercatat lewat `isStepVisited`) tetap 100% —
       // non-punitive, anak tidak kehilangan status "selesai" krn alur berubah.
-      return stepsVisited ? 100 : speakingTopicPercent(topicId, totals.latihan, totals.tantangan);
+      return stepsVisited ? 100 : speakingTopicPercent(topicId, totals.latihan, totals.tantangan, totals.bertanya);
     }
   }
   return stepsVisited ? 100 : 0;

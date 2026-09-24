@@ -662,6 +662,19 @@ Usulan #1–#7 `pembeda_level.md` § Speaking diimplementasikan (ambang bintang,
 
 ---
 
+## 20. Sesi 13 — Tantangan Tab "🙋 Giliranmu Bertanya" (Anak yang Bertanya)
+
+Permintaan user: pembeda #8 ("anak yang bertanya, bukan cuma menjawab") diimplementasikan **tanpa LLM**, dikenalkan mulai level setelah Little Stars, sebagai **section baru di Tantangan**.
+
+- **Dasar riset**: Cambridge A2 Flyers Speaking Part 2 — anak menjawab LALU membuat pertanyaan ("question-word questions"); KET/PET antar-kandidat "initiates and responds" (`pembeda_level.md` § Speaking). Kurikulum Merdeka Fase C: "membuat pertanyaan sederhana".
+- **Tanpa LLM**: pertanyaan yang diharapkan sudah ada di data; ucapan anak dicocokkan proporsional (`wordMatchDetail`); teman menjawab dengan jawaban yang sudah ditulis. Batasan jujur: anak tidak bisa bertanya bebas apa saja — cuma pertanyaan yang disiapkan utk soal itu yang dikenali.
+- **Starter — "🎁 Tebak Isi Kotak"**: 1 kata topik disembunyikan, 4 pilihan tampil; anak bertanya "Is it … ?" → teman menjawab "No, it isn't." (pilihan dicoret) / "Yes, it is!" (terbuka + confetti). Dibangun otomatis dari `items` — 0 data baru. Pola tunggal (ganti 1 kata), sesuai Fase A–B.
+- **Explorer ke atas — "Tanya Temanmu"**: arti Indonesia pertanyaan tampil, anak mengucapkan pertanyaan Inggrisnya; teman (Bima di interview) menjawab dengan contoh jawaban yang sudah ada. Sumber: `roleplay` yang berakhiran "?", `stories[].question`, `turns[].question`. Menengah: chip "Mulai dengan: What …"; Lanjut: tanpa chip, 💡 Petunjuk 🔒 sampai 1x coba.
+- **Section & progres**: `tantangan-tanya`, 5 soal. Tantangan jadi 2 tab (pola Tantangan Vocab) — tuntas "Ngobrol" otomatis lanjut ke "Bertanya", "Kerja Bagus!" setelah keduanya; persentase Tantangan = rata-rata 2 tab.
+- **Verifikasi**: `npm run build` lolos; Playwright (mic di-mock) di 6 level — Little Stars tanpa tab, Starter Tebak Isi Kotak (5 kotak, pilihan salah dicoret), Explorer–Trailblazer Tanya Temanmu 5 soal; semua sampai "Kerja Bagus!", 0 pageerror.
+
+---
+
 ## Sumber Riset Web (Sesi 1–8)
 
 ### Institusi Bahasa Inggris Indonesia

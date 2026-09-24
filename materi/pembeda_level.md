@@ -264,7 +264,7 @@ Angka Adventurer/Achiever/Trailblazer sedikit di atas target karena heuristik ik
 
 # Speaking
 
-Status: **riset selesai 2026-09-24; usulan #1–#7 SUDAH DIIMPLEMENTASIKAN hari yang sama** (`games/speaking.ts`, bersamaan dgn penyeragaman alur Speaking semua level — `speaking.md` §19); #8 (anak bertanya/berpasangan) belum. Angka tetap [U] sampai diuji ke anak & mic sungguhan — semua angka & aturan bertanda **[F]** (fakta dari sumber) atau **[U]** (usulan desain, belum diuji). Pertanyaan yang dijawab: selain FORMAT soal, apa yang membedakan level Speaking di lembaga lain, dan mana yang layak ditiru app ini.
+Status: **riset selesai 2026-09-24; usulan #1–#8 SUDAH DIIMPLEMENTASIKAN** (`games/speaking.ts`, bersamaan dgn penyeragaman alur Speaking semua level — `speaking.md` §19–§20). Angka tetap [U] sampai diuji ke anak & mic sungguhan — semua angka & aturan bertanda **[F]** (fakta dari sumber) atau **[U]** (usulan desain, belum diuji). Pertanyaan yang dijawab: selain FORMAT soal, apa yang membedakan level Speaking di lembaga lain, dan mana yang layak ditiru app ini.
 
 Speaking punya **2 lapis pembeda**, jangan dicampur (pola sama Listening):
 1. **Lapis format & konten (SUDAH ADA)** — 4 format berdampingan (frasa → model/drill/roleplay → cerita → interview) + konten yang naik (sebut benda → deskripsi+"because" → opini+perbandingan → interview). Alasan & riset: [speaking.md](speaking.md) §0, §4, §13–§14, §18 (pilot "Ngobrol" Little Stars). Dokumen ini TIDAK mengulang itu.
@@ -346,7 +346,7 @@ Intinya: **Dasar** = skor longgar, waktu berpikir panjang, bantuan penuh (ASR su
 | 5 | ✅ | Dasar: chip kata Indonesia; Menengah: arti pertanyaan tampil; Lanjut: arti disembunyikan sampai Petunjuk. Latihan Inti tetap tampil arti di semua level (jangkar "Lengkapi Kalimat") |
 | 6 | ✅ | `speakingDefaultRate` dipanggil `app.ts` `renderActivity` (Latihan Inti & Tantangan) |
 | 7 | ✅ | `SILENCE_MS` → `listenAndRecordOnce(..., { silenceMs })`, default global tetap 1300 |
-| 8 | ⏳ | belum — butuh format tugas baru |
+| 8 | ✅ | Tantangan tab "🙋 Giliranmu Bertanya" (mulai Starter): Starter "Tebak Isi Kotak" ("Is it … ?"), Explorer+ "Tanya Temanmu" (ucapkan pertanyaan dari artinya; chip kata tanya di Menengah). Tanpa LLM — pertanyaan & jawaban teman diambil dari data yang sudah ada. Versi berpasangan sungguhan (2 anak) tetap di luar jangkauan app solo |
 
 ## Usulan (Riset Awal)
 
