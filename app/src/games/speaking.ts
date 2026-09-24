@@ -1,4 +1,4 @@
-import type { AnySpeakingTopic, LevelKey, OnDone, SpeakingLine, SpeakingPhraseItem, SpeakingPhraseTopic } from '../types';
+import type { AnySpeakingTopic, LevelKey, OnDone, SpeakingLine, SpeakingPhraseItem, SpeakingPhraseTopic, SpeakingStoryItem } from '../types';
 import { setHandlers } from '../interaction';
 import type { LatihanPlanSlot } from '../progress';
 import {
@@ -211,6 +211,62 @@ function phraseItemBlank(it: SpeakingPhraseItem): Blank | null {
   return keywordBlank(it.phrase.en, it.en) ?? autoBlank(it.phrase.en);
 }
 
+/** Maks soal Latihan Inti Speaking (permintaan user: maks 11, tanpa pengulangan). */
+const LATIHAN_MAX = 11;
+
+function contentWords(text: string): Set<string> {
+  return new Set(
+    normalize(text)
+      .split(' ')
+      .filter((w) => w && !STOPWORDS.has(w))
+  );
+}
+
+/** Kemiripan 2 kalimat (0–1, irisan kata isi ÷ gabungan). */
+function overlap(a: string, b: string): number {
+  const x = contentWords(a);
+  const y = contentWords(b);
+  if (!x.size || !y.size) return 0;
+  let both = 0;
+  x.forEach((w) => y.has(w) && both++);
+  return both / (x.size + y.size - both);
+}
+
+/** Latihan Inti topik cerita dibatasi `LATIHAN_MAX` soal: SEMUA jawaban cerita
+ *  (bahasa target Tantangan) dulu, lalu baris cerita yang paling relevan dgn
+ *  pertanyaannya. Dibuang dulu: baris yang hampir sama dgn kalimat lain yang
+ *  sudah masuk (mis. "Andi has a cat." vs "He has a cat.") & baris pengecoh
+ *  yang tidak nyambung ke pertanyaan (mis. "Andi likes dogs."). */
+function storyPractice(stories: SpeakingStoryItem[]): PracticeItem[] {
+  const pick: PracticeItem[] = stories.map((s) => ({ emoji: s.emoji, line: s.answer, blank: autoBlank(s.answer.en) }));
+  const similar = (en: string): boolean => pick.some((p) => overlap(p.line.en, en) >= 0.5);
+  const add = (emoji: string, line: SpeakingLine): void => {
+    pick.push({ emoji, line, blank: autoBlank(line.en) });
+  };
+  const scored = stories.map((s) =>
+    s.lines
+      .map((line, idx) => ({ emoji: s.emoji, line, idx, rel: overlap(line.en, `${s.question.en} ${s.answer.en}`) }))
+      .sort((a, b) => b.rel - a.rel)
+  );
+  // 1) Tiap cerita minimal 1 baris: yang paling nyambung dgn pertanyaan; kalau
+  //    tidak ada yang berbagi kata (soal inferensi — petunjuknya tersirat),
+  //    ambil baris tengah (biasanya berisi petunjuknya).
+  scored.forEach((lines, si) => {
+    if (pick.length >= LATIHAN_MAX) return;
+    const best = lines.find((c) => c.rel > 0 && !similar(c.line.en));
+    const mid = stories[si].lines[Math.floor(stories[si].lines.length / 2)];
+    if (best) add(best.emoji, best.line);
+    else if (!similar(mid.en)) add(stories[si].emoji, mid);
+  });
+  // 2) Sisa kuota: baris paling relevan lintas cerita.
+  for (const c of scored.flat().sort((a, b) => b.rel - a.rel)) {
+    if (pick.length >= LATIHAN_MAX) break;
+    if (c.rel === 0 || similar(c.line.en)) continue;
+    add(c.emoji, c.line);
+  }
+  return pick;
+}
+
 function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
   if ('items' in topic) {
     return {
@@ -242,9 +298,7 @@ function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
   if ('stories' in topic) {
     return {
       rows: topic.stories.map((s) => ({ emoji: s.emoji, context: s.lines, prompt: s.question, line: s.answer })),
-      practice: topic.stories.flatMap((s) =>
-        [...s.lines, s.answer].map((line) => ({ emoji: s.emoji, line, blank: autoBlank(line.en) }))
-      ),
+      practice: storyPractice(topic.stories),
       prompts: topic.stories.map((s) => ({
         emoji: s.emoji,
         context: s.lines,
