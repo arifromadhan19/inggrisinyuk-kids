@@ -652,7 +652,7 @@ Permintaan user: "audit dan update materi yang ada, benarkan struktur/grammar/su
 **Emoji makhluk hidup**: semua emoji Speaking diaudit — hewan = varian wajah (🐶🐱🦁🐹🐮🐸🐴🐭🐷🐰🐼), orang = bust/kepala; 👵/👴 hanya utk Grandma/Grandpa (pengecualian aturan). Tidak ada yang badan utuh. Denylist `verify-vocab-content.mjs` sekarang ikut mengecek Speaking.
 
 ### 19.2 Satu alur semua level
-Kenalan 🔊🎤 (tanpa 🎮) → Latihan Inti "🔁 Tirukan" + "🧩 Lengkapi Kalimat" → Tantangan "💬 Ngobrol Yuk!" tanpa audio pertanyaan. Detail teknis: CLAUDE.md § "Speaking — SATU Alur di Semua Level". Section baru `latihan-pola`/`tantangan-ngobrol` → titik progres per soal Speaking mulai dari awal utk anak yang sudah pernah main (status "selesai" topik tidak terpengaruh, Speaking memakai `isStepVisited`).
+Kenalan 🔊🎤 (tanpa 🎮) → Latihan Inti "🔁 Tirukan" + "🧩 Lengkapi Kalimat" → Tantangan "💬 Ngobrol Yuk!" tanpa audio pertanyaan. Detail teknis: CLAUDE.md § "Speaking — SATU Alur di Semua Level". Progres topik Speaking sekarang per soal, pola sama Vocab/Listening (`speakingTopicPercent`: rata-rata `latihan-pola` + `tantangan-ngobrol`, "Selesai" = 100%) — sebelumnya 0%/100% kasar lewat `isStepVisited`. Titik per soal mulai dari awal utk anak yang pernah main alur lama (bentuk soalnya berubah, sama perlakuan Vocab/Listening saat format soalnya berubah); topik yang sudah tuntas di alur lama tetap tercatat 100%.
 
 ### 19.3 Pembeda level
 Usulan #1–#7 `pembeda_level.md` § Speaking diimplementasikan (ambang bintang, target panjang, bonus penghubung, Petunjuk terkunci, jangkar Indonesia, kecepatan, waktu berpikir). #8 (anak bertanya/berpasangan — Flyers/KET) belum.

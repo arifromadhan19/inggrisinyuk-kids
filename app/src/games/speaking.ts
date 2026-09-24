@@ -259,6 +259,12 @@ function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
   };
 }
 
+/** Jumlah soal Latihan Inti & Tantangan 1 topik — dipakai `app.ts`
+ *  `topicProgressPercent` (`speakingTopicPercent`, pola sama Vocab/Listening). */
+export function speakingSlotTotals(topic: AnySpeakingTopic): { latihan: number; tantangan: number } {
+  return { latihan: LATIHAN_COUNT, tantangan: flowOf(topic).tantanganCount };
+}
+
 /* ------------------------------------------------------------------ */
 /* Skor                                                                */
 /* ------------------------------------------------------------------ */

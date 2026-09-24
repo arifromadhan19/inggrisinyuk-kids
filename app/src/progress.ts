@@ -677,6 +677,29 @@ export function listeningTopicPercent(
 }
 
 /**
+ * Persentase progres 1 topik Speaking — pola SAMA PERSIS `vocabTopicPercent`/
+ * `listeningTopicPercent` (rata-rata Latihan Inti + Tantangan per soal,
+ * Kenalan TIDAK dihitung). Speaking sekarang 1 alur di semua level
+ * (`games/speaking.ts`), jadi section-nya sama utk semua bentuk data:
+ * `'latihan-pola'` (10 soal) & `'tantangan-ngobrol'` (jumlah soal per topik,
+ * `speakingTantanganCount`). Total dibaca dari plan tersimpan kalau ada.
+ */
+export function speakingTopicPercent(topicId: string, latihanTotal: number, tantanganTotal: number): number {
+  const skill: SkillKey = 'speaking';
+  const stepPct = (section: SectionName, fallback: number): number => {
+    const s = getSection(skill, topicId, section);
+    const total = s?.plan?.length ?? fallback;
+    if (!s || total <= 0) return 0;
+    let done = 0;
+    for (let i = 0; i < total; i += 1) {
+      if (s.slots[i]?.st === 2) done += 1;
+    }
+    return done / total;
+  };
+  return Math.round(((stepPct('latihan-pola', latihanTotal) + stepPct('tantangan-ngobrol', tantanganTotal)) / 2) * 100);
+}
+
+/**
  * Persentase progres 1 topik Reading FORMAT KEDUA (`ReadingWordTopic`, "Baca
  * Kata", Little Stars) — sama persis pola `listeningTopicPercent` di atas
  * (rata-rata Latihan Inti + 1 sub-section Tantangan, Kenalan TIDAK dihitung).
