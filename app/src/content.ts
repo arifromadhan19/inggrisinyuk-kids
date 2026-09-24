@@ -17,9 +17,7 @@ import type {
   ReadingWordTopic,
   SkillKey,
   SkillMeta,
-  SpeakingInterviewTopic,
   SpeakingPhraseTopic,
-  SpeakingTopic,
   VocabTopic,
 } from './types';
 
@@ -6865,7 +6863,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
  * cukup di level lain), pola sama Explorer (id topik Speaking BEDA dari id
  * Listening biar tidak rancu baca kode, walau aman dari tabrakan progres).
  */
-export const SPEAKING_TOPICS_ADVENTURER: SpeakingTopic[] = [
+export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
   {
     id: 'membuat-janji',
     title: 'Membuat Janji (Making Plans)',
@@ -7054,6 +7052,65 @@ export const SPEAKING_TOPICS_ADVENTURER: SpeakingTopic[] = [
       { q: { en: 'What is your favorite room?', id: 'Ruangan apa favoritmu?' }, answer: { en: 'My favorite room is my bedroom upstairs.', id: 'Ruangan favoritku kamar tidurku di lantai atas.' }, emoji: '🏠' },
       { q: { en: 'Why do you like it?', id: 'Kenapa kamu suka ruangan itu?' }, answer: { en: 'I like it because it is quiet and has many toys.', id: 'Aku suka karena tenang dan banyak mainan.' }, emoji: '🧸' },
       { q: { en: 'What do you do in the living room?', id: 'Apa yang kamu lakukan di ruang tamu?' }, answer: { en: 'I watch TV with my family in the living room.', id: 'Aku menonton TV bersama keluargaku di ruang tamu.' }, emoji: '📺' },
+    ],
+  },
+  // Cerita & Jawab level adventurer (permintaan user: perluas pilot Explorer) —
+  // cerita dibacakan di Tantangan, anak menjawab lewat mic (skor kata kunci).
+  {
+    id: 'cerita-seru',
+    title: 'Cerita Seru (Fun Stories)',
+    desc: '5 cerita mini',
+    stories: [
+      {
+        emoji: '🪁',
+        lines: [
+          { en: 'Maya goes to the park with her dad.', id: 'Maya pergi ke taman bersama ayahnya.' },
+          { en: 'She wants to fly her new kite.', id: 'Dia ingin menerbangkan layangan barunya.' },
+          { en: 'The wind is very strong today.', id: 'Anginnya sangat kencang hari ini.' },
+        ],
+        question: { en: 'Why can Maya fly her kite easily?', id: 'Kenapa Maya bisa menerbangkan layangannya dengan mudah?' },
+        answer: { en: 'Because the wind is strong.', id: 'Karena anginnya kencang.' },
+      },
+      {
+        emoji: '☔',
+        lines: [
+          { en: 'Rudi walks to school in the morning.', id: 'Rudi berjalan ke sekolah di pagi hari.' },
+          { en: 'Dark clouds cover the sky.', id: 'Awan gelap menutupi langit.' },
+          { en: 'He puts an umbrella in his bag.', id: 'Dia memasukkan payung ke tasnya.' },
+        ],
+        question: { en: 'Why does Rudi bring an umbrella?', id: 'Kenapa Rudi membawa payung?' },
+        answer: { en: 'Because it will rain.', id: 'Karena akan turun hujan.' },
+      },
+      {
+        emoji: '🍰',
+        lines: [
+          { en: 'It is Sinta\'s birthday today.', id: 'Hari ini ulang tahun Sinta.' },
+          { en: 'Her mom bakes a big chocolate cake.', id: 'Ibunya membuat kue cokelat yang besar.' },
+          { en: 'Sinta shares the cake with her friends.', id: 'Sinta berbagi kue dengan teman-temannya.' },
+        ],
+        question: { en: 'What does Sinta do with the cake?', id: 'Apa yang Sinta lakukan dengan kuenya?' },
+        answer: { en: 'She gives some cake to her friends.', id: 'Dia memberi sebagian kue ke teman-temannya.' },
+      },
+      {
+        emoji: '🐶',
+        lines: [
+          { en: 'Tono has a small brown puppy.', id: 'Tono punya anak anjing kecil berwarna cokelat.' },
+          { en: 'The puppy plays in the garden all morning.', id: 'Anak anjing itu bermain di kebun sepanjang pagi.' },
+          { en: 'After that, Tono gives it food and water.', id: 'Setelah itu, Tono memberinya makanan dan air.' },
+        ],
+        question: { en: 'Why does Tono give the puppy food?', id: 'Kenapa Tono memberi makan anak anjingnya?' },
+        answer: { en: 'Because the puppy is hungry.', id: 'Karena anak anjingnya lapar.' },
+      },
+      {
+        emoji: '🏀',
+        lines: [
+          { en: 'Dina plays basketball every Saturday.', id: 'Dina bermain basket setiap hari Sabtu.' },
+          { en: 'Today her team wins the game.', id: 'Hari ini timnya memenangkan pertandingan.' },
+          { en: 'Dina smiles and jumps with joy.', id: 'Dina tersenyum dan melompat kegirangan.' },
+        ],
+        question: { en: 'How does Dina feel today?', id: 'Bagaimana perasaan Dina hari ini?' },
+        answer: { en: 'She is very happy.', id: 'Dia sangat senang.' },
+      },
     ],
   },
 ];
@@ -15425,7 +15482,7 @@ export const SPEAKING_TOPICS_STARTER: SpeakingPhraseTopic[] = [
  * ada) yg Listening Achiever SUDAH pakai SEMUA 10-nya, pola sama Explorer/
  * Adventurer (id topik Speaking beda dari id Listening).
  */
-export const SPEAKING_TOPICS_ACHIEVER: SpeakingTopic[] = [
+export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
   {
     id: 'deskripsi-orang',
     title: 'Deskripsi Orang (Describing People)',
@@ -15617,6 +15674,65 @@ export const SPEAKING_TOPICS_ACHIEVER: SpeakingTopic[] = [
       { q: { en: 'Describe your favorite thing and why you like it.', id: 'Ceritakan benda favoritmu dan kenapa kamu menyukainya.' }, answer: { en: 'My favorite thing is my blue pencil case. I like it because it is big and has many pockets.', id: 'Benda favoritku kotak pensil biruku. Aku suka karena besar dan punya banyak kantong.' }, emoji: '⭐' },
     ],
   },
+  // Cerita & Jawab level achiever (permintaan user: perluas pilot Explorer) —
+  // cerita dibacakan di Tantangan, anak menjawab lewat mic (skor kata kunci).
+  {
+    id: 'cerita-dan-alasan',
+    title: 'Cerita & Alasan (Stories & Reasons)',
+    desc: '5 cerita mini',
+    stories: [
+      {
+        emoji: '📚',
+        lines: [
+          { en: 'Lala reads two books every week.', id: 'Lala membaca dua buku setiap minggu.' },
+          { en: 'Her brother Bayu reads one book a month.', id: 'Kakaknya, Bayu, membaca satu buku sebulan.' },
+          { en: 'Lala also borrows books from the library.', id: 'Lala juga meminjam buku dari perpustakaan.' },
+        ],
+        question: { en: 'Who reads more books, Lala or Bayu?', id: 'Siapa yang membaca lebih banyak buku, Lala atau Bayu?' },
+        answer: { en: 'Lala reads more.', id: 'Lala membaca lebih banyak.' },
+      },
+      {
+        emoji: '🧥',
+        lines: [
+          { en: 'Fajar looks out of the window in the morning.', id: 'Fajar melihat ke luar jendela di pagi hari.' },
+          { en: 'The trees are moving and the sky is grey.', id: 'Pohon-pohon bergoyang dan langitnya kelabu.' },
+          { en: 'He takes his jacket before he leaves.', id: 'Dia mengambil jaketnya sebelum berangkat.' },
+        ],
+        question: { en: 'What is the weather like?', id: 'Bagaimana cuacanya?' },
+        answer: { en: 'It is windy and cloudy.', id: 'Cuacanya berangin dan berawan.' },
+      },
+      {
+        emoji: '🎹',
+        lines: [
+          { en: 'Nadia practices the piano for one hour every day.', id: 'Nadia berlatih piano satu jam setiap hari.' },
+          { en: 'Next week, she will play at the school concert.', id: 'Minggu depan, dia akan bermain di konser sekolah.' },
+          { en: 'She wants to play without any mistakes.', id: 'Dia ingin bermain tanpa kesalahan.' },
+        ],
+        question: { en: 'Why does Nadia practice so much?', id: 'Kenapa Nadia berlatih begitu banyak?' },
+        answer: { en: 'Because of the school concert.', id: 'Karena ada konser sekolah.' },
+      },
+      {
+        emoji: '🍅',
+        lines: [
+          { en: 'Rio plants a small tomato plant in April.', id: 'Rio menanam tanaman tomat kecil di bulan April.' },
+          { en: 'He waters it every morning before school.', id: 'Dia menyiramnya setiap pagi sebelum sekolah.' },
+          { en: 'In June, he picks red tomatoes from it.', id: 'Di bulan Juni, dia memetik tomat merah darinya.' },
+        ],
+        question: { en: 'How long does the plant take to give tomatoes?', id: 'Berapa lama tanaman itu sampai berbuah tomat?' },
+        answer: { en: 'About two months.', id: 'Sekitar dua bulan.' },
+      },
+      {
+        emoji: '🎒',
+        lines: [
+          { en: 'Tia packs her bag the night before school.', id: 'Tia menyiapkan tasnya malam sebelum sekolah.' },
+          { en: 'Her friend Dewi always packs in the morning.', id: 'Temannya, Dewi, selalu menyiapkan tas di pagi hari.' },
+          { en: 'Dewi often forgets her homework.', id: 'Dewi sering lupa membawa PR-nya.' },
+        ],
+        question: { en: 'Whose habit is better, and why?', id: 'Kebiasaan siapa yang lebih baik, dan kenapa?' },
+        answer: { en: 'Tia has the better habit.', id: 'Kebiasaan Tia lebih baik.' },
+      },
+    ],
+  },
 ];
 
 /**
@@ -15644,7 +15760,7 @@ export const SPEAKING_TOPICS_ACHIEVER: SpeakingTopic[] = [
  * dgn "1 teman ngobrol tetap" di seluruh level ini, bukan karakter baru tiap
  * kali (konsistensi pengalaman, bukan variasi sembarangan).
  */
-export const SPEAKING_TOPICS_TRAILBLAZER: SpeakingInterviewTopic[] = [
+export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
   {
     id: 'rencana-masa-depan',
     title: 'Rencana Masa Depan (Future Plans)',
@@ -16042,6 +16158,70 @@ export const SPEAKING_TOPICS_TRAILBLAZER: SpeakingInterviewTopic[] = [
       {
         question: { en: 'Is there a holiday from another country you find interesting?', id: 'Adakah hari libur dari negara lain yang menurutmu menarik?' },
         peerAnswer: { en: 'Yes, I find Chinese New Year interesting because of the lion dance. The music and colors make the streets look alive.', id: 'Iya, aku merasa Tahun Baru Imlek menarik karena ada tarian barongsai. Musik dan warnanya membuat jalanan tampak meriah.' }, emoji: '🏮',
+      },
+    ],
+  },
+  // Cerita & Jawab level trailblazer (permintaan user: perluas pilot Explorer) —
+  // cerita dibacakan di Tantangan, anak menjawab lewat mic (skor kata kunci).
+  {
+    id: 'cerita-dan-simpulkan',
+    title: 'Cerita & Simpulkan (Stories & Inferences)',
+    desc: '5 cerita mini',
+    stories: [
+      {
+        emoji: '🎤',
+        lines: [
+          { en: 'Kevin was chosen to give a speech at the school event.', id: 'Kevin terpilih untuk berpidato di acara sekolah.' },
+          { en: 'At first, he felt nervous and practiced every evening.', id: 'Awalnya, dia gugup dan berlatih setiap malam.' },
+          { en: 'On the day, his voice was steady and people clapped loudly.', id: 'Pada harinya, suaranya mantap dan orang-orang bertepuk tangan meriah.' },
+          { en: 'Afterwards, he said he wanted to try again next year.', id: 'Setelah itu, dia bilang ingin mencoba lagi tahun depan.' },
+        ],
+        question: { en: 'How did Kevin\'s feelings change?', id: 'Bagaimana perasaan Kevin berubah?' },
+        answer: { en: 'He went from nervous to confident.', id: 'Dari gugup menjadi percaya diri.' },
+      },
+      {
+        emoji: '🌳',
+        lines: [
+          { en: 'The town planned to cut down the old trees in the park.', id: 'Kota berencana menebang pohon-pohon tua di taman.' },
+          { en: 'Many students wrote letters to the mayor.', id: 'Banyak murid menulis surat kepada wali kota.' },
+          { en: 'They explained that families enjoyed the shade there.', id: 'Mereka menjelaskan bahwa keluarga-keluarga menikmati keteduhan di sana.' },
+          { en: 'In the end, the town decided to keep the trees.', id: 'Akhirnya, kota memutuskan untuk mempertahankan pohon-pohon itu.' },
+        ],
+        question: { en: 'Why did the town change its plan?', id: 'Kenapa kota mengubah rencananya?' },
+        answer: { en: 'Because of the students\' letters.', id: 'Karena surat-surat dari para murid.' },
+      },
+      {
+        emoji: '📱',
+        lines: [
+          { en: 'Sarah used to spend hours on her phone every night.', id: 'Sarah dulu menghabiskan berjam-jam di ponselnya setiap malam.' },
+          { en: 'She often felt tired in class the next day.', id: 'Dia sering merasa lelah di kelas keesokan harinya.' },
+          { en: 'Last month, she started leaving her phone outside her bedroom.', id: 'Bulan lalu, dia mulai meninggalkan ponselnya di luar kamar.' },
+          { en: 'Now she wakes up early and feels fresh.', id: 'Sekarang dia bangun pagi dan merasa segar.' },
+        ],
+        question: { en: 'What helped Sarah feel better?', id: 'Apa yang membantu Sarah merasa lebih baik?' },
+        answer: { en: 'Keeping her phone out of her room.', id: 'Menaruh ponselnya di luar kamar.' },
+      },
+      {
+        emoji: '🍳',
+        lines: [
+          { en: 'Budi wanted to cook dinner for his parents\' anniversary.', id: 'Budi ingin memasak makan malam untuk ulang tahun pernikahan orang tuanya.' },
+          { en: 'He burned the rice on his first try.', id: 'Dia menghanguskan nasinya di percobaan pertama.' },
+          { en: 'Instead of giving up, he watched a video and tried again.', id: 'Bukannya menyerah, dia menonton video dan mencoba lagi.' },
+          { en: 'His parents said it was the best meal they had ever eaten.', id: 'Orang tuanya bilang itu makanan terenak yang pernah mereka makan.' },
+        ],
+        question: { en: 'What kind of person is Budi?', id: 'Budi itu orang yang seperti apa?' },
+        answer: { en: 'He never gives up.', id: 'Dia pantang menyerah.' },
+      },
+      {
+        emoji: '🎨',
+        lines: [
+          { en: 'Maya\'s art club needed money for new paints.', id: 'Klub seni Maya butuh uang untuk cat baru.' },
+          { en: 'Some members wanted to ask their parents for help.', id: 'Beberapa anggota ingin minta bantuan orang tua mereka.' },
+          { en: 'Maya suggested selling their drawings at the school fair instead.', id: 'Maya malah mengusulkan menjual gambar mereka di bazar sekolah.' },
+          { en: 'They sold every drawing and bought all the paints they needed.', id: 'Mereka menjual semua gambar dan membeli semua cat yang dibutuhkan.' },
+        ],
+        question: { en: 'Why was Maya\'s idea a good one?', id: 'Kenapa ide Maya bagus?' },
+        answer: { en: 'They earned the money themselves.', id: 'Mereka mendapatkan uangnya sendiri.' },
       },
     ],
   },

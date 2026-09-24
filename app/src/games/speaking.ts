@@ -371,9 +371,9 @@ function scoreFree(said: string, turn: TalkTurn, level: LevelKey): MicScore {
 function scoreTurn(said: string, turn: TalkTurn, level: LevelKey): MicScore {
   if (turn.scoring === 'free') return scoreFree(said, turn, level);
   if (turn.scoring === 'target') return scoreMic(said, turn.answer.en, level);
-  const s = scoreMic(said, talkKeywords(turn.answer.en), level, 'kata kunci');
-  s.extraHtml = lengthBadge(said, level) + connectorBadge(said, level);
-  return s;
+  // Jawaban kata kunci (cerita, giliran 2 frasa) = fakta pendek, jadi TANPA
+  // target panjang kata (target panjang cuma utk jawaban bebas).
+  return scoreMic(said, talkKeywords(turn.answer.en), level, 'kata kunci');
 }
 
 /* ------------------------------------------------------------------ */
@@ -878,7 +878,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
             ${revealed ? `<div class="id-text">${turn.question.id}</div>` : ''}
             <div class="talk-instruct">Jawab pakai kalimat bahasa Inggris, ucapkan!</div>
             ${
-              turn.scoring !== 'target' && target
+              turn.scoring === 'free' && target
                 ? `<div class="talk-target">🎯 Minimal ${target} kata${tier === 'lanjut' ? ' · pakai kata penghubung (because, but, so…)' : ''}</div>`
                 : ''
             }`;

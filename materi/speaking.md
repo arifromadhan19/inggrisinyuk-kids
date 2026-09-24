@@ -693,6 +693,12 @@ Permintaan user: materi di atas Starter diberi ikon/gambar relevan spt Little St
 
 ---
 
+## 23. Sesi 16 — "Cerita & Jawab" Diperluas ke Adventurer, Achiever, Trailblazer
+
+Permintaan user (setelah pilot Explorer §16): format cerita diterapkan di level atas — Listening & Reading sudah punya cerita + pertanyaan di level ini, Speaking belum. 1 topik per level, 5 cerita, naik tangga Cambridge: Adventurer "Cerita Seru (Fun Stories)" — 3 kalimat, pertanyaan *why* + jawaban "because" (Movers); Achiever "Cerita & Alasan (Stories & Reasons)" — membandingkan & menyimpulkan (cuaca dari tanda²nya, lama tanam dari bulan, kebiasaan siapa lebih baik) (Flyers); Trailblazer "Cerita & Simpulkan (Stories & Inferences)" — 4 kalimat, perubahan perasaan, sebab keputusan, sifat tokoh (PET). Alur sama persis (cerita+pertanyaan dibacakan di Tantangan, jawab lewat mic, "Giliranmu Bertanya" dari pertanyaan cerita). Jawaban cerita = fakta pendek → target "Minimal N kata" TIDAK ditampilkan utk soal cerita (cuma utk jawaban bebas). Catatan: Latihan Inti cerita = semua baris + jawaban (Adventurer/Achiever 20 soal, Trailblazer 25) krn aturan "tanpa pengulangan, seadanya".
+
+---
+
 ## Sumber Riset Web (Sesi 1–8)
 
 ### Institusi Bahasa Inggris Indonesia
