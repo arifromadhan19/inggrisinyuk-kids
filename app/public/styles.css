@@ -2281,6 +2281,10 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .guess-chip.hit{ border-color:var(--brand-500); background:var(--brand-50); color:var(--accent); }
 /* Lengkapi Kalimat Speaking: jawaban dari 💡 Petunjuk mengisi lubangnya sendiri. */
 .blank-fill{ color:var(--accent); border-bottom:3px dashed var(--brand-500); padding:0 2px; }
+/* Popup hasil Tantangan Speaking — lebih lebar dari popup mic Kenalan (isi
+   lebih banyak: cek kata, contoh jawaban, 2 tombol), bisa di-scroll sendiri. */
+.talk-result-card{ max-width:400px; max-height:calc(100vh - 40px); overflow-y:auto; }
+.talk-result-card .round-actions{ margin-top:12px; }
 .mic-hint{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:10px; }
 .heard-text{ text-align:center; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; margin-top:8px; min-height:20px; }
 /* Skor kata angka — pelengkap bintang, bukan pengganti (bintang tetap yang

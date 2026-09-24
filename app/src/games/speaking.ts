@@ -434,6 +434,55 @@ function micResultHtml(s: MicScore, said: string, answerHtml: string): string {
     <div class="speak-row"><button class="speak-btn" type="button" id="playMineBtn" data-action="playMine" disabled>▶️ Play Suaramu</button></div>`;
 }
 
+/** Hasil mic Tantangan sbg POPUP (permintaan user: hasil inline bikin layar
+ *  harus di-scroll jauh). Isi sama dgn hasil inline sebelumnya — bintang,
+ *  cek kata, contoh jawaban, ▶️ Play Suaramu, Coba Lagi/Lanjut — pola overlay
+ *  `.mic-pop-overlay` yang sama dgn popup mic Kenalan. */
+function openResultPopup(o: {
+  s: MicScore;
+  said: string;
+  answerHtml: string;
+  feedback: string;
+  isLast: boolean;
+  audioUrl: () => string | null;
+  onTryAgain: () => void;
+  /** Tidak diisi = cuma 1 tombol (`tryLabel`), mis. Tebak Isi Kotak yang
+   *  belum ketebak: anak cukup tanya lagi, belum ada "Lanjut". */
+  onNext?: () => void;
+  tryLabel?: string;
+}): void {
+  document.querySelector('.mic-pop-overlay')?.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'mic-pop-overlay';
+  overlay.innerHTML = `
+    <div class="mic-pop-card talk-result-card" role="dialog" aria-label="Hasil ucapanmu">
+      ${micResultHtml(o.s, o.said, o.answerHtml)}
+      <div class="feedback good" style="margin-top:6px">${o.feedback}</div>
+      ${
+        o.onNext
+          ? roundActionsHtml(o.isLast)
+          : `<div class="round-actions"><button class="primary-btn" type="button" data-action="tryAgainRound" style="margin-top:0">${o.tryLabel ?? '🔁 Coba Lagi'}</button></div>`
+      }
+    </div>`;
+  document.body.appendChild(overlay);
+  const url = o.audioUrl();
+  if (url) overlay.querySelector<HTMLButtonElement>('#playMineBtn')!.disabled = false;
+  setHandlers({
+    playMine: () => {
+      const u = o.audioUrl();
+      if (u) new Audio(u).play().catch(() => {});
+    },
+    tryAgainRound: () => {
+      overlay.remove();
+      o.onTryAgain();
+    },
+    nextRound: () => {
+      overlay.remove();
+      o.onNext?.();
+    },
+  });
+}
+
 function emojiHtml(emoji: string): string {
   return emoji ? `<div class="big-emoji">${emoji}</div>` : '';
 }
@@ -738,7 +787,7 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
         },
         (audioUrl) => {
           recordedAudioUrl = audioUrl;
-          const playBtn = container.querySelector<HTMLButtonElement>('#playMineBtn');
+          const playBtn = document.querySelector<HTMLButtonElement>('#playMineBtn');
           if (playBtn) playBtn.disabled = false;
         },
         micOpts(contentLevel)
@@ -812,7 +861,6 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
     function paint(): void {
       const turn = prompt.turns[turnIdx];
       const locked = tier === 'lanjut' && !attempted;
-      const showQuestionId = tier !== 'lanjut' || revealed;
       const target = TARGET_WORDS[contentLevel];
       const multi = prompt.turns.length > 1;
       const taskHtml =
@@ -824,7 +872,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
             </div>
             <div class="talk-instruct">Apa bahasa Inggrisnya? Ucapkan!</div>`
           : `<p class="reading-question">💬 "${turn.question.en}"</p>
-            ${showQuestionId ? `<div class="id-text">${turn.question.id}</div>` : ''}
+            ${revealed ? `<div class="id-text">${turn.question.id}</div>` : ''}
             <div class="talk-instruct">Jawab pakai kalimat bahasa Inggris, ucapkan!</div>
             ${
               turn.scoring !== 'target' && target
@@ -916,21 +964,15 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
             });
           }
           const label = turn.scoring === 'free' ? 'Contoh jawaban' : 'Jawabannya';
-          container.querySelector<HTMLElement>('#micResult')!.innerHTML = micResultHtml(
+          openResultPopup({
             s,
             said,
-            `<div class="en-text" style="margin-top:8px">${label}: "${turn.answer.en}"</div>`
-          );
-          const fb = container.querySelector<HTMLElement>('#fb')!;
-          fb.textContent = s.perfect ? pickPraise(level) : pickEncourage(level);
-          fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(isLastTurn && allSlotsDone(total, slotStatus)));
-          setHandlers({
-            playMine: () => {
-              if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
-            },
-            tryAgainRound: () => paint(),
-            nextRound: () => {
+            answerHtml: `<div class="talk-model"><span class="talk-model-label">${label}</span><div class="en-text">${turn.answer.en}</div><div class="id-text">${turn.answer.id}</div></div>`,
+            feedback: s.perfect ? pickPraise(level) : pickEncourage(level),
+            isLast: isLastTurn && allSlotsDone(total, slotStatus),
+            audioUrl: () => recordedAudioUrl,
+            onTryAgain: () => paint(),
+            onNext: () => {
               if (isLastTurn) {
                 advance();
                 return;
@@ -947,7 +989,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
         },
         (audioUrl) => {
           recordedAudioUrl = audioUrl;
-          const playBtn = container.querySelector<HTMLButtonElement>('#playMineBtn');
+          const playBtn = document.querySelector<HTMLButtonElement>('#playMineBtn');
           if (playBtn) playBtn.disabled = false;
         },
         micOpts(contentLevel)
@@ -1088,7 +1130,6 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
     const cands = shuffle([target, ...shuffle(items.filter((it) => it !== target)).slice(0, 3)]);
     const ruledOut = new Set<SpeakingPhraseItem>();
     let solved = false;
-    let resultHtml = '';
     let recordedAudioUrl: string | null = null;
 
     function paint(): void {
@@ -1112,10 +1153,8 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
           <div class="mic-hint">${sttSupported ? 'Tap 🎤 lalu tanya, mis. "Is it ' + cands[0].en + '?"' : 'Mikrofon tidak didukung browser ini'}</div>
         </div>`
         }
-        <div id="micResult">${resultHtml}</div>
         <div class="feedback" id="fb"></div>
         ${!sttSupported && !solved ? `<button class="ghost-btn" type="button" data-action="skip">✅ Aku Sudah Bertanya</button>` : ''}
-        ${solved ? roundActionsHtml(allSlotsDone(plan.length, nav.status)) : ''}
       `;
       wireQuizNav(nav.goTo);
       setHandlers({
@@ -1124,11 +1163,6 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
           markSlotAnswered('speaking', topic.id, SECTION_BERTANYA, nav.round, true, { itemRef: target.en });
           nav.advance();
         },
-        playMine: () => {
-          if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
-        },
-        tryAgainRound: () => draw(),
-        nextRound: () => nav.advance(),
       });
     }
 
@@ -1145,7 +1179,6 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
             .filter((c) => normalize(c.en).split(' ').every((w) => heard.includes(` ${w} `)))
             .sort((a, b) => b.en.length - a.en.length)[0];
           const s = scoreMic(said, `is it ${asked?.en ?? cands.find((c) => !ruledOut.has(c))!.en}`, contentLevel);
-          const fb = (): HTMLElement => container.querySelector<HTMLElement>('#fb')!;
           recordEvent({
             kind: 'speak',
             skill: 'speaking',
@@ -1158,7 +1191,8 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
             score: Math.round(s.hitRatio * 100),
             detail: { heard: said },
           });
-          resultHtml = micResultHtml(s, said, '');
+          const reply = (text: string): string =>
+            `<div class="talk-model"><span class="talk-model-label">💬 Temanmu</span><div class="en-text">${text}</div></div>`;
           if (asked === target) {
             solved = true;
             playCorrectTone();
@@ -1166,15 +1200,33 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
             markSlotAnswered('speaking', topic.id, SECTION_BERTANYA, nav.round, s.perfect, { score: Math.round(s.hitRatio * 100), itemRef: target.en });
             paint();
             speak('Yes, it is!');
-            fb().textContent = pickPraise(level);
-            fb().className = 'feedback good';
+            openResultPopup({
+              s,
+              said,
+              answerHtml: reply(`Yes, it is! ${target.emoji ? `${target.emoji} ` : ''}${target.en}`),
+              feedback: pickPraise(level),
+              isLast: allSlotsDone(plan.length, nav.status),
+              audioUrl: () => recordedAudioUrl,
+              onTryAgain: () => draw(),
+              onNext: () => nav.advance(),
+            });
           } else {
             playTryAgainTone();
             if (asked) ruledOut.add(asked);
             paint();
             if (asked) speak("No, it isn't.");
-            fb().textContent = asked ? `Bukan ${asked.en}! ${pickEncourage(level)} Tanya gambar lain, ya.` : `Sebut salah satu gambar, mis. "Is it ${cands.find((c) => !ruledOut.has(c))!.en}?"`;
-            fb().className = 'feedback good';
+            openResultPopup({
+              s,
+              said,
+              answerHtml: asked
+                ? reply("No, it isn't.")
+                : `<div class="talk-model">Sebut salah satu pilihan, mis. <b>"Is it ${cands.find((c) => !ruledOut.has(c))!.en}?"</b></div>`,
+              feedback: asked ? `Bukan ${asked.en}! ${pickEncourage(level)} Tanya pilihan lain, ya.` : pickEncourage(level),
+              isLast: false,
+              audioUrl: () => recordedAudioUrl,
+              onTryAgain: () => {},
+              tryLabel: '🔁 Tanya Lagi',
+            });
           }
         },
         (kind) => {
@@ -1184,7 +1236,7 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
         },
         (audioUrl) => {
           recordedAudioUrl = audioUrl;
-          const playBtn = container.querySelector<HTMLButtonElement>('#playMineBtn');
+          const playBtn = document.querySelector<HTMLButtonElement>('#playMineBtn');
           if (playBtn) playBtn.disabled = false;
         },
         micOpts(contentLevel)
@@ -1283,24 +1335,18 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
             detail: { heard: said },
           });
           // Teman SELALU menjawab (non-punitive) — hadiahnya informasi baru.
-          container.querySelector<HTMLElement>('#micResult')!.innerHTML = micResultHtml(
+          openResultPopup({
             s,
             said,
-            `<div class="en-text" style="margin-top:8px">Pertanyaannya: "${p.question.en}"</div>
-             <div class="talk-model"><span class="talk-model-label">💬 Jawaban ${partner}</span><div class="en-text">${p.answer.en}</div><div class="id-text">${p.answer.id}</div></div>`
-          );
-          speak(p.answer.en);
-          const fb = container.querySelector<HTMLElement>('#fb')!;
-          fb.textContent = s.perfect ? pickPraise(level) : pickEncourage(level);
-          fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(plan.length, nav.status)));
-          setHandlers({
-            playMine: () => {
-              if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
-            },
-            tryAgainRound: () => paint(),
-            nextRound: () => nav.advance(),
+            answerHtml: `<div class="en-text" style="margin-top:8px">Pertanyaannya: "${p.question.en}"</div>
+             <div class="talk-model"><span class="talk-model-label">💬 Jawaban ${partner}</span><div class="en-text">${p.answer.en}</div><div class="id-text">${p.answer.id}</div></div>`,
+            feedback: s.perfect ? pickPraise(level) : pickEncourage(level),
+            isLast: allSlotsDone(plan.length, nav.status),
+            audioUrl: () => recordedAudioUrl,
+            onTryAgain: () => paint(),
+            onNext: () => nav.advance(),
           });
+          speak(p.answer.en);
         },
         (kind) => {
           btn.classList.remove('listening');
@@ -1309,7 +1355,7 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
         },
         (audioUrl) => {
           recordedAudioUrl = audioUrl;
-          const playBtn = container.querySelector<HTMLButtonElement>('#playMineBtn');
+          const playBtn = document.querySelector<HTMLButtonElement>('#playMineBtn');
           if (playBtn) playBtn.disabled = false;
         },
         micOpts(contentLevel)

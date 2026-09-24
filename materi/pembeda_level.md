@@ -343,7 +343,7 @@ Intinya: **Dasar** = skor longgar, waktu berpikir panjang, bantuan penuh (ASR su
 | 2 | ✅ | `TARGET_WORDS` (0/0/4/8/12/18 kata) — baris "🎯 Minimal N kata" + lencana "🗣️ N kata"; skor jawaban bebas = panjang/target |
 | 3 | ✅ | `CONNECTORS` — lencana "🔗 Pakai …" + 1 ⭐ bonus (jawaban bebas) di Achiever/Trailblazer |
 | 4 | ✅ | 💡 Petunjuk Tantangan 🔒 sampai 1x coba di tier Lanjut |
-| 5 | ✅ | Dasar: chip kata Indonesia; Menengah: arti pertanyaan tampil; Lanjut: arti disembunyikan sampai Petunjuk. Latihan Inti tetap tampil arti di semua level (jangkar "Lengkapi Kalimat") |
+| 5 | ✅ (direvisi) | Arti Indonesia pertanyaan "Ngobrol" disembunyikan di SEMUA level, dibuka lewat 💡 Petunjuk (permintaan user). Beda per level tinggal di "Tanya Temanmu" (Menengah dapat chip kata tanya, Lanjut tidak) & Petunjuk 🔒 di tier Lanjut. Latihan Inti tetap tampil arti (jangkar "Lengkapi Kalimat") |
 | 6 | ✅ | `speakingDefaultRate` dipanggil `app.ts` `renderActivity` (Latihan Inti & Tantangan) |
 | 7 | ✅ | `SILENCE_MS` → `listenAndRecordOnce(..., { silenceMs })`, default global tetap 1300 |
 | 8 | ✅ | Tantangan tab "🙋 Giliranmu Bertanya" (mulai Starter): Starter "Tebak Isi Kotak" ("Is it … ?"), Explorer+ "Tanya Temanmu" (ucapkan pertanyaan dari artinya; chip kata tanya di Menengah). Tanpa LLM — pertanyaan & jawaban teman diambil dari data yang sudah ada. Versi berpasangan sungguhan (2 anak) tetap di luar jangkauan app solo |
