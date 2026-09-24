@@ -2285,6 +2285,20 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
    lebih banyak: cek kata, contoh jawaban, 2 tombol), bisa di-scroll sendiri. */
 .talk-result-card{ max-width:400px; max-height:calc(100vh - 40px); overflow-y:auto; }
 .talk-result-card .round-actions{ margin-top:12px; }
+/* Latihan Inti Speaking: 🔊 Dengar & 🎤 Coba Yuk sejajar, sama besar.
+   Mic tetap mango ("giliran kamu bicara"), merah + denyut saat mendengarkan. */
+.act-row{ display:flex; gap:12px; justify-content:center; max-width:440px; margin:var(--s5) auto var(--s2); }
+.act-btn{
+  flex:1 1 0; min-width:0; min-height:58px; display:flex; align-items:center; justify-content:center; gap:8px;
+  border-radius:var(--r-pill); font-weight:800; font-size:1.0625rem; font-family:inherit;
+  box-shadow:var(--sh-1); transition:transform .12s ease;
+}
+.act-btn:active{ transform:scale(.97); }
+.act-listen{ background:var(--accent); color:#fff; }
+.act-mic{ background:var(--sun-500); color:var(--brand-900); box-shadow:0 12px 24px -12px rgba(180,110,10,.7); }
+.act-mic.listening{ background:var(--try); color:#fff; animation:pulse 1s infinite; }
+.act-mic:disabled{ background:var(--muted); color:var(--ink-3); box-shadow:none; }
+.act-hint{ text-align:center; margin-top:4px; }
 .mic-hint{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:10px; }
 .heard-text{ text-align:center; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; margin-top:8px; min-height:20px; }
 /* Skor kata angka — pelengkap bintang, bukan pengganti (bintang tetap yang

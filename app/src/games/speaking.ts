@@ -689,31 +689,31 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
     function paint(): void {
       const body = blank
         ? `
-          <span class="stage-badge">🧩 Lengkapi Kalimat</span>
+          <div class="stage-head">
+            <span class="stage-badge">🧩 Lengkapi Kalimat</span>
+            ${petunjukButtonHtml(revealed)}
+          </div>
           ${quizNavHtml(round, total, slotStatus)}
           <div class="id-text">Soal ${round + 1} dari ${total}</div>
           ${emojiHtml(target.emoji)}
           <div class="en-text">${blank.before}${revealed ? `<span class="blank-fill">${blank.word}</span>` : '___'}${blank.after}</div>
-          <div class="id-text">${target.line.id}</div>
-          <div class="speak-row">
-            <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button>
-            ${petunjukButtonHtml(revealed)}
-          </div>
-`
+          <div class="id-text">${target.line.id}</div>`
         : `
           <span class="stage-badge">🔁 Tirukan</span>
           ${quizNavHtml(round, total, slotStatus)}
           <div class="id-text">Soal ${round + 1} dari ${total}</div>
           ${emojiHtml(target.emoji)}
           <div class="en-text">${target.line.en}</div>
-          <div class="id-text">${target.line.id}</div>
-          <div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar Contoh</button></div>`;
+          <div class="id-text">${target.line.id}</div>`;
+      // 🔊 Dengar & 🎤 Coba Yuk sejajar (permintaan user) — mic tetap pakai
+      // id `micBtn` & kelas `listening` spt sebelumnya.
       container.innerHTML = `
         ${body}
-        <div class="mic-wrap">
-          <button class="mic-btn" id="micBtn" type="button" data-action="mic" aria-label="Ucapkan">🎤</button>
-          <div class="mic-hint">${sttSupported ? (blank ? 'Tap mic, ucapkan kalimatnya sampai lengkap' : 'Tap mic, lalu tirukan ucapannya') : 'Mikrofon tidak didukung browser ini'}</div>
+        <div class="act-row">
+          <button class="act-btn act-listen" type="button" data-action="replay">🔊 Dengar</button>
+          <button class="act-btn act-mic pt-cta" id="micBtn" type="button" data-action="mic" ${sttSupported ? '' : 'disabled'}>🎤 Coba Yuk</button>
         </div>
+        <div class="mic-hint act-hint">${sttSupported ? (blank ? 'Dengar dulu, lalu ucapkan kalimatnya sampai lengkap' : 'Dengar dulu, lalu tirukan ucapannya') : 'Mikrofon tidak didukung browser ini'}</div>
         <div id="micResult"></div>
         <div class="feedback" id="fb"></div>
         ${sttSupported ? '' : `<button class="ghost-btn" type="button" data-action="skip">✅ Aku Sudah Coba Ucapkan</button>`}
@@ -739,11 +739,15 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
       const btn = container.querySelector<HTMLElement>('#micBtn')!;
       if (btn.classList.contains('listening')) return;
       btn.classList.add('listening');
+      btn.textContent = '🎙️ Mendengarkan…';
+      const resetBtn = (): void => {
+        btn.classList.remove('listening');
+        btn.textContent = '🎤 Coba Yuk';
+      };
       let recordedAudioUrl: string | null = null;
       listenAndRecordOnce(
         (said) => {
-          btn.classList.remove('listening');
-          btn.setAttribute('disabled', 'true');
+          resetBtn();
           const s = scoreMic(said, target.line.en, contentLevel);
           if (s.perfect) {
             playCorrectTone();
@@ -763,25 +767,19 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
             score,
             detail: { heard: said },
           });
-          container.querySelector<HTMLElement>('#micResult')!.innerHTML = micResultHtml(
+          openResultPopup({
             s,
             said,
-            blank ? `<div class="en-text" style="margin-top:8px">Kalimatnya: "${target.line.en}"</div>` : ''
-          );
-          const fb = container.querySelector<HTMLElement>('#fb')!;
-          fb.textContent = s.perfect ? pickPraise(level) : pickEncourage(level);
-          fb.className = 'feedback good';
-          fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(total, slotStatus)));
-          setHandlers({
-            playMine: () => {
-              if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
-            },
-            tryAgainRound: () => paint(),
-            nextRound: () => advance(),
+            answerHtml: `<div class="talk-model"><span class="talk-model-label">Kalimatnya</span><div class="en-text">${target.line.en}</div><div class="id-text">${target.line.id}</div></div>`,
+            feedback: s.perfect ? pickPraise(level) : pickEncourage(level),
+            isLast: allSlotsDone(total, slotStatus),
+            audioUrl: () => recordedAudioUrl,
+            onTryAgain: () => paint(),
+            onNext: () => advance(),
           });
         },
         (kind) => {
-          btn.classList.remove('listening');
+          resetBtn();
           if (kind === 'aborted') return;
           container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
         },
