@@ -832,13 +832,15 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
                 : ''
             }`;
       container.innerHTML = `
-        <span class="stage-badge">💬 Ngobrol Yuk!</span>
+        <div class="stage-head">
+          <span class="stage-badge">💬 Ngobrol Yuk!</span>
+          ${petunjukButtonHtml(revealed, locked)}
+        </div>
         ${quizNavHtml(round, total, slotStatus)}
         <div class="id-text">Soal ${round + 1} dari ${total}${multi ? ` · Pertanyaan ${turnIdx + 1} dari ${prompt.turns.length}` : ''}</div>
         ${emojiHtml(prompt.emoji)}
         ${prompt.context ? `<div class="note-card sp-story">${prompt.context.map((c) => `<p>${c.en}</p>`).join('')}</div>` : ''}
         ${taskHtml}
-        <div class="speak-row">${petunjukButtonHtml(revealed, locked)}</div>
         ${locked ? '<div class="mic-hint">💡 Petunjuk terbuka setelah kamu mencoba sekali</div>' : ''}
         ${
           revealed && turn.kind === 'answer'
