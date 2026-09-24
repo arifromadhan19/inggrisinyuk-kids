@@ -458,7 +458,7 @@ export const VOCAB_TOPICS: VocabTopic[] = [
 export const LISTENING_TOPICS: ListeningTopic[] = [
   {
     id: 'toko',
-    title: 'Di Toko',
+    title: 'Di Toko (At the Shop)',
     scene: '🏪',
     desc: 'Cerita belanja',
     drill: [
@@ -822,7 +822,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
   },
   {
     id: 'sekolah',
-    title: 'Di Sekolah',
+    title: 'Di Sekolah (At School)',
     scene: '🏫',
     desc: 'Cerita sekolah',
     drill: [{ en: 'I have a pencil.', id: 'Aku punya pensil.', opts: [{ emoji: '✏️', ok: true }, { emoji: '📕' }] }],
@@ -2234,14 +2234,14 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
 export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
   {
     id: 'kenalan-teman',
-    title: 'Kenalan dengan Teman',
+    title: 'Kenalan dengan Teman (Meeting a New Friend)',
     desc: '2 latihan bicara',
     model: [
       { en: 'Hello, my name is Ara.', id: 'Halo, namaku Ara.', emoji: '👋' },
       { en: 'Nice to meet you.', id: 'Senang bertemu denganmu.', emoji: '🤝' },
     ],
     drill: [
-      { en: 'My name is Ara.', id: 'Namaku Ara.', emoji: '📛' },
+      { en: 'I live in Jakarta.', id: 'Aku tinggal di Jakarta.', emoji: '🏙️' },
       { en: 'I am seven years old.', id: 'Umurku tujuh tahun.', emoji: '🎂' },
       { en: 'I like the color blue.', id: 'Aku suka warna biru.', emoji: '🎨' },
     ],
@@ -2253,7 +2253,7 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
   },
   {
     id: 'beli-toko',
-    title: 'Beli di Toko',
+    title: 'Beli di Toko (Buying at the Shop)',
     desc: '2 latihan bicara',
     model: [
       { en: 'How much is this?', id: 'Berapa harganya?', emoji: '🏷️' },
@@ -2272,7 +2272,7 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
   },
   {
     id: 'tanya-kabar',
-    title: 'Tanya Kabar',
+    title: 'Tanya Kabar (How Are You?)',
     desc: '2 latihan bicara',
     model: [
       { en: 'How are you?', id: 'Apa kabar?', emoji: '👋' },

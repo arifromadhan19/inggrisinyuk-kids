@@ -138,13 +138,11 @@ interface SpeakingFlow {
   rows: KenalanRow[];
   practice: PracticeItem[];
   prompts: TalkPrompt[];
-  /** Jumlah soal Tantangan (pertanyaan diulang/diacak sampai jumlah ini). */
+  /** Jumlah soal Tantangan (= jumlah pertanyaan, tanpa pengulangan). */
   tantanganCount: number;
   shufflePrompts: boolean;
 }
 
-const LATIHAN_COUNT = 10;
-const LATIHAN_POLA_COUNT = 5;
 const SECTION_LATIHAN = 'latihan-pola';
 const SECTION_TANTANGAN = 'tantangan-ngobrol';
 
@@ -264,7 +262,7 @@ function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
       emoji: r.emoji ?? '',
       turns: [{ kind: 'answer', question: r.q, answer: r.answer, scoring: 'free' }],
     })),
-    tantanganCount: Math.max(LATIHAN_COUNT, topic.roleplay.length),
+    tantanganCount: topic.roleplay.length,
     shufflePrompts: false,
   };
 }
@@ -272,7 +270,8 @@ function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
 /** Jumlah soal Latihan Inti & Tantangan 1 topik — dipakai `app.ts`
  *  `topicProgressPercent` (`speakingTopicPercent`, pola sama Vocab/Listening). */
 export function speakingSlotTotals(topic: AnySpeakingTopic, contentLevel: LevelKey): { latihan: number; tantangan: number; bertanya: number } {
-  return { latihan: LATIHAN_COUNT, tantangan: flowOf(topic).tantanganCount, bertanya: bertanyaCount(topic, contentLevel) };
+  const flow = flowOf(topic);
+  return { latihan: flow.practice.length, tantangan: flow.tantanganCount, bertanya: bertanyaCount(topic, contentLevel) };
 }
 
 /* ------------------------------------------------------------------ */
@@ -637,12 +636,15 @@ export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, o
 /* 2. Latihan Inti — 🔁 Tirukan + 🧩 Lengkapi Kalimat                   */
 /* ------------------------------------------------------------------ */
 
+/** Tiap kalimat keluar TEPAT 1x (sbg Tirukan ATAU Lengkapi, tidak dua²nya) —
+ *  permintaan user: dulu kalimat diulang sampai 10 soal, jadi "Nice to ___
+ *  you." & "Nice to meet you." muncul berdua. Jumlah soal = jumlah kalimat
+ *  yang ada ("seadanya"), separuhnya Lengkapi Kalimat. */
 function buildLatihanPlan(practice: PracticeItem[]): LatihanPlanSlot[] {
-  let pool: number[] = [];
-  while (pool.length < LATIHAN_COUNT) pool = pool.concat(shuffle(practice.map((_, i) => i)));
+  const polaTarget = Math.floor(practice.length / 2);
   let pola = 0;
-  const slots = pool.slice(0, LATIHAN_COUNT).map((item): LatihanPlanSlot => {
-    if (pola < LATIHAN_POLA_COUNT && practice[item].blank) {
+  const slots = shuffle(practice.map((_, i) => i)).map((item): LatihanPlanSlot => {
+    if (pola < polaTarget && practice[item].blank) {
       pola++;
       return { kind: 'sentence', item };
     }
@@ -657,7 +659,7 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
     topic.id,
     SECTION_LATIHAN,
     () => buildLatihanPlan(practice),
-    (p) => p.length === LATIHAN_COUNT && p.every((sl) => sl.item < practice.length)
+    (p) => p.length === practice.length && new Set(p.map((sl) => sl.item)).size === p.length && p.every((sl) => sl.item < practice.length)
   );
   const total = plan.length;
   let round = firstUnansweredSlot('speaking', topic.id, SECTION_LATIHAN, total);
@@ -807,12 +809,7 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
 function buildTantanganPlan(flow: SpeakingFlow): LatihanPlanSlot[] {
   const idx = flow.prompts.map((_, i) => i);
   let order: number[];
-  if (flow.tantanganCount === idx.length) order = flow.shufflePrompts ? shuffle(idx) : idx;
-  else {
-    order = [];
-    while (order.length < flow.tantanganCount) order = order.concat(shuffle(idx));
-    order = order.slice(0, flow.tantanganCount);
-  }
+  order = flow.shufflePrompts ? shuffle(idx) : idx;
   return order.map((item) => ({ kind: 'hear', item }));
 }
 
@@ -1041,15 +1038,17 @@ function hasBertanya(topic: AnySpeakingTopic, contentLevel: LevelKey): boolean {
   return 'items' in topic ? topic.items.length >= 2 : askPromptsOf(topic).length > 0;
 }
 
+/** Maks `BERTANYA_COUNT` soal, TANPA pengulangan — kalau sumbernya cuma 2–3
+ *  pertanyaan, soalnya ya 2–3 ("seadanya", sama aturan Latihan Inti). */
 function bertanyaCount(topic: AnySpeakingTopic, contentLevel: LevelKey): number {
-  return hasBertanya(topic, contentLevel) ? BERTANYA_COUNT : 0;
+  if (!hasBertanya(topic, contentLevel)) return 0;
+  return Math.min(BERTANYA_COUNT, 'items' in topic ? topic.items.length : askPromptsOf(topic).length);
 }
 
-/** Urutan soal: acak & diulang sampai `BERTANYA_COUNT` (sumbernya kadang < 5). */
 function buildBertanyaPlan(size: number): LatihanPlanSlot[] {
-  let order: number[] = [];
-  while (order.length < BERTANYA_COUNT) order = order.concat(shuffle(Array.from({ length: size }, (_, i) => i)));
-  return order.slice(0, BERTANYA_COUNT).map((item) => ({ kind: 'hear', item }));
+  return shuffle(Array.from({ length: size }, (_, i) => i))
+    .slice(0, Math.min(BERTANYA_COUNT, size))
+    .map((item) => ({ kind: 'hear', item }));
 }
 
 function firstWord(text: string): string {
@@ -1122,7 +1121,7 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
     topic.id,
     SECTION_BERTANYA,
     () => buildBertanyaPlan(items.length),
-    (p) => p.length === BERTANYA_COUNT && p.every((sl) => sl.item < items.length)
+    (p) => p.length === Math.min(BERTANYA_COUNT, items.length) && new Set(p.map((sl) => sl.item)).size === p.length && p.every((sl) => sl.item < items.length)
   );
   const nav = bertanyaNav(topic.id, plan.length, onDone, draw);
 
@@ -1259,7 +1258,7 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
     topic.id,
     SECTION_BERTANYA,
     () => buildBertanyaPlan(prompts.length),
-    (p) => p.length === BERTANYA_COUNT && p.every((sl) => sl.item < prompts.length)
+    (p) => p.length === Math.min(BERTANYA_COUNT, prompts.length) && new Set(p.map((sl) => sl.item)).size === p.length && p.every((sl) => sl.item < prompts.length)
   );
   const nav = bertanyaNav(topic.id, plan.length, onDone, draw);
 

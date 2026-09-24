@@ -218,6 +218,19 @@ async function main() {
     }
   }
 
+  // Judul topik WAJIB "Indonesia (English)", mis. "Hari di Kalender (Days on
+  // the Calendar)" — aturan CLAUDE.md, dicek di Vocab/Listening/Speaking.
+  const TITLE_RE = /^[^()]+ \([^()]+\)$/;
+  for (const [skill, byLevel] of [['Vocab', VOCAB_TOPICS_BY_LEVEL], ['Listening', mod.LISTENING_TOPICS_BY_LEVEL], ['Speaking', mod.SPEAKING_TOPICS_BY_LEVEL]]) {
+    for (const [level, topics] of Object.entries(byLevel ?? {})) {
+      for (const topic of topics) {
+        if (!TITLE_RE.test(topic.title ?? '')) {
+          errors.push(`${skill} "${topic.id}" (${level}): judul "${topic.title}" belum format "Indonesia (English)".`);
+        }
+      }
+    }
+  }
+
   for (const [word, occurrences] of wordOccurrences.entries()) {
     const uniqueTopics = [...new Set(occurrences.map((o) => `${o.level}:${o.topicId}`))];
     if (uniqueTopics.length > 1 && !ACCEPTED_CROSS_TOPIC_DUPLICATES.has(word)) {
