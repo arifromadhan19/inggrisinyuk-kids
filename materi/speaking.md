@@ -687,6 +687,12 @@ Uji otomatis: 170/170 contoh jawaban lolos; jawaban asal 31/510 lolos (sisanya m
 
 ---
 
+## 22. Sesi 15 — Ikon di Materi Speaking Explorer ke Atas
+
+Permintaan user: materi di atas Starter diberi ikon/gambar relevan spt Little Stars/Starter, desain kid-friendly, patuh aturan ikon CLAUDE.md. Field opsional `emoji` di `SpeakingLine`/`SpeakingRoleplay`/`SpeakingInterviewTurn`; 30 topik format lama + 10 topik interview diisi (≈320 ikon). Audit aturan: makhluk hidup kepala/bust saja (tidak ada badan utuh; jerapah/gajah/citah/kura²/ular TANPA ikon), tanpa emoji bergandengan tangan, tanpa gender dipaksa, tidak membocorkan jawaban (mis. "I like the color ___" pakai 🎨 bukan 🔵), kosong kalau tidak ada ikon yang relevan. **Explorer "Lawan Kata" ditulis ulang pakai benda mati** (house/button/car/bike/train, bukan gajah/tikus/citah/kura²/ular) — topik kata sifat generik, sesuai aturan "Hindari Makhluk Hidup sbg Objek Ilustrasi". Denylist emoji `verify-vocab-content.mjs` mencakup field baru ini.
+
+---
+
 ## Sumber Riset Web (Sesi 1–8)
 
 ### Institusi Bahasa Inggris Indonesia

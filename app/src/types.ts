@@ -404,6 +404,9 @@ export type AnyReadingTopic = ReadingTopic | ReadingWordTopic | ReadingCheckTopi
 export interface SpeakingLine {
   en: string;
   id: string;
+  /** Ikon kalimat (Kenalan/Latihan Inti). Opsional — kosongkan kalau tidak ada
+   *  ikon yang genuinely relevan (CLAUDE.md "Ikon WAJIB Relevan"). */
+  emoji?: string;
 }
 
 /** Pertanyaan Tantangan jawaban-bebas + CONTOH jawaban (dibuka lewat 💡
@@ -412,6 +415,8 @@ export interface SpeakingLine {
 export interface SpeakingRoleplay {
   q: SpeakingLine;
   answer: SpeakingLine;
+  /** Ikon pertanyaan di Tantangan (opsional, aturan sama dgn `SpeakingLine.emoji`). */
+  emoji?: string;
 }
 
 /** Format lama Explorer/Adventurer/Achiever. `model` = contoh Kenalan,
@@ -509,6 +514,8 @@ export interface SpeakingInterviewTurn {
    *  di Latihan Inti (scaffold), disembunyikan default di Tantangan (recall,
    *  cuma kelihatan lewat "💡 Dengar Contoh [peerName]"). */
   peerAnswer: { en: string; id: string };
+  /** Ikon pertanyaan (opsional, aturan sama dgn `SpeakingLine.emoji`). */
+  emoji?: string;
 }
 
 export interface SpeakingInterviewTopic {

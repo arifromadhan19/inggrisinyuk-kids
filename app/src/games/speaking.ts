@@ -231,10 +231,10 @@ function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
   }
   if ('turns' in topic) {
     return {
-      rows: topic.turns.map((t) => ({ emoji: '', prompt: t.question, speaker: topic.peerName, line: t.peerAnswer })),
-      practice: topic.turns.map((t) => ({ emoji: '', line: t.peerAnswer, blank: autoBlank(t.peerAnswer.en) })),
+      rows: topic.turns.map((t) => ({ emoji: t.emoji ?? '', prompt: t.question, speaker: topic.peerName, line: t.peerAnswer })),
+      practice: topic.turns.map((t) => ({ emoji: t.emoji ?? '', line: t.peerAnswer, blank: autoBlank(t.peerAnswer.en) })),
       prompts: topic.turns.map((t) => ({
-        emoji: '',
+        emoji: t.emoji ?? '',
         turns: [{ kind: 'answer', question: t.question, answer: t.peerAnswer, scoring: 'free' }],
       })),
       tantanganCount: topic.turns.length,
@@ -258,10 +258,10 @@ function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
   }
   const lines = [...topic.model, ...topic.drill];
   return {
-    rows: lines.map((line) => ({ emoji: '', line })),
-    practice: lines.map((line) => ({ emoji: '', line, blank: autoBlank(line.en) })),
+    rows: lines.map((line) => ({ emoji: line.emoji ?? '', line })),
+    practice: lines.map((line) => ({ emoji: line.emoji ?? '', line, blank: autoBlank(line.en) })),
     prompts: topic.roleplay.map((r) => ({
-      emoji: '',
+      emoji: r.emoji ?? '',
       turns: [{ kind: 'answer', question: r.q, answer: r.answer, scoring: 'free' }],
     })),
     tantanganCount: Math.max(LATIHAN_COUNT, topic.roleplay.length),
@@ -1024,13 +1024,16 @@ const SECTION_BERTANYA = 'tantangan-tanya';
 interface AskPrompt {
   question: SpeakingLine;
   answer: SpeakingLine;
+  emoji: string;
 }
 
 function askPromptsOf(topic: AnySpeakingTopic): AskPrompt[] {
   if ('items' in topic) return [];
-  if ('turns' in topic) return topic.turns.map((t) => ({ question: t.question, answer: t.peerAnswer }));
-  if ('stories' in topic) return topic.stories.map((s) => ({ question: s.question, answer: s.answer }));
-  return topic.roleplay.filter((r) => r.q.en.trim().endsWith('?')).map((r) => ({ question: r.q, answer: r.answer }));
+  if ('turns' in topic) return topic.turns.map((t) => ({ question: t.question, answer: t.peerAnswer, emoji: t.emoji ?? '' }));
+  if ('stories' in topic) return topic.stories.map((s) => ({ question: s.question, answer: s.answer, emoji: s.emoji }));
+  return topic.roleplay
+    .filter((r) => r.q.en.trim().endsWith('?'))
+    .map((r) => ({ question: r.q, answer: r.answer, emoji: r.emoji ?? '' }));
 }
 
 function hasBertanya(topic: AnySpeakingTopic, contentLevel: LevelKey): boolean {
@@ -1274,6 +1277,7 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
         </div>
         ${quizNavHtml(nav.round, plan.length, nav.status)}
         <div class="id-text">Soal ${nav.round + 1} dari ${plan.length}</div>
+        ${emojiHtml(p.emoji)}
         <div class="talk-instruct">Tanyakan ke ${partner} dalam bahasa Inggris:</div>
         <p class="reading-question">🇮🇩 "${p.question.id}"</p>
         ${tier === 'menengah' ? `<div class="talk-task"><span class="talk-chip talk-chip--en">Mulai dengan: ${firstWord(p.question.en)} …</span></div>` : ''}

@@ -206,6 +206,9 @@ async function main() {
       const checks = [];
       for (const it of topic.items ?? []) checks.push([it.en, it.emoji], [it.en, it.phrase?.emoji]);
       for (const st of topic.stories ?? []) checks.push([st.answer?.en ?? '', st.emoji]);
+      for (const l of [...(topic.model ?? []), ...(topic.drill ?? [])]) checks.push([l.en ?? '', l.emoji]);
+      for (const r of topic.roleplay ?? []) checks.push([r.q?.en ?? '', r.emoji]);
+      for (const t of topic.turns ?? []) checks.push([t.question?.en ?? '', t.emoji]);
       for (const [word, val] of checks) {
         const key = word.trim().toLowerCase();
         if (val && PROBLEMATIC_EMOJI.has(val) && !ALLOWED_EMOJI_WORD_EXCEPTIONS.has(`${val}::${key}`)) {
