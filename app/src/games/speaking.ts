@@ -26,6 +26,7 @@ import {
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
 import { shuffle } from '../util';
+import { hintWord, isOnTopic } from './speaking-relevance';
 
 /**
  * ================================================================
@@ -337,25 +338,32 @@ function connectorBadge(said: string, level: LevelKey): string {
   return found.length ? `<span class="talk-badge ok">🔗 Pakai "${found[0]}" — keren!</span>` : '';
 }
 
-/** Jawaban pribadi: tidak ada kalimat target, jadi yang diukur kelengkapan
- *  (panjang thd target level) + bonus 1 ⭐ kalau pakai kata penghubung (Lanjut). */
-function scoreFree(said: string, level: LevelKey): MicScore {
+/** Jawaban pribadi: tidak ada kalimat target, jadi yang diukur (1) NYAMBUNG
+ *  tidaknya dgn pertanyaan (`isOnTopic`, tanpa LLM — laporan user: "I like
+ *  your pizza" utk "What's your name?" sempat dapat ⭐⭐⭐), lalu (2)
+ *  kelengkapan (panjang thd target level) + bonus 1 ⭐ penghubung (Lanjut).
+ *  Belum nyambung → ⭐ + pesan lembut (non-punitive, "Lanjut" tetap ada). */
+function scoreFree(said: string, turn: TalkTurn, level: LevelKey): MicScore {
   const words = normalize(said).split(' ').filter(Boolean);
+  const wordsHtml = words.map((w) => `<span class="ok">${w}</span>`).join('');
+  if (!isOnTopic(said, turn.question.en, turn.answer.en)) {
+    const hint = hintWord(turn.question.en);
+    return finishScore(
+      0,
+      1,
+      wordsHtml,
+      `🤔 Jawabanmu belum nyambung dengan pertanyaannya${hint ? ` — coba jawab tentang "${hint}"` : ''}.`
+    );
+  }
   const target = TARGET_WORDS[level] || 4;
   const ratio = Math.min(1, words.length / target);
   let stars = starsFrom(ratio, level);
   if (tierOf(level) === 'lanjut' && connectorsIn(said).length && stars < 3) stars = (stars + 1) as 2 | 3;
-  return finishScore(
-    ratio,
-    stars,
-    words.map((w) => `<span class="ok">${w}</span>`).join(''),
-    '',
-    lengthBadge(said, level) + connectorBadge(said, level)
-  );
+  return finishScore(ratio, stars, wordsHtml, '', lengthBadge(said, level) + connectorBadge(said, level));
 }
 
 function scoreTurn(said: string, turn: TalkTurn, level: LevelKey): MicScore {
-  if (turn.scoring === 'free') return scoreFree(said, level);
+  if (turn.scoring === 'free') return scoreFree(said, turn, level);
   if (turn.scoring === 'target') return scoreMic(said, turn.answer.en, level);
   const s = scoreMic(said, talkKeywords(turn.answer.en), level, 'kata kunci');
   s.extraHtml = lengthBadge(said, level) + connectorBadge(said, level);
