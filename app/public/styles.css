@@ -1716,10 +1716,11 @@ body.is-boss-play .tabbar{ display:none; }
   background:var(--accent-bg); color:var(--accent); text-transform:uppercase;
 }
 
-/* Baris judul soal + tombol di ujung kanan (Speaking "Ngobrol Yuk!": 💡 Petunjuk). */
+/* Baris judul soal + tombol di ujung kanan (Speaking "Ngobrol Yuk!" & "Giliranmu Bertanya": 💡 Petunjuk). */
 .stage-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:var(--s3); }
-.stage-head .stage-badge{ margin-bottom:0; }
-.stage-head .speak-btn-ghost{ padding:7px 14px; font-size:var(--fs-meta); flex-shrink:0; }
+.stage-head .stage-badge{ margin-bottom:0; white-space:nowrap; }
+.stage-head .speak-btn-ghost{ padding:7px 12px; gap:6px; font-size:var(--fs-meta); flex-shrink:0; white-space:nowrap; }
+@media (max-width:360px){ .stage-head .stage-badge{ letter-spacing:.03em; padding:6px 10px; } }
 
 /* Placement test (games/placement.ts) — titik progres di atas soal, sama
    semangatnya dengan .stepper tapi lebih ringan (9 soal, bukan 3 langkah). */

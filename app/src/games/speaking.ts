@@ -1218,13 +1218,15 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
     function paint(): void {
       const locked = tier === 'lanjut' && !attempted;
       container.innerHTML = `
-        <span class="stage-badge">🙋 Giliranmu Bertanya</span>
+        <div class="stage-head">
+          <span class="stage-badge">🙋 Giliranmu Bertanya</span>
+          ${petunjukButtonHtml(revealed, locked)}
+        </div>
         ${quizNavHtml(nav.round, plan.length, nav.status)}
         <div class="id-text">Soal ${nav.round + 1} dari ${plan.length}</div>
         <div class="talk-instruct">Tanyakan ke ${partner} dalam bahasa Inggris:</div>
         <p class="reading-question">🇮🇩 "${p.question.id}"</p>
         ${tier === 'menengah' ? `<div class="talk-task"><span class="talk-chip talk-chip--en">Mulai dengan: ${firstWord(p.question.en)} …</span></div>` : ''}
-        <div class="speak-row">${petunjukButtonHtml(revealed, locked)}</div>
         ${locked ? '<div class="mic-hint">💡 Petunjuk terbuka setelah kamu mencoba sekali</div>' : ''}
         ${revealed ? `<div class="talk-model"><span class="talk-model-label">Contoh pertanyaan</span><div class="en-text">${p.question.en}</div></div>` : ''}
         <div class="mic-wrap">
