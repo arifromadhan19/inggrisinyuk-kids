@@ -2299,6 +2299,22 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .act-mic.listening{ background:var(--try); color:#fff; animation:pulse 1s infinite; }
 .act-mic:disabled{ background:var(--muted); color:var(--ink-3); box-shadow:none; }
 .act-hint{ text-align:center; margin-top:4px; }
+/* Tantangan Speaking "Pilih & Ucapkan": bingkai kalimat + kartu pilihan jawaban. */
+.choice-frame{ margin-top:6px; }
+.choice-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px; max-width:520px; margin:12px auto 4px; }
+.choice-card{
+  display:flex; align-items:center; justify-content:center; gap:8px; min-height:56px; padding:10px 14px;
+  border-radius:16px; background:var(--surface); border:2px solid var(--line); color:var(--ink);
+  font-weight:800; font-size:.9375rem; font-family:inherit; text-align:left; box-shadow:var(--sh-1);
+  transition:transform .12s ease, border-color .12s ease;
+}
+.choice-card:active{ transform:scale(.97); }
+.choice-grid.long{ grid-template-columns:1fr; }
+.choice-grid.long .choice-card{ justify-content:flex-start; }
+.choice-card.selected{ border-color:var(--brand-500); background:var(--brand-50); color:var(--accent); }
+.choice-emoji{ font-size:26px; flex-shrink:0; }
+.choice-text{ line-height:1.3; }
+.mic-btn:disabled{ background:var(--muted); color:var(--ink-3); box-shadow:none; animation:none; }
 .mic-hint{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; margin-top:10px; }
 .heard-text{ text-align:center; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; margin-top:8px; min-height:20px; }
 /* Skor kata angka — pelengkap bintang, bukan pengganti (bintang tetap yang

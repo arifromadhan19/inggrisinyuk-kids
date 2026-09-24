@@ -92,6 +92,7 @@ function stimuliSpeaking(topic) {
   for (const rp of topic.roleplay ?? []) {
     out.push({ phase: 'roleplay', text: rp.q.en });
     out.push({ phase: 'roleplay-answer', text: rp.answer.en });
+    for (const c of rp.choices ?? []) out.push({ phase: 'roleplay-choice', text: c.en });
   }
   return out;
 }

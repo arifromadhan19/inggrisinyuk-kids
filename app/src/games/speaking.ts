@@ -4,7 +4,6 @@ import type { LatihanPlanSlot } from '../progress';
 import {
   ensureSection,
   firstUnansweredSlot,
-  getName,
   getSlot,
   hasWordInteraction,
   markSlotAnswered,
@@ -27,7 +26,6 @@ import {
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
 import { shuffle } from '../util';
-import { hintWord, isOnTopic, mentionsProfileName, missingSlot, uniqueWordCount } from './speaking-relevance';
 
 /**
  * ================================================================
@@ -79,19 +77,6 @@ const STAR_CUTS: Record<SpeakTier, [number, number]> = { dasar: [0.6, 0.3], mene
 /** #7 — jeda hening sebelum mic berhenti (ms). */
 const SILENCE_MS: Record<SpeakTier, number> = { dasar: 2000, menengah: 1600, lanjut: 1300 };
 
-/** #2 — target panjang jawaban bebas di Tantangan (kata). 0 = tidak ada. */
-const TARGET_WORDS: Record<LevelKey, number> = {
-  'little-stars': 0,
-  starter: 0,
-  explorer: 4,
-  adventurer: 8,
-  achiever: 12,
-  trailblazer: 18,
-};
-
-/** #3 — kata penghubung yang diberi bonus di tier Lanjut. */
-const CONNECTORS = ['because', 'and', 'but', 'so', 'then', 'however', 'also', 'although', 'when', 'if'];
-
 const micOpts = (level: LevelKey) => ({ silenceMs: SILENCE_MS[tierOf(level)] });
 
 /* ------------------------------------------------------------------ */
@@ -117,15 +102,20 @@ interface PracticeItem {
 }
 
 /** 'target' = kalimat/kata pasti (rasio kata target). 'keywords' = jawaban
- *  sudah tertentu isinya tapi susunannya bebas (rasio kata ISI). 'free' =
- *  jawaban pribadi (rasio panjang thd target level + bonus penghubung). */
-type Scoring = 'target' | 'keywords' | 'free';
+ *  sudah tertentu isinya tapi susunannya bebas (rasio kata ISI). 'choose' =
+ *  "Pilih & Ucapkan": anak memilih 1 kartu jawaban (semua benar), lalu
+ *  mengucapkan kalimat itu — skor thd kalimat yang DIPILIH. Pengganti jawaban
+ *  bebas (permintaan user: menilai jawaban bebas dgn cocok-kata tanpa LLM
+ *  rawan salah nilai, mis. kata acak/tidak nyambung dapat ⭐⭐⭐). */
+type Scoring = 'target' | 'keywords' | 'choose';
 
 interface TalkTurn {
   kind: 'name' | 'answer';
   question: SpeakingLine;
   answer: SpeakingLine;
   scoring: Scoring;
+  /** Kartu pilihan utk `scoring: 'choose'`. */
+  choices?: SpeakingLine[];
 }
 
 interface TalkPrompt {
@@ -289,7 +279,15 @@ function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
       practice: topic.turns.map((t) => ({ emoji: t.emoji ?? '', line: t.peerAnswer, blank: autoBlank(t.peerAnswer.en) })),
       prompts: topic.turns.map((t) => ({
         emoji: t.emoji ?? '',
-        turns: [{ kind: 'answer', question: t.question, answer: t.peerAnswer, scoring: 'free' }],
+        turns: [
+          {
+            kind: 'answer',
+            question: t.question,
+            answer: t.peerAnswer,
+            scoring: 'choose',
+            choices: t.choices?.length ? t.choices : [t.peerAnswer],
+          },
+        ],
       })),
       tantanganCount: topic.turns.length,
       shufflePrompts: false,
@@ -314,7 +312,7 @@ function flowOf(topic: AnySpeakingTopic): SpeakingFlow {
     practice: lines.map((line) => ({ emoji: line.emoji ?? '', line, blank: autoBlank(line.en) })),
     prompts: topic.roleplay.map((r) => ({
       emoji: r.emoji ?? '',
-      turns: [{ kind: 'answer', question: r.q, answer: r.answer, scoring: 'free' }],
+      turns: [{ kind: 'answer', question: r.q, answer: r.answer, scoring: 'choose', choices: [r.answer, ...(r.choices ?? [])] }],
     })),
     tantanganCount: topic.roleplay.length,
     shufflePrompts: false,
@@ -374,56 +372,26 @@ function scoreMic(said: string, target: string, level: LevelKey, unit = 'kata'):
   );
 }
 
-function connectorsIn(said: string): string[] {
-  const heard = new Set(normalize(said).split(' '));
-  return CONNECTORS.filter((c) => heard.has(c));
+/** Bingkai kalimat bersama kartu "Pilih & Ucapkan": awalan & akhiran kata yang
+ *  sama di semua pilihan jadi kalimat berlubang, bagian yang beda jadi isi
+ *  kartu (mis. "I am ___ years old." + kartu eight / nine). `null` kalau
+ *  pilihannya terlalu beda (kartu menampilkan kalimat utuh). */
+function choiceFrame(opts: SpeakingLine[]): { before: string; after: string; slots: string[] } | null {
+  if (opts.length < 2) return null;
+  const toks = opts.map((o) => o.en.split(' '));
+  const same = (j: (t: string[]) => number): boolean => toks.every((t) => t[j(t)]?.toLowerCase() === toks[0][j(toks[0])]?.toLowerCase());
+  let pre = 0;
+  while (toks.every((t) => pre < t.length - 1) && same(() => pre)) pre++;
+  let suf = 0;
+  while (toks.every((t) => suf < t.length - pre - 1) && same((t) => t.length - 1 - suf)) suf++;
+  if (pre + suf < 2) return null;
+  const slots = toks.map((t) => t.slice(pre, t.length - suf).join(' '));
+  if (slots.some((x) => !x)) return null;
+  return { before: toks[0].slice(0, pre).join(' '), after: toks[0].slice(toks[0].length - suf).join(' '), slots };
 }
 
-function lengthBadge(said: string, level: LevelKey): string {
-  const target = TARGET_WORDS[level];
-  if (!target) return '';
-  const n = uniqueWordCount(said);
-  return `<span class="talk-badge${n >= target ? ' ok' : ''}">🗣️ ${n} kata${n >= target ? ' ✓' : ` · target ${target}`}</span>`;
-}
-
-function connectorBadge(said: string, level: LevelKey): string {
-  if (tierOf(level) !== 'lanjut') return '';
-  const found = connectorsIn(said);
-  return found.length ? `<span class="talk-badge ok">🔗 Pakai "${found[0]}" — keren!</span>` : '';
-}
-
-/** Jawaban pribadi: tidak ada kalimat target, jadi yang diukur (1) NYAMBUNG
- *  tidaknya dgn pertanyaan (`isOnTopic`, tanpa LLM — laporan user: "I like
- *  your pizza" utk "What's your name?" sempat dapat ⭐⭐⭐), lalu (2)
- *  kelengkapan (panjang thd target level) + bonus 1 ⭐ penghubung (Lanjut).
- *  Belum nyambung → ⭐ + pesan lembut (non-punitive, "Lanjut" tetap ada). */
-function scoreFree(said: string, turn: TalkTurn, level: LevelKey): MicScore {
-  const words = normalize(said).split(' ').filter(Boolean);
-  const wordsHtml = words.map((w) => `<span class="ok">${w}</span>`).join('');
-  if (!isOnTopic(said, turn.question.en, turn.answer.en)) {
-    const hint = hintWord(turn.question.en);
-    return finishScore(
-      0,
-      1,
-      wordsHtml,
-      `🤔 Jawabanmu belum nyambung dengan pertanyaannya${hint ? ` — coba jawab tentang "${hint}"` : ''}.`
-    );
-  }
-  const slotMsg = missingSlot(said, turn.question.en);
-  if (slotMsg) return finishScore(0, 1, wordsHtml, `🤔 ${slotMsg}`);
-  const target = TARGET_WORDS[level] || 4;
-  // Kata berulang dihitung sekali ("pizza pizza pizza" = 1 kata).
-  const ratio = Math.min(1, uniqueWordCount(said) / target);
-  let stars = starsFrom(ratio, level);
-  if (tierOf(level) === 'lanjut' && connectorsIn(said).length && stars < 3) stars = (stars + 1) as 2 | 3;
-  const nameBonus = mentionsProfileName(said, turn.question.en, getName())
-    ? `<span class="talk-badge ok">🎉 Hai, ${getName()}!</span>`
-    : '';
-  return finishScore(ratio, stars, wordsHtml, '', lengthBadge(said, level) + connectorBadge(said, level) + nameBonus);
-}
-
-function scoreTurn(said: string, turn: TalkTurn, level: LevelKey): MicScore {
-  if (turn.scoring === 'free') return scoreFree(said, turn, level);
+function scoreTurn(said: string, turn: TalkTurn, level: LevelKey, chosen?: SpeakingLine): MicScore {
+  if (turn.scoring === 'choose') return scoreMic(said, (chosen ?? turn.answer).en, level);
   if (turn.scoring === 'target') return scoreMic(said, turn.answer.en, level);
   // Jawaban kata kunci (cerita, giliran 2 frasa) = fakta pendek, jadi TANPA
   // target panjang kata (target panjang cuma utk jawaban bebas).
@@ -900,6 +868,16 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
     let attempted = false;
     let scoreSum = 0;
     let storyPlayed = false;
+    // "Pilih & Ucapkan": urutan kartu diacak per giliran; pilihan anak tetap
+    // tersimpan lewat "Coba Lagi" (direset saat pindah giliran/soal).
+    let order: SpeakingLine[] = [];
+    let chosen: number | null = null;
+    const prepareChoices = (): void => {
+      const t = prompt.turns[turnIdx];
+      order = t.scoring === 'choose' ? shuffle(t.choices ?? [t.answer]) : [];
+      chosen = order.length === 1 ? 0 : null;
+    };
+    prepareChoices();
 
     /** Soal bercerita (format cerita): cerita + pertanyaan DIBACAKAN (pengecualian
      *  "tanpa audio pertanyaan" — permintaan user; anak perlu dengar ceritanya). */
@@ -912,14 +890,38 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
       turnIdx += 1;
       revealed = false;
       attempted = false;
+      prepareChoices();
       paint();
     };
 
     function paint(): void {
       const turn = prompt.turns[turnIdx];
       const locked = tier === 'lanjut' && !attempted;
-      const target = TARGET_WORDS[contentLevel];
       const multi = prompt.turns.length > 1;
+      const choosing = turn.scoring === 'choose';
+      const frame = choosing ? choiceFrame(order) : null;
+      const picked = choosing && chosen !== null ? order[chosen] : null;
+      const choiceHtml = choosing
+        ? `<div class="talk-instruct">${order.length > 1 ? 'Pilih jawabanmu, lalu ucapkan kalimatnya!' : 'Ucapkan jawabannya!'}</div>
+           ${
+             frame
+               ? `<div class="en-text choice-frame">${frame.before} ${picked ? `<span class="blank-fill">${frame.slots[chosen!]}</span>` : '___'} ${frame.after}</div>`
+               : picked && order.length > 1
+                 ? `<div class="en-text choice-frame">${picked.en}</div>`
+                 : ''
+           }
+           ${picked ? `<div class="id-text">${picked.id}</div>` : ''}
+           <div class="choice-grid${order.some((o, i) => (frame ? frame.slots[i] : o.en).length > 28) ? ' long' : ''}">
+             ${order
+               .map(
+                 (o, i) => `<button class="choice-card${i === chosen ? ' selected' : ''}" type="button" data-action="pickChoice" data-payload="${i}">
+                   ${o.emoji ? `<span class="choice-emoji" aria-hidden="true">${o.emoji}</span>` : ''}
+                   <span class="choice-text">${frame ? frame.slots[i] : o.en}</span>
+                 </button>`
+               )
+               .join('')}
+           </div>`
+        : '';
       const taskHtml =
         turn.kind === 'name'
           ? `<div class="talk-task" aria-label="${turn.answer.id} dalam bahasa Inggris?">
@@ -930,12 +932,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
             <div class="talk-instruct">Apa bahasa Inggrisnya? Ucapkan!</div>`
           : `<p class="reading-question">💬 "${turn.question.en}"</p>
             ${revealed ? `<div class="id-text">${turn.question.id}</div>` : ''}
-            <div class="talk-instruct">Jawab pakai kalimat bahasa Inggris, ucapkan!</div>
-            ${
-              turn.scoring === 'free' && target
-                ? `<div class="talk-target">🎯 Minimal ${target} kata${tier === 'lanjut' ? ' · pakai kata penghubung (because, but, so…)' : ''}</div>`
-                : ''
-            }`;
+            ${choosing ? choiceHtml : '<div class="talk-instruct">Jawab pakai kalimat bahasa Inggris, ucapkan!</div>'}`;
       container.innerHTML = `
         <div class="stage-head">
           <span class="stage-badge">💬 Ngobrol Yuk!</span>
@@ -953,13 +950,13 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
         ${taskHtml}
         ${locked ? '<div class="mic-hint">💡 Petunjuk terbuka setelah kamu mencoba sekali</div>' : ''}
         ${
-          revealed && turn.kind === 'answer'
+          revealed && turn.kind === 'answer' && !choosing
             ? `<div class="talk-model"><span class="talk-model-label">Contoh jawaban</span><div class="en-text">${turn.answer.en}</div><div class="id-text">${turn.answer.id}</div></div>`
             : ''
         }
         <div class="mic-wrap">
-          <button class="mic-btn pt-cta" id="micBtn" type="button" data-action="mic" aria-label="Ucapkan">🎤</button>
-          <div class="mic-hint">${sttSupported ? 'Tap 🎤 lalu ucapkan' : 'Mikrofon tidak didukung browser ini'}</div>
+          <button class="mic-btn pt-cta" id="micBtn" type="button" data-action="mic" aria-label="Ucapkan" ${choosing && !picked ? 'disabled' : ''}>🎤</button>
+          <div class="mic-hint">${!sttSupported ? 'Mikrofon tidak didukung browser ini' : choosing && !picked ? 'Pilih dulu salah satu jawaban 👆' : 'Tap 🎤 lalu ucapkan'}</div>
         </div>
         <div id="micResult"></div>
         <div class="feedback" id="fb"></div>
@@ -977,7 +974,15 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
         petunjuk: () => {
           if (revealed || (tier === 'lanjut' && !attempted)) return;
           revealed = true;
-          speak(turn.answer.en);
+          // Pilih & Ucapkan: Petunjuk = arti pertanyaan + contoh cara membaca
+          // kalimat yang sudah dipilih (kartunya sendiri sudah jadi jawaban).
+          if (choosing) {
+            if (picked) speak(picked.en);
+          } else speak(turn.answer.en);
+          paint();
+        },
+        pickChoice: (payload) => {
+          chosen = Number(payload);
           paint();
         },
         skip: () => {
@@ -998,6 +1003,11 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
       if (btn.classList.contains('listening')) return;
       btn.classList.add('listening');
       const turn = prompt.turns[turnIdx];
+      const picked = turn.scoring === 'choose' && chosen !== null ? order[chosen] : undefined;
+      if (turn.scoring === 'choose' && !picked) {
+        btn.classList.remove('listening');
+        return;
+      }
       const isLastTurn = turnIdx === prompt.turns.length - 1;
       let recordedAudioUrl: string | null = null;
       listenAndRecordOnce(
@@ -1005,7 +1015,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
           btn.classList.remove('listening');
           btn.setAttribute('disabled', 'true');
           attempted = true;
-          const s = scoreTurn(said, turn, contentLevel);
+          const s = scoreTurn(said, turn, contentLevel, picked);
           if (s.perfect) {
             playCorrectTone();
             fireConfetti();
@@ -1031,11 +1041,11 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
               itemRef: turn.answer.en,
             });
           }
-          const label = turn.scoring === 'free' ? 'Contoh jawaban' : 'Jawabannya';
+          const shown = picked ?? turn.answer;
           openResultPopup({
             s,
             said,
-            answerHtml: `<div class="talk-model"><span class="talk-model-label">${label}</span><div class="en-text">${turn.answer.en}</div><div class="id-text">${turn.answer.id}</div></div>`,
+            answerHtml: `<div class="talk-model"><span class="talk-model-label">${picked ? 'Kalimatmu' : 'Jawabannya'}</span><div class="en-text">${shown.en}</div><div class="id-text">${shown.id}</div></div>`,
             feedback: s.perfect ? pickPraise(level) : pickEncourage(level),
             isLast: isLastTurn && allSlotsDone(total, slotStatus),
             audioUrl: () => recordedAudioUrl,

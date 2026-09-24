@@ -2244,9 +2244,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'I like the color blue.', id: 'Aku suka warna biru.', emoji: '🎨' },
     ],
     roleplay: [
-      { q: { en: 'What\'s your name?', id: 'Siapa namamu?' }, answer: { en: 'My name is Budi.', id: 'Namaku Budi.' }, emoji: '📛' },
-      { q: { en: 'How old are you?', id: 'Berapa umurmu?' }, answer: { en: 'I am eight years old.', id: 'Umurku delapan tahun.' }, emoji: '🎂' },
-      { q: { en: 'What is your favorite color?', id: 'Apa warna favoritmu?' }, answer: { en: 'My favorite color is green.', id: 'Warna favoritku hijau.' }, emoji: '🎨' },
+      { q: { en: 'What\'s your name?', id: 'Siapa namamu?' }, answer: { en: 'My name is Budi.', id: 'Namaku Budi.', emoji: '📛' }, emoji: '📛', choices: [{ en: 'My name is Sari.', id: 'Namaku Sari.', emoji: '📛' }] },
+      { q: { en: 'How old are you?', id: 'Berapa umurmu?' }, answer: { en: 'I am eight years old.', id: 'Umurku delapan tahun.', emoji: '🎂' }, emoji: '🎂', choices: [{ en: 'I am nine years old.', id: 'Umurku sembilan tahun.', emoji: '🎂' }] },
+      { q: { en: 'What is your favorite color?', id: 'Apa warna favoritmu?' }, answer: { en: 'My favorite color is green.', id: 'Warna favoritku hijau.', emoji: '🟢' }, emoji: '🎨', choices: [{ en: 'My favorite color is blue.', id: 'Warna favoritku biru.', emoji: '🔵' }] },
     ],
   },
   {
@@ -2263,9 +2263,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'Here is my money.', id: 'Ini uangku.', emoji: '💵' },
     ],
     roleplay: [
-      { q: { en: 'What do you want to buy?', id: 'Kamu mau beli apa?' }, answer: { en: 'I want to buy some bread.', id: 'Aku mau beli roti.' }, emoji: '🛒' },
-      { q: { en: 'How many do you want?', id: 'Kamu mau berapa?' }, answer: { en: 'I want three, please.', id: 'Aku mau tiga, ya.' }, emoji: '🔢' },
-      { q: { en: 'Do you need a bag?', id: 'Kamu perlu kantong?' }, answer: { en: 'Yes, I need a bag.', id: 'Iya, aku perlu kantong.' }, emoji: '🛍️' },
+      { q: { en: 'What do you want to buy?', id: 'Kamu mau beli apa?' }, answer: { en: 'I want to buy some bread.', id: 'Aku mau beli roti.', emoji: '🍞' }, emoji: '🛒', choices: [{ en: 'I want to buy some milk.', id: 'Aku mau beli susu.', emoji: '🥛' }] },
+      { q: { en: 'How many do you want?', id: 'Kamu mau berapa?' }, answer: { en: 'I want three, please.', id: 'Aku mau tiga, ya.', emoji: '3️⃣' }, emoji: '🔢', choices: [{ en: 'I want two, please.', id: 'Aku mau dua, ya.', emoji: '2️⃣' }] },
+      { q: { en: 'Do you need a bag?', id: 'Kamu perlu kantong?' }, answer: { en: 'Yes, I need a bag.', id: 'Iya, aku perlu kantong.', emoji: '🛍️' }, emoji: '🛍️', choices: [{ en: 'No, I don\'t need a bag.', id: 'Tidak, aku tidak perlu kantong.', emoji: '🙅' }] },
     ],
   },
   {
@@ -2282,9 +2282,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'I feel very happy today.', id: 'Aku merasa sangat senang hari ini.', emoji: '😊' },
     ],
     roleplay: [
-      { q: { en: 'How are you today?', id: 'Apa kabarmu hari ini?' }, answer: { en: 'I am good, thanks.', id: 'Aku baik, makasih.' }, emoji: '🙂' },
-      { q: { en: 'Are you happy?', id: 'Kamu senang?' }, answer: { en: 'Yes, I am very happy.', id: 'Iya, aku senang sekali.' }, emoji: '😊' },
-      { q: { en: 'How do you feel after school?', id: 'Bagaimana perasaanmu setelah sekolah?' }, answer: { en: 'I feel tired but happy.', id: 'Aku merasa capek tapi senang.' }, emoji: '🏫' },
+      { q: { en: 'How are you today?', id: 'Apa kabarmu hari ini?' }, answer: { en: 'I am good, thanks.', id: 'Aku baik, makasih.', emoji: '🙂' }, emoji: '🙂', choices: [{ en: 'I am very well, thanks.', id: 'Aku sangat baik, makasih.', emoji: '😄' }] },
+      { q: { en: 'Are you happy?', id: 'Kamu senang?' }, answer: { en: 'Yes, I am very happy.', id: 'Iya, aku senang sekali.', emoji: '😊' }, emoji: '😊', choices: [{ en: 'No, I am a bit sad today.', id: 'Tidak, aku agak sedih hari ini.', emoji: '😢' }] },
+      { q: { en: 'How do you feel after school?', id: 'Bagaimana perasaanmu setelah sekolah?' }, answer: { en: 'I feel tired but happy.', id: 'Aku merasa capek tapi senang.', emoji: '😪' }, emoji: '🏫', choices: [{ en: 'I feel happy and relaxed.', id: 'Aku merasa senang dan santai.', emoji: '😌' }] },
     ],
   },
   /**
@@ -2322,9 +2322,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'I need to rest.', id: 'Aku perlu istirahat.', emoji: '😴' },
     ],
     roleplay: [
-      { q: { en: 'What\'s the matter?', id: 'Kamu kenapa?' }, answer: { en: 'I have a bad cough.', id: 'Aku batuk parah.' }, emoji: '🩺' },
-      { q: { en: 'Do you have a fever?', id: 'Kamu demam?' }, answer: { en: 'No, I don\'t have a fever.', id: 'Tidak, aku tidak demam.' }, emoji: '🌡️' },
-      { q: { en: 'Where does it hurt?', id: 'Bagian mana yang sakit?' }, answer: { en: 'My leg hurts a lot.', id: 'Kakiku sakit sekali.' }, emoji: '🩹' },
+      { q: { en: 'What\'s the matter?', id: 'Kamu kenapa?' }, answer: { en: 'I have a bad cough.', id: 'Aku batuk parah.', emoji: '🤧' }, emoji: '🩺', choices: [{ en: 'I have a bad headache.', id: 'Kepalaku sakit sekali.', emoji: '🤕' }] },
+      { q: { en: 'Do you have a fever?', id: 'Kamu demam?' }, answer: { en: 'No, I don\'t have a fever.', id: 'Tidak, aku tidak demam.', emoji: '🌡️' }, emoji: '🌡️', choices: [{ en: 'Yes, I have a fever.', id: 'Iya, aku demam.', emoji: '🤒' }] },
+      { q: { en: 'Where does it hurt?', id: 'Bagian mana yang sakit?' }, answer: { en: 'My leg hurts a lot.', id: 'Kakiku sakit sekali.', emoji: '🦵' }, emoji: '🩹', choices: [{ en: 'My arm hurts a lot.', id: 'Tanganku sakit sekali.', emoji: '💪' }] },
     ],
   },
   {
@@ -2341,9 +2341,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'The train is long.', id: 'Keretanya panjang.', emoji: '🚆' },
     ],
     roleplay: [
-      { q: { en: 'Is the house big or small?', id: 'Rumah itu besar atau kecil?' }, answer: { en: 'The house is very big.', id: 'Rumahnya sangat besar.' }, emoji: '🏠' },
-      { q: { en: 'Which is faster, a car or a bike?', id: 'Mana yang lebih cepat, mobil atau sepeda?' }, answer: { en: 'A car is much faster.', id: 'Mobil jauh lebih cepat.' }, emoji: '🏎️' },
-      { q: { en: 'What is the opposite of heavy?', id: 'Apa lawan kata berat?' }, answer: { en: 'The opposite of heavy is light.', id: 'Lawan kata berat adalah ringan.' }, emoji: '⚖️' },
+      { q: { en: 'Is the house big or small?', id: 'Rumah itu besar atau kecil?' }, answer: { en: 'The house is very big.', id: 'Rumahnya sangat besar.', emoji: '🏠' }, emoji: '🏠' },
+      { q: { en: 'Which is faster, a car or a bike?', id: 'Mana yang lebih cepat, mobil atau sepeda?' }, answer: { en: 'A car is much faster.', id: 'Mobil jauh lebih cepat.', emoji: '🏎️' }, emoji: '🏎️' },
+      { q: { en: 'What is the opposite of heavy?', id: 'Apa lawan kata berat?' }, answer: { en: 'The opposite of heavy is light.', id: 'Lawan kata berat adalah ringan.', emoji: '⚖️' }, emoji: '⚖️' },
     ],
   },
   {
@@ -2360,9 +2360,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'I keep my money in my wallet.', id: 'Aku menyimpan uangku di dompet.', emoji: '👛' },
     ],
     roleplay: [
-      { q: { en: 'How much money do you have?', id: 'Kamu punya uang berapa?' }, answer: { en: 'I have ten coins.', id: 'Aku punya sepuluh koin.' }, emoji: '💵' },
-      { q: { en: 'Can I pay with a coin?', id: 'Boleh aku bayar pakai koin?' }, answer: { en: 'Yes, you can pay with a coin.', id: 'Iya, kamu boleh bayar pakai koin.' }, emoji: '🪙' },
-      { q: { en: 'Do you want a receipt?', id: 'Kamu mau struknya?' }, answer: { en: 'Yes, I want the receipt.', id: 'Iya, aku mau struknya.' }, emoji: '🧾' },
+      { q: { en: 'How much money do you have?', id: 'Kamu punya uang berapa?' }, answer: { en: 'I have ten coins.', id: 'Aku punya sepuluh koin.', emoji: '🪙' }, emoji: '💵', choices: [{ en: 'I have twenty coins.', id: 'Aku punya dua puluh koin.', emoji: '💰' }] },
+      { q: { en: 'Can I pay with a coin?', id: 'Boleh aku bayar pakai koin?' }, answer: { en: 'Yes, you can pay with a coin.', id: 'Iya, kamu boleh bayar pakai koin.', emoji: '✅' }, emoji: '🪙', choices: [{ en: 'No, please pay with paper money.', id: 'Tidak, tolong bayar pakai uang kertas.', emoji: '💵' }] },
+      { q: { en: 'Do you want a receipt?', id: 'Kamu mau struknya?' }, answer: { en: 'Yes, I want the receipt.', id: 'Iya, aku mau struknya.', emoji: '🧾' }, emoji: '🧾', choices: [{ en: 'No, thank you. I don\'t need it.', id: 'Tidak, terima kasih. Aku tidak perlu.', emoji: '🙅' }] },
     ],
   },
   {
@@ -2379,9 +2379,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'I go to school every day.', id: 'Aku pergi ke sekolah setiap hari.', emoji: '🏫' },
     ],
     roleplay: [
-      { q: { en: 'What do you do in the morning?', id: 'Apa yang kamu lakukan di pagi hari?' }, answer: { en: 'I take a bath in the morning.', id: 'Aku mandi di pagi hari.' }, emoji: '🌅' },
-      { q: { en: 'What time do you go to bed?', id: 'Jam berapa kamu tidur?' }, answer: { en: 'I go to bed at eight o\'clock.', id: 'Aku tidur jam delapan.' }, emoji: '⏰' },
-      { q: { en: 'What do you do on Sunday?', id: 'Apa yang kamu lakukan hari Minggu?' }, answer: { en: 'I play with my friends on Sunday.', id: 'Aku bermain dengan temanku hari Minggu.' }, emoji: '📅' },
+      { q: { en: 'What do you do in the morning?', id: 'Apa yang kamu lakukan di pagi hari?' }, answer: { en: 'I take a bath in the morning.', id: 'Aku mandi di pagi hari.', emoji: '🛁' }, emoji: '🌅', choices: [{ en: 'I eat breakfast in the morning.', id: 'Aku sarapan di pagi hari.', emoji: '🍳' }] },
+      { q: { en: 'What time do you go to bed?', id: 'Jam berapa kamu tidur?' }, answer: { en: 'I go to bed at eight o\'clock.', id: 'Aku tidur jam delapan.', emoji: '🕗' }, emoji: '⏰', choices: [{ en: 'I go to bed at nine o\'clock.', id: 'Aku tidur jam sembilan.', emoji: '🕘' }] },
+      { q: { en: 'What do you do on Sunday?', id: 'Apa yang kamu lakukan hari Minggu?' }, answer: { en: 'I play with my friends on Sunday.', id: 'Aku bermain dengan temanku hari Minggu.', emoji: '⚽' }, emoji: '📅', choices: [{ en: 'I help my mom on Sunday.', id: 'Aku membantu ibuku hari Minggu.', emoji: '🧹' }] },
     ],
   },
   {
@@ -2398,9 +2398,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'She is from England.', id: 'Dia dari Inggris.', emoji: '🇬🇧' },
     ],
     roleplay: [
-      { q: { en: 'Can you tell me where you are from?', id: 'Bisa ceritakan kamu dari mana?' }, answer: { en: 'I am from Bandung, Indonesia.', id: 'Aku dari Bandung, Indonesia.' }, emoji: '🗺️' },
-      { q: { en: 'Which country do you want to visit?', id: 'Negara mana yang ingin kamu kunjungi?' }, answer: { en: 'I want to visit Korea.', id: 'Aku ingin mengunjungi Korea.' }, emoji: '✈️' },
-      { q: { en: 'Do you know someone from another country?', id: 'Kamu kenal seseorang dari negara lain?' }, answer: { en: 'Yes, my teacher is from Australia.', id: 'Iya, guruku dari Australia.' }, emoji: '🌍' },
+      { q: { en: 'Can you tell me where you are from?', id: 'Bisa ceritakan kamu dari mana?' }, answer: { en: 'I am from Bandung, Indonesia.', id: 'Aku dari Bandung, Indonesia.', emoji: '🇮🇩' }, emoji: '🗺️', choices: [{ en: 'I am from Medan, Indonesia.', id: 'Aku dari Medan, Indonesia.', emoji: '🏙️' }] },
+      { q: { en: 'Which country do you want to visit?', id: 'Negara mana yang ingin kamu kunjungi?' }, answer: { en: 'I want to visit Korea.', id: 'Aku ingin mengunjungi Korea.', emoji: '🇰🇷' }, emoji: '✈️', choices: [{ en: 'I want to visit Australia.', id: 'Aku ingin mengunjungi Australia.', emoji: '🇦🇺' }] },
+      { q: { en: 'Do you know someone from another country?', id: 'Kamu kenal seseorang dari negara lain?' }, answer: { en: 'Yes, my teacher is from Australia.', id: 'Iya, guruku dari Australia.', emoji: '🇦🇺' }, emoji: '🌍', choices: [{ en: 'No, I don\'t know anyone yet.', id: 'Belum, aku belum kenal siapa pun.', emoji: '🙅' }] },
     ],
   },
   {
@@ -2417,9 +2417,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'We have a party.', id: 'Kami mengadakan pesta.', emoji: '🥳' },
     ],
     roleplay: [
-      { q: { en: 'When is your birthday?', id: 'Kapan ulang tahunmu?' }, answer: { en: 'My birthday is in May.', id: 'Ulang tahunku bulan Mei.' }, emoji: '🎂' },
-      { q: { en: 'What present do you want?', id: 'Kamu mau hadiah apa?' }, answer: { en: 'I want a new bike.', id: 'Aku mau sepeda baru.' }, emoji: '🎁' },
-      { q: { en: 'Who do you want to invite?', id: 'Siapa yang mau kamu undang?' }, answer: { en: 'I want to invite my classmates.', id: 'Aku mau mengundang teman sekelasku.' }, emoji: '💌' },
+      { q: { en: 'When is your birthday?', id: 'Kapan ulang tahunmu?' }, answer: { en: 'My birthday is in May.', id: 'Ulang tahunku bulan Mei.', emoji: '🎂' }, emoji: '🎂', choices: [{ en: 'My birthday is in July.', id: 'Ulang tahunku bulan Juli.', emoji: '📅' }] },
+      { q: { en: 'What present do you want?', id: 'Kamu mau hadiah apa?' }, answer: { en: 'I want a new bike.', id: 'Aku mau sepeda baru.', emoji: '🚲' }, emoji: '🎁', choices: [{ en: 'I want a new book.', id: 'Aku mau buku baru.', emoji: '📚' }] },
+      { q: { en: 'Who do you want to invite?', id: 'Siapa yang mau kamu undang?' }, answer: { en: 'I want to invite my classmates.', id: 'Aku mau mengundang teman sekelasku.', emoji: '🏫' }, emoji: '💌', choices: [{ en: 'I want to invite my cousins.', id: 'Aku mau mengundang sepupu-sepupuku.', emoji: '👨‍👩‍👧‍👦' }] },
     ],
   },
   {
@@ -2436,9 +2436,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'I drink from a cup.', id: 'Aku minum dari cangkir.', emoji: '🥤' },
     ],
     roleplay: [
-      { q: { en: 'What do you use to eat soup?', id: 'Kamu pakai apa untuk makan sup?' }, answer: { en: 'I use a spoon to eat soup.', id: 'Aku pakai sendok untuk makan sup.' }, emoji: '🥣' },
-      { q: { en: 'Can you help me cook?', id: 'Bisa bantu aku memasak?' }, answer: { en: 'Yes, I can help you.', id: 'Iya, aku bisa membantumu.' }, emoji: '🧑‍🍳' },
-      { q: { en: 'What is your favorite food to cook?', id: 'Makanan apa yang paling suka kamu masak?' }, answer: { en: 'I like to cook fried rice.', id: 'Aku suka memasak nasi goreng.' }, emoji: '🍛' },
+      { q: { en: 'What do you use to eat soup?', id: 'Kamu pakai apa untuk makan sup?' }, answer: { en: 'I use a spoon to eat soup.', id: 'Aku pakai sendok untuk makan sup.', emoji: '🥄' }, emoji: '🥣', choices: [{ en: 'I use a spoon and a bowl.', id: 'Aku pakai sendok dan mangkuk.', emoji: '🥣' }] },
+      { q: { en: 'Can you help me cook?', id: 'Bisa bantu aku memasak?' }, answer: { en: 'Yes, I can help you.', id: 'Iya, aku bisa membantumu.', emoji: '👍' }, emoji: '🧑‍🍳', choices: [{ en: 'Sorry, I am busy now.', id: 'Maaf, aku sedang sibuk.', emoji: '⏰' }] },
+      { q: { en: 'What is your favorite food to cook?', id: 'Makanan apa yang paling suka kamu masak?' }, answer: { en: 'I like to cook fried rice.', id: 'Aku suka memasak nasi goreng.', emoji: '🍳' }, emoji: '🍛', choices: [{ en: 'I like to cook noodles.', id: 'Aku suka memasak mi.', emoji: '🍜' }] },
     ],
   },
   /**
@@ -6878,9 +6878,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'The park is nice because it is big and green.', id: 'Tamannya enak karena luas dan hijau.', emoji: '🌳' },
     ],
     roleplay: [
-      { q: { en: 'What are you doing this weekend?', id: 'Apa yang kamu lakukan akhir pekan ini?' }, answer: { en: 'I am visiting my grandma this weekend.', id: 'Aku mengunjungi nenekku akhir pekan ini.' }, emoji: '📅' },
-      { q: { en: 'Do you want to come to my house? Why?', id: 'Kamu mau datang ke rumahku? Kenapa?' }, answer: { en: 'Yes, because your house has a big garden.', id: 'Iya, karena rumahmu punya kebun yang besar.' }, emoji: '🏠' },
-      { q: { en: 'What time works for you?', id: 'Jam berapa yang cocok untukmu?' }, answer: { en: 'Four o\'clock works because I finish school at three.', id: 'Jam empat cocok karena aku selesai sekolah jam tiga.' }, emoji: '🕓' },
+      { q: { en: 'What are you doing this weekend?', id: 'Apa yang kamu lakukan akhir pekan ini?' }, answer: { en: 'I am visiting my grandma this weekend.', id: 'Aku mengunjungi nenekku akhir pekan ini.', emoji: '🏡' }, emoji: '📅', choices: [{ en: 'I am going to the beach this weekend.', id: 'Aku pergi ke pantai akhir pekan ini.', emoji: '🏖️' }] },
+      { q: { en: 'Do you want to come to my house? Why?', id: 'Kamu mau datang ke rumahku? Kenapa?' }, answer: { en: 'Yes, because your house has a big garden.', id: 'Iya, karena rumahmu punya kebun yang besar.', emoji: '🌳' }, emoji: '🏠', choices: [{ en: 'Yes, because we can play games together.', id: 'Iya, karena kita bisa main bersama.', emoji: '🎲' }] },
+      { q: { en: 'What time works for you?', id: 'Jam berapa yang cocok untukmu?' }, answer: { en: 'Four o\'clock works because I finish school at three.', id: 'Jam empat cocok karena aku selesai sekolah jam tiga.', emoji: '🕓' }, emoji: '🕓', choices: [{ en: 'Five o\'clock works because I have lunch first.', id: 'Jam lima cocok karena aku makan siang dulu.', emoji: '🕔' }] },
     ],
   },
   {
@@ -6897,9 +6897,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'A pilot flies an airplane.', id: 'Pilot menerbangkan pesawat.', emoji: '🧑‍✈️' },
     ],
     roleplay: [
-      { q: { en: 'What job do you want to have?', id: 'Pekerjaan apa yang kamu inginkan?' }, answer: { en: 'I want to be a pilot when I grow up.', id: 'Aku ingin jadi pilot kalau sudah besar.' }, emoji: '💼' },
-      { q: { en: 'Why do you want that job?', id: 'Kenapa kamu ingin pekerjaan itu?' }, answer: { en: 'I want that job because I love flying high.', id: 'Aku ingin pekerjaan itu karena aku suka terbang tinggi.' }, emoji: '⭐' },
-      { q: { en: 'What does a doctor do?', id: 'Apa yang dilakukan dokter?' }, answer: { en: 'A doctor checks sick people and gives them medicine.', id: 'Dokter memeriksa orang sakit dan memberi mereka obat.' }, emoji: '🩺' },
+      { q: { en: 'What job do you want to have?', id: 'Pekerjaan apa yang kamu inginkan?' }, answer: { en: 'I want to be a pilot when I grow up.', id: 'Aku ingin jadi pilot kalau sudah besar.', emoji: '🧑‍✈️' }, emoji: '💼', choices: [{ en: 'I want to be a doctor when I grow up.', id: 'Aku ingin jadi dokter kalau sudah besar.', emoji: '🧑‍⚕️' }] },
+      { q: { en: 'Why do you want that job?', id: 'Kenapa kamu ingin pekerjaan itu?' }, answer: { en: 'I want that job because I love flying high.', id: 'Aku ingin pekerjaan itu karena aku suka terbang tinggi.', emoji: '✈️' }, emoji: '⭐', choices: [{ en: 'I want that job because I like helping people.', id: 'Aku ingin pekerjaan itu karena aku suka membantu orang.', emoji: '🤝' }] },
+      { q: { en: 'What does a doctor do?', id: 'Apa yang dilakukan dokter?' }, answer: { en: 'A doctor checks sick people and gives them medicine.', id: 'Dokter memeriksa orang sakit dan memberi mereka obat.', emoji: '🩺' }, emoji: '🩺', choices: [{ en: 'A doctor helps sick people get better.', id: 'Dokter membantu orang sakit jadi sembuh.', emoji: '🧑‍⚕️' }] },
     ],
   },
   {
@@ -6916,9 +6916,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'The tortoise is slower than the rabbit.', id: 'Kura-kura darat lebih lambat dari kelinci.', emoji: '🐰' },
     ],
     roleplay: [
-      { q: { en: 'What does a giraffe look like?', id: 'Seperti apa rupa jerapah?' }, answer: { en: 'A giraffe is tall and has brown spots.', id: 'Jerapah tinggi dan punya bintik cokelat.' } },
-      { q: { en: 'Which is bigger, an elephant or a mouse?', id: 'Mana yang lebih besar, gajah atau tikus?' }, answer: { en: 'An elephant is much bigger than a mouse.', id: 'Gajah jauh lebih besar dari tikus.' }, emoji: '🐭' },
-      { q: { en: 'Why do you like your favorite animal?', id: 'Kenapa kamu suka hewan favoritmu?' }, answer: { en: 'I like cats because they are soft and cute.', id: 'Aku suka kucing karena mereka lembut dan lucu.' }, emoji: '🐱' },
+      { q: { en: 'What does a giraffe look like?', id: 'Seperti apa rupa jerapah?' }, answer: { en: 'A giraffe is tall and has brown spots.', id: 'Jerapah tinggi dan punya bintik cokelat.' }, choices: [{ en: 'A giraffe has a very long neck and long legs.', id: 'Jerapah punya leher yang sangat panjang dan kaki panjang.' }] },
+      { q: { en: 'Which is bigger, an elephant or a mouse?', id: 'Mana yang lebih besar, gajah atau tikus?' }, answer: { en: 'An elephant is much bigger than a mouse.', id: 'Gajah jauh lebih besar dari tikus.', emoji: '🐭' }, emoji: '🐭' },
+      { q: { en: 'Why do you like your favorite animal?', id: 'Kenapa kamu suka hewan favoritmu?' }, answer: { en: 'I like cats because they are soft and cute.', id: 'Aku suka kucing karena mereka lembut dan lucu.', emoji: '🐱' }, emoji: '🐱', choices: [{ en: 'I like dogs because they are loyal and friendly.', id: 'Aku suka anjing karena setia dan ramah.', emoji: '🐶' }] },
     ],
   },
   {
@@ -6935,9 +6935,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'This rice is warm and fluffy.', id: 'Nasi ini hangat dan pulen.', emoji: '🍚' },
     ],
     roleplay: [
-      { q: { en: 'What is your favorite food?', id: 'Apa makanan favoritmu?' }, answer: { en: 'My favorite food is chicken soup with rice.', id: 'Makanan favoritku sup ayam dengan nasi.' }, emoji: '🍽️' },
-      { q: { en: 'Why do you like it?', id: 'Kenapa kamu suka makanan itu?' }, answer: { en: 'I like it because it is warm and tasty.', id: 'Aku suka karena hangat dan enak.' }, emoji: '😋' },
-      { q: { en: 'How does it taste?', id: 'Bagaimana rasanya?' }, answer: { en: 'It tastes salty and a little sweet.', id: 'Rasanya asin dan sedikit manis.' }, emoji: '👅' },
+      { q: { en: 'What is your favorite food?', id: 'Apa makanan favoritmu?' }, answer: { en: 'My favorite food is chicken soup with rice.', id: 'Makanan favoritku sup ayam dengan nasi.', emoji: '🍲' }, emoji: '🍽️', choices: [{ en: 'My favorite food is fried noodles with egg.', id: 'Makanan favoritku mi goreng dengan telur.', emoji: '🍜' }] },
+      { q: { en: 'Why do you like it?', id: 'Kenapa kamu suka makanan itu?' }, answer: { en: 'I like it because it is warm and tasty.', id: 'Aku suka karena hangat dan enak.', emoji: '😋' }, emoji: '😋', choices: [{ en: 'I like it because it is sweet and soft.', id: 'Aku suka karena manis dan lembut.', emoji: '🍰' }] },
+      { q: { en: 'How does it taste?', id: 'Bagaimana rasanya?' }, answer: { en: 'It tastes salty and a little sweet.', id: 'Rasanya asin dan sedikit manis.', emoji: '🧂' }, emoji: '👅', choices: [{ en: 'It tastes sweet and a little sour.', id: 'Rasanya manis dan sedikit asam.', emoji: '🍋' }] },
     ],
   },
   {
@@ -6954,9 +6954,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'This notebook has many pages.', id: 'Buku tulis ini punya banyak halaman.', emoji: '📓' },
     ],
     roleplay: [
-      { q: { en: 'What is in your school bag?', id: 'Apa isi tas sekolahmu?' }, answer: { en: 'There are books, pencils, and a lunchbox in my bag.', id: 'Di tasku ada buku, pensil, dan kotak bekal.' }, emoji: '🎒' },
-      { q: { en: 'Why do you need a ruler?', id: 'Kenapa kamu butuh penggaris?' }, answer: { en: 'I need a ruler because I draw lines in math class.', id: 'Aku butuh penggaris karena aku menggambar garis di kelas matematika.' }, emoji: '📏' },
-      { q: { en: 'Which school supply is your favorite?', id: 'Alat tulis mana yang paling kamu suka?' }, answer: { en: 'My favorite is my pencil case because it is colorful.', id: 'Favoritku kotak pensilku karena warnanya cerah.' }, emoji: '✏️' },
+      { q: { en: 'What is in your school bag?', id: 'Apa isi tas sekolahmu?' }, answer: { en: 'There are books, pencils, and a lunchbox in my bag.', id: 'Di tasku ada buku, pensil, dan kotak bekal.', emoji: '🎒' }, emoji: '🎒', choices: [{ en: 'There are books, crayons, and a water bottle in my bag.', id: 'Di tasku ada buku, krayon, dan botol minum.', emoji: '🖍️' }] },
+      { q: { en: 'Why do you need a ruler?', id: 'Kenapa kamu butuh penggaris?' }, answer: { en: 'I need a ruler because I draw lines in math class.', id: 'Aku butuh penggaris karena aku menggambar garis di kelas matematika.', emoji: '📏' }, emoji: '📏', choices: [{ en: 'I need a ruler because I draw straight lines in art class.', id: 'Aku butuh penggaris karena aku menggambar garis lurus di kelas seni.', emoji: '🎨' }] },
+      { q: { en: 'Which school supply is your favorite?', id: 'Alat tulis mana yang paling kamu suka?' }, answer: { en: 'My favorite is my pencil case because it is colorful.', id: 'Favoritku kotak pensilku karena warnanya cerah.', emoji: '👝' }, emoji: '✏️', choices: [{ en: 'My favorite is my eraser because it smells nice.', id: 'Favoritku penghapusku karena wanginya enak.', emoji: '✏️' }] },
     ],
   },
   {
@@ -6973,9 +6973,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'I wear a jacket because it is windy.', id: 'Aku memakai jaket karena berangin.', emoji: '🧥' },
     ],
     roleplay: [
-      { q: { en: 'What is the weather like today?', id: 'Bagaimana cuaca hari ini?' }, answer: { en: 'It is cloudy today, but it is not raining.', id: 'Hari ini berawan, tapi tidak hujan.' }, emoji: '🌤️' },
-      { q: { en: 'What do you wear when it is cold?', id: 'Kamu pakai apa saat dingin?' }, answer: { en: 'I wear a jacket and warm socks when it is cold.', id: 'Aku pakai jaket dan kaus kaki hangat saat dingin.' }, emoji: '🧣' },
-      { q: { en: 'Do you like rainy days? Why?', id: 'Kamu suka hari hujan? Kenapa?' }, answer: { en: 'Yes, because I can sleep well when it rains.', id: 'Iya, karena aku bisa tidur nyenyak saat hujan.' }, emoji: '🌧️' },
+      { q: { en: 'What is the weather like today?', id: 'Bagaimana cuaca hari ini?' }, answer: { en: 'It is cloudy today, but it is not raining.', id: 'Hari ini berawan, tapi tidak hujan.', emoji: '☁️' }, emoji: '🌤️', choices: [{ en: 'It is sunny today, but it is not too hot.', id: 'Hari ini cerah, tapi tidak terlalu panas.', emoji: '☀️' }] },
+      { q: { en: 'What do you wear when it is cold?', id: 'Kamu pakai apa saat dingin?' }, answer: { en: 'I wear a jacket and warm socks when it is cold.', id: 'Aku pakai jaket dan kaus kaki hangat saat dingin.', emoji: '🧥' }, emoji: '🧣', choices: [{ en: 'I wear a sweater and long pants when it is cold.', id: 'Aku pakai sweter dan celana panjang saat dingin.', emoji: '🧣' }] },
+      { q: { en: 'Do you like rainy days? Why?', id: 'Kamu suka hari hujan? Kenapa?' }, answer: { en: 'Yes, because I can sleep well when it rains.', id: 'Iya, karena aku bisa tidur nyenyak saat hujan.', emoji: '🌧️' }, emoji: '🌧️', choices: [{ en: 'No, because I cannot play outside when it rains.', id: 'Tidak, karena aku tidak bisa main di luar saat hujan.', emoji: '☔' }] },
     ],
   },
   {
@@ -6992,9 +6992,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'I use my nose to smell flowers.', id: 'Aku memakai hidungku untuk mencium bunga.', emoji: '👃' },
     ],
     roleplay: [
-      { q: { en: 'What do you use your eyes for?', id: 'Untuk apa kamu memakai matamu?' }, answer: { en: 'I use my eyes to read books and watch TV.', id: 'Aku memakai mataku untuk membaca buku dan menonton TV.' }, emoji: '👀' },
-      { q: { en: 'Why are your legs important?', id: 'Kenapa kakimu penting?' }, answer: { en: 'My legs are important because I walk and run with them.', id: 'Kakiku penting karena aku berjalan dan berlari dengannya.' }, emoji: '🦵' },
-      { q: { en: 'Which body part do you use the most?', id: 'Bagian tubuh mana yang paling sering kamu pakai?' }, answer: { en: 'I use my hands the most because I write every day.', id: 'Aku paling sering memakai tanganku karena aku menulis setiap hari.' }, emoji: '🙌' },
+      { q: { en: 'What do you use your eyes for?', id: 'Untuk apa kamu memakai matamu?' }, answer: { en: 'I use my eyes to read books and watch TV.', id: 'Aku memakai mataku untuk membaca buku dan menonton TV.', emoji: '👀' }, emoji: '👀', choices: [{ en: 'I use my eyes to see colors and pictures.', id: 'Aku memakai mataku untuk melihat warna dan gambar.', emoji: '🎨' }] },
+      { q: { en: 'Why are your legs important?', id: 'Kenapa kakimu penting?' }, answer: { en: 'My legs are important because I walk and run with them.', id: 'Kakiku penting karena aku berjalan dan berlari dengannya.', emoji: '🦵' }, emoji: '🦵', choices: [{ en: 'My legs are important because I play football with them.', id: 'Kakiku penting karena aku main sepak bola dengannya.', emoji: '⚽' }] },
+      { q: { en: 'Which body part do you use the most?', id: 'Bagian tubuh mana yang paling sering kamu pakai?' }, answer: { en: 'I use my hands the most because I write every day.', id: 'Aku paling sering memakai tanganku karena aku menulis setiap hari.', emoji: '✍️' }, emoji: '🙌', choices: [{ en: 'I use my eyes the most because I read every day.', id: 'Aku paling sering memakai mataku karena aku membaca setiap hari.', emoji: '👀' }] },
     ],
   },
   {
@@ -7011,9 +7011,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'An airplane can fly very high.', id: 'Pesawat bisa terbang sangat tinggi.', emoji: '✈️' },
     ],
     roleplay: [
-      { q: { en: 'How do you get to school?', id: 'Kamu ke sekolah naik apa?' }, answer: { en: 'I get to school by car with my dad.', id: 'Aku ke sekolah naik mobil bersama ayahku.' }, emoji: '🏫' },
-      { q: { en: 'Which kind of transport do you like best?', id: 'Kendaraan apa yang paling kamu suka?' }, answer: { en: 'I like the train best because it is fast and comfortable.', id: 'Aku paling suka kereta karena cepat dan nyaman.' }, emoji: '🚆' },
-      { q: { en: 'Why is a bicycle good for the environment?', id: 'Kenapa sepeda baik untuk lingkungan?' }, answer: { en: 'A bicycle is good because it does not make smoke.', id: 'Sepeda baik karena tidak mengeluarkan asap.' }, emoji: '🌱' },
+      { q: { en: 'How do you get to school?', id: 'Kamu ke sekolah naik apa?' }, answer: { en: 'I get to school by car with my dad.', id: 'Aku ke sekolah naik mobil bersama ayahku.', emoji: '🚗' }, emoji: '🏫', choices: [{ en: 'I get to school by bus with my friends.', id: 'Aku ke sekolah naik bus bersama teman-temanku.', emoji: '🚌' }] },
+      { q: { en: 'Which kind of transport do you like best?', id: 'Kendaraan apa yang paling kamu suka?' }, answer: { en: 'I like the train best because it is fast and comfortable.', id: 'Aku paling suka kereta karena cepat dan nyaman.', emoji: '🚆' }, emoji: '🚆', choices: [{ en: 'I like the bike best because it is fun and healthy.', id: 'Aku paling suka sepeda karena seru dan sehat.', emoji: '🚲' }] },
+      { q: { en: 'Why is a bicycle good for the environment?', id: 'Kenapa sepeda baik untuk lingkungan?' }, answer: { en: 'A bicycle is good because it does not make smoke.', id: 'Sepeda baik karena tidak mengeluarkan asap.', emoji: '🌱' }, emoji: '🌱', choices: [{ en: 'A bicycle is good because it is quiet and clean.', id: 'Sepeda baik karena tidak berisik dan bersih.', emoji: '🚲' }] },
     ],
   },
   {
@@ -7030,9 +7030,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'Running makes me strong and healthy.', id: 'Berlari membuatku kuat dan sehat.', emoji: '👟' },
     ],
     roleplay: [
-      { q: { en: 'What sport do you like?', id: 'Olahraga apa yang kamu suka?' }, answer: { en: 'I like badminton, and I play it every Sunday.', id: 'Aku suka bulu tangkis, dan aku memainkannya setiap hari Minggu.' }, emoji: '🏅' },
-      { q: { en: 'Why do you enjoy it?', id: 'Kenapa kamu menikmatinya?' }, answer: { en: 'I enjoy it because I can play with my friends.', id: 'Aku menikmatinya karena bisa bermain dengan teman-temanku.' }, emoji: '😄' },
-      { q: { en: 'What do you need to play badminton?', id: 'Apa yang kamu butuhkan untuk bermain bulu tangkis?' }, answer: { en: 'I need a racket and a shuttlecock to play.', id: 'Aku butuh raket dan kok untuk bermain.' }, emoji: '🏸' },
+      { q: { en: 'What sport do you like?', id: 'Olahraga apa yang kamu suka?' }, answer: { en: 'I like badminton, and I play it every Sunday.', id: 'Aku suka bulu tangkis, dan aku memainkannya setiap hari Minggu.', emoji: '🏸' }, emoji: '🏅', choices: [{ en: 'I like football, and I play it every Saturday.', id: 'Aku suka sepak bola, dan aku memainkannya setiap hari Sabtu.', emoji: '⚽' }] },
+      { q: { en: 'Why do you enjoy it?', id: 'Kenapa kamu menikmatinya?' }, answer: { en: 'I enjoy it because I can play with my friends.', id: 'Aku menikmatinya karena bisa bermain dengan teman-temanku.', emoji: '😄' }, emoji: '😄', choices: [{ en: 'I enjoy it because it makes me strong and healthy.', id: 'Aku menikmatinya karena membuatku kuat dan sehat.', emoji: '💪' }] },
+      { q: { en: 'What do you need to play badminton?', id: 'Apa yang kamu butuhkan untuk bermain bulu tangkis?' }, answer: { en: 'I need a racket and a shuttlecock to play.', id: 'Aku butuh raket dan kok untuk bermain.', emoji: '🏸' }, emoji: '🏸', choices: [{ en: 'I need a racket, a shuttlecock, and a net.', id: 'Aku butuh raket, kok, dan net.', emoji: '🥅' }] },
     ],
   },
   {
@@ -7049,9 +7049,9 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
       { en: 'The garden has many flowers.', id: 'Kebunnya punya banyak bunga.', emoji: '🌷' },
     ],
     roleplay: [
-      { q: { en: 'What is your favorite room?', id: 'Ruangan apa favoritmu?' }, answer: { en: 'My favorite room is my bedroom upstairs.', id: 'Ruangan favoritku kamar tidurku di lantai atas.' }, emoji: '🏠' },
-      { q: { en: 'Why do you like it?', id: 'Kenapa kamu suka ruangan itu?' }, answer: { en: 'I like it because it is quiet and has many toys.', id: 'Aku suka karena tenang dan banyak mainan.' }, emoji: '🧸' },
-      { q: { en: 'What do you do in the living room?', id: 'Apa yang kamu lakukan di ruang tamu?' }, answer: { en: 'I watch TV with my family in the living room.', id: 'Aku menonton TV bersama keluargaku di ruang tamu.' }, emoji: '📺' },
+      { q: { en: 'What is your favorite room?', id: 'Ruangan apa favoritmu?' }, answer: { en: 'My favorite room is my bedroom upstairs.', id: 'Ruangan favoritku kamar tidurku di lantai atas.', emoji: '🛏️' }, emoji: '🏠', choices: [{ en: 'My favorite room is the kitchen downstairs.', id: 'Ruangan favoritku dapur di lantai bawah.', emoji: '🍳' }] },
+      { q: { en: 'Why do you like it?', id: 'Kenapa kamu suka ruangan itu?' }, answer: { en: 'I like it because it is quiet and has many toys.', id: 'Aku suka karena tenang dan banyak mainan.', emoji: '🧸' }, emoji: '🧸', choices: [{ en: 'I like it because it is bright and has a big window.', id: 'Aku suka karena terang dan punya jendela besar.', emoji: '🪟' }] },
+      { q: { en: 'What do you do in the living room?', id: 'Apa yang kamu lakukan di ruang tamu?' }, answer: { en: 'I watch TV with my family in the living room.', id: 'Aku menonton TV bersama keluargaku di ruang tamu.', emoji: '📺' }, emoji: '📺', choices: [{ en: 'I play board games with my family in the living room.', id: 'Aku main permainan papan bersama keluargaku di ruang tamu.', emoji: '🎲' }] },
     ],
   },
   // Cerita & Jawab level adventurer (permintaan user: perluas pilot Explorer) —
@@ -15498,9 +15498,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'I think my grandfather looks wise with his glasses.', id: 'Menurutku kakekku terlihat bijak dengan kacamatanya.', emoji: '👓' },
     ],
     roleplay: [
-      { q: { en: 'What does your best friend look like?', id: 'Seperti apa rupa sahabatmu?' }, answer: { en: 'My best friend has short hair and wears glasses. She is shorter than me.', id: 'Sahabatku berambut pendek dan berkacamata. Dia lebih pendek dariku.' }, emoji: '👓' },
-      { q: { en: 'Describe someone in your family.', id: 'Ceritakan seseorang di keluargamu.' }, answer: { en: 'My mom has long black hair. I think she is the most patient person in my family.', id: 'Ibuku berambut hitam panjang. Menurutku dia orang paling sabar di keluargaku.' }, emoji: '👨‍👩‍👧‍👦' },
-      { q: { en: 'Do you look more like your mom or your dad? Why?', id: 'Kamu lebih mirip ibu atau ayahmu? Kenapa?' }, answer: { en: 'I look more like my dad because we both have curly hair and round eyes.', id: 'Aku lebih mirip ayahku karena kami sama-sama berambut keriting dan bermata bulat.' }, emoji: '🪞' },
+      { q: { en: 'What does your best friend look like?', id: 'Seperti apa rupa sahabatmu?' }, answer: { en: 'My best friend has short hair and wears glasses. She is shorter than me.', id: 'Sahabatku berambut pendek dan berkacamata. Dia lebih pendek dariku.', emoji: '👓' }, emoji: '👓', choices: [{ en: 'My best friend has long hair and a big smile. She is taller than me.', id: 'Sahabatku berambut panjang dan senyumnya lebar. Dia lebih tinggi dariku.', emoji: '😊' }] },
+      { q: { en: 'Describe someone in your family.', id: 'Ceritakan seseorang di keluargamu.' }, answer: { en: 'My mom has long black hair. I think she is the most patient person in my family.', id: 'Ibuku berambut hitam panjang. Menurutku dia orang paling sabar di keluargaku.', emoji: '👩' }, emoji: '👨‍👩‍👧‍👦', choices: [{ en: 'My dad has short hair. I think he is the funniest person in my family.', id: 'Ayahku berambut pendek. Menurutku dia orang paling lucu di keluargaku.', emoji: '👨' }] },
+      { q: { en: 'Do you look more like your mom or your dad? Why?', id: 'Kamu lebih mirip ibu atau ayahmu? Kenapa?' }, answer: { en: 'I look more like my dad because we both have curly hair and round eyes.', id: 'Aku lebih mirip ayahku karena kami sama-sama berambut keriting dan bermata bulat.', emoji: '🧑‍🦱' }, emoji: '🪞', choices: [{ en: 'I look more like my mom because we both have big eyes and a round face.', id: 'Aku lebih mirip ibuku karena kami sama-sama bermata besar dan berwajah bulat.', emoji: '👀' }] },
     ],
   },
   {
@@ -15517,9 +15517,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'The market is busier than the library.', id: 'Pasar lebih ramai daripada perpustakaan.', emoji: '🛒' },
     ],
     roleplay: [
-      { q: { en: 'What is your favorite place in town?', id: 'Apa tempat favoritmu di kota?' }, answer: { en: 'My favorite place is the library. I think it is calm and full of good books.', id: 'Tempat favoritku perpustakaan. Menurutku tempatnya tenang dan penuh buku bagus.' }, emoji: '🏙️' },
-      { q: { en: 'Which do you prefer, the park or the mall?', id: 'Kamu lebih suka mana, taman atau mal?' }, answer: { en: 'I prefer the park because the air is fresh and it is free.', id: 'Aku lebih suka taman karena udaranya segar dan gratis.' }, emoji: '🌳' },
-      { q: { en: 'What do you think about visiting a museum?', id: 'Bagaimana pendapatmu tentang berkunjung ke museum?' }, answer: { en: 'I think visiting a museum is fun because we can learn about history.', id: 'Menurutku ke museum itu seru karena kita bisa belajar sejarah.' }, emoji: '🏛️' },
+      { q: { en: 'What is your favorite place in town?', id: 'Apa tempat favoritmu di kota?' }, answer: { en: 'My favorite place is the library. I think it is calm and full of good books.', id: 'Tempat favoritku perpustakaan. Menurutku tempatnya tenang dan penuh buku bagus.', emoji: '📚' }, emoji: '🏙️', choices: [{ en: 'My favorite place is the park. I think it is quiet and full of trees.', id: 'Tempat favoritku taman. Menurutku tempatnya tenang dan penuh pohon.', emoji: '🌳' }] },
+      { q: { en: 'Which do you prefer, the park or the mall?', id: 'Kamu lebih suka mana, taman atau mal?' }, answer: { en: 'I prefer the park because the air is fresh and it is free.', id: 'Aku lebih suka taman karena udaranya segar dan gratis.', emoji: '🌳' }, emoji: '🌳', choices: [{ en: 'I prefer the mall because it is cool and there are many shops.', id: 'Aku lebih suka mal karena sejuk dan banyak toko.', emoji: '🏬' }] },
+      { q: { en: 'What do you think about visiting a museum?', id: 'Bagaimana pendapatmu tentang berkunjung ke museum?' }, answer: { en: 'I think visiting a museum is fun because we can learn about history.', id: 'Menurutku ke museum itu seru karena kita bisa belajar sejarah.', emoji: '🏛️' }, emoji: '🏛️', choices: [{ en: 'I think visiting a museum is boring, but the pictures are interesting.', id: 'Menurutku ke museum membosankan, tapi gambarnya menarik.', emoji: '🖼️' }] },
     ],
   },
   {
@@ -15536,9 +15536,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'I think this shortcut is better than the main road.', id: 'Menurutku jalan pintas ini lebih baik daripada jalan utama.', emoji: '🛣️' },
     ],
     roleplay: [
-      { q: { en: 'How do you get to your school?', id: 'Bagaimana caramu ke sekolah?' }, answer: { en: 'I walk straight for five minutes, and then I turn left at the bakery.', id: 'Aku jalan lurus lima menit, lalu belok kiri di toko roti.' }, emoji: '🗺️' },
-      { q: { en: 'Which way is faster, left or right?', id: 'Mana yang lebih cepat, kiri atau kanan?' }, answer: { en: 'I think the left way is faster because there is less traffic.', id: 'Menurutku jalan kiri lebih cepat karena lalu lintasnya lebih sepi.' }, emoji: '↔️' },
-      { q: { en: 'What do you think is the best way to the park?', id: 'Menurutmu jalan terbaik ke taman lewat mana?' }, answer: { en: 'The best way is along the river because it is safe and shady.', id: 'Jalan terbaik lewat pinggir sungai karena aman dan teduh.' }, emoji: '🌳' },
+      { q: { en: 'How do you get to your school?', id: 'Bagaimana caramu ke sekolah?' }, answer: { en: 'I walk straight for five minutes, and then I turn left at the bakery.', id: 'Aku jalan lurus lima menit, lalu belok kiri di toko roti.', emoji: '🥐' }, emoji: '🗺️', choices: [{ en: 'I ride my bike for ten minutes, and then I turn right at the mosque.', id: 'Aku naik sepeda sepuluh menit, lalu belok kanan di masjid.', emoji: '🚲' }] },
+      { q: { en: 'Which way is faster, left or right?', id: 'Mana yang lebih cepat, kiri atau kanan?' }, answer: { en: 'I think the left way is faster because there is less traffic.', id: 'Menurutku jalan kiri lebih cepat karena lalu lintasnya lebih sepi.', emoji: '⬅️' }, emoji: '↔️', choices: [{ en: 'I think the right way is faster because the road is shorter.', id: 'Menurutku jalan kanan lebih cepat karena jalannya lebih pendek.', emoji: '➡️' }] },
+      { q: { en: 'What do you think is the best way to the park?', id: 'Menurutmu jalan terbaik ke taman lewat mana?' }, answer: { en: 'The best way is along the river because it is safe and shady.', id: 'Jalan terbaik lewat pinggir sungai karena aman dan teduh.', emoji: '🏞️' }, emoji: '🌳', choices: [{ en: 'The best way is through the market because it is closer.', id: 'Jalan terbaik lewat pasar karena lebih dekat.', emoji: '🛒' }] },
     ],
   },
   {
@@ -15555,9 +15555,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'I believe outdoor activities are healthier than screen time.', id: 'Aku yakin kegiatan di luar ruangan lebih sehat daripada main gawai.', emoji: '🌳' },
     ],
     roleplay: [
-      { q: { en: 'What do you like to do in your free time?', id: 'Apa yang suka kamu lakukan di waktu luang?' }, answer: { en: 'I like drawing in my free time, and sometimes I play board games with my brother.', id: 'Aku suka menggambar di waktu luang, dan kadang main permainan papan dengan adikku.' }, emoji: '🎨' },
-      { q: { en: 'What do you think about video games?', id: 'Bagaimana pendapatmu tentang video game?' }, answer: { en: 'I think video games are fun, but we should not play them for too long.', id: 'Menurutku video game seru, tapi kita tidak boleh memainkannya terlalu lama.' }, emoji: '🎮' },
-      { q: { en: 'Do you prefer indoor or outdoor activities? Why?', id: 'Kamu lebih suka kegiatan di dalam atau di luar ruangan? Kenapa?' }, answer: { en: 'I prefer outdoor activities because I can run and breathe fresh air.', id: 'Aku lebih suka kegiatan di luar ruangan karena bisa berlari dan menghirup udara segar.' }, emoji: '🏕️' },
+      { q: { en: 'What do you like to do in your free time?', id: 'Apa yang suka kamu lakukan di waktu luang?' }, answer: { en: 'I like drawing in my free time, and sometimes I play board games with my brother.', id: 'Aku suka menggambar di waktu luang, dan kadang main permainan papan dengan adikku.', emoji: '🎨' }, emoji: '🎨', choices: [{ en: 'I like reading comics in my free time, and sometimes I watch cartoons with my sister.', id: 'Aku suka membaca komik di waktu luang, dan kadang menonton kartun dengan kakakku.', emoji: '📚' }] },
+      { q: { en: 'What do you think about video games?', id: 'Bagaimana pendapatmu tentang video game?' }, answer: { en: 'I think video games are fun, but we should not play them for too long.', id: 'Menurutku video game seru, tapi kita tidak boleh memainkannya terlalu lama.', emoji: '🎮' }, emoji: '🎮', choices: [{ en: 'I think video games are exciting, but homework must come first.', id: 'Menurutku video game seru, tapi PR harus didahulukan.', emoji: '📝' }] },
+      { q: { en: 'Do you prefer indoor or outdoor activities? Why?', id: 'Kamu lebih suka kegiatan di dalam atau di luar ruangan? Kenapa?' }, answer: { en: 'I prefer outdoor activities because I can run and breathe fresh air.', id: 'Aku lebih suka kegiatan di luar ruangan karena bisa berlari dan menghirup udara segar.', emoji: '🌳' }, emoji: '🏕️', choices: [{ en: 'I prefer indoor activities because I can read and build things.', id: 'Aku lebih suka kegiatan di dalam ruangan karena bisa membaca dan membuat sesuatu.', emoji: '🧩' }] },
     ],
   },
   {
@@ -15574,9 +15574,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'I decided to join the school club.', id: 'Aku memutuskan bergabung dengan klub sekolah.', emoji: '🏫' },
     ],
     roleplay: [
-      { q: { en: 'What habit do you want to improve?', id: 'Kebiasaan apa yang ingin kamu perbaiki?' }, answer: { en: 'I want to sleep earlier because I often feel tired in the morning.', id: 'Aku ingin tidur lebih awal karena aku sering capek di pagi hari.' }, emoji: '⏰' },
-      { q: { en: 'What do you think helps you study better?', id: 'Menurutmu apa yang membantumu belajar lebih baik?' }, answer: { en: 'I think a quiet room helps me, and short breaks keep me fresh.', id: 'Menurutku kamar yang tenang membantuku, dan istirahat singkat membuatku tetap segar.' }, emoji: '📖' },
-      { q: { en: 'Do you prefer planning ahead or doing things spontaneously?', id: 'Kamu lebih suka merencanakan dulu atau spontan?' }, answer: { en: 'I prefer planning ahead because I feel calmer when I am ready.', id: 'Aku lebih suka merencanakan dulu karena aku merasa lebih tenang saat sudah siap.' }, emoji: '📝' },
+      { q: { en: 'What habit do you want to improve?', id: 'Kebiasaan apa yang ingin kamu perbaiki?' }, answer: { en: 'I want to sleep earlier because I often feel tired in the morning.', id: 'Aku ingin tidur lebih awal karena aku sering capek di pagi hari.', emoji: '😴' }, emoji: '⏰', choices: [{ en: 'I want to eat more vegetables because they keep me healthy.', id: 'Aku ingin makan lebih banyak sayur karena membuatku sehat.', emoji: '🥦' }] },
+      { q: { en: 'What do you think helps you study better?', id: 'Menurutmu apa yang membantumu belajar lebih baik?' }, answer: { en: 'I think a quiet room helps me, and short breaks keep me fresh.', id: 'Menurutku kamar yang tenang membantuku, dan istirahat singkat membuatku tetap segar.', emoji: '🤫' }, emoji: '📖', choices: [{ en: 'I think music helps me, and a clean desk keeps me focused.', id: 'Menurutku musik membantuku, dan meja yang bersih membuatku fokus.', emoji: '🎧' }] },
+      { q: { en: 'Do you prefer planning ahead or doing things spontaneously?', id: 'Kamu lebih suka merencanakan dulu atau spontan?' }, answer: { en: 'I prefer planning ahead because I feel calmer when I am ready.', id: 'Aku lebih suka merencanakan dulu karena aku merasa lebih tenang saat sudah siap.', emoji: '📝' }, emoji: '📝', choices: [{ en: 'I prefer doing things spontaneously because it feels more exciting.', id: 'Aku lebih suka spontan karena rasanya lebih seru.', emoji: '🎢' }] },
     ],
   },
   {
@@ -15593,9 +15593,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'I believe technology should be used carefully.', id: 'Aku yakin teknologi harus dipakai dengan hati-hati.', emoji: '🛡️' },
     ],
     roleplay: [
-      { q: { en: 'What do you think about using a tablet for school?', id: 'Bagaimana pendapatmu soal memakai tablet untuk sekolah?' }, answer: { en: 'I think a tablet is helpful, but paper books are better for my eyes.', id: 'Menurutku tablet membantu, tapi buku kertas lebih baik untuk mataku.' }, emoji: '📱' },
-      { q: { en: 'Which is better, a laptop or a smartphone? Why?', id: 'Mana yang lebih baik, laptop atau ponsel? Kenapa?' }, answer: { en: 'I think a laptop is better because the screen is bigger for homework.', id: 'Menurutku laptop lebih baik karena layarnya lebih besar untuk mengerjakan PR.' }, emoji: '💻' },
-      { q: { en: 'How does technology help you learn?', id: 'Bagaimana teknologi membantumu belajar?' }, answer: { en: 'Technology helps me because I can watch videos and look up new words.', id: 'Teknologi membantuku karena aku bisa menonton video dan mencari kata baru.' }, emoji: '🎓' },
+      { q: { en: 'What do you think about using a tablet for school?', id: 'Bagaimana pendapatmu soal memakai tablet untuk sekolah?' }, answer: { en: 'I think a tablet is helpful, but paper books are better for my eyes.', id: 'Menurutku tablet membantu, tapi buku kertas lebih baik untuk mataku.', emoji: '📱' }, emoji: '📱', choices: [{ en: 'I think a tablet is great because it has many learning apps.', id: 'Menurutku tablet bagus karena punya banyak aplikasi belajar.', emoji: '📲' }] },
+      { q: { en: 'Which is better, a laptop or a smartphone? Why?', id: 'Mana yang lebih baik, laptop atau ponsel? Kenapa?' }, answer: { en: 'I think a laptop is better because the screen is bigger for homework.', id: 'Menurutku laptop lebih baik karena layarnya lebih besar untuk mengerjakan PR.', emoji: '💻' }, emoji: '💻', choices: [{ en: 'I think a smartphone is better because it is easy to carry.', id: 'Menurutku ponsel lebih baik karena mudah dibawa.', emoji: '📱' }] },
+      { q: { en: 'How does technology help you learn?', id: 'Bagaimana teknologi membantumu belajar?' }, answer: { en: 'Technology helps me because I can watch videos and look up new words.', id: 'Teknologi membantuku karena aku bisa menonton video dan mencari kata baru.', emoji: '🎬' }, emoji: '🎓', choices: [{ en: 'Technology helps me because I can practice English with apps.', id: 'Teknologi membantuku karena aku bisa latihan bahasa Inggris dengan aplikasi.', emoji: '📲' }] },
     ],
   },
   {
@@ -15612,9 +15612,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'I believe patience is an important trait.', id: 'Aku yakin kesabaran adalah sifat yang penting.', emoji: '⏳' },
     ],
     roleplay: [
-      { q: { en: 'What personality trait do you admire most?', id: 'Sifat apa yang paling kamu kagumi?' }, answer: { en: 'I admire honesty most because honest people are easy to trust.', id: 'Aku paling mengagumi kejujuran karena orang jujur mudah dipercaya.' }, emoji: '🌟' },
-      { q: { en: 'Do you think kindness is more important than intelligence? Why?', id: 'Menurutmu kebaikan lebih penting daripada kecerdasan? Kenapa?' }, answer: { en: 'Yes, I think kindness is more important because it makes other people happy.', id: 'Iya, menurutku kebaikan lebih penting karena membuat orang lain bahagia.' }, emoji: '💖' },
-      { q: { en: 'Describe someone with a good personality.', id: 'Ceritakan seseorang dengan kepribadian yang baik.' }, answer: { en: 'My teacher is patient and funny, so everyone enjoys her class.', id: 'Guruku sabar dan lucu, jadi semua orang senang dengan kelasnya.' }, emoji: '😊' },
+      { q: { en: 'What personality trait do you admire most?', id: 'Sifat apa yang paling kamu kagumi?' }, answer: { en: 'I admire honesty most because honest people are easy to trust.', id: 'Aku paling mengagumi kejujuran karena orang jujur mudah dipercaya.', emoji: '🤝' }, emoji: '🌟', choices: [{ en: 'I admire kindness most because kind people make me feel safe.', id: 'Aku paling mengagumi kebaikan karena orang baik membuatku merasa aman.', emoji: '💖' }] },
+      { q: { en: 'Do you think kindness is more important than intelligence? Why?', id: 'Menurutmu kebaikan lebih penting daripada kecerdasan? Kenapa?' }, answer: { en: 'Yes, I think kindness is more important because it makes other people happy.', id: 'Iya, menurutku kebaikan lebih penting karena membuat orang lain bahagia.', emoji: '💖' }, emoji: '💖', choices: [{ en: 'I think both are important, but kindness helps us make friends.', id: 'Menurutku keduanya penting, tapi kebaikan membantu kita punya teman.', emoji: '🤝' }] },
+      { q: { en: 'Describe someone with a good personality.', id: 'Ceritakan seseorang dengan kepribadian yang baik.' }, answer: { en: 'My teacher is patient and funny, so everyone enjoys her class.', id: 'Guruku sabar dan lucu, jadi semua orang senang dengan kelasnya.', emoji: '🧑‍🏫' }, emoji: '😊', choices: [{ en: 'My uncle is calm and wise, so everyone listens to him.', id: 'Pamanku tenang dan bijak, jadi semua orang mendengarkannya.', emoji: '🌟' }] },
     ],
   },
   {
@@ -15631,9 +15631,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'I believe English is useful for the future.', id: 'Aku yakin bahasa Inggris berguna untuk masa depan.', emoji: '🔤' },
     ],
     roleplay: [
-      { q: { en: 'What is your favorite subject?', id: 'Apa pelajaran favoritmu?' }, answer: { en: 'My favorite subject is art because I love drawing and painting.', id: 'Pelajaran favoritku seni karena aku suka menggambar dan melukis.' }, emoji: '📚' },
-      { q: { en: 'Which subject do you find difficult? Why?', id: 'Pelajaran mana yang menurutmu sulit? Kenapa?' }, answer: { en: 'I find math difficult because there are many steps to remember.', id: 'Menurutku matematika sulit karena ada banyak langkah yang harus diingat.' }, emoji: '🧮' },
-      { q: { en: 'What do you think about learning a new language?', id: 'Bagaimana pendapatmu tentang belajar bahasa baru?' }, answer: { en: 'I think learning a new language is fun, and it helps me make new friends.', id: 'Menurutku belajar bahasa baru itu seru, dan membantuku punya teman baru.' }, emoji: '🗣️' },
+      { q: { en: 'What is your favorite subject?', id: 'Apa pelajaran favoritmu?' }, answer: { en: 'My favorite subject is art because I love drawing and painting.', id: 'Pelajaran favoritku seni karena aku suka menggambar dan melukis.', emoji: '🎨' }, emoji: '📚', choices: [{ en: 'My favorite subject is music because I like singing.', id: 'Pelajaran favoritku musik karena aku suka bernyanyi.', emoji: '🎵' }] },
+      { q: { en: 'Which subject do you find difficult? Why?', id: 'Pelajaran mana yang menurutmu sulit? Kenapa?' }, answer: { en: 'I find math difficult because there are many steps to remember.', id: 'Menurutku matematika sulit karena ada banyak langkah yang harus diingat.', emoji: '➗' }, emoji: '🧮', choices: [{ en: 'I find English difficult because some words are hard to spell.', id: 'Menurutku bahasa Inggris sulit karena beberapa kata susah dieja.', emoji: '🔤' }] },
+      { q: { en: 'What do you think about learning a new language?', id: 'Bagaimana pendapatmu tentang belajar bahasa baru?' }, answer: { en: 'I think learning a new language is fun, and it helps me make new friends.', id: 'Menurutku belajar bahasa baru itu seru, dan membantuku punya teman baru.', emoji: '🗣️' }, emoji: '🗣️', choices: [{ en: 'I think learning a new language is hard, but it is useful for traveling.', id: 'Menurutku belajar bahasa baru itu sulit, tapi berguna untuk bepergian.', emoji: '✈️' }] },
     ],
   },
   {
@@ -15650,9 +15650,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'I believe forty minutes of practice a day is enough.', id: 'Aku yakin empat puluh menit latihan sehari sudah cukup.', emoji: '⏱️' },
     ],
     roleplay: [
-      { q: { en: 'How much money do you save each month?', id: 'Berapa banyak uang yang kamu tabung setiap bulan?' }, answer: { en: 'I save about twenty thousand rupiah each month, and I keep it in a piggy bank.', id: 'Aku menabung sekitar dua puluh ribu rupiah setiap bulan, dan menyimpannya di celengan.' }, emoji: '💰' },
-      { q: { en: 'Do you think one hundred thousand rupiah is a lot for a gift?', id: 'Menurutmu seratus ribu rupiah itu banyak untuk sebuah hadiah?' }, answer: { en: 'I think it is a lot, but it is fine for a special birthday.', id: 'Menurutku itu banyak, tapi tidak apa untuk ulang tahun yang spesial.' }, emoji: '🎁' },
-      { q: { en: 'What number is important to you?', id: 'Angka berapa yang penting untukmu?' }, answer: { en: 'Number nine is important to me because my birthday is on the ninth.', id: 'Angka sembilan penting untukku karena ulang tahunku tanggal sembilan.' }, emoji: '🔢' },
+      { q: { en: 'How much money do you save each month?', id: 'Berapa banyak uang yang kamu tabung setiap bulan?' }, answer: { en: 'I save about twenty thousand rupiah each month, and I keep it in a piggy bank.', id: 'Aku menabung sekitar dua puluh ribu rupiah setiap bulan, dan menyimpannya di celengan.', emoji: '💰' }, emoji: '💰', choices: [{ en: 'I save about ten thousand rupiah each month, and I put it in my bank account.', id: 'Aku menabung sekitar sepuluh ribu rupiah setiap bulan, dan menaruhnya di rekening bankku.', emoji: '🏦' }] },
+      { q: { en: 'Do you think one hundred thousand rupiah is a lot for a gift?', id: 'Menurutmu seratus ribu rupiah itu banyak untuk sebuah hadiah?' }, answer: { en: 'I think it is a lot, but it is fine for a special birthday.', id: 'Menurutku itu banyak, tapi tidak apa untuk ulang tahun yang spesial.', emoji: '🎁' }, emoji: '🎁', choices: [{ en: 'I think it is too much, because a small gift is also nice.', id: 'Menurutku itu terlalu banyak, karena hadiah kecil juga menyenangkan.', emoji: '🎀' }] },
+      { q: { en: 'What number is important to you?', id: 'Angka berapa yang penting untukmu?' }, answer: { en: 'Number nine is important to me because my birthday is on the ninth.', id: 'Angka sembilan penting untukku karena ulang tahunku tanggal sembilan.', emoji: '9️⃣' }, emoji: '🔢', choices: [{ en: 'Number seven is important to me because it is my lucky number.', id: 'Angka tujuh penting untukku karena itu angka keberuntunganku.', emoji: '7️⃣' }] },
     ],
   },
   {
@@ -15669,9 +15669,9 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
       { en: 'The fabric feels smooth and soft.', id: 'Kainnya terasa halus dan lembut.', emoji: '🧶' },
     ],
     roleplay: [
-      { q: { en: 'What object do you use every day?', id: 'Benda apa yang kamu pakai setiap hari?' }, answer: { en: 'I use my water bottle every day because I drink a lot at school.', id: 'Aku memakai botol minumku setiap hari karena aku banyak minum di sekolah.' }, emoji: '🎒' },
-      { q: { en: 'Which is better, a strong material or a light one? Why?', id: 'Mana yang lebih baik, bahan kuat atau ringan? Kenapa?' }, answer: { en: 'I think a strong material is better because it lasts longer.', id: 'Menurutku bahan yang kuat lebih baik karena lebih awet.' }, emoji: '🪨' },
-      { q: { en: 'Describe your favorite thing and why you like it.', id: 'Ceritakan benda favoritmu dan kenapa kamu menyukainya.' }, answer: { en: 'My favorite thing is my blue pencil case. I like it because it is big and has many pockets.', id: 'Benda favoritku kotak pensil biruku. Aku suka karena besar dan punya banyak kantong.' }, emoji: '⭐' },
+      { q: { en: 'What object do you use every day?', id: 'Benda apa yang kamu pakai setiap hari?' }, answer: { en: 'I use my water bottle every day because I drink a lot at school.', id: 'Aku memakai botol minumku setiap hari karena aku banyak minum di sekolah.', emoji: '🥤' }, emoji: '🎒', choices: [{ en: 'I use my pencil case every day because I bring it to every class.', id: 'Aku memakai kotak pensilku setiap hari karena aku membawanya ke setiap kelas.', emoji: '✏️' }] },
+      { q: { en: 'Which is better, a strong material or a light one? Why?', id: 'Mana yang lebih baik, bahan kuat atau ringan? Kenapa?' }, answer: { en: 'I think a strong material is better because it lasts longer.', id: 'Menurutku bahan yang kuat lebih baik karena lebih awet.', emoji: '🪨' }, emoji: '🪨', choices: [{ en: 'I think a light material is better because it is easy to carry.', id: 'Menurutku bahan ringan lebih baik karena mudah dibawa.', emoji: '🪶' }] },
+      { q: { en: 'Describe your favorite thing and why you like it.', id: 'Ceritakan benda favoritmu dan kenapa kamu menyukainya.' }, answer: { en: 'My favorite thing is my blue pencil case. I like it because it is big and has many pockets.', id: 'Benda favoritku kotak pensil biruku. Aku suka karena besar dan punya banyak kantong.', emoji: '✏️' }, emoji: '⭐', choices: [{ en: 'My favorite thing is my red bicycle. I like it because it is fast and strong.', id: 'Benda favoritku sepeda merahku. Aku suka karena cepat dan kuat.', emoji: '🚲' }] },
     ],
   },
   // Cerita & Jawab level achiever (permintaan user: perluas pilot Explorer) —
@@ -15770,34 +15770,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'What do you want to be when you grow up?', id: 'Apa cita-citamu kalau sudah besar?' },
         peerAnswer: { en: 'I want to be a doctor because I want to help people. My aunt is a nurse, and she inspires me.', id: 'Aku mau jadi dokter karena aku mau membantu orang. Bibiku seorang perawat, dan dia menginspirasiku.' }, emoji: '🌟',
+        choices: [{ en: 'I want to be a doctor because I want to help people.', id: 'Aku mau jadi dokter karena aku mau membantu orang.', emoji: '🧑‍⚕️' }, { en: 'I want to be an engineer because I love building things.', id: 'Aku ingin jadi insinyur karena aku suka membangun sesuatu.', emoji: '🏗️' }, { en: 'I want to be a teacher because I enjoy explaining things to others.', id: 'Aku ingin jadi guru karena aku senang menjelaskan sesuatu ke orang lain.', emoji: '🧑‍🏫' }],
       },
       {
         question: { en: 'What subject do you want to study more in the future?', id: 'Pelajaran apa yang mau kamu pelajari lebih dalam di masa depan?' },
         peerAnswer: { en: 'I want to study science because it\'s very interesting. I also like doing small experiments at home.', id: 'Aku mau belajar sains karena sangat menarik. Aku juga suka melakukan percobaan kecil di rumah.' }, emoji: '📚',
+        choices: [{ en: 'I want to study science because it\'s very interesting.', id: 'Aku mau belajar sains karena sangat menarik.', emoji: '🔬' }, { en: 'I want to study math because I like solving problems.', id: 'Aku ingin belajar matematika karena aku suka memecahkan soal.', emoji: '➗' }, { en: 'I want to study art because I want to design beautiful things.', id: 'Aku ingin belajar seni karena aku ingin mendesain hal-hal yang indah.', emoji: '🎨' }],
       },
       {
         question: { en: 'Do you want to live in a big city or a small town?', id: 'Kamu mau tinggal di kota besar atau kota kecil?' },
         peerAnswer: { en: 'I want to live in a big city because there are many things to do. However, I will miss the quiet streets of my town.', id: 'Aku mau tinggal di kota besar karena banyak hal yang bisa dilakukan. Tapi, aku akan rindu jalanan kotaku yang tenang.' }, emoji: '🏙️',
+        choices: [{ en: 'I want to live in a big city because there are many things to do.', id: 'Aku mau tinggal di kota besar karena banyak hal yang bisa dilakukan.', emoji: '🏙️' }, { en: 'I want to live in a small town because it is quiet and peaceful.', id: 'Aku ingin tinggal di kota kecil karena tenang dan damai.', emoji: '🏡' }, { en: 'I want to live near the sea because I love swimming and fresh air.', id: 'Aku ingin tinggal dekat laut karena aku suka berenang dan udara segar.', emoji: '🏖️' }],
       },
       {
         question: { en: 'What new skill do you want to learn?', id: 'Keahlian baru apa yang mau kamu pelajari?' },
         peerAnswer: { en: 'I want to learn how to play the guitar. My cousin plays well, so he can teach me.', id: 'Aku mau belajar main gitar. Sepupuku jago main, jadi dia bisa mengajariku.' }, emoji: '🎸',
+        choices: [{ en: 'I want to learn how to play the guitar.', id: 'Aku mau belajar main gitar.', emoji: '🎸' }, { en: 'I want to learn coding because I want to make my own game.', id: 'Aku ingin belajar coding karena aku ingin membuat game sendiri.', emoji: '💻' }, { en: 'I want to learn cooking so I can help my family at home.', id: 'Aku ingin belajar memasak supaya bisa membantu keluargaku di rumah.', emoji: '🍳' }],
       },
       {
         question: { en: 'Do you want to travel to another country someday?', id: 'Apakah kamu mau bepergian ke negara lain suatu hari nanti?' },
         peerAnswer: { en: 'Yes, I want to visit Japan because I love the culture. I want to see the cherry blossoms in spring.', id: 'Iya, aku mau mengunjungi Jepang karena aku suka budayanya. Aku ingin melihat bunga sakura di musim semi.' }, emoji: '✈️',
+        choices: [{ en: 'Yes, I want to visit Japan because I love the culture.', id: 'Iya, aku mau mengunjungi Jepang karena aku suka budayanya.', emoji: '🇯🇵' }, { en: 'Yes, I want to visit Egypt because I want to see the pyramids.', id: 'Iya, aku ingin mengunjungi Mesir karena aku ingin melihat piramida.', emoji: '🏜️' }, { en: 'Maybe, but first I want to explore more places in Indonesia.', id: 'Mungkin, tapi aku ingin menjelajahi lebih banyak tempat di Indonesia dulu.', emoji: '🇮🇩' }],
       },
       {
         question: { en: 'What kind of job do you think is important for the future?', id: 'Menurutmu, pekerjaan apa yang penting untuk masa depan?' },
         peerAnswer: { en: 'I think being a teacher is important because they help students learn. Without good teachers, it is hard to learn new things.', id: 'Menurutku jadi guru itu penting karena mereka membantu murid belajar. Tanpa guru yang baik, sulit mempelajari hal baru.' }, emoji: '💼',
+        choices: [{ en: 'I think being a teacher is important because they help students learn.', id: 'Menurutku jadi guru itu penting karena mereka membantu murid belajar.', emoji: '🧑‍🏫' }, { en: 'I think doctors are important because people will always need health care.', id: 'Menurutku dokter penting karena orang selalu butuh layanan kesehatan.', emoji: '🩺' }, { en: 'I think farmers are important because everyone needs food.', id: 'Menurutku petani penting karena semua orang butuh makanan.', emoji: '🌾' }],
       },
       {
         question: { en: 'How do you want to help your community when you are older?', id: 'Bagaimana kamu ingin membantu lingkunganmu saat sudah besar nanti?' },
         peerAnswer: { en: 'I want to plant more trees to keep the air clean. Trees also give shade to people who walk outside.', id: 'Aku mau menanam lebih banyak pohon supaya udaranya tetap bersih. Pohon juga memberi keteduhan bagi orang yang berjalan di luar.' }, emoji: '🌳',
+        choices: [{ en: 'I want to plant more trees to keep the air clean.', id: 'Aku mau menanam lebih banyak pohon supaya udaranya tetap bersih.', emoji: '🌳' }, { en: 'I want to help clean the beach so the sea stays beautiful.', id: 'Aku ingin membantu membersihkan pantai supaya lautnya tetap indah.', emoji: '🏖️' }, { en: 'I want to teach younger kids to read because reading is important.', id: 'Aku ingin mengajari anak-anak yang lebih kecil membaca karena membaca itu penting.', emoji: '📖' }],
       },
       {
         question: { en: 'What is your biggest dream?', id: 'Apa impian terbesarmu?' },
         peerAnswer: { en: 'My biggest dream is to build my own school for children. I hope every child there can learn for free.', id: 'Impian terbesarku adalah membangun sekolahku sendiri untuk anak-anak. Aku harap setiap anak di sana bisa belajar gratis.' }, emoji: '💭',
+        choices: [{ en: 'My biggest dream is to build my own school for children.', id: 'Impian terbesarku adalah membangun sekolahku sendiri untuk anak-anak.', emoji: '🏫' }, { en: 'My biggest dream is to travel around the world with my family.', id: 'Impian terbesarku adalah keliling dunia bersama keluargaku.', emoji: '🌍' }, { en: 'My biggest dream is to become a scientist and discover something new.', id: 'Impian terbesarku adalah menjadi ilmuwan dan menemukan sesuatu yang baru.', emoji: '🔬' }],
       },
     ],
   },
@@ -15810,34 +15818,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'What do you usually do on weekends?', id: 'Apa yang biasanya kamu lakukan di akhir pekan?' },
         peerAnswer: { en: 'I usually play basketball with my friends because it keeps me active. After that, we usually buy cold drinks together.', id: 'Aku biasanya main basket dengan teman-temanku karena itu membuatku tetap aktif. Setelah itu, kami biasanya membeli minuman dingin bersama.' }, emoji: '🏀',
+        choices: [{ en: 'I usually play basketball with my friends because it keeps me active.', id: 'Aku biasanya main basket dengan teman-temanku karena itu membuatku tetap aktif.', emoji: '🏀' }, { en: 'I usually visit my grandparents because they live nearby.', id: 'Aku biasanya mengunjungi kakek nenekku karena mereka tinggal dekat.', emoji: '🏡' }, { en: 'I usually read comics at home because it helps me relax.', id: 'Aku biasanya membaca komik di rumah karena membantuku bersantai.', emoji: '📚' }],
       },
       {
         question: { en: 'Do you prefer staying at home or going out on weekends?', id: 'Kamu lebih suka di rumah atau pergi keluar saat akhir pekan?' },
         peerAnswer: { en: 'I prefer going out because I like visiting new places. Last week, I visited a new museum in my city.', id: 'Aku lebih suka pergi keluar karena aku suka mengunjungi tempat baru. Minggu lalu, aku mengunjungi museum baru di kotaku.' }, emoji: '🏠',
+        choices: [{ en: 'I prefer going out because I like visiting new places.', id: 'Aku lebih suka pergi keluar karena aku suka mengunjungi tempat baru.', emoji: '🗺️' }, { en: 'I prefer staying at home because I can rest and play games.', id: 'Aku lebih suka di rumah karena bisa istirahat dan main game.', emoji: '🏠' }, { en: 'I like both, but I go out when the weather is nice.', id: 'Aku suka keduanya, tapi aku pergi keluar kalau cuacanya bagus.', emoji: '🌤️' }],
       },
       {
         question: { en: 'What is your favorite weekend activity?', id: 'Apa aktivitas akhir pekan favoritmu?' },
         peerAnswer: { en: 'My favorite activity is watching movies with my family. We usually choose a funny movie and eat popcorn.', id: 'Aktivitas favoritku adalah menonton film bersama keluargaku. Kami biasanya memilih film lucu dan makan popcorn.' }, emoji: '🎬',
+        choices: [{ en: 'My favorite activity is watching movies with my family.', id: 'Aktivitas favoritku adalah menonton film bersama keluargaku.', emoji: '🎬' }, { en: 'My favorite activity is cycling around the park in the morning.', id: 'Aktivitas favoritku bersepeda keliling taman di pagi hari.', emoji: '🚲' }, { en: 'My favorite activity is baking cookies with my sister.', id: 'Aktivitas favoritku membuat kue kering bersama kakakku.', emoji: '🍪' }],
       },
       {
         question: { en: 'Do you do any chores on the weekend?', id: 'Apakah kamu mengerjakan pekerjaan rumah saat akhir pekan?' },
         peerAnswer: { en: 'Yes, I help clean the house every Saturday morning. I sweep the floor, and my sister washes the dishes.', id: 'Iya, aku bantu bersih-bersih rumah setiap Sabtu pagi. Aku menyapu lantai, dan kakakku mencuci piring.' }, emoji: '🧹',
+        choices: [{ en: 'Yes, I help clean the house every Saturday morning.', id: 'Iya, aku bantu bersih-bersih rumah setiap Sabtu pagi.', emoji: '🧹' }, { en: 'Yes, I wash the dishes after lunch because my mom is busy.', id: 'Iya, aku mencuci piring setelah makan siang karena ibuku sibuk.', emoji: '🍽️' }, { en: 'Not really, but I always tidy my own room.', id: 'Tidak juga, tapi aku selalu merapikan kamarku sendiri.', emoji: '🛏️' }],
       },
       {
         question: { en: 'How do you relax after a busy week?', id: 'Bagaimana kamu bersantai setelah minggu yang sibuk?' },
         peerAnswer: { en: 'I relax by listening to music and reading books. It helps me feel calm before a new week starts.', id: 'Aku bersantai dengan mendengarkan musik dan membaca buku. Itu membantuku merasa tenang sebelum minggu baru dimulai.' }, emoji: '🎧',
+        choices: [{ en: 'I relax by listening to music and reading books.', id: 'Aku bersantai dengan mendengarkan musik dan membaca buku.', emoji: '🎧' }, { en: 'I relax by watching cartoons with my little brother.', id: 'Aku bersantai dengan menonton kartun bersama adikku.', emoji: '📺' }, { en: 'I relax by sleeping late because I am tired from school.', id: 'Aku bersantai dengan bangun siang karena lelah sekolah.', emoji: '😴' }],
       },
       {
         question: { en: 'Do you spend your weekend with friends or family?', id: 'Kamu menghabiskan akhir pekan dengan teman atau keluarga?' },
         peerAnswer: { en: 'I spend most of my weekend with my family. We often have lunch at my grandmother\'s house.', id: 'Aku menghabiskan sebagian besar akhir pekanku dengan keluargaku. Kami sering makan siang di rumah nenekku.' }, emoji: '👨‍👩‍👧‍👦',
+        choices: [{ en: 'I spend most of my weekend with my family.', id: 'Aku menghabiskan sebagian besar akhir pekanku dengan keluargaku.', emoji: '👨‍👩‍👧‍👦' }, { en: 'I spend my weekend with friends because we play football together.', id: 'Aku menghabiskan akhir pekan dengan teman karena kami main sepak bola bersama.', emoji: '⚽' }, { en: 'I spend it with both, but Sunday is always family day.', id: 'Aku menghabiskannya dengan keduanya, tapi hari Minggu selalu untuk keluarga.', emoji: '📅' }],
       },
       {
         question: { en: 'Would you rather have a longer weekend or a shorter week?', id: 'Kamu lebih suka akhir pekan lebih panjang atau minggu sekolah lebih pendek?' },
         peerAnswer: { en: 'I would rather have a longer weekend to rest more. Then I would have more time for my hobbies too.', id: 'Aku lebih suka akhir pekan yang lebih panjang supaya bisa istirahat lebih banyak. Dengan begitu aku juga punya lebih banyak waktu untuk hobiku.' }, emoji: '📅',
+        choices: [{ en: 'I would rather have a longer weekend to rest more.', id: 'Aku lebih suka akhir pekan yang lebih panjang supaya bisa istirahat lebih banyak.', emoji: '🛋️' }, { en: 'I would rather have a shorter week so I have more free time.', id: 'Aku lebih pilih minggu sekolah yang lebih pendek supaya punya lebih banyak waktu luang.', emoji: '⏰' }, { en: 'I would rather keep it the same because I like my school days.', id: 'Aku lebih pilih tetap sama karena aku suka hari-hari sekolahku.', emoji: '🏫' }],
       },
       {
         question: { en: 'What is something new you want to try next weekend?', id: 'Apa hal baru yang ingin kamu coba akhir pekan depan?' },
         peerAnswer: { en: 'I want to try hiking with my friends next weekend. I have never climbed a hill before, so I am excited.', id: 'Aku mau coba mendaki gunung bersama teman-temanku akhir pekan depan. Aku belum pernah mendaki bukit, jadi aku bersemangat.' }, emoji: '⛰️',
+        choices: [{ en: 'I want to try hiking with my friends next weekend.', id: 'Aku mau coba mendaki gunung bersama teman-temanku akhir pekan depan.', emoji: '⛰️' }, { en: 'I want to try making pizza at home next weekend.', id: 'Aku ingin coba membuat pizza di rumah akhir pekan depan.', emoji: '🍕' }, { en: 'I want to try painting a picture of my house next weekend.', id: 'Aku ingin coba melukis gambar rumahku akhir pekan depan.', emoji: '🎨' }],
       },
     ],
   },
@@ -15850,34 +15866,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'Do you play any sports?', id: 'Apakah kamu berolahraga?' },
         peerAnswer: { en: 'Yes, I play badminton twice a week. I usually play with my brother after school.', id: 'Iya, aku main bulu tangkis dua kali seminggu. Aku biasanya main dengan kakakku sepulang sekolah.' }, emoji: '🏸',
+        choices: [{ en: 'Yes, I play badminton twice a week.', id: 'Iya, aku main bulu tangkis dua kali seminggu.', emoji: '🏸' }, { en: 'Yes, I play football every Saturday with my team.', id: 'Iya, aku main sepak bola setiap Sabtu bersama timku.', emoji: '⚽' }, { en: 'Not often, but I like swimming during the holidays.', id: 'Tidak sering, tapi aku suka berenang saat liburan.', emoji: '🥽' }],
       },
       {
         question: { en: 'Why do you think exercise is important?', id: 'Menurutmu kenapa olahraga itu penting?' },
         peerAnswer: { en: 'I think exercise is important because it keeps our body strong and healthy. It also helps us sleep better at night.', id: 'Menurutku olahraga itu penting karena membuat tubuh kita kuat dan sehat. Olahraga juga membantu kita tidur lebih nyenyak di malam hari.' }, emoji: '💪',
+        choices: [{ en: 'I think exercise is important because it keeps our body strong and healthy.', id: 'Menurutku olahraga itu penting karena membuat tubuh kita kuat dan sehat.', emoji: '💪' }, { en: 'I think exercise is important because it makes us feel happy.', id: 'Menurutku olahraga penting karena membuat kita merasa senang.', emoji: '😊' }, { en: 'Exercise is important because it helps us sleep well at night.', id: 'Olahraga penting karena membantu kita tidur nyenyak di malam hari.', emoji: '😴' }],
       },
       {
         question: { en: 'What sport would you like to try?', id: 'Olahraga apa yang ingin kamu coba?' },
         peerAnswer: { en: 'I would like to try swimming because it looks fun. Also, it is a very useful skill to have.', id: 'Aku ingin coba berenang karena kelihatannya seru. Selain itu, berenang adalah keahlian yang sangat berguna.' }, emoji: '🥽',
+        choices: [{ en: 'I would like to try swimming because it looks fun.', id: 'Aku ingin coba berenang karena kelihatannya seru.', emoji: '🥽' }, { en: 'I would like to try basketball because I am quite tall.', id: 'Aku ingin coba basket karena aku cukup tinggi.', emoji: '🏀' }, { en: 'I would like to try table tennis because it is fast and exciting.', id: 'Aku ingin coba tenis meja karena cepat dan seru.', emoji: '🏓' }],
       },
       {
         question: { en: 'Do you prefer team sports or individual sports?', id: 'Kamu lebih suka olahraga tim atau perorangan?' },
         peerAnswer: { en: 'I prefer team sports because I enjoy playing with friends. We can share the win, and we learn to work together.', id: 'Aku lebih suka olahraga tim karena aku suka bermain bersama teman. Kami bisa berbagi kemenangan, dan kami belajar bekerja sama.' }, emoji: '🤝',
+        choices: [{ en: 'I prefer team sports because I enjoy playing with friends.', id: 'Aku lebih suka olahraga tim karena aku suka bermain bersama teman.', emoji: '🤝' }, { en: 'I prefer individual sports because I can practice at my own speed.', id: 'Aku lebih suka olahraga perorangan karena bisa latihan sesuai kecepatanku.', emoji: '⏱️' }, { en: 'I like both, but team sports are more fun for me.', id: 'Aku suka keduanya, tapi olahraga tim lebih seru buatku.', emoji: '⚽' }],
       },
       {
         question: { en: 'How often do you exercise?', id: 'Seberapa sering kamu berolahraga?' },
         peerAnswer: { en: 'I exercise almost every day, even just a short walk. On weekends, I cycle around my neighborhood.', id: 'Aku berolahraga hampir setiap hari, walau cuma jalan kaki sebentar. Di akhir pekan, aku bersepeda keliling lingkunganku.' }, emoji: '⏱️',
+        choices: [{ en: 'I exercise almost every day, even just a short walk.', id: 'Aku berolahraga hampir setiap hari, walau cuma jalan kaki sebentar.', emoji: '👟' }, { en: 'I exercise three times a week after school.', id: 'Aku berolahraga tiga kali seminggu sepulang sekolah.', emoji: '📅' }, { en: 'I exercise only on weekends because I am busy on school days.', id: 'Aku berolahraga hanya di akhir pekan karena sibuk di hari sekolah.', emoji: '🗓️' }],
       },
       {
         question: { en: 'What do you eat to stay healthy?', id: 'Apa yang kamu makan supaya tetap sehat?' },
         peerAnswer: { en: 'I try to eat more vegetables and drink plenty of water. I also try not to drink too many sweet drinks.', id: 'Aku berusaha makan lebih banyak sayur dan minum banyak air. Aku juga berusaha tidak minum terlalu banyak minuman manis.' }, emoji: '🥦',
+        choices: [{ en: 'I try to eat more vegetables and drink plenty of water.', id: 'Aku berusaha makan lebih banyak sayur dan minum banyak air.', emoji: '🥦' }, { en: 'I eat fruit every day and avoid too much candy.', id: 'Aku makan buah setiap hari dan menghindari terlalu banyak permen.', emoji: '🍎' }, { en: 'I eat rice, fish, and vegetables because my mom cooks healthy food.', id: 'Aku makan nasi, ikan, dan sayur karena ibuku memasak makanan sehat.', emoji: '🍚' }],
       },
       {
         question: { en: 'Who is your favorite athlete?', id: 'Siapa atlet favoritmu?' },
         peerAnswer: { en: 'My favorite athlete is a badminton player because he never gives up. He trains very hard, even when he loses a match.', id: 'Atlet favoritku adalah pemain bulu tangkis karena dia tidak pernah menyerah. Dia berlatih sangat keras, bahkan saat kalah bertanding.' }, emoji: '🏅',
+        choices: [{ en: 'My favorite athlete is a badminton player because he never gives up.', id: 'Atlet favoritku adalah pemain bulu tangkis karena dia tidak pernah menyerah.', emoji: '🏅' }, { en: 'My favorite athlete is a football player because he works well with his team.', id: 'Atlet favoritku pemain sepak bola karena dia bekerja sama dengan baik dengan timnya.', emoji: '⚽' }, { en: 'My favorite athlete is a swimmer because she trains very hard.', id: 'Atlet favoritku perenang karena dia berlatih sangat keras.', emoji: '🥇' }],
       },
       {
         question: { en: 'Do you think schools should have more sports classes?', id: 'Menurutmu apakah sekolah harus punya lebih banyak kelas olahraga?' },
         peerAnswer: { en: 'Yes, I believe more sports classes would make students healthier. Students also need time to move after sitting for hours.', id: 'Iya, aku percaya lebih banyak kelas olahraga akan membuat murid lebih sehat. Murid juga butuh waktu bergerak setelah duduk berjam-jam.' }, emoji: '🏫',
+        choices: [{ en: 'Yes, I believe more sports classes would make students healthier.', id: 'Iya, aku percaya lebih banyak kelas olahraga akan membuat murid lebih sehat.', emoji: '🏫' }, { en: 'Yes, because students need to move after sitting for hours.', id: 'Iya, karena murid perlu bergerak setelah duduk berjam-jam.', emoji: '⏳' }, { en: 'Maybe, but students also need time for other subjects.', id: 'Mungkin, tapi murid juga butuh waktu untuk pelajaran lain.', emoji: '📚' }],
       },
     ],
   },
@@ -15890,34 +15914,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'What makes a good friend?', id: 'Apa yang membuat seseorang jadi teman yang baik?' },
         peerAnswer: { en: 'I think a good friend is someone who is honest and supportive. A good friend also tells you the truth kindly.', id: 'Menurutku teman yang baik adalah orang yang jujur dan suportif. Teman yang baik juga mengatakan hal yang benar dengan cara yang baik.' }, emoji: '🤝',
+        choices: [{ en: 'I think a good friend is someone who is honest and supportive.', id: 'Menurutku teman yang baik adalah orang yang jujur dan suportif.', emoji: '🤝' }, { en: 'I think a good friend is someone who listens and keeps secrets.', id: 'Menurutku teman yang baik adalah orang yang mau mendengarkan dan menjaga rahasia.', emoji: '🤫' }, { en: 'A good friend is someone who helps you when you have a problem.', id: 'Teman yang baik adalah orang yang membantumu saat kamu punya masalah.', emoji: '💪' }],
       },
       {
         question: { en: 'How many close friends do you have?', id: 'Berapa banyak teman dekat yang kamu punya?' },
         peerAnswer: { en: 'I have three close friends that I trust the most. We have known each other since first grade.', id: 'Aku punya tiga teman dekat yang paling aku percaya. Kami sudah saling kenal sejak kelas satu.' }, emoji: '👥',
+        choices: [{ en: 'I have three close friends that I trust the most.', id: 'Aku punya tiga teman dekat yang paling aku percaya.', emoji: '👥' }, { en: 'I have two close friends from my class.', id: 'Aku punya dua teman dekat dari kelasku.', emoji: '🏫' }, { en: 'I have one best friend, but I have many other friends too.', id: 'Aku punya satu sahabat, tapi aku juga punya banyak teman lain.', emoji: '💛' }],
       },
       {
         question: { en: 'What do you and your friends usually do together?', id: 'Apa yang biasa kamu dan temanmu lakukan bersama?' },
         peerAnswer: { en: 'We usually play games and study together. Sometimes we also ride our bikes to the park.', id: 'Kami biasanya main game dan belajar bersama. Kadang kami juga bersepeda ke taman.' }, emoji: '🎲',
+        choices: [{ en: 'We usually play games and study together.', id: 'Kami biasanya main game dan belajar bersama.', emoji: '🎲' }, { en: 'We usually ride our bikes around the neighborhood.', id: 'Kami biasanya bersepeda keliling lingkungan.', emoji: '🚲' }, { en: 'We usually draw comics and share them with each other.', id: 'Kami biasanya menggambar komik dan saling berbagi.', emoji: '✏️' }],
       },
       {
         question: { en: 'Is it important to have many friends or a few close ones?', id: 'Apakah penting punya banyak teman atau sedikit tapi dekat?' },
         peerAnswer: { en: 'In my opinion, having a few close friends is better than having many. Close friends know you well, so they can really help you.', id: 'Menurutku, punya sedikit teman dekat lebih baik daripada banyak teman. Teman dekat mengenalmu dengan baik, jadi mereka benar-benar bisa membantumu.' }, emoji: '💭',
+        choices: [{ en: 'In my opinion, having a few close friends is better than having many.', id: 'Menurutku, punya sedikit teman dekat lebih baik daripada banyak teman.', emoji: '💭' }, { en: 'In my opinion, having many friends is better because life is more fun.', id: 'Menurutku, punya banyak teman lebih baik karena hidup lebih seru.', emoji: '🎉' }, { en: 'I think both are good, but close friends understand you better.', id: 'Menurutku keduanya bagus, tapi teman dekat lebih memahamimu.', emoji: '💖' }],
       },
       {
         question: { en: 'How do you help a friend who is sad?', id: 'Bagaimana kamu membantu teman yang sedang sedih?' },
         peerAnswer: { en: 'I listen to them and try to cheer them up. Sometimes I share a snack or tell a funny story.', id: 'Aku mendengarkan mereka dan berusaha menghibur mereka. Kadang aku berbagi camilan atau menceritakan kisah lucu.' }, emoji: '🤗',
+        choices: [{ en: 'I listen to them and try to cheer them up.', id: 'Aku mendengarkan mereka dan berusaha menghibur mereka.', emoji: '🤗' }, { en: 'I tell them a funny story so they can smile again.', id: 'Aku menceritakan kisah lucu supaya mereka bisa tersenyum lagi.', emoji: '😄' }, { en: 'I stay with them and share my snack.', id: 'Aku menemani mereka dan berbagi camilanku.', emoji: '🍪' }],
       },
       {
         question: { en: 'Have you ever had a disagreement with a friend?', id: 'Pernahkah kamu berselisih pendapat dengan teman?' },
         peerAnswer: { en: 'Yes, but we talked about it and became friends again. Now we understand each other better than before.', id: 'Pernah, tapi kami membicarakannya dan berteman lagi. Sekarang kami lebih saling memahami daripada sebelumnya.' }, emoji: '💬',
+        choices: [{ en: 'Yes, but we talked about it and became friends again.', id: 'Pernah, tapi kami membicarakannya dan berteman lagi.', emoji: '💬' }, { en: 'Yes, but we said sorry the next day.', id: 'Pernah, tapi kami saling minta maaf keesokan harinya.', emoji: '🙏' }, { en: 'Not really, because we always talk when there is a problem.', id: 'Tidak juga, karena kami selalu bicara kalau ada masalah.', emoji: '🗣️' }],
       },
       {
         question: { en: 'What do you think about making friends online?', id: 'Bagaimana pendapatmu soal berteman secara daring?' },
         peerAnswer: { en: 'I think it can be nice, but meeting in person is more meaningful. We should also be careful, because not everyone online is honest.', id: 'Menurutku itu bisa menyenangkan, tapi bertemu langsung lebih berarti. Kita juga harus hati-hati, karena tidak semua orang di internet jujur.' }, emoji: '💻',
+        choices: [{ en: 'I think it can be nice, but meeting in person is more meaningful.', id: 'Menurutku itu bisa menyenangkan, tapi bertemu langsung lebih berarti.', emoji: '💻' }, { en: 'I think it is fun, but we must be careful with strangers.', id: 'Menurutku seru, tapi kita harus hati-hati dengan orang asing.', emoji: '🔒' }, { en: 'I prefer real friends because we can play together.', id: 'Aku lebih suka teman nyata karena kita bisa main bersama.', emoji: '🧩' }],
       },
       {
         question: { en: 'Why is friendship important to you?', id: 'Kenapa persahabatan penting untukmu?' },
         peerAnswer: { en: 'Friendship is important because it makes life happier and easier. Friends help us when things are difficult.', id: 'Persahabatan penting karena membuat hidup lebih bahagia dan lebih mudah. Teman membantu kita saat keadaan sulit.' }, emoji: '💖',
+        choices: [{ en: 'Friendship is important because it makes life happier and easier.', id: 'Persahabatan penting karena membuat hidup lebih bahagia dan lebih mudah.', emoji: '💖' }, { en: 'Friendship is important because friends help us learn and grow.', id: 'Persahabatan penting karena teman membantu kita belajar dan berkembang.', emoji: '🌱' }, { en: 'Friendship is important because we never feel alone.', id: 'Persahabatan penting karena kita tidak pernah merasa sendirian.', emoji: '🤝' }],
       },
     ],
   },
@@ -15930,34 +15962,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'Can you describe the place where you live?', id: 'Bisakah kamu menjelaskan tempat tinggalmu?' },
         peerAnswer: { en: 'I live in a small house near a park. There is a small shop next to my house too.', id: 'Aku tinggal di rumah kecil dekat taman. Ada toko kecil di sebelah rumahku juga.' }, emoji: '🏡',
+        choices: [{ en: 'I live in a small house near a park.', id: 'Aku tinggal di rumah kecil dekat taman.', emoji: '🏡' }, { en: 'I live in an apartment on the fifth floor.', id: 'Aku tinggal di apartemen lantai lima.', emoji: '🏢' }, { en: 'I live in a big house with a small garden.', id: 'Aku tinggal di rumah besar dengan kebun kecil.', emoji: '🏠' }],
       },
       {
         question: { en: 'What do you like most about your neighborhood?', id: 'Apa yang paling kamu suka dari lingkungan tempat tinggalmu?' },
         peerAnswer: { en: 'I like that it is quiet and friendly. People often say hello when they walk past.', id: 'Aku suka karena tempatnya tenang dan ramah. Orang-orang sering menyapa saat lewat.' }, emoji: '🏘️',
+        choices: [{ en: 'I like that it is quiet and friendly.', id: 'Aku suka karena tempatnya tenang dan ramah.', emoji: '🏘️' }, { en: 'I like that there are many shops near my house.', id: 'Aku suka karena banyak toko dekat rumahku.', emoji: '🛒' }, { en: 'I like that my school is very close to my house.', id: 'Aku suka karena sekolahku sangat dekat dengan rumah.', emoji: '🏫' }],
       },
       {
         question: { en: 'Is your home in a city or a village?', id: 'Apakah rumahmu di kota atau di desa?' },
         peerAnswer: { en: 'My home is in a small town, between a city and a village. It is not too busy, but it has everything I need.', id: 'Rumahku ada di kota kecil, di antara kota besar dan desa. Tempatnya tidak terlalu ramai, tapi ada semua yang aku butuhkan.' }, emoji: '🏙️',
+        choices: [{ en: 'My home is in a small town, between a city and a village.', id: 'Rumahku ada di kota kecil, di antara kota besar dan desa.', emoji: '🏘️' }, { en: 'My home is in a big city with many tall buildings.', id: 'Rumahku di kota besar dengan banyak gedung tinggi.', emoji: '🏙️' }, { en: 'My home is in a village near the rice fields.', id: 'Rumahku di desa dekat sawah.', emoji: '🌾' }],
       },
       {
         question: { en: 'What would you change about your neighborhood?', id: 'Apa yang ingin kamu ubah dari lingkunganmu?' },
         peerAnswer: { en: 'I would like more parks for children to play in. Right now, children often play near the road.', id: 'Aku ingin lebih banyak taman untuk anak-anak bermain. Sekarang, anak-anak sering bermain di dekat jalan.' }, emoji: '🌳',
+        choices: [{ en: 'I would like more parks for children to play in.', id: 'Aku ingin lebih banyak taman untuk anak-anak bermain.', emoji: '🌳' }, { en: 'I would like cleaner streets and more trash bins.', id: 'Aku ingin jalanan yang lebih bersih dan lebih banyak tempat sampah.', emoji: '🗑️' }, { en: 'I would like a library near my house.', id: 'Aku ingin ada perpustakaan dekat rumahku.', emoji: '📚' }],
       },
       {
         question: { en: 'Do you know your neighbors well?', id: 'Apakah kamu kenal baik dengan tetanggamu?' },
         peerAnswer: { en: 'Yes, my neighbors are very friendly and helpful. One neighbor even waters our plants when we travel.', id: 'Iya, tetanggaku sangat ramah dan suka membantu. Salah satu tetangga bahkan menyiram tanaman kami saat kami bepergian.' }, emoji: '👋',
+        choices: [{ en: 'Yes, my neighbors are very friendly and helpful.', id: 'Iya, tetanggaku sangat ramah dan suka membantu.', emoji: '👋' }, { en: 'Not very well, but we always say hello.', id: 'Tidak terlalu, tapi kami selalu saling menyapa.', emoji: '🙋' }, { en: 'Yes, I often play with the kids next door.', id: 'Iya, aku sering main dengan anak-anak tetangga sebelah.', emoji: '⚽' }],
       },
       {
         question: { en: 'What is special about the place where you live?', id: 'Apa yang istimewa dari tempat tinggalmu?' },
         peerAnswer: { en: 'My town is famous for its delicious street food. Many visitors come on weekends to try it.', id: 'Kotaku terkenal dengan jajanan kaki lima yang enak. Banyak pengunjung datang di akhir pekan untuk mencobanya.' }, emoji: '⭐',
+        choices: [{ en: 'My town is famous for its delicious street food.', id: 'Kotaku terkenal dengan jajanan kaki lima yang enak.', emoji: '🍢' }, { en: 'My town is famous for its beautiful beach.', id: 'Kotaku terkenal dengan pantainya yang indah.', emoji: '🏖️' }, { en: 'My town is special because there is a big old market.', id: 'Kotaku istimewa karena ada pasar lama yang besar.', emoji: '🛒' }],
       },
       {
         question: { en: 'Would you like to live somewhere else in the future?', id: 'Apakah kamu ingin tinggal di tempat lain di masa depan?' },
         peerAnswer: { en: 'I would like to live near the beach someday. I love the sound of the waves, and I could swim every day.', id: 'Aku ingin tinggal dekat pantai suatu hari nanti. Aku suka suara ombak, dan aku bisa berenang setiap hari.' }, emoji: '🏖️',
+        choices: [{ en: 'I would like to live near the beach someday.', id: 'Aku ingin tinggal dekat pantai suatu hari nanti.', emoji: '🏖️' }, { en: 'I would like to live in the mountains because the air is cool.', id: 'Aku ingin tinggal di pegunungan karena udaranya sejuk.', emoji: '⛰️' }, { en: 'No, I want to stay here because my family is here.', id: 'Tidak, aku ingin tetap di sini karena keluargaku di sini.', emoji: '🏡' }],
       },
       {
         question: { en: 'How has your neighborhood changed over the years?', id: 'Bagaimana lingkunganmu berubah selama bertahun-tahun?' },
         peerAnswer: { en: 'There are more shops and buildings now than before. However, there are fewer trees than before.', id: 'Sekarang ada lebih banyak toko dan bangunan dibanding dulu. Tapi, pohonnya lebih sedikit daripada dulu.' }, emoji: '🏗️',
+        choices: [{ en: 'There are more shops and buildings now than before.', id: 'Sekarang ada lebih banyak toko dan bangunan dibanding dulu.', emoji: '🏗️' }, { en: 'There are more cars now, so the streets are busier.', id: 'Sekarang ada lebih banyak mobil, jadi jalanan lebih ramai.', emoji: '🚗' }, { en: 'There is a new park now, and it is very popular.', id: 'Sekarang ada taman baru, dan tempatnya sangat ramai dikunjungi.', emoji: '🌳' }],
       },
     ],
   },
@@ -15970,34 +16010,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'What is your favorite subject at school?', id: 'Apa pelajaran favoritmu di sekolah?' },
         peerAnswer: { en: 'My favorite subject is science because I love doing experiments. Last month, we made a small volcano in class.', id: 'Pelajaran favoritku sains karena aku suka melakukan percobaan. Bulan lalu, kami membuat gunung berapi kecil di kelas.' }, emoji: '🔬',
+        choices: [{ en: 'My favorite subject is science because I love doing experiments.', id: 'Pelajaran favoritku sains karena aku suka melakukan percobaan.', emoji: '🔬' }, { en: 'My favorite subject is history because I like old stories.', id: 'Pelajaran favoritku sejarah karena aku suka cerita zaman dulu.', emoji: '🏺' }, { en: 'My favorite subject is PE because I love sports.', id: 'Pelajaran favoritku olahraga karena aku suka olahraga.', emoji: '⚽' }],
       },
       {
         question: { en: 'Is there a subject you find difficult?', id: 'Apakah ada pelajaran yang menurutmu sulit?' },
         peerAnswer: { en: 'Yes, math is difficult for me because the formulas are hard to remember. However, I practice every night, so I am getting better.', id: 'Iya, matematika sulit buatku karena rumusnya susah diingat. Tapi, aku berlatih setiap malam, jadi aku makin bisa.' }, emoji: '➗',
+        choices: [{ en: 'Yes, math is difficult for me because the formulas are hard to remember.', id: 'Iya, matematika sulit buatku karena rumusnya susah diingat.', emoji: '➗' }, { en: 'Yes, English is difficult because the grammar is confusing.', id: 'Iya, bahasa Inggris sulit karena tata bahasanya membingungkan.', emoji: '🔤' }, { en: 'Not really, because I study a little every day.', id: 'Tidak juga, karena aku belajar sedikit setiap hari.', emoji: '📚' }],
       },
       {
         question: { en: 'Who is your favorite teacher?', id: 'Siapa guru favoritmu?' },
         peerAnswer: { en: 'My favorite teacher is my English teacher because she makes lessons fun. She often uses games and songs in her lessons.', id: 'Guru favoritku adalah guru Bahasa Inggrisku karena dia membuat pelajaran jadi seru. Dia sering memakai permainan dan lagu dalam pelajarannya.' }, emoji: '🧑‍🏫',
+        choices: [{ en: 'My favorite teacher is my English teacher because she makes lessons fun.', id: 'Guru favoritku adalah guru Bahasa Inggrisku karena dia membuat pelajaran jadi seru.', emoji: '🧑‍🏫' }, { en: 'My favorite teacher is my math teacher because he explains things clearly.', id: 'Guru favoritku guru matematikaku karena dia menjelaskan dengan jelas.', emoji: '➗' }, { en: 'My favorite teacher is my art teacher because she is very patient.', id: 'Guru favoritku guru seniku karena dia sangat sabar.', emoji: '🎨' }],
       },
       {
         question: { en: 'What do you usually do during recess?', id: 'Apa yang biasanya kamu lakukan saat istirahat?' },
         peerAnswer: { en: 'I usually chat with my friends and eat a snack. Sometimes we also play in the school field.', id: 'Aku biasanya mengobrol dengan teman-teman dan makan camilan. Kadang kami juga bermain di lapangan sekolah.' }, emoji: '🥪',
+        choices: [{ en: 'I usually chat with my friends and eat a snack.', id: 'Aku biasanya mengobrol dengan teman-teman dan makan camilan.', emoji: '🥪' }, { en: 'I usually play football in the school field.', id: 'Aku biasanya main sepak bola di lapangan sekolah.', emoji: '⚽' }, { en: 'I usually read a book in the library.', id: 'Aku biasanya membaca buku di perpustakaan.', emoji: '📚' }],
       },
       {
         question: { en: 'How do you get to school every day?', id: 'Bagaimana kamu pergi ke sekolah setiap hari?' },
         peerAnswer: { en: 'I go to school by bicycle because it is close to my house. It only takes about ten minutes, so I am never late.', id: 'Aku naik sepeda ke sekolah karena rumahku dekat. Hanya butuh sekitar sepuluh menit, jadi aku tidak pernah terlambat.' }, emoji: '🚲',
+        choices: [{ en: 'I go to school by bicycle because it is close to my house.', id: 'Aku naik sepeda ke sekolah karena rumahku dekat.', emoji: '🚲' }, { en: 'I go to school by bus because it is far from my house.', id: 'Aku ke sekolah naik bus karena jauh dari rumahku.', emoji: '🚌' }, { en: 'My dad drives me to school on his way to work.', id: 'Ayahku mengantarku ke sekolah sambil berangkat kerja.', emoji: '🚗' }],
       },
       {
         question: { en: 'What do you think makes a good student?', id: 'Menurutmu apa yang membuat seorang murid jadi baik?' },
         peerAnswer: { en: 'I think a good student listens carefully and asks questions. A good student also does homework on time.', id: 'Menurutku murid yang baik mendengarkan dengan saksama dan bertanya. Murid yang baik juga mengerjakan PR tepat waktu.' }, emoji: '📝',
+        choices: [{ en: 'I think a good student listens carefully and asks questions.', id: 'Menurutku murid yang baik mendengarkan dengan saksama dan bertanya.', emoji: '📝' }, { en: 'I think a good student always does homework on time.', id: 'Menurutku murid yang baik selalu mengerjakan PR tepat waktu.', emoji: '⏰' }, { en: 'A good student is kind and helps classmates.', id: 'Murid yang baik itu ramah dan membantu teman sekelas.', emoji: '🤝' }],
       },
       {
         question: { en: 'Do you prefer studying alone or in a group?', id: 'Kamu lebih suka belajar sendiri atau berkelompok?' },
         peerAnswer: { en: 'I prefer studying in a group because we can help each other. However, I study alone when I need to focus.', id: 'Aku lebih suka belajar berkelompok karena kami bisa saling membantu. Tapi, aku belajar sendiri saat perlu fokus.' }, emoji: '👥',
+        choices: [{ en: 'I prefer studying in a group because we can help each other.', id: 'Aku lebih suka belajar berkelompok karena kami bisa saling membantu.', emoji: '👥' }, { en: 'I prefer studying alone because it is quieter.', id: 'Aku lebih suka belajar sendiri karena lebih tenang.', emoji: '🤫' }, { en: 'I like both, but I study alone before a test.', id: 'Aku suka keduanya, tapi aku belajar sendiri sebelum ujian.', emoji: '📝' }],
       },
       {
         question: { en: 'What is your dream school project?', id: 'Apa proyek sekolah impianmu?' },
         peerAnswer: { en: 'My dream project is building a small robot for the science fair. It could pick up rubbish in the school yard.', id: 'Proyek impianku adalah membuat robot kecil untuk pameran sains. Robot itu bisa memungut sampah di halaman sekolah.' }, emoji: '🤖',
+        choices: [{ en: 'My dream project is building a small robot for the science fair.', id: 'Proyek impianku adalah membuat robot kecil untuk pameran sains.', emoji: '🤖' }, { en: 'My dream project is making a short film with my class.', id: 'Proyek impianku membuat film pendek bersama kelasku.', emoji: '🎬' }, { en: 'My dream project is growing vegetables in the school garden.', id: 'Proyek impianku menanam sayur di kebun sekolah.', emoji: '🥕' }],
       },
     ],
   },
@@ -16010,34 +16058,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'What kind of music do you like?', id: 'Musik apa yang kamu sukai?' },
         peerAnswer: { en: 'I like pop music because the songs are catchy and fun. I often sing along when I do my homework.', id: 'Aku suka musik pop karena lagunya mudah diingat dan menyenangkan. Aku sering ikut bernyanyi saat mengerjakan PR.' }, emoji: '🎵',
+        choices: [{ en: 'I like pop music because the songs are catchy and fun.', id: 'Aku suka musik pop karena lagunya mudah diingat dan menyenangkan.', emoji: '🎵' }, { en: 'I like traditional music because it reminds me of my culture.', id: 'Aku suka musik tradisional karena mengingatkanku pada budayaku.', emoji: '🪘' }, { en: 'I like calm music because it helps me study.', id: 'Aku suka musik yang tenang karena membantuku belajar.', emoji: '🎧' }],
       },
       {
         question: { en: 'Do you play a musical instrument?', id: 'Apakah kamu bisa memainkan alat musik?' },
         peerAnswer: { en: 'Yes, I play the piano a little bit every week. My teacher says I am getting better every month.', id: 'Iya, aku main piano sedikit setiap minggu. Guruku bilang aku makin bagus setiap bulan.' }, emoji: '🎹',
+        choices: [{ en: 'Yes, I play the piano a little bit every week.', id: 'Iya, aku main piano sedikit setiap minggu.', emoji: '🎹' }, { en: 'Yes, I play the guitar with my brother.', id: 'Iya, aku main gitar bersama kakakku.', emoji: '🎸' }, { en: 'No, but I would like to learn the drums.', id: 'Tidak, tapi aku ingin belajar drum.', emoji: '🥁' }],
       },
       {
         question: { en: 'What is your favorite movie?', id: 'Apa film favoritmu?' },
         peerAnswer: { en: 'My favorite movie is an animated film because the story is touching. I have watched it three times with my family.', id: 'Film favoritku adalah film animasi karena ceritanya menyentuh. Aku sudah menontonnya tiga kali bersama keluargaku.' }, emoji: '🎬',
+        choices: [{ en: 'My favorite movie is an animated film because the story is touching.', id: 'Film favoritku adalah film animasi karena ceritanya menyentuh.', emoji: '🎬' }, { en: 'My favorite movie is an adventure film because it is exciting.', id: 'Film favoritku film petualangan karena seru.', emoji: '🗺️' }, { en: 'My favorite movie is a funny film about a family.', id: 'Film favoritku film lucu tentang sebuah keluarga.', emoji: '😂' }],
       },
       {
         question: { en: 'Do you prefer watching movies at home or at the cinema?', id: 'Kamu lebih suka nonton film di rumah atau di bioskop?' },
         peerAnswer: { en: 'I prefer the cinema because the big screen feels more exciting. However, watching at home is cheaper and more relaxing.', id: 'Aku lebih suka di bioskop karena layar besarnya terasa lebih seru. Tapi, menonton di rumah lebih murah dan lebih santai.' }, emoji: '🍿',
+        choices: [{ en: 'I prefer the cinema because the big screen feels more exciting.', id: 'Aku lebih suka di bioskop karena layar besarnya terasa lebih seru.', emoji: '🍿' }, { en: 'I prefer watching at home because I can pause the movie.', id: 'Aku lebih suka nonton di rumah karena bisa menjeda filmnya.', emoji: '🏠' }, { en: 'I like both, but the cinema is better for new movies.', id: 'Aku suka keduanya, tapi bioskop lebih cocok untuk film baru.', emoji: '🎟️' }],
       },
       {
         question: { en: 'Who is your favorite singer or band?', id: 'Siapa penyanyi atau band favoritmu?' },
         peerAnswer: { en: 'My favorite singer writes songs about friendship and hope. Her songs make me feel brave when I am nervous.', id: 'Penyanyi favoritku menulis lagu tentang persahabatan dan harapan. Lagu-lagunya membuatku merasa berani saat aku gugup.' }, emoji: '🎤',
+        choices: [{ en: 'My favorite singer writes songs about friendship and hope.', id: 'Penyanyi favoritku menulis lagu tentang persahabatan dan harapan.', emoji: '🎤' }, { en: 'My favorite band plays music that makes me want to dance.', id: 'Band favoritku memainkan musik yang membuatku ingin menari.', emoji: '🎶' }, { en: 'My favorite singer has a beautiful voice and sings in English.', id: 'Penyanyi favoritku punya suara indah dan bernyanyi dalam bahasa Inggris.', emoji: '🎙️' }],
       },
       {
         question: { en: 'How does music make you feel?', id: 'Bagaimana perasaanmu saat mendengarkan musik?' },
         peerAnswer: { en: 'Music makes me feel calm and happy at the same time. I listen to quiet songs when I study.', id: 'Musik membuatku merasa tenang sekaligus senang. Aku mendengarkan lagu yang tenang saat belajar.' }, emoji: '🎧',
+        choices: [{ en: 'Music makes me feel calm and happy at the same time.', id: 'Musik membuatku merasa tenang sekaligus senang.', emoji: '🎧' }, { en: 'Music makes me feel full of energy when I exercise.', id: 'Musik membuatku penuh semangat saat berolahraga.', emoji: '⚡' }, { en: 'Music makes me feel relaxed before I sleep.', id: 'Musik membuatku santai sebelum tidur.', emoji: '😴' }],
       },
       {
         question: { en: 'Do you think music class is important at school?', id: 'Menurutmu apakah pelajaran musik penting di sekolah?' },
         peerAnswer: { en: 'Yes, I think music class helps students express their feelings. It is also a good break from other lessons.', id: 'Iya, menurutku pelajaran musik membantu murid mengungkapkan perasaan mereka. Pelajaran musik juga jadi jeda yang baik dari pelajaran lain.' }, emoji: '🎼',
+        choices: [{ en: 'Yes, I think music class helps students express their feelings.', id: 'Iya, menurutku pelajaran musik membantu murid mengungkapkan perasaan mereka.', emoji: '🎼' }, { en: 'Yes, because music class is a fun break from other lessons.', id: 'Iya, karena kelas musik jadi jeda yang seru dari pelajaran lain.', emoji: '😄' }, { en: 'I think it is nice, but it should not be too long.', id: 'Menurutku bagus, tapi tidak boleh terlalu lama.', emoji: '⏳' }],
       },
       {
         question: { en: 'If you could learn a new instrument, what would it be?', id: 'Kalau bisa belajar alat musik baru, kamu mau belajar apa?' },
         peerAnswer: { en: 'I would like to learn the guitar because it looks fun to play. Then I could play songs with my friends.', id: 'Aku mau belajar gitar karena kelihatannya seru dimainkan. Dengan begitu aku bisa memainkan lagu bersama teman-temanku.' }, emoji: '🎸',
+        choices: [{ en: 'I would like to learn the guitar because it looks fun to play.', id: 'Aku mau belajar gitar karena kelihatannya seru dimainkan.', emoji: '🎸' }, { en: 'I would like to learn the violin because it sounds beautiful.', id: 'Aku ingin belajar biola karena suaranya indah.', emoji: '🎻' }, { en: 'I would like to learn the drums because they are loud and exciting.', id: 'Aku ingin belajar drum karena keras dan seru.', emoji: '🥁' }],
       },
     ],
   },
@@ -16050,34 +16106,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'What is your favorite food?', id: 'Apa makanan favoritmu?' },
         peerAnswer: { en: 'My favorite food is fried rice because it reminds me of home. My grandmother makes the best one with fried eggs.', id: 'Makanan favoritku nasi goreng karena mengingatkanku pada rumah. Nenekku membuat yang paling enak dengan telur ceplok.' }, emoji: '🍚',
+        choices: [{ en: 'My favorite food is fried rice because it reminds me of home.', id: 'Makanan favoritku nasi goreng karena mengingatkanku pada rumah.', emoji: '🍚' }, { en: 'My favorite food is chicken soup because it is warm and tasty.', id: 'Makanan favoritku sup ayam karena hangat dan enak.', emoji: '🍲' }, { en: 'My favorite food is noodles because I can eat them every day.', id: 'Makanan favoritku mi karena aku bisa memakannya setiap hari.', emoji: '🍜' }],
       },
       {
         question: { en: 'Do you like cooking?', id: 'Apakah kamu suka memasak?' },
         peerAnswer: { en: 'Yes, I like cooking simple dishes with my mom on weekends. Last Sunday, we made pancakes for breakfast.', id: 'Iya, aku suka memasak masakan sederhana bersama mama di akhir pekan. Minggu lalu, kami membuat panekuk untuk sarapan.' }, emoji: '🍳',
+        choices: [{ en: 'Yes, I like cooking simple dishes with my mom on weekends.', id: 'Iya, aku suka memasak masakan sederhana bersama mama di akhir pekan.', emoji: '🍳' }, { en: 'Yes, I like baking cakes because it is fun to decorate them.', id: 'Iya, aku suka membuat kue karena seru menghiasnya.', emoji: '🎂' }, { en: 'Not really, but I like helping in the kitchen.', id: 'Tidak juga, tapi aku suka membantu di dapur.', emoji: '🥄' }],
       },
       {
         question: { en: 'What food do you dislike?', id: 'Makanan apa yang tidak kamu suka?' },
         peerAnswer: { en: 'I dislike spicy food because it makes my stomach hurt. So I always ask for my food without chili.', id: 'Aku tidak suka makanan pedas karena bikin perutku sakit. Jadi aku selalu minta makananku tanpa cabai.' }, emoji: '🌶️',
+        choices: [{ en: 'I dislike spicy food because it makes my stomach hurt.', id: 'Aku tidak suka makanan pedas karena bikin perutku sakit.', emoji: '🌶️' }, { en: 'I dislike bitter vegetables because they taste strange.', id: 'Aku tidak suka sayur pahit karena rasanya aneh.', emoji: '🥬' }, { en: 'I dislike very sweet drinks because they make me thirsty.', id: 'Aku tidak suka minuman yang terlalu manis karena bikin haus.', emoji: '🥤' }],
       },
       {
         question: { en: 'Do you prefer eating at home or at a restaurant?', id: 'Kamu lebih suka makan di rumah atau di restoran?' },
         peerAnswer: { en: 'I prefer eating at home because the food feels healthier. Also, we can talk and laugh together at the table.', id: 'Aku lebih suka makan di rumah karena makanannya terasa lebih sehat. Selain itu, kami bisa mengobrol dan tertawa bersama di meja makan.' }, emoji: '🍽️',
+        choices: [{ en: 'I prefer eating at home because the food feels healthier.', id: 'Aku lebih suka makan di rumah karena makanannya terasa lebih sehat.', emoji: '🏠' }, { en: 'I prefer eating at a restaurant because I can try new food.', id: 'Aku lebih suka makan di restoran karena bisa mencoba makanan baru.', emoji: '🍽️' }, { en: 'I like both, but home food is cheaper and healthier.', id: 'Aku suka keduanya, tapi makanan rumah lebih murah dan sehat.', emoji: '💰' }],
       },
       {
         question: { en: 'What is a traditional food from your hometown?', id: 'Apa makanan tradisional dari kotamu?' },
         peerAnswer: { en: 'A traditional food from my hometown is satay with peanut sauce. People often eat it at family events.', id: 'Makanan tradisional dari kotaku adalah sate dengan bumbu kacang. Orang sering memakannya di acara keluarga.' }, emoji: '🍢',
+        choices: [{ en: 'A traditional food from my hometown is satay with peanut sauce.', id: 'Makanan tradisional dari kotaku adalah sate dengan bumbu kacang.', emoji: '🍢' }, { en: 'A traditional food from my hometown is rendang with rice.', id: 'Makanan tradisional dari kotaku adalah rendang dengan nasi.', emoji: '🍛' }, { en: 'A traditional food from my hometown is gado-gado with vegetables.', id: 'Makanan tradisional dari kotaku adalah gado-gado dengan sayuran.', emoji: '🥗' }],
       },
       {
         question: { en: 'Do you think fast food is bad for health?', id: 'Menurutmu apakah makanan cepat saji buruk untuk kesehatan?' },
         peerAnswer: { en: 'I think fast food is fine sometimes, but not every day. We should also eat enough fruit and vegetables.', id: 'Menurutku makanan cepat saji tidak apa sesekali, tapi jangan tiap hari. Kita juga harus makan cukup buah dan sayur.' }, emoji: '🍔',
+        choices: [{ en: 'I think fast food is fine sometimes, but not every day.', id: 'Menurutku makanan cepat saji tidak apa sesekali, tapi jangan tiap hari.', emoji: '🍔' }, { en: 'Yes, I think fast food is bad because it has too much oil.', id: 'Iya, menurutku makanan cepat saji buruk karena terlalu banyak minyak.', emoji: '🍟' }, { en: 'I think it is okay if we also eat fruit and vegetables.', id: 'Menurutku tidak apa asal kita juga makan buah dan sayur.', emoji: '🥦' }],
       },
       {
         question: { en: 'What new food would you like to try?', id: 'Makanan baru apa yang ingin kamu coba?' },
         peerAnswer: { en: 'I would like to try sushi because I have never tasted it before. My friend says it is fresh and tasty.', id: 'Aku ingin coba sushi karena belum pernah mencicipinya. Temanku bilang rasanya segar dan enak.' }, emoji: '🍣',
+        choices: [{ en: 'I would like to try sushi because I have never tasted it before.', id: 'Aku ingin coba sushi karena belum pernah mencicipinya.', emoji: '🍣' }, { en: 'I would like to try pasta because it looks delicious.', id: 'Aku ingin mencoba pasta karena kelihatannya enak.', emoji: '🍝' }, { en: 'I would like to try Korean food because my friends talk about it.', id: 'Aku ingin mencoba makanan Korea karena teman-temanku sering membicarakannya.', emoji: '🥢' }],
       },
       {
         question: { en: 'Who usually cooks in your family?', id: 'Siapa yang biasanya memasak di keluargamu?' },
         peerAnswer: { en: 'My mom usually cooks, but my dad cooks on weekends. His fried noodles are my favorite dish.', id: 'Mamaku biasanya memasak, tapi papaku memasak di akhir pekan. Mi goreng buatannya adalah masakan favoritku.' }, emoji: '🥘',
+        choices: [{ en: 'My mom usually cooks, but my dad cooks on weekends.', id: 'Mamaku biasanya memasak, tapi papaku memasak di akhir pekan.', emoji: '🥘' }, { en: 'My grandmother usually cooks because she is the best cook.', id: 'Nenekku biasanya memasak karena dia juru masak terbaik.', emoji: '🍲' }, { en: 'Everyone cooks together on special days.', id: 'Semua orang memasak bersama di hari spesial.', emoji: '👨‍👩‍👧‍👦' }],
       },
     ],
   },
@@ -16090,34 +16154,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'How much time do you spend on your phone every day?', id: 'Berapa lama waktu yang kamu habiskan di ponsel setiap hari?' },
         peerAnswer: { en: 'I spend about two hours on my phone every day. On school days, I try to use it less.', id: 'Aku menghabiskan sekitar dua jam di ponsel setiap hari. Di hari sekolah, aku berusaha lebih jarang memakainya.' }, emoji: '📱',
+        choices: [{ en: 'I spend about two hours on my phone every day.', id: 'Aku menghabiskan sekitar dua jam di ponsel setiap hari.', emoji: '📱' }, { en: 'I spend about one hour on my phone after school.', id: 'Aku menghabiskan sekitar satu jam di ponsel sepulang sekolah.', emoji: '⏰' }, { en: 'I don\'t have my own phone, so I use my mom\'s phone sometimes.', id: 'Aku belum punya ponsel sendiri, jadi kadang pakai ponsel ibuku.', emoji: '📲' }],
       },
       {
         question: { en: 'What do you usually do online?', id: 'Apa yang biasanya kamu lakukan saat online?' },
         peerAnswer: { en: 'I usually watch videos and chat with my friends online. Sometimes I also look for help with my homework.', id: 'Aku biasanya menonton video dan mengobrol dengan teman-teman secara daring. Kadang aku juga mencari bantuan untuk PR-ku.' }, emoji: '💻',
+        choices: [{ en: 'I usually watch videos and chat with my friends online.', id: 'Aku biasanya menonton video dan mengobrol dengan teman-teman secara daring.', emoji: '💻' }, { en: 'I usually search for information for my homework.', id: 'Aku biasanya mencari informasi untuk PR-ku.', emoji: '🔍' }, { en: 'I usually play games online with my cousins.', id: 'Aku biasanya main game online dengan sepupuku.', emoji: '🎮' }],
       },
       {
         question: { en: 'Do you think social media is good or bad for teenagers?', id: 'Menurutmu apakah media sosial baik atau buruk untuk remaja?' },
         peerAnswer: { en: 'I think social media can be good, but too much of it is not healthy. People should take breaks and talk face to face.', id: 'Menurutku media sosial bisa baik, tapi terlalu banyak juga tidak sehat. Orang sebaiknya beristirahat dan berbicara langsung.' }, emoji: '🌐',
+        choices: [{ en: 'I think social media can be good, but too much of it is not healthy.', id: 'Menurutku media sosial bisa baik, tapi terlalu banyak juga tidak sehat.', emoji: '🌐' }, { en: 'I think social media is good because we can learn new things.', id: 'Menurutku media sosial bagus karena kita bisa belajar hal baru.', emoji: '💡' }, { en: 'I think it is risky because some people share false news.', id: 'Menurutku berisiko karena ada orang yang menyebarkan berita palsu.', emoji: '⚠️' }],
       },
       {
         question: { en: 'What is your favorite app?', id: 'Apa aplikasi favoritmu?' },
         peerAnswer: { en: 'My favorite app is a video app because it has funny and creative content. I also learn simple cooking tips from it.', id: 'Aplikasi favoritku aplikasi video karena isinya lucu dan kreatif. Aku juga belajar tips memasak sederhana dari situ.' }, emoji: '📲',
+        choices: [{ en: 'My favorite app is a video app because it has funny and creative content.', id: 'Aplikasi favoritku aplikasi video karena isinya lucu dan kreatif.', emoji: '📲' }, { en: 'My favorite app is a drawing app because I can make pictures.', id: 'Aplikasi favoritku aplikasi menggambar karena aku bisa membuat gambar.', emoji: '🎨' }, { en: 'My favorite app is a learning app because it helps me with English.', id: 'Aplikasi favoritku aplikasi belajar karena membantuku belajar bahasa Inggris.', emoji: '📚' }],
       },
       {
         question: { en: 'Do your parents set rules about screen time?', id: 'Apakah orang tuamu membuat aturan soal waktu layar?' },
         peerAnswer: { en: 'Yes, my parents only let me use my phone for one hour after homework. At first I did not like it, but now I think it is fair.', id: 'Iya, orang tuaku cuma mengizinkanku pakai ponsel satu jam setelah PR selesai. Awalnya aku tidak suka, tapi sekarang menurutku itu adil.' }, emoji: '⏰',
+        choices: [{ en: 'Yes, my parents only let me use my phone for one hour after homework.', id: 'Iya, orang tuaku cuma mengizinkanku pakai ponsel satu jam setelah PR selesai.', emoji: '⏰' }, { en: 'Yes, I cannot use my phone during dinner.', id: 'Iya, aku tidak boleh pakai ponsel saat makan malam.', emoji: '🍽️' }, { en: 'Not really, but they check what I watch.', id: 'Tidak juga, tapi mereka memeriksa apa yang aku tonton.', emoji: '👀' }],
       },
       {
         question: { en: 'How do you stay safe online?', id: 'Bagaimana kamu tetap aman saat online?' },
         peerAnswer: { en: 'I never share my personal information with strangers online. I also tell my parents if something online feels strange.', id: 'Aku tidak pernah membagikan data pribadiku ke orang asing secara daring. Aku juga memberi tahu orang tuaku kalau ada hal aneh di internet.' }, emoji: '🔒',
+        choices: [{ en: 'I never share my personal information with strangers online.', id: 'Aku tidak pernah membagikan data pribadiku ke orang asing secara daring.', emoji: '🔒' }, { en: 'I use strong passwords and never share them.', id: 'Aku memakai kata sandi yang kuat dan tidak pernah membagikannya.', emoji: '🔑' }, { en: 'I tell my parents when something online makes me uncomfortable.', id: 'Aku memberi tahu orang tuaku kalau ada hal di internet yang membuatku tidak nyaman.', emoji: '🗣️' }],
       },
       {
         question: { en: 'What technology do you think will change in the future?', id: 'Menurutmu teknologi apa yang akan berubah di masa depan?' },
         peerAnswer: { en: 'I think phones will become even smarter and more helpful. Maybe they will help us learn languages faster.', id: 'Menurutku ponsel akan makin pintar dan makin membantu. Mungkin ponsel akan membantu kita belajar bahasa lebih cepat.' }, emoji: '🤖',
+        choices: [{ en: 'I think phones will become even smarter and more helpful.', id: 'Menurutku ponsel akan makin pintar dan makin membantu.', emoji: '🤖' }, { en: 'I think cars will drive by themselves in the future.', id: 'Menurutku mobil akan bisa menyetir sendiri di masa depan.', emoji: '🚗' }, { en: 'I think robots will help people at home.', id: 'Menurutku robot akan membantu orang di rumah.', emoji: '🏠' }],
       },
       {
         question: { en: 'Would you rather read a book or watch a video to learn something new?', id: 'Kamu lebih suka membaca buku atau menonton video untuk belajar hal baru?' },
         peerAnswer: { en: 'I would rather watch a video because it is easier to understand. However, books are better when I want to focus.', id: 'Aku lebih suka menonton video karena lebih mudah dipahami. Tapi, buku lebih baik saat aku ingin fokus.' }, emoji: '📖',
+        choices: [{ en: 'I would rather watch a video because it is easier to understand.', id: 'Aku lebih suka menonton video karena lebih mudah dipahami.', emoji: '🎥' }, { en: 'I would rather read a book because I can read at my own speed.', id: 'Aku lebih pilih membaca buku karena bisa membaca sesuai kecepatanku.', emoji: '📖' }, { en: 'I like both, but books are better before I sleep.', id: 'Aku suka keduanya, tapi buku lebih cocok sebelum tidur.', emoji: '🌙' }],
       },
     ],
   },
@@ -16130,34 +16202,42 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'What is your favorite holiday?', id: 'Apa hari libur favoritmu?' },
         peerAnswer: { en: 'My favorite holiday is Eid because I get to meet my whole family. We visit our relatives and ask for forgiveness.', id: 'Hari libur favoritku Lebaran karena aku bisa bertemu seluruh keluargaku. Kami mengunjungi kerabat dan saling bermaafan.' }, emoji: '🌙',
+        choices: [{ en: 'My favorite holiday is Eid because I get to meet my whole family.', id: 'Hari libur favoritku Lebaran karena aku bisa bertemu seluruh keluargaku.', emoji: '🌙' }, { en: 'My favorite holiday is the school holiday because I can travel.', id: 'Hari libur favoritku libur sekolah karena aku bisa bepergian.', emoji: '✈️' }, { en: 'My favorite holiday is Independence Day because there are fun games.', id: 'Hari libur favoritku Hari Kemerdekaan karena ada lomba seru.', emoji: '🇮🇩' }],
       },
       {
         question: { en: 'Does your family have any special traditions?', id: 'Apakah keluargamu punya tradisi khusus?' },
         peerAnswer: { en: 'Yes, we always cook special food together before the holiday. My mom makes ketupat, and I help her wrap it.', id: 'Iya, kami selalu memasak makanan spesial bersama sebelum hari raya. Ibuku membuat ketupat, dan aku membantunya membungkus.' }, emoji: '🎊',
+        choices: [{ en: 'Yes, we always cook special food together before the holiday.', id: 'Iya, kami selalu memasak makanan spesial bersama sebelum hari raya.', emoji: '🍲' }, { en: 'Yes, we visit our grandparents in the village every year.', id: 'Iya, kami mengunjungi kakek nenek di desa setiap tahun.', emoji: '🏡' }, { en: 'Yes, we take a family photo every new year.', id: 'Iya, kami berfoto keluarga setiap tahun baru.', emoji: '📸' }],
       },
       {
         question: { en: 'How do you usually celebrate your birthday?', id: 'Bagaimana biasanya kamu merayakan ulang tahunmu?' },
         peerAnswer: { en: 'I usually celebrate with a small party and my favorite cake. My friends come over, and we play games together.', id: 'Aku biasanya merayakannya dengan pesta kecil dan kue favoritku. Teman-temanku datang, dan kami main bersama.' }, emoji: '🎂',
+        choices: [{ en: 'I usually celebrate with a small party and my favorite cake.', id: 'Aku biasanya merayakannya dengan pesta kecil dan kue favoritku.', emoji: '🎂' }, { en: 'I usually celebrate by eating dinner with my family.', id: 'Aku biasanya merayakannya dengan makan malam bersama keluarga.', emoji: '🍽️' }, { en: 'I usually celebrate by going to the park with my friends.', id: 'Aku biasanya merayakannya dengan pergi ke taman bersama teman-teman.', emoji: '🌳' }],
       },
       {
         question: { en: 'Do you prefer celebrating at home or traveling somewhere?', id: 'Kamu lebih suka merayakan di rumah atau bepergian ke suatu tempat?' },
         peerAnswer: { en: 'I prefer traveling because it feels like a new adventure. However, it can be tiring to travel for many hours.', id: 'Aku lebih suka bepergian karena rasanya seperti petualangan baru. Tapi, perjalanan berjam-jam bisa melelahkan.' }, emoji: '✈️',
+        choices: [{ en: 'I prefer traveling because it feels like a new adventure.', id: 'Aku lebih suka bepergian karena rasanya seperti petualangan baru.', emoji: '✈️' }, { en: 'I prefer celebrating at home because everyone can relax.', id: 'Aku lebih suka merayakan di rumah karena semua bisa bersantai.', emoji: '🏠' }, { en: 'I like both, but traveling is more exciting.', id: 'Aku suka keduanya, tapi bepergian lebih seru.', emoji: '🧳' }],
       },
       {
         question: { en: 'What gift would you like to receive?', id: 'Hadiah apa yang ingin kamu terima?' },
         peerAnswer: { en: 'I would like to receive a new book because I love reading. Books let me imagine new places and people.', id: 'Aku ingin menerima buku baru karena aku suka membaca. Buku membuatku bisa membayangkan tempat dan orang baru.' }, emoji: '🎁',
+        choices: [{ en: 'I would like to receive a new book because I love reading.', id: 'Aku ingin menerima buku baru karena aku suka membaca.', emoji: '📚' }, { en: 'I would like to receive a football because I play every day.', id: 'Aku ingin menerima bola karena aku main setiap hari.', emoji: '⚽' }, { en: 'I would like to receive a drawing set because I love art.', id: 'Aku ingin menerima perlengkapan menggambar karena aku suka seni.', emoji: '🎨' }],
       },
       {
         question: { en: 'Who do you usually spend holidays with?', id: 'Dengan siapa kamu biasanya menghabiskan hari libur?' },
         peerAnswer: { en: 'I usually spend holidays with my grandparents and cousins. We usually stay at their house in the village.', id: 'Aku biasanya menghabiskan hari libur bersama kakek nenek dan sepupuku. Kami biasanya menginap di rumah mereka di desa.' }, emoji: '👨‍👩‍👧‍👦',
+        choices: [{ en: 'I usually spend holidays with my grandparents and cousins.', id: 'Aku biasanya menghabiskan hari libur bersama kakek nenek dan sepupuku.', emoji: '👨‍👩‍👧‍👦' }, { en: 'I usually spend holidays with my parents and my little sister.', id: 'Aku biasanya menghabiskan liburan bersama orang tua dan adik perempuanku.', emoji: '🏠' }, { en: 'I usually spend holidays with my best friend\'s family.', id: 'Aku biasanya menghabiskan liburan bersama keluarga sahabatku.', emoji: '🤝' }],
       },
       {
         question: { en: 'What do you think is the best part of a holiday?', id: 'Menurutmu apa bagian terbaik dari hari libur?' },
         peerAnswer: { en: 'I think the best part is spending time with family without rushing. We can talk, eat, and relax together.', id: 'Menurutku bagian terbaiknya adalah menghabiskan waktu bersama keluarga tanpa terburu-buru. Kami bisa mengobrol, makan, dan bersantai bersama.' }, emoji: '🌟',
+        choices: [{ en: 'I think the best part is spending time with family without rushing.', id: 'Menurutku bagian terbaiknya adalah menghabiskan waktu bersama keluarga tanpa terburu-buru.', emoji: '🌟' }, { en: 'I think the best part is eating delicious food together.', id: 'Menurutku bagian terbaiknya adalah makan makanan enak bersama.', emoji: '🍲' }, { en: 'I think the best part is not having homework.', id: 'Menurutku bagian terbaiknya adalah tidak ada PR.', emoji: '🎉' }],
       },
       {
         question: { en: 'Is there a holiday from another country you find interesting?', id: 'Adakah hari libur dari negara lain yang menurutmu menarik?' },
         peerAnswer: { en: 'Yes, I find Chinese New Year interesting because of the lion dance. The music and colors make the streets look alive.', id: 'Iya, aku merasa Tahun Baru Imlek menarik karena ada tarian barongsai. Musik dan warnanya membuat jalanan tampak meriah.' }, emoji: '🏮',
+        choices: [{ en: 'Yes, I find Chinese New Year interesting because of the lion dance.', id: 'Iya, aku merasa Tahun Baru Imlek menarik karena ada tarian barongsai.', emoji: '🏮' }, { en: 'Yes, I find Christmas interesting because of the lights and songs.', id: 'Iya, menurutku Natal menarik karena lampu dan lagunya.', emoji: '🎄' }, { en: 'Yes, I find Diwali interesting because of the colorful lamps.', id: 'Iya, menurutku Diwali menarik karena lampu-lampunya yang berwarna-warni.', emoji: '🪔' }],
       },
     ],
   },

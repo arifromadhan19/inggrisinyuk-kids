@@ -416,7 +416,11 @@ export interface SpeakingRoleplay {
   q: SpeakingLine;
   answer: SpeakingLine;
   /** Ikon pertanyaan di Tantangan (opsional, aturan sama dgn `SpeakingLine.emoji`). */
-  emoji?: string;
+  emoji?: string;  /** "Pilih & Ucapkan": jawaban ALTERNATIF yang sama² benar & nyambung (bingkai
+   *  kalimat sama dgn `answer`) — Tantangan menampilkan `answer` + ini sbg kartu
+   *  pilihan, anak memilih lalu mengucapkan kalimatnya (skor thd kalimat yang
+   *  dipilih, BUKAN jawaban bebas). Kosong = pertanyaan faktual, 1 kartu. */
+  choices?: SpeakingLine[];
 }
 
 /** Format lama Explorer/Adventurer/Achiever. `model` = contoh Kenalan,
@@ -515,7 +519,9 @@ export interface SpeakingInterviewTurn {
    *  cuma kelihatan lewat "💡 Dengar Contoh [peerName]"). */
   peerAnswer: { en: string; id: string };
   /** Ikon pertanyaan (opsional, aturan sama dgn `SpeakingLine.emoji`). */
-  emoji?: string;
+  emoji?: string;  /** "Pilih & Ucapkan": SEMUA kartu pilihan jawaban Tantangan (kalimat pendek
+   *  ber-penghubung, sama² benar) — pengganti jawaban bebas. */
+  choices?: SpeakingLine[];
 }
 
 export interface SpeakingInterviewTopic {

@@ -699,6 +699,12 @@ Permintaan user (setelah pilot Explorer §16): format cerita diterapkan di level
 
 ---
 
+## 24. Sesi 17 — Jawaban Bebas Diganti "Pilih & Ucapkan"
+
+Masalah (dicoba user di Achiever): jawaban bebas dinilai cocok-kata tanpa LLM → 1 kata nyambung + kata pengisi (atau daftar kata acak) tetap dapat ⭐⭐⭐, makin parah saat target kata makin panjang (12/18). Solusi yang dipilih user: gabungan **A (Pilih lalu Ucapkan)** + **B (Kerangka Kalimat)** — ±170 pertanyaan roleplay (Explorer–Achiever) & interview (Trailblazer) sekarang tampil sbg bingkai kalimat berlubang + kartu pilihan (semua benar & nyambung, ber-ikon); anak memilih lalu mengucapkan kalimatnya, skor thd kalimat yang dipilih (akurat, kalimat asal → ⭐). Data: `SpeakingRoleplay.choices` (1 alternatif; 4 pertanyaan faktual tanpa alternatif) & `SpeakingInterviewTurn.choices` (3 kalimat ber-penghubung), ±250 kalimat baru + terjemahan + ikon. Dihapus: cek relevansi (`speaking-relevance.ts`), target panjang kata, bonus penghubung. "Giliranmu Bertanya" TIDAK diubah (pertanyaannya sudah pasti — tidak berisiko). Cek duplikat & denylist emoji ikut mencakup `choices`.
+
+---
+
 ## Sumber Riset Web (Sesi 1–8)
 
 ### Institusi Bahasa Inggris Indonesia

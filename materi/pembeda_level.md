@@ -340,8 +340,8 @@ Intinya: **Dasar** = skor longgar, waktu berpikir panjang, bantuan penuh (ASR su
 | # | Status | Di kode |
 |---|---|---|
 | 1 | ✅ | `STAR_CUTS` (Dasar 0.6/0.3) — berlaku semua mic Speaking termasuk Kenalan (keadilan ASR, bukan tingkat kesulitan) |
-| 2 | ✅ | `TARGET_WORDS` (0/0/4/8/12/18 kata) — baris "🎯 Minimal N kata" + lencana "🗣️ N kata"; skor jawaban bebas = panjang/target |
-| 3 | ✅ | `CONNECTORS` — lencana "🔗 Pakai …" + 1 ⭐ bonus (jawaban bebas) di Achiever/Trailblazer |
+| 2 | ↩️ diganti | Target panjang kata DIHAPUS bersama jawaban bebas (jawaban bebas rawan salah nilai tanpa LLM) — diganti "Pilih & Ucapkan": kerumitan kalimat pilihan naik per level (Explorer–Achiever 2 kartu, Trailblazer 3 kartu kalimat ber-penghubung) |
+| 3 | ↩️ diganti | Bonus kata penghubung DIHAPUS (sama alasan #2) — kata penghubung kini ADA di kalimat pilihan Trailblazer (because/but/so), jadi tetap dilatih |
 | 4 | ✅ | 💡 Petunjuk Tantangan 🔒 sampai 1x coba di tier Lanjut |
 | 5 | ✅ (direvisi) | Arti Indonesia pertanyaan "Ngobrol" disembunyikan di SEMUA level, dibuka lewat 💡 Petunjuk (permintaan user). Beda per level tinggal di "Tanya Temanmu" (Menengah dapat chip kata tanya, Lanjut tidak) & Petunjuk 🔒 di tier Lanjut. Latihan Inti tetap tampil arti (jangkar "Lengkapi Kalimat") |
 | 6 | ✅ | `speakingDefaultRate` dipanggil `app.ts` `renderActivity` (Latihan Inti & Tantangan) |
