@@ -675,6 +675,18 @@ Permintaan user: pembeda #8 ("anak yang bertanya, bukan cuma menjawab") diimplem
 
 ---
 
+## 21. Sesi 14 — Penilaian Jawaban Bebas Tanpa LLM
+
+Laporan user: "I like your pizza" utk "What's your name?" dapat ⭐⭐⭐ (jawaban bebas dulu cuma dinilai panjangnya). Aturan sekarang (`games/speaking-relevance.ts`):
+1. **Nyambung** — minimal 1 kata isi dari pertanyaan/contoh jawaban, atau anggota kelompok kata yang disinggung soal (angka, warna, hari/bulan, keluarga, perasaan, makanan, olahraga/hobi, tempat/kendaraan, hewan, cuaca, pelajaran, pekerjaan, kegiatan santai, alat sekolah). Kata umum (like/think/because/…) tidak dihitung.
+2. **Isi wajib** utk pertanyaan berpola tetap — nama (kata bermakna setelah "my name is"/"I'm"; kata umum dilewati krn mic sering menangkap "Dhafran" jadi "the fran"), umur/how many/how much/jam (angka), warna, bulan ulang tahun. Isinya TIDAK dicek benar-salah.
+3. **Panjang = kata unik** ÷ target level — "name name name name" = 1 kata.
+4. **Nama profil = bonus saja** (keputusan user: bukan sumber kebenaran) — "My name is xxx" tetap ⭐⭐⭐ walau profil "dhafran"; kalau kebetulan cocok muncul "🎉 Hai, dhafran!".
+
+Uji otomatis: 170/170 contoh jawaban lolos; jawaban asal 31/510 lolos (sisanya memang relevan, mis. "pencil" utk soal alat sekolah). Batasan: tidak bisa memastikan isi masuk akal ("My name is banana" tetap lolos).
+
+---
+
 ## Sumber Riset Web (Sesi 1–8)
 
 ### Institusi Bahasa Inggris Indonesia

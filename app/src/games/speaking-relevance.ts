@@ -115,3 +115,52 @@ export function hintWord(question: string): string | null {
   const w = words(question).find((x) => !GENERIC.has(x) && x.length > 2);
   return w ?? null;
 }
+
+/** Kata ISI unik — kata yang diulang ("name name name") atau kata umum tidak
+ *  menambah panjang jawaban (menutup celah "isi dengan kata berulang"). */
+export function uniqueWordCount(said: string): number {
+  return new Set(words(said)).size;
+}
+
+const NUMBERS = new Set(CLASSES[0]);
+const COLORS = new Set(CLASSES[1]);
+const MONTHS = new Set(CLASSES[3]);
+
+/**
+ * Pertanyaan berpola tetap WAJIB ada isinya — isinya sendiri TIDAK dicek
+ * benar/salahnya (jawaban pribadi), cuma harus ADA. `null` = aman.
+ *  - nama: harus ada kata setelah "my name is"/"I am"/"I'm"/"call me";
+ *  - umur / "how many" / "how much" / jam: harus ada angka;
+ *  - warna: harus ada nama warna; ulang tahun: harus ada bulan/angka.
+ */
+export function missingSlot(said: string, question: string): string | null {
+  const q = question.toLowerCase();
+  const heard = words(said);
+  const text = ` ${heard.join(' ')} `;
+  const hasNumber = heard.some((w) => NUMBERS.has(w)) || /\d/.test(said);
+  if (/\bname\b/.test(q)) {
+    // Nama = kata bermakna mana pun SETELAH pola (kata umum dilewati — mic
+    // sering menangkap "Dhafran" jadi "the fran"). Nama TIDAK dicocokkan ke
+    // profil: "My name is xxx" tetap benar.
+    const m = / (?:name is|i am|im|call me) (.*)$/.exec(text);
+    const rest = m ? m[1].trim().split(' ').filter((w) => w && !GENERIC.has(w) && w !== 'name') : [];
+    if (!rest.length) return 'Sebutkan namamu juga, ya — mis. "My name is …".';
+    return null;
+  }
+  if (/\bhow old\b/.test(q) && !hasNumber) return 'Sebutkan umurmu juga, ya — mis. "I am nine years old."';
+  if (/\bhow (many|much)\b|\bwhat time\b/.test(q) && !hasNumber) return 'Sebutkan angkanya juga, ya.';
+  if (/\bcolou?r\b/.test(q) && !heard.some((w) => COLORS.has(w))) return 'Sebutkan warnanya juga, ya.';
+  if (/\bbirthday\b/.test(q) && /\bwhen\b/.test(q) && !hasNumber && !heard.some((w) => MONTHS.has(w)))
+    return 'Sebutkan bulan atau tanggalnya juga, ya.';
+  return null;
+}
+
+/** Bonus sapaan kalau nama di jawaban kebetulan sama dgn nama profil.
+ *  Nama profil BUKAN sumber kebenaran (bisa nama panggilan lain, & mic
+ *  sering salah tangkap nama Indonesia) — dipakai HANYA utk bonus, tidak
+ *  pernah mengurangi skor. */
+export function mentionsProfileName(said: string, question: string, profileName: string): boolean {
+  if (!/\bname\b/i.test(question)) return false;
+  const name = words(profileName)[0];
+  return !!name && name.length >= 3 && words(said).includes(name);
+}

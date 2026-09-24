@@ -4,6 +4,7 @@ import type { LatihanPlanSlot } from '../progress';
 import {
   ensureSection,
   firstUnansweredSlot,
+  getName,
   getSlot,
   hasWordInteraction,
   markSlotAnswered,
@@ -26,7 +27,7 @@ import {
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
 import { shuffle } from '../util';
-import { hintWord, isOnTopic } from './speaking-relevance';
+import { hintWord, isOnTopic, mentionsProfileName, missingSlot, uniqueWordCount } from './speaking-relevance';
 
 /**
  * ================================================================
@@ -328,7 +329,7 @@ function connectorsIn(said: string): string[] {
 function lengthBadge(said: string, level: LevelKey): string {
   const target = TARGET_WORDS[level];
   if (!target) return '';
-  const n = normalize(said).split(' ').filter(Boolean).length;
+  const n = uniqueWordCount(said);
   return `<span class="talk-badge${n >= target ? ' ok' : ''}">🗣️ ${n} kata${n >= target ? ' ✓' : ` · target ${target}`}</span>`;
 }
 
@@ -355,11 +356,17 @@ function scoreFree(said: string, turn: TalkTurn, level: LevelKey): MicScore {
       `🤔 Jawabanmu belum nyambung dengan pertanyaannya${hint ? ` — coba jawab tentang "${hint}"` : ''}.`
     );
   }
+  const slotMsg = missingSlot(said, turn.question.en);
+  if (slotMsg) return finishScore(0, 1, wordsHtml, `🤔 ${slotMsg}`);
   const target = TARGET_WORDS[level] || 4;
-  const ratio = Math.min(1, words.length / target);
+  // Kata berulang dihitung sekali ("pizza pizza pizza" = 1 kata).
+  const ratio = Math.min(1, uniqueWordCount(said) / target);
   let stars = starsFrom(ratio, level);
   if (tierOf(level) === 'lanjut' && connectorsIn(said).length && stars < 3) stars = (stars + 1) as 2 | 3;
-  return finishScore(ratio, stars, wordsHtml, '', lengthBadge(said, level) + connectorBadge(said, level));
+  const nameBonus = mentionsProfileName(said, turn.question.en, getName())
+    ? `<span class="talk-badge ok">🎉 Hai, ${getName()}!</span>`
+    : '';
+  return finishScore(ratio, stars, wordsHtml, '', lengthBadge(said, level) + connectorBadge(said, level) + nameBonus);
 }
 
 function scoreTurn(said: string, turn: TalkTurn, level: LevelKey): MicScore {
