@@ -241,10 +241,33 @@ async function main() {
     }
   }
 
+  // Reading "Baca Teks": emoji makhluk hidup (gambar halaman buku, opsi soal
+  // gambar, gambar ✅/❌) ikut denylist yang sama. Kata acuan = kata bukti /
+  // label gambar, supaya pengecualian gender-spesifik (grandma) tetap berlaku.
+  for (const [level, topics] of Object.entries(mod.READING_TOPICS_BY_LEVEL ?? {})) {
+    for (const topic of topics) {
+      const checks = [];
+      for (const x of [...(topic.texts ?? []), ...(topic.newTexts ?? [])]) {
+        // Opsi soal gambar = gambar halaman lain di buku yang sama, jadi cukup
+        // cek `pictures` (label = kata halamannya sendiri).
+        for (const p of x.pictures ?? []) checks.push([p.label, p.emoji]);
+        for (const q of x.questions ?? []) if (q.kind === 'truefalse') checks.push([q.q, q.picture]);
+      }
+      for (const [word, val] of checks) {
+        const keys = [(word ?? '').trim().toLowerCase(), ...(word ?? '').toLowerCase().split(/[^a-z']+/)];
+        for (const e of PROBLEMATIC_EMOJI.keys()) {
+          if (val && val.includes(e) && !keys.some((k) => ALLOWED_EMOJI_WORD_EXCEPTIONS.has(`${e}::${k}`))) {
+            errors.push(`Reading "${topic.id}" (${level}) "${word}" (emoji="${val}"): ${PROBLEMATIC_EMOJI.get(e)}.`);
+          }
+        }
+      }
+    }
+  }
+
   // Judul topik WAJIB "Indonesia (English)", mis. "Hari di Kalender (Days on
-  // the Calendar)" — aturan CLAUDE.md, dicek di Vocab/Listening/Speaking/Grammar.
+  // the Calendar)" — aturan CLAUDE.md, dicek di Vocab/Listening/Speaking/Grammar/Reading.
   const TITLE_RE = /^[^()]+ \([^()]+\)$/;
-  for (const [skill, byLevel] of [['Vocab', VOCAB_TOPICS_BY_LEVEL], ['Listening', mod.LISTENING_TOPICS_BY_LEVEL], ['Speaking', mod.SPEAKING_TOPICS_BY_LEVEL], ['Grammar', mod.GRAMMAR_TOPICS_BY_LEVEL]]) {
+  for (const [skill, byLevel] of [['Vocab', VOCAB_TOPICS_BY_LEVEL], ['Listening', mod.LISTENING_TOPICS_BY_LEVEL], ['Speaking', mod.SPEAKING_TOPICS_BY_LEVEL], ['Grammar', mod.GRAMMAR_TOPICS_BY_LEVEL], ['Reading', mod.READING_TOPICS_BY_LEVEL]]) {
     for (const [level, topics] of Object.entries(byLevel ?? {})) {
       for (const topic of topics) {
         if (!TITLE_RE.test(topic.title ?? '')) {

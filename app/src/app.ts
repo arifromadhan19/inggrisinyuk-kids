@@ -904,25 +904,11 @@ function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): 
   }
   if (key === 'reading') {
     const readingTopic = readingTopicsForLevel(level).find((t) => t.id === topicId);
-    // Format KEDUA (`ReadingWordTopic`, "Baca Kata") & KETIGA
-    // (`ReadingCheckTopic`, "Baca & Nilai") py section granular sejak revisi
-    // feedback user — format LAMA (Adventurer/Achiever, `ReadingTopic`)
-    // TIDAK, tetap jatuh ke fallback `isStepVisited` di bawah.
-    if (readingTopic && 'texts' in readingTopic) {
+    // Format "Baca Teks" (satu-satunya format Reading) — section granular per
+    // soal `latihan-teks` & `tantangan-teks` (materi/reading.md §22).
+    if (readingTopic) {
       const totals = readingGame.textQuizTotals(readingTopic);
       return readingTopicPercent(topicId, totals.latihan, { section: 'tantangan-teks', total: totals.tantangan }, 'latihan-teks');
-    }
-    if (readingTopic && 'items' in readingTopic) {
-      return readingTopicPercent(topicId, readingTopic.items.length, {
-        section: 'tantangan-baca',
-        total: Math.min(readingTopic.items.length, 10),
-      });
-    }
-    if (readingTopic && 'checks' in readingTopic) {
-      return readingTopicPercent(topicId, readingTopic.checks.length, {
-        section: 'tantangan-cek',
-        total: Math.min(readingTopic.checks.length, 10),
-      });
     }
   }
   const stepsVisited = isStepVisited(key, topicId, 'latihan') && isStepVisited(key, topicId, 'tantangan');
@@ -2207,33 +2193,11 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
     }
     case 'reading': {
       const topic = readingTopicsForLevel(contentLevel)[state.topicIndex];
-      // `AnyReadingTopic` — 3 format: format lama (Adventurer/Achiever,
-      // `primer`/`drill`/`story`, baca kalimat/cerita, silent) vs format
-      // KEDUA "py `items`" (Little Stars/Starter, baca KATA/FRASA ↔ gambar,
-      // TTS aktif) vs format KETIGA "py `checks`" (Explorer, 1 kalimat →
-      // Benar/Salah, silent) — dibedakan runtime BERTINGKAT lewat
-      // `'items' in topic` lalu `'checks' in topic` (types.ts komentar
-      // `AnyReadingTopic`), sama pola persis dgn `AnyListeningTopic`. JANGAN
-      // migrasi format lama ke sini tanpa arahan baru user.
-      // Format KEEMPAT "Baca Teks" (PILOT Explorer, `'texts' in topic`) dicek
-      // PALING AWAL — materi/reading.md §19–§20.
-      if ('texts' in topic) {
-        if (state.step === 0) readingGame.renderKenalanText(stage, topic, nextStep, praiseLevel, contentLevel);
-        else if (state.step === 1) readingGame.runLatihanIntiText(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
-        else readingGame.runTantanganText(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
-      } else if ('items' in topic) {
-        if (state.step === 0) readingGame.renderKenalanWord(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) readingGame.runLatihanIntiWord(stage, topic, nextStepWithSync, praiseLevel);
-        else readingGame.runTantanganWord(stage, topic, nextStepWithSync, praiseLevel);
-      } else if ('checks' in topic) {
-        if (state.step === 0) readingGame.renderKenalanCheck(stage, topic, nextStep);
-        else if (state.step === 1) readingGame.runLatihanIntiCheck(stage, topic, nextStepWithSync, praiseLevel);
-        else readingGame.runTantanganCheck(stage, topic, nextStepWithSync, praiseLevel);
-      } else {
-        if (state.step === 0) readingGame.renderKenalan(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) readingGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
-        else readingGame.runTantangan(stage, topic, nextStepWithSync, praiseLevel);
-      }
+      // Satu format "Baca Teks" di semua level; beda level lewat konten +
+      // `textTier(contentLevel)` (materi/reading.md §19–§22).
+      if (state.step === 0) readingGame.renderKenalanText(stage, topic, nextStep, praiseLevel, contentLevel);
+      else if (state.step === 1) readingGame.runLatihanIntiText(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+      else readingGame.runTantanganText(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       return;
     }
     case 'grammar': {

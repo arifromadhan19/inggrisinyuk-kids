@@ -613,6 +613,31 @@ Setelah pilot Explorer (§20) disetujui konsepnya, user minta **1 pilot di tiap 
 
 **Belum**: rollout ke topik lain tiap level (topik lama tetap format lama), panjang teks sesuai tabel tier (pilot Adventurer ~70 kata, Achiever ~90–100 kata, Trailblazer ~110 kata — sudah di atas topik lama, masih di bawah batas atas usulan), karaoke per kata masih perkiraan waktu.
 
+## 22. Migrasi PENUH ke "Baca Teks" — Semua Materi Reading 6 Level (2026-09-25)
+
+Permintaan user: *"kerjakan semua materi reading dan wajib lihat pembeda_level dan pastikan kids friendly"*. Semua 60 topik lama (Little Stars/Starter "Baca Kata", Explorer "Baca & Nilai", Adventurer–Trailblazer cerita+soal gambar) DITULIS ULANG ke format `ReadingTextTopic`; 6 pilot §20–§21 tetap di posisi ke-11. **Format lama DIHAPUS dari kode** (tipe `ReadingTopic`/`ReadingWordTopic`/`ReadingCheckTopic`/`ReadingDrill` & ±1.350 baris fungsi layar lama di `games/reading.ts`); `AnyReadingTopic = ReadingTextTopic`.
+
+**Id & urutan topik lama DIPERTAHANKAN** (tema yang sudah dikenal anak tetap, mis. `kata-hewan` → "Buku Mini: Hewan", `cek-uang` → "Menu Kantin", `kebun-binatang` tetap "Di Kebun Binatang"). Progres format lama TIDAK terbaca: Latihan Inti pindah ke section `latihan-teks`, Tantangan `tantangan-teks`, penanda 🔊/🎤/🎮 per halaman di slot `kenalan` +200 (mini-game +100).
+
+**Isi per level** (tiap topik: 2 teks Kenalan/Latihan Inti + 2 teks BARU Tantangan, 10 + 10 soal):
+
+| Level | Bentuk teks | Soal | Rata² kata/teks (maks kata/kalimat) |
+|---|---|---|---|
+| Little Stars | 4 buku mini × 5 halaman, pola berulang ("I see a…", "I have a…"), buku angka pakai gambar hitungan | tunjuk 1 dari 3 gambar + 👆 tap kata | 20 (5) |
+| Starter | 4 buku mini, kalimat ≤6 kata (tempat, angka 11–20, hari, alat, makanan, rumah, sekolah, orang, alam, hobi) | tunjuk gambar + ✅/❌ seluruh kalimat (jumlah + benda, cuaca + tempat) | 21 (6) |
+| Explorer | kartu info, pesan chat, daftar belanja, poster, surat izin, menu, jadwal, kartu pos, resep | 3 opsi teks + 🔎 kalimat bukti; topik teks | 30 (8) |
+| Adventurer | cerita 3 bagian + papan aturan/pengumuman/daftar + dialog | detail, urutan, judul, balasan dialog, maksud tanda | 47 (12) |
+| Achiever | diary, email sahabat pena, artikel info, petunjuk arah, catatan tukang pos | lintas kalimat, rujukan she/it/this, simpulan, tujuan teks | 65 (14) |
+| Trailblazer | transkrip radio, email, artikel opini, iklan workshop, cerita | 4 opsi: sikap/opini penulis, rujukan, simpulan, tujuan, ide pokok | 70 (16) |
+
+**Kids-friendly** (CLAUDE.md filter + aturan ikon): benda mati dulu kecuali topiknya hewan/orang; emoji hewan/orang kepala saja (dicek otomatis — denylist makhluk hidup kini juga memindai Reading); tidak ada tema menakutkan (masalah dalam cerita selalu selesai hangat: dompet ketemu, kucing diturunkan penjaga, sup keasinan diperbaiki); instruksi 🔈 dibacakan Indonesia; bantuan tetap ada di semua level (Lanjut selalu aktif, Petunjuk terkunci hanya sampai 1x coba di tier Lanjut); teks keselamatan anak (minta orang dewasa memotong/memakai kompor, jangan bagikan alamat online).
+
+**Pengecekan build**: `checkReadingTextData` (semua 66 topik: jawaban/bukti/gambar valid, kata bukti ada di kalimat, jawaban gambar = gambar halamannya, Tantangan tidak mengulang kalimat Kenalan), judul "Indonesia (English)" kini juga dicek utk Reading, denylist emoji makhluk hidup utk gambar halaman & soal ✅/❌.
+
+**Verifikasi**: `npm run build` lolos; Playwright (login akun tes 124) — 66 topik × 3 tahap = 198 layar terbuka tanpa error; topik pertama tiap level diuji penuh di 390px & 1280px (Kenalan + 🎮, jawab benar → bukti kata/kalimat hijau, Tantangan 10 titik).
+
+**Catatan jujur**: panjang teks Adventurer/Achiever/Trailblazer (rata² 47/65/70 kata) masih DI BAWAH usulan awal pembeda_level.md (50–80/80–150/150–250) — dipilih lebih pendek supaya 1 kartu masih nyaman dibaca di layar HP; pembeda level tetap terasa lewat jenis teks, jenis soal, jumlah opsi, audio & Petunjuk. 4 kalimat sedikit di atas usulan batas kata/kalimat (11–14 kata). Tantangan Bos memakai soal Reading baru (soal tanpa bukti/topik dilewati).
+
 ---
 
 ## Sumber Riset Web

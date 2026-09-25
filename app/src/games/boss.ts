@@ -142,10 +142,11 @@ const LEGACY_ROUNDS_PER_PHASE = 2;
  * mirip vocab cuma user baca... apakah baiknya buat statement dan ada
  * pertanyaan?") — Little Stars TETAP kata tunggal (SENGAJA, riset usia 3-5
  * th belum siap kalimat, `materi/reading.md`), TAPI materi Reading Explorer
- * (`ReadingCheckTopic`, `'checks' in t` di `toReadingBossItems` bawah)
+ * (sekarang format "Baca Teks", `toReadingBossItems` bawah)
  * SUDAH berbentuk 1 kalimat (statement) + judge Benar/Salah — genapkan
  * Explorer ke pilot ini supaya "statement + pertanyaan" kelihatan hidup di
- * test tanpa perlu adapter/konten baru (sudah generik sejak awal). */
+ * test. (Catatan 2026-09-25: Reading kini format "Baca Teks" di semua level
+ * — adapter `toReadingBossItems` di bawah.) */
 const PILOT_LEVELS: LevelKey[] = ['little-stars', 'explorer'];
 
 export function isPilotLevel(level: LevelKey): boolean {
@@ -232,9 +233,8 @@ function emptyResult(): BossResult {
  *  tidak lewat `answerCardsHtml` yang sudah dibentengi. Daftar kata SAMA
  *  PERSIS 4 kategori `vocabulary.ts` (`NUMBER_WORDS`/`COLOR_WORDS`/
  *  `SHAPE_WORDS`/`DAY_WORDS`), diduplikasi ke sini (konvensi helper generik
- *  per file game). 🔒 TIDAK diterapkan ke `toReadingBossItems` (`'items' in
- *  t` / `ReadingWordTopic`) — beda kasus: `games/reading.ts` `runLatihanIntiWord`/
- *  `runTantanganWord` (game ASLI-nya, sudah diaudit sebelumnya) SENGAJA
+ *  per file game). 🔒 TIDAK diterapkan ke `toReadingBossItems` (soal gambar
+ *  "Baca Teks") — beda kasus: game Reading ASLI-nya SENGAJA
  *  TIDAK menyaring kategori ini, krn tugasnya "baca kata TERCETAK (tanpa
  *  audio wajib) → tunjuk gambar", bukan "dengar kata → tunjuk gambar" —
  *  tidak ada jalur dengar-lalu-cocok-warna/angka yang bisa dilewati tanpa
@@ -260,76 +260,38 @@ function isLeakyEmojiWord(en: string): boolean {
 
 interface ReadingBossItem {
   text: string;
-  /** Cuma `true` utk item dari `ReadingWordTopic` (divergensi TTS yang sah,
-   *  types.ts) — `ReadingCheckTopic`/`ReadingTopic` lama TIDAK PERNAH dapat
-   *  tombol suara, konsisten "Reading tidak pernah TTS" di luar Kenalan. */
+  /** `true` cuma utk soal gambar buku mini (Little Stars/Starter, divergensi
+   *  TTS sah pra-pembaca) — soal teks level atas TIDAK dapat tombol suara. */
   speakable: boolean;
   /** `label` ada = opsi TEKS (soal "Baca Teks" level atas), dirender tombol
    *  teks 1 kolom; tanpa `label` = opsi gambar/emoji. */
   opts: { emoji: string; ok?: boolean; label?: string }[];
 }
 
-/** Menormalkan 3 format Reading (`AnyReadingTopic`) jadi 1 bentuk MCQ
- *  generik, pola SAMA dgn adapter Vocab/Listening/Grammar/Speaking di bawah
- *  (`runBoss`) — supaya babak Reading TETAP 1 implementasi generik tanpa
- *  perlu tahu format aslinya. */
+/** Soal Reading "Baca Teks" (`AnyReadingTopic`) → bentuk MCQ generik babak
+ *  Reading: `picture` = kalimat halaman → gambar (bisa didengar, divergensi
+ *  TTS sah utk pra-pembaca); `truefalse` = gambar + pernyataan → ✅/❌;
+ *  `text` = kalimat BUKTI (bukan seluruh kartu, supaya muat 1 layar) +
+ *  pertanyaan → opsi teks. Pertanyaan tanpa bukti (topik/judul keseluruhan)
+ *  dilewati krn butuh teks utuh. */
 function toReadingBossItems(topics: AnyReadingTopic[]): ReadingBossItem[] {
-  return topics.flatMap((t): ReadingBossItem[] => {
-    // Format "Baca Teks" (`ReadingTextTopic`) — tiap pertanyaan jadi 1 item:
-    // `picture` = kalimat halaman → gambar (bisa didengar, divergensi TTS sah
-    // pra-pembaca); `truefalse` = gambar + pernyataan → ✅/❌; `text` = kalimat
-    // BUKTI (bukan seluruh kartu, supaya muat di 1 layar) + pertanyaan → opsi
-    // teks. Pertanyaan tanpa bukti (topik/judul keseluruhan) dilewati krn
-    // butuh teks utuh.
-    if ('texts' in t) {
-      return [...t.texts, ...t.newTexts].flatMap((x) =>
-        x.questions.flatMap((q): ReadingBossItem[] => {
-          if (q.kind === 'picture') {
-            const opts = q.options.map((emoji, i) => ({ emoji, ok: i === q.answer }));
-            return [{ text: x.lines[q.about ?? 0].en, speakable: true, opts: shuffle(opts) }];
-          }
-          if (q.kind === 'truefalse') {
-            return [{ text: `${q.picture ?? ''} "${q.q}"`, speakable: false, opts: [{ emoji: '✅', ok: q.answer === 0 }, { emoji: '❌', ok: q.answer === 1 }] }];
-          }
-          if (!q.evidence.length) return [];
-          const passage = q.evidence.map((e) => x.lines[e].en).join(' ');
-          const opts = q.options.map((label, i) => ({ emoji: '', label, ok: i === q.answer }));
-          return [{ text: `${passage} — ${q.q}`, speakable: false, opts: shuffle(opts) }];
-        })
-      );
-    }
-    if ('items' in t) {
-      // ReadingWordTopic (Little Stars/Starter) — kartu kata dibaca sendiri,
-      // "🔊 Dengar" tetap opsional (divergensi sah TTS format ini).
-      return t.items.map((it) => {
-        const distractors = shuffle(t.items.filter((s) => s.en !== it.en)).slice(0, 3);
-        const opts = shuffle([it, ...distractors]).map((o) => ({ emoji: o.emoji, ok: o.en === it.en }));
-        return { text: it.en, speakable: true, opts };
-      });
-    }
-    if ('checks' in t) {
-      // ReadingCheckTopic (Explorer) — 1 kalimat (benar/salah diacak 50/50)
-      // + gambar, jawab Benar/Salah — SILENT (TTS tidak pernah dipakai).
-      return t.checks.map((c) => {
-        const isTrue = Math.random() < 0.5;
-        return {
-          text: `${c.emoji} "${isTrue ? c.trueSentence : c.falseSentence}"`,
-          speakable: false,
-          opts: [
-            { emoji: '✅', ok: isTrue },
-            { emoji: '❌', ok: !isTrue },
-          ],
-        };
-      });
-    }
-    // ReadingTopic lama (Adventurer/Achiever/Trailblazer) — passage+question
-    // dibaca sendiri, SILENT (konsisten `runReadingQuizSet`, games/reading.ts).
-    return t.drill.map((d) => ({
-      text: `${d.passage.join(' ')} — ${d.question}`,
-      speakable: false,
-      opts: d.opts.map((o) => ({ emoji: o.emoji, ok: o.ok })),
-    }));
-  });
+  return topics.flatMap((t) =>
+    [...t.texts, ...t.newTexts].flatMap((x) =>
+      x.questions.flatMap((q): ReadingBossItem[] => {
+        if (q.kind === 'picture') {
+          const opts = q.options.map((emoji, i) => ({ emoji, ok: i === q.answer }));
+          return [{ text: x.lines[q.about ?? 0].en, speakable: true, opts: shuffle(opts) }];
+        }
+        if (q.kind === 'truefalse') {
+          return [{ text: `${q.picture ?? ''} "${q.q}"`, speakable: false, opts: [{ emoji: '✅', ok: q.answer === 0 }, { emoji: '❌', ok: q.answer === 1 }] }];
+        }
+        if (!q.evidence.length) return [];
+        const passage = q.evidence.map((e) => x.lines[e].en).join(' ');
+        const opts = q.options.map((label, i) => ({ emoji: '', label, ok: i === q.answer }));
+        return [{ text: `${passage} — ${q.q}`, speakable: false, opts: shuffle(opts) }];
+      })
+    )
+  );
 }
 
 /** Jalankan seluruh gauntlet (4 babak lama, atau 5 babak hasil redesain kalau
@@ -623,7 +585,7 @@ export function runBoss(container: HTMLElement, onWin: (result: BossResult) => v
   /** Babak Reading BARU (`materi/test_perlevel.md` §5/§6) — sebelumnya
    *  bolong total di Tantangan Bos, padahal Reading sekarang py materi
    *  TUNTAS di semua 6 level. SILENT by default (konsisten "Reading tidak
-   *  pernah TTS") — cuma item `speakable` (dari `ReadingWordTopic`, Little
+   *  pernah TTS") — cuma item `speakable` (soal gambar buku mini, Little
    *  Stars/Starter) yang dapat tombol "🔊 Dengar" OPSIONAL. */
   function runReadingPhase(round = 0): void {
     cursor.reading = round;

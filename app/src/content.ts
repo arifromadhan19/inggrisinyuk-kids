@@ -12,10 +12,7 @@ import type {
   ListeningNoteTopic,
   ListeningSentenceTopic,
   ListeningTopic,
-  ReadingCheckTopic,
   ReadingTextTopic,
-  ReadingTopic,
-  ReadingWordTopic,
   SkillKey,
   SkillMeta,
   SpeakingPhraseTopic,
@@ -30256,9 +30253,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "👵",
-            "q": "On Sunday, we visit Grandpa.",
-            "qId": "Hari Minggu, kami mengunjungi Kakek.",
+            "picture": "🍝",
+            "q": "We eat rice for lunch.",
+            "qId": "Kami makan nasi untuk makan siang.",
             "options": [
               "Benar",
               "Salah"

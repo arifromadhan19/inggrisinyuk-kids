@@ -208,7 +208,7 @@ function checkReadingTextData(byLevel, errors) {
               if (!line) errors.push(`${w}: about menunjuk baris yang tidak ada.`);
               else if (q.evidenceWord) {
                 const ws = line.en.toLowerCase().split(/\s+/).map((t) => t.replace(/[^a-z0-9']/g, ''));
-                if (!ws.includes(q.evidenceWord.toLowerCase())) errors.push(`${w}: evidenceWord "${q.evidenceWord}" tidak ada sbg kata utuh di "${line.en}".`);
+                if (!ws.includes(q.evidenceWord.toLowerCase().replace(/[^a-z0-9']/g, ''))) errors.push(`${w}: evidenceWord "${q.evidenceWord}" tidak ada sbg kata utuh di "${line.en}".`);
               }
               const pics = line?.pic !== undefined ? (x.pictures ?? [])[line.pic]?.emoji : undefined;
               if (pics && q.options[q.answer] !== pics) errors.push(`${w}: jawaban gambar tidak sama dgn gambar halaman "${line.en}".`);
