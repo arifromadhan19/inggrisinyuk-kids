@@ -162,6 +162,19 @@ function roundActionsHtml(isLast: boolean): string {
     </div>`;
 }
 
+/** Bullet progress read-only di dalam 1 markas (permintaan user "pada game
+ *  tambahkan bullet progress juga") — pola SAMA PERSIS `games/storyquest.ts`
+ *  `dotsHtml()` (`.quiz-dot.static`, warna ikut Raja lewat `.raja-stage`).
+ *  Duplikat lokal per file game (konvensi sama `roundActionsHtml`). */
+function progressDotsHtml(total: number, isDone: (i: number) => boolean, current: number): string {
+  const dots = Array.from({ length: total }, (_, i) => {
+    const done = isDone(i);
+    const cls = [done ? 'done' : '', i === current ? 'current' : ''].filter(Boolean).join(' ');
+    return `<span class="quiz-dot static ${cls}" aria-hidden="true">${done ? '✓' : i + 1}</span>`;
+  }).join('');
+  return `<div class="quiz-nav"><div class="quiz-dots">${dots}</div></div>`;
+}
+
 /** "Cara Main" — duplikat lokal, lihat komentar lengkap `gameHowToHtml`
  *  `games/wordmatch.ts`. */
 function gameHowToHtml(steps: string[]): string {
@@ -218,8 +231,8 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
       ${journey?.headerHtml ?? ''}
       <div class="mm-head">
         <span class="mm-score">SKOR: <b>${score}</b></span>
-        <span class="tag">${matchedPairs}/${words.length}</span>
       </div>
+      ${progressDotsHtml(words.length, (i) => i < matchedPairs, matchedPairs)}
       <div class="mm-grid">
         ${cards
           .map((c, i) => {

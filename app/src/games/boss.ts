@@ -264,7 +264,9 @@ interface ReadingBossItem {
    *  types.ts) — `ReadingCheckTopic`/`ReadingTopic` lama TIDAK PERNAH dapat
    *  tombol suara, konsisten "Reading tidak pernah TTS" di luar Kenalan. */
   speakable: boolean;
-  opts: { emoji: string; ok?: boolean }[];
+  /** `label` ada = opsi TEKS (soal "Baca Teks" level atas), dirender tombol
+   *  teks 1 kolom; tanpa `label` = opsi gambar/emoji. */
+  opts: { emoji: string; ok?: boolean; label?: string }[];
 }
 
 /** Menormalkan 3 format Reading (`AnyReadingTopic`) jadi 1 bentuk MCQ
@@ -273,6 +275,29 @@ interface ReadingBossItem {
  *  perlu tahu format aslinya. */
 function toReadingBossItems(topics: AnyReadingTopic[]): ReadingBossItem[] {
   return topics.flatMap((t): ReadingBossItem[] => {
+    // Format "Baca Teks" (`ReadingTextTopic`) — tiap pertanyaan jadi 1 item:
+    // `picture` = kalimat halaman → gambar (bisa didengar, divergensi TTS sah
+    // pra-pembaca); `truefalse` = gambar + pernyataan → ✅/❌; `text` = kalimat
+    // BUKTI (bukan seluruh kartu, supaya muat di 1 layar) + pertanyaan → opsi
+    // teks. Pertanyaan tanpa bukti (topik/judul keseluruhan) dilewati krn
+    // butuh teks utuh.
+    if ('texts' in t) {
+      return [...t.texts, ...t.newTexts].flatMap((x) =>
+        x.questions.flatMap((q): ReadingBossItem[] => {
+          if (q.kind === 'picture') {
+            const opts = q.options.map((emoji, i) => ({ emoji, ok: i === q.answer }));
+            return [{ text: x.lines[q.about ?? 0].en, speakable: true, opts: shuffle(opts) }];
+          }
+          if (q.kind === 'truefalse') {
+            return [{ text: `${q.picture ?? ''} "${q.q}"`, speakable: false, opts: [{ emoji: '✅', ok: q.answer === 0 }, { emoji: '❌', ok: q.answer === 1 }] }];
+          }
+          if (!q.evidence.length) return [];
+          const passage = q.evidence.map((e) => x.lines[e].en).join(' ');
+          const opts = q.options.map((label, i) => ({ emoji: '', label, ok: i === q.answer }));
+          return [{ text: `${passage} — ${q.q}`, speakable: false, opts: shuffle(opts) }];
+        })
+      );
+    }
     if ('items' in t) {
       // ReadingWordTopic (Little Stars/Starter) — kartu kata dibaca sendiri,
       // "🔊 Dengar" tetap opsional (divergensi sah TTS format ini).
@@ -613,10 +638,10 @@ export function runBoss(container: HTMLElement, onWin: (result: BossResult) => v
         ${progressLine(round, readingItems.length)}
         <div class="en-text">${item.text}</div>
         ${item.speakable ? '<div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar</button></div>' : ''}
-        <div class="opt-grid ${item.opts.length === 3 ? 'three' : ''}">
+        <div class="opt-grid ${item.opts[0]?.label ? 'rt-opts' : item.opts.length === 3 ? 'three' : ''}">
           ${/* Sama fix dgn `runListenPhase` di atas — 4 opsi (`ReadingWordTopic`
              target+3 distraktor) WAJIB grid 2×2 default, bukan 3 kolom+1 sisa. */ ''}
-          ${item.opts.map((o, i) => `<button class="opt-btn" data-action="pick" data-payload="${i}">${o.emoji}</button>`).join('')}
+          ${item.opts.map((o, i) => `<button class="opt-btn${o.label ? ' opt-btn-text' : ''}" data-action="pick" data-payload="${i}">${o.label ?? o.emoji}</button>`).join('')}
         </div>
         <div class="feedback" id="fb"></div>
       `;

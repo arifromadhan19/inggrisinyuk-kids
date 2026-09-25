@@ -273,130 +273,79 @@ export type ListeningItemsTopic = ListeningSentenceTopic | ListeningNoteTopic | 
 export type AnyListeningTopic = ListeningTopic | ListeningSentenceTopic | ListeningNoteTopic | ListeningDialogueTopic;
 
 /**
- * Reading — beda dari Listening: `passage`/`story` dibaca SENDIRI (silent,
- * TIDAK PERNAH diucapkan TTS di kind ini, konsisten dgn `reading` di First
- * Placement Test/placement-test-data.ts) supaya beneran menguji baca, bukan
- * dengar. `ReadingDrill.passage` bisa 1-2 kalimat pendek (beda dari
- * ListeningDrill yang cuma 1 kalimat diucapkan).
+ * Format KEEMPAT Reading — "Baca Teks" (PILOT Explorer, `materi/reading.md`
+ * §19–§20). Lahir dari audit "Reading terlalu mirip Vocabulary": satuan
+ * terkecil di sini TEKS NYATA utuh (undangan, pesan, catatan), bukan kata —
+ * yang diuji: menemukan info di teks, siapa menulis/untuk siapa, topik teks,
+ * dan MENUNJUK kalimat buktinya (CP Fase C "menemukan informasi pada sebuah
+ * kalimat dan menjelaskan topik"; Cambridge Starters P5/KET P2).
  *
- * `id`/`questionId` — 🔒 revisi user ("di latihan inti dan tantangan
- * translasinya berupa klik button petunjuk") — terjemahan Indonesia
- * gabungan dari `passage`/`question`, TAPI TIDAK PERNAH ditampilkan
- * otomatis (beda dari `primer`/Kenalan yg translasinya SELALU terlihat) —
- * cuma muncul lewat tombol "💡 Petunjuk" yg sengaja disembunyikan default,
- * konsisten dgn prinsip "Reading tidak pernah TTS": bantuan tetap ada, tapi
- * WAJIB diusahakan (tap dulu), bukan disodorkan gratis spt Kenalan.
+ * Alur: Kenalan "📖 Baca Bareng" (halaman `texts`, 🔊/🎤/🎮 "Tunjuk di
+ * Gambar") → Latihan Inti "🔎 Baca & Temukan" (pertanyaan atas `texts` yang
+ * SAMA) → Tantangan "📚 Baca Sendiri" (`newTexts`, teks BARU sejenis).
+ * Pembeda runtime: `'texts' in topic`.
  */
-export interface ReadingDrill {
-  passage: string[];
-  id: string;
-  question: string;
-  questionId: string;
-  opts: ListeningOption[];
-}
+/** `book` = buku gambar mini (Little Stars/Starter): tiap `lines[i]` = 1
+ *  HALAMAN (gambar `pictures[pic]` besar + 1 kalimat). Sisanya kartu teks. */
+export type ReadingTextGenre = 'book' | 'invitation' | 'message' | 'note' | 'story' | 'sign' | 'dialog' | 'diary' | 'article' | 'email';
 
-export interface ReadingTopic {
-  id: string;
-  title: string;
-  scene: string;
-  desc: string;
-  primer: { passage: string[]; id: string }[];
-  drill: ReadingDrill[];
-  story: string[];
-  /** Terjemahan Indonesia gabungan dari `story` — sama prinsip `ReadingDrill.id`
-   *  di atas, cuma muncul lewat 💡 Petunjuk di Tantangan. */
-  storyId: string;
-  question: { text: string; id: string; opts: ListeningOption[] };
-}
-
-/**
- * Format KEDUA Reading — "Baca Kata" (whole-word/sight-word ↔ gambar),
- * khusus Little Stars (3–5 th, pre-literate/baru mulai kenal huruf). BEDA
- * PRINSIP dari `ReadingTopic` di atas (format lama, Adventurer): itu menguji
- * KOMPREHENSI kalimat/cerita (anak SUDAH bisa membaca kalimat) — riset
- * (`materi/reading.md` §5) mengonfirmasi anak 3–5th di app manapun (Reading
- * Eggs, Endless Reader, HOMER, Starfall, Teach Your Monster to Read) &
- * kurikulum Indonesia (Kurikulum Merdeka Fase Fondasi, EF Small Stars)
- * SELALU mulai dari pengenalan KATA TUNGGAL (whole-word/sight-word), bukan
- * kalimat/cerita — komprehensi multi-kalimat digerbangi jauh di belakang
- * puluhan pelajaran prasyarat, bukan aktivitas pembuka. `items` sengaja
- * dipetakan dari kosakata Vocab Little Stars yang SUDAH dikenal anak (bukan
- * daftar kata generik baru spt kompetitor) — anak melatih ULANG kata yang
- * familiar lewat modalitas baca, pola sama dgn keputusan Listening Little
- * Stars (`materi/listening.md` §4A). Pembeda runtime dari `ReadingTopic`
- * lama: `'items' in topic` (lihat `AnyReadingTopic` di bawah, sama pola dgn
- * `AnyListeningTopic`).
- *
- * 🔒 Divergensi SENGAJA dari aturan "Reading tidak pernah TTS" (komentar
- * `ReadingTopic` di atas & CLAUDE.md) — KHUSUS format ini, kata BOLEH
- * diucapkan `speak()` (lihat `games/reading.ts` `renderKenalanWord`/
- * `runLatihanIntiWord`/`runTantanganWord`). Alasan (riset `materi/
- * reading.md` §5): tujuan `ReadingTopic` lama adalah menguji DEKODING
- * MANDIRI (anak sudah bisa baca sendiri, jangan dibantu dengar) — tujuan
- * format ini beda total, MEMBANGUN asosiasi bentuk-cetak↔bunyi↔makna (print
- * awareness) utk anak yang BELUM bisa decode, jadi bantuan dengar itu
- * sendiri bagian dari mekanisme belajarnya (persis pola Reading Eggs/HOMER/
- * Kumon — semua pasangkan audio+cetak di tahap paling awal ini). Jangan
- * generalisasi divergensi ini ke `ReadingTopic` lama (Adventurer) tanpa
- * arahan baru user.
- */
-export interface ReadingWordItem {
+export interface ReadingTextLine {
   en: string;
   id: string;
-  emoji: string;
+  /** Index ke `ReadingText.pictures` — kalimat ini ikut 🎮 "Tunjuk di
+   *  Gambar" di Kenalan. Kosong = kalimat tidak dipakai di mini-game. */
+  pic?: number;
+  /** Awal paragraf baru (teks panjang Adventurer+). */
+  br?: boolean;
 }
 
-export interface ReadingWordTopic {
+export interface ReadingTextQuestion {
+  /** `text` (default) = pertanyaan + opsi teks. `picture` = kalimat
+   *  `lines[about]` → pilih 1 gambar (`options` = emoji; PAUD/Starter).
+   *  `truefalse` = gambar `picture` + pernyataan `q` → ✅/❌, SELURUH
+   *  kalimat harus cocok (Starters P1/P2; `options` = ['Benar','Salah']). */
+  kind?: 'text' | 'picture' | 'truefalse';
+  about?: number;
+  picture?: string;
+  /** `picture`: kata di `lines[about]` yang ditap di langkah "👆 Mana
+   *  tulisannya?" (hubungan tulisan ↔ bunyi utk pra-pembaca). */
+  evidenceWord?: string;
+  q: string;
+  qId: string;
+  /** Opsi TEKS; distraktor sebaiknya ikut disebut di teks (menjawab
+   *  pertanyaan lain) supaya tidak bisa dijawab cuma dgn mencocokkan kata. */
+  options: string[];
+  answer: number;
+  /** Index `lines` yang jadi bukti jawaban (boleh >1). Kosong = pertanyaan
+   *  keseluruhan (mis. "Teks ini tentang apa?"), tanpa langkah 🔎. */
+  evidence: number[];
+}
+
+export interface ReadingText {
+  genre: ReadingTextGenre;
+  /** Judul di kartu (mis. "🎈 Party Time!"), ditampilkan apa adanya. */
+  heading: string;
+  lines: ReadingTextLine[];
+  /** Gambar adegan utk 🎮 Kenalan (cuma di `texts`, bukan `newTexts`). */
+  pictures?: { emoji: string; label: string }[];
+  /** Index `lines` dlm urutan benar utk 🎮 "Urutkan" di Kenalan (buku:
+   *  urutan halaman; teks: urutan kejadian). Kosong → 🎮 "Tunjuk di Gambar"
+   *  kalau ada `pic`, atau tanpa 🎮. */
+  sequence?: number[];
+  questions: ReadingTextQuestion[];
+}
+
+export interface ReadingTextTopic {
   id: string;
   title: string;
   scene: string;
   desc: string;
-  items: ReadingWordItem[];
+  texts: ReadingText[];
+  newTexts: ReadingText[];
 }
 
-/**
- * Format KETIGA Reading — "Baca & Nilai" (Benar/Salah), khusus Explorer
- * (7–9 th, ≈Pre-A1→A1). Riset (`materi/reading.md` §9.2, prioritas
- * Kurikulum Merdeka Fase B & Cambridge Pre A1 Starters — backbone struktural
- * Explorer) mengonfirmasi format INI BUTUH BARU, BUKAN versi kecil dari
- * `ReadingTopic` (Adventurer, backbone A1 Movers) — Starters exam strukturnya
- * genuinely lebih ringan (1 kalimat+gambar → centang/silang, BUKAN passage
- * multi-kalimat+MCQ). Format ini masuk keluarga "silent reading" yang SAMA
- * dgn `ReadingTopic` (TTS TIDAK PERNAH dipakai di kind manapun — beda dari
- * `ReadingWordTopic` yang audio-nya sengaja aktif utk pra-pembaca) — titik
- * PERTAMA di tangga Reading yang menguji SATU KALIMAT UTUH dibaca sendiri
- * (naik dari kata/frasa `ReadingWordTopic`, turun dari passage
- * `ReadingTopic`).
- */
-export interface ReadingCheckItem {
-  emoji: string;
-  /** Kalimat Inggris yang BENAR menggambarkan `emoji`. */
-  trueSentence: string;
-  /** Kalimat Inggris yang SALAH menggambarkan `emoji` — near-miss masuk akal
-   *  (ganti PERSIS 1 kata, mis. kata sifat berlawanan), bukan kalimat absurd
-   *  yang gampang ditebak tanpa membaca. */
-  falseSentence: string;
-  /** Terjemahan `trueSentence` — dipakai Kenalan SAJA (exposure), tidak
-   *  pernah ditampilkan di Latihan Inti/Tantangan (itu yang justru diuji:
-   *  baca Inggrisnya sendiri, tanpa bantuan terjemahan). */
-  id: string;
-}
-
-export interface ReadingCheckTopic {
-  id: string;
-  title: string;
-  scene: string;
-  desc: string;
-  checks: ReadingCheckItem[];
-}
-
-/** Union dipakai `READING_TOPICS_BY_LEVEL` (content.ts) supaya 3 format
- *  Reading bisa hidup berdampingan — pembeda runtime BERTINGKAT (`app.ts`
- *  `runStage`, sama pola dgn `AnyListeningTopic`):
- *  `'items' in topic` → `ReadingWordTopic` (Little Stars/Starter);
- *  `'checks' in topic` → `ReadingCheckTopic` (Explorer); selain itu →
- *  `ReadingTopic` (Adventurer/Achiever, format lama). */
-export type AnyReadingTopic = ReadingTopic | ReadingWordTopic | ReadingCheckTopic;
+/** Satu-satunya format Reading sejak migrasi "Baca Teks" (materi/reading.md §22). */
+export type AnyReadingTopic = ReadingTextTopic;
 
 /** 1 kalimat Speaking + terjemahannya. Terjemahan WAJIB ada krn alur Speaking
  *  seragam semua level (`materi/speaking.md` §19): "🧩 Lengkapi Kalimat" butuh

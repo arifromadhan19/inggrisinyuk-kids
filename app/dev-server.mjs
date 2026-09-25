@@ -74,4 +74,18 @@ server.on('error', (err) => {
 
 server.listen(PORT, HOST, () => {
   console.log(`Dev server: http://${HOST}:${PORT} (auto-rebuild + SPA fallback aktif)`);
+  void warnIfPortalDown();
 });
+
+// Login/placement test/sync progres butuh API portal/ (port 3000). Portal
+// TIDAK ikut jalan otomatis — kalau lupa dinyalakan, semua akun "gagal
+// login" (issue/20260924_login_124_issue.md). Peringatan di sini supaya
+// ketahuan dari terminal, bukan dari layar login. `npm run dev:all`
+// menyalakan keduanya sekaligus.
+async function warnIfPortalDown() {
+  try {
+    await fetch('http://127.0.0.1:3000/api/leaderboard', { signal: AbortSignal.timeout(3000) });
+  } catch {
+    console.warn('[dev-server] ⚠ Portal (API login, port 3000) belum jalan — login akan gagal. Jalankan: cd portal && npm run dev (atau npm run dev:all di app/).');
+  }
+}

@@ -13,6 +13,7 @@ import type {
   ListeningSentenceTopic,
   ListeningTopic,
   ReadingCheckTopic,
+  ReadingTextTopic,
   ReadingTopic,
   ReadingWordTopic,
   SkillKey,
@@ -7186,361 +7187,4605 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
 ];
 
 /**
- * Reading — cuma Adventurer dulu (permintaan user: fokus Adventurer),
- * belum ada versi Explorer. Menu Belajar otomatis MENYEMBUNYIKAN skill
- * yang topiknya kosong di level aktif (`app.ts` `visibleSkillKeys`) — jadi
- * Explorer TIDAK menampilkan kartu Reading kosong/rusak, bukan bug.
- * `passage`/`story` SENGAJA TIDAK PERNAH diucapkan TTS di mana pun (lihat
- * games/reading.ts) — beda dari Listening, ini menguji baca sendiri.
+ * Reading adventurer — format "Baca Teks" (`ReadingTextTopic`, materi/reading.md §19–§22).
+ * Cerita 3 bagian + papan/catatan + dialog — tier Menengah. Id topik lama DIPERTAHANKAN (urutan menu sama); progres format
+ * lama tidak terbaca krn section-nya beda (`latihan-teks`/`tantangan-teks`).
  */
-export const READING_TOPICS_ADVENTURER: ReadingTopic[] = [
+export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
   {
-    id: 'kebun-binatang',
-    title: 'Di Kebun Binatang (At the Zoo)',
-    scene: '🦁',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Zoe visits the zoo.', 'She sees a big elephant.'], id: 'Zoe mengunjungi kebun binatang. Dia melihat gajah besar.' },
-      { passage: ['The lion is sleeping.', 'It looks very tired.'], id: 'Singanya sedang tidur. Kelihatan sangat lelah.' },
-    ],
-    // `drill` di bawah SENGAJA menyebut distraktor JUGA di teks (bukan
-    // cuma jawaban benar) — pola sama dgn `story` di topik ini (soal
-    // "hewan favorit Zoe": lion & elephant disebut juga, bukan cuma
-    // panda) dan perbaikan Reading First Placement Test
-    // (`placement-test-data.ts`) — supaya anak wajib bedakan lewat
-    // konteks yang tepat, tidak bisa ditembak dari 1 kata benda yang
-    // kebetulan match gambar (bias "construct-irrelevant variance",
-    // dilaporkan user).
-    drill: [
+    "id": "kebun-binatang",
+    "title": "Di Kebun Binatang (At the Zoo)",
+    "scene": "🦁",
+    "desc": "Cerita, papan aturan & dialog",
+    "texts": [
       {
-        passage: ['Zoe brings an apple for a snack.', 'The giraffe eats leaves from a tree.'],
-        id: 'Zoe membawa apel untuk cemilan. Jerapah itu makan daun dari pohon.',
-        question: 'What does the giraffe eat?',
-        questionId: 'Apa yang dimakan jerapah itu?',
-        opts: [{ emoji: '🍃', lbl: 'Leaves', ok: true }, { emoji: '🍎', lbl: 'Apple' }, { emoji: '🌊', lbl: 'Fish' }],
+        "genre": "story",
+        "heading": "🦁 Zoe's Zoo Day",
+        "lines": [
+          {
+            "en": "On Sunday, Zoe went to the zoo with Grandpa.",
+            "id": "Hari Minggu, Zoe pergi ke kebun binatang bersama Kakek."
+          },
+          {
+            "en": "First, they watched the monkeys eat bananas.",
+            "id": "Pertama, mereka melihat monyet makan pisang."
+          },
+          {
+            "en": "One monkey took Grandpa's hat!",
+            "id": "Seekor monyet mengambil topi Kakek!"
+          },
+          {
+            "en": "Everyone laughed, and the keeper got it back.",
+            "id": "Semua tertawa, dan penjaga mengambilnya kembali."
+          },
+          {
+            "en": "Next, they saw the lions sleeping in the sun.",
+            "id": "Lalu, mereka melihat singa tidur di bawah matahari.",
+            "br": true
+          },
+          {
+            "en": "Zoe wanted to hear a roar, but they were quiet.",
+            "id": "Zoe ingin mendengar auman, tapi singanya diam."
+          },
+          {
+            "en": "Then it was lunch time.",
+            "id": "Lalu tiba waktu makan siang.",
+            "br": true
+          },
+          {
+            "en": "They ate sandwiches near the lake.",
+            "id": "Mereka makan roti lapis di dekat danau."
+          },
+          {
+            "en": "At the end, Zoe bought a panda toy.",
+            "id": "Terakhir, Zoe membeli mainan panda."
+          },
+          {
+            "en": "It was a great day!",
+            "id": "Hari yang menyenangkan!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who went to the zoo with Zoe?",
+            "qId": "Siapa yang pergi bersama Zoe?",
+            "options": [
+              "Grandpa",
+              "Grandma",
+              "Her teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What did a monkey take?",
+            "qId": "Apa yang diambil monyet?",
+            "options": [
+              "Grandpa's hat",
+              "Zoe's sandwich",
+              "The keeper's key"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Why didn't Zoe hear a roar?",
+            "qId": "Kenapa Zoe tidak mendengar auman?",
+            "options": [
+              "The lions were quiet.",
+              "The lions were eating.",
+              "The zoo was closed."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What happened after they saw the lions?",
+            "qId": "Apa yang terjadi setelah mereka melihat singa?",
+            "options": [
+              "They ate lunch near the lake.",
+              "They watched the monkeys.",
+              "A monkey took a hat."
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A Funny Day at the Zoo",
+              "Grandpa Loses His Car",
+              "Zoe Feeds the Lions"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          1,
+          4,
+          7
+        ]
       },
       {
-        passage: ['The lion is sleeping under a tree.', 'The monkey jumps from branch to branch.'],
-        id: 'Singanya sedang tidur di bawah pohon. Monyet itu melompat dari dahan ke dahan.',
-        question: 'What is the monkey doing?',
-        questionId: 'Apa yang sedang dilakukan monyet itu?',
-        opts: [{ emoji: '🐵', lbl: 'Jumping', ok: true }, { emoji: '😴', lbl: 'Sleeping' }, { emoji: '🍽️', lbl: 'Eating' }],
-      },
+        "genre": "sign",
+        "heading": "🪧 City Zoo Rules",
+        "lines": [
+          {
+            "en": "Welcome to City Zoo!",
+            "id": "Selamat datang di Kebun Binatang Kota!"
+          },
+          {
+            "en": "Please do not feed the animals.",
+            "id": "Tolong jangan memberi makan hewan."
+          },
+          {
+            "en": "Keep your hands away from the cages.",
+            "id": "Jauhkan tanganmu dari kandang."
+          },
+          {
+            "en": "Stay on the path at all times.",
+            "id": "Selalu tetap di jalur."
+          },
+          {
+            "en": "Feeding show: penguins at 2 p.m.",
+            "id": "Pertunjukan makan penguin jam 2 siang."
+          },
+          {
+            "en": "The zoo closes at 5 p.m.",
+            "id": "Kebun binatang tutup jam 5 sore."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What must you not do?",
+            "qId": "Apa yang tidak boleh kamu lakukan?",
+            "options": [
+              "Give the animals food",
+              "Walk on the path",
+              "Watch the show"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where should you keep your hands?",
+            "qId": "Tanganmu harus dijauhkan dari mana?",
+            "options": [
+              "Away from the cages",
+              "Inside the cages",
+              "On the animals"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When can you watch the penguins eat?",
+            "qId": "Kapan kamu bisa melihat penguin makan?",
+            "options": [
+              "At 2 p.m.",
+              "At 5 p.m.",
+              "At 12 p.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What time does the zoo close?",
+            "qId": "Jam berapa kebun binatang tutup?",
+            "options": [
+              "At 5 p.m.",
+              "At 2 p.m.",
+              "At 7 p.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Where would you see this sign?",
+            "qId": "Di mana kamu melihat papan ini?",
+            "options": [
+              "At a zoo",
+              "At a school",
+              "At a farm shop"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
     ],
-    story: ['Zoe and her family go to the zoo.', 'They see elephants, lions, and monkeys.', 'Her favorite animal is the panda.'],
-    storyId: 'Zoe dan keluarganya pergi ke kebun binatang. Mereka melihat gajah, singa, dan monyet. Hewan favoritnya adalah panda.',
-    question: {
-      text: 'What is Zoe’s favorite animal?',
-      id: 'Apa hewan favorit Zoe?',
-      opts: [{ emoji: '🐼', lbl: 'Panda', ok: true }, { emoji: '🦁', lbl: 'Lion' }, { emoji: '🐾', lbl: 'Elephant' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ At the Zoo Gate",
+        "lines": [
+          {
+            "en": "Tika: Two tickets, please. One adult and one child.",
+            "id": "Tika: Dua tiket, ya. Satu dewasa dan satu anak."
+          },
+          {
+            "en": "Staff: That's forty thousand rupiah, please.",
+            "id": "Petugas: Semuanya empat puluh ribu rupiah."
+          },
+          {
+            "en": "Tika: Here you are. Where are the giraffes?",
+            "id": "Tika: Ini uangnya. Jerapahnya di mana?"
+          },
+          {
+            "en": "Staff: Go straight, then turn left at the café.",
+            "id": "Petugas: Lurus, lalu belok kiri di kafe."
+          },
+          {
+            "en": "Tika: Thank you! Is there a show today?",
+            "id": "Tika: Terima kasih! Hari ini ada pertunjukan?"
+          },
+          {
+            "en": "Staff: Yes, the bird show starts at eleven.",
+            "id": "Petugas: Ada, pertunjukan burung mulai jam sebelas."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many tickets does Tika buy?",
+            "qId": "Tika membeli berapa tiket?",
+            "options": [
+              "Two",
+              "One",
+              "Four"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How much are the tickets?",
+            "qId": "Berapa harga tiketnya?",
+            "options": [
+              "Forty thousand rupiah",
+              "Fourteen thousand rupiah",
+              "Four thousand rupiah"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where should Tika turn left?",
+            "qId": "Di mana Tika harus belok kiri?",
+            "options": [
+              "At the café",
+              "At the gate",
+              "At the bird show"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Tika asks, 'Is there a show today?' What does the staff answer?",
+            "qId": "Tika bertanya 'Hari ini ada pertunjukan?'. Petugas menjawab apa?",
+            "options": [
+              "Yes, the bird show starts at eleven.",
+              "Go straight, then turn left.",
+              "That's forty thousand rupiah."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Which animals does Tika want to find?",
+            "qId": "Hewan apa yang ingin Tika cari?",
+            "options": [
+              "The giraffes",
+              "The birds",
+              "The lions"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "🌿 The New Baby",
+        "lines": [
+          {
+            "en": "The zoo had a big surprise this week.",
+            "id": "Kebun binatang punya kejutan besar minggu ini."
+          },
+          {
+            "en": "A baby elephant was born on Monday!",
+            "id": "Seekor bayi gajah lahir hari Senin!"
+          },
+          {
+            "en": "She is small, but she is very strong.",
+            "id": "Dia kecil, tapi sangat kuat.",
+            "br": true
+          },
+          {
+            "en": "Her mother keeps her close all the time.",
+            "id": "Induknya selalu menjaganya di dekatnya."
+          },
+          {
+            "en": "Children can vote for her name.",
+            "id": "Anak-anak boleh memilih namanya.",
+            "br": true
+          },
+          {
+            "en": "The top names are Bella, Lulu and Mimi.",
+            "id": "Nama teratas adalah Bella, Lulu, dan Mimi."
+          },
+          {
+            "en": "The keeper will choose the winner on Friday.",
+            "id": "Penjaga akan memilih pemenangnya hari Jumat."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What was the surprise?",
+            "qId": "Apa kejutannya?",
+            "options": [
+              "A baby elephant was born.",
+              "A new lion came.",
+              "The zoo got bigger."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "When was the baby born?",
+            "qId": "Kapan bayinya lahir?",
+            "options": [
+              "On Monday",
+              "On Friday",
+              "On Sunday"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who keeps the baby close?",
+            "qId": "Siapa yang selalu menjaga bayinya?",
+            "options": [
+              "Her mother",
+              "The keeper",
+              "The children"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What can children do?",
+            "qId": "Apa yang boleh dilakukan anak-anak?",
+            "options": [
+              "Vote for her name",
+              "Feed the baby",
+              "Ride the elephant"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A New Baby at the Zoo",
+              "The Strong Keeper",
+              "Names for a Lion"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'hari-libur',
-    title: 'Hari Libur (Holiday)',
-    scene: '🏖️',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Rio goes on holiday.', 'He travels to the beach.'], id: 'Rio pergi berlibur. Dia pergi ke pantai.' },
-      { passage: ['The weather is sunny.', 'Everyone is happy.'], id: 'Cuacanya cerah. Semua orang senang.' },
-    ],
-    // Sama prinsip anti-tebak dgn topik 'kebun-binatang' di atas —
-    // distraktor disebut juga di teks, dilekatkan ke hal/orang LAIN
-    // (bukan jawaban yg ditanya) supaya anak wajib bedakan lewat konteks.
-    drill: [
+    "id": "hari-libur",
+    "title": "Hari Libur (Holiday)",
+    "scene": "🏖️",
+    "desc": "Cerita, pengumuman & dialog",
+    "texts": [
       {
-        passage: ['Rio wears a blue shirt.', 'He builds a sandcastle with a red bucket.'],
-        id: 'Rio memakai kaos biru. Dia membuat istana pasir dengan ember merah.',
-        question: 'What color is the bucket?',
-        questionId: 'Apa warna embernya?',
-        opts: [{ emoji: '🔴', lbl: 'Red', ok: true }, { emoji: '🔵', lbl: 'Blue' }, { emoji: '🟢', lbl: 'Green' }],
+        "genre": "story",
+        "heading": "🏖️ A Holiday in Bali",
+        "lines": [
+          {
+            "en": "Last holiday, Dimas went to Bali with his family.",
+            "id": "Liburan lalu, Dimas pergi ke Bali bersama keluarganya."
+          },
+          {
+            "en": "They stayed in a small hotel near the beach.",
+            "id": "Mereka menginap di hotel kecil dekat pantai."
+          },
+          {
+            "en": "Every morning, Dimas built sandcastles with his sister.",
+            "id": "Setiap pagi, Dimas membuat istana pasir bersama adiknya."
+          },
+          {
+            "en": "One day, they went snorkeling in the blue sea.",
+            "id": "Suatu hari, mereka snorkeling di laut biru.",
+            "br": true
+          },
+          {
+            "en": "Dimas saw colorful fish and a big turtle.",
+            "id": "Dimas melihat ikan warna-warni dan penyu besar."
+          },
+          {
+            "en": "His sister was scared, so she stayed on the boat.",
+            "id": "Adiknya takut, jadi dia tetap di perahu."
+          },
+          {
+            "en": "In the evening, they watched the sunset.",
+            "id": "Sore harinya, mereka melihat matahari terbenam.",
+            "br": true
+          },
+          {
+            "en": "On the last day, Dimas bought a necklace.",
+            "id": "Di hari terakhir, Dimas membeli kalung."
+          },
+          {
+            "en": "He didn't want to go home!",
+            "id": "Dia tidak mau pulang!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where did Dimas go?",
+            "qId": "Dimas pergi ke mana?",
+            "options": [
+              "To Bali",
+              "To Jakarta",
+              "To the mountains"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What did Dimas do every morning?",
+            "qId": "Apa yang Dimas lakukan setiap pagi?",
+            "options": [
+              "He built sandcastles.",
+              "He went snorkeling.",
+              "He watched the sunset."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Why did his sister stay on the boat?",
+            "qId": "Kenapa adiknya tetap di perahu?",
+            "options": [
+              "She was scared.",
+              "She was tired.",
+              "She was hungry."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What did they do in the evening?",
+            "qId": "Apa yang mereka lakukan sore hari?",
+            "options": [
+              "They watched the sunset.",
+              "They built sandcastles.",
+              "They went shopping."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A Happy Holiday in Bali",
+              "The Lost Turtle",
+              "Dimas's New School"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          0,
+          3,
+          7
+        ]
       },
       {
-        passage: ['Rio takes a shower before lunch.', 'Then he swims in the sea.'],
-        id: 'Rio mandi sebelum makan siang. Lalu dia berenang di laut.',
-        question: 'Where does Rio swim?',
-        questionId: 'Di mana Rio berenang?',
-        opts: [{ emoji: '🌊', lbl: 'Sea', ok: true }, { emoji: '💦', lbl: 'Pool' }, { emoji: '🚿', lbl: 'Shower' }],
-      },
+        "genre": "sign",
+        "heading": "🏨 Hotel Notice",
+        "lines": [
+          {
+            "en": "Welcome to Sunny Beach Hotel!",
+            "id": "Selamat datang di Hotel Sunny Beach!"
+          },
+          {
+            "en": "Breakfast is from 6 to 10 a.m.",
+            "id": "Sarapan jam 6 sampai 10 pagi."
+          },
+          {
+            "en": "The pool is open until 8 p.m.",
+            "id": "Kolam renang buka sampai jam 8 malam."
+          },
+          {
+            "en": "Please take a towel from the front desk.",
+            "id": "Silakan ambil handuk di meja depan."
+          },
+          {
+            "en": "Children must swim with an adult.",
+            "id": "Anak-anak harus berenang bersama orang dewasa."
+          },
+          {
+            "en": "Check-out time is 12 p.m.",
+            "id": "Waktu check-out jam 12 siang."
+          }
+        ],
+        "questions": [
+          {
+            "q": "When can you eat breakfast?",
+            "qId": "Kapan kamu bisa sarapan?",
+            "options": [
+              "From 6 to 10 a.m.",
+              "Until 8 p.m.",
+              "At 12 p.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where can you get a towel?",
+            "qId": "Di mana kamu bisa mengambil handuk?",
+            "options": [
+              "At the front desk",
+              "At the pool",
+              "In your room"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who must swim with an adult?",
+            "qId": "Siapa yang harus berenang bersama orang dewasa?",
+            "options": [
+              "Children",
+              "Hotel staff",
+              "Everyone at night"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Until what time is the pool open?",
+            "qId": "Kolam renang buka sampai jam berapa?",
+            "options": [
+              "8 p.m.",
+              "10 a.m.",
+              "12 p.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Who is this notice for?",
+            "qId": "Pengumuman ini untuk siapa?",
+            "options": [
+              "Hotel guests",
+              "School students",
+              "Zoo visitors"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
     ],
-    story: ['Rio and his family go to the beach.', 'His sister has strawberry ice cream.', 'Rio has chocolate ice cream.'],
-    storyId: 'Rio dan keluarganya pergi ke pantai. Kakaknya makan es krim stroberi. Rio makan es krim cokelat.',
-    question: {
-      text: 'What flavor ice cream does Rio have?',
-      id: 'Rasa es krim apa yang dimakan Rio?',
-      opts: [{ emoji: '🍫', lbl: 'Chocolate', ok: true }, { emoji: '🍓', lbl: 'Strawberry' }, { emoji: '🍋', lbl: 'Lemon' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ Holiday Plans",
+        "lines": [
+          {
+            "en": "Rina: Where are you going this holiday, Adi?",
+            "id": "Rina: Liburan ini kamu ke mana, Adi?"
+          },
+          {
+            "en": "Adi: We're going to visit my grandma in Bandung.",
+            "id": "Adi: Kami akan mengunjungi nenekku di Bandung."
+          },
+          {
+            "en": "Rina: Nice! It's cool there, right?",
+            "id": "Rina: Asyik! Di sana sejuk, kan?"
+          },
+          {
+            "en": "Adi: Yes. My mom says I must bring a jacket.",
+            "id": "Adi: Iya. Kata ibuku aku harus bawa jaket."
+          },
+          {
+            "en": "Rina: I'm staying home, but my cousin is coming.",
+            "id": "Rina: Aku di rumah saja, tapi sepupuku datang."
+          },
+          {
+            "en": "Adi: Great! Send me a photo of your holiday.",
+            "id": "Adi: Seru! Kirimi aku foto liburanmu, ya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is Adi going?",
+            "qId": "Adi akan pergi ke mana?",
+            "options": [
+              "To Bandung",
+              "To Bali",
+              "To Rina's house"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who will Adi visit?",
+            "qId": "Siapa yang akan Adi kunjungi?",
+            "options": [
+              "His grandma",
+              "His cousin",
+              "Rina"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What must Adi bring?",
+            "qId": "Apa yang harus Adi bawa?",
+            "options": [
+              "A jacket",
+              "A photo",
+              "An umbrella"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Rina says, 'I'm staying home.' Who is coming to her house?",
+            "qId": "Rina bilang dia di rumah saja. Siapa yang datang ke rumahnya?",
+            "options": [
+              "Her cousin",
+              "Adi's grandma",
+              "Adi"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What does Adi ask Rina to send?",
+            "qId": "Adi minta Rina mengirim apa?",
+            "options": [
+              "A photo",
+              "A jacket",
+              "A letter"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "⛰️ The Mountain Trip",
+        "lines": [
+          {
+            "en": "In July, Sinta's family went camping on a mountain.",
+            "id": "Bulan Juli, keluarga Sinta berkemah di gunung."
+          },
+          {
+            "en": "The air was cold and fresh.",
+            "id": "Udaranya dingin dan segar."
+          },
+          {
+            "en": "They walked for three hours to the top.",
+            "id": "Mereka berjalan selama tiga jam ke puncak.",
+            "br": true
+          },
+          {
+            "en": "Sinta's legs were tired, but she didn't stop.",
+            "id": "Kaki Sinta capek, tapi dia tidak berhenti."
+          },
+          {
+            "en": "At the top, they saw clouds below them!",
+            "id": "Di puncak, mereka melihat awan di bawah mereka!"
+          },
+          {
+            "en": "Dad made hot chocolate for everyone.",
+            "id": "Ayah membuat cokelat panas untuk semua.",
+            "br": true
+          },
+          {
+            "en": "That night, Sinta slept in a warm tent.",
+            "id": "Malam itu, Sinta tidur di tenda yang hangat."
+          }
+        ],
+        "questions": [
+          {
+            "q": "When did they go camping?",
+            "qId": "Kapan mereka berkemah?",
+            "options": [
+              "In July",
+              "In June",
+              "In December"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How long did they walk?",
+            "qId": "Berapa lama mereka berjalan?",
+            "options": [
+              "Three hours",
+              "Three days",
+              "Thirty minutes"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did they see at the top?",
+            "qId": "Apa yang mereka lihat di puncak?",
+            "options": [
+              "Clouds below them",
+              "A big lake",
+              "A hotel"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who made hot chocolate?",
+            "qId": "Siapa yang membuat cokelat panas?",
+            "options": [
+              "Dad",
+              "Sinta",
+              "Mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Sinta's Mountain Adventure",
+              "A Hot Day at the Beach",
+              "Dad Gets Lost"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
-  // 8 topik BARU (genapkan dari 2 ke 10, target CLAUDE.md ≥10 topik/skill,
-  // `materi/reading.md` §9.3 — format TERVALIDASI ULANG oleh riset, murni
-  // kerja data, TIDAK ada perubahan mekanik) — skenario keseharian anak
-  // 9-11 th, pola anti-tebak yang sama (distraktor `drill` disebut di teks
-  // tapi dilekatkan ke hal LAIN, opsi `story` akhir semuanya disebut di teks
-  // spy anak wajib baca semua baris, bukan cuma cocok-gambar).
   {
-    id: 'hari-sekolah',
-    title: 'Hari Sekolah (School Day)',
-    scene: '🎒',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Zara wakes up early for school.', 'She wears her blue uniform.'], id: 'Zara bangun pagi untuk sekolah. Dia memakai seragam birunya.' },
-      { passage: ['She packs her bag with books and pencils.', 'Then she eats breakfast quickly.'], id: 'Dia mengemas tasnya dengan buku dan pensil. Lalu dia sarapan dengan cepat.' },
-    ],
-    drill: [
+    "id": "hari-sekolah",
+    "title": "Hari Sekolah (School Day)",
+    "scene": "🏫",
+    "desc": "Cerita, jadwal & dialog",
+    "texts": [
       {
-        passage: ['Zara puts a red apple and a sandwich in her lunch box.', 'Her friend Dini brings a banana and some crackers.'],
-        id: 'Zara menaruh apel merah dan sandwich di kotak makannya. Temannya Dini membawa pisang dan beberapa biskuit.',
-        question: 'What does Zara bring for lunch?',
-        questionId: 'Apa yang dibawa Zara untuk makan siang?',
-        opts: [{ emoji: '🍎', lbl: 'Apple and sandwich', ok: true }, { emoji: '🍌', lbl: 'Banana and crackers' }, { emoji: '🍬', lbl: 'Candy' }],
+        "genre": "story",
+        "heading": "🏫 Rudi's First Day",
+        "lines": [
+          {
+            "en": "Today was Rudi's first day at a new school.",
+            "id": "Hari ini hari pertama Rudi di sekolah baru."
+          },
+          {
+            "en": "He felt nervous in the morning.",
+            "id": "Pagi itu dia merasa gugup."
+          },
+          {
+            "en": "His teacher, Mrs. Lina, smiled at him.",
+            "id": "Gurunya, Bu Lina, tersenyum padanya."
+          },
+          {
+            "en": "In class, he sat next to a boy named Joko.",
+            "id": "Di kelas, dia duduk di sebelah anak bernama Joko.",
+            "br": true
+          },
+          {
+            "en": "Joko showed him the library and the canteen.",
+            "id": "Joko menunjukkan perpustakaan dan kantin."
+          },
+          {
+            "en": "They ate lunch together under a big tree.",
+            "id": "Mereka makan siang bersama di bawah pohon besar."
+          },
+          {
+            "en": "In the afternoon, Rudi played football with his class.",
+            "id": "Siang harinya, Rudi main sepak bola dengan teman sekelas.",
+            "br": true
+          },
+          {
+            "en": "He scored a goal!",
+            "id": "Dia mencetak gol!"
+          },
+          {
+            "en": "Now Rudi can't wait for tomorrow.",
+            "id": "Sekarang Rudi tidak sabar menunggu besok."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How did Rudi feel in the morning?",
+            "qId": "Bagaimana perasaan Rudi di pagi hari?",
+            "options": [
+              "Nervous",
+              "Angry",
+              "Sleepy"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who sat next to Rudi?",
+            "qId": "Siapa yang duduk di sebelah Rudi?",
+            "options": [
+              "Joko",
+              "Mrs. Lina",
+              "His brother"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where did they eat lunch?",
+            "qId": "Di mana mereka makan siang?",
+            "options": [
+              "Under a big tree",
+              "In the library",
+              "In the classroom"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What happened in the afternoon?",
+            "qId": "Apa yang terjadi siang hari?",
+            "options": [
+              "Rudi played football.",
+              "Rudi went home early.",
+              "Rudi read in the library."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Rudi's Great First Day",
+              "Joko Loses His Ball",
+              "A Rainy School Day"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          0,
+          4,
+          6
+        ]
       },
       {
-        passage: ['The math class starts first, then art class.', 'Zara loves art class the most.'],
-        id: 'Kelas matematika dimulai duluan, lalu kelas seni. Zara paling suka kelas seni.',
-        question: 'Which class starts first?',
-        questionId: 'Kelas apa yang dimulai duluan?',
-        opts: [{ emoji: '🔢', lbl: 'Math', ok: true }, { emoji: '🎨', lbl: 'Art' }, { emoji: '🎵', lbl: 'Music' }],
-      },
+        "genre": "sign",
+        "heading": "📋 Class 4 Timetable",
+        "lines": [
+          {
+            "en": "Monday timetable for Class 4.",
+            "id": "Jadwal hari Senin untuk Kelas 4."
+          },
+          {
+            "en": "Maths is the first lesson.",
+            "id": "Matematika pelajaran pertama."
+          },
+          {
+            "en": "After Maths, we have English.",
+            "id": "Setelah Matematika, ada Bahasa Inggris."
+          },
+          {
+            "en": "Break time is at 9:30.",
+            "id": "Waktu istirahat jam 9.30."
+          },
+          {
+            "en": "Art is after break, so bring your crayons.",
+            "id": "Seni setelah istirahat, jadi bawa krayonmu."
+          },
+          {
+            "en": "School finishes at 12:30.",
+            "id": "Sekolah selesai jam 12.30."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is the first lesson?",
+            "qId": "Pelajaran pertama apa?",
+            "options": [
+              "Maths",
+              "English",
+              "Art"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What comes after Maths?",
+            "qId": "Apa sesudah Matematika?",
+            "options": [
+              "English",
+              "Art",
+              "Break time"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When is break time?",
+            "qId": "Jam berapa istirahat?",
+            "options": [
+              "At 9:30",
+              "At 12:30",
+              "At 7:00"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why should students bring crayons?",
+            "qId": "Kenapa siswa harus bawa krayon?",
+            "options": [
+              "They have Art after break.",
+              "They have Maths first.",
+              "School finishes early."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Which class is this timetable for?",
+            "qId": "Jadwal ini untuk kelas berapa?",
+            "options": [
+              "Class 4",
+              "Class 3",
+              "Class 5"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
     ],
-    story: ['Zara and her classmates go to the library after lunch.', 'They read books about animals, space, and dinosaurs.', 'Zara says the book about the moon is her favorite.'],
-    storyId: 'Zara dan teman-teman sekelasnya pergi ke perpustakaan setelah makan siang. Mereka membaca buku tentang hewan, luar angkasa, dan dinosaurus. Zara bilang buku tentang bulan adalah favoritnya.',
-    question: {
-      text: 'What is Zara’s favorite book about?',
-      id: 'Buku tentang apa yang jadi favorit Zara?',
-      opts: [{ emoji: '🌙', lbl: 'The moon', ok: true }, { emoji: '🦴', lbl: 'Dinosaurs' }, { emoji: '🐾', lbl: 'Animals' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ The Lost Pencil Case",
+        "lines": [
+          {
+            "en": "Mia: Have you seen my pencil case, Tono?",
+            "id": "Mia: Kamu lihat kotak pensilku, Tono?"
+          },
+          {
+            "en": "Tono: Is it blue with stars on it?",
+            "id": "Tono: Yang biru bergambar bintang?"
+          },
+          {
+            "en": "Mia: Yes! Where is it?",
+            "id": "Mia: Iya! Di mana?"
+          },
+          {
+            "en": "Tono: I saw it on Mr. Budi's desk.",
+            "id": "Tono: Aku lihat di meja Pak Budi."
+          },
+          {
+            "en": "Mia: Oh, I left it there after Maths.",
+            "id": "Mia: Oh, aku meninggalkannya di sana setelah Matematika."
+          },
+          {
+            "en": "Tono: Let's go and get it now.",
+            "id": "Tono: Ayo kita ambil sekarang."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What did Mia lose?",
+            "qId": "Apa yang hilang dari Mia?",
+            "options": [
+              "Her pencil case",
+              "Her book",
+              "Her bag"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What does the pencil case look like?",
+            "qId": "Kotak pensilnya seperti apa?",
+            "options": [
+              "Blue with stars",
+              "Red with stars",
+              "Blue with flowers"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where did Tono see it?",
+            "qId": "Di mana Tono melihatnya?",
+            "options": [
+              "On Mr. Budi's desk",
+              "In Mia's bag",
+              "In the library"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "When did Mia leave it there?",
+            "qId": "Kapan Mia meninggalkannya di sana?",
+            "options": [
+              "After Maths",
+              "Before school",
+              "At lunch"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Mia asks, 'Where is it?' What does Tono answer?",
+            "qId": "Mia bertanya 'Di mana?'. Tono menjawab apa?",
+            "options": [
+              "I saw it on Mr. Budi's desk.",
+              "Is it blue with stars on it?",
+              "Let's go and get it now."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "🌱 The Class Garden",
+        "lines": [
+          {
+            "en": "Class 4 has a small garden behind the school.",
+            "id": "Kelas 4 punya kebun kecil di belakang sekolah."
+          },
+          {
+            "en": "Every Friday, the children water the plants.",
+            "id": "Setiap Jumat, anak-anak menyiram tanaman."
+          },
+          {
+            "en": "Last month, they planted tomatoes and beans.",
+            "id": "Bulan lalu, mereka menanam tomat dan buncis.",
+            "br": true
+          },
+          {
+            "en": "At first, nothing grew.",
+            "id": "Awalnya, tidak ada yang tumbuh."
+          },
+          {
+            "en": "Then, after two weeks, small green leaves came out.",
+            "id": "Lalu, setelah dua minggu, daun hijau kecil muncul."
+          },
+          {
+            "en": "Now the tomatoes are red and ready to pick.",
+            "id": "Sekarang tomatnya merah dan siap dipetik.",
+            "br": true
+          },
+          {
+            "en": "The class will make a salad next Friday!",
+            "id": "Kelas itu akan membuat salad Jumat depan!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is the garden?",
+            "qId": "Kebunnya di mana?",
+            "options": [
+              "Behind the school",
+              "In front of the school",
+              "At the teacher's house"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "When do the children water the plants?",
+            "qId": "Kapan anak-anak menyiram tanaman?",
+            "options": [
+              "Every Friday",
+              "Every Monday",
+              "Every day"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did they plant?",
+            "qId": "Mereka menanam apa?",
+            "options": [
+              "Tomatoes and beans",
+              "Flowers and trees",
+              "Carrots and corn"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When did the leaves come out?",
+            "qId": "Kapan daunnya muncul?",
+            "options": [
+              "After two weeks",
+              "After one day",
+              "After two months"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Our Growing Garden",
+              "The Lost Tomatoes",
+              "A Salad Shop"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'pesta-ulang-tahun',
-    title: 'Pesta Ulang Tahun (Birthday Party)',
-    scene: '🎂',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Toni is having a birthday party today.', 'His mom bakes a chocolate cake.'], id: 'Toni sedang mengadakan pesta ulang tahun hari ini. Ibunya memanggang kue cokelat.' },
-      { passage: ['Toni invites his friends from school.', 'They bring balloons and gifts.'], id: 'Toni mengundang teman-temannya dari sekolah. Mereka membawa balon dan hadiah.' },
-    ],
-    drill: [
+    "id": "pesta-ulang-tahun",
+    "title": "Pesta Ulang Tahun (Birthday Party)",
+    "scene": "🎂",
+    "desc": "Cerita, daftar & dialog",
+    "texts": [
       {
-        passage: ['Toni’s friends bring a red balloon and a blue balloon.', 'Toni ties the red balloon to his chair.'],
-        id: 'Teman-teman Toni membawa balon merah dan balon biru. Toni mengikat balon merah ke kursinya.',
-        question: 'Which balloon does Toni tie to his chair?',
-        questionId: 'Balon mana yang diikat Toni ke kursinya?',
-        opts: [{ emoji: '🔴', lbl: 'Red', ok: true }, { emoji: '🔵', lbl: 'Blue' }, { emoji: '🟡', lbl: 'Yellow' }],
+        "genre": "story",
+        "heading": "🎂 A Surprise for Mom",
+        "lines": [
+          {
+            "en": "It was Mom's birthday on Saturday.",
+            "id": "Hari Sabtu itu ulang tahun Ibu."
+          },
+          {
+            "en": "Lina and Dad made a secret plan.",
+            "id": "Lina dan Ayah membuat rencana rahasia."
+          },
+          {
+            "en": "In the morning, Dad took Mom to the market.",
+            "id": "Pagi harinya, Ayah mengajak Ibu ke pasar."
+          },
+          {
+            "en": "Lina stayed home and made a card.",
+            "id": "Lina tinggal di rumah dan membuat kartu.",
+            "br": true
+          },
+          {
+            "en": "She drew flowers and wrote, 'I love you, Mom!'",
+            "id": "Dia menggambar bunga dan menulis, 'Aku sayang Ibu!'"
+          },
+          {
+            "en": "Grandma came and helped her bake a cake.",
+            "id": "Nenek datang dan membantunya membuat kue."
+          },
+          {
+            "en": "When Mom came home, everyone shouted, 'Surprise!'",
+            "id": "Waktu Ibu pulang, semua berteriak, 'Kejutan!'",
+            "br": true
+          },
+          {
+            "en": "Mom laughed and hugged everyone.",
+            "id": "Ibu tertawa dan memeluk semua orang."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Whose birthday was it?",
+            "qId": "Ulang tahun siapa?",
+            "options": [
+              "Mom's",
+              "Lina's",
+              "Grandma's"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where did Dad take Mom?",
+            "qId": "Ayah mengajak Ibu ke mana?",
+            "options": [
+              "To the market",
+              "To a café",
+              "To Grandma's house"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did Lina draw on the card?",
+            "qId": "Lina menggambar apa di kartunya?",
+            "options": [
+              "Flowers",
+              "A cake",
+              "Balloons"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who helped Lina bake the cake?",
+            "qId": "Siapa yang membantu Lina membuat kue?",
+            "options": [
+              "Grandma",
+              "Dad",
+              "Mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A Birthday Surprise for Mom",
+              "Dad Buys a Card",
+              "Grandma's Birthday Party"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          6
+        ]
       },
       {
-        passage: ['Dini gives Toni a storybook, and Budi gives him a toy car.', 'Toni says the toy car is his favorite gift.'],
-        id: 'Dini memberi Toni buku cerita, dan Budi memberinya mobil mainan. Toni bilang mobil mainan itu hadiah favoritnya.',
-        question: 'What is Toni’s favorite gift?',
-        questionId: 'Apa hadiah favorit Toni?',
-        opts: [{ emoji: '🚗', lbl: 'Toy car', ok: true }, { emoji: '📖', lbl: 'Storybook' }, { emoji: '🎈', lbl: 'Balloon' }],
-      },
+        "genre": "note",
+        "heading": "📝 Party To-Do List",
+        "lines": [
+          {
+            "en": "Things to do before Saturday:",
+            "id": "Hal yang harus dilakukan sebelum Sabtu:"
+          },
+          {
+            "en": "Buy balloons and candles on Thursday.",
+            "id": "Beli balon dan lilin hari Kamis."
+          },
+          {
+            "en": "Order the cake from Mrs. Ani's shop.",
+            "id": "Pesan kue dari toko Bu Ani."
+          },
+          {
+            "en": "Clean the living room on Friday.",
+            "id": "Bersihkan ruang tamu hari Jumat."
+          },
+          {
+            "en": "Invite Grandma and Aunt Sri.",
+            "id": "Undang Nenek dan Tante Sri."
+          },
+          {
+            "en": "Hide the gift in Lina's room.",
+            "id": "Sembunyikan hadiah di kamar Lina."
+          }
+        ],
+        "questions": [
+          {
+            "q": "When will they buy balloons?",
+            "qId": "Kapan mereka membeli balon?",
+            "options": [
+              "On Thursday",
+              "On Friday",
+              "On Saturday"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where will they order the cake?",
+            "qId": "Kue dipesan dari mana?",
+            "options": [
+              "From Mrs. Ani's shop",
+              "From the market",
+              "From Grandma"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Which room will they clean?",
+            "qId": "Ruangan mana yang akan dibersihkan?",
+            "options": [
+              "The living room",
+              "Lina's room",
+              "The kitchen"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where will they hide the gift?",
+            "qId": "Hadiah disembunyikan di mana?",
+            "options": [
+              "In Lina's room",
+              "In the living room",
+              "At the shop"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this list for?",
+            "qId": "Daftar ini untuk apa?",
+            "options": [
+              "Getting ready for a party",
+              "Going on holiday",
+              "Cleaning the school"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
     ],
-    story: ['All the friends sing a happy birthday song for Toni.', 'Toni closes his eyes and blows out the candles.', 'Everyone claps and eats chocolate cake together.'],
-    storyId: 'Semua teman menyanyikan lagu ulang tahun untuk Toni. Toni menutup matanya dan meniup lilinnya. Semua orang bertepuk tangan dan makan kue cokelat bersama.',
-    question: {
-      text: 'What does Toni do after he closes his eyes?',
-      id: 'Apa yang dilakukan Toni setelah menutup matanya?',
-      opts: [{ emoji: '🕯️', lbl: 'Blows out the candles', ok: true }, { emoji: '👏', lbl: 'Claps his hands' }, { emoji: '🎂', lbl: 'Eats the cake' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ On the Phone",
+        "lines": [
+          {
+            "en": "Sari: Hi Budi! Can you come to my party?",
+            "id": "Sari: Hai Budi! Bisa datang ke pestaku?"
+          },
+          {
+            "en": "Budi: When is it?",
+            "id": "Budi: Kapan?"
+          },
+          {
+            "en": "Sari: It's on Sunday at four o'clock.",
+            "id": "Sari: Hari Minggu jam empat."
+          },
+          {
+            "en": "Budi: Sorry, I have a swimming lesson at four.",
+            "id": "Budi: Maaf, aku ada les renang jam empat."
+          },
+          {
+            "en": "Sari: Oh! Can you come after that?",
+            "id": "Sari: Oh! Bisa datang sesudahnya?"
+          },
+          {
+            "en": "Budi: Yes! I can come at five.",
+            "id": "Budi: Bisa! Aku datang jam lima."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What day is the party?",
+            "qId": "Pestanya hari apa?",
+            "options": [
+              "Sunday",
+              "Saturday",
+              "Friday"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Why can't Budi come at four?",
+            "qId": "Kenapa Budi tidak bisa datang jam empat?",
+            "options": [
+              "He has a swimming lesson.",
+              "He is sick.",
+              "He is at school."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What time can Budi come?",
+            "qId": "Jam berapa Budi bisa datang?",
+            "options": [
+              "At five",
+              "At four",
+              "At six"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Budi asks, 'When is it?' What does Sari answer?",
+            "qId": "Budi bertanya 'Kapan?'. Sari menjawab apa?",
+            "options": [
+              "It's on Sunday at four o'clock.",
+              "Can you come after that?",
+              "Can you come to my party?"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Who is having a party?",
+            "qId": "Siapa yang mengadakan pesta?",
+            "options": [
+              "Sari",
+              "Budi",
+              "Budi's swimming teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "🪁 The Same Gift",
+        "lines": [
+          {
+            "en": "For Tom's birthday, Ali bought a blue kite.",
+            "id": "Untuk ulang tahun Tom, Ali membeli layangan biru."
+          },
+          {
+            "en": "He wrapped it in paper with stars.",
+            "id": "Dia membungkusnya dengan kertas bergambar bintang."
+          },
+          {
+            "en": "At the party, Tom opened all his gifts.",
+            "id": "Di pesta, Tom membuka semua hadiahnya.",
+            "br": true
+          },
+          {
+            "en": "Oh no, there were two blue kites!",
+            "id": "Waduh, ada dua layangan biru!"
+          },
+          {
+            "en": "Ali felt a little sad.",
+            "id": "Ali merasa agak sedih."
+          },
+          {
+            "en": "But Tom laughed and said, 'Now we can fly them together!'",
+            "id": "Tapi Tom tertawa dan bilang, 'Sekarang kita bisa menerbangkannya bersama!'",
+            "br": true
+          },
+          {
+            "en": "After the party, the boys went to the park with their kites.",
+            "id": "Setelah pesta, mereka pergi ke taman membawa layangan."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What did Ali buy for Tom?",
+            "qId": "Ali membeli apa untuk Tom?",
+            "options": [
+              "A blue kite",
+              "A red ball",
+              "A toy car"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What was the problem?",
+            "qId": "Apa masalahnya?",
+            "options": [
+              "Tom got two blue kites.",
+              "Tom did not like kites.",
+              "Ali forgot the gift."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How did Ali feel at first?",
+            "qId": "Bagaimana perasaan Ali awalnya?",
+            "options": [
+              "A little sad",
+              "Very angry",
+              "Very sleepy"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What did the boys do after the party?",
+            "qId": "Apa yang mereka lakukan setelah pesta?",
+            "options": [
+              "They flew kites in the park.",
+              "They went to school.",
+              "They bought more gifts."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Two Kites Are Better Than One",
+              "Ali Loses His Kite",
+              "Tom's Birthday Cake"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'belanja-di-pasar',
-    title: 'Belanja di Pasar (Shopping at the Market)',
-    scene: '🛒',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Mother goes to the market on Saturday.', 'She brings a big shopping bag.'], id: 'Ibu pergi ke pasar hari Sabtu. Dia membawa tas belanja besar.' },
-      { passage: ['She buys fresh vegetables and fruits.', 'The market is busy and colorful.'], id: 'Dia membeli sayur dan buah segar. Pasarnya ramai dan berwarna-warni.' },
-    ],
-    drill: [
+    "id": "belanja-di-pasar",
+    "title": "Belanja di Pasar (Shopping at the Market)",
+    "scene": "🧺",
+    "desc": "Cerita, papan harga & dialog",
+    "texts": [
       {
-        passage: ['Mother buys three tomatoes and two carrots.', 'She also buys a bag of rice.'],
-        id: 'Ibu membeli tiga tomat dan dua wortel. Dia juga membeli sekantong beras.',
-        question: 'How many tomatoes does mother buy?',
-        questionId: 'Berapa banyak tomat yang dibeli ibu?',
-        opts: [{ emoji: '3️⃣', lbl: 'Three', ok: true }, { emoji: '2️⃣', lbl: 'Two' }, { emoji: '1️⃣', lbl: 'One' }],
+        "genre": "story",
+        "heading": "🧺 Market Morning",
+        "lines": [
+          {
+            "en": "Every Saturday, Nia goes to the market with Mom.",
+            "id": "Setiap Sabtu, Nia pergi ke pasar bersama Ibu."
+          },
+          {
+            "en": "They leave home at six in the morning.",
+            "id": "Mereka berangkat jam enam pagi."
+          },
+          {
+            "en": "First, they buy vegetables from Mrs. Tuti.",
+            "id": "Pertama, mereka membeli sayur dari Bu Tuti."
+          },
+          {
+            "en": "Mrs. Tuti always gives Nia a free tomato!",
+            "id": "Bu Tuti selalu memberi Nia tomat gratis!"
+          },
+          {
+            "en": "Next, they look for fish, but it is too expensive.",
+            "id": "Lalu, mereka mencari ikan, tapi terlalu mahal.",
+            "br": true
+          },
+          {
+            "en": "So Mom buys chicken instead.",
+            "id": "Jadi Ibu membeli ayam saja."
+          },
+          {
+            "en": "Before they go home, Nia chooses some fruit.",
+            "id": "Sebelum pulang, Nia memilih buah.",
+            "br": true
+          },
+          {
+            "en": "Her bag is heavy, but she is happy.",
+            "id": "Tasnya berat, tapi dia senang."
+          }
+        ],
+        "questions": [
+          {
+            "q": "When does Nia go to the market?",
+            "qId": "Kapan Nia pergi ke pasar?",
+            "options": [
+              "Every Saturday",
+              "Every Sunday",
+              "Every day"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What does Mrs. Tuti give Nia?",
+            "qId": "Bu Tuti memberi Nia apa?",
+            "options": [
+              "A free tomato",
+              "A free fish",
+              "Some fruit"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why doesn't Mom buy fish?",
+            "qId": "Kenapa Ibu tidak membeli ikan?",
+            "options": [
+              "It is too expensive.",
+              "There is no fish.",
+              "Nia does not like fish."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What does Nia choose before they go home?",
+            "qId": "Apa yang Nia pilih sebelum pulang?",
+            "options": [
+              "Some fruit",
+              "Some chicken",
+              "Some vegetables"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A Saturday at the Market",
+              "Mrs. Tuti's New Shop",
+              "Nia Catches a Fish"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          2,
+          4,
+          6
+        ]
       },
       {
-        passage: ['The fruit seller offers mangoes and grapes.', 'Mother chooses the sweet mangoes for dessert.'],
-        id: 'Penjual buah menawarkan mangga dan anggur. Ibu memilih mangga manis untuk pencuci mulut.',
-        question: 'What fruit does mother choose?',
-        questionId: 'Buah apa yang dipilih ibu?',
-        opts: [{ emoji: '🥭', lbl: 'Mangoes', ok: true }, { emoji: '🍇', lbl: 'Grapes' }, { emoji: '🍌', lbl: 'Bananas' }],
-      },
+        "genre": "sign",
+        "heading": "🏷️ Pak Joko's Fruit Stall",
+        "lines": [
+          {
+            "en": "Welcome to Pak Joko's Fruit Stall!",
+            "id": "Selamat datang di Kios Buah Pak Joko!"
+          },
+          {
+            "en": "Mangoes: 20,000 a kilo.",
+            "id": "Mangga: 20.000 per kilo."
+          },
+          {
+            "en": "Bananas: 15,000 a bunch.",
+            "id": "Pisang: 15.000 per sisir."
+          },
+          {
+            "en": "Watermelons: 25,000 each.",
+            "id": "Semangka: 25.000 per buah."
+          },
+          {
+            "en": "Today only: buy two kilos of mangoes, get free bananas!",
+            "id": "Hari ini saja: beli dua kilo mangga, gratis pisang!"
+          },
+          {
+            "en": "We don't open on Mondays.",
+            "id": "Kami tidak buka hari Senin."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How much is a watermelon?",
+            "qId": "Berapa harga satu semangka?",
+            "options": [
+              "25,000",
+              "20,000",
+              "15,000"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What is sold in bunches?",
+            "qId": "Apa yang dijual per sisir?",
+            "options": [
+              "Bananas",
+              "Mangoes",
+              "Watermelons"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What do you get free today?",
+            "qId": "Apa yang kamu dapat gratis hari ini?",
+            "options": [
+              "Bananas",
+              "A kilo of mangoes",
+              "A watermelon"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When is the stall closed?",
+            "qId": "Kapan kiosnya tutup?",
+            "options": [
+              "On Mondays",
+              "On Sundays",
+              "Today"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Whose stall is it?",
+            "qId": "Kios milik siapa?",
+            "options": [
+              "Pak Joko's",
+              "Mrs. Tuti's",
+              "Nia's"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
     ],
-    story: ['At the market, mother meets her friend Mrs. Sari.', 'They talk while looking at fresh fish and eggs.', 'Mother decides to buy eggs, but not fish, because they already have fish at home.'],
-    storyId: 'Di pasar, ibu bertemu temannya, Bu Sari. Mereka mengobrol sambil melihat ikan dan telur segar. Ibu memutuskan membeli telur, tapi tidak ikan, karena mereka sudah punya ikan di rumah.',
-    question: {
-      text: 'Why does mother not buy fish?',
-      id: 'Kenapa ibu tidak membeli ikan?',
-      opts: [{ emoji: '🏠', lbl: 'They already have fish at home', ok: true }, { emoji: '💰', lbl: 'It is too expensive' }, { emoji: '🌊', lbl: 'It is not fresh' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ At the Fruit Stall",
+        "lines": [
+          {
+            "en": "Seller: Good morning! What would you like?",
+            "id": "Penjual: Selamat pagi! Mau beli apa?"
+          },
+          {
+            "en": "Dina: How much are the oranges?",
+            "id": "Dina: Jeruknya berapa?"
+          },
+          {
+            "en": "Seller: Twelve thousand for one kilo.",
+            "id": "Penjual: Dua belas ribu sekilo."
+          },
+          {
+            "en": "Dina: Can I have two kilos, please?",
+            "id": "Dina: Saya beli dua kilo, ya."
+          },
+          {
+            "en": "Seller: Sure. That's twenty-four thousand.",
+            "id": "Penjual: Baik. Semuanya dua puluh empat ribu."
+          },
+          {
+            "en": "Dina: Here you are. Thank you!",
+            "id": "Dina: Ini uangnya. Terima kasih!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What does Dina want to buy?",
+            "qId": "Dina ingin membeli apa?",
+            "options": [
+              "Oranges",
+              "Mangoes",
+              "Bananas"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How much is one kilo?",
+            "qId": "Berapa harga sekilo?",
+            "options": [
+              "Twelve thousand",
+              "Twenty-four thousand",
+              "Two thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How many kilos does Dina buy?",
+            "qId": "Dina membeli berapa kilo?",
+            "options": [
+              "Two",
+              "One",
+              "Twelve"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Dina asks for two kilos. What does the seller say?",
+            "qId": "Dina minta dua kilo. Penjual bilang apa?",
+            "options": [
+              "Sure. That's twenty-four thousand.",
+              "Twelve thousand for one kilo.",
+              "What would you like?"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who says 'Good morning'?",
+            "qId": "Siapa yang bilang 'Selamat pagi'?",
+            "options": [
+              "The seller",
+              "Dina",
+              "Dina's mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "👛 The Lost Wallet",
+        "lines": [
+          {
+            "en": "On Sunday, Budi and his dad went to the market.",
+            "id": "Hari Minggu, Budi dan ayahnya pergi ke pasar."
+          },
+          {
+            "en": "Dad bought rice, eggs and onions.",
+            "id": "Ayah membeli beras, telur, dan bawang."
+          },
+          {
+            "en": "Then he looked for his wallet, but it was gone!",
+            "id": "Lalu dia mencari dompetnya, tapi dompetnya hilang!"
+          },
+          {
+            "en": "They walked back to the egg seller.",
+            "id": "Mereka kembali ke penjual telur.",
+            "br": true
+          },
+          {
+            "en": "The kind seller was holding the wallet.",
+            "id": "Penjual yang baik hati itu memegang dompetnya."
+          },
+          {
+            "en": "'You left it on my table,' she said.",
+            "id": "'Bapak meninggalkannya di mejaku,' katanya."
+          },
+          {
+            "en": "Dad thanked her and bought more eggs.",
+            "id": "Ayah berterima kasih dan membeli telur lagi.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "What did Dad buy?",
+            "qId": "Ayah membeli apa?",
+            "options": [
+              "Rice, eggs and onions",
+              "Fish and bread",
+              "Fruit and milk"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What was the problem?",
+            "qId": "Apa masalahnya?",
+            "options": [
+              "Dad's wallet was gone.",
+              "The market was closed.",
+              "Budi was lost."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where did Dad leave his wallet?",
+            "qId": "Di mana Ayah meninggalkan dompetnya?",
+            "options": [
+              "On the egg seller's table",
+              "At home",
+              "In the car"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What did Dad do to say thank you?",
+            "qId": "Apa yang Ayah lakukan untuk berterima kasih?",
+            "options": [
+              "He bought more eggs.",
+              "He gave her flowers.",
+              "He sang a song."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "The Kind Egg Seller",
+              "Budi Buys Onions",
+              "A Rainy Market Day"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'hari-hujan',
-    title: 'Hari Hujan (Rainy Day)',
-    scene: '🌧️',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['It is raining outside today.', 'Dito wears his yellow raincoat.'], id: 'Hari ini hujan di luar. Dito memakai jas hujan kuningnya.' },
-      { passage: ['He carries a blue umbrella too.', 'The streets are wet and shiny.'], id: 'Dia juga membawa payung biru. Jalanan basah dan berkilau.' },
-    ],
-    drill: [
+    "id": "hari-hujan",
+    "title": "Hari Hujan (Rainy Day)",
+    "scene": "🌧️",
+    "desc": "Cerita, pengumuman & dialog",
+    "texts": [
       {
-        passage: ['Dito jumps over a big puddle near the school gate.', 'His sister walks around a small puddle instead.'],
-        id: 'Dito melompati genangan air besar dekat gerbang sekolah. Kakaknya malah berjalan mengitari genangan air kecil.',
-        question: 'What does Dito do at the puddle?',
-        questionId: 'Apa yang dilakukan Dito di genangan air itu?',
-        opts: [{ emoji: '🐸', lbl: 'Jumps over it', ok: true }, { emoji: '👣', lbl: 'Walks around it' }, { emoji: '🛑', lbl: 'Stops there' }],
+        "genre": "story",
+        "heading": "🌧️ The Rainy Afternoon",
+        "lines": [
+          {
+            "en": "On Tuesday afternoon, it started to rain.",
+            "id": "Selasa sore, hujan mulai turun."
+          },
+          {
+            "en": "Maya couldn't play outside.",
+            "id": "Maya tidak bisa bermain di luar."
+          },
+          {
+            "en": "She felt bored and a little sad.",
+            "id": "Dia merasa bosan dan agak sedih."
+          },
+          {
+            "en": "Then her brother had an idea.",
+            "id": "Lalu kakaknya punya ide.",
+            "br": true
+          },
+          {
+            "en": "They built a tent with chairs and a blanket.",
+            "id": "Mereka membuat tenda dari kursi dan selimut."
+          },
+          {
+            "en": "Inside the tent, they read comics with a torch.",
+            "id": "Di dalam tenda, mereka membaca komik dengan senter."
+          },
+          {
+            "en": "Later, Mom made hot banana fritters.",
+            "id": "Kemudian, Ibu membuat pisang goreng hangat.",
+            "br": true
+          },
+          {
+            "en": "When the rain stopped, there was a rainbow!",
+            "id": "Waktu hujan berhenti, ada pelangi!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why couldn't Maya play outside?",
+            "qId": "Kenapa Maya tidak bisa bermain di luar?",
+            "options": [
+              "It was raining.",
+              "She was sick.",
+              "It was dark."
+            ],
+            "answer": 0,
+            "evidence": [
+              0,
+              1
+            ]
+          },
+          {
+            "q": "Who had an idea?",
+            "qId": "Siapa yang punya ide?",
+            "options": [
+              "Maya's brother",
+              "Maya's mom",
+              "Maya"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What did they use to build a tent?",
+            "qId": "Mereka membuat tenda dari apa?",
+            "options": [
+              "Chairs and a blanket",
+              "Sticks and paper",
+              "A big umbrella"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What did they see after the rain?",
+            "qId": "Apa yang mereka lihat setelah hujan?",
+            "options": [
+              "A rainbow",
+              "A tent",
+              "The sun going down"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A Fun Rainy Day",
+              "Maya Gets Wet",
+              "The Broken Tent"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          0,
+          4,
+          6
+        ]
       },
       {
-        passage: ['Thunder booms loudly, and Dito’s little brother feels scared.', 'Dito hugs his brother and says it is okay.'],
-        id: 'Petir menggelegar keras, dan adik Dito merasa takut. Dito memeluk adiknya dan bilang tidak apa-apa.',
-        question: 'How does Dito’s brother feel?',
-        questionId: 'Bagaimana perasaan adik Dito?',
-        opts: [{ emoji: '😨', lbl: 'Scared', ok: true }, { emoji: '😊', lbl: 'Happy' }, { emoji: '😴', lbl: 'Sleepy' }],
-      },
+        "genre": "sign",
+        "heading": "⛅ School Notice: Rainy Season",
+        "lines": [
+          {
+            "en": "The rainy season is here!",
+            "id": "Musim hujan sudah tiba!"
+          },
+          {
+            "en": "Please bring an umbrella or a raincoat.",
+            "id": "Tolong bawa payung atau jas hujan."
+          },
+          {
+            "en": "Wear boots if the road is wet.",
+            "id": "Pakai sepatu bot kalau jalannya basah."
+          },
+          {
+            "en": "When it rains hard, wait inside the school.",
+            "id": "Kalau hujan deras, tunggu di dalam sekolah."
+          },
+          {
+            "en": "Parents can pick up children at the side gate.",
+            "id": "Orang tua bisa menjemput anak di gerbang samping."
+          },
+          {
+            "en": "Stay safe and dry!",
+            "id": "Tetap aman dan kering!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What should students bring?",
+            "qId": "Apa yang harus dibawa siswa?",
+            "options": [
+              "An umbrella or a raincoat",
+              "A towel and a ball",
+              "A hat and sunglasses"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What should you do when it rains hard?",
+            "qId": "Apa yang harus kamu lakukan kalau hujan deras?",
+            "options": [
+              "Wait inside the school",
+              "Run home quickly",
+              "Play in the rain"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where can parents pick up children?",
+            "qId": "Di mana orang tua bisa menjemput anak?",
+            "options": [
+              "At the side gate",
+              "At the front door",
+              "At the canteen"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When should you wear boots?",
+            "qId": "Kapan kamu harus pakai sepatu bot?",
+            "options": [
+              "When the road is wet",
+              "Every day",
+              "At break time"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is this notice about?",
+            "qId": "Pengumuman ini tentang apa?",
+            "options": [
+              "The rainy season",
+              "A sports day",
+              "A new canteen"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
     ],
-    story: ['After school, the rain stops and the sun comes out.', 'Dito sees a beautiful rainbow in the sky.', 'He counts the colors and finds seven of them.'],
-    storyId: 'Setelah sekolah, hujan berhenti dan matahari muncul. Dito melihat pelangi indah di langit. Dia menghitung warnanya dan menemukan tujuh warna.',
-    question: {
-      text: 'What does Dito see in the sky?',
-      id: 'Apa yang dilihat Dito di langit?',
-      opts: [{ emoji: '🌈', lbl: 'A rainbow', ok: true }, { emoji: '☀️', lbl: 'The sun' }, { emoji: '🌧️', lbl: 'The rain' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ Waiting for the Rain to Stop",
+        "lines": [
+          {
+            "en": "Adi: Oh no, it's raining and I forgot my umbrella.",
+            "id": "Adi: Waduh, hujan dan aku lupa bawa payung."
+          },
+          {
+            "en": "Lia: You can share mine.",
+            "id": "Lia: Pakai payungku bareng saja."
+          },
+          {
+            "en": "Adi: Thanks! But it's very small.",
+            "id": "Adi: Makasih! Tapi payungnya kecil sekali."
+          },
+          {
+            "en": "Lia: Let's wait in the library first.",
+            "id": "Lia: Kita tunggu di perpustakaan dulu, yuk."
+          },
+          {
+            "en": "Adi: Good idea. We can read until it stops.",
+            "id": "Adi: Ide bagus. Kita bisa membaca sampai hujan reda."
+          },
+          {
+            "en": "Lia: Look, it's stopping now!",
+            "id": "Lia: Lihat, hujannya mulai reda!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What did Adi forget?",
+            "qId": "Apa yang Adi lupa bawa?",
+            "options": [
+              "His umbrella",
+              "His book",
+              "His raincoat"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What does Lia offer?",
+            "qId": "Apa yang Lia tawarkan?",
+            "options": [
+              "To share her umbrella",
+              "To call his mom",
+              "To give him a raincoat"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where do they decide to wait?",
+            "qId": "Mereka memutuskan menunggu di mana?",
+            "options": [
+              "In the library",
+              "At the gate",
+              "In the canteen"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Adi says, 'Thanks! But it's very small.' What does Lia say next?",
+            "qId": "Adi bilang 'Makasih! Tapi kecil sekali.' Lia bilang apa?",
+            "options": [
+              "Let's wait in the library first.",
+              "You can share mine.",
+              "Look, it's stopping now!"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What happens at the end?",
+            "qId": "Apa yang terjadi di akhir?",
+            "options": [
+              "The rain is stopping.",
+              "It rains harder.",
+              "Adi goes home wet."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "🐸 The Rain Concert",
+        "lines": [
+          {
+            "en": "After the rain, Tono heard a strange sound.",
+            "id": "Setelah hujan, Tono mendengar suara aneh."
+          },
+          {
+            "en": "It came from the pond behind his house.",
+            "id": "Suaranya dari kolam di belakang rumahnya."
+          },
+          {
+            "en": "He walked slowly to the pond with a torch.",
+            "id": "Dia berjalan pelan ke kolam membawa senter.",
+            "br": true
+          },
+          {
+            "en": "Ten little frogs were singing together!",
+            "id": "Sepuluh katak kecil sedang bernyanyi bersama!"
+          },
+          {
+            "en": "Tono laughed and called his little sister.",
+            "id": "Tono tertawa dan memanggil adiknya."
+          },
+          {
+            "en": "They listened to the frog song for a long time.",
+            "id": "Mereka lama mendengarkan nyanyian katak.",
+            "br": true
+          },
+          {
+            "en": "Now they call it the 'rain concert.'",
+            "id": "Sekarang mereka menyebutnya 'konser hujan'."
+          }
+        ],
+        "questions": [
+          {
+            "q": "When did Tono hear the sound?",
+            "qId": "Kapan Tono mendengar suara itu?",
+            "options": [
+              "After the rain",
+              "Before breakfast",
+              "At school"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where did the sound come from?",
+            "qId": "Suara itu dari mana?",
+            "options": [
+              "The pond behind his house",
+              "His bedroom",
+              "The kitchen"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What was making the sound?",
+            "qId": "Apa yang membuat suara itu?",
+            "options": [
+              "Ten little frogs",
+              "His little sister",
+              "The rain on the roof"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who did Tono call?",
+            "qId": "Siapa yang Tono panggil?",
+            "options": [
+              "His little sister",
+              "His dad",
+              "His friend"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "The Rain Concert",
+              "Tono Loses His Torch",
+              "A Frog in the House"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'hari-olahraga',
-    title: 'Hari Olahraga (Sports Day)',
-    scene: '⚽',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Today is Sports Day at school.', 'All students wear their sports uniform.'], id: 'Hari ini Hari Olahraga di sekolah. Semua murid memakai seragam olahraga.' },
-      { passage: ['Students can join running or jumping games.', 'Everyone is excited and cheering.'], id: 'Murid-murid bisa ikut lomba lari atau lompat. Semuanya bersemangat dan bersorak.' },
-    ],
-    drill: [
+    "id": "hari-olahraga",
+    "title": "Hari Olahraga (Sports Day)",
+    "scene": "🏅",
+    "desc": "Cerita, pengumuman & dialog",
+    "texts": [
       {
-        passage: ['Rian joins the running race, and his friend Budi joins the jumping game.', 'Rian finishes the race in second place.'],
-        id: 'Rian ikut lomba lari, dan temannya Budi ikut lomba lompat. Rian menyelesaikan lomba di posisi kedua.',
-        question: 'What race does Rian join?',
-        questionId: 'Lomba apa yang diikuti Rian?',
-        opts: [{ emoji: '💨', lbl: 'Running', ok: true }, { emoji: '🐸', lbl: 'Jumping' }, { emoji: '🌊', lbl: 'Swimming' }],
+        "genre": "story",
+        "heading": "🏅 Sports Day",
+        "lines": [
+          {
+            "en": "Last Friday was Sports Day at Nita's school.",
+            "id": "Jumat lalu ada Hari Olahraga di sekolah Nita."
+          },
+          {
+            "en": "All the students wore their team colors.",
+            "id": "Semua siswa memakai warna timnya."
+          },
+          {
+            "en": "Nita ran in the relay race with three friends.",
+            "id": "Nita ikut lomba lari estafet dengan tiga teman."
+          },
+          {
+            "en": "She dropped the baton, but she picked it up quickly.",
+            "id": "Tongkatnya jatuh, tapi dia cepat memungutnya.",
+            "br": true
+          },
+          {
+            "en": "Her team finished second.",
+            "id": "Timnya juara dua."
+          },
+          {
+            "en": "Then Nita's class won the tug of war!",
+            "id": "Lalu kelas Nita menang tarik tambang!"
+          },
+          {
+            "en": "At the end, the head teacher gave out medals.",
+            "id": "Di akhir, kepala sekolah membagikan medali.",
+            "br": true
+          },
+          {
+            "en": "Nita got a silver medal. She was proud.",
+            "id": "Nita dapat medali perak. Dia bangga."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What race did Nita run?",
+            "qId": "Nita ikut lomba lari apa?",
+            "options": [
+              "The relay race",
+              "The sack race",
+              "The swimming race"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did Nita drop?",
+            "qId": "Apa yang Nita jatuhkan?",
+            "options": [
+              "The baton",
+              "Her shoe",
+              "Her medal"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where did her team finish in the relay?",
+            "qId": "Timnya juara berapa di estafet?",
+            "options": [
+              "Second",
+              "First",
+              "Last"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What did Nita's class win?",
+            "qId": "Kelas Nita menang apa?",
+            "options": [
+              "The tug of war",
+              "The relay race",
+              "The swimming race"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Nita's Proud Sports Day",
+              "The Lost Baton",
+              "A Rainy Race"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          2,
+          5,
+          6
+        ]
       },
       {
-        passage: ['The red team scores two points, and the blue team scores three points.', 'The blue team wins the game.'],
-        id: 'Tim merah mendapat dua poin, dan tim biru mendapat tiga poin. Tim biru memenangkan pertandingan.',
-        question: 'Which team wins the game?',
-        questionId: 'Tim mana yang memenangkan pertandingan?',
-        opts: [{ emoji: '🔵', lbl: 'Blue team', ok: true }, { emoji: '🔴', lbl: 'Red team' }, { emoji: '🟢', lbl: 'Green team' }],
-      },
+        "genre": "sign",
+        "heading": "📣 Sports Day Plan",
+        "lines": [
+          {
+            "en": "Sports Day: Friday, 7 a.m. to 12 p.m.",
+            "id": "Hari Olahraga: Jumat, jam 7 pagi sampai 12 siang."
+          },
+          {
+            "en": "Wear your team T-shirt: red, blue or yellow.",
+            "id": "Pakai kaus timmu: merah, biru, atau kuning."
+          },
+          {
+            "en": "Bring a water bottle and a hat.",
+            "id": "Bawa botol minum dan topi."
+          },
+          {
+            "en": "Races start at 8 a.m. on the field.",
+            "id": "Lomba lari mulai jam 8 pagi di lapangan."
+          },
+          {
+            "en": "Parents can watch from the tent.",
+            "id": "Orang tua bisa menonton dari tenda."
+          },
+          {
+            "en": "Medals will be given at 11:30.",
+            "id": "Medali dibagikan jam 11.30."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What should students bring?",
+            "qId": "Apa yang harus dibawa siswa?",
+            "options": [
+              "A water bottle and a hat",
+              "A ball and a racket",
+              "Their lunch and a book"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where do the races start?",
+            "qId": "Lomba lari mulai di mana?",
+            "options": [
+              "On the field",
+              "In the hall",
+              "In the tent"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where can parents watch?",
+            "qId": "Orang tua bisa menonton dari mana?",
+            "options": [
+              "From the tent",
+              "From the classroom",
+              "From the canteen"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When will the medals be given?",
+            "qId": "Kapan medali dibagikan?",
+            "options": [
+              "At 11:30",
+              "At 8 a.m.",
+              "At 12 p.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What colors are the team T-shirts?",
+            "qId": "Kaus tim warnanya apa?",
+            "options": [
+              "Red, blue or yellow",
+              "Red, green or white",
+              "Blue, black or yellow"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          }
+        ]
+      }
     ],
-    story: ['At the end of the day, the teacher gives out medals.', 'Rian gets a silver medal for second place.', 'His friend Budi gets a gold medal for first place in jumping.'],
-    storyId: 'Di akhir hari, gurunya membagikan medali. Rian mendapat medali perak untuk posisi kedua. Temannya Budi mendapat medali emas untuk posisi pertama di lomba lompat.',
-    question: {
-      text: 'What medal does Budi get?',
-      id: 'Medali apa yang didapat Budi?',
-      opts: [{ emoji: '🥇', lbl: 'Gold medal', ok: true }, { emoji: '🥈', lbl: 'Silver medal' }, { emoji: '🥉', lbl: 'Bronze medal' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ Before the Race",
+        "lines": [
+          {
+            "en": "Coach: Are you ready, Bima?",
+            "id": "Pelatih: Sudah siap, Bima?"
+          },
+          {
+            "en": "Bima: I'm a bit nervous, Coach.",
+            "id": "Bima: Aku agak gugup, Pak."
+          },
+          {
+            "en": "Coach: That's okay. Just run your best.",
+            "id": "Pelatih: Tidak apa-apa. Lari sebaik-baiknya saja."
+          },
+          {
+            "en": "Bima: What if I fall?",
+            "id": "Bima: Kalau aku jatuh bagaimana?"
+          },
+          {
+            "en": "Coach: Then get up and keep running!",
+            "id": "Pelatih: Bangun lagi dan terus berlari!"
+          },
+          {
+            "en": "Bima: Okay! I'll try.",
+            "id": "Bima: Oke! Aku coba."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How does Bima feel?",
+            "qId": "Bagaimana perasaan Bima?",
+            "options": [
+              "A bit nervous",
+              "Very angry",
+              "Very sleepy"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What does the coach tell Bima to do?",
+            "qId": "Pelatih menyuruh Bima melakukan apa?",
+            "options": [
+              "Run his best",
+              "Win the race",
+              "Go home"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is Bima worried about?",
+            "qId": "Bima khawatir tentang apa?",
+            "options": [
+              "Falling down",
+              "Losing his shoes",
+              "Being late"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Bima asks, 'What if I fall?' What does the coach answer?",
+            "qId": "Bima bertanya 'Kalau aku jatuh?'. Pelatih menjawab apa?",
+            "options": [
+              "Then get up and keep running!",
+              "Just run your best.",
+              "Are you ready, Bima?"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who is Bima talking to?",
+            "qId": "Bima berbicara dengan siapa?",
+            "options": [
+              "His coach",
+              "His mom",
+              "His friend"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "⚽ The Big Match",
+        "lines": [
+          {
+            "en": "On Saturday, the Tigers played the Eagles.",
+            "id": "Hari Sabtu, tim Tigers melawan tim Eagles."
+          },
+          {
+            "en": "The Eagles scored first, and the Tigers were sad.",
+            "id": "Eagles mencetak gol duluan, dan Tigers sedih."
+          },
+          {
+            "en": "In the second half, Rafi passed the ball to Dewi.",
+            "id": "Di babak kedua, Rafi mengoper bola ke Dewi.",
+            "br": true
+          },
+          {
+            "en": "Dewi kicked it hard, and it went in!",
+            "id": "Dewi menendangnya keras, dan masuk!"
+          },
+          {
+            "en": "The score was one to one.",
+            "id": "Skornya satu sama."
+          },
+          {
+            "en": "In the last minute, Rafi scored again!",
+            "id": "Di menit terakhir, Rafi mencetak gol lagi!",
+            "br": true
+          },
+          {
+            "en": "The Tigers won two to one.",
+            "id": "Tigers menang dua lawan satu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who scored first?",
+            "qId": "Siapa yang mencetak gol duluan?",
+            "options": [
+              "The Eagles",
+              "The Tigers",
+              "Dewi"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who passed the ball to Dewi?",
+            "qId": "Siapa yang mengoper bola ke Dewi?",
+            "options": [
+              "Rafi",
+              "The coach",
+              "An Eagles player"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What was the score after Dewi's goal?",
+            "qId": "Berapa skornya setelah gol Dewi?",
+            "options": [
+              "One to one",
+              "Two to one",
+              "One to zero"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who won the match?",
+            "qId": "Siapa yang menang?",
+            "options": [
+              "The Tigers",
+              "The Eagles",
+              "Nobody"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "The Tigers Win!",
+              "The Eagles Fly Away",
+              "Dewi Loses the Ball"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'memasak-di-dapur',
-    title: 'Memasak di Dapur (Cooking in the Kitchen)',
-    scene: '🍳',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Grandma cooks fried rice in the kitchen.', 'She uses eggs, rice, and vegetables.'], id: 'Nenek memasak nasi goreng di dapur. Dia memakai telur, nasi, dan sayuran.' },
-      { passage: ['The kitchen smells delicious.', 'Everyone comes to see what is cooking.'], id: 'Dapurnya berbau lezat. Semua orang datang untuk melihat apa yang sedang dimasak.' },
-    ],
-    drill: [
+    "id": "memasak-di-dapur",
+    "title": "Memasak di Dapur (Cooking in the Kitchen)",
+    "scene": "🍳",
+    "desc": "Cerita, resep & dialog",
+    "texts": [
       {
-        passage: ['Grandma cracks two eggs into the pan.', 'She saves one egg for breakfast tomorrow.'],
-        id: 'Nenek memecahkan dua telur ke wajan. Dia menyimpan satu telur untuk sarapan besok.',
-        question: 'How many eggs does grandma cook now?',
-        questionId: 'Berapa banyak telur yang dimasak nenek sekarang?',
-        opts: [{ emoji: '2️⃣', lbl: 'Two', ok: true }, { emoji: '1️⃣', lbl: 'One' }, { emoji: '3️⃣', lbl: 'Three' }],
+        "genre": "story",
+        "heading": "🥞 Pancake Sunday",
+        "lines": [
+          {
+            "en": "On Sunday, Dad and Sari made pancakes.",
+            "id": "Hari Minggu, Ayah dan Sari membuat panekuk."
+          },
+          {
+            "en": "First, Sari put flour and milk in a bowl.",
+            "id": "Pertama, Sari memasukkan tepung dan susu ke mangkuk."
+          },
+          {
+            "en": "Dad added two eggs.",
+            "id": "Ayah menambahkan dua telur."
+          },
+          {
+            "en": "Sari mixed everything with a big spoon.",
+            "id": "Sari mengaduk semuanya dengan sendok besar.",
+            "br": true
+          },
+          {
+            "en": "Dad cooked the pancakes in a pan.",
+            "id": "Ayah memasak panekuk di wajan."
+          },
+          {
+            "en": "One pancake fell on the floor!",
+            "id": "Satu panekuk jatuh ke lantai!"
+          },
+          {
+            "en": "They laughed and cooked another one.",
+            "id": "Mereka tertawa dan memasak satu lagi.",
+            "br": true
+          },
+          {
+            "en": "They ate the pancakes with honey.",
+            "id": "Mereka makan panekuk dengan madu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What did Dad and Sari make?",
+            "qId": "Ayah dan Sari membuat apa?",
+            "options": [
+              "Pancakes",
+              "A cake",
+              "Fried rice"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What did Dad add?",
+            "qId": "Ayah menambahkan apa?",
+            "options": [
+              "Two eggs",
+              "Some honey",
+              "More milk"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did Sari use to mix?",
+            "qId": "Sari mengaduk pakai apa?",
+            "options": [
+              "A big spoon",
+              "A fork",
+              "Her hands"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What happened to one pancake?",
+            "qId": "Apa yang terjadi pada satu panekuk?",
+            "options": [
+              "It fell on the floor.",
+              "It burned.",
+              "The cat ate it."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Pancake Sunday",
+              "Dad Burns the Rice",
+              "Sari's Big Spoon"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          1,
+          4,
+          7
+        ]
       },
       {
-        passage: ['Grandma adds carrots and peas to the rice.', 'She does not add corn because nobody likes it.'],
-        id: 'Nenek menambahkan wortel dan kacang polong ke nasinya. Dia tidak menambahkan jagung karena tidak ada yang suka.',
-        question: 'What vegetable does grandma NOT add?',
-        questionId: 'Sayuran apa yang TIDAK ditambahkan nenek?',
-        opts: [{ emoji: '🌽', lbl: 'Corn', ok: true }, { emoji: '🥕', lbl: 'Carrots' }, { emoji: '🫛', lbl: 'Peas' }],
-      },
+        "genre": "note",
+        "heading": "📝 Recipe: Fried Rice",
+        "lines": [
+          {
+            "en": "Fried rice for two people.",
+            "id": "Nasi goreng untuk dua orang."
+          },
+          {
+            "en": "You need rice, an egg, onions and sauce.",
+            "id": "Kamu butuh nasi, telur, bawang, dan kecap."
+          },
+          {
+            "en": "Ask an adult to cut the onions.",
+            "id": "Minta orang dewasa memotong bawangnya."
+          },
+          {
+            "en": "Cook the onions and the egg in a pan.",
+            "id": "Masak bawang dan telur di wajan."
+          },
+          {
+            "en": "Add the rice and the sauce.",
+            "id": "Tambahkan nasi dan kecap."
+          },
+          {
+            "en": "Cook for five minutes and serve it hot.",
+            "id": "Masak lima menit dan sajikan hangat."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many people is this recipe for?",
+            "qId": "Resep ini untuk berapa orang?",
+            "options": [
+              "Two",
+              "Five",
+              "One"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Who should cut the onions?",
+            "qId": "Siapa yang harus memotong bawang?",
+            "options": [
+              "An adult",
+              "A child",
+              "Anyone"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What do you cook first?",
+            "qId": "Apa yang dimasak lebih dulu?",
+            "options": [
+              "The onions and the egg",
+              "The rice and the sauce",
+              "Only the rice"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How long do you cook it at the end?",
+            "qId": "Berapa lama dimasak di akhir?",
+            "options": [
+              "Five minutes",
+              "Two minutes",
+              "Ten minutes"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this text?",
+            "qId": "Teks ini apa?",
+            "options": [
+              "A recipe",
+              "A menu",
+              "A shopping list"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
     ],
-    story: ['When the fried rice is ready, grandma calls everyone to the table.', 'She also makes a plate of sliced cucumbers and tomatoes.', 'Dito eats two plates because it tastes so good.'],
-    storyId: 'Ketika nasi gorengnya siap, nenek memanggil semua orang ke meja. Dia juga membuat satu piring irisan timun dan tomat. Dito makan dua piring karena rasanya sangat enak.',
-    question: {
-      text: 'How many plates does Dito eat?',
-      id: 'Berapa piring yang dimakan Dito?',
-      opts: [{ emoji: '2️⃣', lbl: 'Two plates', ok: true }, { emoji: '1️⃣', lbl: 'One plate' }, { emoji: '3️⃣', lbl: 'Three plates' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ Making Cookies",
+        "lines": [
+          {
+            "en": "Grandma: Let's make cookies today!",
+            "id": "Nenek: Ayo bikin kue kering hari ini!"
+          },
+          {
+            "en": "Rudi: Yay! What do we need?",
+            "id": "Rudi: Hore! Kita butuh apa?"
+          },
+          {
+            "en": "Grandma: Butter, sugar, flour and chocolate.",
+            "id": "Nenek: Mentega, gula, tepung, dan cokelat."
+          },
+          {
+            "en": "Rudi: Oh no, there's no chocolate.",
+            "id": "Rudi: Waduh, cokelatnya tidak ada."
+          },
+          {
+            "en": "Grandma: Then let's use raisins instead.",
+            "id": "Nenek: Kalau begitu pakai kismis saja."
+          },
+          {
+            "en": "Rudi: Raisin cookies sound yummy!",
+            "id": "Rudi: Kue kering kismis kedengarannya enak!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What are they making?",
+            "qId": "Mereka membuat apa?",
+            "options": [
+              "Cookies",
+              "Pancakes",
+              "Bread"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What is missing?",
+            "qId": "Apa yang tidak ada?",
+            "options": [
+              "Chocolate",
+              "Butter",
+              "Sugar"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What will they use instead?",
+            "qId": "Mereka memakai apa sebagai gantinya?",
+            "options": [
+              "Raisins",
+              "Nuts",
+              "Honey"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Rudi asks, 'What do we need?' What does Grandma answer?",
+            "qId": "Rudi bertanya 'Kita butuh apa?'. Nenek menjawab apa?",
+            "options": [
+              "Butter, sugar, flour and chocolate.",
+              "Let's make cookies today!",
+              "Then let's use raisins instead."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What does Rudi think of raisin cookies?",
+            "qId": "Apa pendapat Rudi soal kue kering kismis?",
+            "options": [
+              "They sound yummy.",
+              "He does not want them.",
+              "They are too sweet."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "🍲 Lina's Salty Soup",
+        "lines": [
+          {
+            "en": "Lina wanted to make soup for her sick mom.",
+            "id": "Lina ingin membuat sup untuk ibunya yang sakit."
+          },
+          {
+            "en": "She cut carrots and potatoes with Dad's help.",
+            "id": "Dia memotong wortel dan kentang dibantu Ayah."
+          },
+          {
+            "en": "Then she added salt.",
+            "id": "Lalu dia menambahkan garam.",
+            "br": true
+          },
+          {
+            "en": "Oh no, she added too much!",
+            "id": "Waduh, garamnya terlalu banyak!"
+          },
+          {
+            "en": "The soup was very salty.",
+            "id": "Supnya asin sekali."
+          },
+          {
+            "en": "Dad had an idea: add more water and potatoes.",
+            "id": "Ayah punya ide: tambahkan air dan kentang.",
+            "br": true
+          },
+          {
+            "en": "Now the soup was perfect, and Mom felt better.",
+            "id": "Sekarang supnya pas, dan Ibu merasa lebih baik."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who was the soup for?",
+            "qId": "Sup itu untuk siapa?",
+            "options": [
+              "Lina's sick mom",
+              "Lina's dad",
+              "Lina"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Who helped Lina cut the vegetables?",
+            "qId": "Siapa yang membantu Lina memotong sayur?",
+            "options": [
+              "Dad",
+              "Mom",
+              "Grandma"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What was wrong with the soup?",
+            "qId": "Apa yang salah dengan supnya?",
+            "options": [
+              "It was too salty.",
+              "It was too cold.",
+              "It was too sweet."
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "How did they fix the soup?",
+            "qId": "Bagaimana mereka memperbaiki supnya?",
+            "options": [
+              "They added water and potatoes.",
+              "They added more salt.",
+              "They cooked a new soup."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Lina's Salty Soup",
+              "Mom Cooks Dinner",
+              "The Missing Carrots"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'taman-bermain',
-    title: 'Di Taman Bermain (At the Playground)',
-    scene: '🛝',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Maya goes to the playground after school.', 'She wants to play on the slide.'], id: 'Maya pergi ke taman bermain setelah sekolah. Dia ingin main perosotan.' },
-      { passage: ['Her brother prefers the swing.', 'They play together happily.'], id: 'Kakaknya lebih suka ayunan. Mereka bermain bersama dengan senang.' },
-    ],
-    drill: [
+    "id": "taman-bermain",
+    "title": "Di Taman Bermain (At the Playground)",
+    "scene": "🛝",
+    "desc": "Cerita, papan aturan & dialog",
+    "texts": [
       {
-        passage: ['Maya climbs up the ladder and slides down fast.', 'Her brother pushes the swing higher and higher.'],
-        id: 'Maya memanjat tangga dan meluncur turun dengan cepat. Kakaknya mendorong ayunan makin tinggi.',
-        question: 'What does Maya slide down?',
-        questionId: 'Apa yang diluncuri Maya?',
-        opts: [{ emoji: '🛝', lbl: 'The slide', ok: true }, { emoji: '🎢', lbl: 'A roller coaster' }, { emoji: '🪜', lbl: 'A ladder' }],
+        "genre": "story",
+        "heading": "🛝 The New Playground",
+        "lines": [
+          {
+            "en": "A new playground opened near Ali's house.",
+            "id": "Taman bermain baru dibuka dekat rumah Ali."
+          },
+          {
+            "en": "It had a tall slide and three swings.",
+            "id": "Ada perosotan tinggi dan tiga ayunan."
+          },
+          {
+            "en": "Ali ran to the slide first.",
+            "id": "Ali berlari ke perosotan duluan."
+          },
+          {
+            "en": "Then he met a girl named Rara.",
+            "id": "Lalu dia bertemu anak perempuan bernama Rara.",
+            "br": true
+          },
+          {
+            "en": "Rara was scared of the tall slide.",
+            "id": "Rara takut pada perosotan yang tinggi."
+          },
+          {
+            "en": "Ali held her hand and they went down together.",
+            "id": "Ali menggandeng tangannya dan mereka meluncur bersama."
+          },
+          {
+            "en": "After that, they played on the swings.",
+            "id": "Setelah itu, mereka main ayunan.",
+            "br": true
+          },
+          {
+            "en": "Now Ali and Rara are good friends.",
+            "id": "Sekarang Ali dan Rara berteman baik."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many swings did the playground have?",
+            "qId": "Ada berapa ayunan di taman bermain itu?",
+            "options": [
+              "Three",
+              "One",
+              "Two"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What was Rara scared of?",
+            "qId": "Rara takut pada apa?",
+            "options": [
+              "The tall slide",
+              "The swings",
+              "Ali"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How did Ali help Rara?",
+            "qId": "Bagaimana Ali membantu Rara?",
+            "options": [
+              "He held her hand.",
+              "He pushed her.",
+              "He called her mom."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What did they do after the slide?",
+            "qId": "Apa yang mereka lakukan setelah perosotan?",
+            "options": [
+              "They played on the swings.",
+              "They went home.",
+              "They ate ice cream."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A New Friend at the Playground",
+              "Ali Falls Down",
+              "The Broken Swing"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          2,
+          3,
+          6
+        ]
       },
       {
-        passage: ['Three kids wait in line for the seesaw.', 'Maya and her brother wait for the monkey bars instead.'],
-        id: 'Tiga anak antre untuk jungkat-jungkit. Maya dan kakaknya malah menunggu giliran panjatan monyet.',
-        question: 'What do Maya and her brother wait for?',
-        questionId: 'Apa yang ditunggu Maya dan kakaknya?',
-        opts: [{ emoji: '🐵', lbl: 'The monkey bars', ok: true }, { emoji: '⚖️', lbl: 'The seesaw' }, { emoji: '🛝', lbl: 'The slide' }],
-      },
+        "genre": "sign",
+        "heading": "🪧 Playground Rules",
+        "lines": [
+          {
+            "en": "Welcome to Melati Playground!",
+            "id": "Selamat datang di Taman Bermain Melati!"
+          },
+          {
+            "en": "This playground is for children under 12.",
+            "id": "Taman bermain ini untuk anak di bawah 12 tahun."
+          },
+          {
+            "en": "Take turns on the slide and swings.",
+            "id": "Bergantian main perosotan dan ayunan."
+          },
+          {
+            "en": "No bikes on the grass.",
+            "id": "Dilarang naik sepeda di rumput."
+          },
+          {
+            "en": "Please put rubbish in the bin.",
+            "id": "Tolong buang sampah di tempat sampah."
+          },
+          {
+            "en": "Open from 7 a.m. to 6 p.m.",
+            "id": "Buka jam 7 pagi sampai 6 sore."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who is the playground for?",
+            "qId": "Taman bermain ini untuk siapa?",
+            "options": [
+              "Children under 12",
+              "Adults only",
+              "Everyone over 12"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What should you do on the slide and swings?",
+            "qId": "Apa yang harus kamu lakukan di perosotan dan ayunan?",
+            "options": [
+              "Take turns",
+              "Go down together",
+              "Ride bikes"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where can't you ride bikes?",
+            "qId": "Di mana tidak boleh naik sepeda?",
+            "options": [
+              "On the grass",
+              "On the road",
+              "On the path"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "When does the playground close?",
+            "qId": "Jam berapa taman bermain tutup?",
+            "options": [
+              "At 6 p.m.",
+              "At 7 a.m.",
+              "At 12 p.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the playground's name?",
+            "qId": "Apa nama taman bermain itu?",
+            "options": [
+              "Melati Playground",
+              "Mawar Playground",
+              "Rara Playground"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
     ],
-    story: ['After playing for an hour, Maya feels thirsty.', 'She asks her brother to share his water bottle.', 'They sit on a bench and rest before going home.'],
-    storyId: 'Setelah bermain satu jam, Maya merasa haus. Dia meminta kakaknya berbagi botol minumnya. Mereka duduk di bangku dan beristirahat sebelum pulang.',
-    question: {
-      text: 'Where do Maya and her brother rest?',
-      id: 'Di mana Maya dan kakaknya beristirahat?',
-      opts: [{ emoji: '🪑', lbl: 'On a bench', ok: true }, { emoji: '🌱', lbl: 'On the grass' }, { emoji: '🛝', lbl: 'On the slide' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ Whose Turn?",
+        "lines": [
+          {
+            "en": "Bayu: Can I have a turn on the swing?",
+            "id": "Bayu: Boleh aku gantian main ayunan?"
+          },
+          {
+            "en": "Sita: I just got on. Can you wait a bit?",
+            "id": "Sita: Aku baru naik. Bisa tunggu sebentar?"
+          },
+          {
+            "en": "Bayu: Okay. How long?",
+            "id": "Bayu: Oke. Berapa lama?"
+          },
+          {
+            "en": "Sita: Five more minutes, then it's your turn.",
+            "id": "Sita: Lima menit lagi, lalu giliranmu."
+          },
+          {
+            "en": "Bayu: Can I push you while I wait?",
+            "id": "Bayu: Boleh aku dorong sambil menunggu?"
+          },
+          {
+            "en": "Sita: Yes, please! Higher!",
+            "id": "Sita: Boleh! Lebih tinggi!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What does Bayu want?",
+            "qId": "Bayu ingin apa?",
+            "options": [
+              "A turn on the swing",
+              "A turn on the slide",
+              "A drink"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How long must Bayu wait?",
+            "qId": "Berapa lama Bayu harus menunggu?",
+            "options": [
+              "Five minutes",
+              "Ten minutes",
+              "One minute"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does Bayu offer to do?",
+            "qId": "Bayu menawarkan apa?",
+            "options": [
+              "Push Sita",
+              "Go home",
+              "Play on the slide"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Bayu asks, 'How long?' What does Sita answer?",
+            "qId": "Bayu bertanya 'Berapa lama?'. Sita menjawab apa?",
+            "options": [
+              "Five more minutes, then it's your turn.",
+              "Can you wait a bit?",
+              "Yes, please! Higher!"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How does Sita feel when Bayu pushes her?",
+            "qId": "Bagaimana perasaan Sita saat didorong Bayu?",
+            "options": [
+              "Happy",
+              "Angry",
+              "Scared"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "🐱 The Cat in the Tree",
+        "lines": [
+          {
+            "en": "One afternoon, Nia heard a cat crying.",
+            "id": "Suatu sore, Nia mendengar kucing mengeong sedih."
+          },
+          {
+            "en": "It was stuck high up in a tree.",
+            "id": "Kucing itu tersangkut tinggi di pohon."
+          },
+          {
+            "en": "Nia couldn't reach it.",
+            "id": "Nia tidak bisa menjangkaunya."
+          },
+          {
+            "en": "She ran to the park keeper for help.",
+            "id": "Dia berlari minta tolong ke penjaga taman.",
+            "br": true
+          },
+          {
+            "en": "The keeper brought a long ladder.",
+            "id": "Penjaga membawa tangga panjang."
+          },
+          {
+            "en": "He climbed up and carefully took the cat down.",
+            "id": "Dia memanjat dan menurunkan kucing itu dengan hati-hati.",
+            "br": true
+          },
+          {
+            "en": "The cat purred and rubbed against Nia's legs.",
+            "id": "Kucing itu mendengkur senang dan menggesek kaki Nia."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where was the cat?",
+            "qId": "Di mana kucing itu?",
+            "options": [
+              "High up in a tree",
+              "On the slide",
+              "In a box"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why did Nia go to the park keeper?",
+            "qId": "Kenapa Nia pergi ke penjaga taman?",
+            "options": [
+              "She couldn't reach the cat.",
+              "She lost her ball.",
+              "She wanted a drink."
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              3
+            ]
+          },
+          {
+            "q": "What did the keeper bring?",
+            "qId": "Apa yang dibawa penjaga?",
+            "options": [
+              "A long ladder",
+              "A big box",
+              "Some food"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How did the cat feel at the end?",
+            "qId": "Bagaimana perasaan kucing itu di akhir?",
+            "options": [
+              "Happy",
+              "Scared",
+              "Angry"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Help for a Little Cat",
+              "Nia Climbs a Tree",
+              "The Lost Ladder"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'perjalanan-kereta',
-    title: 'Perjalanan Kereta (Train Trip)',
-    scene: '🚆',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Fajar takes a train to visit his grandpa.', 'He sits by the window.'], id: 'Fajar naik kereta untuk mengunjungi kakeknya. Dia duduk dekat jendela.' },
-      { passage: ['The train passes rice fields and rivers.', 'Fajar watches everything with excitement.'], id: 'Kereta melewati sawah dan sungai. Fajar mengamati semuanya dengan senang.' },
-    ],
-    drill: [
+    "id": "perjalanan-kereta",
+    "title": "Perjalanan Kereta (Train Trip)",
+    "scene": "🚆",
+    "desc": "Cerita, pengumuman & dialog",
+    "texts": [
       {
-        passage: ['The train stops at two small stations before the big city.', 'Fajar counts the stations on his fingers.'],
-        id: 'Kereta berhenti di dua stasiun kecil sebelum kota besar. Fajar menghitung stasiunnya dengan jari.',
-        question: 'How many small stations does the train stop at?',
-        questionId: 'Berapa stasiun kecil yang disinggahi kereta?',
-        opts: [{ emoji: '2️⃣', lbl: 'Two', ok: true }, { emoji: '1️⃣', lbl: 'One' }, { emoji: '3️⃣', lbl: 'Three' }],
+        "genre": "story",
+        "heading": "🚆 A Trip to Grandma's",
+        "lines": [
+          {
+            "en": "During the holiday, Riko took a train to Yogyakarta.",
+            "id": "Saat liburan, Riko naik kereta ke Yogyakarta."
+          },
+          {
+            "en": "He went with his mom and baby sister.",
+            "id": "Dia pergi bersama ibu dan adik bayinya."
+          },
+          {
+            "en": "The train left Jakarta at eight in the morning.",
+            "id": "Kereta berangkat dari Jakarta jam delapan pagi."
+          },
+          {
+            "en": "Riko sat by the window.",
+            "id": "Riko duduk di dekat jendela.",
+            "br": true
+          },
+          {
+            "en": "He saw rice fields, rivers and mountains.",
+            "id": "Dia melihat sawah, sungai, dan gunung."
+          },
+          {
+            "en": "At lunchtime, they ate fried rice on the train.",
+            "id": "Saat makan siang, mereka makan nasi goreng di kereta."
+          },
+          {
+            "en": "They arrived in Yogyakarta at four.",
+            "id": "Mereka tiba di Yogyakarta jam empat.",
+            "br": true
+          },
+          {
+            "en": "Grandma was waiting at the station with a big smile.",
+            "id": "Nenek menunggu di stasiun dengan senyum lebar."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where did Riko go?",
+            "qId": "Riko pergi ke mana?",
+            "options": [
+              "To Yogyakarta",
+              "To Jakarta",
+              "To Bali"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Who went with Riko?",
+            "qId": "Siapa yang pergi bersama Riko?",
+            "options": [
+              "His mom and baby sister",
+              "His dad",
+              "His grandma"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did Riko see from the window?",
+            "qId": "Apa yang Riko lihat dari jendela?",
+            "options": [
+              "Rice fields, rivers and mountains",
+              "The sea and boats",
+              "Tall buildings"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who was waiting at the station?",
+            "qId": "Siapa yang menunggu di stasiun?",
+            "options": [
+              "Grandma",
+              "Dad",
+              "A friend"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "Riko's Train Trip",
+              "The Late Train",
+              "Grandma Visits Jakarta"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          2,
+          4,
+          6
+        ]
       },
       {
-        passage: ['Fajar buys a snack from the train seller.', 'He chooses crackers instead of candy.'],
-        id: 'Fajar membeli camilan dari penjual di kereta. Dia memilih biskuit, bukan permen.',
-        question: 'What snack does Fajar choose?',
-        questionId: 'Camilan apa yang dipilih Fajar?',
-        opts: [{ emoji: '🍪', lbl: 'Crackers', ok: true }, { emoji: '🍬', lbl: 'Candy' }, { emoji: '🍫', lbl: 'Chocolate' }],
-      },
+        "genre": "sign",
+        "heading": "🚉 Station Notice",
+        "lines": [
+          {
+            "en": "Train to Bandung: Platform 3.",
+            "id": "Kereta ke Bandung: Peron 3."
+          },
+          {
+            "en": "The train leaves at 9:15.",
+            "id": "Kereta berangkat jam 9.15."
+          },
+          {
+            "en": "Please be at the platform 10 minutes early.",
+            "id": "Harap tiba di peron 10 menit lebih awal."
+          },
+          {
+            "en": "Keep your ticket with you.",
+            "id": "Simpan tiketmu baik-baik."
+          },
+          {
+            "en": "Do not stand near the yellow line.",
+            "id": "Jangan berdiri dekat garis kuning."
+          },
+          {
+            "en": "Food is sold in coach 4.",
+            "id": "Makanan dijual di gerbong 4."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Which platform is the train to Bandung?",
+            "qId": "Kereta ke Bandung di peron berapa?",
+            "options": [
+              "Platform 3",
+              "Platform 4",
+              "Platform 9"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What time does the train leave?",
+            "qId": "Jam berapa kereta berangkat?",
+            "options": [
+              "9:15",
+              "9:05",
+              "10:15"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "When should you be at the platform?",
+            "qId": "Kapan kamu harus tiba di peron?",
+            "options": [
+              "10 minutes early",
+              "At 9:15 exactly",
+              "1 hour early"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where can you buy food?",
+            "qId": "Di mana kamu bisa membeli makanan?",
+            "options": [
+              "In coach 4",
+              "On platform 3",
+              "Near the yellow line"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Where would you see this notice?",
+            "qId": "Di mana kamu melihat pengumuman ini?",
+            "options": [
+              "At a train station",
+              "At an airport",
+              "At a bus stop"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
     ],
-    story: ['When the train arrives, grandpa is waiting at the station.', 'He is holding a bunch of yellow bananas for Fajar.', 'Fajar runs and gives grandpa a big hug.'],
-    storyId: 'Ketika kereta tiba, kakek sudah menunggu di stasiun. Dia membawa sesisir pisang kuning untuk Fajar. Fajar berlari dan memeluk kakek erat-erat.',
-    question: {
-      text: 'What is grandpa holding at the station?',
-      id: 'Apa yang dibawa kakek di stasiun?',
-      opts: [{ emoji: '🍌', lbl: 'Bananas', ok: true }, { emoji: '🎈', lbl: 'Balloons' }, { emoji: '📷', lbl: 'A camera' }],
-    },
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ On the Train",
+        "lines": [
+          {
+            "en": "Conductor: Tickets, please!",
+            "id": "Kondektur: Tiketnya, tolong!"
+          },
+          {
+            "en": "Mom: Here are our two tickets.",
+            "id": "Ibu: Ini dua tiket kami."
+          },
+          {
+            "en": "Conductor: Thank you. You are in seats 12 and 13.",
+            "id": "Kondektur: Terima kasih. Kursi Anda nomor 12 dan 13."
+          },
+          {
+            "en": "Riko: When do we arrive in Bandung?",
+            "id": "Riko: Kapan kita sampai di Bandung?"
+          },
+          {
+            "en": "Conductor: In about two hours.",
+            "id": "Kondektur: Sekitar dua jam lagi."
+          },
+          {
+            "en": "Riko: Great! I can read my comic.",
+            "id": "Riko: Asyik! Aku bisa baca komikku."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who asks for the tickets?",
+            "qId": "Siapa yang meminta tiket?",
+            "options": [
+              "The conductor",
+              "Mom",
+              "Riko"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Which seats are theirs?",
+            "qId": "Kursi mereka nomor berapa?",
+            "options": [
+              "12 and 13",
+              "2 and 3",
+              "13 and 14"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where are they going?",
+            "qId": "Mereka pergi ke mana?",
+            "options": [
+              "To Bandung",
+              "To Yogyakarta",
+              "To Jakarta"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Riko asks when they arrive. What does the conductor answer?",
+            "qId": "Riko bertanya kapan sampai. Kondektur menjawab apa?",
+            "options": [
+              "In about two hours.",
+              "Tickets, please!",
+              "You are in seats 12 and 13."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What will Riko do on the train?",
+            "qId": "Apa yang akan Riko lakukan di kereta?",
+            "options": [
+              "Read his comic",
+              "Sleep",
+              "Eat lunch"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "🎒 The Forgotten Bag",
+        "lines": [
+          {
+            "en": "Sinta and her dad got off the train in Malang.",
+            "id": "Sinta dan ayahnya turun dari kereta di Malang."
+          },
+          {
+            "en": "Outside the station, Sinta stopped.",
+            "id": "Di luar stasiun, Sinta berhenti."
+          },
+          {
+            "en": "'My bag! I left it on the train!'",
+            "id": "'Tasku! Tasku tertinggal di kereta!'"
+          },
+          {
+            "en": "Dad ran back to the platform.",
+            "id": "Ayah berlari kembali ke peron.",
+            "br": true
+          },
+          {
+            "en": "A kind guard was holding a pink bag.",
+            "id": "Seorang petugas yang baik memegang tas merah muda."
+          },
+          {
+            "en": "'Is this yours?' he asked with a smile.",
+            "id": "'Ini punyamu?' tanyanya sambil tersenyum."
+          },
+          {
+            "en": "Sinta said thank you and held her bag tightly.",
+            "id": "Sinta berterima kasih dan memegang tasnya erat-erat.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where did they get off the train?",
+            "qId": "Di mana mereka turun dari kereta?",
+            "options": [
+              "In Malang",
+              "In Bandung",
+              "In Jakarta"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What did Sinta forget?",
+            "qId": "Apa yang Sinta lupakan?",
+            "options": [
+              "Her bag",
+              "Her ticket",
+              "Her book"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Who ran back to the platform?",
+            "qId": "Siapa yang berlari kembali ke peron?",
+            "options": [
+              "Dad",
+              "Sinta",
+              "The guard"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What color was the bag?",
+            "qId": "Tasnya warna apa?",
+            "options": [
+              "Pink",
+              "Blue",
+              "Red"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "The Kind Guard",
+              "A Long Train Ride",
+              "Dad Loses His Ticket"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
+  {
+    "id": "hari-kemah",
+    "title": "Hari Kemah (Camping Day)",
+    "scene": "⛺",
+    "desc": "Cerita, papan aturan & dialog",
+    "texts": [
+      {
+        "genre": "story",
+        "heading": "⛺ Camping Day",
+        "sequence": [
+          1,
+          4,
+          8
+        ],
+        "lines": [
+          {
+            "en": "On Saturday, Tono's class went camping.",
+            "id": "Hari Sabtu, kelas Tono pergi berkemah."
+          },
+          {
+            "en": "They took a bus to the forest.",
+            "id": "Mereka naik bus ke hutan."
+          },
+          {
+            "en": "The teacher showed them how to build a tent.",
+            "id": "Guru menunjukkan cara mendirikan tenda."
+          },
+          {
+            "en": "It was hard, but they did it!",
+            "id": "Susah, tapi mereka berhasil!"
+          },
+          {
+            "en": "In the afternoon, it started to rain.",
+            "id": "Sore harinya, hujan mulai turun.",
+            "br": true
+          },
+          {
+            "en": "Everyone ran into the big tent.",
+            "id": "Semua lari masuk ke tenda besar."
+          },
+          {
+            "en": "They sang songs and ate cookies.",
+            "id": "Mereka bernyanyi dan makan kue kering."
+          },
+          {
+            "en": "At night, the sky was clear again.",
+            "id": "Malam harinya, langit cerah lagi.",
+            "br": true
+          },
+          {
+            "en": "Tono saw many stars.",
+            "id": "Tono melihat banyak bintang."
+          },
+          {
+            "en": "It was the best day of the year!",
+            "id": "Itu hari terbaik tahun ini!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How did the class go to the forest?",
+            "qId": "Bagaimana kelas itu pergi ke hutan?",
+            "options": [
+              "By bus",
+              "By train",
+              "On foot"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did they do when it rained?",
+            "qId": "Apa yang mereka lakukan waktu hujan?",
+            "options": [
+              "They ran into the big tent.",
+              "They went home.",
+              "They built a new tent."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What did Tono see at night?",
+            "qId": "Apa yang Tono lihat di malam hari?",
+            "options": [
+              "Many stars",
+              "The rain",
+              "A big bus"
+            ],
+            "answer": 0,
+            "evidence": [
+              8
+            ]
+          },
+          {
+            "q": "What happened first?",
+            "qId": "Apa yang terjadi paling dulu?",
+            "options": [
+              "They took a bus.",
+              "They sang songs.",
+              "It started to rain."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A Fun Day in the Forest",
+              "A Rainy Day at School",
+              "Tono's New Tent"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "🪧 Green Forest Camp — Rules",
+        "lines": [
+          {
+            "en": "Welcome to Green Forest Camp!",
+            "id": "Selamat datang di Perkemahan Hutan Hijau!"
+          },
+          {
+            "en": "Please stay on the path.",
+            "id": "Tetaplah berjalan di jalur."
+          },
+          {
+            "en": "Do not feed the animals.",
+            "id": "Jangan memberi makan hewan."
+          },
+          {
+            "en": "Put your rubbish in the bin.",
+            "id": "Buang sampahmu ke tempat sampah."
+          },
+          {
+            "en": "No swimming in the river after 5 p.m.",
+            "id": "Dilarang berenang di sungai setelah jam 5 sore."
+          },
+          {
+            "en": "Lights off at 9 p.m.",
+            "id": "Lampu dimatikan jam 9 malam."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where should you put your rubbish?",
+            "qId": "Sampah harus dibuang ke mana?",
+            "options": [
+              "In the bin",
+              "In the river",
+              "On the path"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Can you swim in the river at 6 p.m.?",
+            "qId": "Bolehkah berenang di sungai jam 6 sore?",
+            "options": [
+              "No, you can't.",
+              "Yes, you can.",
+              "Only with a friend."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What time do the lights go off?",
+            "qId": "Jam berapa lampu dimatikan?",
+            "options": [
+              "At 9 p.m.",
+              "At 5 p.m.",
+              "At 6 p.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does the sign say about the animals?",
+            "qId": "Apa kata papan itu tentang hewan?",
+            "options": [
+              "Don't give them food.",
+              "Take photos of them.",
+              "Play with them."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where would you see this sign?",
+            "qId": "Di mana kamu akan melihat papan ini?",
+            "options": [
+              "At a camp in a forest",
+              "At a swimming pool",
+              "At a school library"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ At the Library",
+        "lines": [
+          {
+            "en": "Mia: Excuse me, where are the animal books?",
+            "id": "Mia: Permisi, buku tentang hewan di mana?"
+          },
+          {
+            "en": "Librarian: They are on the top shelf.",
+            "id": "Pustakawan: Ada di rak paling atas."
+          },
+          {
+            "en": "Mia: I can't reach it. Can you help me?",
+            "id": "Mia: Aku tidak sampai. Bisa bantu aku?"
+          },
+          {
+            "en": "Librarian: Sure! Here you are.",
+            "id": "Pustakawan: Tentu! Ini dia."
+          },
+          {
+            "en": "Mia: Thank you! Can I take two books home?",
+            "id": "Mia: Terima kasih! Boleh aku bawa pulang dua buku?"
+          },
+          {
+            "en": "Librarian: Yes, but bring them back on Friday.",
+            "id": "Pustakawan: Boleh, tapi kembalikan hari Jumat."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What books does Mia want?",
+            "qId": "Buku apa yang Mia cari?",
+            "options": [
+              "Animal books",
+              "Story books",
+              "Cooking books"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where are the books?",
+            "qId": "Bukunya ada di mana?",
+            "options": [
+              "On the top shelf",
+              "On the table",
+              "In a box"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why does Mia ask for help?",
+            "qId": "Kenapa Mia minta tolong?",
+            "options": [
+              "She can't reach the shelf.",
+              "She can't find the library.",
+              "She lost her bag."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When must Mia bring the books back?",
+            "qId": "Kapan Mia harus mengembalikan bukunya?",
+            "options": [
+              "On Friday",
+              "On Monday",
+              "Tomorrow"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Mia asks, 'Can you help me?' What does the librarian answer?",
+            "qId": "Mia bertanya 'Bisa bantu aku?'. Pustakawan menjawab apa?",
+            "options": [
+              "Sure! Here you are.",
+              "They are on the top shelf.",
+              "Bring them back on Friday."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "story",
+        "heading": "🪁 The Lost Kite",
+        "lines": [
+          {
+            "en": "Rudi had a new red kite.",
+            "id": "Rudi punya layangan merah baru."
+          },
+          {
+            "en": "He flew it in the park with his sister.",
+            "id": "Dia menerbangkannya di taman bersama kakaknya."
+          },
+          {
+            "en": "Suddenly, the wind was very strong.",
+            "id": "Tiba-tiba, anginnya sangat kencang.",
+            "br": true
+          },
+          {
+            "en": "The kite flew away over the trees!",
+            "id": "Layangan terbang jauh melewati pepohonan!"
+          },
+          {
+            "en": "Rudi was sad and looked everywhere.",
+            "id": "Rudi sedih dan mencari ke mana-mana."
+          },
+          {
+            "en": "Then an old man came to them.",
+            "id": "Lalu seorang kakek datang menghampiri mereka.",
+            "br": true
+          },
+          {
+            "en": "He had the red kite in his hand.",
+            "id": "Dia memegang layangan merah itu."
+          },
+          {
+            "en": "Rudi said thank you and smiled.",
+            "id": "Rudi berterima kasih dan tersenyum."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who was with Rudi in the park?",
+            "qId": "Siapa yang bersama Rudi di taman?",
+            "options": [
+              "His sister",
+              "His dad",
+              "An old man"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why did the kite fly away?",
+            "qId": "Kenapa layangannya terbang jauh?",
+            "options": [
+              "The wind was very strong.",
+              "Rudi let it go.",
+              "His sister took it."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How did Rudi feel when he lost the kite?",
+            "qId": "Bagaimana perasaan Rudi saat layangannya hilang?",
+            "options": [
+              "Sad",
+              "Happy",
+              "Angry"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who found the kite?",
+            "qId": "Siapa yang menemukan layangannya?",
+            "options": [
+              "An old man",
+              "Rudi's sister",
+              "Rudi"
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "The Kind Old Man",
+              "Rudi's New Bike",
+              "A Rainy Day in the Park"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 /**
@@ -18540,1525 +22785,26791 @@ export const GRAMMAR_TOPICS_BY_LEVEL: Partial<Record<LevelKey, AnyGrammarTopic[]
   trailblazer: GRAMMAR_TOPICS_TRAILBLAZER,
 };
 /**
- * Reading Little Stars (3–5 th) — format KEDUA `ReadingWordTopic` (§types.ts),
- * beda total dari `READING_TOPICS_ADVENTURER` di atas (baca kalimat/cerita →
- * jawab pertanyaan) krn riset (`materi/reading.md` §5) mengonfirmasi anak
- * usia ini di manapun (Indonesia maupun kompetitor internasional) belum siap
- * dekoding kalimat — bahkan literasi Bahasa Indonesia sendiri (Kurikulum
- * Merdeka Fase Fondasi) baru menargetkan pengenalan huruf/kata di usia 5–6,
- * bukan 3–5. Aktivitas pembuka yang tepat: cocokkan KATA TUNGGAL (whole-word/
- * sight-word) dgn gambar — pola yang dipakai SEMUA kompetitor early-literacy
- * (Reading Eggs Junior, Endless Reader, Kumon, HOMER) di gerbang paling awal.
- *
- * **1 topik pertama** (permintaan user "coba buat 1 materi") — `kata-hewan`,
- * 10 kata dipetakan 1:1 dari `VOCAB_TOPICS_LITTLE_STARS` topik
- * `hewan-peliharaan` (kata pendek, emoji sangat khas/tidak ambigu, anak
- * SUDAH kenal maknanya dari Vocab — melatih ULANG lewat modalitas baca,
- * bukan kosakata baru sekaligus 2 skill). Id topik SENGAJA beda dari id
- * Vocab-nya (`kata-hewan` vs `hewan-peliharaan`, walau aman dari tabrakan
- * progres krn key `${skill}:${topicId}:${section}` sudah py awalan skill) —
- * konsisten dgn konvensi penamaan Listening Little Stars (`materi/
- * listening.md` §4A, semua id barunya beda dari id Vocab sumbernya).
- *
- * Sengaja BUKAN cuma tiru mentah pola "kata→gambar" kompetitor (permintaan
- * user "wajib ada improvement", `materi/reading.md` §6) — 2 penambahan:
- * (1) kartu kata dibungkus `.reading-word-card` (font besar+letter-spacing
- * ala flashcard, bukan teks sebaris kecil spt kompetitor kebanyakan) supaya
- * print-awareness bentuk kata lebih menonjol; (2) Tantangan membalik ARAH
- * tugas (gambar→pilih KATA tercetak, bukan kata→pilih gambar lagi spt
- * Latihan Inti) — tangga 2-arah yang TIDAK dipunyai kompetitor manapun yang
- * diriset (semuanya 1 arah: word→meaning), memaksa anak benar-benar
- * membedakan BENTUK CETAK kata (bukan cuma tebak dari familiaritas urutan).
- *
- * **Digenapkan 1→10 topik** (target CLAUDE.md ≥10/skill, permintaan user
- * "materi reading di little stars masih 1... buatkan minimal 10... research
- * ke lembaga bahasa inggris dalam negeri" — riset dikonfirmasi ulang: LIA
- * GEYL/EF Small Stars/Kumon Indonesia SEMUA mulai dari "look-listen-repeat"
- * kata benda konkret bergambar sebelum phonics, jadi PERLUASAN yang tepat
- * murni GENAPKAN domain `VOCAB_TOPICS_LITTLE_STARS` yang belum dipakai
- * Reading — bukan format/mekanik baru) — 9 topik baru: `kata-warna`/`kata-
- * angka`/`kata-bentuk`/`kata-keluarga`/`kata-tubuh`/`kata-buah`/`kata-
- * mainan`/`kata-pakaian`/`kata-kendaraan`, dipetakan 1:1 dari domain Vocab
- * `kenal-warna`/`angka-pertama`/`bentuk`/`keluargaku`/`tubuhku`/`buah-
- * buahan`/`mainan`/`pakaian`/`kendaraan` — urutan REUSE urutan asli Vocab
- * (sudah mencerminkan progresi "konsep dasar → diri & keluarga → benda
- * konkret" ala Kurikulum Merdeka Fase Fondasi/Kumon level 7A-6A). **2 domain
- * Vocab SENGAJA DILEWATI** (bukan lupa): `salam-sopan-santun` (ditandai
- * `iconAmbiguous:true` di Vocab — emoji gestur/ekspresi (mis. 😔 utk "Sorry")
- * multi-tafsir tanpa teks penjelas, fatal utk format Reading yang jawaban
- * Latihan Inti-nya MURNI gambar tanpa label; kata²nya jg frasa 2-3 kata
- * "Good Morning"/"Excuse Me", bukan kata benda tunggal) & `perasaanku`
- * (konsep EMOSI abstrak — semua sumber yg diriset & urutan Vocab-nya sendiri
- * menaruh kategori ini PALING TERAKHIR/tersulit di tangga Little Stars,
- * disisakan utk sesi mendatang kalau mau digenapkan lebih jauh). ZERO
- * perubahan mekanik/tipe data — 9 topik baru cuma `ReadingWordItem[]`
- * (en/id/emoji) via copy-paste 1:1 dari item Vocab yang sudah divalidasi,
- * murni kerja data.
+ * Reading little-stars — format "Baca Teks" (`ReadingTextTopic`, materi/reading.md §19–§22).
+ * Buku gambar mini — tier Dasar (dibacakan otomatis + kata disorot). Id topik lama DIPERTAHANKAN (urutan menu sama); progres format
+ * lama tidak terbaca krn section-nya beda (`latihan-teks`/`tantangan-teks`).
  */
-export const READING_TOPICS_LITTLE_STARS: ReadingWordTopic[] = [
+export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   {
-    id: 'kata-hewan',
-    title: 'Membaca Kata: Hewan (Reading Animal Words)',
-    scene: '🐶',
-    desc: '10 kata',
-    items: [
-      { en: 'Dog', id: 'Anjing', emoji: '🐶' },
-      { en: 'Cat', id: 'Kucing', emoji: '🐱' },
-      { en: 'Lion', id: 'Singa', emoji: '🦁' },
-      { en: 'Hamster', id: 'Hamster', emoji: '🐹' },
-      { en: 'Cow', id: 'Sapi', emoji: '🐮' },
-      { en: 'Frog', id: 'Katak', emoji: '🐸' },
-      { en: 'Horse', id: 'Kuda', emoji: '🐴' },
-      { en: 'Mouse', id: 'Tikus', emoji: '🐭' },
-      { en: 'Pig', id: 'Babi', emoji: '🐷' },
-      { en: 'Rabbit', id: 'Kelinci', emoji: '🐰' },
+    "id": "kata-hewan",
+    "title": "Buku Mini: Hewan (Mini Book: Animals)",
+    "scene": "🐮",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🐮 On the Farm",
+        "pictures": [
+          {
+            "emoji": "🐮",
+            "label": "cow"
+          },
+          {
+            "emoji": "🐷",
+            "label": "pig"
+          },
+          {
+            "emoji": "🐴",
+            "label": "horse"
+          },
+          {
+            "emoji": "🐭",
+            "label": "mouse"
+          },
+          {
+            "emoji": "🏡",
+            "label": "farm"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a cow.",
+            "id": "Aku lihat sapi.",
+            "pic": 0
+          },
+          {
+            "en": "I see a pig.",
+            "id": "Aku lihat babi.",
+            "pic": 1
+          },
+          {
+            "en": "I see a horse.",
+            "id": "Aku lihat kuda.",
+            "pic": 2
+          },
+          {
+            "en": "I see a mouse.",
+            "id": "Aku lihat tikus.",
+            "pic": 3
+          },
+          {
+            "en": "I see my farm!",
+            "id": "Aku lihat kebunku!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐮",
+              "🐷",
+              "🐭"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "cow"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐷",
+              "🐴",
+              "🏡"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "pig"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐴",
+              "🐭",
+              "🐮"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "horse"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐭",
+              "🏡",
+              "🐷"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "mouse"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏡",
+              "🐮",
+              "🐴"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "farm"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🐱 My Pets",
+        "pictures": [
+          {
+            "emoji": "🐱",
+            "label": "cat"
+          },
+          {
+            "emoji": "🐶",
+            "label": "dog"
+          },
+          {
+            "emoji": "🐰",
+            "label": "rabbit"
+          },
+          {
+            "emoji": "🐹",
+            "label": "hamster"
+          },
+          {
+            "emoji": "❤️",
+            "label": "pets"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I have a cat.",
+            "id": "Aku punya kucing.",
+            "pic": 0
+          },
+          {
+            "en": "I have a dog.",
+            "id": "Aku punya anjing.",
+            "pic": 1
+          },
+          {
+            "en": "I have a rabbit.",
+            "id": "Aku punya kelinci.",
+            "pic": 2
+          },
+          {
+            "en": "I have a hamster.",
+            "id": "Aku punya hamster.",
+            "pic": 3
+          },
+          {
+            "en": "I love my pets!",
+            "id": "Aku sayang hewanku!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐱",
+              "🐶",
+              "🐹"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "cat"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐶",
+              "🐰",
+              "❤️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "dog"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐰",
+              "🐹",
+              "🐱"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "rabbit"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐹",
+              "❤️",
+              "🐶"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "hamster"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "❤️",
+              "🐱",
+              "🐰"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "pets"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🦁 At the Zoo",
+        "pictures": [
+          {
+            "emoji": "🦁",
+            "label": "lion"
+          },
+          {
+            "emoji": "🐯",
+            "label": "tiger"
+          },
+          {
+            "emoji": "🐵",
+            "label": "monkey"
+          },
+          {
+            "emoji": "🐼",
+            "label": "panda"
+          },
+          {
+            "emoji": "🐻",
+            "label": "bear"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a lion.",
+            "id": "Aku lihat singa.",
+            "pic": 0
+          },
+          {
+            "en": "I see a tiger.",
+            "id": "Aku lihat harimau.",
+            "pic": 1
+          },
+          {
+            "en": "I see a monkey.",
+            "id": "Aku lihat monyet.",
+            "pic": 2
+          },
+          {
+            "en": "I see a panda.",
+            "id": "Aku lihat panda.",
+            "pic": 3
+          },
+          {
+            "en": "I see a bear.",
+            "id": "Aku lihat beruang.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🦁",
+              "🐯",
+              "🐼"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "lion"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐯",
+              "🐵",
+              "🐻"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "tiger"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐵",
+              "🐼",
+              "🦁"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "monkey"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐼",
+              "🐻",
+              "🐯"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "panda"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐻",
+              "🦁",
+              "🐵"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "bear"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎵 Animal Sounds",
+        "pictures": [
+          {
+            "emoji": "🐮",
+            "label": "cow"
+          },
+          {
+            "emoji": "🐶",
+            "label": "dog"
+          },
+          {
+            "emoji": "🐱",
+            "label": "cat"
+          },
+          {
+            "emoji": "🐸",
+            "label": "frog"
+          },
+          {
+            "emoji": "🦁",
+            "label": "lion"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The cow says moo.",
+            "id": "Sapi bilang moo.",
+            "pic": 0
+          },
+          {
+            "en": "The dog says woof.",
+            "id": "Anjing bilang guk.",
+            "pic": 1
+          },
+          {
+            "en": "The cat says meow.",
+            "id": "Kucing bilang meong.",
+            "pic": 2
+          },
+          {
+            "en": "The frog says ribbit.",
+            "id": "Katak bilang kwak.",
+            "pic": 3
+          },
+          {
+            "en": "The lion says roar.",
+            "id": "Singa bilang auum.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐮",
+              "🐶",
+              "🐸"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "cow"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐶",
+              "🐱",
+              "🦁"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "dog"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐱",
+              "🐸",
+              "🐮"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "cat"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐸",
+              "🦁",
+              "🐶"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "frog"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🦁",
+              "🐮",
+              "🐱"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "lion"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-warna',
-    title: 'Membaca Kata: Warna (Reading Color Words)',
-    scene: '🔴',
-    desc: '10 kata',
-    items: [
-      { en: 'Red', id: 'Merah', emoji: '🔴' },
-      { en: 'Blue', id: 'Biru', emoji: '🔵' },
-      { en: 'Yellow', id: 'Kuning', emoji: '🟡' },
-      { en: 'Green', id: 'Hijau', emoji: '🟢' },
-      { en: 'Orange', id: 'Oranye', emoji: '🟠' },
-      { en: 'Purple', id: 'Ungu', emoji: '🟣' },
-      { en: 'Pink', id: 'Merah Muda', emoji: '🩷' },
-      { en: 'Black', id: 'Hitam', emoji: '⚫' },
-      { en: 'White', id: 'Putih', emoji: '⚪' },
-      { en: 'Brown', id: 'Cokelat', emoji: '🟤' },
+    "id": "kata-warna",
+    "title": "Buku Mini: Warna (Mini Book: Colors)",
+    "scene": "🌈",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🌈 Colors Outside",
+        "pictures": [
+          {
+            "emoji": "☀️",
+            "label": "sun"
+          },
+          {
+            "emoji": "🍃",
+            "label": "leaf"
+          },
+          {
+            "emoji": "🌊",
+            "label": "sea"
+          },
+          {
+            "emoji": "🍎",
+            "label": "apple"
+          },
+          {
+            "emoji": "☁️",
+            "label": "cloud"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The sun is yellow.",
+            "id": "Mataharinya kuning.",
+            "pic": 0
+          },
+          {
+            "en": "The leaf is green.",
+            "id": "Daunnya hijau.",
+            "pic": 1
+          },
+          {
+            "en": "The sea is blue.",
+            "id": "Lautnya biru.",
+            "pic": 2
+          },
+          {
+            "en": "The apple is red.",
+            "id": "Apelnya merah.",
+            "pic": 3
+          },
+          {
+            "en": "The cloud is white.",
+            "id": "Awannya putih.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☀️",
+              "🍃",
+              "🍎"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "sun"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍃",
+              "🌊",
+              "☁️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "leaf"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌊",
+              "🍎",
+              "☀️"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "sea"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍎",
+              "☁️",
+              "🍃"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "apple"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☁️",
+              "☀️",
+              "🌊"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "cloud"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎒 My Things",
+        "pictures": [
+          {
+            "emoji": "🧢",
+            "label": "cap"
+          },
+          {
+            "emoji": "🎒",
+            "label": "bag"
+          },
+          {
+            "emoji": "👞",
+            "label": "shoe"
+          },
+          {
+            "emoji": "🏀",
+            "label": "ball"
+          },
+          {
+            "emoji": "📗",
+            "label": "book"
+          }
+        ],
+        "lines": [
+          {
+            "en": "My cap is blue.",
+            "id": "Topiku biru.",
+            "pic": 0
+          },
+          {
+            "en": "My bag is red.",
+            "id": "Tasku merah.",
+            "pic": 1
+          },
+          {
+            "en": "My shoe is brown.",
+            "id": "Sepatuku cokelat.",
+            "pic": 2
+          },
+          {
+            "en": "My ball is orange.",
+            "id": "Bolaku oranye.",
+            "pic": 3
+          },
+          {
+            "en": "My book is green.",
+            "id": "Bukuku hijau.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧢",
+              "🎒",
+              "🏀"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "cap"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎒",
+              "👞",
+              "📗"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "bag"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👞",
+              "🏀",
+              "🧢"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "shoe"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏀",
+              "📗",
+              "🎒"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "ball"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📗",
+              "🧢",
+              "👞"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "book"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🥕 Food Colors",
+        "pictures": [
+          {
+            "emoji": "🌽",
+            "label": "corn"
+          },
+          {
+            "emoji": "🍇",
+            "label": "grapes"
+          },
+          {
+            "emoji": "🥕",
+            "label": "carrot"
+          },
+          {
+            "emoji": "🥛",
+            "label": "milk"
+          },
+          {
+            "emoji": "🌸",
+            "label": "flower"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The corn is yellow.",
+            "id": "Jagungnya kuning.",
+            "pic": 0
+          },
+          {
+            "en": "The grapes are purple.",
+            "id": "Anggurnya ungu.",
+            "pic": 1
+          },
+          {
+            "en": "The carrot is orange.",
+            "id": "Wortelnya oranye.",
+            "pic": 2
+          },
+          {
+            "en": "The milk is white.",
+            "id": "Susunya putih.",
+            "pic": 3
+          },
+          {
+            "en": "The flower is pink.",
+            "id": "Bunganya merah muda.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌽",
+              "🍇",
+              "🥛"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "corn"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍇",
+              "🥕",
+              "🌸"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "grapes"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥕",
+              "🥛",
+              "🌽"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "carrot"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥛",
+              "🌸",
+              "🍇"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "milk"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌸",
+              "🌽",
+              "🥕"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "flower"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🚕 On the Street",
+        "pictures": [
+          {
+            "emoji": "🚕",
+            "label": "taxi"
+          },
+          {
+            "emoji": "🚗",
+            "label": "car"
+          },
+          {
+            "emoji": "🌳",
+            "label": "tree"
+          },
+          {
+            "emoji": "🌃",
+            "label": "night"
+          },
+          {
+            "emoji": "🛥️",
+            "label": "boat"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The taxi is yellow.",
+            "id": "Taksinya kuning.",
+            "pic": 0
+          },
+          {
+            "en": "The car is red.",
+            "id": "Mobilnya merah.",
+            "pic": 1
+          },
+          {
+            "en": "The tree is green.",
+            "id": "Pohonnya hijau.",
+            "pic": 2
+          },
+          {
+            "en": "The night is black.",
+            "id": "Malamnya hitam.",
+            "pic": 3
+          },
+          {
+            "en": "The boat is white.",
+            "id": "Perahunya putih.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚕",
+              "🚗",
+              "🌃"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "taxi"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚗",
+              "🌳",
+              "🛥️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "car"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌳",
+              "🌃",
+              "🚕"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "tree"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌃",
+              "🛥️",
+              "🚗"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "night"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛥️",
+              "🚕",
+              "🌳"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "boat"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-angka',
-    title: 'Membaca Kata: Angka (Reading Number Words)',
-    scene: '🔢',
-    desc: '10 kata',
-    items: [
-      { en: 'One', id: 'Satu', emoji: '1️⃣' },
-      { en: 'Two', id: 'Dua', emoji: '2️⃣' },
-      { en: 'Three', id: 'Tiga', emoji: '3️⃣' },
-      { en: 'Four', id: 'Empat', emoji: '4️⃣' },
-      { en: 'Five', id: 'Lima', emoji: '5️⃣' },
-      { en: 'Six', id: 'Enam', emoji: '6️⃣' },
-      { en: 'Seven', id: 'Tujuh', emoji: '7️⃣' },
-      { en: 'Eight', id: 'Delapan', emoji: '8️⃣' },
-      { en: 'Nine', id: 'Sembilan', emoji: '9️⃣' },
-      { en: 'Ten', id: 'Sepuluh', emoji: '🔟' },
+    "id": "kata-angka",
+    "title": "Buku Mini: Angka (Mini Book: Numbers)",
+    "scene": "🔢",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🔢 Let's Count",
+        "pictures": [
+          {
+            "emoji": "☀️",
+            "label": "one"
+          },
+          {
+            "emoji": "🚗🚗",
+            "label": "two"
+          },
+          {
+            "emoji": "⚽⚽⚽",
+            "label": "three"
+          },
+          {
+            "emoji": "⭐⭐⭐⭐",
+            "label": "four"
+          },
+          {
+            "emoji": "☕☕☕☕☕",
+            "label": "five"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see one sun.",
+            "id": "Aku lihat satu matahari.",
+            "pic": 0
+          },
+          {
+            "en": "I see two cars.",
+            "id": "Aku lihat dua mobil.",
+            "pic": 1
+          },
+          {
+            "en": "I see three balls.",
+            "id": "Aku lihat tiga bola.",
+            "pic": 2
+          },
+          {
+            "en": "I see four stars.",
+            "id": "Aku lihat empat bintang.",
+            "pic": 3
+          },
+          {
+            "en": "I see five cups.",
+            "id": "Aku lihat lima cangkir.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☀️",
+              "☀️☀️",
+              "☀️☀️☀️"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "one"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚗🚗",
+              "🚗",
+              "🚗🚗🚗"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "two"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⚽⚽⚽",
+              "⚽⚽",
+              "⚽⚽⚽⚽"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "three"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⭐⭐⭐⭐",
+              "⭐⭐",
+              "⭐⭐⭐"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "four"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☕☕☕☕☕",
+              "☕☕☕",
+              "☕☕☕☕"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "five"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🍋 Fruit Count",
+        "pictures": [
+          {
+            "emoji": "🍎",
+            "label": "one"
+          },
+          {
+            "emoji": "🍐🍐",
+            "label": "two"
+          },
+          {
+            "emoji": "🍓🍓🍓",
+            "label": "three"
+          },
+          {
+            "emoji": "🍋🍋🍋🍋",
+            "label": "four"
+          },
+          {
+            "emoji": "🍇🍇🍇🍇🍇",
+            "label": "five"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I eat one apple.",
+            "id": "Aku makan satu apel.",
+            "pic": 0
+          },
+          {
+            "en": "I eat two pears.",
+            "id": "Aku makan dua pir.",
+            "pic": 1
+          },
+          {
+            "en": "I eat three strawberries.",
+            "id": "Aku makan tiga stroberi.",
+            "pic": 2
+          },
+          {
+            "en": "I eat four lemons.",
+            "id": "Aku makan empat lemon.",
+            "pic": 3
+          },
+          {
+            "en": "I eat five grapes.",
+            "id": "Aku makan lima anggur.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍎",
+              "🍎🍎",
+              "🍎🍎🍎"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "one"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍐🍐",
+              "🍐",
+              "🍐🍐🍐"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "two"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍓🍓🍓",
+              "🍓🍓",
+              "🍓"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "three"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍋🍋🍋🍋",
+              "🍋🍋🍋",
+              "🍋🍋"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "four"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍇🍇🍇🍇🍇",
+              "🍇🍇🍇🍇",
+              "🍇🍇"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "five"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🎈 Party Count",
+        "pictures": [
+          {
+            "emoji": "🎂",
+            "label": "one"
+          },
+          {
+            "emoji": "🎁🎁",
+            "label": "two"
+          },
+          {
+            "emoji": "🎈🎈🎈",
+            "label": "three"
+          },
+          {
+            "emoji": "🕯️🕯️🕯️🕯️",
+            "label": "four"
+          },
+          {
+            "emoji": "🍪🍪🍪🍪🍪",
+            "label": "five"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see one cake.",
+            "id": "Aku lihat satu kue.",
+            "pic": 0
+          },
+          {
+            "en": "I see two gifts.",
+            "id": "Aku lihat dua hadiah.",
+            "pic": 1
+          },
+          {
+            "en": "I see three balloons.",
+            "id": "Aku lihat tiga balon.",
+            "pic": 2
+          },
+          {
+            "en": "I see four candles.",
+            "id": "Aku lihat empat lilin.",
+            "pic": 3
+          },
+          {
+            "en": "I see five cookies.",
+            "id": "Aku lihat lima kue kering.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎂",
+              "🎂🎂",
+              "🎂🎂🎂"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "one"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎁🎁",
+              "🎁🎁🎁",
+              "🎁"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "two"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎈🎈🎈",
+              "🎈🎈",
+              "🎈🎈🎈🎈"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "three"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🕯️🕯️🕯️🕯️",
+              "🕯️🕯️",
+              "🕯️🕯️🕯️🕯️🕯️"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "four"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍪🍪🍪🍪🍪",
+              "🍪🍪🍪",
+              "🍪🍪🍪🍪"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "five"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🚌 On the Road",
+        "pictures": [
+          {
+            "emoji": "🚌",
+            "label": "one"
+          },
+          {
+            "emoji": "🚲🚲",
+            "label": "two"
+          },
+          {
+            "emoji": "🚚🚚🚚",
+            "label": "three"
+          },
+          {
+            "emoji": "🚕🚕🚕🚕",
+            "label": "four"
+          },
+          {
+            "emoji": "⛵⛵⛵⛵⛵",
+            "label": "five"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see one bus.",
+            "id": "Aku lihat satu bus.",
+            "pic": 0
+          },
+          {
+            "en": "I see two bikes.",
+            "id": "Aku lihat dua sepeda.",
+            "pic": 1
+          },
+          {
+            "en": "I see three trucks.",
+            "id": "Aku lihat tiga truk.",
+            "pic": 2
+          },
+          {
+            "en": "I see four taxis.",
+            "id": "Aku lihat empat taksi.",
+            "pic": 3
+          },
+          {
+            "en": "I see five boats.",
+            "id": "Aku lihat lima perahu.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚌",
+              "🚌🚌",
+              "🚌🚌🚌"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "one"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚲🚲",
+              "🚲",
+              "🚲🚲🚲"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "two"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚚🚚🚚",
+              "🚚🚚🚚🚚",
+              "🚚🚚"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "three"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚕🚕🚕🚕",
+              "🚕🚕🚕",
+              "🚕🚕🚕🚕🚕"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "four"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⛵⛵⛵⛵⛵",
+              "⛵⛵⛵⛵",
+              "⛵⛵⛵"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "five"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-bentuk',
-    title: 'Membaca Kata: Bentuk (Reading Shape Words)',
-    scene: '⭐',
-    desc: '10 kata',
-    items: [
-      { en: 'Circle', id: 'Lingkaran', emoji: '⚪' },
-      { en: 'Square', id: 'Persegi', emoji: '⬜' },
-      { en: 'Triangle', id: 'Segitiga', emoji: '🔺' },
-      { en: 'Star', id: 'Bintang', emoji: '⭐' },
-      { en: 'Heart', id: 'Hati', emoji: '❤️' },
-      { en: 'Diamond', id: 'Berlian', emoji: '🔷' },
-      { en: 'Oval', id: 'Oval', emoji: '🥚' },
-      { en: 'Cross', id: 'Silang', emoji: '➕' },
-      { en: 'Arrow', id: 'Panah', emoji: '➡️' },
-      { en: 'Moon', id: 'Bulan', emoji: '🌙' },
+    "id": "kata-bentuk",
+    "title": "Buku Mini: Bentuk (Mini Book: Shapes)",
+    "scene": "🔺",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🔺 I See Shapes",
+        "pictures": [
+          {
+            "emoji": "⭕",
+            "label": "circle"
+          },
+          {
+            "emoji": "🟩",
+            "label": "square"
+          },
+          {
+            "emoji": "🔺",
+            "label": "triangle"
+          },
+          {
+            "emoji": "⭐",
+            "label": "star"
+          },
+          {
+            "emoji": "❤️",
+            "label": "heart"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a circle.",
+            "id": "Aku lihat lingkaran.",
+            "pic": 0
+          },
+          {
+            "en": "I see a square.",
+            "id": "Aku lihat persegi.",
+            "pic": 1
+          },
+          {
+            "en": "I see a triangle.",
+            "id": "Aku lihat segitiga.",
+            "pic": 2
+          },
+          {
+            "en": "I see a star.",
+            "id": "Aku lihat bintang.",
+            "pic": 3
+          },
+          {
+            "en": "I see a heart.",
+            "id": "Aku lihat hati.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⭕",
+              "🟩",
+              "⭐"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "circle"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🟩",
+              "🔺",
+              "❤️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "square"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🔺",
+              "⭐",
+              "⭕"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "triangle"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⭐",
+              "❤️",
+              "🟩"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "star"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "❤️",
+              "⭕",
+              "🔺"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "heart"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🍕 Shape Snacks",
+        "pictures": [
+          {
+            "emoji": "🍕",
+            "label": "pizza"
+          },
+          {
+            "emoji": "🍪",
+            "label": "cookie"
+          },
+          {
+            "emoji": "🥚",
+            "label": "egg"
+          },
+          {
+            "emoji": "🧀",
+            "label": "cheese"
+          },
+          {
+            "emoji": "🍩",
+            "label": "donut"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The pizza is a triangle.",
+            "id": "Pizzanya segitiga.",
+            "pic": 0
+          },
+          {
+            "en": "The cookie is round.",
+            "id": "Kue keringnya bundar.",
+            "pic": 1
+          },
+          {
+            "en": "The egg is an oval.",
+            "id": "Telurnya lonjong.",
+            "pic": 2
+          },
+          {
+            "en": "The cheese is a triangle.",
+            "id": "Kejunya segitiga.",
+            "pic": 3
+          },
+          {
+            "en": "The donut is round.",
+            "id": "Donatnya bundar.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍕",
+              "🍪",
+              "🧀"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "pizza"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍪",
+              "🥚",
+              "🍩"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "cookie"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥚",
+              "🧀",
+              "🍕"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "egg"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧀",
+              "🍩",
+              "🍪"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "cheese"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍩",
+              "🍕",
+              "🥚"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "donut"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🏠 Shapes at Home",
+        "pictures": [
+          {
+            "emoji": "🚪",
+            "label": "door"
+          },
+          {
+            "emoji": "🪟",
+            "label": "window"
+          },
+          {
+            "emoji": "🍽️",
+            "label": "plate"
+          },
+          {
+            "emoji": "📕",
+            "label": "book"
+          },
+          {
+            "emoji": "🕐",
+            "label": "clock"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The door is a rectangle.",
+            "id": "Pintunya persegi panjang.",
+            "pic": 0
+          },
+          {
+            "en": "The window is a square.",
+            "id": "Jendelanya persegi.",
+            "pic": 1
+          },
+          {
+            "en": "The plate is round.",
+            "id": "Piringnya bundar.",
+            "pic": 2
+          },
+          {
+            "en": "The book is a rectangle.",
+            "id": "Bukunya persegi panjang.",
+            "pic": 3
+          },
+          {
+            "en": "The clock is round.",
+            "id": "Jamnya bundar.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚪",
+              "🪟",
+              "📕"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "door"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪟",
+              "🍽️",
+              "🕐"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "window"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍽️",
+              "📕",
+              "🚪"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "plate"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📕",
+              "🕐",
+              "🪟"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "book"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🕐",
+              "🚪",
+              "🍽️"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "clock"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎁 Party Shapes",
+        "pictures": [
+          {
+            "emoji": "🎈",
+            "label": "balloon"
+          },
+          {
+            "emoji": "🎁",
+            "label": "gift"
+          },
+          {
+            "emoji": "🚩",
+            "label": "flag"
+          },
+          {
+            "emoji": "💌",
+            "label": "card"
+          },
+          {
+            "emoji": "🎂",
+            "label": "cake"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The balloon is round.",
+            "id": "Balonnya bundar.",
+            "pic": 0
+          },
+          {
+            "en": "The gift is a square.",
+            "id": "Hadiahnya persegi.",
+            "pic": 1
+          },
+          {
+            "en": "The flag is a triangle.",
+            "id": "Benderanya segitiga.",
+            "pic": 2
+          },
+          {
+            "en": "The card has a heart.",
+            "id": "Kartunya bergambar hati.",
+            "pic": 3
+          },
+          {
+            "en": "The cake is round.",
+            "id": "Kuenya bundar.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎈",
+              "🎁",
+              "💌"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "balloon"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎁",
+              "🚩",
+              "🎂"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "gift"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚩",
+              "💌",
+              "🎈"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "flag"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "💌",
+              "🎂",
+              "🎁"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "card"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎂",
+              "🎈",
+              "🚩"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "cake"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-keluarga',
-    title: 'Membaca Kata: Keluarga (Reading Family Words)',
-    scene: '👨‍👩‍👧‍👦',
-    desc: '10 kata',
-    items: [
-      { en: 'Mom', id: 'Mama', emoji: '👩' },
-      { en: 'Dad', id: 'Papa', emoji: '👨' },
-      { en: 'Baby', id: 'Bayi', emoji: '👶' },
-      { en: 'Sister', id: 'Kakak/Adik Perempuan', emoji: '👧' },
-      { en: 'Brother', id: 'Kakak/Adik Laki-laki', emoji: '👦' },
-      { en: 'Grandma', id: 'Nenek', emoji: '👵' },
-      { en: 'Grandpa', id: 'Kakek', emoji: '👴' },
-      { en: 'Aunt', id: 'Bibi', emoji: '👩‍🦱' },
-      { en: 'Uncle', id: 'Paman', emoji: '🧔' },
-      { en: 'Family', id: 'Keluarga', emoji: '👨‍👩‍👧‍👦' },
+    "id": "kata-keluarga",
+    "title": "Buku Mini: Keluargaku (Mini Book: My Family)",
+    "scene": "🏡",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🏡 My Family",
+        "pictures": [
+          {
+            "emoji": "👩",
+            "label": "mom"
+          },
+          {
+            "emoji": "👨",
+            "label": "dad"
+          },
+          {
+            "emoji": "👧",
+            "label": "sister"
+          },
+          {
+            "emoji": "👦",
+            "label": "brother"
+          },
+          {
+            "emoji": "❤️",
+            "label": "family"
+          }
+        ],
+        "lines": [
+          {
+            "en": "This is my mom.",
+            "id": "Ini ibuku.",
+            "pic": 0
+          },
+          {
+            "en": "This is my dad.",
+            "id": "Ini ayahku.",
+            "pic": 1
+          },
+          {
+            "en": "This is my sister.",
+            "id": "Ini saudara perempuanku.",
+            "pic": 2
+          },
+          {
+            "en": "This is my brother.",
+            "id": "Ini saudara laki-lakiku.",
+            "pic": 3
+          },
+          {
+            "en": "I love my family!",
+            "id": "Aku sayang keluargaku!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👩",
+              "👨",
+              "👦"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "mom"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👨",
+              "👧",
+              "❤️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "dad"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👧",
+              "👦",
+              "👩"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "sister"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👦",
+              "❤️",
+              "👨"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "brother"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "❤️",
+              "👩",
+              "👧"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "family"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🍰 At Grandma's House",
+        "pictures": [
+          {
+            "emoji": "👵",
+            "label": "grandma"
+          },
+          {
+            "emoji": "👴",
+            "label": "grandpa"
+          },
+          {
+            "emoji": "🎂",
+            "label": "cake"
+          },
+          {
+            "emoji": "📖",
+            "label": "book"
+          },
+          {
+            "emoji": "😊",
+            "label": "happy"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see my grandma.",
+            "id": "Aku lihat nenekku.",
+            "pic": 0
+          },
+          {
+            "en": "I see my grandpa.",
+            "id": "Aku lihat kakekku.",
+            "pic": 1
+          },
+          {
+            "en": "Grandma makes a cake.",
+            "id": "Nenek bikin kue.",
+            "pic": 2
+          },
+          {
+            "en": "Grandpa reads a book.",
+            "id": "Kakek membaca buku.",
+            "pic": 3
+          },
+          {
+            "en": "We are happy!",
+            "id": "Kami senang!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👵",
+              "👴",
+              "📖"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "grandma"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👴",
+              "🎂",
+              "😊"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "grandpa"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎂",
+              "📖",
+              "👵"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "cake"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📖",
+              "😊",
+              "👴"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "book"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "😊",
+              "👵",
+              "🎂"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "happy"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🍚 Family Time",
+        "pictures": [
+          {
+            "emoji": "🍚",
+            "label": "rice"
+          },
+          {
+            "emoji": "🚗",
+            "label": "car"
+          },
+          {
+            "emoji": "🎤",
+            "label": "sings"
+          },
+          {
+            "emoji": "🖍️",
+            "label": "draws"
+          },
+          {
+            "emoji": "🍽️",
+            "label": "eat"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Mom cooks rice.",
+            "id": "Ibu memasak nasi.",
+            "pic": 0
+          },
+          {
+            "en": "Dad washes the car.",
+            "id": "Ayah mencuci mobil.",
+            "pic": 1
+          },
+          {
+            "en": "My sister sings.",
+            "id": "Saudara perempuanku bernyanyi.",
+            "pic": 2
+          },
+          {
+            "en": "My brother draws.",
+            "id": "Saudara laki-lakiku menggambar.",
+            "pic": 3
+          },
+          {
+            "en": "We eat together.",
+            "id": "Kami makan bersama.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍚",
+              "🚗",
+              "🖍️"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "rice"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚗",
+              "🎤",
+              "🍽️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "car"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎤",
+              "🖍️",
+              "🍚"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "sings"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🖍️",
+              "🍽️",
+              "🚗"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "draws"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍽️",
+              "🍚",
+              "🎤"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "eat"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🌳 Family Day Out",
+        "pictures": [
+          {
+            "emoji": "🌳",
+            "label": "park"
+          },
+          {
+            "emoji": "🪁",
+            "label": "kite"
+          },
+          {
+            "emoji": "🍦",
+            "label": "ice"
+          },
+          {
+            "emoji": "⚽",
+            "label": "ball"
+          },
+          {
+            "emoji": "🏠",
+            "label": "home"
+          }
+        ],
+        "lines": [
+          {
+            "en": "We go to the park.",
+            "id": "Kami pergi ke taman.",
+            "pic": 0
+          },
+          {
+            "en": "We fly a kite.",
+            "id": "Kami menerbangkan layangan.",
+            "pic": 1
+          },
+          {
+            "en": "We eat ice cream.",
+            "id": "Kami makan es krim.",
+            "pic": 2
+          },
+          {
+            "en": "We play ball.",
+            "id": "Kami main bola.",
+            "pic": 3
+          },
+          {
+            "en": "We go home.",
+            "id": "Kami pulang.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌳",
+              "🪁",
+              "⚽"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "park"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪁",
+              "🍦",
+              "🏠"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "kite"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍦",
+              "⚽",
+              "🌳"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "ice"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⚽",
+              "🏠",
+              "🪁"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "ball"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏠",
+              "🌳",
+              "🍦"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "home"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-tubuh',
-    title: 'Membaca Kata: Tubuh (Reading Body Words)',
-    scene: '🙂',
-    desc: '10 kata',
-    items: [
-      { en: 'Head', id: 'Kepala', emoji: '🙂' },
-      { en: 'Shoulders', id: 'Bahu', emoji: '🤷' },
-      { en: 'Knees', id: 'Lutut', emoji: '🦵' },
-      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶' },
-      { en: 'Eyes', id: 'Mata', emoji: '👀' },
-      { en: 'Ears', id: 'Telinga', emoji: '👂' },
-      { en: 'Nose', id: 'Hidung', emoji: '👃' },
-      { en: 'Mouth', id: 'Mulut', emoji: '👄' },
-      { en: 'Hands', id: 'Tangan', emoji: '🙌' },
-      { en: 'Hair', id: 'Rambut', emoji: '💇' },
+    "id": "kata-tubuh",
+    "title": "Buku Mini: Tubuhku (Mini Book: My Body)",
+    "scene": "🙂",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🙂 My Face",
+        "pictures": [
+          {
+            "emoji": "👀",
+            "label": "eyes"
+          },
+          {
+            "emoji": "👃",
+            "label": "nose"
+          },
+          {
+            "emoji": "👄",
+            "label": "mouth"
+          },
+          {
+            "emoji": "👂",
+            "label": "hear"
+          },
+          {
+            "emoji": "😊",
+            "label": "smile"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I have two eyes.",
+            "id": "Aku punya dua mata.",
+            "pic": 0
+          },
+          {
+            "en": "I have one nose.",
+            "id": "Aku punya satu hidung.",
+            "pic": 1
+          },
+          {
+            "en": "I have one mouth.",
+            "id": "Aku punya satu mulut.",
+            "pic": 2
+          },
+          {
+            "en": "I can hear.",
+            "id": "Aku bisa mendengar.",
+            "pic": 3
+          },
+          {
+            "en": "I can smile!",
+            "id": "Aku bisa tersenyum!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👀",
+              "👃",
+              "👂"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "eyes"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👃",
+              "👄",
+              "😊"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "nose"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👄",
+              "👂",
+              "👀"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "mouth"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👂",
+              "😊",
+              "👃"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "hear"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "😊",
+              "👀",
+              "👄"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "smile"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "👏 I Can Move",
+        "pictures": [
+          {
+            "emoji": "👏",
+            "label": "clap"
+          },
+          {
+            "emoji": "👋",
+            "label": "wave"
+          },
+          {
+            "emoji": "🦶",
+            "label": "feet"
+          },
+          {
+            "emoji": "👃",
+            "label": "nose"
+          },
+          {
+            "emoji": "🫣",
+            "label": "eyes"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I clap my hands.",
+            "id": "Aku bertepuk tangan.",
+            "pic": 0
+          },
+          {
+            "en": "I wave my hand.",
+            "id": "Aku melambaikan tangan.",
+            "pic": 1
+          },
+          {
+            "en": "I stamp my feet.",
+            "id": "Aku menghentakkan kaki.",
+            "pic": 2
+          },
+          {
+            "en": "I touch my nose.",
+            "id": "Aku menyentuh hidungku.",
+            "pic": 3
+          },
+          {
+            "en": "I close my eyes.",
+            "id": "Aku menutup mataku.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👏",
+              "👋",
+              "👃"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "clap"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👋",
+              "🦶",
+              "🫣"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "wave"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🦶",
+              "👃",
+              "👏"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "feet"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👃",
+              "🫣",
+              "👋"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "nose"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🫣",
+              "👏",
+              "🦶"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "eyes"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🪥 Healthy Me",
+        "pictures": [
+          {
+            "emoji": "🪥",
+            "label": "teeth"
+          },
+          {
+            "emoji": "🧼",
+            "label": "hands"
+          },
+          {
+            "emoji": "🪮",
+            "label": "hair"
+          },
+          {
+            "emoji": "🍎",
+            "label": "fruit"
+          },
+          {
+            "emoji": "🛏️",
+            "label": "bed"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I brush my teeth.",
+            "id": "Aku menggosok gigi.",
+            "pic": 0
+          },
+          {
+            "en": "I wash my hands.",
+            "id": "Aku mencuci tangan.",
+            "pic": 1
+          },
+          {
+            "en": "I comb my hair.",
+            "id": "Aku menyisir rambut.",
+            "pic": 2
+          },
+          {
+            "en": "I eat my fruit.",
+            "id": "Aku makan buahku.",
+            "pic": 3
+          },
+          {
+            "en": "I sleep in bed.",
+            "id": "Aku tidur di kasur.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪥",
+              "🧼",
+              "🍎"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "teeth"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧼",
+              "🪮",
+              "🛏️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "hands"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪮",
+              "🍎",
+              "🪥"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "hair"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍎",
+              "🛏️",
+              "🧼"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "fruit"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛏️",
+              "🪥",
+              "🪮"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "bed"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🧤 Warm and Cozy",
+        "pictures": [
+          {
+            "emoji": "🧦",
+            "label": "socks"
+          },
+          {
+            "emoji": "🧢",
+            "label": "hat"
+          },
+          {
+            "emoji": "🧤",
+            "label": "gloves"
+          },
+          {
+            "emoji": "👟",
+            "label": "shoes"
+          },
+          {
+            "emoji": "🧣",
+            "label": "scarf"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Socks on my feet.",
+            "id": "Kaus kaki di kakiku.",
+            "pic": 0
+          },
+          {
+            "en": "A hat on my head.",
+            "id": "Topi di kepalaku.",
+            "pic": 1
+          },
+          {
+            "en": "Gloves on my hands.",
+            "id": "Sarung tangan di tanganku.",
+            "pic": 2
+          },
+          {
+            "en": "Shoes on my feet.",
+            "id": "Sepatu di kakiku.",
+            "pic": 3
+          },
+          {
+            "en": "A scarf on my neck.",
+            "id": "Syal di leherku.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧦",
+              "🧢",
+              "👟"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "socks"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧢",
+              "🧤",
+              "🧣"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "hat"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧤",
+              "👟",
+              "🧦"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "gloves"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👟",
+              "🧣",
+              "🧢"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "shoes"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧣",
+              "🧦",
+              "🧤"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "scarf"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-buah',
-    title: 'Membaca Kata: Buah (Reading Fruit Words)',
-    scene: '🍎',
-    desc: '10 kata',
-    items: [
-      { en: 'Apple', id: 'Apel', emoji: '🍎' },
-      { en: 'Banana', id: 'Pisang', emoji: '🍌' },
-      { en: 'Orange', id: 'Jeruk', emoji: '🍊' },
-      { en: 'Grape', id: 'Anggur', emoji: '🍇' },
-      { en: 'Watermelon', id: 'Semangka', emoji: '🍉' },
-      { en: 'Strawberry', id: 'Stroberi', emoji: '🍓' },
-      { en: 'Mango', id: 'Mangga', emoji: '🥭' },
-      { en: 'Pineapple', id: 'Nanas', emoji: '🍍' },
-      { en: 'Pear', id: 'Pir', emoji: '🍐' },
-      { en: 'Peach', id: 'Persik', emoji: '🍑' },
+    "id": "kata-buah",
+    "title": "Buku Mini: Buah (Mini Book: Fruit)",
+    "scene": "🍎",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🍎 I Like Fruit",
+        "pictures": [
+          {
+            "emoji": "🍎",
+            "label": "apples"
+          },
+          {
+            "emoji": "🍌",
+            "label": "bananas"
+          },
+          {
+            "emoji": "🍇",
+            "label": "grapes"
+          },
+          {
+            "emoji": "🍊",
+            "label": "oranges"
+          },
+          {
+            "emoji": "🥭",
+            "label": "mangoes"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I like apples.",
+            "id": "Aku suka apel.",
+            "pic": 0
+          },
+          {
+            "en": "I like bananas.",
+            "id": "Aku suka pisang.",
+            "pic": 1
+          },
+          {
+            "en": "I like grapes.",
+            "id": "Aku suka anggur.",
+            "pic": 2
+          },
+          {
+            "en": "I like oranges.",
+            "id": "Aku suka jeruk.",
+            "pic": 3
+          },
+          {
+            "en": "I like mangoes.",
+            "id": "Aku suka mangga.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍎",
+              "🍌",
+              "🍊"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "apples"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍌",
+              "🍇",
+              "🥭"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "bananas"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍇",
+              "🍊",
+              "🍎"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "grapes"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍊",
+              "🥭",
+              "🍌"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "oranges"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥭",
+              "🍎",
+              "🍇"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "mangoes"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🧺 Fruit Basket",
+        "pictures": [
+          {
+            "emoji": "🍋",
+            "label": "lemon"
+          },
+          {
+            "emoji": "🍐",
+            "label": "pear"
+          },
+          {
+            "emoji": "🍈",
+            "label": "melon"
+          },
+          {
+            "emoji": "🍍",
+            "label": "pineapple"
+          },
+          {
+            "emoji": "🥝",
+            "label": "kiwi"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a lemon.",
+            "id": "Aku lihat lemon.",
+            "pic": 0
+          },
+          {
+            "en": "I see a pear.",
+            "id": "Aku lihat pir.",
+            "pic": 1
+          },
+          {
+            "en": "I see a melon.",
+            "id": "Aku lihat melon.",
+            "pic": 2
+          },
+          {
+            "en": "I see a pineapple.",
+            "id": "Aku lihat nanas.",
+            "pic": 3
+          },
+          {
+            "en": "I see a kiwi.",
+            "id": "Aku lihat kiwi.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍋",
+              "🍐",
+              "🍍"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "lemon"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍐",
+              "🍈",
+              "🥝"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "pear"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍈",
+              "🍍",
+              "🍋"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "melon"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍍",
+              "🥝",
+              "🍐"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "pineapple"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥝",
+              "🍋",
+              "🍈"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "kiwi"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🥤 Juice Time",
+        "pictures": [
+          {
+            "emoji": "🍊",
+            "label": "orange"
+          },
+          {
+            "emoji": "🥭",
+            "label": "mango"
+          },
+          {
+            "emoji": "🍇",
+            "label": "grape"
+          },
+          {
+            "emoji": "🍎",
+            "label": "apple"
+          },
+          {
+            "emoji": "🍈",
+            "label": "melon"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I drink orange juice.",
+            "id": "Aku minum jus jeruk.",
+            "pic": 0
+          },
+          {
+            "en": "I drink mango juice.",
+            "id": "Aku minum jus mangga.",
+            "pic": 1
+          },
+          {
+            "en": "I drink grape juice.",
+            "id": "Aku minum jus anggur.",
+            "pic": 2
+          },
+          {
+            "en": "I drink apple juice.",
+            "id": "Aku minum jus apel.",
+            "pic": 3
+          },
+          {
+            "en": "I drink melon juice.",
+            "id": "Aku minum jus melon.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍊",
+              "🥭",
+              "🍎"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "orange"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥭",
+              "🍇",
+              "🍈"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "mango"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍇",
+              "🍎",
+              "🍊"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "grape"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍎",
+              "🍈",
+              "🥭"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "apple"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍈",
+              "🍊",
+              "🍇"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "melon"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🍓 Fruit Colors",
+        "pictures": [
+          {
+            "emoji": "🍓",
+            "label": "strawberry"
+          },
+          {
+            "emoji": "🍌",
+            "label": "banana"
+          },
+          {
+            "emoji": "🥝",
+            "label": "kiwi"
+          },
+          {
+            "emoji": "🍇",
+            "label": "grapes"
+          },
+          {
+            "emoji": "🥥",
+            "label": "coconut"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The strawberry is red.",
+            "id": "Stroberinya merah.",
+            "pic": 0
+          },
+          {
+            "en": "The banana is yellow.",
+            "id": "Pisangnya kuning.",
+            "pic": 1
+          },
+          {
+            "en": "The kiwi is green.",
+            "id": "Kiwinya hijau.",
+            "pic": 2
+          },
+          {
+            "en": "The grapes are purple.",
+            "id": "Anggurnya ungu.",
+            "pic": 3
+          },
+          {
+            "en": "The coconut is brown.",
+            "id": "Kelapanya cokelat.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍓",
+              "🍌",
+              "🍇"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "strawberry"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍌",
+              "🥝",
+              "🥥"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "banana"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥝",
+              "🍇",
+              "🍓"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "kiwi"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍇",
+              "🥥",
+              "🍌"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "grapes"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥥",
+              "🍓",
+              "🥝"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "coconut"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-mainan',
-    title: 'Membaca Kata: Mainan (Reading Toy Words)',
-    scene: '🚗',
-    desc: '10 kata',
-    items: [
-      { en: 'Ball', id: 'Bola', emoji: '⚽' },
-      { en: 'Doll', id: 'Boneka', emoji: '🪆' },
-      { en: 'Kite', id: 'Layangan', emoji: '🪁' },
-      { en: 'Balloon', id: 'Balon', emoji: '🎈' },
-      { en: 'Puzzle', id: 'Puzzle', emoji: '🧩' },
-      { en: 'Robot', id: 'Robot', emoji: '🤖' },
-      { en: 'Drum', id: 'Drum', emoji: '🥁' },
-      { en: 'Blocks', id: 'Balok', emoji: '🧱' },
-      { en: 'Yoyo', id: 'Yoyo', emoji: '🪀' },
-      { en: 'Car', id: 'Mobil-mobilan', emoji: '🚗' },
+    "id": "kata-mainan",
+    "title": "Buku Mini: Mainan (Mini Book: Toys)",
+    "scene": "🧸",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🧸 My Toy Box",
+        "pictures": [
+          {
+            "emoji": "⚽",
+            "label": "ball"
+          },
+          {
+            "emoji": "🪁",
+            "label": "kite"
+          },
+          {
+            "emoji": "🪀",
+            "label": "yo-yo"
+          },
+          {
+            "emoji": "🚂",
+            "label": "train"
+          },
+          {
+            "emoji": "🧸",
+            "label": "teddy"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Here is my ball.",
+            "id": "Ini bolaku.",
+            "pic": 0
+          },
+          {
+            "en": "Here is my kite.",
+            "id": "Ini layanganku.",
+            "pic": 1
+          },
+          {
+            "en": "Here is my yo-yo.",
+            "id": "Ini yoyoku.",
+            "pic": 2
+          },
+          {
+            "en": "Here is my train.",
+            "id": "Ini keretaku.",
+            "pic": 3
+          },
+          {
+            "en": "Here is my teddy.",
+            "id": "Ini boneka beruangku.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⚽",
+              "🪁",
+              "🚂"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "ball"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪁",
+              "🪀",
+              "🧸"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "kite"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪀",
+              "🚂",
+              "⚽"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "yo-yo"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚂",
+              "🧸",
+              "🪁"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "train"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧸",
+              "⚽",
+              "🪀"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "teddy"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎲 Let's Play",
+        "pictures": [
+          {
+            "emoji": "🎲",
+            "label": "dice"
+          },
+          {
+            "emoji": "🏀",
+            "label": "ball"
+          },
+          {
+            "emoji": "🧱",
+            "label": "blocks"
+          },
+          {
+            "emoji": "🚗",
+            "label": "car"
+          },
+          {
+            "emoji": "🧸",
+            "label": "teddy"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I roll the dice.",
+            "id": "Aku melempar dadu.",
+            "pic": 0
+          },
+          {
+            "en": "I bounce the ball.",
+            "id": "Aku memantulkan bola.",
+            "pic": 1
+          },
+          {
+            "en": "I build with blocks.",
+            "id": "Aku membangun dengan balok.",
+            "pic": 2
+          },
+          {
+            "en": "I push my car.",
+            "id": "Aku mendorong mobilku.",
+            "pic": 3
+          },
+          {
+            "en": "I hug my teddy.",
+            "id": "Aku memeluk boneka beruangku.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎲",
+              "🏀",
+              "🚗"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "dice"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏀",
+              "🧱",
+              "🧸"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "ball"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧱",
+              "🚗",
+              "🎲"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "blocks"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚗",
+              "🧸",
+              "🏀"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "car"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧸",
+              "🎲",
+              "🧱"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "teddy"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🎁 Party Toys",
+        "pictures": [
+          {
+            "emoji": "🎈",
+            "label": "balloon"
+          },
+          {
+            "emoji": "🎁",
+            "label": "gift"
+          },
+          {
+            "emoji": "🪀",
+            "label": "yo-yo"
+          },
+          {
+            "emoji": "🥁",
+            "label": "drum"
+          },
+          {
+            "emoji": "🤖",
+            "label": "robot"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I get a balloon.",
+            "id": "Aku dapat balon.",
+            "pic": 0
+          },
+          {
+            "en": "I get a gift.",
+            "id": "Aku dapat hadiah.",
+            "pic": 1
+          },
+          {
+            "en": "I get a yo-yo.",
+            "id": "Aku dapat yoyo.",
+            "pic": 2
+          },
+          {
+            "en": "I get a drum.",
+            "id": "Aku dapat drum.",
+            "pic": 3
+          },
+          {
+            "en": "I get a robot.",
+            "id": "Aku dapat robot.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎈",
+              "🎁",
+              "🥁"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "balloon"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎁",
+              "🪀",
+              "🤖"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "gift"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪀",
+              "🥁",
+              "🎈"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "yo-yo"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥁",
+              "🤖",
+              "🎁"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "drum"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🤖",
+              "🎈",
+              "🪀"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "robot"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🧩 Quiet Toys",
+        "pictures": [
+          {
+            "emoji": "🧩",
+            "label": "puzzle"
+          },
+          {
+            "emoji": "📖",
+            "label": "book"
+          },
+          {
+            "emoji": "🖍️",
+            "label": "color"
+          },
+          {
+            "emoji": "🃏",
+            "label": "cards"
+          },
+          {
+            "emoji": "🧱",
+            "label": "tower"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I do a puzzle.",
+            "id": "Aku main puzzle.",
+            "pic": 0
+          },
+          {
+            "en": "I read a book.",
+            "id": "Aku membaca buku.",
+            "pic": 1
+          },
+          {
+            "en": "I color a picture.",
+            "id": "Aku mewarnai gambar.",
+            "pic": 2
+          },
+          {
+            "en": "I play cards.",
+            "id": "Aku main kartu.",
+            "pic": 3
+          },
+          {
+            "en": "I make a tower.",
+            "id": "Aku membuat menara.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧩",
+              "📖",
+              "🃏"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "puzzle"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📖",
+              "🖍️",
+              "🧱"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "book"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🖍️",
+              "🃏",
+              "🧩"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "color"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🃏",
+              "🧱",
+              "📖"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "cards"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧱",
+              "🧩",
+              "🖍️"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "tower"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-pakaian',
-    title: 'Membaca Kata: Pakaian (Reading Clothes Words)',
-    scene: '👕',
-    desc: '10 kata',
-    items: [
-      { en: 'Shirt', id: 'Baju', emoji: '👕' },
-      { en: 'Pants', id: 'Celana Panjang', emoji: '👖' },
-      { en: 'Shoes', id: 'Sepatu', emoji: '👟' },
-      { en: 'Socks', id: 'Kaus Kaki', emoji: '🧦' },
-      { en: 'Hat', id: 'Topi', emoji: '🧢' },
-      { en: 'Dress', id: 'Gaun', emoji: '👗' },
-      { en: 'Jacket', id: 'Jaket', emoji: '🧥' },
-      { en: 'Shorts', id: 'Celana Pendek', emoji: '🩳' },
-      { en: 'Gloves', id: 'Sarung Tangan', emoji: '🧤' },
-      { en: 'Scarf', id: 'Syal', emoji: '🧣' },
+    "id": "kata-pakaian",
+    "title": "Buku Mini: Pakaianku (Mini Book: My Clothes)",
+    "scene": "👕",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "👕 Get Dressed",
+        "pictures": [
+          {
+            "emoji": "👕",
+            "label": "shirt"
+          },
+          {
+            "emoji": "🧢",
+            "label": "cap"
+          },
+          {
+            "emoji": "🧦",
+            "label": "socks"
+          },
+          {
+            "emoji": "👟",
+            "label": "shoes"
+          },
+          {
+            "emoji": "👗",
+            "label": "dress"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I wear a shirt.",
+            "id": "Aku pakai kaus.",
+            "pic": 0
+          },
+          {
+            "en": "I wear a cap.",
+            "id": "Aku pakai topi.",
+            "pic": 1
+          },
+          {
+            "en": "I wear socks.",
+            "id": "Aku pakai kaus kaki.",
+            "pic": 2
+          },
+          {
+            "en": "I wear shoes.",
+            "id": "Aku pakai sepatu.",
+            "pic": 3
+          },
+          {
+            "en": "I wear a dress.",
+            "id": "Aku pakai gaun.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👕",
+              "🧢",
+              "👟"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "shirt"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧢",
+              "🧦",
+              "👗"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "cap"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧦",
+              "👟",
+              "👕"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "socks"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👟",
+              "👗",
+              "🧢"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "shoes"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👗",
+              "👕",
+              "🧦"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "dress"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "☔ Rainy Day Clothes",
+        "pictures": [
+          {
+            "emoji": "🧥",
+            "label": "coat"
+          },
+          {
+            "emoji": "👢",
+            "label": "boots"
+          },
+          {
+            "emoji": "☂️",
+            "label": "umbrella"
+          },
+          {
+            "emoji": "🧤",
+            "label": "gloves"
+          },
+          {
+            "emoji": "🧣",
+            "label": "scarf"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I wear a coat.",
+            "id": "Aku pakai jaket.",
+            "pic": 0
+          },
+          {
+            "en": "I wear boots.",
+            "id": "Aku pakai sepatu bot.",
+            "pic": 1
+          },
+          {
+            "en": "I take an umbrella.",
+            "id": "Aku bawa payung.",
+            "pic": 2
+          },
+          {
+            "en": "I wear gloves.",
+            "id": "Aku pakai sarung tangan.",
+            "pic": 3
+          },
+          {
+            "en": "I wear a scarf.",
+            "id": "Aku pakai syal.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧥",
+              "👢",
+              "🧤"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "coat"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👢",
+              "☂️",
+              "🧣"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "boots"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☂️",
+              "🧤",
+              "🧥"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "umbrella"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧤",
+              "🧣",
+              "👢"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "gloves"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧣",
+              "🧥",
+              "☂️"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "scarf"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🏖️ Beach Clothes",
+        "pictures": [
+          {
+            "emoji": "🩱",
+            "label": "swimsuit"
+          },
+          {
+            "emoji": "🕶️",
+            "label": "sunglasses"
+          },
+          {
+            "emoji": "👒",
+            "label": "hat"
+          },
+          {
+            "emoji": "🩴",
+            "label": "sandals"
+          },
+          {
+            "emoji": "🩳",
+            "label": "shorts"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I wear a swimsuit.",
+            "id": "Aku pakai baju renang.",
+            "pic": 0
+          },
+          {
+            "en": "I wear sunglasses.",
+            "id": "Aku pakai kacamata hitam.",
+            "pic": 1
+          },
+          {
+            "en": "I wear a sun hat.",
+            "id": "Aku pakai topi pantai.",
+            "pic": 2
+          },
+          {
+            "en": "I wear sandals.",
+            "id": "Aku pakai sandal.",
+            "pic": 3
+          },
+          {
+            "en": "I wear shorts.",
+            "id": "Aku pakai celana pendek.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🩱",
+              "🕶️",
+              "🩴"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "swimsuit"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🕶️",
+              "👒",
+              "🩳"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "sunglasses"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👒",
+              "🩴",
+              "🩱"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "hat"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🩴",
+              "🩳",
+              "🕶️"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "sandals"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🩳",
+              "🩱",
+              "👒"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "shorts"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎒 Ready for School",
+        "pictures": [
+          {
+            "emoji": "👔",
+            "label": "tie"
+          },
+          {
+            "emoji": "👓",
+            "label": "glasses"
+          },
+          {
+            "emoji": "⌚",
+            "label": "watch"
+          },
+          {
+            "emoji": "🎒",
+            "label": "bag"
+          },
+          {
+            "emoji": "🍱",
+            "label": "lunch"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I wear a tie.",
+            "id": "Aku pakai dasi.",
+            "pic": 0
+          },
+          {
+            "en": "I wear glasses.",
+            "id": "Aku pakai kacamata.",
+            "pic": 1
+          },
+          {
+            "en": "I wear a watch.",
+            "id": "Aku pakai jam tangan.",
+            "pic": 2
+          },
+          {
+            "en": "I take my bag.",
+            "id": "Aku bawa tasku.",
+            "pic": 3
+          },
+          {
+            "en": "I take my lunch.",
+            "id": "Aku bawa bekalku.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👔",
+              "👓",
+              "🎒"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "tie"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👓",
+              "⌚",
+              "🍱"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "glasses"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⌚",
+              "🎒",
+              "👔"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "watch"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎒",
+              "🍱",
+              "👓"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "bag"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍱",
+              "👔",
+              "⌚"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "lunch"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kata-kendaraan',
-    title: 'Membaca Kata: Kendaraan (Reading Vehicle Words)',
-    scene: '🚗',
-    desc: '10 kata',
-    items: [
-      { en: 'Car', id: 'Mobil', emoji: '🚗' },
-      { en: 'Bus', id: 'Bus', emoji: '🚌' },
-      { en: 'Bike', id: 'Sepeda', emoji: '🚲' },
-      { en: 'Train', id: 'Kereta', emoji: '🚆' },
-      { en: 'Airplane', id: 'Pesawat', emoji: '✈️' },
-      { en: 'Boat', id: 'Perahu', emoji: '⛵' },
-      { en: 'Truck', id: 'Truk', emoji: '🚚' },
-      { en: 'Fire Truck', id: 'Truk Pemadam', emoji: '🚒' },
-      { en: 'Ambulance', id: 'Ambulans', emoji: '🚑' },
-      { en: 'Helicopter', id: 'Helikopter', emoji: '🚁' },
+    "id": "kata-kendaraan",
+    "title": "Buku Mini: Kendaraan (Mini Book: Vehicles)",
+    "scene": "🚗",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🚗 Let's Go!",
+        "pictures": [
+          {
+            "emoji": "🚗",
+            "label": "car"
+          },
+          {
+            "emoji": "🚌",
+            "label": "bus"
+          },
+          {
+            "emoji": "🚆",
+            "label": "train"
+          },
+          {
+            "emoji": "⛵",
+            "label": "boat"
+          },
+          {
+            "emoji": "✈️",
+            "label": "plane"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Go by car!",
+            "id": "Pergi naik mobil!",
+            "pic": 0
+          },
+          {
+            "en": "Go by bus!",
+            "id": "Pergi naik bus!",
+            "pic": 1
+          },
+          {
+            "en": "Go by train!",
+            "id": "Pergi naik kereta!",
+            "pic": 2
+          },
+          {
+            "en": "Go by boat!",
+            "id": "Pergi naik perahu!",
+            "pic": 3
+          },
+          {
+            "en": "Go by plane!",
+            "id": "Pergi naik pesawat!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚗",
+              "🚌",
+              "⛵"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "car"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚌",
+              "🚆",
+              "✈️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "bus"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚆",
+              "⛵",
+              "🚗"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "train"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⛵",
+              "✈️",
+              "🚌"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "boat"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "✈️",
+              "🚗",
+              "🚆"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "plane"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🚒 Busy Road",
+        "pictures": [
+          {
+            "emoji": "🚒",
+            "label": "fire"
+          },
+          {
+            "emoji": "🚜",
+            "label": "tractor"
+          },
+          {
+            "emoji": "🚓",
+            "label": "police"
+          },
+          {
+            "emoji": "🚑",
+            "label": "ambulance"
+          },
+          {
+            "emoji": "🛵",
+            "label": "scooter"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a fire truck.",
+            "id": "Aku lihat mobil pemadam.",
+            "pic": 0
+          },
+          {
+            "en": "I see a tractor.",
+            "id": "Aku lihat traktor.",
+            "pic": 1
+          },
+          {
+            "en": "I see a police car.",
+            "id": "Aku lihat mobil polisi.",
+            "pic": 2
+          },
+          {
+            "en": "I see an ambulance.",
+            "id": "Aku lihat ambulans.",
+            "pic": 3
+          },
+          {
+            "en": "I see a scooter.",
+            "id": "Aku lihat skuter.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚒",
+              "🚜",
+              "🚑"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "fire"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚜",
+              "🚓",
+              "🛵"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "tractor"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚓",
+              "🚑",
+              "🚒"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "police"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚑",
+              "🛵",
+              "🚜"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "ambulance"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛵",
+              "🚒",
+              "🚓"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "scooter"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🚀 Up in the Sky",
+        "pictures": [
+          {
+            "emoji": "🚁",
+            "label": "helicopter"
+          },
+          {
+            "emoji": "🚀",
+            "label": "rocket"
+          },
+          {
+            "emoji": "✈️",
+            "label": "jet"
+          },
+          {
+            "emoji": "🎈",
+            "label": "balloon"
+          },
+          {
+            "emoji": "🪁",
+            "label": "kite"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a helicopter.",
+            "id": "Aku lihat helikopter.",
+            "pic": 0
+          },
+          {
+            "en": "I see a rocket.",
+            "id": "Aku lihat roket.",
+            "pic": 1
+          },
+          {
+            "en": "I see a jet.",
+            "id": "Aku lihat jet.",
+            "pic": 2
+          },
+          {
+            "en": "I see a balloon.",
+            "id": "Aku lihat balon udara.",
+            "pic": 3
+          },
+          {
+            "en": "I see a kite.",
+            "id": "Aku lihat layangan.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚁",
+              "🚀",
+              "🎈"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "helicopter"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚀",
+              "✈️",
+              "🪁"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "rocket"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "✈️",
+              "🎈",
+              "🚁"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "jet"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎈",
+              "🪁",
+              "🚀"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "balloon"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪁",
+              "🚁",
+              "✈️"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "kite"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🚢 On the Water",
+        "pictures": [
+          {
+            "emoji": "🚢",
+            "label": "ship"
+          },
+          {
+            "emoji": "🛶",
+            "label": "canoe"
+          },
+          {
+            "emoji": "🚤",
+            "label": "speedboat"
+          },
+          {
+            "emoji": "⛵",
+            "label": "sailboat"
+          },
+          {
+            "emoji": "⛴️",
+            "label": "ferry"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a ship.",
+            "id": "Aku lihat kapal.",
+            "pic": 0
+          },
+          {
+            "en": "I see a canoe.",
+            "id": "Aku lihat kano.",
+            "pic": 1
+          },
+          {
+            "en": "I see a speedboat.",
+            "id": "Aku lihat perahu motor.",
+            "pic": 2
+          },
+          {
+            "en": "I see a sailboat.",
+            "id": "Aku lihat perahu layar.",
+            "pic": 3
+          },
+          {
+            "en": "I see a ferry.",
+            "id": "Aku lihat kapal feri.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚢",
+              "🛶",
+              "⛵"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "ship"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛶",
+              "🚤",
+              "⛴️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "canoe"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚤",
+              "⛵",
+              "🚢"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "speedboat"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⛵",
+              "⛴️",
+              "🛶"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "sailboat"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⛴️",
+              "🚢",
+              "🚤"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "ferry"
+          }
+        ]
+      }
+    ]
   },
+  {
+    "id": "buku-di-taman",
+    "title": "Buku Mini: Di Taman (Mini Book: At the Park)",
+    "scene": "🛝",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "📗 At the Park",
+        "pictures": [
+          {
+            "emoji": "⚽",
+            "label": "ball"
+          },
+          {
+            "emoji": "🪁",
+            "label": "kite"
+          },
+          {
+            "emoji": "🛝",
+            "label": "slide"
+          },
+          {
+            "emoji": "🌳",
+            "label": "tree"
+          },
+          {
+            "emoji": "🧒",
+            "label": "friend"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a ball.",
+            "id": "Aku lihat bola.",
+            "pic": 0
+          },
+          {
+            "en": "I see a kite.",
+            "id": "Aku lihat layangan.",
+            "pic": 1
+          },
+          {
+            "en": "I see a slide.",
+            "id": "Aku lihat perosotan.",
+            "pic": 2
+          },
+          {
+            "en": "I see a tree.",
+            "id": "Aku lihat pohon.",
+            "pic": 3
+          },
+          {
+            "en": "I see my friend!",
+            "id": "Aku lihat temanku!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⚽",
+              "🪁",
+              "🌳"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "ball"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪁",
+              "🛝",
+              "🧒"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "kite"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛝",
+              "🌳",
+              "⚽"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "slide"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌳",
+              "🧒",
+              "🪁"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "tree"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧒",
+              "⚽",
+              "🛝"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "friend"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "📘 My Toys",
+        "pictures": [
+          {
+            "emoji": "🚗",
+            "label": "car"
+          },
+          {
+            "emoji": "🧸",
+            "label": "teddy"
+          },
+          {
+            "emoji": "🥁",
+            "label": "drum"
+          },
+          {
+            "emoji": "🤖",
+            "label": "robot"
+          },
+          {
+            "emoji": "❤️",
+            "label": "toys"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I have a car.",
+            "id": "Aku punya mobil.",
+            "pic": 0
+          },
+          {
+            "en": "I have a teddy.",
+            "id": "Aku punya boneka beruang.",
+            "pic": 1
+          },
+          {
+            "en": "I have a drum.",
+            "id": "Aku punya drum.",
+            "pic": 2
+          },
+          {
+            "en": "I have a robot.",
+            "id": "Aku punya robot.",
+            "pic": 3
+          },
+          {
+            "en": "I love my toys!",
+            "id": "Aku sayang mainanku!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚗",
+              "🧸",
+              "🤖"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "car"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧸",
+              "🥁",
+              "❤️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "teddy"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥁",
+              "🤖",
+              "🚗"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "drum"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🤖",
+              "❤️",
+              "🧸"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "robot"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "❤️",
+              "🚗",
+              "🥁"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "toys"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🚌 On the Road",
+        "pictures": [
+          {
+            "emoji": "🚌",
+            "label": "bus"
+          },
+          {
+            "emoji": "🚲",
+            "label": "bike"
+          },
+          {
+            "emoji": "🚚",
+            "label": "truck"
+          },
+          {
+            "emoji": "🚆",
+            "label": "train"
+          },
+          {
+            "emoji": "🏫",
+            "label": "school"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a bus.",
+            "id": "Aku lihat bus.",
+            "pic": 0
+          },
+          {
+            "en": "I see a bike.",
+            "id": "Aku lihat sepeda.",
+            "pic": 1
+          },
+          {
+            "en": "I see a truck.",
+            "id": "Aku lihat truk.",
+            "pic": 2
+          },
+          {
+            "en": "I see a train.",
+            "id": "Aku lihat kereta.",
+            "pic": 3
+          },
+          {
+            "en": "I see my school!",
+            "id": "Aku lihat sekolahku!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚌",
+              "🚲",
+              "🚆"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "bus"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚲",
+              "🚚",
+              "🏫"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "bike"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚚",
+              "🚆",
+              "🚌"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "truck"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚆",
+              "🏫",
+              "🚲"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "train"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏫",
+              "🚌",
+              "🚚"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "school"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎒 My Bag",
+        "pictures": [
+          {
+            "emoji": "📕",
+            "label": "book"
+          },
+          {
+            "emoji": "✏️",
+            "label": "pencil"
+          },
+          {
+            "emoji": "🧢",
+            "label": "cap"
+          },
+          {
+            "emoji": "🍎",
+            "label": "apple"
+          },
+          {
+            "emoji": "🎒",
+            "label": "bag"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I have a book.",
+            "id": "Aku punya buku.",
+            "pic": 0
+          },
+          {
+            "en": "I have a pencil.",
+            "id": "Aku punya pensil.",
+            "pic": 1
+          },
+          {
+            "en": "I have a cap.",
+            "id": "Aku punya topi.",
+            "pic": 2
+          },
+          {
+            "en": "I have an apple.",
+            "id": "Aku punya apel.",
+            "pic": 3
+          },
+          {
+            "en": "I have my bag!",
+            "id": "Aku bawa tasku!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📕",
+              "✏️",
+              "🍎"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "book"
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "✏️",
+              "🧢",
+              "🎒"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "pencil"
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧢",
+              "🍎",
+              "📕"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "cap"
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍎",
+              "🎒",
+              "✏️"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "apple"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎒",
+              "📕",
+              "🧢"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "bag"
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 /**
- * Reading Starter (5–7 th) — TETAP format KEDUA (`ReadingWordTopic`), BUKAN
- * format baru (`materi/reading.md` §9.1) — riset mengonfirmasi Kurikulum
- * Merdeka Fase A (kelas 1–2) masih "teks dibacakan guru", bukan baca
- * mandiri, jadi Starter cuma naik UNIT dari kata tunggal (Little Stars) ke
- * FRASA pendek (2–3 kata) — mekanik & fungsi render 100% sama, TTS TETAP
- * jadi bantuan aktif (jangan dicabut). 10 frasa dipetakan dari
- * `VOCAB_TOPICS_STARTER` topik `tempat-di-sekitar` (preposisi+the+tempat,
- * panjang konsisten, emoji tempat sangat khas/tidak ambigu).
- *
- * **Digenapkan 1→10 topik** (target CLAUDE.md ≥10/skill, permintaan user
- * "materi reading di starter masih 1... buatkan minimal 10... research ke
- * lembaga bahasa inggris dalam negeri" — riset dikonfirmasi ulang, pola sama
- * `materi/reading.md` §13: TIDAK ada institusi/kompetitor yg menyarankan
- * urutan kategori beda dari yg sudah dipakai `VOCAB_TOPICS_STARTER`, jadi
- * PERLUASAN yg tepat murni GENAPKAN 9 domain Vocab Starter yg belum
- * disentuh Reading — SEMUA 9 domain dipakai (0 domain dilewati, beda dari
- * Little Stars yg py 2 domain `iconAmbiguous`/terlalu abstrak — Vocab
- * Starter TIDAK py flag `iconAmbiguous` di domain manapun, aman dipakai
- * semua) — 9 topik baru: `baca-angka`/`baca-hari`/`baca-serangga`/`baca-
- * makanan`/`baca-barang`/`baca-sekolah`/`baca-orang`/`baca-alam`/`baca-
- * hobi`, dipetakan dari `angka-11-20`/`hari-dalam-seminggu`/`serangga`/
- * `makanan-favoritku`/`barang-di-rumah`/`di-sekolah`/`orang-di-sekitarku`/
- * `alam-sekitar`/`hobi`. (Koreksi sesi lanjutan: `baca-serangga` & Vocab
- * `serangga` sumbernya SEKARANG diganti total jadi `baca-perkakas`/
- * `perkakas` — domain benda mati Tools, bukan lagi serangga, lihat §3B.4.) **Frasa 2-3 kata DIKONSTRUKSI natural per-item**
- * (bukan cuma copy `item.en` mentah spt Little Stars, krn Starter emang
- * wajib naik ke unit FRASA) — pola bervariasi per domain sesuai kealamian
- * bahasa Inggrisnya sendiri (sama prinsip `baca-tempat` yg SUDAH mencampur
- * "At The X" & "On The X" dalam 1 topik, bukan 1 template kaku): `The X`
- * (benda/makhluk — serangga/barang-di-rumah/alam/sebagian orang), `I Like X`
- * (makanan/hobi, REUSE PERSIS `item.example.en` yg sudah ada tanpa titik),
- * `My X` (hal personal — teman/kotak bekal/seragam/PR/tetangga/sahabat),
- * `On Day` (7 nama hari) + `I Play(ed) Today/Tomorrow/Yesterday` (3 kata
- * waktu relatif, tense disesuaikan biar tetap gramatikal: present utk
- * today/tomorrow, past utk yesterday), `<Angka> <Benda Jamak>` (reuse kata
- * benda dari `item.example.en` masing² angka, mis. "Eleven Stickers"). ZERO
- * kosakata baru diauthoring — semua kata sumbernya SUDAH ada di Vocab
- * Starter, cuma dirangkai jadi frasa baca.
+ * Reading starter — format "Baca Teks" (`ReadingTextTopic`, materi/reading.md §19–§22).
+ * Buku gambar mini + ✅/❌ seluruh kalimat — tier Dasar. Id topik lama DIPERTAHANKAN (urutan menu sama); progres format
+ * lama tidak terbaca krn section-nya beda (`latihan-teks`/`tantangan-teks`).
  */
-export const READING_TOPICS_STARTER: ReadingWordTopic[] = [
+export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   {
-    id: 'baca-tempat',
-    title: 'Membaca Frasa: Tempat (Reading Place Phrases)',
-    scene: '🏞️',
-    desc: '10 frasa',
-    items: [
-      { en: 'At The Park', id: 'Di Taman', emoji: '🏞️' },
-      { en: 'At The Zoo', id: 'Di Kebun Binatang', emoji: '🐼' },
-      { en: 'At The Beach', id: 'Di Pantai', emoji: '🏖️' },
-      { en: 'At The Market', id: 'Di Pasar', emoji: '🛒' },
-      { en: 'At The Hospital', id: 'Di Rumah Sakit', emoji: '🏥' },
-      { en: 'On The Farm', id: 'Di Ladang', emoji: '🚜' },
-      { en: 'On The Bridge', id: 'Di Jembatan', emoji: '🌉' },
-      { en: 'At The Playground', id: 'Di Taman Bermain', emoji: '🛝' },
-      { en: 'On The Street', id: 'Di Jalan', emoji: '🛣️' },
-      { en: 'On The Mountain', id: 'Di Gunung', emoji: '⛰️' },
+    "id": "baca-tempat",
+    "title": "Buku Mini: Tempat di Kotaku (Mini Book: Places in My Town)",
+    "scene": "🏙️",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🏙️ My Town",
+        "pictures": [
+          {
+            "emoji": "🏫",
+            "label": "school"
+          },
+          {
+            "emoji": "🏪",
+            "label": "shop"
+          },
+          {
+            "emoji": "🛝",
+            "label": "park"
+          },
+          {
+            "emoji": "🏥",
+            "label": "hospital"
+          },
+          {
+            "emoji": "📚",
+            "label": "library"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The school is big.",
+            "id": "Sekolahnya besar.",
+            "pic": 0
+          },
+          {
+            "en": "The shop is small.",
+            "id": "Tokonya kecil.",
+            "pic": 1
+          },
+          {
+            "en": "I play at the park.",
+            "id": "Aku main di taman.",
+            "pic": 2
+          },
+          {
+            "en": "Mom works at the hospital.",
+            "id": "Ibu bekerja di rumah sakit.",
+            "pic": 3
+          },
+          {
+            "en": "We read at the library.",
+            "id": "Kami membaca di perpustakaan.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏫",
+              "🏪",
+              "🏥"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "school"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🏫🏫",
+            "q": "I see one school.",
+            "qId": "Aku lihat satu sekolah.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛝",
+              "🏥",
+              "🏫"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "park"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🏪",
+            "q": "I see a small shop.",
+            "qId": "Aku lihat toko kecil.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📚",
+              "🏫",
+              "🛝"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "library"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🚏 Going Out",
+        "pictures": [
+          {
+            "emoji": "🚏",
+            "label": "stop"
+          },
+          {
+            "emoji": "🥐",
+            "label": "bakery"
+          },
+          {
+            "emoji": "🦁",
+            "label": "zoo"
+          },
+          {
+            "emoji": "🏖️",
+            "label": "beach"
+          },
+          {
+            "emoji": "🧺",
+            "label": "market"
+          }
+        ],
+        "lines": [
+          {
+            "en": "We wait at the bus stop.",
+            "id": "Kami menunggu di halte.",
+            "pic": 0
+          },
+          {
+            "en": "We go to the bakery.",
+            "id": "Kami pergi ke toko roti.",
+            "pic": 1
+          },
+          {
+            "en": "The zoo has big animals.",
+            "id": "Kebun binatang punya hewan besar.",
+            "pic": 2
+          },
+          {
+            "en": "The beach is sunny.",
+            "id": "Pantainya cerah.",
+            "pic": 3
+          },
+          {
+            "en": "The market is busy.",
+            "id": "Pasarnya ramai.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥐",
+              "🦁",
+              "🧺"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "bakery"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🏖️",
+            "q": "The beach is sunny.",
+            "qId": "Pantainya cerah.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏖️",
+              "🧺",
+              "🥐"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "beach"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌧️",
+            "q": "The beach is sunny.",
+            "qId": "Pantainya cerah.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧺",
+              "🚏",
+              "🦁"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "market"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🏛️ A Trip to the Museum",
+        "pictures": [
+          {
+            "emoji": "🏛️",
+            "label": "museum"
+          },
+          {
+            "emoji": "🚌",
+            "label": "bus"
+          },
+          {
+            "emoji": "⛵",
+            "label": "boats"
+          },
+          {
+            "emoji": "🕰️",
+            "label": "clock"
+          },
+          {
+            "emoji": "🏠",
+            "label": "home"
+          }
+        ],
+        "lines": [
+          {
+            "en": "We go to the museum.",
+            "id": "Kami pergi ke museum.",
+            "pic": 0
+          },
+          {
+            "en": "We ride the bus there.",
+            "id": "Kami naik bus ke sana.",
+            "pic": 1
+          },
+          {
+            "en": "I see old boats.",
+            "id": "Aku lihat perahu kuno.",
+            "pic": 2
+          },
+          {
+            "en": "I see a big clock.",
+            "id": "Aku lihat jam besar.",
+            "pic": 3
+          },
+          {
+            "en": "Then we go home.",
+            "id": "Lalu kami pulang.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏛️",
+              "🚌",
+              "🕰️"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "museum"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🚌🚌",
+            "q": "We ride one bus.",
+            "qId": "Kami naik satu bus.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⛵",
+              "🕰️",
+              "🏛️"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "boats"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🕰️",
+            "q": "I see a big clock.",
+            "qId": "Aku lihat jam besar.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏠",
+              "🏛️",
+              "⛵"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "home"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🏥 At the Clinic",
+        "pictures": [
+          {
+            "emoji": "🏥",
+            "label": "clinic"
+          },
+          {
+            "emoji": "🩺",
+            "label": "doctor"
+          },
+          {
+            "emoji": "🪑",
+            "label": "chair"
+          },
+          {
+            "emoji": "💧",
+            "label": "water"
+          },
+          {
+            "emoji": "😊",
+            "label": "better"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I am at the clinic.",
+            "id": "Aku di klinik.",
+            "pic": 0
+          },
+          {
+            "en": "The doctor is kind.",
+            "id": "Dokternya baik.",
+            "pic": 1
+          },
+          {
+            "en": "I sit on a chair.",
+            "id": "Aku duduk di kursi.",
+            "pic": 2
+          },
+          {
+            "en": "The nurse gives me water.",
+            "id": "Perawat memberiku air.",
+            "pic": 3
+          },
+          {
+            "en": "Now I feel better!",
+            "id": "Sekarang aku merasa lebih baik!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🩺",
+              "🪑",
+              "😊"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "doctor"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "💧",
+            "q": "The nurse gives me water.",
+            "qId": "Perawat memberiku air.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪑",
+              "💧",
+              "🏥"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "chair"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍞",
+            "q": "The nurse gives me water.",
+            "qId": "Perawat memberiku air.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "😊",
+              "🏥",
+              "🪑"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "better"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-angka',
-    title: 'Membaca Frasa: Angka (Reading Number Phrases)',
-    scene: '11',
-    desc: '10 frasa',
-    items: [
-      { en: 'Eleven Stickers', id: 'Sebelas Stiker', emoji: '11' },
-      { en: 'Twelve Apples', id: 'Dua Belas Apel', emoji: '12' },
-      { en: 'Thirteen Balloons', id: 'Tiga Belas Balon', emoji: '13' },
-      { en: 'Fourteen Birds', id: 'Empat Belas Burung', emoji: '14' },
-      { en: 'Fifteen Candies', id: 'Lima Belas Permen', emoji: '15' },
-      { en: 'Sixteen Ants', id: 'Enam Belas Semut', emoji: '16' },
-      { en: 'Seventeen Coins', id: 'Tujuh Belas Koin', emoji: '17' },
-      { en: 'Eighteen Flowers', id: 'Delapan Belas Bunga', emoji: '18' },
-      { en: 'Nineteen Crackers', id: 'Sembilan Belas Biskuit', emoji: '19' },
-      { en: 'Twenty Fish', id: 'Dua Puluh Ikan', emoji: '20' },
+    "id": "baca-angka",
+    "title": "Buku Mini: Angka 11–20 (Mini Book: Numbers 11–20)",
+    "scene": "🔢",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🎒 In My Bag",
+        "pictures": [
+          {
+            "emoji": "✏️ 12",
+            "label": "twelve"
+          },
+          {
+            "emoji": "⭐ 15",
+            "label": "fifteen"
+          },
+          {
+            "emoji": "🖍️ 11",
+            "label": "eleven"
+          },
+          {
+            "emoji": "🪙 20",
+            "label": "twenty"
+          },
+          {
+            "emoji": "🃏 14",
+            "label": "fourteen"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I have twelve pencils.",
+            "id": "Aku punya dua belas pensil.",
+            "pic": 0
+          },
+          {
+            "en": "I have fifteen stickers.",
+            "id": "Aku punya lima belas stiker.",
+            "pic": 1
+          },
+          {
+            "en": "I have eleven crayons.",
+            "id": "Aku punya sebelas krayon.",
+            "pic": 2
+          },
+          {
+            "en": "I have twenty coins.",
+            "id": "Aku punya dua puluh koin.",
+            "pic": 3
+          },
+          {
+            "en": "I have fourteen cards.",
+            "id": "Aku punya empat belas kartu.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "✏️ 12",
+              "✏️ 20",
+              "✏️ 11"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "twelve"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "⭐ 15",
+            "q": "I have fifteen stickers.",
+            "qId": "Aku punya lima belas stiker.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🖍️ 11",
+              "🖍️ 17",
+              "🖍️ 12"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "eleven"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🪙 12",
+            "q": "I have twenty coins.",
+            "qId": "Aku punya dua puluh koin.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🃏 14",
+              "🃏 40",
+              "🃏 18"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "fourteen"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎂 How Old?",
+        "pictures": [
+          {
+            "emoji": "👦 13",
+            "label": "thirteen"
+          },
+          {
+            "emoji": "🧑 16",
+            "label": "sixteen"
+          },
+          {
+            "emoji": "👧 11",
+            "label": "eleven"
+          },
+          {
+            "emoji": "🧒 12",
+            "label": "twelve"
+          },
+          {
+            "emoji": "🕯️ 19",
+            "label": "nineteen"
+          }
+        ],
+        "lines": [
+          {
+            "en": "My brother is thirteen.",
+            "id": "Kakakku tiga belas tahun.",
+            "pic": 0
+          },
+          {
+            "en": "My cousin is sixteen.",
+            "id": "Sepupuku enam belas tahun.",
+            "pic": 1
+          },
+          {
+            "en": "My sister is eleven.",
+            "id": "Kakakku sebelas tahun.",
+            "pic": 2
+          },
+          {
+            "en": "My friend is twelve.",
+            "id": "Temanku dua belas tahun.",
+            "pic": 3
+          },
+          {
+            "en": "The cake has nineteen candles.",
+            "id": "Kuenya punya sembilan belas lilin.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👦 13",
+              "👦 30",
+              "👦 3"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "thirteen"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "👧 11",
+            "q": "My sister is eleven.",
+            "qId": "Kakakku sebelas tahun.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧑 16",
+              "🧑 60",
+              "🧑 6"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "sixteen"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🧒 20",
+            "q": "My friend is twelve.",
+            "qId": "Temanku dua belas tahun.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🕯️ 19",
+              "🕯️ 9",
+              "🕯️ 15"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "nineteen"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🛒 At the Shop",
+        "pictures": [
+          {
+            "emoji": "🥚 17",
+            "label": "seventeen"
+          },
+          {
+            "emoji": "🍎 18",
+            "label": "eighteen"
+          },
+          {
+            "emoji": "🍌 16",
+            "label": "sixteen"
+          },
+          {
+            "emoji": "🧃 12",
+            "label": "twelve"
+          },
+          {
+            "emoji": "🛍️ 19",
+            "label": "nineteen"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I buy seventeen eggs.",
+            "id": "Aku beli tujuh belas telur.",
+            "pic": 0
+          },
+          {
+            "en": "I buy eighteen apples.",
+            "id": "Aku beli delapan belas apel.",
+            "pic": 1
+          },
+          {
+            "en": "Mom buys sixteen bananas.",
+            "id": "Ibu beli enam belas pisang.",
+            "pic": 2
+          },
+          {
+            "en": "Dad buys twelve juice boxes.",
+            "id": "Ayah beli dua belas kotak jus.",
+            "pic": 3
+          },
+          {
+            "en": "We have nineteen bags.",
+            "id": "Kami punya sembilan belas tas.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥚 17",
+              "🥚 7",
+              "🥚 70"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "seventeen"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍎 18",
+            "q": "I buy eighteen apples.",
+            "qId": "Aku beli delapan belas apel.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍌 16",
+              "🍌 19",
+              "🍌 6"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "sixteen"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🧃 20",
+            "q": "Dad buys twelve juice boxes.",
+            "qId": "Ayah beli dua belas kotak jus.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛍️ 19",
+              "🛍️ 11",
+              "🛍️ 90"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "nineteen"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🏅 Sports Day",
+        "pictures": [
+          {
+            "emoji": "⚽ 11",
+            "label": "eleven"
+          },
+          {
+            "emoji": "👟 14",
+            "label": "fourteen"
+          },
+          {
+            "emoji": "🏆 20",
+            "label": "twenty"
+          },
+          {
+            "emoji": "🏀 16",
+            "label": "sixteen"
+          },
+          {
+            "emoji": "🏅 18",
+            "label": "eighteen"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Eleven children play football.",
+            "id": "Sebelas anak main sepak bola.",
+            "pic": 0
+          },
+          {
+            "en": "Fourteen children wear new shoes.",
+            "id": "Empat belas anak pakai sepatu baru.",
+            "pic": 1
+          },
+          {
+            "en": "Our team gets twenty points.",
+            "id": "Tim kami dapat dua puluh poin.",
+            "pic": 2
+          },
+          {
+            "en": "We have sixteen balls.",
+            "id": "Kami punya enam belas bola.",
+            "pic": 3
+          },
+          {
+            "en": "We win eighteen medals.",
+            "id": "Kami menang delapan belas medali.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⚽ 11",
+              "⚽ 7",
+              "⚽ 17"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "eleven"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🏀 16",
+            "q": "We have sixteen balls.",
+            "qId": "Kami punya enam belas bola.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏆 20",
+              "🏆 12",
+              "🏆 2"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "twenty"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🏅 13",
+            "q": "We win eighteen medals.",
+            "qId": "Kami menang delapan belas medali.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏅 18",
+              "🏅 13",
+              "🏅 8"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "eighteen"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-hari',
-    title: 'Membaca Frasa: Hari (Reading Day Phrases)',
-    scene: '🏫',
-    desc: '10 frasa',
-    items: [
-      { en: 'On Monday', id: 'Hari Senin', emoji: '🏫' },
-      { en: 'On Tuesday', id: 'Hari Selasa', emoji: '🎨' },
-      { en: 'On Wednesday', id: 'Hari Rabu', emoji: '🎵' },
-      { en: 'On Thursday', id: 'Hari Kamis', emoji: '⚽' },
-      { en: 'On Friday', id: 'Hari Jumat', emoji: '🎈' },
-      { en: 'On Saturday', id: 'Hari Sabtu', emoji: '🎉' },
-      { en: 'On Sunday', id: 'Hari Minggu', emoji: '🌳' },
-      { en: 'I Play Today', id: 'Aku Bermain Hari Ini', emoji: '👉' },
-      { en: 'I Play Tomorrow', id: 'Aku Bermain Besok', emoji: '🌅' },
-      { en: 'I Played Yesterday', id: 'Aku Bermain Kemarin', emoji: '🌇' },
+    "id": "baca-hari",
+    "title": "Buku Mini: Hari-hariku (Mini Book: My Week)",
+    "scene": "📅",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "📅 My Week",
+        "pictures": [
+          {
+            "emoji": "📚",
+            "label": "read"
+          },
+          {
+            "emoji": "🎨",
+            "label": "paint"
+          },
+          {
+            "emoji": "🍳",
+            "label": "cook"
+          },
+          {
+            "emoji": "🎤",
+            "label": "sing"
+          },
+          {
+            "emoji": "⚽",
+            "label": "football"
+          }
+        ],
+        "lines": [
+          {
+            "en": "On Monday, I read.",
+            "id": "Hari Senin, aku membaca.",
+            "pic": 0
+          },
+          {
+            "en": "On Tuesday, I paint.",
+            "id": "Hari Selasa, aku melukis.",
+            "pic": 1
+          },
+          {
+            "en": "On Wednesday, I cook.",
+            "id": "Hari Rabu, aku memasak.",
+            "pic": 2
+          },
+          {
+            "en": "On Thursday, I sing.",
+            "id": "Hari Kamis, aku bernyanyi.",
+            "pic": 3
+          },
+          {
+            "en": "On Friday, I play football.",
+            "id": "Hari Jumat, aku main sepak bola.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📚",
+              "🎨",
+              "🎤"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "read"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🎨",
+            "q": "On Tuesday, I paint.",
+            "qId": "Hari Selasa, aku melukis.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍳",
+              "🎤",
+              "📚"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "cook"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🎤",
+            "q": "On Wednesday, I cook.",
+            "qId": "Hari Rabu, aku memasak.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⚽",
+              "📚",
+              "🍳"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "football"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🛍️ The Weekend",
+        "pictures": [
+          {
+            "emoji": "🛍️",
+            "label": "shopping"
+          },
+          {
+            "emoji": "👵",
+            "label": "Grandma"
+          },
+          {
+            "emoji": "🍝",
+            "label": "noodles"
+          },
+          {
+            "emoji": "🏫",
+            "label": "School"
+          },
+          {
+            "emoji": "❤️",
+            "label": "weekend"
+          }
+        ],
+        "lines": [
+          {
+            "en": "On Saturday, we go shopping.",
+            "id": "Hari Sabtu, kami belanja.",
+            "pic": 0
+          },
+          {
+            "en": "On Sunday, we visit Grandma.",
+            "id": "Hari Minggu, kami mengunjungi Nenek.",
+            "pic": 1
+          },
+          {
+            "en": "We eat noodles for lunch.",
+            "id": "Kami makan mi untuk makan siang.",
+            "pic": 2
+          },
+          {
+            "en": "Tomorrow is Monday. School!",
+            "id": "Besok hari Senin. Sekolah!",
+            "pic": 3
+          },
+          {
+            "en": "I love the weekend!",
+            "id": "Aku suka akhir pekan!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛍️",
+              "👵",
+              "🏫"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "shopping"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍝",
+            "q": "We eat noodles for lunch.",
+            "qId": "Kami makan mi untuk makan siang.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "👵",
+              "🍝",
+              "❤️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "Grandma"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "👵",
+            "q": "On Sunday, we visit Grandpa.",
+            "qId": "Hari Minggu, kami mengunjungi Kakek.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏫",
+              "❤️",
+              "👵"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "School"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🪁 Busy Days",
+        "pictures": [
+          {
+            "emoji": "🖍️",
+            "label": "draw"
+          },
+          {
+            "emoji": "🚲",
+            "label": "bike"
+          },
+          {
+            "emoji": "🍕",
+            "label": "pizza"
+          },
+          {
+            "emoji": "🪁",
+            "label": "kite"
+          },
+          {
+            "emoji": "😴",
+            "label": "rest"
+          }
+        ],
+        "lines": [
+          {
+            "en": "On Monday, I draw.",
+            "id": "Hari Senin, aku menggambar.",
+            "pic": 0
+          },
+          {
+            "en": "On Wednesday, I ride my bike.",
+            "id": "Hari Rabu, aku naik sepeda.",
+            "pic": 1
+          },
+          {
+            "en": "On Friday, I eat pizza.",
+            "id": "Hari Jumat, aku makan pizza.",
+            "pic": 2
+          },
+          {
+            "en": "On Saturday, I fly a kite.",
+            "id": "Hari Sabtu, aku main layangan.",
+            "pic": 3
+          },
+          {
+            "en": "On Sunday, I rest.",
+            "id": "Hari Minggu, aku istirahat.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚲",
+              "🍕",
+              "😴"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "bike"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍕",
+            "q": "On Friday, I eat pizza.",
+            "qId": "Hari Jumat, aku makan pizza.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍕",
+              "🪁",
+              "🖍️"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "pizza"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🪁",
+            "q": "On Saturday, I ride my bike.",
+            "qId": "Hari Sabtu, aku naik sepeda.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "😴",
+              "🖍️",
+              "🍕"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "rest"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎒 Today and Tomorrow",
+        "pictures": [
+          {
+            "emoji": "🎵",
+            "label": "music"
+          },
+          {
+            "emoji": "🎨",
+            "label": "art"
+          },
+          {
+            "emoji": "⚽",
+            "label": "sports"
+          },
+          {
+            "emoji": "🥁",
+            "label": "drum"
+          },
+          {
+            "emoji": "🖌️",
+            "label": "brush"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Today I have music.",
+            "id": "Hari ini ada pelajaran musik.",
+            "pic": 0
+          },
+          {
+            "en": "Tomorrow I have art.",
+            "id": "Besok ada pelajaran seni.",
+            "pic": 1
+          },
+          {
+            "en": "Yesterday I had sports.",
+            "id": "Kemarin ada pelajaran olahraga.",
+            "pic": 2
+          },
+          {
+            "en": "Today I bring my drum.",
+            "id": "Hari ini aku bawa drumku.",
+            "pic": 3
+          },
+          {
+            "en": "Tomorrow I bring my brush.",
+            "id": "Besok aku bawa kuasku.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎵",
+              "🎨",
+              "🥁"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "music"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🥁",
+            "q": "Today I bring my drum.",
+            "qId": "Hari ini aku bawa drumku.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⚽",
+              "🥁",
+              "🎵"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "sports"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🎨",
+            "q": "Today I have music.",
+            "qId": "Hari ini ada pelajaran musik.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🖌️",
+              "🎵",
+              "⚽"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "brush"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-perkakas',
-    title: 'Membaca Frasa: Perkakas (Reading Tool Phrases)',
-    scene: '🧰',
-    desc: '10 frasa',
-    items: [
-      { en: 'The Hammer', id: 'Palu Itu', emoji: '🔨' },
-      { en: 'The Screwdriver', id: 'Obeng Itu', emoji: '🪛' },
-      { en: 'The Wrench', id: 'Kunci Inggris Itu', emoji: '🔧' },
-      { en: 'The Saw', id: 'Gergaji Itu', emoji: '🪚' },
-      { en: 'The Ladder', id: 'Tangga Itu', emoji: '🪜' },
-      { en: 'The Toolbox', id: 'Kotak Perkakas Itu', emoji: '🧰' },
-      { en: 'The Bucket', id: 'Ember Itu', emoji: '🪣' },
-      { en: 'The Bolt', id: 'Baut Itu', emoji: '🔩' },
-      { en: 'The Rope', id: 'Tali Itu', emoji: '🪢' },
-      { en: 'The Flashlight', id: 'Senter Itu', emoji: '🔦' },
+    "id": "baca-perkakas",
+    "title": "Buku Mini: Alat Tukang (Mini Book: Tools)",
+    "scene": "🧰",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🔨 Dad's Tools",
+        "pictures": [
+          {
+            "emoji": "🔨",
+            "label": "hammer"
+          },
+          {
+            "emoji": "🪚",
+            "label": "saw"
+          },
+          {
+            "emoji": "🪛",
+            "label": "screwdriver"
+          },
+          {
+            "emoji": "🪜",
+            "label": "ladder"
+          },
+          {
+            "emoji": "🪑",
+            "label": "chair"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Dad has a hammer.",
+            "id": "Ayah punya palu.",
+            "pic": 0
+          },
+          {
+            "en": "Dad has a saw.",
+            "id": "Ayah punya gergaji.",
+            "pic": 1
+          },
+          {
+            "en": "Dad has a screwdriver.",
+            "id": "Ayah punya obeng.",
+            "pic": 2
+          },
+          {
+            "en": "Dad has a ladder.",
+            "id": "Ayah punya tangga.",
+            "pic": 3
+          },
+          {
+            "en": "Dad fixes my chair.",
+            "id": "Ayah memperbaiki kursiku.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🔨",
+              "🪚",
+              "🪜"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "hammer"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🔨🔨",
+            "q": "Dad has one hammer.",
+            "qId": "Ayah punya satu palu.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪛",
+              "🪜",
+              "🔨"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "screwdriver"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🪜",
+            "q": "Dad has a ladder.",
+            "qId": "Ayah punya tangga.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪑",
+              "🔨",
+              "🪛"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "chair"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🧰 Fix It!",
+        "pictures": [
+          {
+            "emoji": "🚪",
+            "label": "door"
+          },
+          {
+            "emoji": "🧰",
+            "label": "toolbox"
+          },
+          {
+            "emoji": "🔧",
+            "label": "wrench"
+          },
+          {
+            "emoji": "🔩",
+            "label": "bolt"
+          },
+          {
+            "emoji": "🎉",
+            "label": "fixed"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The door is broken.",
+            "id": "Pintunya rusak.",
+            "pic": 0
+          },
+          {
+            "en": "Mom gets the toolbox.",
+            "id": "Ibu mengambil kotak perkakas.",
+            "pic": 1
+          },
+          {
+            "en": "She uses a wrench.",
+            "id": "Ibu memakai kunci inggris.",
+            "pic": 2
+          },
+          {
+            "en": "She uses a nut and bolt.",
+            "id": "Ibu memakai mur dan baut.",
+            "pic": 3
+          },
+          {
+            "en": "Hooray, it is fixed!",
+            "id": "Hore, sudah beres!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧰",
+              "🔧",
+              "🎉"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "toolbox"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🔧",
+            "q": "She uses a wrench.",
+            "qId": "Ibu memakai kunci inggris.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🔧",
+              "🔩",
+              "🚪"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "wrench"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🔨",
+            "q": "She uses a wrench.",
+            "qId": "Ibu memakai kunci inggris.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🔩",
+              "🎉",
+              "🧰"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "bolt"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🛠️ My Workshop",
+        "pictures": [
+          {
+            "emoji": "🪓",
+            "label": "axe"
+          },
+          {
+            "emoji": "🧲",
+            "label": "magnet"
+          },
+          {
+            "emoji": "✂️",
+            "label": "scissors"
+          },
+          {
+            "emoji": "📏",
+            "label": "ruler"
+          },
+          {
+            "emoji": "🪢",
+            "label": "rope"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Grandpa uses an axe.",
+            "id": "Kakek memakai kapak.",
+            "pic": 0
+          },
+          {
+            "en": "I use a magnet.",
+            "id": "Aku memakai magnet.",
+            "pic": 1
+          },
+          {
+            "en": "I cut paper with scissors.",
+            "id": "Aku memotong kertas dengan gunting.",
+            "pic": 2
+          },
+          {
+            "en": "I measure with a ruler.",
+            "id": "Aku mengukur dengan penggaris.",
+            "pic": 3
+          },
+          {
+            "en": "I tie it with rope.",
+            "id": "Aku mengikatnya dengan tali.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧲",
+              "✂️",
+              "🪢"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "magnet"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "📏",
+            "q": "I measure with a ruler.",
+            "qId": "Aku mengukur dengan penggaris.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "✂️",
+              "📏",
+              "🪓"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "scissors"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🧲",
+            "q": "I cut paper with scissors.",
+            "qId": "Aku memotong kertas dengan gunting.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪢",
+              "🪓",
+              "✂️"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "rope"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🏗️ Building a House",
+        "pictures": [
+          {
+            "emoji": "🧱",
+            "label": "bricks"
+          },
+          {
+            "emoji": "🏗️",
+            "label": "crane"
+          },
+          {
+            "emoji": "🪵",
+            "label": "wood"
+          },
+          {
+            "emoji": "🚚",
+            "label": "truck"
+          },
+          {
+            "emoji": "🏠",
+            "label": "house"
+          }
+        ],
+        "lines": [
+          {
+            "en": "We need many bricks.",
+            "id": "Kami butuh banyak batu bata.",
+            "pic": 0
+          },
+          {
+            "en": "We need a big crane.",
+            "id": "Kami butuh derek besar.",
+            "pic": 1
+          },
+          {
+            "en": "We need some wood.",
+            "id": "Kami butuh kayu.",
+            "pic": 2
+          },
+          {
+            "en": "We need a truck.",
+            "id": "Kami butuh truk.",
+            "pic": 3
+          },
+          {
+            "en": "Look, a new house!",
+            "id": "Lihat, rumah baru!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧱",
+              "🏗️",
+              "🚚"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "bricks"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🧱🧱",
+            "q": "We need many bricks.",
+            "qId": "Kami butuh banyak batu bata.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪵",
+              "🚚",
+              "🧱"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "wood"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🚚",
+            "q": "We need a big crane.",
+            "qId": "Kami butuh derek besar.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏠",
+              "🧱",
+              "🪵"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "house"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-makanan',
-    title: 'Membaca Frasa: Makanan (Reading Food Phrases)',
-    scene: '🍕',
-    desc: '10 frasa',
-    items: [
-      { en: 'I Like Pizza', id: 'Aku Suka Pizza', emoji: '🍕' },
-      { en: 'I Like Burger', id: 'Aku Suka Burger', emoji: '🍔' },
-      { en: 'I Like Sandwich', id: 'Aku Suka Sandwich', emoji: '🥪' },
-      { en: 'I Like Ice Cream', id: 'Aku Suka Es Krim', emoji: '🍦' },
-      { en: 'I Like Cake', id: 'Aku Suka Kue', emoji: '🍰' },
-      { en: 'I Like Cookie', id: 'Aku Suka Biskuit', emoji: '🍪' },
-      { en: 'I Like Chocolate', id: 'Aku Suka Cokelat', emoji: '🍫' },
-      { en: 'I Like Cheese', id: 'Aku Suka Keju', emoji: '🧀' },
-      { en: 'I Like Juice', id: 'Aku Suka Jus', emoji: '🧃' },
-      { en: 'I Like Yogurt', id: 'Aku Suka Yogurt', emoji: '🥣' },
+    "id": "baca-makanan",
+    "title": "Buku Mini: Makananku (Mini Book: My Food)",
+    "scene": "🍱",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🍞 Breakfast",
+        "pictures": [
+          {
+            "emoji": "🍞",
+            "label": "bread"
+          },
+          {
+            "emoji": "🥛",
+            "label": "milk"
+          },
+          {
+            "emoji": "🥚🥚",
+            "label": "eggs"
+          },
+          {
+            "emoji": "🍵",
+            "label": "tea"
+          },
+          {
+            "emoji": "🍚",
+            "label": "rice"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I eat bread and jam.",
+            "id": "Aku makan roti dan selai.",
+            "pic": 0
+          },
+          {
+            "en": "I drink warm milk.",
+            "id": "Aku minum susu hangat.",
+            "pic": 1
+          },
+          {
+            "en": "Dad eats two eggs.",
+            "id": "Ayah makan dua telur.",
+            "pic": 2
+          },
+          {
+            "en": "Mom drinks hot tea.",
+            "id": "Ibu minum teh panas.",
+            "pic": 3
+          },
+          {
+            "en": "We eat fried rice.",
+            "id": "Kami makan nasi goreng.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍞",
+              "🥛",
+              "🍵"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "bread"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🥚🥚",
+            "q": "Dad eats two eggs.",
+            "qId": "Ayah makan dua telur.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥛",
+              "🥚🥚",
+              "🍚"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "milk"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🥚",
+            "q": "Dad eats two eggs.",
+            "qId": "Ayah makan dua telur.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍚",
+              "🍞",
+              "🥚🥚"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "rice"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🍱 My Lunch Box",
+        "pictures": [
+          {
+            "emoji": "🍗",
+            "label": "chicken"
+          },
+          {
+            "emoji": "🥕",
+            "label": "carrots"
+          },
+          {
+            "emoji": "🍌",
+            "label": "banana"
+          },
+          {
+            "emoji": "💧",
+            "label": "water"
+          },
+          {
+            "emoji": "😋",
+            "label": "yummy"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I have rice and chicken.",
+            "id": "Aku bawa nasi dan ayam.",
+            "pic": 0
+          },
+          {
+            "en": "I have some carrots.",
+            "id": "Aku bawa wortel.",
+            "pic": 1
+          },
+          {
+            "en": "I have a banana.",
+            "id": "Aku bawa pisang.",
+            "pic": 2
+          },
+          {
+            "en": "I have a bottle of water.",
+            "id": "Aku bawa sebotol air.",
+            "pic": 3
+          },
+          {
+            "en": "My lunch is yummy!",
+            "id": "Bekalku enak!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥕",
+              "🍌",
+              "😋"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "carrots"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🥕🥕",
+            "q": "I have some carrots.",
+            "qId": "Aku bawa wortel.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍌",
+              "💧",
+              "🍗"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "banana"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍌",
+            "q": "I have some carrots.",
+            "qId": "Aku bawa wortel.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "💧",
+              "😋",
+              "🥕"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "water"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🍜 At the Food Stall",
+        "pictures": [
+          {
+            "emoji": "🍜",
+            "label": "noodles"
+          },
+          {
+            "emoji": "🍢",
+            "label": "satay"
+          },
+          {
+            "emoji": "🥣",
+            "label": "soup"
+          },
+          {
+            "emoji": "🥤",
+            "label": "tea"
+          },
+          {
+            "emoji": "♨️",
+            "label": "hot"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I want noodles, please.",
+            "id": "Aku mau mi, ya.",
+            "pic": 0
+          },
+          {
+            "en": "Mom wants satay.",
+            "id": "Ibu mau sate.",
+            "pic": 1
+          },
+          {
+            "en": "Dad wants soup.",
+            "id": "Ayah mau sup.",
+            "pic": 2
+          },
+          {
+            "en": "We drink iced tea.",
+            "id": "Kami minum es teh.",
+            "pic": 3
+          },
+          {
+            "en": "The food is hot!",
+            "id": "Makanannya panas!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍜",
+              "🍢",
+              "🥤"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "noodles"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍢",
+            "q": "Mom wants satay.",
+            "qId": "Ibu mau sate.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍢",
+              "🥣",
+              "♨️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "satay"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍜",
+            "q": "Dad wants soup.",
+            "qId": "Ayah mau sup.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥣",
+              "🥤",
+              "🍜"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "soup"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🍪 Snack Time",
+        "pictures": [
+          {
+            "emoji": "🍪",
+            "label": "cookie"
+          },
+          {
+            "emoji": "🧁",
+            "label": "cupcake"
+          },
+          {
+            "emoji": "🍿",
+            "label": "popcorn"
+          },
+          {
+            "emoji": "🥞",
+            "label": "pancake"
+          },
+          {
+            "emoji": "🧃",
+            "label": "juice"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I eat a cookie.",
+            "id": "Aku makan kue kering.",
+            "pic": 0
+          },
+          {
+            "en": "My sister eats a cupcake.",
+            "id": "Kakakku makan kue mangkuk.",
+            "pic": 1
+          },
+          {
+            "en": "We share some popcorn.",
+            "id": "Kami berbagi berondong jagung.",
+            "pic": 2
+          },
+          {
+            "en": "Grandpa eats a pancake.",
+            "id": "Kakek makan panekuk.",
+            "pic": 3
+          },
+          {
+            "en": "We drink fruit juice.",
+            "id": "Kami minum jus buah.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍪",
+              "🧁",
+              "🥞"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "cookie"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🧁",
+            "q": "My sister eats a cupcake.",
+            "qId": "Kakakku makan kue mangkuk.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍿",
+              "🥞",
+              "🍪"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "popcorn"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍪🍪🍪",
+            "q": "I eat a cookie.",
+            "qId": "Aku makan sebuah kue kering.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥞",
+              "🧃",
+              "🧁"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "pancake"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-barang',
-    title: 'Membaca Frasa: Barang di Rumah (Reading Home Item Phrases)',
-    scene: '🛏️',
-    desc: '10 frasa',
-    items: [
-      { en: 'The Table', id: 'Meja Itu', emoji: '🍽️' },
-      { en: 'The Bed', id: 'Tempat Tidur Itu', emoji: '🛏️' },
-      { en: 'The Sofa', id: 'Sofa Itu', emoji: '🛋️' },
-      { en: 'The Lamp', id: 'Lampu Itu', emoji: '💡' },
-      { en: 'The Television', id: 'Televisi Itu', emoji: '📺' },
-      { en: 'The Fridge', id: 'Kulkas Itu', emoji: '🧊' },
-      { en: 'The Mirror', id: 'Cermin Itu', emoji: '🪞' },
-      { en: 'The Phone', id: 'Telepon Itu', emoji: '📱' },
-      { en: 'The Cupboard', id: 'Lemari Itu', emoji: '🗄️' },
-      { en: 'The Broom', id: 'Sapu Itu', emoji: '🧹' },
+    "id": "baca-barang",
+    "title": "Buku Mini: Barang di Rumah (Mini Book: Things at Home)",
+    "scene": "🏠",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🛋️ In the Living Room",
+        "pictures": [
+          {
+            "emoji": "🛋️",
+            "label": "sofa"
+          },
+          {
+            "emoji": "📺",
+            "label": "TV"
+          },
+          {
+            "emoji": "💡",
+            "label": "lamp"
+          },
+          {
+            "emoji": "🕰️",
+            "label": "clock"
+          },
+          {
+            "emoji": "🪴",
+            "label": "plant"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I sit on the sofa.",
+            "id": "Aku duduk di sofa.",
+            "pic": 0
+          },
+          {
+            "en": "The TV is big.",
+            "id": "TV-nya besar.",
+            "pic": 1
+          },
+          {
+            "en": "The lamp is on.",
+            "id": "Lampunya menyala.",
+            "pic": 2
+          },
+          {
+            "en": "The clock is on the wall.",
+            "id": "Jamnya di dinding.",
+            "pic": 3
+          },
+          {
+            "en": "The plant is green.",
+            "id": "Tanamannya hijau.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🛋️",
+              "📺",
+              "🕰️"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "sofa"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "📺",
+            "q": "The TV is big.",
+            "qId": "TV-nya besar.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "💡",
+              "🕰️",
+              "🛋️"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "lamp"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🪴🪴",
+            "q": "I see one plant.",
+            "qId": "Aku lihat satu tanaman.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪴",
+              "🛋️",
+              "💡"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "plant"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🛏️ My Bedroom",
+        "pictures": [
+          {
+            "emoji": "🛏️",
+            "label": "bed"
+          },
+          {
+            "emoji": "🪞",
+            "label": "mirror"
+          },
+          {
+            "emoji": "🧸",
+            "label": "teddy"
+          },
+          {
+            "emoji": "🪟",
+            "label": "window"
+          },
+          {
+            "emoji": "⏰",
+            "label": "alarm"
+          }
+        ],
+        "lines": [
+          {
+            "en": "My bed is soft.",
+            "id": "Kasurku empuk.",
+            "pic": 0
+          },
+          {
+            "en": "I have a mirror.",
+            "id": "Aku punya cermin.",
+            "pic": 1
+          },
+          {
+            "en": "My teddy is on the bed.",
+            "id": "Boneka beruangku di kasur.",
+            "pic": 2
+          },
+          {
+            "en": "My window is open.",
+            "id": "Jendelaku terbuka.",
+            "pic": 3
+          },
+          {
+            "en": "My alarm clock rings.",
+            "id": "Jam wekerku berbunyi.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪞",
+              "🧸",
+              "⏰"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "mirror"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🪟",
+            "q": "My window is open.",
+            "qId": "Jendelaku terbuka.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪟",
+              "⏰",
+              "🪞"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "window"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🪞",
+            "q": "My bed is soft.",
+            "qId": "Kasurku empuk.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⏰",
+              "🛏️",
+              "🧸"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "alarm"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🍽️ In the Kitchen",
+        "pictures": [
+          {
+            "emoji": "🥄",
+            "label": "spoon"
+          },
+          {
+            "emoji": "☕",
+            "label": "cup"
+          },
+          {
+            "emoji": "🥣",
+            "label": "bowl"
+          },
+          {
+            "emoji": "🍲",
+            "label": "pot"
+          },
+          {
+            "emoji": "🍴",
+            "label": "fork"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The spoon is on the table.",
+            "id": "Sendoknya di meja.",
+            "pic": 0
+          },
+          {
+            "en": "The cup is full.",
+            "id": "Cangkirnya penuh.",
+            "pic": 1
+          },
+          {
+            "en": "The bowl is empty.",
+            "id": "Mangkuknya kosong.",
+            "pic": 2
+          },
+          {
+            "en": "The pot is hot.",
+            "id": "Pancinya panas.",
+            "pic": 3
+          },
+          {
+            "en": "The fork is clean.",
+            "id": "Garpunya bersih.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥄",
+              "☕",
+              "🍲"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "spoon"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "☕",
+            "q": "The cup is full.",
+            "qId": "Cangkirnya penuh.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥣",
+              "🍲",
+              "🥄"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "bowl"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🥣",
+            "q": "The pot is hot.",
+            "qId": "Pancinya panas.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍴",
+              "🥄",
+              "🥣"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "fork"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🛁 In the Bathroom",
+        "pictures": [
+          {
+            "emoji": "🧼",
+            "label": "soap"
+          },
+          {
+            "emoji": "🪥",
+            "label": "toothbrush"
+          },
+          {
+            "emoji": "🛁",
+            "label": "bathtub"
+          },
+          {
+            "emoji": "🧴",
+            "label": "shampoo"
+          },
+          {
+            "emoji": "🚿",
+            "label": "shower"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I use the soap.",
+            "id": "Aku memakai sabun.",
+            "pic": 0
+          },
+          {
+            "en": "I brush with a toothbrush.",
+            "id": "Aku menggosok gigi dengan sikat gigi.",
+            "pic": 1
+          },
+          {
+            "en": "I sit in the bathtub.",
+            "id": "Aku duduk di bak mandi.",
+            "pic": 2
+          },
+          {
+            "en": "I use shampoo.",
+            "id": "Aku memakai sampo.",
+            "pic": 3
+          },
+          {
+            "en": "I take a shower.",
+            "id": "Aku mandi pakai pancuran.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧼",
+              "🪥",
+              "🧴"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "soap"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🛁",
+            "q": "I sit in the bathtub.",
+            "qId": "Aku duduk di bak mandi.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪥",
+              "🛁",
+              "🚿"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "toothbrush"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🧼",
+            "q": "I take a shower.",
+            "qId": "Aku mandi pakai pancuran.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚿",
+              "🧼",
+              "🛁"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "shower"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-sekolah',
-    title: 'Membaca Frasa: Di Sekolah (Reading School Phrases)',
-    scene: '🏫',
-    desc: '10 frasa',
-    items: [
-      { en: 'The Coach', id: 'Pelatih Itu', emoji: '📣' },
-      { en: 'The Classroom', id: 'Ruang Kelas Itu', emoji: '🏫' },
-      { en: 'My Friend', id: 'Temanku', emoji: '👥' },
-      { en: 'The Principal', id: 'Kepala Sekolah Itu', emoji: '🧑‍💼' },
-      { en: 'The Library', id: 'Perpustakaan Itu', emoji: '📚' },
-      { en: 'My Lunchbox', id: 'Kotak Bekalku', emoji: '🍱' },
-      { en: 'My Uniform', id: 'Seragamku', emoji: '👕' },
-      { en: 'The Bell', id: 'Bel Itu', emoji: '🔔' },
-      { en: 'My Homework', id: 'PR-ku', emoji: '📓' },
-      { en: 'At Recess', id: 'Saat Istirahat', emoji: '🥪' },
+    "id": "baca-sekolah",
+    "title": "Buku Mini: Di Sekolah (Mini Book: At School)",
+    "scene": "🏫",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🏫 My Class",
+        "pictures": [
+          {
+            "emoji": "🧑‍🏫",
+            "label": "teacher"
+          },
+          {
+            "emoji": "🪑",
+            "label": "desk"
+          },
+          {
+            "emoji": "📓",
+            "label": "book"
+          },
+          {
+            "emoji": "🎵",
+            "label": "song"
+          },
+          {
+            "emoji": "🧒",
+            "label": "friend"
+          }
+        ],
+        "lines": [
+          {
+            "en": "My teacher is kind.",
+            "id": "Guruku baik.",
+            "pic": 0
+          },
+          {
+            "en": "I sit at my desk.",
+            "id": "Aku duduk di mejaku.",
+            "pic": 1
+          },
+          {
+            "en": "I write in my book.",
+            "id": "Aku menulis di bukuku.",
+            "pic": 2
+          },
+          {
+            "en": "We sing a song.",
+            "id": "Kami menyanyikan lagu.",
+            "pic": 3
+          },
+          {
+            "en": "I have a new friend.",
+            "id": "Aku punya teman baru.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧑‍🏫",
+              "🪑",
+              "🎵"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "teacher"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "📓",
+            "q": "I write in my book.",
+            "qId": "Aku menulis di bukuku.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📓",
+              "🎵",
+              "🧑‍🏫"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "book"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🎵",
+            "q": "I sit at my desk.",
+            "qId": "Aku duduk di mejaku.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧒",
+              "🧑‍🏫",
+              "📓"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "friend"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "✏️ My Pencil Case",
+        "pictures": [
+          {
+            "emoji": "✏️",
+            "label": "pencil"
+          },
+          {
+            "emoji": "🖊️",
+            "label": "pen"
+          },
+          {
+            "emoji": "📏",
+            "label": "ruler"
+          },
+          {
+            "emoji": "✂️",
+            "label": "scissors"
+          },
+          {
+            "emoji": "🖍️",
+            "label": "crayons"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I have a pencil.",
+            "id": "Aku punya pensil.",
+            "pic": 0
+          },
+          {
+            "en": "I have a pen.",
+            "id": "Aku punya pulpen.",
+            "pic": 1
+          },
+          {
+            "en": "I have a ruler.",
+            "id": "Aku punya penggaris.",
+            "pic": 2
+          },
+          {
+            "en": "I have scissors.",
+            "id": "Aku punya gunting.",
+            "pic": 3
+          },
+          {
+            "en": "I have crayons.",
+            "id": "Aku punya krayon.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🖊️",
+              "📏",
+              "🖍️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "pen"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "✏️✏️",
+            "q": "I have one pencil.",
+            "qId": "Aku punya satu pensil.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📏",
+              "✂️",
+              "✏️"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "ruler"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "📏",
+            "q": "I have a ruler.",
+            "qId": "Aku punya penggaris.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🖍️",
+              "✏️",
+              "📏"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "crayons"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🔔 Break Time",
+        "pictures": [
+          {
+            "emoji": "🔔",
+            "label": "bell"
+          },
+          {
+            "emoji": "🌳",
+            "label": "outside"
+          },
+          {
+            "emoji": "🍪",
+            "label": "snack"
+          },
+          {
+            "emoji": "⚽",
+            "label": "ball"
+          },
+          {
+            "emoji": "📖",
+            "label": "read"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The bell rings.",
+            "id": "Belnya berbunyi.",
+            "pic": 0
+          },
+          {
+            "en": "We go outside.",
+            "id": "Kami keluar kelas.",
+            "pic": 1
+          },
+          {
+            "en": "I eat my snack.",
+            "id": "Aku makan camilanku.",
+            "pic": 2
+          },
+          {
+            "en": "We play ball.",
+            "id": "Kami main bola.",
+            "pic": 3
+          },
+          {
+            "en": "Then we read again.",
+            "id": "Lalu kami membaca lagi.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🔔",
+              "🌳",
+              "⚽"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "bell"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🔔",
+            "q": "The bell rings.",
+            "qId": "Belnya berbunyi.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍪",
+              "⚽",
+              "🔔"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "snack"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "⚽",
+            "q": "I eat my snack.",
+            "qId": "Aku makan camilanku.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⚽",
+              "📖",
+              "🌳"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "ball"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🎨 Art Class",
+        "pictures": [
+          {
+            "emoji": "🎨",
+            "label": "paint"
+          },
+          {
+            "emoji": "☀️",
+            "label": "sun"
+          },
+          {
+            "emoji": "🌳",
+            "label": "tree"
+          },
+          {
+            "emoji": "✂️",
+            "label": "cut"
+          },
+          {
+            "emoji": "❤️",
+            "label": "art"
+          }
+        ],
+        "lines": [
+          {
+            "en": "We paint a picture.",
+            "id": "Kami melukis gambar.",
+            "pic": 0
+          },
+          {
+            "en": "I paint a big sun.",
+            "id": "Aku melukis matahari besar.",
+            "pic": 1
+          },
+          {
+            "en": "My friend paints a tree.",
+            "id": "Temanku melukis pohon.",
+            "pic": 2
+          },
+          {
+            "en": "We cut paper.",
+            "id": "Kami memotong kertas.",
+            "pic": 3
+          },
+          {
+            "en": "The teacher likes our art!",
+            "id": "Guru suka karya kami!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☀️",
+              "🌳",
+              "❤️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "sun"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "☀️",
+            "q": "I paint a big sun.",
+            "qId": "Aku melukis matahari besar.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌳",
+              "✂️",
+              "🎨"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "tree"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌳🌳",
+            "q": "My friend paints a tree.",
+            "qId": "Temanku melukis sebatang pohon.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "✂️",
+              "❤️",
+              "☀️"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "cut"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-orang',
-    title: 'Membaca Frasa: Orang di Sekitarku (Reading People Phrases)',
-    scene: '🧑‍🎓',
-    desc: '10 frasa',
-    items: [
-      { en: 'My Neighbor', id: 'Tetanggaku', emoji: '🏘️' },
-      { en: 'My Classmate', id: 'Teman Sekelasku', emoji: '🧑‍🎓' },
-      { en: 'The Boy', id: 'Anak Laki-laki Itu', emoji: '👦' },
-      { en: 'The Girl', id: 'Anak Perempuan Itu', emoji: '👧' },
-      { en: 'The Man', id: 'Pria Itu', emoji: '👨' },
-      { en: 'The Woman', id: 'Wanita Itu', emoji: '👩' },
-      { en: 'The Baby', id: 'Bayi Itu', emoji: '👶' },
-      { en: 'The Driver', id: 'Supir Itu', emoji: '🚕' },
-      { en: 'My Best Friend', id: 'Sahabatku', emoji: '🤝' },
-      { en: 'My Twin', id: 'Kembaranku', emoji: '👥' },
+    "id": "baca-orang",
+    "title": "Buku Mini: Orang di Sekitarku (Mini Book: People Around Me)",
+    "scene": "🧑‍🍳",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🧑‍⚕️ Helpers",
+        "pictures": [
+          {
+            "emoji": "🩺",
+            "label": "doctor"
+          },
+          {
+            "emoji": "👮",
+            "label": "police"
+          },
+          {
+            "emoji": "🌾",
+            "label": "farmer"
+          },
+          {
+            "emoji": "🧑‍🍳",
+            "label": "chef"
+          },
+          {
+            "emoji": "🚌",
+            "label": "driver"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The doctor helps sick people.",
+            "id": "Dokter menolong orang sakit.",
+            "pic": 0
+          },
+          {
+            "en": "The police officer helps us.",
+            "id": "Polisi menolong kita.",
+            "pic": 1
+          },
+          {
+            "en": "The farmer grows rice.",
+            "id": "Petani menanam padi.",
+            "pic": 2
+          },
+          {
+            "en": "The chef cooks food.",
+            "id": "Koki memasak makanan.",
+            "pic": 3
+          },
+          {
+            "en": "The driver drives a bus.",
+            "id": "Sopir menyetir bus.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🩺",
+              "👮",
+              "🧑‍🍳"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "doctor"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🧑‍🍳",
+            "q": "The chef cooks food.",
+            "qId": "Koki memasak makanan.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌾",
+              "🧑‍🍳",
+              "🩺"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "farmer"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌾",
+            "q": "The doctor helps sick people.",
+            "qId": "Dokter menolong orang sakit.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚌",
+              "🩺",
+              "🌾"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "driver"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🏘️ My Neighbors",
+        "pictures": [
+          {
+            "emoji": "👶",
+            "label": "baby"
+          },
+          {
+            "emoji": "🪁",
+            "label": "kite"
+          },
+          {
+            "emoji": "🐶",
+            "label": "dog"
+          },
+          {
+            "emoji": "🎂",
+            "label": "cake"
+          },
+          {
+            "emoji": "🎩",
+            "label": "hat"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The baby is small.",
+            "id": "Bayinya kecil.",
+            "pic": 0
+          },
+          {
+            "en": "The girl has a kite.",
+            "id": "Anak perempuan itu punya layangan.",
+            "pic": 1
+          },
+          {
+            "en": "The man has a dog.",
+            "id": "Pria itu punya anjing.",
+            "pic": 2
+          },
+          {
+            "en": "The woman has a cake.",
+            "id": "Wanita itu punya kue.",
+            "pic": 3
+          },
+          {
+            "en": "Grandpa has a hat.",
+            "id": "Kakek punya topi.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪁",
+              "🐶",
+              "🎩"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "kite"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🐶",
+            "q": "The man has a dog.",
+            "qId": "Pria itu punya anjing.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🐶",
+              "🎂",
+              "👶"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "dog"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🎂",
+            "q": "The girl has a kite.",
+            "qId": "Anak perempuan itu punya layangan.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎩",
+              "👶",
+              "🐶"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "hat"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🩹 At the Clinic",
+        "pictures": [
+          {
+            "emoji": "🩹",
+            "label": "nurse"
+          },
+          {
+            "emoji": "🩺",
+            "label": "heart"
+          },
+          {
+            "emoji": "⭐",
+            "label": "sticker"
+          },
+          {
+            "emoji": "🤝",
+            "label": "hand"
+          },
+          {
+            "emoji": "💪",
+            "label": "brave"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The nurse is kind.",
+            "id": "Perawatnya baik.",
+            "pic": 0
+          },
+          {
+            "en": "The doctor listens to my heart.",
+            "id": "Dokter mendengarkan detak jantungku.",
+            "pic": 1
+          },
+          {
+            "en": "The nurse gives me a sticker.",
+            "id": "Perawat memberiku stiker.",
+            "pic": 2
+          },
+          {
+            "en": "Mom holds my hand.",
+            "id": "Ibu memegang tanganku.",
+            "pic": 3
+          },
+          {
+            "en": "I am brave!",
+            "id": "Aku berani!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🩹",
+              "🩺",
+              "🤝"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "nurse"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "⭐",
+            "q": "The nurse gives me a sticker.",
+            "qId": "Perawat memberiku stiker.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⭐",
+              "🤝",
+              "🩹"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "sticker"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🩺",
+            "q": "The nurse gives me a sticker.",
+            "qId": "Perawat memberiku stiker.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "💪",
+              "🩹",
+              "⭐"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "brave"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🧺 At the Market",
+        "pictures": [
+          {
+            "emoji": "🍉",
+            "label": "fruit"
+          },
+          {
+            "emoji": "🥖",
+            "label": "bread"
+          },
+          {
+            "emoji": "🥣",
+            "label": "soup"
+          },
+          {
+            "emoji": "👟",
+            "label": "shoes"
+          },
+          {
+            "emoji": "💐",
+            "label": "flowers"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The seller has fruit.",
+            "id": "Penjualnya punya buah.",
+            "pic": 0
+          },
+          {
+            "en": "The baker sells bread.",
+            "id": "Tukang roti menjual roti.",
+            "pic": 1
+          },
+          {
+            "en": "The cook sells soup.",
+            "id": "Juru masak menjual sup.",
+            "pic": 2
+          },
+          {
+            "en": "The man sells shoes.",
+            "id": "Pria itu menjual sepatu.",
+            "pic": 3
+          },
+          {
+            "en": "Mom buys flowers.",
+            "id": "Ibu membeli bunga.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍉",
+              "🥖",
+              "👟"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "fruit"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🥖",
+            "q": "The baker sells bread.",
+            "qId": "Tukang roti menjual roti.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🥖",
+              "🥣",
+              "💐"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "bread"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "💐",
+            "q": "The man sells shoes.",
+            "qId": "Pria itu menjual sepatu.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "💐",
+              "🍉",
+              "🥣"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "flowers"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-alam',
-    title: 'Membaca Frasa: Alam (Reading Nature Phrases)',
-    scene: '🌳',
-    desc: '10 frasa',
-    items: [
-      { en: 'The Sun', id: 'Matahari Itu', emoji: '☀️' },
-      { en: 'The Moon', id: 'Bulan Itu', emoji: '🌙' },
-      { en: 'The Sky', id: 'Langit Itu', emoji: '🌤️' },
-      { en: 'The Cloud', id: 'Awan Itu', emoji: '☁️' },
-      { en: 'The Tree', id: 'Pohon Itu', emoji: '🌳' },
-      { en: 'The Flower', id: 'Bunga Itu', emoji: '🌸' },
-      { en: 'The Grass', id: 'Rumput Itu', emoji: '🌿' },
-      { en: 'The River', id: 'Sungai Itu', emoji: '🌊' },
-      { en: 'The Stone', id: 'Batu Itu', emoji: '🪨' },
-      { en: 'The Star', id: 'Bintang Itu', emoji: '⭐' },
+    "id": "baca-alam",
+    "title": "Buku Mini: Alam (Mini Book: Nature)",
+    "scene": "🌳",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🌹 In the Garden",
+        "pictures": [
+          {
+            "emoji": "🌹",
+            "label": "flower"
+          },
+          {
+            "emoji": "🌳",
+            "label": "tree"
+          },
+          {
+            "emoji": "🌿",
+            "label": "grass"
+          },
+          {
+            "emoji": "☀️",
+            "label": "sun"
+          },
+          {
+            "emoji": "🪨",
+            "label": "rock"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The flower is red.",
+            "id": "Bunganya merah.",
+            "pic": 0
+          },
+          {
+            "en": "The tree is tall.",
+            "id": "Pohonnya tinggi.",
+            "pic": 1
+          },
+          {
+            "en": "The grass is green.",
+            "id": "Rumputnya hijau.",
+            "pic": 2
+          },
+          {
+            "en": "The sun is hot.",
+            "id": "Mataharinya panas.",
+            "pic": 3
+          },
+          {
+            "en": "The rock is big.",
+            "id": "Batunya besar.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌹",
+              "🌳",
+              "☀️"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "flower"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌹",
+            "q": "The flower is red.",
+            "qId": "Bunganya merah.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌿",
+              "☀️",
+              "🌹"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "grass"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌻",
+            "q": "The flower is red.",
+            "qId": "Bunganya merah.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🪨",
+              "🌹",
+              "🌿"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "rock"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "⛰️ A Walk Outside",
+        "pictures": [
+          {
+            "emoji": "⛰️",
+            "label": "mountain"
+          },
+          {
+            "emoji": "🏞️",
+            "label": "river"
+          },
+          {
+            "emoji": "☁️",
+            "label": "clouds"
+          },
+          {
+            "emoji": "🌈",
+            "label": "rainbow"
+          },
+          {
+            "emoji": "⭐",
+            "label": "star"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I see a big mountain.",
+            "id": "Aku lihat gunung besar.",
+            "pic": 0
+          },
+          {
+            "en": "I see a long river.",
+            "id": "Aku lihat sungai panjang.",
+            "pic": 1
+          },
+          {
+            "en": "I see white clouds.",
+            "id": "Aku lihat awan putih.",
+            "pic": 2
+          },
+          {
+            "en": "I see a rainbow.",
+            "id": "Aku lihat pelangi.",
+            "pic": 3
+          },
+          {
+            "en": "I see a star at night.",
+            "id": "Aku lihat bintang di malam hari.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⛰️",
+              "🏞️",
+              "🌈"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "mountain"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "☁️☁️",
+            "q": "I see white clouds.",
+            "qId": "Aku lihat awan putih.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏞️",
+              "☁️",
+              "⭐"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "river"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌈",
+            "q": "I see a big mountain.",
+            "qId": "Aku lihat gunung besar.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌈",
+              "⭐",
+              "🏞️"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "rainbow"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🌦️ Weather Today",
+        "pictures": [
+          {
+            "emoji": "☀️",
+            "label": "sunny"
+          },
+          {
+            "emoji": "🌧️",
+            "label": "rainy"
+          },
+          {
+            "emoji": "🌬️",
+            "label": "windy"
+          },
+          {
+            "emoji": "☁️",
+            "label": "cloudy"
+          },
+          {
+            "emoji": "🌈",
+            "label": "rainbow"
+          }
+        ],
+        "lines": [
+          {
+            "en": "It is sunny today.",
+            "id": "Hari ini cerah.",
+            "pic": 0
+          },
+          {
+            "en": "It is rainy today.",
+            "id": "Hari ini hujan.",
+            "pic": 1
+          },
+          {
+            "en": "It is windy today.",
+            "id": "Hari ini berangin.",
+            "pic": 2
+          },
+          {
+            "en": "It is cloudy today.",
+            "id": "Hari ini berawan.",
+            "pic": 3
+          },
+          {
+            "en": "The rainbow is pretty.",
+            "id": "Pelanginya cantik.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☀️",
+              "🌧️",
+              "☁️"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "sunny"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌧️",
+            "q": "It is rainy today.",
+            "qId": "Hari ini hujan.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌬️",
+              "☁️",
+              "☀️"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "windy"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "☀️",
+            "q": "It is windy today.",
+            "qId": "Hari ini berangin.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☁️",
+              "🌈",
+              "🌧️"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "cloudy"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🌕 Sea and Sky",
+        "pictures": [
+          {
+            "emoji": "🌊",
+            "label": "waves"
+          },
+          {
+            "emoji": "🏖️",
+            "label": "sand"
+          },
+          {
+            "emoji": "🌕",
+            "label": "moon"
+          },
+          {
+            "emoji": "🐚",
+            "label": "shell"
+          },
+          {
+            "emoji": "✨",
+            "label": "stars"
+          }
+        ],
+        "lines": [
+          {
+            "en": "The waves are big.",
+            "id": "Ombaknya besar.",
+            "pic": 0
+          },
+          {
+            "en": "The sand is soft.",
+            "id": "Pasirnya lembut.",
+            "pic": 1
+          },
+          {
+            "en": "The moon is round.",
+            "id": "Bulannya bundar.",
+            "pic": 2
+          },
+          {
+            "en": "The shell is small.",
+            "id": "Kerangnya kecil.",
+            "pic": 3
+          },
+          {
+            "en": "The stars are bright.",
+            "id": "Bintangnya terang.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌊",
+              "🏖️",
+              "🐚"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "waves"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌕",
+            "q": "The moon is round.",
+            "qId": "Bulannya bundar.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌕",
+              "🐚",
+              "🌊"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "moon"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🌙",
+            "q": "The moon is round.",
+            "qId": "Bulannya bundar.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "✨",
+              "🌊",
+              "🌕"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "stars"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'baca-hobi',
-    title: 'Membaca Frasa: Hobi (Reading Hobby Phrases)',
-    scene: '🎨',
-    desc: '10 frasa',
-    items: [
-      { en: 'I Like Drawing', id: 'Aku Suka Menggambar', emoji: '🎨' },
-      { en: 'I Like Singing', id: 'Aku Suka Bernyanyi', emoji: '🎤' },
-      { en: 'I Like Reading', id: 'Aku Suka Membaca', emoji: '📖' },
-      { en: 'I Like Painting', id: 'Aku Suka Melukis', emoji: '🖌️' },
-      { en: 'I Like Cooking', id: 'Aku Suka Memasak', emoji: '🍳' },
-      { en: 'I Like Camping', id: 'Aku Suka Berkemah', emoji: '⛺' },
-      { en: 'I Like Fishing', id: 'Aku Suka Memancing', emoji: '🎣' },
-      { en: 'I Like Gardening', id: 'Aku Suka Berkebun', emoji: '🌱' },
-      { en: 'I Like Collecting', id: 'Aku Suka Mengoleksi', emoji: '🪙' },
-      { en: 'I Like Building', id: 'Aku Suka Membangun', emoji: '🧱' },
+    "id": "baca-hobi",
+    "title": "Buku Mini: Hobiku (Mini Book: My Hobbies)",
+    "scene": "🎨",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🎨 Things I Like",
+        "pictures": [
+          {
+            "emoji": "🖍️",
+            "label": "drawing"
+          },
+          {
+            "emoji": "🎤",
+            "label": "singing"
+          },
+          {
+            "emoji": "📚",
+            "label": "reading"
+          },
+          {
+            "emoji": "🍳",
+            "label": "cooking"
+          },
+          {
+            "emoji": "🎶",
+            "label": "music"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I like drawing.",
+            "id": "Aku suka menggambar.",
+            "pic": 0
+          },
+          {
+            "en": "I like singing.",
+            "id": "Aku suka bernyanyi.",
+            "pic": 1
+          },
+          {
+            "en": "I like reading.",
+            "id": "Aku suka membaca.",
+            "pic": 2
+          },
+          {
+            "en": "I like cooking.",
+            "id": "Aku suka memasak.",
+            "pic": 3
+          },
+          {
+            "en": "I like music.",
+            "id": "Aku suka musik.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🖍️",
+              "🎤",
+              "🍳"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "drawing"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🎤",
+            "q": "I like singing.",
+            "qId": "Aku suka bernyanyi.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📚",
+              "🍳",
+              "🖍️"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "reading"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍳",
+            "q": "I like reading.",
+            "qId": "Aku suka membaca.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎶",
+              "🖍️",
+              "📚"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "music"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🏸 Sports I Love",
+        "pictures": [
+          {
+            "emoji": "⚽",
+            "label": "football"
+          },
+          {
+            "emoji": "🏸",
+            "label": "badminton"
+          },
+          {
+            "emoji": "🚲",
+            "label": "bike"
+          },
+          {
+            "emoji": "🥽",
+            "label": "swim"
+          },
+          {
+            "emoji": "🏀",
+            "label": "basketball"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I play football.",
+            "id": "Aku main sepak bola.",
+            "pic": 0
+          },
+          {
+            "en": "I play badminton.",
+            "id": "Aku main bulu tangkis.",
+            "pic": 1
+          },
+          {
+            "en": "I ride my bike.",
+            "id": "Aku naik sepedaku.",
+            "pic": 2
+          },
+          {
+            "en": "I swim with goggles.",
+            "id": "Aku berenang pakai kacamata renang.",
+            "pic": 3
+          },
+          {
+            "en": "I play basketball.",
+            "id": "Aku main bola basket.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏸",
+              "🚲",
+              "🏀"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "badminton"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🏸",
+            "q": "I play badminton.",
+            "qId": "Aku main bulu tangkis.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🚲",
+              "🥽",
+              "⚽"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "bike"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "⚽⚽",
+            "q": "I play basketball.",
+            "qId": "Aku main bola basket.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏀",
+              "⚽",
+              "🚲"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "basketball"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🎸 Music Time",
+        "pictures": [
+          {
+            "emoji": "🎸",
+            "label": "guitar"
+          },
+          {
+            "emoji": "🎹",
+            "label": "piano"
+          },
+          {
+            "emoji": "🥁",
+            "label": "drum"
+          },
+          {
+            "emoji": "🎻",
+            "label": "violin"
+          },
+          {
+            "emoji": "🎤",
+            "label": "sing"
+          }
+        ],
+        "lines": [
+          {
+            "en": "I play the guitar.",
+            "id": "Aku main gitar.",
+            "pic": 0
+          },
+          {
+            "en": "I play the piano.",
+            "id": "Aku main piano.",
+            "pic": 1
+          },
+          {
+            "en": "My brother plays the drum.",
+            "id": "Kakakku main drum.",
+            "pic": 2
+          },
+          {
+            "en": "My sister plays the violin.",
+            "id": "Kakakku main biola.",
+            "pic": 3
+          },
+          {
+            "en": "We sing together.",
+            "id": "Kami bernyanyi bersama.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎸",
+              "🎹",
+              "🎻"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "guitar"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🥁",
+            "q": "My brother plays the drum.",
+            "qId": "Kakakku main drum.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎹",
+              "🥁",
+              "🎤"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "piano"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🎹",
+            "q": "I play the guitar.",
+            "qId": "Aku main gitar.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎻",
+              "🎤",
+              "🎹"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "violin"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "📷 Weekend Hobbies",
+        "pictures": [
+          {
+            "emoji": "🌷",
+            "label": "flowers"
+          },
+          {
+            "emoji": "📷",
+            "label": "photos"
+          },
+          {
+            "emoji": "🍰",
+            "label": "cakes"
+          },
+          {
+            "emoji": "🌟",
+            "label": "stickers"
+          },
+          {
+            "emoji": "🧩",
+            "label": "puzzles"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Grandma grows flowers.",
+            "id": "Nenek menanam bunga.",
+            "pic": 0
+          },
+          {
+            "en": "Dad takes photos.",
+            "id": "Ayah memotret.",
+            "pic": 1
+          },
+          {
+            "en": "Mom makes cakes.",
+            "id": "Ibu membuat kue.",
+            "pic": 2
+          },
+          {
+            "en": "I collect stickers.",
+            "id": "Aku mengoleksi stiker.",
+            "pic": 3
+          },
+          {
+            "en": "We do puzzles.",
+            "id": "Kami main puzzle.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "📷",
+              "🍰",
+              "🧩"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "photos"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "📷",
+            "q": "Dad takes photos.",
+            "qId": "Ayah memotret.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 2,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍰",
+              "🌟",
+              "🌷"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ],
+            "evidenceWord": "cakes"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍰",
+            "q": "Grandma grows flowers.",
+            "qId": "Nenek menanam bunga.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🧩",
+              "🌷",
+              "🍰"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "puzzles"
+          }
+        ]
+      }
+    ]
   },
+  {
+    "id": "buku-di-pantai",
+    "title": "Buku Mini: Di Pantai (Mini Book: At the Beach)",
+    "scene": "🏖️",
+    "desc": "Buku gambar mini",
+    "texts": [
+      {
+        "genre": "book",
+        "heading": "🏖️ At the Beach",
+        "pictures": [
+          {
+            "emoji": "🏖️",
+            "label": "beach"
+          },
+          {
+            "emoji": "🏰",
+            "label": "castle"
+          },
+          {
+            "emoji": "⛵⛵",
+            "label": "boats"
+          },
+          {
+            "emoji": "🍉",
+            "label": "watermelon"
+          },
+          {
+            "emoji": "☀️",
+            "label": "sun"
+          }
+        ],
+        "lines": [
+          {
+            "en": "We go to the beach.",
+            "id": "Kami pergi ke pantai.",
+            "pic": 0
+          },
+          {
+            "en": "I make a sand castle.",
+            "id": "Aku bikin istana pasir.",
+            "pic": 1
+          },
+          {
+            "en": "I see two boats.",
+            "id": "Aku lihat dua perahu.",
+            "pic": 2
+          },
+          {
+            "en": "We eat watermelon.",
+            "id": "Kami makan semangka.",
+            "pic": 3
+          },
+          {
+            "en": "The sun is hot!",
+            "id": "Mataharinya panas!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🏰",
+              "⛵⛵",
+              "🍉"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "castle"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "⛵⛵⛵",
+            "q": "I see two boats.",
+            "qId": "Aku lihat dua perahu.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍉",
+              "☀️",
+              "🏖️"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "watermelon"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🏰",
+            "q": "I make a sand castle.",
+            "qId": "Aku bikin istana pasir.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍉",
+            "q": "We eat cake.",
+            "qId": "Kami makan kue.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🌧️ A Rainy Day",
+        "pictures": [
+          {
+            "emoji": "🌧️",
+            "label": "raining"
+          },
+          {
+            "emoji": "☂️",
+            "label": "umbrella"
+          },
+          {
+            "emoji": "👢",
+            "label": "boots"
+          },
+          {
+            "emoji": "💦",
+            "label": "water"
+          },
+          {
+            "emoji": "🌈",
+            "label": "rainbow"
+          }
+        ],
+        "lines": [
+          {
+            "en": "It is raining.",
+            "id": "Sedang hujan.",
+            "pic": 0
+          },
+          {
+            "en": "I have an umbrella.",
+            "id": "Aku punya payung.",
+            "pic": 1
+          },
+          {
+            "en": "I wear my boots.",
+            "id": "Aku pakai sepatu botku.",
+            "pic": 2
+          },
+          {
+            "en": "I jump in the water.",
+            "id": "Aku lompat di genangan air.",
+            "pic": 3
+          },
+          {
+            "en": "Then I see a rainbow!",
+            "id": "Lalu aku lihat pelangi!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "☂️",
+              "👢",
+              "💦"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "umbrella"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "👢",
+            "q": "I wear my boots.",
+            "qId": "Aku pakai sepatu botku.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🌈",
+              "🌧️",
+              "☂️"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "rainbow"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "☀️",
+            "q": "It is raining.",
+            "qId": "Sedang hujan.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "💦",
+              "🌈",
+              "🌧️"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "water"
+          }
+        ],
+        "sequence": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "book",
+        "heading": "🎂 My Birthday",
+        "pictures": [
+          {
+            "emoji": "🎂",
+            "label": "birthday"
+          },
+          {
+            "emoji": "🍰",
+            "label": "cake"
+          },
+          {
+            "emoji": "🎈🎈🎈",
+            "label": "balloons"
+          },
+          {
+            "emoji": "🎵",
+            "label": "song"
+          },
+          {
+            "emoji": "6️⃣",
+            "label": "six"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Today is my birthday.",
+            "id": "Hari ini ulang tahunku.",
+            "pic": 0
+          },
+          {
+            "en": "Mom makes a big cake.",
+            "id": "Mama bikin kue besar.",
+            "pic": 1
+          },
+          {
+            "en": "I have three balloons.",
+            "id": "Aku punya tiga balon.",
+            "pic": 2
+          },
+          {
+            "en": "My friends sing a song.",
+            "id": "Teman-temanku menyanyikan lagu.",
+            "pic": 3
+          },
+          {
+            "en": "I am six today!",
+            "id": "Hari ini aku enam tahun!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 0,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎂",
+              "🍰",
+              "🎈🎈🎈"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ],
+            "evidenceWord": "birthday"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🎈🎈",
+            "q": "I have three balloons.",
+            "qId": "Aku punya tiga balon.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🎵",
+              "6️⃣",
+              "🎂"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "song"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "6️⃣",
+            "q": "I am six today!",
+            "qId": "Hari ini aku enam tahun!",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍰",
+              "🎈🎈🎈",
+              "🎵"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "cake"
+          }
+        ]
+      },
+      {
+        "genre": "book",
+        "heading": "🍳 In the Kitchen",
+        "pictures": [
+          {
+            "emoji": "🍳",
+            "label": "kitchen"
+          },
+          {
+            "emoji": "🍚",
+            "label": "rice"
+          },
+          {
+            "emoji": "☕☕",
+            "label": "cups"
+          },
+          {
+            "emoji": "🍽️",
+            "label": "eat"
+          },
+          {
+            "emoji": "😋",
+            "label": "yummy"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Grandma is in the kitchen.",
+            "id": "Nenek ada di dapur.",
+            "pic": 0
+          },
+          {
+            "en": "She cooks rice.",
+            "id": "Nenek memasak nasi.",
+            "pic": 1
+          },
+          {
+            "en": "I wash two cups.",
+            "id": "Aku mencuci dua cangkir.",
+            "pic": 2
+          },
+          {
+            "en": "We eat together.",
+            "id": "Kami makan bersama.",
+            "pic": 3
+          },
+          {
+            "en": "The food is yummy!",
+            "id": "Makanannya enak!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍚",
+              "☕☕",
+              "🍽️"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "rice"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "☕☕",
+            "q": "I wash two cups.",
+            "qId": "Aku mencuci dua cangkir.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🍞",
+            "q": "She cooks rice.",
+            "qId": "Nenek memasak nasi.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 1,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 3,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "🍽️",
+              "😋",
+              "🍳"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ],
+            "evidenceWord": "eat"
+          },
+          {
+            "kind": "picture",
+            "about": 4,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "😋",
+              "🍳",
+              "🍚"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ],
+            "evidenceWord": "yummy"
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 /**
- * Reading Achiever (11–13 th) — TETAP format LAMA `ReadingTopic` (persis tipe
- * Adventurer, TIDAK ada tipe baru), krn riset (`materi/reading.md` §9.4)
- * bilang "Format C+" achiever DNA-nya sama dgn format Adventurer, cukup naik
- * INTENSITAS lewat konten, bukan mekanik baru: (1) passage lebih panjang
- * (`story` 4-5 kalimat, naik dari 3 kalimat Adventurer), (2) `question`
- * WAJIB pertanyaan INFERENSI (butuh gabungkan >1 info dari story, bukan
- * fakta 1-kalimat literal spt Adventurer) — jembatan menuju Fase D/
- * Trailblazer. Tipe soal cloze-dalam-passage (disebut riset sbg pelengkap
- * opsional) SENGAJA belum dibangun sesi ini (di luar scope "reuse tipe
- * existing", `materi/reading.md` §7 gap) — 1 topik pembuka dulu, sama pola
- * bootstrap dgn Little Stars/Starter/Explorer.
- *
- * **Digenapkan 1→10 topik** (target CLAUDE.md ≥10/skill, permintaan user
- * "materi reading di achiver masih 1... buatkan minimal 10... research ke
- * lembaga bahasa inggris dalam negeri" — riset konfirmasi EF Indonesia
- * Trailblazers (10-14 th, irisan Achiever) & Kumon EFL: keduanya eksplisit
- * fokus "topik relevan kehidupan nyata" + critical thinking, cocok dgn arah
- * yg sudah dipilih §9.4, `materi/reading.md` §17) — 9 topik baru skenario
- * remaja 11-13 th, masing² dipetakan dari 1 domain `VOCAB_TOPICS_ACHIEVER`
- * (`ciri-ciri-fisik`/`tempat-di-kota`/`arah-posisi`/`hiburan-waktu-luang`/
- * `kata-kerja-lanjutan`/`teknologi-internet`/`sifat-kepribadian`/`mata-
- * pelajaran`/`angka-puluhan` — 9 dari 10 domain, `sifat-benda-lanjutan`
- * SENGAJA dilewati krn paling sulit dirangkai jadi narasi personal
- * dibanding 9 domain lain, disisakan sbg opsi kalau mau digenapkan lebih
- * jauh). SEMUA 9 topik konsisten format "C+" §9.4: `story` 4 kalimat +
- * `question` akhir WAJIB INFERENSI (jawaban TIDAK PERNAH ditulis literal,
- * anak gabungkan ≥2 info dari primer/drill/story — pola sama `hari-piknik`,
- * mis. `menggalang-dana-sekolah` minta anak MENGHITUNG SENDIRI 90rb+10×1rb
- * = 100rb utk simpulkan target tercapai, bukan sekadar re-baca fakta).
+ * Reading achiever — format "Baca Teks" (`ReadingTextTopic`, materi/reading.md §19–§22).
+ * Diary, email, artikel info (paragraf) — tier Lanjut. Id topik lama DIPERTAHANKAN (urutan menu sama); progres format
+ * lama tidak terbaca krn section-nya beda (`latihan-teks`/`tantangan-teks`).
  */
-export const READING_TOPICS_ACHIEVER: ReadingTopic[] = [
+export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
   {
-    id: 'hari-piknik',
-    title: 'Hari Piknik (Picnic Day)',
-    scene: '🧺',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Lani plans a picnic with her cousins.', 'She packs sandwiches, juice, and a big blanket.'], id: 'Lani merencanakan piknik dengan sepupu-sepupunya. Dia mengemas sandwich, jus, dan selimut besar.' },
-      { passage: ['They choose a park near the river.', 'The park has tall trees for shade.'], id: 'Mereka memilih taman dekat sungai. Tamannya punya pohon tinggi untuk keteduhan.' },
-    ],
-    // Sama pola anti-tebak dgn topik Adventurer (distraktor jg disebut di
-    // teks, dilekatkan ke hal LAIN) — di sini distraktornya jg dipakai utk
-    // "naikkan intensitas" (info yang relevan tidak selalu di kalimat
-    // pertama, anak harus baca semua baris dulu).
-    drill: [
+    "id": "hari-piknik",
+    "title": "Hari Piknik (Picnic Day)",
+    "scene": "🧺",
+    "desc": "Diary, info taman, email & cerita",
+    "texts": [
       {
-        passage: ['Lani wants to sit under the big tree, but her cousin Budi prefers the open grass.', 'In the end, they spread the blanket under the tree because the sun is too hot.'],
-        id: 'Lani ingin duduk di bawah pohon besar, tapi sepupunya Budi lebih suka rumput terbuka. Akhirnya, mereka menggelar selimut di bawah pohon karena mataharinya terlalu terik.',
-        question: 'Where do they finally spread the blanket?',
-        questionId: 'Di mana akhirnya mereka menggelar selimut?',
-        opts: [{ emoji: '🌳', lbl: 'Under the tree', ok: true }, { emoji: '🌱', lbl: 'On the open grass' }, { emoji: '🏠', lbl: 'Inside the house' }],
+        "genre": "diary",
+        "heading": "📔 Rina's Diary — Sunday",
+        "lines": [
+          {
+            "en": "Today our class had a picnic at Taman Suropati.",
+            "id": "Hari ini kelas kami piknik di Taman Suropati."
+          },
+          {
+            "en": "We met at school at seven and took a bus together.",
+            "id": "Kami berkumpul di sekolah jam tujuh dan naik bus bersama."
+          },
+          {
+            "en": "Mrs. Wati asked everyone to bring one kind of food.",
+            "id": "Bu Wati meminta semua membawa satu jenis makanan."
+          },
+          {
+            "en": "I brought fried chicken, and Bayu brought fruit.",
+            "id": "Aku membawa ayam goreng, dan Bayu membawa buah."
+          },
+          {
+            "en": "After lunch, we played a treasure hunt game.",
+            "id": "Setelah makan siang, kami main berburu harta karun.",
+            "br": true
+          },
+          {
+            "en": "The clues were hidden under benches and behind trees.",
+            "id": "Petunjuknya disembunyikan di bawah bangku dan di balik pohon."
+          },
+          {
+            "en": "My team found the treasure first. It was a box of chocolates!",
+            "id": "Timku menemukan hartanya duluan. Isinya sekotak cokelat!"
+          },
+          {
+            "en": "We shared it with the other teams.",
+            "id": "Kami membaginya dengan tim lain."
+          },
+          {
+            "en": "On the way home, it started to rain.",
+            "id": "Dalam perjalanan pulang, hujan mulai turun.",
+            "br": true
+          },
+          {
+            "en": "Luckily, we were already on the bus.",
+            "id": "Untungnya, kami sudah di dalam bus."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How did the class travel to the park?",
+            "qId": "Bagaimana kelas itu pergi ke taman?",
+            "options": [
+              "By bus",
+              "On foot",
+              "By train"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did Bayu bring?",
+            "qId": "Bayu membawa apa?",
+            "options": [
+              "Fruit",
+              "Fried chicken",
+              "Chocolates"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What was the 'treasure'?",
+            "qId": "Apa 'harta karun'-nya?",
+            "options": [
+              "A box of chocolates",
+              "A map of the park",
+              "A new bench"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What does 'it' mean in 'We shared it with the other teams'?",
+            "qId": "Apa arti 'it' dalam 'We shared it with the other teams'?",
+            "options": [
+              "The box of chocolates",
+              "The bus",
+              "The rain"
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          },
+          {
+            "q": "Why were they lucky at the end?",
+            "qId": "Kenapa mereka beruntung di akhir?",
+            "options": [
+              "They were on the bus when it rained.",
+              "They won a second prize.",
+              "They got home early."
+            ],
+            "answer": 0,
+            "evidence": [
+              8,
+              9
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          4,
+          8
+        ]
       },
       {
-        passage: ['Budi brings a kite, and Lani brings a ball.', 'After lunch, the wind is strong, so they decide to fly the kite first.'],
-        id: 'Budi membawa layangan, dan Lani membawa bola. Setelah makan siang, anginnya kencang, jadi mereka memutuskan menerbangkan layangan dulu.',
-        question: 'What do they play first after lunch?',
-        questionId: 'Apa yang mereka mainkan lebih dulu setelah makan siang?',
-        opts: [{ emoji: '🪁', lbl: 'The kite', ok: true }, { emoji: '⚽', lbl: 'The ball' }, { emoji: '🎨', lbl: 'Drawing' }],
+        "genre": "article",
+        "heading": "ℹ️ Taman Suropati",
+        "lines": [
+          {
+            "en": "Taman Suropati is a small, green park in Central Jakarta.",
+            "id": "Taman Suropati adalah taman hijau kecil di Jakarta Pusat."
+          },
+          {
+            "en": "It is famous for its tall, old trees.",
+            "id": "Taman ini terkenal dengan pohon-pohonnya yang tinggi dan tua."
+          },
+          {
+            "en": "Many people come here to relax in the morning.",
+            "id": "Banyak orang datang ke sini untuk bersantai di pagi hari."
+          },
+          {
+            "en": "Some of them practise playing the violin.",
+            "id": "Sebagian dari mereka berlatih bermain biola.",
+            "br": true
+          },
+          {
+            "en": "On Sundays, you can often hear free music there.",
+            "id": "Hari Minggu, kamu sering bisa mendengar musik gratis di sana."
+          },
+          {
+            "en": "Children love to feed the pigeons near the fountain.",
+            "id": "Anak-anak suka memberi makan merpati di dekat air mancur."
+          },
+          {
+            "en": "The park is free, and it opens from 6 a.m. to 8 p.m.",
+            "id": "Taman ini gratis, dan buka jam 6 pagi sampai 8 malam.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is Taman Suropati?",
+            "qId": "Di mana Taman Suropati?",
+            "options": [
+              "In Central Jakarta",
+              "In Bandung",
+              "Near the sea"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What is the park famous for?",
+            "qId": "Taman itu terkenal karena apa?",
+            "options": [
+              "Its tall, old trees",
+              "Its big lake",
+              "Its zoo"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "When can you often hear music there?",
+            "qId": "Kapan kamu sering bisa mendengar musik di sana?",
+            "options": [
+              "On Sundays",
+              "Every night",
+              "Only on holidays"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How much does it cost to visit the park?",
+            "qId": "Berapa biaya masuk taman itu?",
+            "options": [
+              "Nothing",
+              "Six thousand rupiah",
+              "Eight thousand rupiah"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the text mainly about?",
+            "qId": "Teks ini terutama tentang apa?",
+            "options": [
+              "A park in Jakarta",
+              "A music school",
+              "A picnic game"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Mrs. Wati · To: Class 6 parents · Subject: Next picnic",
+        "lines": [
+          {
+            "en": "Dear parents,",
+            "id": "Bapak/Ibu orang tua yang terhormat,"
+          },
+          {
+            "en": "Our next class picnic will be on Friday at Ragunan Zoo.",
+            "id": "Piknik kelas berikutnya hari Jumat di Kebun Binatang Ragunan."
+          },
+          {
+            "en": "Please make sure your child arrives at school by 6:30.",
+            "id": "Pastikan anak Anda tiba di sekolah paling lambat jam 6.30."
+          },
+          {
+            "en": "The bus will leave at 7 sharp.",
+            "id": "Bus berangkat tepat jam 7."
+          },
+          {
+            "en": "Children should bring a hat, water and a small snack.",
+            "id": "Anak-anak perlu membawa topi, air minum, dan camilan kecil.",
+            "br": true
+          },
+          {
+            "en": "Lunch will be provided by the school.",
+            "id": "Makan siang disediakan sekolah."
+          },
+          {
+            "en": "If it rains, the picnic will move to the following Friday.",
+            "id": "Kalau hujan, piknik dipindah ke Jumat berikutnya.",
+            "br": true
+          },
+          {
+            "en": "Best wishes, Mrs. Wati",
+            "id": "Salam, Bu Wati"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is the next picnic?",
+            "qId": "Di mana piknik berikutnya?",
+            "options": [
+              "At Ragunan Zoo",
+              "At school",
+              "At Taman Suropati"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why must children arrive by 6:30?",
+            "qId": "Kenapa anak-anak harus tiba sebelum jam 6.30?",
+            "options": [
+              "The bus leaves at 7.",
+              "Lunch starts at 6:30.",
+              "The zoo opens at 6:30."
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              3
+            ]
+          },
+          {
+            "q": "What don't children need to bring?",
+            "qId": "Apa yang tidak perlu dibawa anak-anak?",
+            "options": [
+              "Lunch",
+              "A hat",
+              "Water"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What will happen if it rains?",
+            "qId": "Apa yang terjadi kalau hujan?",
+            "options": [
+              "The picnic will be a week later.",
+              "The picnic will be cancelled.",
+              "They will eat at school."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "Who is the email for?",
+            "qId": "Email ini untuk siapa?",
+            "options": [
+              "Parents",
+              "Children",
+              "Teachers"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'Lani and her cousins arrive at the park at nine in the morning.',
-      'They play by the river until they feel hungry.',
-      'When they open the basket, the sandwiches are gone — a group of ducks is walking away happily nearby.',
-      'Lani laughs and says they will bring a covered basket next time.',
-    ],
-    storyId: 'Lani dan sepupu-sepupunya tiba di taman pukul sembilan pagi. Mereka bermain di dekat sungai sampai merasa lapar. Ketika membuka keranjang, sandwichnya sudah hilang — sekelompok bebek berjalan pergi dengan riang di dekat situ. Lani tertawa dan berkata mereka akan membawa keranjang bertutup lain kali.',
-    // Pertanyaan INFERENSI (permintaan riset §9.4) — jawabannya TIDAK
-    // disebutkan literal di story manapun ("ducks ate the sandwiches" tidak
-    // pernah ditulis), anak harus GABUNGKAN 2 info (basket kosong + bebek
-    // jalan pergi di dekatnya) buat menyimpulkan sendiri.
-    question: {
-      text: 'What most likely happened to the sandwiches?',
-      id: 'Apa yang kemungkinan besar terjadi pada sandwich-nya?',
-      opts: [{ emoji: '🐾', lbl: 'The ducks ate them', ok: true }, { emoji: '🎒', lbl: 'Lani forgot to pack them' }, { emoji: '🏠', lbl: 'They left them at home' }],
-    },
+      {
+        "genre": "diary",
+        "heading": "📔 Budi's Diary — Friday",
+        "lines": [
+          {
+            "en": "The zoo picnic was fun, but a little tiring.",
+            "id": "Piknik ke kebun binatang seru, tapi agak melelahkan."
+          },
+          {
+            "en": "We walked around the whole zoo in three hours.",
+            "id": "Kami berkeliling seluruh kebun binatang selama tiga jam."
+          },
+          {
+            "en": "My favourite animal was the orangutan.",
+            "id": "Hewan favoritku orang utan."
+          },
+          {
+            "en": "It watched us quietly and then waved its hand!",
+            "id": "Orang utan itu memperhatikan kami diam-diam lalu melambaikan tangan!",
+            "br": true
+          },
+          {
+            "en": "My friend Andi thought it was waving at him.",
+            "id": "Temanku Andi mengira orang utan itu melambai padanya."
+          },
+          {
+            "en": "At lunch, a monkey came close to his table.",
+            "id": "Saat makan siang, seekor monyet mendekati mejanya."
+          },
+          {
+            "en": "Andi laughed and said the zoo animals liked him.",
+            "id": "Andi tertawa dan bilang hewan-hewan kebun binatang menyukainya.",
+            "br": true
+          },
+          {
+            "en": "I was so tired that I slept on the bus home.",
+            "id": "Aku capek sekali sampai tertidur di bus saat pulang."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How long did they walk around the zoo?",
+            "qId": "Berapa lama mereka berkeliling kebun binatang?",
+            "options": [
+              "Three hours",
+              "One hour",
+              "The whole day"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did the orangutan do?",
+            "qId": "Apa yang dilakukan orang utan?",
+            "options": [
+              "It waved its hand.",
+              "It ate a banana.",
+              "It slept."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who does 'him' refer to in 'waving at him'?",
+            "qId": "Siapa yang dimaksud 'him' dalam 'waving at him'?",
+            "options": [
+              "Andi",
+              "Budi",
+              "The zookeeper"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why did Andi say the animals liked him?",
+            "qId": "Kenapa Andi bilang hewan-hewan menyukainya?",
+            "options": [
+              "The orangutan waved, and a monkey came close.",
+              "He fed all the animals.",
+              "He won a prize."
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4,
+              5,
+              6
+            ]
+          },
+          {
+            "q": "How did Budi feel at the end of the day?",
+            "qId": "Bagaimana perasaan Budi di akhir hari?",
+            "options": [
+              "Very tired",
+              "Very angry",
+              "Very hungry"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'mencari-sahabat-pena',
-    title: 'Mencari Sahabat Pena (Finding a Pen Pal)',
-    scene: '🧳',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Rani is waiting at the airport to meet her pen pal, Emma, for the first time.', 'She has never seen Emma’s photo, only read her letters.'], id: 'Rani menunggu di bandara untuk bertemu sahabat penanya, Emma, untuk pertama kalinya. Dia belum pernah melihat foto Emma, cuma membaca surat-suratnya.' },
-      { passage: ['Emma wrote that she has curly hair and is quite tall.', 'Rani looks around at the crowd of passengers.'], id: 'Emma menulis bahwa dia punya rambut keriting dan cukup tinggi. Rani melihat sekeliling kerumunan penumpang.' },
-    ],
-    drill: [
+    "id": "mencari-sahabat-pena",
+    "title": "Mencari Sahabat Pena (Finding a Pen Pal)",
+    "scene": "✉️",
+    "desc": "Email sahabat pena & artikel",
+    "texts": [
       {
-        passage: ['Two girls with curly hair walk out of the arrival gate.', 'One girl is tall and one girl is quite short.'],
-        id: 'Dua anak perempuan berambut keriting keluar dari gerbang kedatangan. Satu anak tinggi dan satu anak agak pendek.',
-        question: 'Which girl matches Emma’s letter?',
-        questionId: 'Anak perempuan mana yang cocok dengan surat Emma?',
-        opts: [{ emoji: '👧', lbl: 'The tall girl', ok: true }, { emoji: '👧', lbl: 'The short girl' }, { emoji: '👦', lbl: 'A boy nearby' }],
+        "genre": "email",
+        "heading": "✉️ From: Dewi · To: Emma · Subject: Hello from Indonesia!",
+        "lines": [
+          {
+            "en": "Hi Emma,",
+            "id": "Hai Emma,"
+          },
+          {
+            "en": "My name is Dewi, and I'm eleven years old.",
+            "id": "Namaku Dewi, umurku sebelas tahun."
+          },
+          {
+            "en": "I live in Semarang, a city on the north coast of Java.",
+            "id": "Aku tinggal di Semarang, kota di pantai utara Jawa."
+          },
+          {
+            "en": "I have one older brother, who is fourteen.",
+            "id": "Aku punya satu kakak laki-laki yang berumur empat belas tahun."
+          },
+          {
+            "en": "At school, my favourite subject is science.",
+            "id": "Di sekolah, pelajaran favoritku IPA.",
+            "br": true
+          },
+          {
+            "en": "In my free time, I like drawing and swimming.",
+            "id": "Di waktu luang, aku suka menggambar dan berenang."
+          },
+          {
+            "en": "Our teacher gave me your address for our pen pal project.",
+            "id": "Guru kami memberiku alamatmu untuk proyek sahabat pena.",
+            "br": true
+          },
+          {
+            "en": "What do you like doing? Please write back soon!",
+            "id": "Kamu suka melakukan apa? Tolong cepat balas, ya!"
+          },
+          {
+            "en": "Best wishes, Dewi",
+            "id": "Salam, Dewi"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where does Dewi live?",
+            "qId": "Dewi tinggal di mana?",
+            "options": [
+              "In Semarang",
+              "In Jakarta",
+              "In England"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How old is Dewi's brother?",
+            "qId": "Berapa umur kakak Dewi?",
+            "options": [
+              "Fourteen",
+              "Eleven",
+              "Twelve"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does Dewi like doing in her free time?",
+            "qId": "Apa yang Dewi suka lakukan di waktu luang?",
+            "options": [
+              "Drawing and swimming",
+              "Science and reading",
+              "Cooking and singing"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "How did Dewi get Emma's address?",
+            "qId": "Bagaimana Dewi mendapat alamat Emma?",
+            "options": [
+              "Her teacher gave it to her.",
+              "Her brother found it.",
+              "She met Emma on holiday."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "Why is Dewi writing?",
+            "qId": "Kenapa Dewi menulis email ini?",
+            "options": [
+              "To start being pen pals",
+              "To say sorry",
+              "To invite Emma to a party"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          1,
+          4,
+          6
+        ]
       },
       {
-        passage: ['The tall girl waves and smiles at Rani.', 'She is wearing a bright yellow backpack, just like in her last letter.'],
-        id: 'Anak perempuan tinggi itu melambai dan tersenyum ke Rani. Dia memakai tas ransel kuning cerah, persis seperti di surat terakhirnya.',
-        question: 'What color is the girl’s backpack?',
-        questionId: 'Apa warna tas ransel anak perempuan itu?',
-        opts: [{ emoji: '🟡', lbl: 'Yellow', ok: true }, { emoji: '🔵', lbl: 'Blue' }, { emoji: '🔴', lbl: 'Red' }],
+        "genre": "email",
+        "heading": "✉️ From: Emma · To: Dewi · Subject: Re: Hello from Indonesia!",
+        "lines": [
+          {
+            "en": "Dear Dewi,",
+            "id": "Dewi yang baik,"
+          },
+          {
+            "en": "Thank you for your email! I was so excited to read it.",
+            "id": "Terima kasih untuk emailmu! Aku senang sekali membacanya."
+          },
+          {
+            "en": "I'm twelve, and I live in a small town near York, in England.",
+            "id": "Aku dua belas tahun dan tinggal di kota kecil dekat York, Inggris."
+          },
+          {
+            "en": "It's very cold here now, and it snowed last week!",
+            "id": "Di sini sekarang dingin sekali, dan minggu lalu turun salju!"
+          },
+          {
+            "en": "I love science too, especially learning about space.",
+            "id": "Aku juga suka IPA, terutama belajar tentang luar angkasa.",
+            "br": true
+          },
+          {
+            "en": "I can't swim very well, but I enjoy riding my horse, Toffee.",
+            "id": "Aku kurang pandai berenang, tapi aku suka menunggang kudaku, Toffee."
+          },
+          {
+            "en": "She is brown and very gentle.",
+            "id": "Dia cokelat dan sangat jinak."
+          },
+          {
+            "en": "Can you tell me about the food in Indonesia?",
+            "id": "Bisa ceritakan tentang makanan di Indonesia?",
+            "br": true
+          },
+          {
+            "en": "Love, Emma",
+            "id": "Salam sayang, Emma"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How old is Emma?",
+            "qId": "Berapa umur Emma?",
+            "options": [
+              "Twelve",
+              "Eleven",
+              "Fourteen"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is the weather like where Emma lives?",
+            "qId": "Cuaca di tempat Emma seperti apa?",
+            "options": [
+              "Very cold",
+              "Hot and sunny",
+              "Rainy and warm"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who is Toffee?",
+            "qId": "Siapa Toffee?",
+            "options": [
+              "Emma's horse",
+              "Emma's sister",
+              "Emma's teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "In 'She is brown and very gentle', who is 'she'?",
+            "qId": "Dalam 'She is brown and very gentle', siapa 'she'?",
+            "options": [
+              "Toffee",
+              "Emma",
+              "Dewi"
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "What does Emma want to know?",
+            "qId": "Apa yang ingin Emma ketahui?",
+            "options": [
+              "About food in Indonesia",
+              "About Dewi's school",
+              "About swimming"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Kenji · To: Arif · Subject: My first letter",
+        "lines": [
+          {
+            "en": "Hello Arif,",
+            "id": "Halo Arif,"
+          },
+          {
+            "en": "I'm Kenji, your new pen pal from Osaka, Japan.",
+            "id": "Aku Kenji, sahabat pena barumu dari Osaka, Jepang."
+          },
+          {
+            "en": "I'm in Year 6, and I have a twin sister called Yumi.",
+            "id": "Aku kelas 6 dan punya saudara kembar perempuan bernama Yumi."
+          },
+          {
+            "en": "We look the same, but we are very different!",
+            "id": "Kami mirip, tapi sifat kami sangat berbeda!"
+          },
+          {
+            "en": "Yumi loves music, but I prefer football.",
+            "id": "Yumi suka musik, tapi aku lebih suka sepak bola.",
+            "br": true
+          },
+          {
+            "en": "Last month my team won a big match, so I'm very happy.",
+            "id": "Bulan lalu timku menang pertandingan besar, jadi aku sangat senang."
+          },
+          {
+            "en": "I have never been to Indonesia.",
+            "id": "Aku belum pernah ke Indonesia.",
+            "br": true
+          },
+          {
+            "en": "Is it true that there are more than 17,000 islands?",
+            "id": "Benarkah ada lebih dari 17.000 pulau?"
+          },
+          {
+            "en": "Write soon! Kenji",
+            "id": "Cepat balas, ya! Kenji"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is Kenji from?",
+            "qId": "Kenji berasal dari mana?",
+            "options": [
+              "Osaka, Japan",
+              "Tokyo, Japan",
+              "Indonesia"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who is Yumi?",
+            "qId": "Siapa Yumi?",
+            "options": [
+              "Kenji's twin sister",
+              "Kenji's teacher",
+              "Arif's sister"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How are Kenji and Yumi different?",
+            "qId": "Apa bedanya Kenji dan Yumi?",
+            "options": [
+              "They like different things.",
+              "They look very different.",
+              "They are different ages."
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "Why is Kenji very happy?",
+            "qId": "Kenapa Kenji sangat senang?",
+            "options": [
+              "His team won a big match.",
+              "He visited Indonesia.",
+              "He got a new sister."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does Kenji want to know?",
+            "qId": "Apa yang ingin Kenji ketahui?",
+            "options": [
+              "If Indonesia has over 17,000 islands",
+              "What Arif looks like",
+              "When Arif will visit Japan"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'Rani walks closer and says hello, but the girl laughs and says her name is Sarah, not Emma.',
-      'A little confused, Rani checks her phone and rereads Emma’s last letter.',
-      'She then notices a girl nearby holding a notebook with the exact same neat handwriting from the letter.',
-      'Rani walks over immediately, and the girl looks up and says, “You must be Rani!”',
-    ],
-    storyId: 'Rani mendekat dan menyapa, tapi anak itu tertawa dan bilang namanya Sarah, bukan Emma. Agak bingung, Rani memeriksa ponselnya dan membaca ulang surat terakhir Emma. Lalu dia melihat seorang anak perempuan di dekatnya memegang buku catatan dengan tulisan tangan rapi yang persis sama dari surat itu. Rani langsung menghampirinya, dan anak itu mendongak dan bilang, "Kamu pasti Rani!"',
-    question: {
-      text: 'How does Rani figure out who Emma really is?',
-      id: 'Bagaimana Rani akhirnya tahu siapa Emma sebenarnya?',
-      opts: [{ emoji: '✍️', lbl: 'She recognizes the handwriting', ok: true }, { emoji: '🎒', lbl: 'She recognizes the backpack' }, { emoji: '👧', lbl: 'She recognizes the curly hair' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Why Have a Pen Pal?",
+        "lines": [
+          {
+            "en": "A pen pal is a friend you write to, often in another country.",
+            "id": "Sahabat pena adalah teman yang kamu surati, sering di negara lain."
+          },
+          {
+            "en": "Writing to a pen pal helps you practise English.",
+            "id": "Menulis surat ke sahabat pena membantumu berlatih bahasa Inggris."
+          },
+          {
+            "en": "You also learn about other cultures and food.",
+            "id": "Kamu juga belajar tentang budaya dan makanan lain."
+          },
+          {
+            "en": "Some pen pals stay friends for many years.",
+            "id": "Sebagian sahabat pena tetap berteman selama bertahun-tahun.",
+            "br": true
+          },
+          {
+            "en": "A few of them even visit each other one day!",
+            "id": "Beberapa bahkan saling berkunjung suatu hari!"
+          },
+          {
+            "en": "However, you should never share your home address online.",
+            "id": "Tapi, jangan pernah membagikan alamat rumahmu secara online.",
+            "br": true
+          },
+          {
+            "en": "Always ask a parent or teacher to help you first.",
+            "id": "Selalu minta bantuan orang tua atau guru dulu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is a pen pal?",
+            "qId": "Apa itu sahabat pena?",
+            "options": [
+              "A friend you write to",
+              "A teacher who helps you write",
+              "A special kind of pen"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How can a pen pal help your English?",
+            "qId": "Bagaimana sahabat pena membantu bahasa Inggrismu?",
+            "options": [
+              "You practise by writing.",
+              "You get free books.",
+              "You watch English films."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What should you never do online?",
+            "qId": "Apa yang tidak boleh dilakukan secara online?",
+            "options": [
+              "Share your home address",
+              "Write in English",
+              "Talk about food"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Who should help you first?",
+            "qId": "Siapa yang harus membantumu dulu?",
+            "options": [
+              "A parent or teacher",
+              "Your pen pal",
+              "A shop assistant"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the writer's purpose?",
+            "qId": "Apa tujuan penulis?",
+            "options": [
+              "To explain pen pals and give safety advice",
+              "To sell pens",
+              "To tell a holiday story"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'jalan-jalan-di-kota',
-    title: 'Jalan-jalan di Kota (A Day Around Town)',
-    scene: '🏙️',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Dimas and his dad run errands around town on Saturday.', 'Their first stop is the bank to withdraw some money.'], id: 'Dimas dan ayahnya mengurus keperluan di kota hari Sabtu. Perhentian pertama mereka adalah bank untuk mengambil uang.' },
-      { passage: ['Next, they walk to the post office to send a package.', 'The post office is very crowded today.'], id: 'Selanjutnya, mereka berjalan ke kantor pos untuk mengirim paket. Kantor posnya sangat ramai hari ini.' },
-    ],
-    drill: [
+    "id": "jalan-jalan-di-kota",
+    "title": "Jalan-jalan di Kota (A Day Around Town)",
+    "scene": "🏙️",
+    "desc": "Diary, papan tur, pesan & artikel",
+    "texts": [
       {
-        passage: ['After the post office, Dimas wants to visit the museum, but his dad needs to go to the supermarket first.', 'They agree to go to the supermarket first since it closes earlier.'],
-        id: 'Setelah kantor pos, Dimas ingin mengunjungi museum, tapi ayahnya perlu ke supermarket dulu. Mereka sepakat ke supermarket dulu karena tutup lebih awal.',
-        question: 'Where do they go first, the museum or the supermarket?',
-        questionId: 'Ke mana mereka pergi duluan, museum atau supermarket?',
-        opts: [{ emoji: '🏬', lbl: 'The supermarket', ok: true }, { emoji: '🏛️', lbl: 'The museum' }, { emoji: '🏦', lbl: 'The bank' }],
+        "genre": "diary",
+        "heading": "📔 Lala's Saturday in Bandung",
+        "lines": [
+          {
+            "en": "On Saturday, Aunt Mira took me around Bandung.",
+            "id": "Hari Sabtu, Tante Mira mengajakku keliling Bandung."
+          },
+          {
+            "en": "First, we visited the Geology Museum.",
+            "id": "Pertama, kami mengunjungi Museum Geologi."
+          },
+          {
+            "en": "I saw huge dinosaur bones and shiny rocks.",
+            "id": "Aku melihat tulang dinosaurus raksasa dan batu berkilau."
+          },
+          {
+            "en": "My favourite part was a real meteorite from space!",
+            "id": "Bagian favoritku adalah meteorit asli dari luar angkasa!"
+          },
+          {
+            "en": "Next, we had lunch at a noodle shop on Braga Street.",
+            "id": "Lalu, kami makan siang di warung mi di Jalan Braga.",
+            "br": true
+          },
+          {
+            "en": "The noodles were so spicy that my eyes watered.",
+            "id": "Minya pedas sekali sampai mataku berair."
+          },
+          {
+            "en": "Aunt Mira laughed and ordered me some iced tea.",
+            "id": "Tante Mira tertawa dan memesankan es teh untukku."
+          },
+          {
+            "en": "In the afternoon, we walked through the flower market.",
+            "id": "Sore harinya, kami berjalan-jalan di pasar bunga.",
+            "br": true
+          },
+          {
+            "en": "I bought a small cactus for my bedroom.",
+            "id": "Aku membeli kaktus kecil untuk kamarku."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where did they go first?",
+            "qId": "Ke mana mereka pergi pertama?",
+            "options": [
+              "The Geology Museum",
+              "A noodle shop",
+              "The flower market"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What was Lala's favourite part of the museum?",
+            "qId": "Apa bagian favorit Lala di museum?",
+            "options": [
+              "A meteorite from space",
+              "The dinosaur bones",
+              "The shiny rocks"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why did Lala's eyes water?",
+            "qId": "Kenapa mata Lala berair?",
+            "options": [
+              "The noodles were very spicy.",
+              "She was sad.",
+              "It was very windy."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why did Aunt Mira order iced tea?",
+            "qId": "Kenapa Tante Mira memesan es teh?",
+            "options": [
+              "To help Lala with the spicy food",
+              "Because it was cheap",
+              "Because Lala was sleepy"
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "What did Lala buy?",
+            "qId": "Apa yang Lala beli?",
+            "options": [
+              "A small cactus",
+              "Some roses",
+              "A rock"
+            ],
+            "answer": 0,
+            "evidence": [
+              8
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          4,
+          7
+        ]
       },
       {
-        passage: ['At the supermarket, dad buys bread, milk, and eggs.', 'Dimas picks out his favorite cereal to add to the cart.'],
-        id: 'Di supermarket, ayah membeli roti, susu, dan telur. Dimas memilih sereal favoritnya untuk ditambahkan ke troli.',
-        question: 'What does Dimas add to the cart?',
-        questionId: 'Apa yang ditambahkan Dimas ke troli?',
-        opts: [{ emoji: '🥣', lbl: 'Cereal', ok: true }, { emoji: '🍞', lbl: 'Bread' }, { emoji: '🥛', lbl: 'Milk' }],
+        "genre": "sign",
+        "heading": "🚌 Bandung City Tour Bus",
+        "lines": [
+          {
+            "en": "Bandung City Tour Bus: see the city in two hours!",
+            "id": "Bus Tur Kota Bandung: keliling kota dalam dua jam!"
+          },
+          {
+            "en": "The bus leaves from Alun-Alun every hour from 9 a.m.",
+            "id": "Bus berangkat dari Alun-Alun setiap jam mulai jam 9 pagi."
+          },
+          {
+            "en": "Stops: Braga Street, the Geology Museum and Gedung Sate.",
+            "id": "Pemberhentian: Jalan Braga, Museum Geologi, dan Gedung Sate."
+          },
+          {
+            "en": "You can get off and get on again with the same ticket.",
+            "id": "Kamu bisa turun dan naik lagi dengan tiket yang sama."
+          },
+          {
+            "en": "Tickets cost 20,000 for adults and 10,000 for children.",
+            "id": "Tiket 20.000 untuk dewasa dan 10.000 untuk anak-anak.",
+            "br": true
+          },
+          {
+            "en": "Children under five ride for free.",
+            "id": "Anak di bawah lima tahun gratis."
+          },
+          {
+            "en": "Please do not eat or drink on the bus.",
+            "id": "Dilarang makan atau minum di dalam bus."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How long is the tour?",
+            "qId": "Berapa lama turnya?",
+            "options": [
+              "Two hours",
+              "One hour",
+              "All day"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where does the bus leave from?",
+            "qId": "Bus berangkat dari mana?",
+            "options": [
+              "Alun-Alun",
+              "Braga Street",
+              "Gedung Sate"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What can you do with one ticket?",
+            "qId": "Apa yang bisa dilakukan dengan satu tiket?",
+            "options": [
+              "Get off and get on again",
+              "Ride two different buses",
+              "Eat on the bus"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How much is a ticket for an eight-year-old?",
+            "qId": "Berapa harga tiket anak umur delapan tahun?",
+            "options": [
+              "10,000",
+              "20,000",
+              "Free"
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "What is not allowed?",
+            "qId": "Apa yang tidak boleh?",
+            "options": [
+              "Eating or drinking on the bus",
+              "Getting off at stops",
+              "Bringing children"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "message",
+        "heading": "💬 Aunt Mira",
+        "lines": [
+          {
+            "en": "Hi Lala! Are you free next Saturday?",
+            "id": "Hai Lala! Sabtu depan kamu kosong?"
+          },
+          {
+            "en": "I want to take you to the Asian-African Museum.",
+            "id": "Tante ingin mengajakmu ke Museum Asia-Afrika."
+          },
+          {
+            "en": "It's on Asia Afrika Street, near the big mosque.",
+            "id": "Tempatnya di Jalan Asia Afrika, dekat masjid besar."
+          },
+          {
+            "en": "Let's meet at the bus stop at nine.",
+            "id": "Kita bertemu di halte jam sembilan, ya.",
+            "br": true
+          },
+          {
+            "en": "Wear comfortable shoes, because we will walk a lot.",
+            "id": "Pakai sepatu yang nyaman, karena kita akan banyak berjalan."
+          },
+          {
+            "en": "After the museum, we can eat batagor.",
+            "id": "Setelah museum, kita bisa makan batagor.",
+            "br": true
+          },
+          {
+            "en": "Don't worry, it isn't spicy this time!",
+            "id": "Tenang, kali ini tidak pedas!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where does Aunt Mira want to go?",
+            "qId": "Tante Mira ingin pergi ke mana?",
+            "options": [
+              "The Asian-African Museum",
+              "The Geology Museum",
+              "The big mosque"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where will they meet?",
+            "qId": "Mereka bertemu di mana?",
+            "options": [
+              "At the bus stop",
+              "At the museum",
+              "At the mosque"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why should Lala wear comfortable shoes?",
+            "qId": "Kenapa Lala harus memakai sepatu nyaman?",
+            "options": [
+              "They will walk a lot.",
+              "It will rain.",
+              "The museum is closed."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What does 'it' refer to in 'it isn't spicy this time'?",
+            "qId": "'It' dalam 'it isn't spicy this time' merujuk ke apa?",
+            "options": [
+              "The batagor",
+              "The museum",
+              "The bus"
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "Why does Aunt Mira say 'Don't worry'?",
+            "qId": "Kenapa Tante Mira bilang 'Tenang'?",
+            "options": [
+              "Lala had very spicy food last time.",
+              "Lala is scared of buses.",
+              "The museum is far away."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'By the time they finish shopping, it is almost four o’clock.',
-      'Dimas looks at the museum’s opening hours printed on a flyer in his pocket — it closes at four thirty.',
-      'Dad checks his watch and starts walking very quickly toward the car.',
-      'Dimas grins and grabs his backpack, running to catch up.',
-    ],
-    storyId: 'Saat mereka selesai belanja, waktu sudah hampir jam empat. Dimas melihat jam buka museum yang tercetak di selebaran di sakunya — tutup jam empat setengah. Ayah melihat jamnya dan mulai berjalan sangat cepat menuju mobil. Dimas tersenyum lebar dan meraih ranselnya, berlari untuk mengejar.',
-    question: {
-      text: 'Why does dad start walking quickly?',
-      id: 'Kenapa ayah mulai berjalan cepat?',
-      opts: [{ emoji: '🏛️', lbl: 'They might still make it to the museum', ok: true }, { emoji: '🚗', lbl: 'The car is about to be towed' }, { emoji: '🌧️', lbl: 'It is starting to rain' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Bandung, the City of Flowers",
+        "lines": [
+          {
+            "en": "Bandung is a city in West Java, about three hours from Jakarta.",
+            "id": "Bandung adalah kota di Jawa Barat, sekitar tiga jam dari Jakarta."
+          },
+          {
+            "en": "It is higher than Jakarta, so the air is cooler.",
+            "id": "Letaknya lebih tinggi dari Jakarta, jadi udaranya lebih sejuk."
+          },
+          {
+            "en": "People call it 'the City of Flowers' because of its many gardens.",
+            "id": "Orang menyebutnya 'Kota Kembang' karena banyak tamannya.",
+            "br": true
+          },
+          {
+            "en": "It is also famous for food like batagor and surabi.",
+            "id": "Bandung juga terkenal dengan makanan seperti batagor dan surabi."
+          },
+          {
+            "en": "Every weekend, many families from Jakarta visit Bandung.",
+            "id": "Setiap akhir pekan, banyak keluarga dari Jakarta berkunjung ke Bandung.",
+            "br": true
+          },
+          {
+            "en": "Because of this, the roads can be very busy.",
+            "id": "Karena itu, jalanan bisa sangat macet."
+          },
+          {
+            "en": "Visitors often come on Friday night to avoid the traffic.",
+            "id": "Pengunjung sering datang Jumat malam untuk menghindari macet."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why is the air cooler in Bandung?",
+            "qId": "Kenapa udara di Bandung lebih sejuk?",
+            "options": [
+              "It is higher than Jakarta.",
+              "It is near the sea.",
+              "It rains every day."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why is Bandung called 'the City of Flowers'?",
+            "qId": "Kenapa Bandung disebut 'Kota Kembang'?",
+            "options": [
+              "It has many gardens.",
+              "It sells flowers to Jakarta.",
+              "Its buildings are colourful."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Why can the roads be very busy?",
+            "qId": "Kenapa jalanan bisa sangat macet?",
+            "options": [
+              "Many families visit every weekend.",
+              "The roads are very small.",
+              "Everyone drives to school."
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "Why do visitors come on Friday night?",
+            "qId": "Kenapa pengunjung datang Jumat malam?",
+            "options": [
+              "To avoid the traffic",
+              "To eat batagor",
+              "To see the flowers at night"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the text mainly about?",
+            "qId": "Teks ini terutama tentang apa?",
+            "options": [
+              "Facts about Bandung",
+              "How to cook batagor",
+              "A trip to Jakarta"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'mencari-alamat',
-    title: 'Mencari Alamat (Finding the Address)',
-    scene: '🧭',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Sinta is looking for her new friend’s house for the first time.', 'She has the address written on a small piece of paper.'], id: 'Sinta sedang mencari rumah teman barunya untuk pertama kalinya. Dia punya alamatnya tertulis di secarik kertas kecil.' },
-      { passage: ['The house is near the corner of Melati Street.', 'Sinta checks a map on her phone.'], id: 'Rumahnya dekat sudut Jalan Melati. Sinta memeriksa peta di ponselnya.' },
-    ],
-    drill: [
+    "id": "mencari-alamat",
+    "title": "Mencari Alamat (Finding the Address)",
+    "scene": "🗺️",
+    "desc": "Cerita, petunjuk arah, dialog & catatan",
+    "texts": [
       {
-        passage: ['A man tells Sinta to go straight and then turn left at the corner.', 'Sinta thanks him and follows his directions carefully.'],
-        id: 'Seorang pria memberi tahu Sinta untuk jalan lurus lalu belok kiri di sudut. Sinta berterima kasih dan mengikuti arahannya dengan hati-hati.',
-        question: 'Which way does Sinta turn at the corner?',
-        questionId: 'Ke arah mana Sinta belok di sudut itu?',
-        opts: [{ emoji: '⬅️', lbl: 'Left', ok: true }, { emoji: '➡️', lbl: 'Right' }, { emoji: '⬆️', lbl: 'Straight' }],
+        "genre": "story",
+        "heading": "🗺️ Finding Grandpa's New House",
+        "lines": [
+          {
+            "en": "Grandpa moved to a new house last month.",
+            "id": "Kakek pindah ke rumah baru bulan lalu."
+          },
+          {
+            "en": "On Sunday, Dimas and his mom went to visit him.",
+            "id": "Hari Minggu, Dimas dan ibunya pergi mengunjunginya."
+          },
+          {
+            "en": "They had the address: Jalan Kenanga No. 12.",
+            "id": "Mereka punya alamatnya: Jalan Kenanga No. 12."
+          },
+          {
+            "en": "But when they got there, number 12 was a bakery!",
+            "id": "Tapi waktu sampai, nomor 12 ternyata toko roti!",
+            "br": true
+          },
+          {
+            "en": "Mom checked her phone again.",
+            "id": "Ibu memeriksa ponselnya lagi."
+          },
+          {
+            "en": "Oh no, it was Jalan Kenari, not Jalan Kenanga!",
+            "id": "Waduh, ternyata Jalan Kenari, bukan Jalan Kenanga!"
+          },
+          {
+            "en": "A friendly baker showed them the way.",
+            "id": "Tukang roti yang ramah menunjukkan jalannya.",
+            "br": true
+          },
+          {
+            "en": "It was only two streets away.",
+            "id": "Ternyata cuma dua jalan dari situ."
+          },
+          {
+            "en": "Grandpa laughed when he heard the story.",
+            "id": "Kakek tertawa waktu mendengar ceritanya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why did Dimas and his mom go out?",
+            "qId": "Kenapa Dimas dan ibunya pergi?",
+            "options": [
+              "To visit Grandpa",
+              "To buy bread",
+              "To go to school"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What was at Jalan Kenanga No. 12?",
+            "qId": "Ada apa di Jalan Kenanga No. 12?",
+            "options": [
+              "A bakery",
+              "Grandpa's house",
+              "A school"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What mistake did they make?",
+            "qId": "Kesalahan apa yang mereka buat?",
+            "options": [
+              "They went to the wrong street.",
+              "They forgot the house number.",
+              "They took the wrong bus."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Who helped them?",
+            "qId": "Siapa yang membantu mereka?",
+            "options": [
+              "A friendly baker",
+              "Grandpa",
+              "A police officer"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How far was Grandpa's house from the bakery?",
+            "qId": "Seberapa jauh rumah Kakek dari toko roti?",
+            "options": [
+              "Two streets away",
+              "Twelve streets away",
+              "Very far"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          2,
+          4,
+          6
+        ]
       },
       {
-        passage: ['Sinta sees a small bakery on her right and a park on her left.', 'Her friend’s house should be right behind the bakery.'],
-        id: 'Sinta melihat toko roti kecil di sebelah kanannya dan taman di sebelah kirinya. Rumah temannya seharusnya persis di belakang toko roti itu.',
-        question: 'Where should the friend’s house be?',
-        questionId: 'Di mana seharusnya rumah temannya?',
-        opts: [{ emoji: '🥖', lbl: 'Behind the bakery', ok: true }, { emoji: '🌳', lbl: 'Inside the park' }, { emoji: '👉', lbl: 'In front of the bakery' }],
+        "genre": "note",
+        "heading": "📝 Directions to My House",
+        "lines": [
+          {
+            "en": "Here's how to get to my house from school.",
+            "id": "Ini cara ke rumahku dari sekolah."
+          },
+          {
+            "en": "Turn right when you leave the school gate.",
+            "id": "Belok kanan saat keluar gerbang sekolah."
+          },
+          {
+            "en": "Walk past the mosque and the post office.",
+            "id": "Jalan melewati masjid dan kantor pos."
+          },
+          {
+            "en": "At the traffic lights, turn left into Jalan Mawar.",
+            "id": "Di lampu merah, belok kiri ke Jalan Mawar.",
+            "br": true
+          },
+          {
+            "en": "My house is the third one on the right.",
+            "id": "Rumahku yang ketiga di sebelah kanan."
+          },
+          {
+            "en": "It has a green door and a mango tree in front.",
+            "id": "Pintunya hijau dan ada pohon mangga di depannya."
+          },
+          {
+            "en": "If you get lost, call me! Tia",
+            "id": "Kalau tersesat, telepon aku! Tia",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Which way do you turn at the school gate?",
+            "qId": "Belok ke mana di gerbang sekolah?",
+            "options": [
+              "Right",
+              "Left",
+              "Straight on"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What do you walk past?",
+            "qId": "Kamu berjalan melewati apa?",
+            "options": [
+              "The mosque and the post office",
+              "The bakery and the bank",
+              "The park and the zoo"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where do you turn left?",
+            "qId": "Di mana kamu belok kiri?",
+            "options": [
+              "At the traffic lights",
+              "At the post office",
+              "At the mango tree"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How can you find Tia's house?",
+            "qId": "Bagaimana cara mengenali rumah Tia?",
+            "options": [
+              "It has a green door and a mango tree.",
+              "It is next to the mosque.",
+              "It is the first house on the left."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Who wrote the directions?",
+            "qId": "Siapa yang menulis petunjuk arah ini?",
+            "options": [
+              "Tia",
+              "The teacher",
+              "The postman"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🗨️ Asking the Way",
+        "lines": [
+          {
+            "en": "Rani: Excuse me, how do I get to the library?",
+            "id": "Rani: Permisi, bagaimana cara ke perpustakaan?"
+          },
+          {
+            "en": "Man: Go straight until you see a big bank.",
+            "id": "Pria: Lurus sampai kamu melihat bank besar."
+          },
+          {
+            "en": "Man: Then cross the road at the zebra crossing.",
+            "id": "Pria: Lalu menyeberang di zebra cross."
+          },
+          {
+            "en": "Rani: Is the library next to the bank?",
+            "id": "Rani: Perpustakaannya di sebelah bank?"
+          },
+          {
+            "en": "Man: No, it's opposite the bank, next to the café.",
+            "id": "Pria: Bukan, di seberang bank, sebelah kafe."
+          },
+          {
+            "en": "Rani: Is it far from here?",
+            "id": "Rani: Jauh dari sini?"
+          },
+          {
+            "en": "Man: Not really. It takes about five minutes on foot.",
+            "id": "Pria: Tidak juga. Sekitar lima menit jalan kaki."
+          },
+          {
+            "en": "Rani: Thank you so much!",
+            "id": "Rani: Terima kasih banyak!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where does Rani want to go?",
+            "qId": "Rani ingin pergi ke mana?",
+            "options": [
+              "The library",
+              "The bank",
+              "The café"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where should Rani cross the road?",
+            "qId": "Di mana Rani harus menyeberang?",
+            "options": [
+              "At the zebra crossing",
+              "At the traffic lights",
+              "Near the café"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where exactly is the library?",
+            "qId": "Tepatnya perpustakaan di mana?",
+            "options": [
+              "Opposite the bank, next to the café",
+              "Next to the bank",
+              "Behind the café"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Rani asks, 'Is it far from here?' What does the man answer?",
+            "qId": "Rani bertanya 'Jauh dari sini?'. Pria itu menjawab apa?",
+            "options": [
+              "Not really. It takes about five minutes on foot.",
+              "Go straight until you see a big bank.",
+              "No, it's opposite the bank."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How will Rani probably get there?",
+            "qId": "Kemungkinan Rani ke sana dengan apa?",
+            "options": [
+              "On foot",
+              "By bus",
+              "By car"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'Sinta walks behind the bakery, but she only sees a tall fence and no houses at all.',
-      'She checks her phone map and sees she is standing on “Melati Street”, just like the address says.',
-      'A woman walking her dog mentions that there are actually two different streets named Melati in this town — one near the market, and one near the school.',
-      'Sinta looks at her friend’s address again: it says “Melati Street, near the school.”',
-    ],
-    storyId: 'Sinta berjalan ke belakang toko roti, tapi dia cuma melihat pagar tinggi dan tidak ada rumah sama sekali. Dia memeriksa peta ponselnya dan melihat dia sedang berdiri di "Jalan Melati", persis seperti di alamat itu. Seorang wanita yang jalan-jalan dengan anjingnya bilang sebenarnya ada dua jalan berbeda bernama Melati di kota ini — satu dekat pasar, dan satu dekat sekolah. Sinta melihat lagi alamat temannya: tertulis "Jalan Melati, dekat sekolah."',
-    question: {
-      text: 'Why did Sinta go to the wrong place first?',
-      id: 'Kenapa Sinta pergi ke tempat yang salah di awal?',
-      opts: [{ emoji: '🛣️', lbl: 'She went to the Melati Street near the market, not the school', ok: true }, { emoji: '📱', lbl: 'Her phone map was broken' }, { emoji: '🐶', lbl: 'A dog led her the wrong way' }],
-    },
+      {
+        "genre": "note",
+        "heading": "📦 A Note from the Postman",
+        "lines": [
+          {
+            "en": "Dear Mr. Hadi,",
+            "id": "Pak Hadi yang terhormat,"
+          },
+          {
+            "en": "I tried to deliver your parcel at 10 a.m. today.",
+            "id": "Saya mencoba mengantar paket Bapak jam 10 pagi tadi."
+          },
+          {
+            "en": "Nobody was at home, so I could not leave it.",
+            "id": "Tidak ada orang di rumah, jadi saya tidak bisa meninggalkannya."
+          },
+          {
+            "en": "Your parcel is now at the post office on Jalan Merdeka.",
+            "id": "Paket Bapak sekarang di kantor pos Jalan Merdeka.",
+            "br": true
+          },
+          {
+            "en": "You can collect it from tomorrow, between 8 a.m. and 3 p.m.",
+            "id": "Bapak bisa mengambilnya mulai besok, jam 8 pagi sampai 3 sore."
+          },
+          {
+            "en": "Please bring this note and your ID card.",
+            "id": "Mohon bawa catatan ini dan KTP Bapak."
+          },
+          {
+            "en": "If you prefer, I can try again on Thursday.",
+            "id": "Kalau Bapak mau, saya bisa mencoba lagi hari Kamis.",
+            "br": true
+          },
+          {
+            "en": "Pak Joko, Postman",
+            "id": "Pak Joko, Tukang Pos"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why couldn't the postman deliver the parcel?",
+            "qId": "Kenapa tukang pos tidak bisa mengantar paket?",
+            "options": [
+              "Nobody was at home.",
+              "The address was wrong.",
+              "The parcel was too big."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where is the parcel now?",
+            "qId": "Paketnya sekarang di mana?",
+            "options": [
+              "At the post office",
+              "At the neighbour's house",
+              "In the postman's car"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "When can Mr. Hadi collect it?",
+            "qId": "Kapan Pak Hadi bisa mengambilnya?",
+            "options": [
+              "From tomorrow, 8 a.m. to 3 p.m.",
+              "Today at 10 a.m.",
+              "Only on Thursday"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What must Mr. Hadi bring?",
+            "qId": "Apa yang harus dibawa Pak Hadi?",
+            "options": [
+              "This note and his ID card",
+              "Some money",
+              "A big box"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What other choice does Mr. Hadi have?",
+            "qId": "Pilihan lain apa yang dimiliki Pak Hadi?",
+            "options": [
+              "The postman can try again on Thursday.",
+              "He can call the shop.",
+              "He can wait until next month."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'akhir-pekan-di-rumah',
-    title: 'Akhir Pekan di Rumah (Weekend at Home)',
-    scene: '🎮',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['It is Saturday, and Bima has no school today.', 'He wants to decide how to spend his free time.'], id: 'Ini hari Sabtu, dan Bima tidak sekolah hari ini. Dia ingin memutuskan bagaimana menghabiskan waktu luangnya.' },
-      { passage: ['His sister invites him to play a board game.', 'His friend calls and invites him to play video games instead.'], id: 'Kakaknya mengajaknya main permainan papan. Temannya menelepon dan mengajaknya main gim video sebagai gantinya.' },
-    ],
-    drill: [
+    "id": "akhir-pekan-di-rumah",
+    "title": "Akhir Pekan di Rumah (Weekend at Home)",
+    "scene": "🏠",
+    "desc": "Diary, daftar tugas, pesan & artikel",
+    "texts": [
       {
-        passage: ['Bima’s sister sets up a chess board on the living room table.', 'She has been practicing every day this week.'],
-        id: 'Kakak Bima menyiapkan papan catur di meja ruang tamu. Dia sudah berlatih setiap hari minggu ini.',
-        question: 'What game does the sister want to play?',
-        questionId: 'Permainan apa yang ingin dimainkan kakaknya?',
-        opts: [{ emoji: '♟️', lbl: 'Chess', ok: true }, { emoji: '🕹️', lbl: 'Video game' }, { emoji: '🃏', lbl: 'Cards' }],
+        "genre": "diary",
+        "heading": "📔 A Busy Weekend at Home",
+        "lines": [
+          {
+            "en": "This weekend, my family decided to stay at home.",
+            "id": "Akhir pekan ini, keluargaku memutuskan di rumah saja."
+          },
+          {
+            "en": "On Saturday morning, we cleaned the whole house.",
+            "id": "Sabtu pagi, kami membersihkan seluruh rumah."
+          },
+          {
+            "en": "My job was to tidy my bedroom and water the plants.",
+            "id": "Tugasku merapikan kamar dan menyiram tanaman."
+          },
+          {
+            "en": "In the afternoon, Dad and I fixed my old bike.",
+            "id": "Siangnya, aku dan Ayah memperbaiki sepeda lamaku.",
+            "br": true
+          },
+          {
+            "en": "The chain was broken, so we bought a new one.",
+            "id": "Rantainya putus, jadi kami membeli yang baru."
+          },
+          {
+            "en": "It took two hours, but now the bike works perfectly!",
+            "id": "Butuh dua jam, tapi sekarang sepedanya berfungsi sempurna!"
+          },
+          {
+            "en": "On Sunday, it rained all day.",
+            "id": "Hari Minggu, hujan seharian.",
+            "br": true
+          },
+          {
+            "en": "We played board games and baked banana bread.",
+            "id": "Kami main permainan papan dan membuat roti pisang."
+          },
+          {
+            "en": "It was a quiet weekend, but I enjoyed it.",
+            "id": "Akhir pekannya tenang, tapi aku menikmatinya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What was the writer's job on Saturday morning?",
+            "qId": "Apa tugas penulis Sabtu pagi?",
+            "options": [
+              "Tidy the bedroom and water the plants",
+              "Fix the bike",
+              "Bake banana bread"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What was wrong with the bike?",
+            "qId": "Apa yang rusak pada sepeda itu?",
+            "options": [
+              "The chain was broken.",
+              "The tyre was flat.",
+              "The seat was missing."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How long did fixing the bike take?",
+            "qId": "Berapa lama memperbaiki sepedanya?",
+            "options": [
+              "Two hours",
+              "All day",
+              "Ten minutes"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why did they stay inside on Sunday?",
+            "qId": "Kenapa mereka di dalam rumah hari Minggu?",
+            "options": [
+              "It rained all day.",
+              "They were sick.",
+              "The bike was broken."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How did the writer feel about the weekend?",
+            "qId": "Bagaimana perasaan penulis tentang akhir pekan itu?",
+            "options": [
+              "They enjoyed it.",
+              "They were bored.",
+              "They were angry."
+            ],
+            "answer": 0,
+            "evidence": [
+              8
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          7
+        ]
       },
       {
-        passage: ['Bima’s friend Andi says the new video game has amazing graphics.', 'Andi has already finished two levels by himself.'],
-        id: 'Teman Bima, Andi, bilang gim video barunya punya grafis luar biasa. Andi sudah menyelesaikan dua level sendirian.',
-        question: 'How many levels has Andi finished?',
-        questionId: 'Berapa level yang sudah diselesaikan Andi?',
-        opts: [{ emoji: '2️⃣', lbl: 'Two', ok: true }, { emoji: '1️⃣', lbl: 'One' }, { emoji: '3️⃣', lbl: 'Three' }],
+        "genre": "note",
+        "heading": "📝 Weekend Jobs",
+        "lines": [
+          {
+            "en": "Weekend jobs for everyone:",
+            "id": "Tugas akhir pekan untuk semua:"
+          },
+          {
+            "en": "Dad: wash the car and cut the grass.",
+            "id": "Ayah: mencuci mobil dan memotong rumput."
+          },
+          {
+            "en": "Kiki: tidy your room and feed the cat.",
+            "id": "Kiki: rapikan kamarmu dan beri makan kucing."
+          },
+          {
+            "en": "Bima: help me cook lunch on Sunday.",
+            "id": "Bima: bantu Ibu memasak makan siang hari Minggu.",
+            "br": true
+          },
+          {
+            "en": "Everyone: put your dirty clothes in the basket.",
+            "id": "Semua: taruh baju kotor di keranjang."
+          },
+          {
+            "en": "When we finish, we will watch a film together!",
+            "id": "Kalau sudah selesai, kita nonton film bersama!"
+          },
+          {
+            "en": "Mom",
+            "id": "Ibu",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who washes the car?",
+            "qId": "Siapa yang mencuci mobil?",
+            "options": [
+              "Dad",
+              "Kiki",
+              "Bima"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What must Kiki do?",
+            "qId": "Apa yang harus Kiki lakukan?",
+            "options": [
+              "Tidy her room and feed the cat",
+              "Cook lunch",
+              "Cut the grass"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When will Bima help cook?",
+            "qId": "Kapan Bima membantu memasak?",
+            "options": [
+              "On Sunday",
+              "On Saturday",
+              "Every day"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What must everyone do?",
+            "qId": "Apa yang harus dilakukan semua orang?",
+            "options": [
+              "Put dirty clothes in the basket",
+              "Wash the car",
+              "Feed the cat"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What will happen when they finish?",
+            "qId": "Apa yang terjadi kalau semua selesai?",
+            "options": [
+              "They will watch a film.",
+              "They will go out to eat.",
+              "They will visit Grandma."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "message",
+        "heading": "💬 Kevin",
+        "lines": [
+          {
+            "en": "Hey Tara, what are you doing this weekend?",
+            "id": "Hai Tara, akhir pekan ini kamu ngapain?"
+          },
+          {
+            "en": "My parents are working, so I'm staying home.",
+            "id": "Orang tuaku kerja, jadi aku di rumah saja."
+          },
+          {
+            "en": "I'm planning to build a cardboard castle.",
+            "id": "Aku berencana membuat istana dari kardus."
+          },
+          {
+            "en": "I've already got six big boxes from the shop.",
+            "id": "Aku sudah dapat enam kardus besar dari toko.",
+            "br": true
+          },
+          {
+            "en": "But I need someone to help me paint it.",
+            "id": "Tapi aku butuh teman untuk membantu mengecatnya."
+          },
+          {
+            "en": "Can you come over on Saturday afternoon?",
+            "id": "Bisa datang Sabtu sore?",
+            "br": true
+          },
+          {
+            "en": "My mom said she will make pizza for us!",
+            "id": "Kata ibuku, dia akan membuatkan pizza untuk kita!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why is Kevin staying home?",
+            "qId": "Kenapa Kevin di rumah saja?",
+            "options": [
+              "His parents are working.",
+              "He is sick.",
+              "It is raining."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What is Kevin planning to build?",
+            "qId": "Apa yang ingin Kevin buat?",
+            "options": [
+              "A cardboard castle",
+              "A wooden house",
+              "A pizza oven"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where did he get the boxes?",
+            "qId": "Dari mana dia mendapat kardusnya?",
+            "options": [
+              "From the shop",
+              "From school",
+              "From Tara"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does Kevin need help with?",
+            "qId": "Kevin butuh bantuan apa?",
+            "options": [
+              "Painting the castle",
+              "Buying boxes",
+              "Making pizza"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who will make pizza?",
+            "qId": "Siapa yang akan membuat pizza?",
+            "options": [
+              "Kevin's mom",
+              "Kevin",
+              "Tara"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'Bima looks at his sister’s serious face as she arranges the chess pieces.',
-      'He remembers that she lost every game to him last month and really wants a rematch.',
-      'He also looks at his phone, where Andi is still typing excited messages about the new game.',
-      'Bima puts his phone down and sits across from his sister at the chess board.',
-    ],
-    storyId: 'Bima melihat wajah serius kakaknya saat menyusun bidak caturnya. Dia ingat kakaknya kalah setiap kali main bulan lalu dan sangat ingin tanding ulang. Dia juga melihat ponselnya, tempat Andi masih mengetik pesan-pesan bersemangat tentang gim barunya. Bima meletakkan ponselnya dan duduk di seberang kakaknya di papan catur.',
-    question: {
-      text: 'Why does Bima decide to play chess with his sister?',
-      id: 'Kenapa Bima memutuskan main catur dengan kakaknya?',
-      opts: [{ emoji: '♟️', lbl: 'He wants to give her a chance for a rematch', ok: true }, { emoji: '🕹️', lbl: 'The video game stopped working' }, { emoji: '📵', lbl: 'His phone battery died' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Screen-Free Weekends",
+        "lines": [
+          {
+            "en": "Some families now try a 'screen-free weekend' once a month.",
+            "id": "Sebagian keluarga kini mencoba 'akhir pekan tanpa layar' sebulan sekali."
+          },
+          {
+            "en": "This means no phones, tablets or TV for two days.",
+            "id": "Artinya tidak ada ponsel, tablet, atau TV selama dua hari."
+          },
+          {
+            "en": "At first, many children think it will be boring.",
+            "id": "Awalnya, banyak anak mengira itu membosankan.",
+            "br": true
+          },
+          {
+            "en": "However, most of them find new hobbies quickly.",
+            "id": "Tapi, kebanyakan cepat menemukan hobi baru."
+          },
+          {
+            "en": "Some start drawing comics, while others learn to cook.",
+            "id": "Ada yang mulai menggambar komik, ada juga yang belajar memasak."
+          },
+          {
+            "en": "Parents say families talk and laugh together more.",
+            "id": "Orang tua bilang keluarga jadi lebih sering mengobrol dan tertawa bersama.",
+            "br": true
+          },
+          {
+            "en": "Why not try it with your family this month?",
+            "id": "Bagaimana kalau dicoba bersama keluargamu bulan ini?"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is a 'screen-free weekend'?",
+            "qId": "Apa itu 'akhir pekan tanpa layar'?",
+            "options": [
+              "Two days without phones, tablets or TV",
+              "A weekend of watching films",
+              "A weekend at the cinema"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What do many children think at first?",
+            "qId": "Apa pikiran banyak anak awalnya?",
+            "options": [
+              "It will be boring.",
+              "It will be easy.",
+              "It will be scary."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What happens to most children?",
+            "qId": "Apa yang terjadi pada kebanyakan anak?",
+            "options": [
+              "They find new hobbies.",
+              "They feel sad all weekend.",
+              "They sleep all day."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What do parents say?",
+            "qId": "Apa kata orang tua?",
+            "options": [
+              "Families talk and laugh more.",
+              "Children sleep more.",
+              "Families spend more money."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does the writer want readers to do?",
+            "qId": "Penulis ingin pembaca melakukan apa?",
+            "options": [
+              "Try a screen-free weekend",
+              "Buy a new tablet",
+              "Watch more TV"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'main-petak-umpet',
-    title: 'Main Petak Umpet (Playing Hide and Seek)',
-    scene: '🙈',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Reza and his cousins play hide and seek in the backyard.', 'Reza’s turn is to count while everyone hides.'], id: 'Reza dan sepupu-sepupunya main petak umpet di halaman belakang. Giliran Reza untuk menghitung sementara semua orang bersembunyi.' },
-      { passage: ['He closes his eyes and counts to twenty loudly.', 'Everyone runs to find a good hiding spot.'], id: 'Dia menutup matanya dan menghitung sampai dua puluh dengan keras. Semua orang berlari mencari tempat sembunyi yang bagus.' },
-    ],
-    drill: [
+    "id": "main-petak-umpet",
+    "title": "Main Petak Umpet (Playing Hide and Seek)",
+    "scene": "🙈",
+    "desc": "Cerita, aturan main & artikel",
+    "texts": [
       {
-        passage: ['Reza’s cousin Wati climbs up into the mango tree to hide.', 'His other cousin Doni hides behind the water tank instead.'],
-        id: 'Sepupu Reza, Wati, memanjat pohon mangga untuk bersembunyi. Sepupunya yang lain, Doni, malah bersembunyi di belakang tandon air.',
-        question: 'Where does Wati hide?',
-        questionId: 'Di mana Wati bersembunyi?',
-        opts: [{ emoji: '🌳', lbl: 'The mango tree', ok: true }, { emoji: '🚰', lbl: 'The water tank' }, { emoji: '🚗', lbl: 'The garage' }],
+        "genre": "story",
+        "heading": "🙈 The Best Hiding Place",
+        "lines": [
+          {
+            "en": "After school, six friends played hide and seek at Dani's house.",
+            "id": "Sepulang sekolah, enam sahabat main petak umpet di rumah Dani."
+          },
+          {
+            "en": "Sari closed her eyes and counted to twenty.",
+            "id": "Sari menutup mata dan menghitung sampai dua puluh."
+          },
+          {
+            "en": "Everyone ran to find a hiding place.",
+            "id": "Semua berlari mencari tempat sembunyi."
+          },
+          {
+            "en": "Dani hid behind the curtains, and Mila hid under the bed.",
+            "id": "Dani bersembunyi di balik gorden, dan Mila di bawah kasur.",
+            "br": true
+          },
+          {
+            "en": "Sari found them quickly because their feet were showing.",
+            "id": "Sari cepat menemukan mereka karena kaki mereka kelihatan."
+          },
+          {
+            "en": "But nobody could find Yoga.",
+            "id": "Tapi tidak ada yang bisa menemukan Yoga."
+          },
+          {
+            "en": "After ten minutes, they heard a small snore from the laundry basket!",
+            "id": "Setelah sepuluh menit, terdengar dengkuran kecil dari keranjang cucian!",
+            "br": true
+          },
+          {
+            "en": "Yoga had fallen asleep under the clothes.",
+            "id": "Yoga ketiduran di bawah tumpukan baju."
+          },
+          {
+            "en": "Everyone laughed, and Yoga won the game.",
+            "id": "Semua tertawa, dan Yoga menang."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who counted to twenty?",
+            "qId": "Siapa yang menghitung sampai dua puluh?",
+            "options": [
+              "Sari",
+              "Dani",
+              "Yoga"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why did Sari find Dani and Mila quickly?",
+            "qId": "Kenapa Sari cepat menemukan Dani dan Mila?",
+            "options": [
+              "Their feet were showing.",
+              "They were laughing.",
+              "They were in the kitchen."
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "Where was Yoga hiding?",
+            "qId": "Yoga bersembunyi di mana?",
+            "options": [
+              "In the laundry basket",
+              "Under the bed",
+              "Behind the curtains"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How did they find Yoga?",
+            "qId": "Bagaimana mereka menemukan Yoga?",
+            "options": [
+              "They heard him snore.",
+              "He called them.",
+              "Sari saw his feet."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "Why did Yoga win?",
+            "qId": "Kenapa Yoga menang?",
+            "options": [
+              "Nobody could find him.",
+              "He counted the fastest.",
+              "He found everyone."
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              8
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          6
+        ]
       },
       {
-        passage: ['Reza finds Doni first and shouts his name loudly.', 'Doni laughs and jumps out from behind the water tank.'],
-        id: 'Reza menemukan Doni duluan dan berteriak namanya dengan keras. Doni tertawa dan melompat keluar dari belakang tandon air.',
-        question: 'Who does Reza find first?',
-        questionId: 'Siapa yang ditemukan Reza duluan?',
-        opts: [{ emoji: '🧑', lbl: 'Doni', ok: true }, { emoji: '👧', lbl: 'Wati' }, { emoji: '❓', lbl: 'Nobody' }],
+        "genre": "sign",
+        "heading": "📋 Our Hide-and-Seek Rules",
+        "lines": [
+          {
+            "en": "Rules for our hide-and-seek game:",
+            "id": "Aturan main petak umpet kami:"
+          },
+          {
+            "en": "The seeker counts to twenty with their eyes closed.",
+            "id": "Penjaga menghitung sampai dua puluh dengan mata tertutup."
+          },
+          {
+            "en": "Do not hide outside the garden gate.",
+            "id": "Jangan bersembunyi di luar gerbang kebun."
+          },
+          {
+            "en": "Do not hide in the kitchen or in Dad's office.",
+            "id": "Jangan bersembunyi di dapur atau ruang kerja Ayah."
+          },
+          {
+            "en": "If the seeker finds you, you help them look for the others.",
+            "id": "Kalau penjaga menemukanmu, kamu membantunya mencari yang lain.",
+            "br": true
+          },
+          {
+            "en": "The last person found is the next seeker.",
+            "id": "Yang terakhir ditemukan jadi penjaga berikutnya."
+          },
+          {
+            "en": "Have fun, and be careful!",
+            "id": "Selamat bermain, dan hati-hati!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What does the seeker do first?",
+            "qId": "Apa yang dilakukan penjaga pertama kali?",
+            "options": [
+              "Count to twenty with eyes closed",
+              "Hide in the garden",
+              "Look in the kitchen"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where can't players hide?",
+            "qId": "Di mana pemain tidak boleh bersembunyi?",
+            "options": [
+              "In the kitchen or Dad's office",
+              "Behind the curtains",
+              "Under a bed"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What happens when the seeker finds you?",
+            "qId": "Apa yang terjadi kalau penjaga menemukanmu?",
+            "options": [
+              "You help look for the others.",
+              "You go home.",
+              "You count again."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who will be the next seeker?",
+            "qId": "Siapa penjaga berikutnya?",
+            "options": [
+              "The last person found",
+              "The first person found",
+              "The youngest player"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why does the note say 'be careful'?",
+            "qId": "Kenapa catatan bilang 'hati-hati'?",
+            "options": [
+              "So nobody gets hurt",
+              "So nobody gets hungry",
+              "So the game ends quickly"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "story",
+        "heading": "🔍 The Missing Seeker",
+        "lines": [
+          {
+            "en": "It was Bayu's turn to be the seeker.",
+            "id": "Giliran Bayu jadi penjaga."
+          },
+          {
+            "en": "Everyone hid and waited quietly.",
+            "id": "Semua bersembunyi dan menunggu diam-diam."
+          },
+          {
+            "en": "Five minutes passed, and nobody came.",
+            "id": "Lima menit berlalu, dan tidak ada yang datang."
+          },
+          {
+            "en": "Then ten minutes passed.",
+            "id": "Lalu sepuluh menit berlalu.",
+            "br": true
+          },
+          {
+            "en": "Finally, the players came out to look for Bayu.",
+            "id": "Akhirnya, para pemain keluar mencari Bayu."
+          },
+          {
+            "en": "They found him in the living room, watching cartoons!",
+            "id": "Mereka menemukannya di ruang tamu, sedang nonton kartun!"
+          },
+          {
+            "en": "'I forgot we were playing,' he said with a smile.",
+            "id": "'Aku lupa kita sedang main,' katanya sambil tersenyum.",
+            "br": true
+          },
+          {
+            "en": "From then on, they called him 'Bayu the Forgetful'.",
+            "id": "Sejak itu, mereka memanggilnya 'Bayu si Pelupa'."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who was the seeker?",
+            "qId": "Siapa penjaganya?",
+            "options": [
+              "Bayu",
+              "Sari",
+              "Nobody"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How long did the players wait before coming out?",
+            "qId": "Berapa lama pemain menunggu sebelum keluar?",
+            "options": [
+              "More than ten minutes",
+              "Five minutes",
+              "One minute"
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "Where was Bayu?",
+            "qId": "Bayu ada di mana?",
+            "options": [
+              "In the living room",
+              "In the garden",
+              "Under the bed"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why didn't Bayu look for his friends?",
+            "qId": "Kenapa Bayu tidak mencari teman-temannya?",
+            "options": [
+              "He forgot they were playing.",
+              "He was hiding too.",
+              "He was sick."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "Why did they call him 'Bayu the Forgetful'?",
+            "qId": "Kenapa mereka memanggilnya 'Bayu si Pelupa'?",
+            "options": [
+              "He forgot about the game.",
+              "He forgot his shoes.",
+              "He was always late."
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'After finding Doni, Reza searches the whole yard but cannot find Wati anywhere.',
-      'Suddenly, he hears someone trying not to laugh, coming from somewhere above him.',
-      'He looks up slowly and sees a pair of shoes dangling between the mango tree leaves.',
-      'Reza points and shouts, catching Wati completely by surprise.',
-    ],
-    storyId: 'Setelah menemukan Doni, Reza mencari ke seluruh halaman tapi tidak menemukan Wati di mana pun. Tiba-tiba, dia mendengar seseorang menahan tawa, datang dari suatu tempat di atasnya. Dia mendongak perlahan dan melihat sepasang sepatu menjuntai di antara daun pohon mangga. Reza menunjuk dan berteriak, membuat Wati benar-benar terkejut.',
-    question: {
-      text: 'How does Reza finally find Wati?',
-      id: 'Bagaimana akhirnya Reza menemukan Wati?',
-      opts: [{ emoji: '👀', lbl: 'He sees her shoes in the tree and hears her laughing', ok: true }, { emoji: '📣', lbl: 'Wati calls out her own hiding spot' }, { emoji: '⏰', lbl: 'Time runs out and everyone must come out' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Hide and Seek Around the World",
+        "lines": [
+          {
+            "en": "Hide and seek is played by children all over the world.",
+            "id": "Petak umpet dimainkan anak-anak di seluruh dunia."
+          },
+          {
+            "en": "In Indonesia, it is called 'petak umpet'.",
+            "id": "Di Indonesia, namanya 'petak umpet'."
+          },
+          {
+            "en": "In some countries, the seeker must touch a 'home' tree before counting.",
+            "id": "Di beberapa negara, penjaga harus menyentuh pohon 'rumah' sebelum menghitung."
+          },
+          {
+            "en": "In others, hidden players can run 'home' to be safe.",
+            "id": "Di negara lain, pemain bisa lari ke 'rumah' supaya aman.",
+            "br": true
+          },
+          {
+            "en": "Scientists say this game is good for children.",
+            "id": "Ilmuwan bilang permainan ini baik untuk anak-anak.",
+            "br": true
+          },
+          {
+            "en": "It helps them think, plan and work with others.",
+            "id": "Permainan ini membantu mereka berpikir, merencanakan, dan bekerja sama."
+          },
+          {
+            "en": "It is also free and needs no special toys.",
+            "id": "Permainan ini juga gratis dan tidak butuh mainan khusus."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is hide and seek called in Indonesia?",
+            "qId": "Apa nama petak umpet di Indonesia?",
+            "options": [
+              "Petak umpet",
+              "Home tree",
+              "Seeker"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "In some countries, what must the seeker do before counting?",
+            "qId": "Di beberapa negara, apa yang harus dilakukan penjaga sebelum menghitung?",
+            "options": [
+              "Touch a 'home' tree",
+              "Run home",
+              "Close the door"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How can hidden players be safe in some countries?",
+            "qId": "Bagaimana pemain bisa aman di beberapa negara?",
+            "options": [
+              "By running 'home'",
+              "By hiding in trees",
+              "By counting to twenty"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "According to scientists, how does the game help children?",
+            "qId": "Menurut ilmuwan, bagaimana permainan ini membantu anak?",
+            "options": [
+              "It helps them think, plan and work with others.",
+              "It helps them run faster than adults.",
+              "It helps them sleep better."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why is the game easy to play anywhere?",
+            "qId": "Kenapa permainan ini mudah dimainkan di mana saja?",
+            "options": [
+              "It is free and needs no special toys.",
+              "It is played only in parks.",
+              "It needs only two players."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'tugas-sekolah-online',
-    title: 'Tugas Sekolah Online (Online Homework)',
-    scene: '💻',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Farah has an English homework assignment due tomorrow.', 'She turns on her computer to start researching.'], id: 'Farah punya tugas Bahasa Inggris yang harus dikumpulkan besok. Dia menyalakan komputernya untuk mulai mencari informasi.' },
-      { passage: ['She opens the internet and searches for information about volcanoes.', 'She finds a helpful website with pictures and facts.'], id: 'Dia membuka internet dan mencari informasi tentang gunung berapi. Dia menemukan situs web yang membantu dengan gambar dan fakta.' },
-    ],
-    drill: [
+    "id": "tugas-sekolah-online",
+    "title": "Tugas Sekolah Online (Online Homework)",
+    "scene": "💻",
+    "desc": "Diary, aturan, email & artikel",
+    "texts": [
       {
-        passage: ['Farah types her password to log into the school’s online portal.', 'She types it wrong twice before getting it right.'],
-        id: 'Farah mengetik kata sandinya untuk masuk ke portal daring sekolah. Dia mengetiknya salah dua kali sebelum akhirnya benar.',
-        question: 'How many times does Farah type her password wrong?',
-        questionId: 'Berapa kali Farah salah mengetik kata sandinya?',
-        opts: [{ emoji: '2️⃣', lbl: 'Two', ok: true }, { emoji: '1️⃣', lbl: 'One' }, { emoji: '3️⃣', lbl: 'Three' }],
+        "genre": "diary",
+        "heading": "📔 My Online Homework",
+        "lines": [
+          {
+            "en": "Today our teacher gave us homework on the school website.",
+            "id": "Hari ini guru memberi PR lewat situs sekolah."
+          },
+          {
+            "en": "We had to watch a video about the water cycle.",
+            "id": "Kami harus menonton video tentang siklus air."
+          },
+          {
+            "en": "Then we answered ten questions online.",
+            "id": "Lalu kami menjawab sepuluh soal secara online."
+          },
+          {
+            "en": "At first, I couldn't log in because I forgot my password.",
+            "id": "Awalnya aku tidak bisa masuk karena lupa kata sandi.",
+            "br": true
+          },
+          {
+            "en": "My sister helped me reset it with Mom's email.",
+            "id": "Kakakku membantuku mengatur ulang dengan email Ibu."
+          },
+          {
+            "en": "It took twenty minutes, so I was a little stressed.",
+            "id": "Butuh dua puluh menit, jadi aku agak tegang."
+          },
+          {
+            "en": "In the end, I finished all the questions before dinner.",
+            "id": "Akhirnya, aku menyelesaikan semua soal sebelum makan malam.",
+            "br": true
+          },
+          {
+            "en": "I got nine out of ten!",
+            "id": "Aku dapat nilai sembilan dari sepuluh!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What was the video about?",
+            "qId": "Video itu tentang apa?",
+            "options": [
+              "The water cycle",
+              "Space",
+              "Healthy food"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why couldn't the writer log in at first?",
+            "qId": "Kenapa penulis awalnya tidak bisa masuk?",
+            "options": [
+              "They forgot their password.",
+              "The website was closed.",
+              "The computer was broken."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who helped the writer?",
+            "qId": "Siapa yang membantu penulis?",
+            "options": [
+              "Their sister",
+              "Their teacher",
+              "Their dad"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How did the writer feel while fixing the problem?",
+            "qId": "Bagaimana perasaan penulis saat memperbaiki masalahnya?",
+            "options": [
+              "A little stressed",
+              "Very happy",
+              "Very sleepy"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What was the writer's score?",
+            "qId": "Berapa nilai penulis?",
+            "options": [
+              "Nine out of ten",
+              "Ten out of ten",
+              "Five out of ten"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          6
+        ]
       },
       {
-        passage: ['Farah downloads a picture of a volcano to use in her homework.', 'She also uploads her finished essay to the school portal.'],
-        id: 'Farah mengunduh gambar gunung berapi untuk dipakai di tugasnya. Dia juga mengunggah esainya yang sudah selesai ke portal sekolah.',
-        question: 'What does Farah upload to the school portal?',
-        questionId: 'Apa yang diunggah Farah ke portal sekolah?',
-        opts: [{ emoji: '📝', lbl: 'Her essay', ok: true }, { emoji: '🖼️', lbl: 'A picture' }, { emoji: '🎬', lbl: 'A video' }],
+        "genre": "sign",
+        "heading": "💻 Online Safety Rules",
+        "lines": [
+          {
+            "en": "Online Safety Rules for Students",
+            "id": "Aturan Aman Online untuk Siswa"
+          },
+          {
+            "en": "Never tell anyone your password, even your friends.",
+            "id": "Jangan beri tahu kata sandimu ke siapa pun, bahkan temanmu."
+          },
+          {
+            "en": "Don't share photos of yourself without asking a parent.",
+            "id": "Jangan bagikan fotomu tanpa izin orang tua."
+          },
+          {
+            "en": "If a message makes you feel bad, tell an adult.",
+            "id": "Kalau ada pesan yang membuatmu tidak nyaman, beri tahu orang dewasa.",
+            "br": true
+          },
+          {
+            "en": "Only use websites your teacher gives you.",
+            "id": "Hanya pakai situs yang diberikan gurumu."
+          },
+          {
+            "en": "Take a break from the screen every 30 minutes.",
+            "id": "Istirahatkan mata dari layar setiap 30 menit."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who can you tell your password to?",
+            "qId": "Kepada siapa kamu boleh memberi tahu kata sandi?",
+            "options": [
+              "Nobody",
+              "Your friends",
+              "Your classmates"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What should you do before sharing a photo of yourself?",
+            "qId": "Apa yang harus kamu lakukan sebelum membagikan fotomu?",
+            "options": [
+              "Ask a parent",
+              "Ask a friend",
+              "Nothing"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What should you do if a message makes you feel bad?",
+            "qId": "Apa yang harus kamu lakukan kalau pesan membuatmu tidak nyaman?",
+            "options": [
+              "Tell an adult",
+              "Delete your account",
+              "Send a message back"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How often should you take a break?",
+            "qId": "Seberapa sering kamu harus istirahat?",
+            "options": [
+              "Every 30 minutes",
+              "Every 3 hours",
+              "Once a day"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Who are these rules for?",
+            "qId": "Aturan ini untuk siapa?",
+            "options": [
+              "Students",
+              "Teachers only",
+              "Parents only"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Mr. Rudi · To: Class 5B · Subject: Science project",
+        "lines": [
+          {
+            "en": "Hello Class 5B,",
+            "id": "Halo Kelas 5B,"
+          },
+          {
+            "en": "Your science project is due next Monday.",
+            "id": "Proyek IPA kalian dikumpulkan Senin depan."
+          },
+          {
+            "en": "Please make a short video about a plant in your home.",
+            "id": "Buatlah video pendek tentang tanaman di rumahmu."
+          },
+          {
+            "en": "The video should be two or three minutes long.",
+            "id": "Panjang videonya dua atau tiga menit.",
+            "br": true
+          },
+          {
+            "en": "Upload it to the class folder, not to social media.",
+            "id": "Unggah ke folder kelas, bukan ke media sosial."
+          },
+          {
+            "en": "If you don't have a phone, you can draw a poster instead.",
+            "id": "Kalau tidak punya ponsel, kamu boleh menggambar poster."
+          },
+          {
+            "en": "I can't wait to see your work! Mr. Rudi",
+            "id": "Bapak tidak sabar melihat karya kalian! Pak Rudi",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "When is the project due?",
+            "qId": "Kapan proyeknya dikumpulkan?",
+            "options": [
+              "Next Monday",
+              "Today",
+              "Next Friday"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What should the video be about?",
+            "qId": "Video itu tentang apa?",
+            "options": [
+              "A plant in your home",
+              "Your family",
+              "A school trip"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How long should the video be?",
+            "qId": "Berapa panjang videonya?",
+            "options": [
+              "Two or three minutes",
+              "Ten minutes",
+              "Thirty seconds"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where should students upload the video?",
+            "qId": "Di mana siswa mengunggah videonya?",
+            "options": [
+              "To the class folder",
+              "To social media",
+              "To Mr. Rudi's phone"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What can students without a phone do?",
+            "qId": "Apa yang bisa dilakukan siswa tanpa ponsel?",
+            "options": [
+              "Draw a poster",
+              "Skip the project",
+              "Borrow Mr. Rudi's phone"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'Just as Farah finishes typing the last paragraph, her screen suddenly turns black.',
-      'She waits a few seconds, but the computer does not turn back on.',
-      'Farah remembers she forgot to save her work before the screen went black.',
-      'She sighs and starts typing the whole essay again from memory.',
-    ],
-    storyId: 'Persis saat Farah selesai mengetik paragraf terakhir, layarnya tiba-tiba menghitam. Dia menunggu beberapa detik, tapi komputernya tidak menyala kembali. Farah ingat dia lupa menyimpan pekerjaannya sebelum layarnya menghitam. Dia menghela napas dan mulai mengetik ulang seluruh esainya dari ingatan.',
-    question: {
-      text: 'Why does Farah have to type her essay again?',
-      id: 'Kenapa Farah harus mengetik esainya lagi?',
-      opts: [{ emoji: '💾', lbl: 'She did not save her work before the computer turned off', ok: true }, { emoji: '🌋', lbl: 'She wrote about the wrong topic' }, { emoji: '🔑', lbl: 'She forgot her password again' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Learning Online: Good and Bad",
+        "lines": [
+          {
+            "en": "Many schools now give homework online.",
+            "id": "Banyak sekolah kini memberi PR secara online."
+          },
+          {
+            "en": "This has some good points.",
+            "id": "Ini punya beberapa kelebihan."
+          },
+          {
+            "en": "Students can learn at their own speed and watch videos again.",
+            "id": "Siswa bisa belajar sesuai kecepatannya dan menonton video berulang."
+          },
+          {
+            "en": "However, not every family has a good internet connection.",
+            "id": "Tapi, tidak semua keluarga punya koneksi internet yang baik.",
+            "br": true
+          },
+          {
+            "en": "Some students also find it hard to focus at home.",
+            "id": "Sebagian siswa juga sulit fokus di rumah."
+          },
+          {
+            "en": "Teachers say the best way is to mix online and paper homework.",
+            "id": "Guru bilang cara terbaik adalah mencampur PR online dan PR kertas.",
+            "br": true
+          },
+          {
+            "en": "That way, everyone can take part.",
+            "id": "Dengan begitu, semua bisa ikut."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is one good point of online homework?",
+            "qId": "Apa satu kelebihan PR online?",
+            "options": [
+              "Students can learn at their own speed.",
+              "It is always free.",
+              "It is always shorter."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What problem do some families have?",
+            "qId": "Masalah apa yang dialami sebagian keluarga?",
+            "options": [
+              "A bad internet connection",
+              "Too many books",
+              "No teachers"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why do some students find it hard at home?",
+            "qId": "Kenapa sebagian siswa kesulitan di rumah?",
+            "options": [
+              "They find it hard to focus.",
+              "They have no desk.",
+              "They have no homework."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What do teachers think is best?",
+            "qId": "Menurut guru, apa yang terbaik?",
+            "options": [
+              "A mix of online and paper homework",
+              "Only online homework",
+              "No homework at all"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why is that way best?",
+            "qId": "Kenapa cara itu yang terbaik?",
+            "options": [
+              "Everyone can take part.",
+              "It is faster.",
+              "Teachers work less."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'murid-baru-di-kelas',
-    title: 'Murid Baru di Kelas (The New Student)',
-    scene: '🧑‍🎓',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['A new student named Kevin joins Ayu’s class this week.', 'He sits quietly at the back on his first day.'], id: 'Seorang murid baru bernama Kevin bergabung ke kelas Ayu minggu ini. Dia duduk diam di belakang di hari pertamanya.' },
-      { passage: ['Ayu wonders what Kevin is really like.', 'She decides to say hello during recess.'], id: 'Ayu penasaran seperti apa sebenarnya Kevin. Dia memutuskan untuk menyapa saat istirahat.' },
-    ],
-    drill: [
+    "id": "murid-baru-di-kelas",
+    "title": "Murid Baru di Kelas (The New Student)",
+    "scene": "🙋",
+    "desc": "Cerita, catatan guru, pesan & artikel",
+    "texts": [
       {
-        passage: ['At recess, Ayu offers Kevin half of her sandwich.', 'Kevin smiles and thanks her politely before eating it.'],
-        id: 'Saat istirahat, Ayu menawarkan Kevin setengah sandwichnya. Kevin tersenyum dan berterima kasih dengan sopan sebelum memakannya.',
-        question: 'What does Ayu offer Kevin?',
-        questionId: 'Apa yang ditawarkan Ayu ke Kevin?',
-        opts: [{ emoji: '🥪', lbl: 'Half of her sandwich', ok: true }, { emoji: '🥤', lbl: 'Her drink' }, { emoji: '✏️', lbl: 'Her pencil' }],
+        "genre": "story",
+        "heading": "🙋 The New Student",
+        "lines": [
+          {
+            "en": "On Monday, a new girl joined Class 6A.",
+            "id": "Hari Senin, seorang murid perempuan baru masuk Kelas 6A."
+          },
+          {
+            "en": "Her name was Aisha, and she came from Makassar.",
+            "id": "Namanya Aisha, dan dia dari Makassar."
+          },
+          {
+            "en": "She looked shy and sat alone at the back.",
+            "id": "Dia tampak pemalu dan duduk sendirian di belakang."
+          },
+          {
+            "en": "At break time, Putri noticed that Aisha had no snack.",
+            "id": "Saat istirahat, Putri melihat Aisha tidak membawa camilan.",
+            "br": true
+          },
+          {
+            "en": "She shared her banana cake with her.",
+            "id": "Dia berbagi kue pisangnya dengan Aisha."
+          },
+          {
+            "en": "Aisha smiled for the first time that day.",
+            "id": "Aisha tersenyum untuk pertama kalinya hari itu."
+          },
+          {
+            "en": "They talked about their favourite books.",
+            "id": "Mereka mengobrol tentang buku favorit.",
+            "br": true
+          },
+          {
+            "en": "After school, Putri showed her the way to the bus stop.",
+            "id": "Sepulang sekolah, Putri menunjukkan jalan ke halte."
+          },
+          {
+            "en": "Now they walk home together every day.",
+            "id": "Sekarang mereka pulang bersama setiap hari."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where did Aisha come from?",
+            "qId": "Aisha berasal dari mana?",
+            "options": [
+              "Makassar",
+              "Jakarta",
+              "Bandung"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How did Aisha seem at first?",
+            "qId": "Aisha tampak seperti apa awalnya?",
+            "options": [
+              "Shy",
+              "Angry",
+              "Noisy"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did Putri notice?",
+            "qId": "Apa yang Putri perhatikan?",
+            "options": [
+              "Aisha had no snack.",
+              "Aisha had no book.",
+              "Aisha was lost."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "In 'She shared her banana cake with her', who shared the cake?",
+            "qId": "Dalam 'She shared her banana cake with her', siapa yang berbagi kue?",
+            "options": [
+              "Putri",
+              "Aisha",
+              "The teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "What is true now?",
+            "qId": "Apa yang benar sekarang?",
+            "options": [
+              "They walk home together every day.",
+              "Aisha moved back to Makassar.",
+              "Putri changed classes."
+            ],
+            "answer": 0,
+            "evidence": [
+              8
+            ]
+          }
+        ],
+        "sequence": [
+          0,
+          3,
+          7
+        ]
       },
       {
-        passage: ['A boy accidentally drops his books all over the hallway.', 'Kevin immediately kneels down and helps pick everything up.'],
-        id: 'Seorang anak laki-laki tidak sengaja menjatuhkan buku-bukunya di lorong. Kevin langsung berlutut dan membantu mengambil semuanya.',
-        question: 'What does Kevin do when the boy drops his books?',
-        questionId: 'Apa yang dilakukan Kevin saat anak itu menjatuhkan bukunya?',
-        opts: [{ emoji: '🤝', lbl: 'Helps pick them up', ok: true }, { emoji: '😂', lbl: 'Laughs at him' }, { emoji: '👣', lbl: 'Walks away' }],
+        "genre": "note",
+        "heading": "📝 A Note from Mrs. Tan",
+        "lines": [
+          {
+            "en": "Dear Class 6A,",
+            "id": "Kelas 6A yang baik,"
+          },
+          {
+            "en": "Tomorrow a new student, Aisha, will join our class.",
+            "id": "Besok murid baru, Aisha, akan bergabung di kelas kita."
+          },
+          {
+            "en": "She moved here because her dad has a new job.",
+            "id": "Dia pindah ke sini karena ayahnya mendapat pekerjaan baru."
+          },
+          {
+            "en": "Please make her feel welcome.",
+            "id": "Tolong buat dia merasa diterima.",
+            "br": true
+          },
+          {
+            "en": "Putri, can you show her around the school?",
+            "id": "Putri, bisa ajak dia berkeliling sekolah?"
+          },
+          {
+            "en": "Everyone, please tell her your names and say hello.",
+            "id": "Semua, tolong sebutkan nama kalian dan sapa dia."
+          },
+          {
+            "en": "Remember how it felt when you were new! Mrs. Tan",
+            "id": "Ingat bagaimana rasanya waktu kalian masih baru! Bu Tan",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why did Aisha move?",
+            "qId": "Kenapa Aisha pindah?",
+            "options": [
+              "Her dad has a new job.",
+              "She wanted a new school.",
+              "Her family went on holiday."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What does Mrs. Tan ask Putri to do?",
+            "qId": "Bu Tan meminta Putri melakukan apa?",
+            "options": [
+              "Show Aisha around the school",
+              "Share her snack",
+              "Sit at the back"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What should everyone do?",
+            "qId": "Apa yang harus dilakukan semua?",
+            "options": [
+              "Tell Aisha their names and say hello",
+              "Give Aisha a gift",
+              "Write Aisha a letter"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does 'Remember how it felt when you were new' mean?",
+            "qId": "Apa maksud 'Ingat bagaimana rasanya waktu kalian masih baru'?",
+            "options": [
+              "Think about how Aisha feels",
+              "Remember your first teacher",
+              "Remember your old school"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "Who wrote this note?",
+            "qId": "Siapa yang menulis catatan ini?",
+            "options": [
+              "Mrs. Tan",
+              "Putri",
+              "Aisha"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "message",
+        "heading": "💬 Aisha",
+        "lines": [
+          {
+            "en": "Hi Putri! Thank you for helping me this week.",
+            "id": "Hai Putri! Terima kasih sudah membantuku minggu ini."
+          },
+          {
+            "en": "I was really nervous on my first day.",
+            "id": "Aku sangat gugup di hari pertama."
+          },
+          {
+            "en": "In Makassar, my old school was much smaller.",
+            "id": "Di Makassar, sekolah lamaku jauh lebih kecil."
+          },
+          {
+            "en": "Here, I got lost twice looking for the library!",
+            "id": "Di sini, aku dua kali tersesat mencari perpustakaan!",
+            "br": true
+          },
+          {
+            "en": "But now I know the way.",
+            "id": "Tapi sekarang aku sudah tahu jalannya."
+          },
+          {
+            "en": "Can we go to the library together on Friday?",
+            "id": "Bisa kita ke perpustakaan bareng hari Jumat?",
+            "br": true
+          },
+          {
+            "en": "I want to borrow the book you told me about.",
+            "id": "Aku ingin meminjam buku yang kamu ceritakan."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why is Aisha writing?",
+            "qId": "Kenapa Aisha menulis pesan ini?",
+            "options": [
+              "To thank Putri",
+              "To say sorry",
+              "To invite Putri to a party"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How was her old school different?",
+            "qId": "Apa bedanya sekolah lamanya?",
+            "options": [
+              "It was much smaller.",
+              "It was much bigger.",
+              "It had no library."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Why did Aisha get lost?",
+            "qId": "Kenapa Aisha tersesat?",
+            "options": [
+              "She was looking for the library.",
+              "She took the wrong bus.",
+              "She went to the wrong class."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does 'the way' mean in 'now I know the way'?",
+            "qId": "Apa maksud 'the way' dalam 'now I know the way'?",
+            "options": [
+              "How to get to the library",
+              "How to get to Makassar",
+              "How to use the computer"
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "What does Aisha want to borrow?",
+            "qId": "Apa yang ingin Aisha pinjam?",
+            "options": [
+              "The book Putri told her about",
+              "Putri's bag",
+              "A computer"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'After school, Ayu tells her mom about the new student.',
-      'She describes how Kevin shared his snack with a hungry classmate, and how he helped clean up the classroom without being asked.',
-      'Ayu also remembers Kevin patiently explaining a math problem to a confused classmate three times.',
-      'Her mom smiles and asks if Ayu has made a new friend.',
-    ],
-    storyId: 'Sepulang sekolah, Ayu bercerita ke ibunya tentang murid baru itu. Dia menceritakan bagaimana Kevin berbagi camilannya dengan teman sekelas yang lapar, dan bagaimana dia membantu membersihkan kelas tanpa diminta. Ayu juga ingat Kevin dengan sabar menjelaskan soal matematika ke teman sekelas yang bingung sampai tiga kali. Ibunya tersenyum dan bertanya apakah Ayu sudah punya teman baru.',
-    question: {
-      text: 'What kind of personality does Kevin most likely have?',
-      id: 'Kira-kira, kepribadian Kevin itu seperti apa?',
-      opts: [{ emoji: '🤗', lbl: 'Kind and helpful', ok: true }, { emoji: '😠', lbl: 'Angry and rude' }, { emoji: '😴', lbl: 'Lazy and careless' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Tips for Your First Day at a New School",
+        "lines": [
+          {
+            "en": "Starting at a new school can feel scary.",
+            "id": "Mulai di sekolah baru bisa terasa menegangkan."
+          },
+          {
+            "en": "Here are some tips to make it easier.",
+            "id": "Ini beberapa tips supaya lebih mudah."
+          },
+          {
+            "en": "First, arrive early so you can find your classroom.",
+            "id": "Pertama, datang lebih awal supaya bisa menemukan kelasmu."
+          },
+          {
+            "en": "Second, smile and say hello to the people near you.",
+            "id": "Kedua, tersenyum dan sapa orang di dekatmu.",
+            "br": true
+          },
+          {
+            "en": "Most students are friendly, even if they seem busy.",
+            "id": "Kebanyakan siswa ramah, walaupun kelihatan sibuk."
+          },
+          {
+            "en": "Finally, join a club or a team.",
+            "id": "Terakhir, ikuti klub atau tim.",
+            "br": true
+          },
+          {
+            "en": "It's the fastest way to make new friends.",
+            "id": "Itu cara tercepat mendapat teman baru."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why should you arrive early?",
+            "qId": "Kenapa kamu harus datang lebih awal?",
+            "options": [
+              "To find your classroom",
+              "To eat breakfast",
+              "To meet the head teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What should you do with people near you?",
+            "qId": "Apa yang harus kamu lakukan pada orang di dekatmu?",
+            "options": [
+              "Smile and say hello",
+              "Ask for their snacks",
+              "Sit away from them"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "According to the writer, what are most students like?",
+            "qId": "Menurut penulis, kebanyakan siswa seperti apa?",
+            "options": [
+              "Friendly",
+              "Unfriendly",
+              "Shy"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why should you join a club?",
+            "qId": "Kenapa kamu sebaiknya ikut klub?",
+            "options": [
+              "To make friends quickly",
+              "To finish homework",
+              "To get a prize"
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "Who is this article for?",
+            "qId": "Artikel ini untuk siapa?",
+            "options": [
+              "Students starting a new school",
+              "Teachers",
+              "Parents looking for a school"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'memilih-proyek-sekolah',
-    title: 'Memilih Proyek Sekolah (Choosing a School Project)',
-    scene: '🔬',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['This semester, students can choose one subject for their big project.', 'Fajri looks at the list: Science, Art, History, and Music.'], id: 'Semester ini, murid bisa memilih satu mata pelajaran untuk proyek besar mereka. Fajri melihat daftarnya: Sains, Seni, Sejarah, dan Musik.' },
-      { passage: ['His best friend Ilham already picked Music because he loves singing.', 'Fajri is still not sure what to choose.'], id: 'Sahabatnya, Ilham, sudah memilih Musik karena dia suka bernyanyi. Fajri masih belum yakin harus memilih apa.' },
-    ],
-    drill: [
+    "id": "memilih-proyek-sekolah",
+    "title": "Memilih Proyek Sekolah (Choosing a School Project)",
+    "scene": "🔬",
+    "desc": "Cerita, aturan, diary & email",
+    "texts": [
       {
-        passage: ['Fajri really enjoys mixing chemicals safely in Science class.', 'But he also loves drawing comic characters during Art class.'],
-        id: 'Fajri sangat senang mencampur bahan kimia dengan aman di kelas Sains. Tapi dia juga suka menggambar karakter komik saat kelas Seni.',
-        question: 'What does Fajri enjoy doing in Science class?',
-        questionId: 'Apa yang disukai Fajri di kelas Sains?',
-        opts: [{ emoji: '🧪', lbl: 'Mixing chemicals', ok: true }, { emoji: '🎨', lbl: 'Drawing' }, { emoji: '🎵', lbl: 'Singing' }],
+        "genre": "story",
+        "heading": "🔬 Choosing a Project",
+        "lines": [
+          {
+            "en": "Mr. Adi asked everyone to choose a science project.",
+            "id": "Pak Adi meminta semua memilih proyek IPA."
+          },
+          {
+            "en": "Farah wanted to grow beans in different kinds of light.",
+            "id": "Farah ingin menanam kacang dengan jenis cahaya berbeda."
+          },
+          {
+            "en": "Her friend Leo wanted to build a small volcano.",
+            "id": "Temannya, Leo, ingin membuat gunung api kecil."
+          },
+          {
+            "en": "They couldn't decide, so they asked Mr. Adi for advice.",
+            "id": "Mereka tidak bisa memutuskan, jadi mereka minta saran Pak Adi.",
+            "br": true
+          },
+          {
+            "en": "He said the bean project would take three weeks.",
+            "id": "Katanya proyek kacang butuh tiga minggu."
+          },
+          {
+            "en": "The volcano would take only one day, but it could be messy.",
+            "id": "Gunung api cuma butuh sehari, tapi bisa berantakan."
+          },
+          {
+            "en": "In the end, they chose the beans.",
+            "id": "Akhirnya, mereka memilih kacang.",
+            "br": true
+          },
+          {
+            "en": "They wanted time to watch the plants grow.",
+            "id": "Mereka ingin punya waktu melihat tanamannya tumbuh."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What did Leo want to build?",
+            "qId": "Apa yang ingin Leo buat?",
+            "options": [
+              "A small volcano",
+              "A robot",
+              "A garden"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Why did they ask Mr. Adi?",
+            "qId": "Kenapa mereka bertanya pada Pak Adi?",
+            "options": [
+              "They couldn't decide.",
+              "They lost their beans.",
+              "They needed money."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How long would the bean project take?",
+            "qId": "Berapa lama proyek kacang?",
+            "options": [
+              "Three weeks",
+              "One day",
+              "Three days"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What was the problem with the volcano?",
+            "qId": "Apa masalah proyek gunung api?",
+            "options": [
+              "It could be messy.",
+              "It would take three weeks.",
+              "It was too expensive."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why did they choose the beans?",
+            "qId": "Kenapa mereka memilih kacang?",
+            "options": [
+              "They wanted to watch the plants grow.",
+              "It was faster.",
+              "Mr. Adi told them to."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          6
+        ]
       },
       {
-        passage: ['His teacher says the Science project needs a lot of extra time after school.', 'The Art project can be finished mostly during class hours.'],
-        id: 'Gurunya bilang proyek Sains butuh banyak waktu tambahan setelah sekolah. Proyek Seni bisa diselesaikan hampir semuanya saat jam pelajaran.',
-        question: 'Which project needs more extra time after school?',
-        questionId: 'Proyek mana yang butuh lebih banyak waktu tambahan setelah sekolah?',
-        opts: [{ emoji: '🔬', lbl: 'Science', ok: true }, { emoji: '🎨', lbl: 'Art' }, { emoji: '🎵', lbl: 'Music' }],
+        "genre": "sign",
+        "heading": "📌 Science Fair Rules",
+        "lines": [
+          {
+            "en": "Class 6 Science Fair: Friday, 21 March",
+            "id": "Pameran IPA Kelas 6: Jumat, 21 Maret"
+          },
+          {
+            "en": "Work in pairs or in groups of three.",
+            "id": "Kerjakan berdua atau bertiga."
+          },
+          {
+            "en": "Your project must answer one clear question.",
+            "id": "Proyekmu harus menjawab satu pertanyaan yang jelas."
+          },
+          {
+            "en": "You must record your results in a notebook.",
+            "id": "Kamu harus mencatat hasilnya di buku catatan.",
+            "br": true
+          },
+          {
+            "en": "Projects with fire or sharp tools need a teacher's help.",
+            "id": "Proyek dengan api atau alat tajam perlu bantuan guru."
+          },
+          {
+            "en": "Prizes for the most creative idea and the best teamwork!",
+            "id": "Hadiah untuk ide paling kreatif dan kerja sama terbaik!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many students can work together?",
+            "qId": "Berapa siswa boleh bekerja bersama?",
+            "options": [
+              "Two or three",
+              "Only one",
+              "Five or more"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What must every project do?",
+            "qId": "Apa yang harus dilakukan setiap proyek?",
+            "options": [
+              "Answer one clear question",
+              "Use fire",
+              "Win a prize"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where should you write your results?",
+            "qId": "Di mana kamu mencatat hasilnya?",
+            "options": [
+              "In a notebook",
+              "On the wall",
+              "On your phone"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Which projects need a teacher's help?",
+            "qId": "Proyek mana yang perlu bantuan guru?",
+            "options": [
+              "Ones with fire or sharp tools",
+              "Ones with plants",
+              "Ones with notebooks"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What are the prizes for?",
+            "qId": "Hadiahnya untuk apa?",
+            "options": [
+              "The most creative idea and the best teamwork",
+              "The biggest project",
+              "The fastest group"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "diary",
+        "heading": "📔 Farah's Bean Diary",
+        "lines": [
+          {
+            "en": "Week 1: We planted six beans in three pots.",
+            "id": "Minggu 1: Kami menanam enam kacang di tiga pot."
+          },
+          {
+            "en": "The first pot is by the window.",
+            "id": "Pot pertama di dekat jendela."
+          },
+          {
+            "en": "The second is in a dark cupboard, and the third is under a lamp.",
+            "id": "Pot kedua di lemari gelap, dan yang ketiga di bawah lampu."
+          },
+          {
+            "en": "Week 2: The window beans are the tallest!",
+            "id": "Minggu 2: Kacang di jendela paling tinggi!",
+            "br": true
+          },
+          {
+            "en": "The cupboard beans are thin and yellow.",
+            "id": "Kacang di lemari kurus dan kuning."
+          },
+          {
+            "en": "Week 3: The lamp beans are green, but shorter than the window beans.",
+            "id": "Minggu 3: Kacang di bawah lampu hijau, tapi lebih pendek dari kacang di jendela.",
+            "br": true
+          },
+          {
+            "en": "Our answer: plants grow best in sunlight.",
+            "id": "Jawaban kami: tanaman tumbuh paling baik di bawah sinar matahari."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many pots did they use?",
+            "qId": "Berapa pot yang mereka pakai?",
+            "options": [
+              "Three",
+              "Six",
+              "Two"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where was the second pot?",
+            "qId": "Di mana pot kedua?",
+            "options": [
+              "In a dark cupboard",
+              "By the window",
+              "Under a lamp"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Which beans grew the tallest?",
+            "qId": "Kacang mana yang paling tinggi?",
+            "options": [
+              "The window beans",
+              "The lamp beans",
+              "The cupboard beans"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What were the cupboard beans like?",
+            "qId": "Kacang di lemari seperti apa?",
+            "options": [
+              "Thin and yellow",
+              "Tall and green",
+              "Short and green"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What did they learn?",
+            "qId": "Apa yang mereka pelajari?",
+            "options": [
+              "Plants grow best in sunlight.",
+              "Plants need no light.",
+              "Lamps are better than the sun."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'That evening, Fajri remembers he also plays football practice three times a week after school.',
-      'He counts his afternoons on his fingers and realizes he barely has any free time left.',
-      'He thinks about the comic characters he has already sketched in his notebook this week.',
-      'The next morning, Fajri walks to the sign-up sheet and writes his name under one subject.',
-    ],
-    storyId: 'Malam itu, Fajri ingat dia juga latihan sepak bola tiga kali seminggu setelah sekolah. Dia menghitung sore harinya dengan jarinya dan sadar dia hampir tidak punya waktu luang lagi. Dia memikirkan karakter komik yang sudah dia sketsa di buku catatannya minggu ini. Keesokan paginya, Fajri berjalan ke daftar pendaftaran dan menulis namanya di bawah satu mata pelajaran.',
-    question: {
-      text: 'Which project does Fajri most likely choose?',
-      id: 'Proyek mana yang kemungkinan besar dipilih Fajri?',
-      opts: [{ emoji: '🎨', lbl: 'Art', ok: true }, { emoji: '🔬', lbl: 'Science' }, { emoji: '🎵', lbl: 'Music' }],
-    },
+      {
+        "genre": "email",
+        "heading": "✉️ From: Leo · To: Farah · Subject: We won!",
+        "lines": [
+          {
+            "en": "Hi Farah!",
+            "id": "Hai Farah!"
+          },
+          {
+            "en": "Guess what? Our bean project won the prize for best teamwork!",
+            "id": "Coba tebak? Proyek kacang kita menang hadiah kerja sama terbaik!"
+          },
+          {
+            "en": "Mr. Adi said our notebook was very clear.",
+            "id": "Pak Adi bilang buku catatan kita sangat jelas."
+          },
+          {
+            "en": "He liked the photos we took every week.",
+            "id": "Dia suka foto-foto yang kita ambil setiap minggu.",
+            "br": true
+          },
+          {
+            "en": "The prize is a small telescope.",
+            "id": "Hadiahnya teleskop kecil."
+          },
+          {
+            "en": "I think we should share it.",
+            "id": "Menurutku kita harus berbagi."
+          },
+          {
+            "en": "You can keep it this month, and I'll take it next month.",
+            "id": "Kamu simpan bulan ini, dan aku bulan depan.",
+            "br": true
+          },
+          {
+            "en": "See you tomorrow! Leo",
+            "id": "Sampai jumpa besok! Leo"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Which prize did they win?",
+            "qId": "Hadiah apa yang mereka menangkan?",
+            "options": [
+              "Best teamwork",
+              "Most creative idea",
+              "Biggest plants"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did Mr. Adi say about their notebook?",
+            "qId": "Apa kata Pak Adi tentang buku catatan mereka?",
+            "options": [
+              "It was very clear.",
+              "It was too short.",
+              "It was lost."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did Mr. Adi like?",
+            "qId": "Apa yang disukai Pak Adi?",
+            "options": [
+              "The weekly photos",
+              "The volcano",
+              "The lamp"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What is the prize?",
+            "qId": "Apa hadiahnya?",
+            "options": [
+              "A small telescope",
+              "A notebook",
+              "A plant pot"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How does Leo want to share the prize?",
+            "qId": "Bagaimana Leo ingin berbagi hadiahnya?",
+            "options": [
+              "They each keep it for a month.",
+              "Leo keeps it forever.",
+              "They give it to Mr. Adi."
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'menggalang-dana-sekolah',
-    title: 'Menggalang Dana Sekolah (School Fundraiser)',
-    scene: '💰',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Ayu’s class is raising money for a school library project.', 'They sell homemade cookies during recess.'], id: 'Kelas Ayu sedang menggalang dana untuk proyek perpustakaan sekolah. Mereka menjual kue buatan sendiri saat istirahat.' },
-      { passage: ['Each cookie costs one thousand rupiah.', 'Ayu keeps track of the money in a small notebook.'], id: 'Setiap kue harganya seribu rupiah. Ayu mencatat uangnya di buku catatan kecil.' },
-    ],
-    drill: [
+    "id": "menggalang-dana-sekolah",
+    "title": "Menggalang Dana Sekolah (School Fundraiser)",
+    "scene": "💰",
+    "desc": "Cerita, poster, email & artikel",
+    "texts": [
       {
-        passage: ['On Monday, the class sells forty cookies and raises forty thousand rupiah.', 'On Tuesday, they sell fifty cookies instead.'],
-        id: 'Hari Senin, kelas menjual empat puluh kue dan mengumpulkan empat puluh ribu rupiah. Hari Selasa, mereka menjual lima puluh kue.',
-        question: 'How many cookies does the class sell on Tuesday?',
-        questionId: 'Berapa kue yang dijual kelas hari Selasa?',
-        opts: [{ emoji: '5️⃣0️⃣', lbl: 'Fifty', ok: true }, { emoji: '4️⃣0️⃣', lbl: 'Forty' }, { emoji: '6️⃣0️⃣', lbl: 'Sixty' }],
+        "genre": "story",
+        "heading": "💰 Books for the Library",
+        "lines": [
+          {
+            "en": "Class 6B wanted to buy new books for the school library.",
+            "id": "Kelas 6B ingin membeli buku baru untuk perpustakaan sekolah."
+          },
+          {
+            "en": "They needed 1,500,000 rupiah.",
+            "id": "Mereka butuh 1.500.000 rupiah."
+          },
+          {
+            "en": "The class decided to hold a cake sale.",
+            "id": "Kelas itu memutuskan mengadakan bazar kue."
+          },
+          {
+            "en": "Every student baked something at home.",
+            "id": "Setiap siswa membuat kue di rumah.",
+            "br": true
+          },
+          {
+            "en": "On Friday, they sold cakes at break time.",
+            "id": "Hari Jumat, mereka menjual kue saat istirahat."
+          },
+          {
+            "en": "By the end of the day, they had 900,000 rupiah.",
+            "id": "Di akhir hari, terkumpul 900.000 rupiah."
+          },
+          {
+            "en": "The next week, they washed teachers' cars for 20,000 each.",
+            "id": "Minggu berikutnya, mereka mencuci mobil guru, 20.000 per mobil.",
+            "br": true
+          },
+          {
+            "en": "They washed thirty cars and reached their goal!",
+            "id": "Mereka mencuci tiga puluh mobil dan mencapai target!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why did Class 6B need money?",
+            "qId": "Kenapa Kelas 6B butuh uang?",
+            "options": [
+              "To buy library books",
+              "To go on a trip",
+              "To buy cakes"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How much did they make from the cake sale?",
+            "qId": "Berapa hasil bazar kuenya?",
+            "options": [
+              "900,000 rupiah",
+              "1,500,000 rupiah",
+              "20,000 rupiah"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What did they do the next week?",
+            "qId": "Apa yang mereka lakukan minggu berikutnya?",
+            "options": [
+              "They washed teachers' cars.",
+              "They sold more cakes.",
+              "They sold books."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How much did the car wash make?",
+            "qId": "Berapa hasil cuci mobil?",
+            "options": [
+              "600,000 rupiah",
+              "300,000 rupiah",
+              "900,000 rupiah"
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          },
+          {
+            "q": "Did they reach their goal?",
+            "qId": "Apakah mereka mencapai target?",
+            "options": [
+              "Yes, they did.",
+              "No, they needed more.",
+              "They stopped trying."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          3,
+          4,
+          6
+        ]
       },
       {
-        passage: ['By Wednesday, the total money collected reaches ninety thousand rupiah.', 'The teacher says they need one hundred thousand rupiah for the new bookshelf.'],
-        id: 'Sampai hari Rabu, total uang yang terkumpul mencapai sembilan puluh ribu rupiah. Gurunya bilang mereka butuh seratus ribu rupiah untuk rak buku baru.',
-        question: 'How much money do they need for the bookshelf?',
-        questionId: 'Berapa uang yang mereka butuhkan untuk rak buku?',
-        opts: [{ emoji: '💯', lbl: 'One hundred thousand', ok: true }, { emoji: '9️⃣0️⃣', lbl: 'Ninety thousand' }, { emoji: '8️⃣0️⃣', lbl: 'Eighty thousand' }],
+        "genre": "sign",
+        "heading": "🧁 Cake Sale Today!",
+        "lines": [
+          {
+            "en": "Class 6B Cake Sale: Friday at break time",
+            "id": "Bazar Kue Kelas 6B: Jumat saat istirahat"
+          },
+          {
+            "en": "All money goes to new library books.",
+            "id": "Semua uang untuk buku perpustakaan baru."
+          },
+          {
+            "en": "Cupcakes: 5,000 each",
+            "id": "Kue mangkuk: 5.000 per buah"
+          },
+          {
+            "en": "Banana bread: 8,000 a slice",
+            "id": "Roti pisang: 8.000 per potong",
+            "br": true
+          },
+          {
+            "en": "Cookies: 3 for 10,000",
+            "id": "Kue kering: 3 buah 10.000"
+          },
+          {
+            "en": "Buy any two items and get a free drink!",
+            "id": "Beli dua barang apa saja, gratis minuman!"
+          },
+          {
+            "en": "Please bring small change if you can.",
+            "id": "Kalau bisa, bawa uang pas atau uang kecil.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where does the money go?",
+            "qId": "Uangnya untuk apa?",
+            "options": [
+              "New library books",
+              "A class trip",
+              "New cakes"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How much is one cupcake?",
+            "qId": "Berapa harga satu kue mangkuk?",
+            "options": [
+              "5,000",
+              "8,000",
+              "10,000"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How many cookies can you get for 10,000?",
+            "qId": "Dapat berapa kue kering dengan 10.000?",
+            "options": [
+              "Three",
+              "One",
+              "Ten"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How can you get a free drink?",
+            "qId": "Bagaimana cara dapat minuman gratis?",
+            "options": [
+              "Buy any two items",
+              "Buy one cupcake",
+              "Bring small change"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why should buyers bring small change?",
+            "qId": "Kenapa pembeli sebaiknya bawa uang kecil?",
+            "options": [
+              "So the sellers can give change easily",
+              "Because big notes are not allowed",
+              "To get a free drink"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Mrs. Lestari · To: Class 6B · Subject: Thank you!",
+        "lines": [
+          {
+            "en": "Dear Class 6B,",
+            "id": "Kelas 6B yang baik,"
+          },
+          {
+            "en": "Thank you for your amazing work this month!",
+            "id": "Terima kasih atas kerja luar biasa kalian bulan ini!"
+          },
+          {
+            "en": "Because of you, the library now has 45 new books.",
+            "id": "Berkat kalian, perpustakaan sekarang punya 45 buku baru."
+          },
+          {
+            "en": "Some are about science, and others are adventure stories.",
+            "id": "Sebagian tentang IPA, sebagian lagi cerita petualangan.",
+            "br": true
+          },
+          {
+            "en": "We have put a sign inside each book.",
+            "id": "Kami menempelkan tanda di dalam setiap buku."
+          },
+          {
+            "en": "It says, 'A gift from Class 6B'.",
+            "id": "Isinya, 'Hadiah dari Kelas 6B'."
+          },
+          {
+            "en": "Students from other classes are already borrowing them.",
+            "id": "Siswa dari kelas lain sudah mulai meminjamnya.",
+            "br": true
+          },
+          {
+            "en": "I'm very proud of you. Mrs. Lestari, Librarian",
+            "id": "Ibu sangat bangga pada kalian. Bu Lestari, Pustakawan"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many new books does the library have?",
+            "qId": "Berapa buku baru di perpustakaan?",
+            "options": [
+              "45",
+              "15",
+              "6"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What kinds of books are they?",
+            "qId": "Buku apa saja itu?",
+            "options": [
+              "Science and adventure stories",
+              "Cookbooks and maps",
+              "Comics only"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does 'It' refer to in 'It says...'?",
+            "qId": "'It' dalam 'It says...' merujuk ke apa?",
+            "options": [
+              "The sign",
+              "The library",
+              "The email"
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "Who is borrowing the books?",
+            "qId": "Siapa yang meminjam buku-buku itu?",
+            "options": [
+              "Students from other classes",
+              "Only Class 6B",
+              "Only teachers"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How does Mrs. Lestari feel?",
+            "qId": "Bagaimana perasaan Bu Lestari?",
+            "options": [
+              "Proud",
+              "Worried",
+              "Bored"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'On Thursday morning, Ayu counts the money in the box very carefully.',
-      'She counts ninety thousand rupiah from before, plus ten new cookies sold that morning.',
-      'Each cookie is one thousand rupiah, so she adds the new money to the total.',
-      'Ayu jumps up excitedly and runs to tell her teacher the good news.',
-    ],
-    storyId: 'Kamis pagi, Ayu menghitung uang di kotak dengan sangat hati-hati. Dia menghitung sembilan puluh ribu rupiah dari sebelumnya, ditambah sepuluh kue baru yang terjual pagi itu. Setiap kue harganya seribu rupiah, jadi dia menambahkan uang barunya ke total. Ayu melompat kegirangan dan berlari memberi tahu gurunya kabar baiknya.',
-    question: {
-      text: 'Why is Ayu so excited?',
-      id: 'Kenapa Ayu sangat senang?',
-      opts: [{ emoji: '💯', lbl: 'They finally reached one hundred thousand rupiah', ok: true }, { emoji: '🍪', lbl: 'They ran out of cookies to sell' }, { emoji: '📚', lbl: 'The bookshelf arrived early' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 How to Plan a Fundraiser",
+        "lines": [
+          {
+            "en": "A fundraiser is an event to collect money for a good cause.",
+            "id": "Penggalangan dana adalah acara mengumpulkan uang untuk tujuan baik."
+          },
+          {
+            "en": "First, decide what the money is for and how much you need.",
+            "id": "Pertama, tentukan uangnya untuk apa dan berapa yang dibutuhkan."
+          },
+          {
+            "en": "Next, choose an activity people will enjoy, like a sale or a fun run.",
+            "id": "Lalu, pilih kegiatan yang disukai orang, seperti bazar atau lari santai.",
+            "br": true
+          },
+          {
+            "en": "Make posters so everyone knows the date and time.",
+            "id": "Buat poster supaya semua tahu tanggal dan jamnya."
+          },
+          {
+            "en": "On the day, keep the money safe with an adult.",
+            "id": "Di hari acara, simpan uangnya dengan aman bersama orang dewasa.",
+            "br": true
+          },
+          {
+            "en": "Finally, tell everyone how much you collected.",
+            "id": "Terakhir, beri tahu semua berapa yang terkumpul."
+          },
+          {
+            "en": "People like to know their money helped.",
+            "id": "Orang senang tahu uang mereka membantu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is a fundraiser?",
+            "qId": "Apa itu penggalangan dana?",
+            "options": [
+              "An event to collect money for a good cause",
+              "A party for teachers",
+              "A sale only for books"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What should you decide first?",
+            "qId": "Apa yang harus ditentukan pertama?",
+            "options": [
+              "What the money is for and how much you need",
+              "Which cakes to bake",
+              "Who will make posters"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why should you make posters?",
+            "qId": "Kenapa kamu harus membuat poster?",
+            "options": [
+              "So everyone knows the date and time",
+              "To sell them",
+              "To decorate the class"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who should help keep the money safe?",
+            "qId": "Siapa yang membantu menjaga uangnya?",
+            "options": [
+              "An adult",
+              "A friend",
+              "The buyers"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why should you tell everyone how much you collected?",
+            "qId": "Kenapa kamu harus memberi tahu hasilnya?",
+            "options": [
+              "People like to know their money helped.",
+              "It makes the event longer.",
+              "Teachers ask for it."
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          }
+        ]
+      }
+    ]
   },
+  {
+    "id": "buku-harian-liburan",
+    "title": "Buku Harian Liburan (Holiday Diary)",
+    "scene": "📔",
+    "desc": "Buku harian & teks info",
+    "texts": [
+      {
+        "genre": "diary",
+        "heading": "📔 Dimas's Diary — Monday",
+        "sequence": [
+          0,
+          4,
+          7
+        ],
+        "lines": [
+          {
+            "en": "Today my family visited Borobudur Temple.",
+            "id": "Hari ini keluargaku mengunjungi Candi Borobudur."
+          },
+          {
+            "en": "We left home at five because Dad wanted to see the sunrise.",
+            "id": "Kami berangkat jam lima karena Ayah ingin melihat matahari terbit."
+          },
+          {
+            "en": "My little sister Nia slept in the car the whole way.",
+            "id": "Adikku Nia tidur di mobil sepanjang jalan."
+          },
+          {
+            "en": "When we arrived, she was full of energy again!",
+            "id": "Waktu kami sampai, dia segar lagi!"
+          },
+          {
+            "en": "We climbed the stairs slowly because they were very steep.",
+            "id": "Kami menaiki tangga pelan-pelan karena sangat curam.",
+            "br": true
+          },
+          {
+            "en": "At the top, Dad took a photo of us.",
+            "id": "Di puncak, Ayah memotret kami."
+          },
+          {
+            "en": "He said it was his favourite picture this year.",
+            "id": "Katanya itu foto favoritnya tahun ini."
+          },
+          {
+            "en": "In the afternoon, we bought souvenirs for Grandma.",
+            "id": "Sore harinya, kami membeli oleh-oleh untuk Nenek.",
+            "br": true
+          },
+          {
+            "en": "I chose a small wooden statue for her.",
+            "id": "Aku memilih patung kayu kecil untuknya."
+          },
+          {
+            "en": "I was tired, but it was a wonderful day.",
+            "id": "Aku capek, tapi harinya luar biasa."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why did the family leave home at five?",
+            "qId": "Kenapa keluarga itu berangkat jam lima?",
+            "options": [
+              "Dad wanted to see the sunrise.",
+              "Nia was tired.",
+              "The temple closed early."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "In 'she was full of energy again', who is 'she'?",
+            "qId": "Dalam 'she was full of energy again', siapa 'she'?",
+            "options": [
+              "Nia",
+              "Mom",
+              "Grandma"
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              3
+            ]
+          },
+          {
+            "q": "Why did they climb the stairs slowly?",
+            "qId": "Kenapa mereka naik tangga pelan-pelan?",
+            "options": [
+              "The stairs were very steep.",
+              "It was raining.",
+              "Nia was sleeping."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who is the wooden statue for?",
+            "qId": "Patung kayu itu untuk siapa?",
+            "options": [
+              "Grandma",
+              "Nia",
+              "Dad"
+            ],
+            "answer": 0,
+            "evidence": [
+              7,
+              8
+            ]
+          },
+          {
+            "q": "How did Dimas feel at the end of the day?",
+            "qId": "Bagaimana perasaan Dimas di akhir hari?",
+            "options": [
+              "Tired but happy",
+              "Sad and bored",
+              "Angry and hungry"
+            ],
+            "answer": 0,
+            "evidence": [
+              9
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "article",
+        "heading": "ℹ️ Borobudur Temple",
+        "lines": [
+          {
+            "en": "Borobudur is a very old temple in Central Java.",
+            "id": "Borobudur adalah candi yang sangat tua di Jawa Tengah."
+          },
+          {
+            "en": "People built it more than 1,200 years ago.",
+            "id": "Candi ini dibangun lebih dari 1.200 tahun lalu."
+          },
+          {
+            "en": "It is the biggest Buddhist temple in the world.",
+            "id": "Ini candi Buddha terbesar di dunia."
+          },
+          {
+            "en": "The temple has nine levels and many stone pictures.",
+            "id": "Candinya punya sembilan tingkat dan banyak relief batu.",
+            "br": true
+          },
+          {
+            "en": "The pictures tell stories from long ago.",
+            "id": "Relief itu menceritakan kisah zaman dulu."
+          },
+          {
+            "en": "Every year, millions of visitors come to see it.",
+            "id": "Setiap tahun, jutaan pengunjung datang melihatnya."
+          },
+          {
+            "en": "Many of them come early to watch the sunrise.",
+            "id": "Banyak dari mereka datang pagi-pagi untuk melihat matahari terbit.",
+            "br": true
+          },
+          {
+            "en": "Visitors must not climb on the stone statues.",
+            "id": "Pengunjung dilarang memanjat patung batu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How old is Borobudur?",
+            "qId": "Berapa umur Borobudur?",
+            "options": [
+              "More than 1,200 years old",
+              "About 200 years old",
+              "Nine years old"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What do the stone pictures show?",
+            "qId": "Relief batu itu menunjukkan apa?",
+            "options": [
+              "Stories from long ago",
+              "Maps of Java",
+              "Photos of visitors"
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "Why do many visitors come early?",
+            "qId": "Kenapa banyak pengunjung datang pagi-pagi?",
+            "options": [
+              "To watch the sunrise",
+              "To climb the statues",
+              "To buy souvenirs"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What must visitors NOT do?",
+            "qId": "Apa yang TIDAK boleh dilakukan pengunjung?",
+            "options": [
+              "Climb on the statues",
+              "Take photos",
+              "Watch the sunrise"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          },
+          {
+            "q": "What is this text mainly about?",
+            "qId": "Teks ini terutama tentang apa?",
+            "options": [
+              "Facts about an old temple",
+              "A family holiday",
+              "How to take good photos"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "diary",
+        "heading": "📔 Sinta's Diary — Saturday",
+        "lines": [
+          {
+            "en": "This morning I joined a beach clean-up with my scout group.",
+            "id": "Pagi ini aku ikut bersih-bersih pantai bersama regu pramukaku."
+          },
+          {
+            "en": "We met at the lighthouse at seven o'clock.",
+            "id": "Kami berkumpul di mercusuar jam tujuh."
+          },
+          {
+            "en": "Our leader, Mrs. Ratna, gave everyone gloves and a big bag.",
+            "id": "Pembina kami, Bu Ratna, membagikan sarung tangan dan kantong besar.",
+            "br": true
+          },
+          {
+            "en": "We found plastic bottles, old nets and even a shoe!",
+            "id": "Kami menemukan botol plastik, jaring bekas, bahkan sepatu!"
+          },
+          {
+            "en": "My friend Beni found the most rubbish, so he got a prize.",
+            "id": "Temanku Beni menemukan sampah paling banyak, jadi dia dapat hadiah."
+          },
+          {
+            "en": "It was a book about sea turtles.",
+            "id": "Hadiahnya buku tentang penyu.",
+            "br": true
+          },
+          {
+            "en": "My back hurt a little after three hours.",
+            "id": "Punggungku agak pegal setelah tiga jam."
+          },
+          {
+            "en": "However, the beach looked clean and beautiful again.",
+            "id": "Tapi, pantainya jadi bersih dan indah lagi."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where did the group meet?",
+            "qId": "Regu itu berkumpul di mana?",
+            "options": [
+              "At the lighthouse",
+              "At the school",
+              "At Beni's house"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who gave out the gloves?",
+            "qId": "Siapa yang membagikan sarung tangan?",
+            "options": [
+              "Mrs. Ratna",
+              "Beni",
+              "Sinta's mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What was Beni's prize?",
+            "qId": "Apa hadiah Beni?",
+            "options": [
+              "A book about sea turtles",
+              "A big bag",
+              "A pair of gloves"
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "Why did Beni get a prize?",
+            "qId": "Kenapa Beni dapat hadiah?",
+            "options": [
+              "He found the most rubbish.",
+              "He came first.",
+              "He found a shoe."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How did Sinta probably feel about the day?",
+            "qId": "Kira-kira bagaimana perasaan Sinta tentang hari itu?",
+            "options": [
+              "Tired but proud",
+              "Bored and sad",
+              "Angry with Beni"
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "article",
+        "heading": "ℹ️ Plastic in the Sea",
+        "lines": [
+          {
+            "en": "Every year, a lot of plastic ends up in the sea.",
+            "id": "Setiap tahun, banyak plastik berakhir di laut."
+          },
+          {
+            "en": "Some of it comes from rubbish that people drop on beaches.",
+            "id": "Sebagian berasal dari sampah yang dibuang orang di pantai."
+          },
+          {
+            "en": "Sea animals sometimes think plastic bags are food.",
+            "id": "Hewan laut kadang mengira kantong plastik itu makanan.",
+            "br": true
+          },
+          {
+            "en": "This can make them very sick.",
+            "id": "Ini bisa membuat mereka sakit parah."
+          },
+          {
+            "en": "Small changes can help a lot.",
+            "id": "Perubahan kecil bisa sangat membantu.",
+            "br": true
+          },
+          {
+            "en": "For example, you can bring your own bottle to school.",
+            "id": "Misalnya, kamu bisa membawa botol minum sendiri ke sekolah."
+          },
+          {
+            "en": "You can also say no to plastic straws.",
+            "id": "Kamu juga bisa menolak sedotan plastik."
+          },
+          {
+            "en": "If everyone helps, our seas can stay clean.",
+            "id": "Kalau semua ikut membantu, laut kita bisa tetap bersih."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where does some of the plastic come from?",
+            "qId": "Sebagian plastik itu berasal dari mana?",
+            "options": [
+              "Rubbish people drop on beaches",
+              "Old fishing boats",
+              "Rain clouds"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why is plastic dangerous for sea animals?",
+            "qId": "Kenapa plastik berbahaya bagi hewan laut?",
+            "options": [
+              "They think it is food.",
+              "It is too heavy.",
+              "It is very hot."
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              3
+            ]
+          },
+          {
+            "q": "What can you bring to school?",
+            "qId": "Apa yang bisa kamu bawa ke sekolah?",
+            "options": [
+              "Your own bottle",
+              "A plastic straw",
+              "A plastic bag"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does 'This' mean in 'This can make them very sick'?",
+            "qId": "Apa arti 'This' dalam 'This can make them very sick'?",
+            "options": [
+              "Eating plastic bags",
+              "Swimming in the sea",
+              "Going to the beach"
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              3
+            ]
+          },
+          {
+            "q": "What does the writer want readers to do?",
+            "qId": "Penulis ingin pembaca melakukan apa?",
+            "options": [
+              "Use less plastic",
+              "Visit the beach more",
+              "Buy more bottles"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 /**
- * Reading Explorer (7–9 th) — format KETIGA BARU `ReadingCheckTopic`
- * (`types.ts`, `materi/reading.md` §9.2) — 1 kalimat + gambar → Benar/Salah,
- * TTS TIDAK PERNAH (keluarga "silent reading" sama dgn `ReadingTopic`).
- * 10 item dipetakan 1:1 dari `VOCAB_TOPICS` (Explorer) topik `kata-sifat`
- * (Adjectives & Opposites) — domain ini SENGAJA dipilih krn tiap kata sudah
- * py pasangan lawan kata alami (big↔small, dst), jadi `falseSentence` cukup
- * ganti PERSIS 1 kata sifat jadi lawannya — near-miss yang masuk akal &
- * konsisten, bukan kalimat absurd yang gampang ditebak tanpa baca.
- *
- * **Digenapkan 1→10 topik** (target CLAUDE.md ≥10/skill, permintaan user
- * "materi reading di explorer masih 1... buatkan minimal 10... research ke
- * lembaga bahasa inggris dalam negeri" — riset konfirmasi LIA GEYL: domain
- * keluarga/uang/waktu/negara eksplisit disebut cocok utk usia 7-9,
- * `materi/reading.md` §15) — 9 topik baru dipetakan dari SEMUA 9 domain
- * `VOCAB_TOPICS` (Explorer) yg belum disentuh Reading (`keluarga`/`angka`/
- * `warna`/`kesehatan`/`belanja-uang`/`waktu-harian`/`negara`/`pesta-
- * perayaan`/`peralatan-dapur` → `cek-keluarga`/`cek-angka`/`cek-warna`/
- * `cek-kesehatan`/`cek-uang`/`cek-waktu`/`cek-negara`/`cek-pesta`/
- * `cek-dapur`). **Beda dari domain `kata-sifat` (adjective, py lawan kata
- * alami), 9 domain baru ini SEMUANYA kata benda** — mekanik `falseSentence`
- * diadaptasi: domain `warna` REUSE PERSIS pola adjective asli (`item.
- * example.en` Vocab-nya sendiri sudah berbentuk "The X is <warna>.", false
- * ganti warna ke warna sibling — paling natural krn warna jg py struktur
- * deskriptif spt kata sifat); 8 domain benda murni lainnya pakai template
- * seragam "This is a/an <benda>."/frasa natural per-domain ("I am from
- * <negara>."/"It is <waktu>."/dst), `falseSentence` ganti KATA BENDA/FAKTA
- * ke sibling item DALAM topik yang sama (bukan lawan kata krn tidak semua
- * py antonim alami) — tetap "near-miss masuk akal" (kalimat gramatikal utuh,
- * cuma 1 fakta yg salah), bukan kalimat absurd. ZERO kosakata baru
- * diauthoring — semua kata sumbernya sudah ada di `VOCAB_TOPICS`.
+ * Reading explorer — format "Baca Teks" (`ReadingTextTopic`, materi/reading.md §19–§22).
+ * Kartu/pesan/catatan/papan sehari-hari — tier Menengah. Id topik lama DIPERTAHANKAN (urutan menu sama); progres format
+ * lama tidak terbaca krn section-nya beda (`latihan-teks`/`tantangan-teks`).
  */
-export const READING_TOPICS_EXPLORER: ReadingCheckTopic[] = [
+export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
   {
-    id: 'baca-dan-cek',
-    title: 'Baca & Cek: Sifat Benda (Read & Check: Descriptions)',
-    scene: '⛰️',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '⛰️', trueSentence: 'The elephant is big.', falseSentence: 'The elephant is small.', id: 'Gajahnya besar.' },
-      { emoji: '🐭', trueSentence: 'The mouse is small.', falseSentence: 'The mouse is big.', id: 'Tikusnya kecil.' },
-      { emoji: '🏎️', trueSentence: 'The cheetah is fast.', falseSentence: 'The cheetah is slow.', id: 'Citahnya cepat.' },
-      { emoji: '⏳', trueSentence: 'The turtle is slow.', falseSentence: 'The turtle is fast.', id: 'Kura-kuranya lambat.' },
-      { emoji: '🪢', trueSentence: 'The snake is long.', falseSentence: 'The snake is short.', id: 'Ularnya panjang.' },
-      { emoji: '✏️', trueSentence: 'The pencil is short.', falseSentence: 'The pencil is long.', id: 'Pensilnya pendek.' },
-      { emoji: '🪨', trueSentence: 'The rock is heavy.', falseSentence: 'The rock is light.', id: 'Batunya berat.' },
-      { emoji: '🪶', trueSentence: 'The feather is light.', falseSentence: 'The feather is heavy.', id: 'Bulunya ringan.' },
-      { emoji: '🧼', trueSentence: 'The hands are clean.', falseSentence: 'The hands are dirty.', id: 'Tangannya bersih.' },
-      { emoji: '🐷', trueSentence: 'The pig is dirty.', falseSentence: 'The pig is clean.', id: 'Babinya kotor.' },
+    "id": "baca-dan-cek",
+    "title": "Kartu Hewan Kebun Binatang (Zoo Animal Cards)",
+    "scene": "🦁",
+    "desc": "Kartu info hewan",
+    "texts": [
+      {
+        "genre": "sign",
+        "heading": "🦁 Meet Leo the Lion",
+        "lines": [
+          {
+            "en": "This is Leo the lion.",
+            "id": "Ini Leo si singa.",
+            "pic": 0
+          },
+          {
+            "en": "He is big and strong.",
+            "id": "Dia besar dan kuat."
+          },
+          {
+            "en": "He sleeps a lot in the day.",
+            "id": "Dia banyak tidur di siang hari.",
+            "pic": 1
+          },
+          {
+            "en": "He eats meat.",
+            "id": "Dia makan daging.",
+            "pic": 2
+          },
+          {
+            "en": "Do not touch the fence.",
+            "id": "Jangan sentuh pagarnya.",
+            "pic": 3
+          },
+          {
+            "en": "Leo likes the warm sun.",
+            "id": "Leo suka matahari yang hangat.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is the lion's name?",
+            "qId": "Siapa nama singa itu?",
+            "options": [
+              "Leo",
+              "Tia",
+              "Max"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What does Leo look like?",
+            "qId": "Leo seperti apa?",
+            "options": [
+              "Big and strong",
+              "Small and slow",
+              "Short and weak"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "When does Leo sleep a lot?",
+            "qId": "Kapan Leo banyak tidur?",
+            "options": [
+              "In the day",
+              "At night",
+              "In the rain"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What must visitors not do?",
+            "qId": "Apa yang tidak boleh dilakukan pengunjung?",
+            "options": [
+              "Touch the fence",
+              "Look at Leo",
+              "Take a photo"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is this card about?",
+            "qId": "Kartu ini tentang apa?",
+            "options": [
+              "A lion at the zoo",
+              "A lion at school",
+              "A sunny beach"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🦁",
+            "label": "lion"
+          },
+          {
+            "emoji": "😴",
+            "label": "day"
+          },
+          {
+            "emoji": "🍖",
+            "label": "meat"
+          },
+          {
+            "emoji": "🚧",
+            "label": "fence"
+          },
+          {
+            "emoji": "☀️",
+            "label": "sun"
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "🐼 Meet Tia the Panda",
+        "lines": [
+          {
+            "en": "This is Tia the panda.",
+            "id": "Ini Tia si panda.",
+            "pic": 0
+          },
+          {
+            "en": "She is black and white.",
+            "id": "Dia hitam dan putih."
+          },
+          {
+            "en": "She is slow and quiet.",
+            "id": "Dia lambat dan pendiam.",
+            "pic": 1
+          },
+          {
+            "en": "She eats bamboo every day.",
+            "id": "Dia makan bambu setiap hari.",
+            "pic": 2
+          },
+          {
+            "en": "Her baby is very small.",
+            "id": "Bayinya sangat kecil.",
+            "pic": 3
+          },
+          {
+            "en": "Please be quiet near her.",
+            "id": "Tolong jangan berisik di dekatnya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What colors is Tia?",
+            "qId": "Tia berwarna apa?",
+            "options": [
+              "Black and white",
+              "Black and yellow",
+              "Brown and white"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What does Tia eat?",
+            "qId": "Tia makan apa?",
+            "options": [
+              "Bamboo",
+              "Meat",
+              "Bananas"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Is Tia fast?",
+            "qId": "Apakah Tia cepat?",
+            "options": [
+              "No, she is slow.",
+              "Yes, she is fast.",
+              "Yes, she is big."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Who is very small?",
+            "qId": "Siapa yang sangat kecil?",
+            "options": [
+              "Tia's baby",
+              "Tia",
+              "Leo"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What should visitors do near Tia?",
+            "qId": "Apa yang harus dilakukan pengunjung di dekat Tia?",
+            "options": [
+              "Be quiet",
+              "Sing loudly",
+              "Give her food"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🐼",
+            "label": "panda"
+          },
+          {
+            "emoji": "🤫",
+            "label": "quiet"
+          },
+          {
+            "emoji": "🎋",
+            "label": "day"
+          },
+          {
+            "emoji": "🍼",
+            "label": "small"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "sign",
+        "heading": "🐵 Meet Momo and Mimi",
+        "lines": [
+          {
+            "en": "Here are Momo and Mimi.",
+            "id": "Ini Momo dan Mimi."
+          },
+          {
+            "en": "Momo is big, but Mimi is small.",
+            "id": "Momo besar, tapi Mimi kecil."
+          },
+          {
+            "en": "They are fast and funny.",
+            "id": "Mereka cepat dan lucu."
+          },
+          {
+            "en": "They love bananas.",
+            "id": "Mereka suka pisang."
+          },
+          {
+            "en": "They play all day.",
+            "id": "Mereka bermain seharian."
+          },
+          {
+            "en": "Please do not give them food.",
+            "id": "Tolong jangan beri mereka makanan."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who is small?",
+            "qId": "Siapa yang kecil?",
+            "options": [
+              "Mimi",
+              "Momo",
+              "Both of them"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What are the monkeys like?",
+            "qId": "Monyet-monyet itu seperti apa?",
+            "options": [
+              "Fast and funny",
+              "Slow and quiet",
+              "Big and sleepy"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What do they love?",
+            "qId": "Mereka suka apa?",
+            "options": [
+              "Bananas",
+              "Bamboo",
+              "Meat"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What should visitors not do?",
+            "qId": "Apa yang tidak boleh dilakukan pengunjung?",
+            "options": [
+              "Give them food",
+              "Watch them play",
+              "Say hello"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this card about?",
+            "qId": "Kartu ini tentang apa?",
+            "options": [
+              "Two monkeys at the zoo",
+              "A banana shop",
+              "A funny game"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "genre": "note",
+        "heading": "📝 My Zoo Trip",
+        "lines": [
+          {
+            "en": "Today I went to the zoo.",
+            "id": "Hari ini aku pergi ke kebun binatang."
+          },
+          {
+            "en": "The giraffe was very tall.",
+            "id": "Jerapahnya sangat tinggi."
+          },
+          {
+            "en": "The zebra had black stripes.",
+            "id": "Zebranya punya garis-garis hitam."
+          },
+          {
+            "en": "The hippo was big and heavy.",
+            "id": "Kuda nilnya besar dan berat."
+          },
+          {
+            "en": "The parrot was green and loud.",
+            "id": "Burung beonya hijau dan berisik."
+          },
+          {
+            "en": "I liked the parrot best!",
+            "id": "Aku paling suka burung beo!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Which animal was tall?",
+            "qId": "Hewan mana yang tinggi?",
+            "options": [
+              "The giraffe",
+              "The hippo",
+              "The parrot"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did the zebra have?",
+            "qId": "Zebra punya apa?",
+            "options": [
+              "Black stripes",
+              "Green feathers",
+              "A long neck"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What was the hippo like?",
+            "qId": "Kuda nil seperti apa?",
+            "options": [
+              "Big and heavy",
+              "Small and fast",
+              "Green and loud"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Which animal did the writer like best?",
+            "qId": "Hewan apa yang paling disukai penulis?",
+            "options": [
+              "The parrot",
+              "The zebra",
+              "The giraffe"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this note about?",
+            "qId": "Catatan ini tentang apa?",
+            "options": [
+              "A trip to the zoo",
+              "A trip to the beach",
+              "A new pet"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-keluarga',
-    title: 'Baca & Cek: Keluarga (Read & Check: Family)',
-    scene: '👩',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '👩', trueSentence: 'This is my mother.', falseSentence: 'This is my father.', id: 'Ini ibuku.' },
-      { emoji: '👨', trueSentence: 'This is my father.', falseSentence: 'This is my mother.', id: 'Ini ayahku.' },
-      { emoji: '👧', trueSentence: 'This is my sister.', falseSentence: 'This is my brother.', id: 'Ini kakak/adik perempuanku.' },
-      { emoji: '👦', trueSentence: 'This is my brother.', falseSentence: 'This is my sister.', id: 'Ini kakak/adik laki-lakiku.' },
-      { emoji: '👵', trueSentence: 'This is my grandmother.', falseSentence: 'This is my grandfather.', id: 'Ini nenekku.' },
-      { emoji: '👴', trueSentence: 'This is my grandfather.', falseSentence: 'This is my grandmother.', id: 'Ini kakekku.' },
-      { emoji: '🧔', trueSentence: 'This is my uncle.', falseSentence: 'This is my aunt.', id: 'Ini pamanku.' },
-      { emoji: '👩‍🦱', trueSentence: 'This is my aunt.', falseSentence: 'This is my uncle.', id: 'Ini bibiku.' },
-      { emoji: '🧑', trueSentence: 'This is my cousin.', falseSentence: 'This is my baby.', id: 'Ini sepupuku.' },
-      { emoji: '👶', trueSentence: 'This is my baby.', falseSentence: 'This is my cousin.', id: 'Ini bayiku.' },
+    "id": "cek-keluarga",
+    "title": "Foto Keluarga (Family Photos)",
+    "scene": "📷",
+    "desc": "Foto & pesan keluarga",
+    "texts": [
+      {
+        "genre": "note",
+        "heading": "📷 My Family Photo",
+        "lines": [
+          {
+            "en": "This is my family photo.",
+            "id": "Ini foto keluargaku.",
+            "pic": 0
+          },
+          {
+            "en": "My dad is tall.",
+            "id": "Ayahku tinggi.",
+            "pic": 1
+          },
+          {
+            "en": "My mom has long hair.",
+            "id": "Ibuku berambut panjang.",
+            "pic": 2
+          },
+          {
+            "en": "My big sister is ten.",
+            "id": "Kakak perempuanku sepuluh tahun."
+          },
+          {
+            "en": "My baby brother is one.",
+            "id": "Adik laki-lakiku satu tahun.",
+            "pic": 3
+          },
+          {
+            "en": "We are at the beach.",
+            "id": "Kami di pantai.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who is tall?",
+            "qId": "Siapa yang tinggi?",
+            "options": [
+              "Dad",
+              "Mom",
+              "The baby"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How old is the big sister?",
+            "qId": "Kakak perempuannya umur berapa?",
+            "options": [
+              "Ten",
+              "One",
+              "Two"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who has long hair?",
+            "qId": "Siapa yang berambut panjang?",
+            "options": [
+              "Mom",
+              "Dad",
+              "The big sister"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where is the family?",
+            "qId": "Keluarga itu ada di mana?",
+            "options": [
+              "At the beach",
+              "At home",
+              "At school"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this text about?",
+            "qId": "Teks ini tentang apa?",
+            "options": [
+              "A family photo",
+              "A school trip",
+              "A birthday cake"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "📷",
+            "label": "photo"
+          },
+          {
+            "emoji": "👨",
+            "label": "tall"
+          },
+          {
+            "emoji": "👩",
+            "label": "hair"
+          },
+          {
+            "emoji": "👶",
+            "label": "one"
+          },
+          {
+            "emoji": "🏖️",
+            "label": "beach"
+          }
+        ]
+      },
+      {
+        "genre": "message",
+        "heading": "💬 Grandma",
+        "lines": [
+          {
+            "en": "Hi, Dina! It's Grandma.",
+            "id": "Hai, Dina! Ini Nenek."
+          },
+          {
+            "en": "I miss you very much.",
+            "id": "Nenek kangen sekali.",
+            "pic": 0
+          },
+          {
+            "en": "Grandpa and I are coming on Sunday.",
+            "id": "Kakek dan Nenek datang hari Minggu.",
+            "pic": 1
+          },
+          {
+            "en": "We will bring a big cake.",
+            "id": "Kami akan bawa kue besar.",
+            "pic": 2
+          },
+          {
+            "en": "Is your cat still small?",
+            "id": "Kucingmu masih kecil?",
+            "pic": 3
+          },
+          {
+            "en": "See you soon!",
+            "id": "Sampai jumpa!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who is writing?",
+            "qId": "Siapa yang menulis?",
+            "options": [
+              "Grandma",
+              "Dina",
+              "Grandpa"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "When are Grandma and Grandpa coming?",
+            "qId": "Kapan Kakek dan Nenek datang?",
+            "options": [
+              "On Sunday",
+              "On Monday",
+              "Today"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What will they bring?",
+            "qId": "Mereka akan membawa apa?",
+            "options": [
+              "A big cake",
+              "A small cat",
+              "A photo"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does Grandma ask about?",
+            "qId": "Nenek bertanya tentang apa?",
+            "options": [
+              "Dina's cat",
+              "Dina's school",
+              "Dina's bike"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How does Grandma feel?",
+            "qId": "Bagaimana perasaan Nenek?",
+            "options": [
+              "She misses Dina.",
+              "She is angry.",
+              "She is tired."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "💗",
+            "label": "much"
+          },
+          {
+            "emoji": "📅",
+            "label": "sunday"
+          },
+          {
+            "emoji": "🎂",
+            "label": "cake"
+          },
+          {
+            "emoji": "🐱",
+            "label": "small"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "note",
+        "heading": "📷 Our Old Photo",
+        "lines": [
+          {
+            "en": "This photo is very old.",
+            "id": "Foto ini sudah sangat lama."
+          },
+          {
+            "en": "The baby in it is my dad!",
+            "id": "Bayi di foto itu ayahku!"
+          },
+          {
+            "en": "The girl next to him is Aunt Rina.",
+            "id": "Anak perempuan di sebelahnya Tante Rina."
+          },
+          {
+            "en": "Grandma is holding a big basket.",
+            "id": "Nenek memegang keranjang besar."
+          },
+          {
+            "en": "They are at a rice field.",
+            "id": "Mereka di sawah."
+          },
+          {
+            "en": "Dad is only one year old here.",
+            "id": "Di sini Ayah baru satu tahun."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who is the baby in the photo?",
+            "qId": "Siapa bayi di foto itu?",
+            "options": [
+              "The writer's dad",
+              "Aunt Rina",
+              "The writer"
+            ],
+            "answer": 0,
+            "evidence": [
+              1,
+              5
+            ]
+          },
+          {
+            "q": "Who is next to the baby?",
+            "qId": "Siapa yang di sebelah bayi?",
+            "options": [
+              "Aunt Rina",
+              "Grandma",
+              "Grandpa"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is Grandma holding?",
+            "qId": "Nenek memegang apa?",
+            "options": [
+              "A big basket",
+              "A baby",
+              "A camera"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where are they in the photo?",
+            "qId": "Di foto, mereka ada di mana?",
+            "options": [
+              "At a rice field",
+              "At the beach",
+              "At home"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is special about the photo?",
+            "qId": "Apa yang istimewa dari foto itu?",
+            "options": [
+              "It is very old.",
+              "It is very big.",
+              "It is new."
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "message",
+        "heading": "💬 Bayu",
+        "lines": [
+          {
+            "en": "Hi, Nia! Mom is at work.",
+            "id": "Hai, Nia! Ibu sedang kerja."
+          },
+          {
+            "en": "I will pick you up at school.",
+            "id": "Aku akan menjemputmu di sekolah."
+          },
+          {
+            "en": "Wait for me at the gate.",
+            "id": "Tunggu aku di gerbang."
+          },
+          {
+            "en": "I have a blue bike today.",
+            "id": "Hari ini aku bawa sepeda biru."
+          },
+          {
+            "en": "Don't forget your hat.",
+            "id": "Jangan lupa topimu."
+          },
+          {
+            "en": "Your big brother, Bayu",
+            "id": "Kakakmu, Bayu"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who is Bayu?",
+            "qId": "Siapa Bayu?",
+            "options": [
+              "Nia's big brother",
+              "Nia's dad",
+              "Nia's teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Where is Mom?",
+            "qId": "Ibu ada di mana?",
+            "options": [
+              "At work",
+              "At school",
+              "At home"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where should Nia wait?",
+            "qId": "Nia harus menunggu di mana?",
+            "options": [
+              "At the gate",
+              "At work",
+              "In the classroom"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What color is Bayu's bike?",
+            "qId": "Sepeda Bayu warnanya apa?",
+            "options": [
+              "Blue",
+              "Red",
+              "Green"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What should Nia not forget?",
+            "qId": "Apa yang tidak boleh Nia lupakan?",
+            "options": [
+              "Her hat",
+              "Her bike",
+              "Her lunch"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-angka',
-    title: 'Baca & Cek: Angka (Read & Check: Numbers)',
-    scene: '1️⃣',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '1️⃣', trueSentence: 'This is the number one.', falseSentence: 'This is the number two.', id: 'Ini angka satu.' },
-      { emoji: '2️⃣', trueSentence: 'This is the number two.', falseSentence: 'This is the number one.', id: 'Ini angka dua.' },
-      { emoji: '3️⃣', trueSentence: 'This is the number three.', falseSentence: 'This is the number four.', id: 'Ini angka tiga.' },
-      { emoji: '4️⃣', trueSentence: 'This is the number four.', falseSentence: 'This is the number three.', id: 'Ini angka empat.' },
-      { emoji: '5️⃣', trueSentence: 'This is the number five.', falseSentence: 'This is the number six.', id: 'Ini angka lima.' },
-      { emoji: '6️⃣', trueSentence: 'This is the number six.', falseSentence: 'This is the number five.', id: 'Ini angka enam.' },
-      { emoji: '7️⃣', trueSentence: 'This is the number seven.', falseSentence: 'This is the number eight.', id: 'Ini angka tujuh.' },
-      { emoji: '8️⃣', trueSentence: 'This is the number eight.', falseSentence: 'This is the number seven.', id: 'Ini angka delapan.' },
-      { emoji: '9️⃣', trueSentence: 'This is the number nine.', falseSentence: 'This is the number ten.', id: 'Ini angka sembilan.' },
-      { emoji: '🔟', trueSentence: 'This is the number ten.', falseSentence: 'This is the number nine.', id: 'Ini angka sepuluh.' },
+    "id": "cek-angka",
+    "title": "Daftar Belanja (Shopping Lists)",
+    "scene": "📝",
+    "desc": "Daftar belanja & harga",
+    "texts": [
+      {
+        "genre": "note",
+        "heading": "📝 Shopping List",
+        "lines": [
+          {
+            "en": "Please buy these things, Dimas.",
+            "id": "Tolong belikan barang-barang ini, Dimas."
+          },
+          {
+            "en": "Two bags of rice.",
+            "id": "Dua karung beras.",
+            "pic": 0
+          },
+          {
+            "en": "Six eggs.",
+            "id": "Enam butir telur.",
+            "pic": 1
+          },
+          {
+            "en": "Three big tomatoes.",
+            "id": "Tiga tomat besar.",
+            "pic": 2
+          },
+          {
+            "en": "One bottle of milk.",
+            "id": "Satu botol susu.",
+            "pic": 3
+          },
+          {
+            "en": "Here is fifty thousand rupiah.",
+            "id": "Ini uang lima puluh ribu rupiah.",
+            "pic": 4
+          },
+          {
+            "en": "Thanks! Mom",
+            "id": "Makasih! Ibu"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many eggs?",
+            "qId": "Berapa butir telur?",
+            "options": [
+              "Six",
+              "Two",
+              "Three"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How many bottles of milk?",
+            "qId": "Berapa botol susu?",
+            "options": [
+              "One",
+              "Two",
+              "Six"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What must be big?",
+            "qId": "Apa yang harus besar?",
+            "options": [
+              "The tomatoes",
+              "The eggs",
+              "The bags of rice"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who wrote the list?",
+            "qId": "Siapa yang menulis daftar ini?",
+            "options": [
+              "Mom",
+              "Dimas",
+              "The shop"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How much money does Mom give?",
+            "qId": "Berapa uang yang Ibu berikan?",
+            "options": [
+              "Fifty thousand rupiah",
+              "Five thousand rupiah",
+              "Fifteen thousand rupiah"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🍚",
+            "label": "rice"
+          },
+          {
+            "emoji": "🥚",
+            "label": "eggs"
+          },
+          {
+            "emoji": "🍅",
+            "label": "tomatoes"
+          },
+          {
+            "emoji": "🥛",
+            "label": "milk"
+          },
+          {
+            "emoji": "💵",
+            "label": "rupiah"
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "🏪 Fruit Shop Prices",
+        "lines": [
+          {
+            "en": "Big sale today!",
+            "id": "Diskon besar hari ini!"
+          },
+          {
+            "en": "Bananas: five for ten thousand.",
+            "id": "Pisang: lima buah sepuluh ribu.",
+            "pic": 0
+          },
+          {
+            "en": "Mangoes: two for fifteen thousand.",
+            "id": "Mangga: dua buah lima belas ribu.",
+            "pic": 1
+          },
+          {
+            "en": "Oranges: four for twelve thousand.",
+            "id": "Jeruk: empat buah dua belas ribu.",
+            "pic": 2
+          },
+          {
+            "en": "Buy ten apples, get one free!",
+            "id": "Beli sepuluh apel, gratis satu!",
+            "pic": 3
+          },
+          {
+            "en": "We are open from seven to nine.",
+            "id": "Kami buka jam tujuh sampai sembilan.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many bananas can you get for ten thousand?",
+            "qId": "Dapat berapa pisang dengan sepuluh ribu?",
+            "options": [
+              "Five",
+              "Two",
+              "Four"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How much are two mangoes?",
+            "qId": "Berapa harga dua mangga?",
+            "options": [
+              "Fifteen thousand",
+              "Twelve thousand",
+              "Ten thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What do you get free?",
+            "qId": "Apa yang kamu dapat gratis?",
+            "options": [
+              "One apple",
+              "One mango",
+              "Ten oranges"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When does the shop close?",
+            "qId": "Jam berapa tokonya tutup?",
+            "options": [
+              "At nine",
+              "At seven",
+              "At ten"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this sign about?",
+            "qId": "Papan ini tentang apa?",
+            "options": [
+              "Fruit prices",
+              "A fruit party",
+              "A new school"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🍌",
+            "label": "thousand"
+          },
+          {
+            "emoji": "🥭",
+            "label": "thousand"
+          },
+          {
+            "emoji": "🍊",
+            "label": "thousand"
+          },
+          {
+            "emoji": "🍎",
+            "label": "free"
+          },
+          {
+            "emoji": "🕖",
+            "label": "nine"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "note",
+        "heading": "📝 Party Shopping",
+        "lines": [
+          {
+            "en": "We need things for the party.",
+            "id": "Kita butuh barang untuk pesta."
+          },
+          {
+            "en": "Buy twenty balloons.",
+            "id": "Beli dua puluh balon."
+          },
+          {
+            "en": "Buy two big cakes.",
+            "id": "Beli dua kue besar."
+          },
+          {
+            "en": "Buy twelve cups and twelve plates.",
+            "id": "Beli dua belas gelas dan dua belas piring."
+          },
+          {
+            "en": "Get three bottles of juice.",
+            "id": "Beli tiga botol jus."
+          },
+          {
+            "en": "Don't buy candles. We have eight.",
+            "id": "Jangan beli lilin. Kita punya delapan."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many balloons?",
+            "qId": "Berapa balon?",
+            "options": [
+              "Twenty",
+              "Twelve",
+              "Two"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How many cakes?",
+            "qId": "Berapa kue?",
+            "options": [
+              "Two",
+              "Three",
+              "Eight"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How many bottles of juice?",
+            "qId": "Berapa botol jus?",
+            "options": [
+              "Three",
+              "Twelve",
+              "Two"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why don't they buy candles?",
+            "qId": "Kenapa mereka tidak beli lilin?",
+            "options": [
+              "They have eight already.",
+              "Candles are too big.",
+              "The shop has none."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the list for?",
+            "qId": "Daftar ini untuk apa?",
+            "options": [
+              "A party",
+              "A picnic at school",
+              "A trip"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "message",
+        "heading": "💬 Class 3 Group",
+        "lines": [
+          {
+            "en": "Hi class! Tomorrow is Art Day.",
+            "id": "Halo kelas! Besok Hari Seni."
+          },
+          {
+            "en": "Please bring four crayons.",
+            "id": "Tolong bawa empat krayon."
+          },
+          {
+            "en": "Bring one old T-shirt too.",
+            "id": "Bawa juga satu kaus lama."
+          },
+          {
+            "en": "We will paint two pictures.",
+            "id": "Kita akan melukis dua gambar."
+          },
+          {
+            "en": "Class starts at eight.",
+            "id": "Kelas mulai jam delapan."
+          },
+          {
+            "en": "Miss Ani",
+            "id": "Bu Ani"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many crayons?",
+            "qId": "Berapa krayon?",
+            "options": [
+              "Four",
+              "One",
+              "Two"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What else should they bring?",
+            "qId": "Apa lagi yang harus dibawa?",
+            "options": [
+              "An old T-shirt",
+              "A new T-shirt",
+              "Two pictures"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How many pictures will they paint?",
+            "qId": "Berapa gambar yang akan dilukis?",
+            "options": [
+              "Two",
+              "Four",
+              "Eight"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What time does class start?",
+            "qId": "Jam berapa kelas mulai?",
+            "options": [
+              "At eight",
+              "At four",
+              "At two"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who sent the message?",
+            "qId": "Siapa yang mengirim pesan?",
+            "options": [
+              "Miss Ani",
+              "The class",
+              "A student"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-warna',
-    title: 'Baca & Cek: Warna (Read & Check: Colors)',
-    scene: '🔴',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '🍎', trueSentence: 'The apple is red.', falseSentence: 'The apple is blue.', id: 'Apelnya merah.' },
-      { emoji: '🌤️', trueSentence: 'The sky is blue.', falseSentence: 'The sky is green.', id: 'Langitnya biru.' },
-      { emoji: '🌿', trueSentence: 'The grass is green.', falseSentence: 'The grass is yellow.', id: 'Rumputnya hijau.' },
-      { emoji: '🍌', trueSentence: 'The banana is yellow.', falseSentence: 'The banana is orange.', id: 'Pisangnya kuning.' },
-      { emoji: '🍊', trueSentence: 'The orange is orange.', falseSentence: 'The orange is purple.', id: 'Jeruknya berwarna oranye.' },
-      { emoji: '🍇', trueSentence: 'The grapes are purple.', falseSentence: 'The grapes are green.', id: 'Anggurnya ungu.' },
-      { emoji: '👗', trueSentence: 'Her dress is pink.', falseSentence: 'Her dress is black.', id: 'Gaunnya merah muda.' },
-      { emoji: '🐱', trueSentence: 'The cat is black.', falseSentence: 'The cat is white.', id: 'Kucingnya hitam.' },
-      { emoji: '☁️', trueSentence: 'The cloud is white.', falseSentence: 'The cloud is pink.', id: 'Awannya putih.' },
-      { emoji: '🐻', trueSentence: 'The bear is brown.', falseSentence: 'The bear is red.', id: 'Beruangnya cokelat.' },
+    "id": "cek-warna",
+    "title": "Lomba Mewarnai (Coloring Contest)",
+    "scene": "🖍️",
+    "desc": "Poster, catatan & pesan",
+    "texts": [
+      {
+        "genre": "sign",
+        "heading": "🖍️ Coloring Contest!",
+        "lines": [
+          {
+            "en": "Join our coloring contest!",
+            "id": "Ikuti lomba mewarnai kami!",
+            "pic": 0
+          },
+          {
+            "en": "It is on Saturday morning.",
+            "id": "Lombanya hari Sabtu pagi.",
+            "pic": 1
+          },
+          {
+            "en": "Color a picture of a garden.",
+            "id": "Warnai gambar taman.",
+            "pic": 2
+          },
+          {
+            "en": "Use crayons or pencils.",
+            "id": "Pakai krayon atau pensil warna.",
+            "pic": 3
+          },
+          {
+            "en": "Bring your own crayons.",
+            "id": "Bawa krayon sendiri."
+          },
+          {
+            "en": "Every child gets a gift!",
+            "id": "Setiap anak dapat hadiah!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "q": "When is the contest?",
+            "qId": "Kapan lombanya?",
+            "options": [
+              "On Saturday morning",
+              "On Sunday morning",
+              "On Saturday night"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What do children color?",
+            "qId": "Anak-anak mewarnai apa?",
+            "options": [
+              "A garden",
+              "A big house",
+              "A beach"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What can children use?",
+            "qId": "Anak-anak boleh memakai apa?",
+            "options": [
+              "Crayons or pencils",
+              "Paint only",
+              "Pens only"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who gets a gift?",
+            "qId": "Siapa yang dapat hadiah?",
+            "options": [
+              "Every child",
+              "Only the winner",
+              "The teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this poster about?",
+            "qId": "Poster ini tentang apa?",
+            "options": [
+              "A coloring contest",
+              "A garden party",
+              "A shop sale"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🖍️",
+            "label": "contest"
+          },
+          {
+            "emoji": "📅",
+            "label": "morning"
+          },
+          {
+            "emoji": "🌷",
+            "label": "garden"
+          },
+          {
+            "emoji": "✏️",
+            "label": "pencils"
+          },
+          {
+            "emoji": "🎁",
+            "label": "gift"
+          }
+        ]
+      },
+      {
+        "genre": "note",
+        "heading": "📝 My Picture",
+        "lines": [
+          {
+            "en": "I colored my garden picture.",
+            "id": "Aku mewarnai gambar tamanku."
+          },
+          {
+            "en": "The sky is light blue.",
+            "id": "Langitnya biru muda.",
+            "pic": 0
+          },
+          {
+            "en": "The flowers are pink and yellow.",
+            "id": "Bunganya merah muda dan kuning.",
+            "pic": 1
+          },
+          {
+            "en": "The tree is green and brown.",
+            "id": "Pohonnya hijau dan cokelat.",
+            "pic": 2
+          },
+          {
+            "en": "I used orange for the sun.",
+            "id": "Aku pakai oranye untuk matahari.",
+            "pic": 3
+          },
+          {
+            "en": "My friend liked it!",
+            "id": "Temanku suka!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What color is the sky?",
+            "qId": "Langitnya warna apa?",
+            "options": [
+              "Light blue",
+              "Orange",
+              "Green"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What colors are the flowers?",
+            "qId": "Bunganya warna apa?",
+            "options": [
+              "Pink and yellow",
+              "Green and brown",
+              "Light blue"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did the writer use for the sun?",
+            "qId": "Penulis pakai warna apa untuk matahari?",
+            "options": [
+              "Orange",
+              "Yellow",
+              "Pink"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is green and brown?",
+            "qId": "Apa yang hijau dan cokelat?",
+            "options": [
+              "The tree",
+              "The sky",
+              "The flowers"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who liked the picture?",
+            "qId": "Siapa yang suka gambarnya?",
+            "options": [
+              "The writer's friend",
+              "The teacher",
+              "Mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🌤️",
+            "label": "blue"
+          },
+          {
+            "emoji": "🌸",
+            "label": "yellow"
+          },
+          {
+            "emoji": "🌳",
+            "label": "brown"
+          },
+          {
+            "emoji": "☀️",
+            "label": "sun"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "message",
+        "heading": "💬 Rara",
+        "lines": [
+          {
+            "en": "Hi Sam! I won the contest!",
+            "id": "Hai Sam! Aku menang lomba!"
+          },
+          {
+            "en": "I colored a big rainbow.",
+            "id": "Aku mewarnai pelangi besar."
+          },
+          {
+            "en": "It has seven colors.",
+            "id": "Pelanginya punya tujuh warna."
+          },
+          {
+            "en": "My prize is a box of paints.",
+            "id": "Hadiahku sekotak cat air."
+          },
+          {
+            "en": "There are twelve colors in the box.",
+            "id": "Ada dua belas warna di kotaknya."
+          },
+          {
+            "en": "Come and paint with me!",
+            "id": "Ayo melukis bersamaku!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What happened?",
+            "qId": "Apa yang terjadi?",
+            "options": [
+              "Rara won the contest.",
+              "Sam won the contest.",
+              "Rara lost her paints."
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What did Rara color?",
+            "qId": "Rara mewarnai apa?",
+            "options": [
+              "A big rainbow",
+              "A big box",
+              "A sun"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How many colors are in the rainbow?",
+            "qId": "Ada berapa warna di pelangi itu?",
+            "options": [
+              "Seven",
+              "Twelve",
+              "Two"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is Rara's prize?",
+            "qId": "Apa hadiah Rara?",
+            "options": [
+              "A box of paints",
+              "A rainbow",
+              "A crayon"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does Rara want Sam to do?",
+            "qId": "Rara ingin Sam melakukan apa?",
+            "options": [
+              "Paint with her",
+              "Buy paints",
+              "Win a prize"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "🎨 Art Room Rules",
+        "lines": [
+          {
+            "en": "Welcome to the Art Room!",
+            "id": "Selamat datang di Ruang Seni!"
+          },
+          {
+            "en": "Wear an old shirt.",
+            "id": "Pakai kemeja lama."
+          },
+          {
+            "en": "Put the red paint on the red shelf.",
+            "id": "Taruh cat merah di rak merah."
+          },
+          {
+            "en": "Wash your brushes with water.",
+            "id": "Cuci kuasmu dengan air."
+          },
+          {
+            "en": "Put your pictures on the table to dry.",
+            "id": "Taruh gambarmu di meja supaya kering."
+          },
+          {
+            "en": "Have fun with colors!",
+            "id": "Bersenang-senanglah dengan warna!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What should you wear?",
+            "qId": "Kamu harus memakai apa?",
+            "options": [
+              "An old shirt",
+              "A red shirt",
+              "A new hat"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where does the red paint go?",
+            "qId": "Cat merah ditaruh di mana?",
+            "options": [
+              "On the red shelf",
+              "On the table",
+              "In the water"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How do you clean the brushes?",
+            "qId": "Bagaimana cara membersihkan kuas?",
+            "options": [
+              "With water",
+              "With paint",
+              "With a shirt"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where do the pictures dry?",
+            "qId": "Gambar dikeringkan di mana?",
+            "options": [
+              "On the table",
+              "On the shelf",
+              "In the water"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Where would you see this sign?",
+            "qId": "Di mana kamu akan melihat papan ini?",
+            "options": [
+              "In an art room",
+              "In a kitchen",
+              "In a library"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-kesehatan',
-    title: 'Baca & Cek: Kesehatan (Read & Check: Health)',
-    scene: '🤒',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '😷', trueSentence: 'I have a cough.', falseSentence: 'I have a fever.', id: 'Aku batuk.' },
-      { emoji: '🤒', trueSentence: 'I have a fever.', falseSentence: 'I have a headache.', id: 'Aku demam.' },
-      { emoji: '🤕', trueSentence: 'I have a headache.', falseSentence: 'I have a stomachache.', id: 'Aku sakit kepala.' },
-      { emoji: '😖', trueSentence: 'I have a stomachache.', falseSentence: 'I have a cough.', id: 'Aku sakit perut.' },
-      { emoji: '🩹', trueSentence: 'I wear a bandage.', falseSentence: 'I take medicine.', id: 'Aku memakai perban.' },
-      { emoji: '💊', trueSentence: 'I take medicine.', falseSentence: 'I get an injection.', id: 'Aku minum obat.' },
-      { emoji: '💉', trueSentence: 'I get an injection.', falseSentence: 'I wear a bandage.', id: 'Aku mendapat suntikan.' },
-      { emoji: '🤧', trueSentence: 'I sneeze a lot.', falseSentence: 'I have a cough.', id: 'Aku banyak bersin.' },
-      { emoji: '🛌', trueSentence: 'I need rest.', falseSentence: 'I am healthy.', id: 'Aku butuh istirahat.' },
-      { emoji: '💪', trueSentence: 'I am healthy.', falseSentence: 'I need rest.', id: 'Aku sehat.' },
+    "id": "cek-kesehatan",
+    "title": "Hari Sakit (A Sick Day)",
+    "scene": "🤧",
+    "desc": "Surat, poster & pesan",
+    "texts": [
+      {
+        "genre": "note",
+        "heading": "✉️ A Letter to the Teacher",
+        "lines": [
+          {
+            "en": "Dear Miss Rina,",
+            "id": "Bu Rina yang baik,"
+          },
+          {
+            "en": "My son Budi is sick today.",
+            "id": "Anak saya Budi sakit hari ini.",
+            "pic": 0
+          },
+          {
+            "en": "He has a cold and a cough.",
+            "id": "Dia pilek dan batuk.",
+            "pic": 1
+          },
+          {
+            "en": "He cannot come to school.",
+            "id": "Dia tidak bisa masuk sekolah.",
+            "pic": 2
+          },
+          {
+            "en": "He will stay home and rest.",
+            "id": "Dia akan di rumah dan istirahat.",
+            "pic": 3
+          },
+          {
+            "en": "Thank you. Mrs. Sari",
+            "id": "Terima kasih. Bu Sari"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who is sick?",
+            "qId": "Siapa yang sakit?",
+            "options": [
+              "Budi",
+              "Miss Rina",
+              "Mrs. Sari"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What does Budi have?",
+            "qId": "Budi sakit apa?",
+            "options": [
+              "A cold and a cough",
+              "A broken arm",
+              "A toothache"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where will Budi stay?",
+            "qId": "Budi akan tinggal di mana?",
+            "options": [
+              "At home",
+              "At school",
+              "At the hospital"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who wrote the letter?",
+            "qId": "Siapa yang menulis surat ini?",
+            "options": [
+              "Budi's mom, Mrs. Sari",
+              "Miss Rina",
+              "Budi"
+            ],
+            "answer": 0,
+            "evidence": [
+              1,
+              5
+            ]
+          },
+          {
+            "q": "Why did she write the letter?",
+            "qId": "Kenapa dia menulis surat ini?",
+            "options": [
+              "Budi cannot come to school.",
+              "Budi is new at school.",
+              "Budi lost his book."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🤒",
+            "label": "today"
+          },
+          {
+            "emoji": "🤧",
+            "label": "cough"
+          },
+          {
+            "emoji": "🏫",
+            "label": "school"
+          },
+          {
+            "emoji": "🛏️",
+            "label": "rest"
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "🩺 Stay Healthy!",
+        "lines": [
+          {
+            "en": "Wash your hands before you eat.",
+            "id": "Cuci tangan sebelum makan.",
+            "pic": 0
+          },
+          {
+            "en": "Drink eight glasses of water.",
+            "id": "Minum delapan gelas air.",
+            "pic": 1
+          },
+          {
+            "en": "Sleep early every night.",
+            "id": "Tidur lebih awal setiap malam.",
+            "pic": 2
+          },
+          {
+            "en": "Eat fruit and vegetables.",
+            "id": "Makan buah dan sayur.",
+            "pic": 3
+          },
+          {
+            "en": "Play outside every day.",
+            "id": "Bermain di luar setiap hari.",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "q": "When should you wash your hands?",
+            "qId": "Kapan kamu harus cuci tangan?",
+            "options": [
+              "Before you eat",
+              "After you sleep",
+              "When you play"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How many glasses of water?",
+            "qId": "Berapa gelas air?",
+            "options": [
+              "Eight",
+              "Two",
+              "Five"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "When should you sleep?",
+            "qId": "Kapan kamu harus tidur?",
+            "options": [
+              "Early every night",
+              "Late at night",
+              "In the day"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What should you eat?",
+            "qId": "Kamu harus makan apa?",
+            "options": [
+              "Fruit and vegetables",
+              "Candy and cake",
+              "Only rice"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What is this poster about?",
+            "qId": "Poster ini tentang apa?",
+            "options": [
+              "How to stay healthy",
+              "How to cook",
+              "How to play football"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🧼",
+            "label": "eat"
+          },
+          {
+            "emoji": "💧",
+            "label": "water"
+          },
+          {
+            "emoji": "🛏️",
+            "label": "night"
+          },
+          {
+            "emoji": "🥦",
+            "label": "vegetables"
+          },
+          {
+            "emoji": "⚽",
+            "label": "day"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "message",
+        "heading": "💬 Dina",
+        "lines": [
+          {
+            "en": "Hi Tono, are you okay?",
+            "id": "Hai Tono, kamu baik-baik saja?"
+          },
+          {
+            "en": "You were not at school today.",
+            "id": "Kamu tidak masuk sekolah hari ini."
+          },
+          {
+            "en": "Miss Rina says you have a fever.",
+            "id": "Bu Rina bilang kamu demam."
+          },
+          {
+            "en": "Here is the homework: page ten.",
+            "id": "Ini PR-nya: halaman sepuluh."
+          },
+          {
+            "en": "Drink lots of water!",
+            "id": "Minum air yang banyak!"
+          },
+          {
+            "en": "Get well soon!",
+            "id": "Cepat sembuh!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why was Tono not at school?",
+            "qId": "Kenapa Tono tidak masuk sekolah?",
+            "options": [
+              "He has a fever.",
+              "He was on holiday.",
+              "He lost his bag."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Who told Dina about the fever?",
+            "qId": "Siapa yang memberi tahu Dina soal demam itu?",
+            "options": [
+              "Miss Rina",
+              "Tono",
+              "Tono's mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is the homework?",
+            "qId": "PR-nya apa?",
+            "options": [
+              "Page ten",
+              "Page two",
+              "No homework"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does Dina tell Tono to drink?",
+            "qId": "Dina menyuruh Tono minum apa?",
+            "options": [
+              "Lots of water",
+              "Hot tea",
+              "Cold juice"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How does Dina feel about Tono?",
+            "qId": "Bagaimana perasaan Dina terhadap Tono?",
+            "options": [
+              "She cares about him.",
+              "She is angry.",
+              "She is bored."
+            ],
+            "answer": 0,
+            "evidence": [
+              0,
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "💊 Medicine Label",
+        "lines": [
+          {
+            "en": "Cough syrup for children.",
+            "id": "Sirup obat batuk untuk anak."
+          },
+          {
+            "en": "Take one spoon three times a day.",
+            "id": "Minum satu sendok tiga kali sehari."
+          },
+          {
+            "en": "Take it after you eat.",
+            "id": "Minum sesudah makan."
+          },
+          {
+            "en": "Keep it in a cool place.",
+            "id": "Simpan di tempat sejuk."
+          },
+          {
+            "en": "Ask an adult to help you.",
+            "id": "Minta bantuan orang dewasa."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is this medicine for?",
+            "qId": "Obat ini untuk apa?",
+            "options": [
+              "A cough",
+              "A cut",
+              "A toothache"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How many times a day?",
+            "qId": "Berapa kali sehari?",
+            "options": [
+              "Three times",
+              "One time",
+              "Two times"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "When should you take it?",
+            "qId": "Kapan diminum?",
+            "options": [
+              "After you eat",
+              "Before you sleep",
+              "Before you eat"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Where should you keep it?",
+            "qId": "Obat disimpan di mana?",
+            "options": [
+              "In a cool place",
+              "In the sun",
+              "In your bag"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who should help you?",
+            "qId": "Siapa yang harus membantumu?",
+            "options": [
+              "An adult",
+              "A friend",
+              "Your little brother"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-uang',
-    title: 'Baca & Cek: Belanja & Uang (Read & Check: Shopping & Money)',
-    scene: '💵',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '💵', trueSentence: 'This is money.', falseSentence: 'This is a coin.', id: 'Ini uang.' },
-      { emoji: '🪙', trueSentence: 'This is a coin.', falseSentence: 'This is money.', id: 'Ini koin.' },
-      { emoji: '🏷️', trueSentence: 'This is the price.', falseSentence: 'This is a receipt.', id: 'Ini harganya.' },
-      { emoji: '🧾', trueSentence: 'This is a receipt.', falseSentence: 'This is the price.', id: 'Ini struk.' },
-      { emoji: '💎', trueSentence: 'This is expensive.', falseSentence: 'This is a wallet.', id: 'Ini mahal.' },
-      { emoji: '👛', trueSentence: 'This is a wallet.', falseSentence: 'This is expensive.', id: 'Ini dompet.' },
-      { emoji: '🧺', trueSentence: 'This is a basket.', falseSentence: 'This is a cart.', id: 'Ini keranjang.' },
-      { emoji: '🛒', trueSentence: 'This is a cart.', falseSentence: 'This is a basket.', id: 'Ini troli.' },
-      { emoji: '🧑‍💼', trueSentence: 'This is a cashier.', falseSentence: 'This is a piggy bank.', id: 'Ini kasir.' },
-      { emoji: '🐷', trueSentence: 'This is a piggy bank.', falseSentence: 'This is a cashier.', id: 'Ini celengan.' },
+    "id": "cek-uang",
+    "title": "Menu Kantin (Canteen Menu)",
+    "scene": "🍽️",
+    "desc": "Menu, dialog & tabungan",
+    "texts": [
+      {
+        "genre": "sign",
+        "heading": "🍽️ Canteen Menu",
+        "lines": [
+          {
+            "en": "Fried rice: ten thousand.",
+            "id": "Nasi goreng: sepuluh ribu.",
+            "pic": 0
+          },
+          {
+            "en": "Chicken noodles: twelve thousand.",
+            "id": "Mi ayam: dua belas ribu.",
+            "pic": 1
+          },
+          {
+            "en": "Banana cake: three thousand.",
+            "id": "Kue pisang: tiga ribu.",
+            "pic": 2
+          },
+          {
+            "en": "Orange juice: five thousand.",
+            "id": "Jus jeruk: lima ribu.",
+            "pic": 3
+          },
+          {
+            "en": "Water is free!",
+            "id": "Air putih gratis!",
+            "pic": 4
+          },
+          {
+            "en": "Open from nine to one.",
+            "id": "Buka jam sembilan sampai satu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How much is the fried rice?",
+            "qId": "Berapa harga nasi goreng?",
+            "options": [
+              "Ten thousand",
+              "Twelve thousand",
+              "Five thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What costs three thousand?",
+            "qId": "Apa yang harganya tiga ribu?",
+            "options": [
+              "Banana cake",
+              "Orange juice",
+              "Fried rice"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is free?",
+            "qId": "Apa yang gratis?",
+            "options": [
+              "Water",
+              "Orange juice",
+              "Banana cake"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What costs the most?",
+            "qId": "Apa yang paling mahal?",
+            "options": [
+              "Chicken noodles",
+              "Fried rice",
+              "Orange juice"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What is this sign?",
+            "qId": "Ini papan apa?",
+            "options": [
+              "A canteen menu",
+              "A shopping list",
+              "A school timetable"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🍚",
+            "label": "thousand"
+          },
+          {
+            "emoji": "🍜",
+            "label": "thousand"
+          },
+          {
+            "emoji": "🍰",
+            "label": "thousand"
+          },
+          {
+            "emoji": "🍊",
+            "label": "thousand"
+          },
+          {
+            "emoji": "💧",
+            "label": "free"
+          }
+        ]
+      },
+      {
+        "genre": "dialog",
+        "heading": "🗨️ At the Canteen",
+        "lines": [
+          {
+            "en": "Rudi: Can I have fried rice, please?",
+            "id": "Rudi: Boleh saya pesan nasi goreng?",
+            "pic": 0
+          },
+          {
+            "en": "Cook: Sure. Anything to drink?",
+            "id": "Juru masak: Tentu. Mau minum apa?"
+          },
+          {
+            "en": "Rudi: Orange juice, please.",
+            "id": "Rudi: Jus jeruk, ya.",
+            "pic": 1
+          },
+          {
+            "en": "Cook: That's fifteen thousand.",
+            "id": "Juru masak: Semuanya lima belas ribu.",
+            "pic": 2
+          },
+          {
+            "en": "Rudi: Here is twenty thousand.",
+            "id": "Rudi: Ini dua puluh ribu."
+          },
+          {
+            "en": "Cook: Thanks! Here is five thousand.",
+            "id": "Juru masak: Makasih! Ini kembaliannya lima ribu.",
+            "pic": 3
+          }
+        ],
+        "questions": [
+          {
+            "q": "What does Rudi order to eat?",
+            "qId": "Rudi pesan makanan apa?",
+            "options": [
+              "Fried rice",
+              "Noodles",
+              "Banana cake"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What does Rudi drink?",
+            "qId": "Rudi minum apa?",
+            "options": [
+              "Orange juice",
+              "Water",
+              "Milk"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How much is Rudi's food and drink?",
+            "qId": "Berapa harga makanan dan minuman Rudi?",
+            "options": [
+              "Fifteen thousand",
+              "Twenty thousand",
+              "Five thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How much change does Rudi get?",
+            "qId": "Berapa kembalian Rudi?",
+            "options": [
+              "Five thousand",
+              "Fifteen thousand",
+              "Twenty thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Who is Rudi talking to?",
+            "qId": "Rudi berbicara dengan siapa?",
+            "options": [
+              "The cook",
+              "His teacher",
+              "His mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🍚",
+            "label": "please"
+          },
+          {
+            "emoji": "🍊",
+            "label": "please"
+          },
+          {
+            "emoji": "💵",
+            "label": "thousand"
+          },
+          {
+            "emoji": "🪙",
+            "label": "thousand"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "note",
+        "heading": "🪙 My Savings",
+        "lines": [
+          {
+            "en": "I have a piggy bank.",
+            "id": "Aku punya celengan."
+          },
+          {
+            "en": "I save two thousand every day.",
+            "id": "Aku menabung dua ribu setiap hari."
+          },
+          {
+            "en": "Now I have fifty thousand.",
+            "id": "Sekarang aku punya lima puluh ribu."
+          },
+          {
+            "en": "I want a new ball.",
+            "id": "Aku ingin bola baru."
+          },
+          {
+            "en": "The ball is sixty thousand.",
+            "id": "Harga bolanya enam puluh ribu."
+          },
+          {
+            "en": "I need to save more!",
+            "id": "Aku harus menabung lagi!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How much does the writer save every day?",
+            "qId": "Berapa yang ditabung penulis setiap hari?",
+            "options": [
+              "Two thousand",
+              "Fifty thousand",
+              "Sixty thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How much money does the writer have now?",
+            "qId": "Berapa uang penulis sekarang?",
+            "options": [
+              "Fifty thousand",
+              "Sixty thousand",
+              "Two thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What does the writer want?",
+            "qId": "Penulis ingin apa?",
+            "options": [
+              "A new ball",
+              "A new piggy bank",
+              "A new bag"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How much is the ball?",
+            "qId": "Berapa harga bolanya?",
+            "options": [
+              "Sixty thousand",
+              "Fifty thousand",
+              "Sixteen thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Does the writer have enough money?",
+            "qId": "Apakah uang penulis sudah cukup?",
+            "options": [
+              "Not yet",
+              "Yes, it is enough.",
+              "Yes, more than enough."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "🏷️ Toy Shop Sale",
+        "lines": [
+          {
+            "en": "Toy Shop: Big Sale!",
+            "id": "Toko Mainan: Diskon Besar!"
+          },
+          {
+            "en": "Kites: eight thousand.",
+            "id": "Layangan: delapan ribu."
+          },
+          {
+            "en": "Yo-yos: four thousand.",
+            "id": "Yoyo: empat ribu."
+          },
+          {
+            "en": "Toy cars: fifteen thousand.",
+            "id": "Mobil mainan: lima belas ribu."
+          },
+          {
+            "en": "Buy two kites, get a yo-yo free!",
+            "id": "Beli dua layangan, gratis satu yoyo!"
+          },
+          {
+            "en": "The sale ends on Sunday.",
+            "id": "Diskon berakhir hari Minggu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How much is a yo-yo?",
+            "qId": "Berapa harga yoyo?",
+            "options": [
+              "Four thousand",
+              "Eight thousand",
+              "Fifteen thousand"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What costs fifteen thousand?",
+            "qId": "Apa yang harganya lima belas ribu?",
+            "options": [
+              "A toy car",
+              "A kite",
+              "A yo-yo"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What do you get if you buy two kites?",
+            "qId": "Apa yang kamu dapat kalau beli dua layangan?",
+            "options": [
+              "A free yo-yo",
+              "A free car",
+              "A free kite"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When does the sale end?",
+            "qId": "Kapan diskonnya berakhir?",
+            "options": [
+              "On Sunday",
+              "On Saturday",
+              "Today"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What kind of shop is it?",
+            "qId": "Itu toko apa?",
+            "options": [
+              "A toy shop",
+              "A food shop",
+              "A shoe shop"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-waktu',
-    title: 'Baca & Cek: Waktu (Read & Check: Time)',
-    scene: '🌅',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '🌅', trueSentence: 'It is morning.', falseSentence: 'It is night.', id: 'Ini pagi hari.' },
-      { emoji: '☀️', trueSentence: 'It is afternoon.', falseSentence: 'It is evening.', id: 'Ini siang hari.' },
-      { emoji: '🌇', trueSentence: 'It is evening.', falseSentence: 'It is afternoon.', id: 'Ini sore hari.' },
-      { emoji: '🌃', trueSentence: 'It is night.', falseSentence: 'It is morning.', id: 'Ini malam hari.' },
-      { emoji: '🕛', trueSentence: 'It is noon.', falseSentence: 'It is evening.', id: 'Ini tengah hari.' },
-      { emoji: '🗓️', trueSentence: 'I see her every week.', falseSentence: 'I see her every month.', id: 'Aku menemuinya setiap minggu.' },
-      { emoji: '📅', trueSentence: 'I see her every month.', falseSentence: 'I see her every year.', id: 'Aku menemuinya setiap bulan.' },
-      { emoji: '🎊', trueSentence: 'I see her every year.', falseSentence: 'I see her every week.', id: 'Aku menemuinya setiap tahun.' },
-      { emoji: '🎂', trueSentence: 'Today is my birthday.', falseSentence: 'Today is a holiday.', id: 'Hari ini ulang tahunku.' },
-      { emoji: '🏖️', trueSentence: 'Today is a holiday.', falseSentence: 'Today is my birthday.', id: 'Hari ini hari libur.' },
+    "id": "cek-waktu",
+    "title": "Jadwal Harianku (My Daily Schedule)",
+    "scene": "⏰",
+    "desc": "Jadwal, papan & pesan",
+    "texts": [
+      {
+        "genre": "note",
+        "heading": "⏰ Sari's Day",
+        "lines": [
+          {
+            "en": "I wake up at six o'clock.",
+            "id": "Aku bangun jam enam.",
+            "pic": 0
+          },
+          {
+            "en": "I eat breakfast at half past six.",
+            "id": "Aku sarapan jam setengah tujuh.",
+            "pic": 1
+          },
+          {
+            "en": "School starts at seven.",
+            "id": "Sekolah mulai jam tujuh.",
+            "pic": 2
+          },
+          {
+            "en": "I have lunch at twelve.",
+            "id": "Aku makan siang jam dua belas.",
+            "pic": 3
+          },
+          {
+            "en": "I do my homework at four.",
+            "id": "Aku mengerjakan PR jam empat.",
+            "pic": 4
+          },
+          {
+            "en": "I go to bed at nine.",
+            "id": "Aku tidur jam sembilan.",
+            "pic": 5
+          }
+        ],
+        "questions": [
+          {
+            "q": "What time does Sari wake up?",
+            "qId": "Jam berapa Sari bangun?",
+            "options": [
+              "At six",
+              "At seven",
+              "At nine"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "When does school start?",
+            "qId": "Jam berapa sekolah mulai?",
+            "options": [
+              "At seven",
+              "At six",
+              "At twelve"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What does Sari do at four?",
+            "qId": "Apa yang Sari lakukan jam empat?",
+            "options": [
+              "Her homework",
+              "Lunch",
+              "Sleep"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When does Sari have lunch?",
+            "qId": "Jam berapa Sari makan siang?",
+            "options": [
+              "At twelve",
+              "At four",
+              "At half past six"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What is this text about?",
+            "qId": "Teks ini tentang apa?",
+            "options": [
+              "Sari's day",
+              "Sari's school bag",
+              "Sari's family"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "⏰",
+            "label": "o'clock"
+          },
+          {
+            "emoji": "🍳",
+            "label": "six"
+          },
+          {
+            "emoji": "🏫",
+            "label": "seven"
+          },
+          {
+            "emoji": "🍱",
+            "label": "twelve"
+          },
+          {
+            "emoji": "📚",
+            "label": "four"
+          },
+          {
+            "emoji": "🛏️",
+            "label": "nine"
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "🏊 Swimming Pool Times",
+        "lines": [
+          {
+            "en": "Open from Tuesday to Sunday.",
+            "id": "Buka hari Selasa sampai Minggu.",
+            "pic": 0
+          },
+          {
+            "en": "Closed on Monday.",
+            "id": "Tutup hari Senin.",
+            "pic": 1
+          },
+          {
+            "en": "Kids' pool: eight to eleven.",
+            "id": "Kolam anak: jam delapan sampai sebelas.",
+            "pic": 2
+          },
+          {
+            "en": "Big pool: one to five.",
+            "id": "Kolam besar: jam satu sampai lima."
+          },
+          {
+            "en": "Swimming lessons: Saturday at nine.",
+            "id": "Les renang: hari Sabtu jam sembilan.",
+            "pic": 3
+          }
+        ],
+        "questions": [
+          {
+            "q": "When is the pool closed?",
+            "qId": "Kapan kolam renangnya tutup?",
+            "options": [
+              "On Monday",
+              "On Sunday",
+              "On Tuesday"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "When can kids use the kids' pool?",
+            "qId": "Kapan anak-anak bisa memakai kolam anak?",
+            "options": [
+              "From eight to eleven",
+              "From one to five",
+              "On Monday"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When are swimming lessons?",
+            "qId": "Kapan les renangnya?",
+            "options": [
+              "On Saturday at nine",
+              "On Monday at nine",
+              "On Sunday at five"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When does the big pool close?",
+            "qId": "Jam berapa kolam besar tutup?",
+            "options": [
+              "At five",
+              "At eleven",
+              "At one"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What is this sign about?",
+            "qId": "Papan ini tentang apa?",
+            "options": [
+              "Pool opening times",
+              "A swimming race",
+              "A new pool"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "📅",
+            "label": "sunday"
+          },
+          {
+            "emoji": "🚫",
+            "label": "monday"
+          },
+          {
+            "emoji": "🌊",
+            "label": "eleven"
+          },
+          {
+            "emoji": "🥽",
+            "label": "nine"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "note",
+        "heading": "📝 Ben's Saturday",
+        "lines": [
+          {
+            "en": "On Saturday, I wake up late.",
+            "id": "Hari Sabtu, aku bangun siang."
+          },
+          {
+            "en": "I get up at eight o'clock.",
+            "id": "Aku bangun jam delapan."
+          },
+          {
+            "en": "At ten, I play football with Adi.",
+            "id": "Jam sepuluh, aku main sepak bola dengan Adi."
+          },
+          {
+            "en": "We have lunch at one.",
+            "id": "Kami makan siang jam satu."
+          },
+          {
+            "en": "In the evening, I watch a film.",
+            "id": "Malamnya, aku menonton film."
+          },
+          {
+            "en": "I love Saturdays!",
+            "id": "Aku suka hari Sabtu!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What time does Ben get up?",
+            "qId": "Jam berapa Ben bangun?",
+            "options": [
+              "At eight",
+              "At ten",
+              "At one"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who does Ben play football with?",
+            "qId": "Ben main sepak bola dengan siapa?",
+            "options": [
+              "Adi",
+              "His dad",
+              "His sister"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When do they have lunch?",
+            "qId": "Jam berapa mereka makan siang?",
+            "options": [
+              "At one",
+              "At ten",
+              "At eight"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does Ben do in the evening?",
+            "qId": "Apa yang Ben lakukan malam hari?",
+            "options": [
+              "He watches a film.",
+              "He plays football.",
+              "He goes to school."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How does Ben feel about Saturdays?",
+            "qId": "Bagaimana perasaan Ben tentang hari Sabtu?",
+            "options": [
+              "He loves them.",
+              "He does not like them.",
+              "He is tired of them."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "message",
+        "heading": "💬 Mom",
+        "lines": [
+          {
+            "en": "Hi Lala! I'm late today.",
+            "id": "Hai Lala! Ibu terlambat hari ini."
+          },
+          {
+            "en": "I will be home at five, not four.",
+            "id": "Ibu pulang jam lima, bukan jam empat."
+          },
+          {
+            "en": "Your snack is on the table.",
+            "id": "Camilanmu ada di meja."
+          },
+          {
+            "en": "Please do your homework first.",
+            "id": "Tolong kerjakan PR dulu."
+          },
+          {
+            "en": "Then you can watch TV.",
+            "id": "Setelah itu kamu boleh nonton TV."
+          },
+          {
+            "en": "Love you!",
+            "id": "Sayang kamu!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What time will Mom be home?",
+            "qId": "Jam berapa Ibu pulang?",
+            "options": [
+              "At five",
+              "At four",
+              "At half past four"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where is the snack?",
+            "qId": "Camilannya di mana?",
+            "options": [
+              "On the table",
+              "In the fridge",
+              "In the bag"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What should Lala do first?",
+            "qId": "Apa yang harus Lala lakukan dulu?",
+            "options": [
+              "Her homework",
+              "Watch TV",
+              "Eat dinner"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "When can Lala watch TV?",
+            "qId": "Kapan Lala boleh nonton TV?",
+            "options": [
+              "After her homework",
+              "Before her homework",
+              "At four"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why did Mom write the message?",
+            "qId": "Kenapa Ibu menulis pesan ini?",
+            "options": [
+              "She is late today.",
+              "She is sick.",
+              "She lost her phone."
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-negara',
-    title: 'Baca & Cek: Negara (Read & Check: Countries)',
-    scene: '🇮🇩',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '🇮🇩', trueSentence: 'I am from Indonesia.', falseSentence: 'I am from Japan.', id: 'Aku dari Indonesia.' },
-      { emoji: '🇯🇵', trueSentence: 'I am from Japan.', falseSentence: 'I am from Indonesia.', id: 'Aku dari Jepang.' },
-      { emoji: '🇬🇧', trueSentence: 'I am from England.', falseSentence: 'I am from France.', id: 'Aku dari Inggris.' },
-      { emoji: '🇫🇷', trueSentence: 'I am from France.', falseSentence: 'I am from England.', id: 'Aku dari Prancis.' },
-      { emoji: '🇺🇸', trueSentence: 'I am from America.', falseSentence: 'I am from Germany.', id: 'Aku dari Amerika.' },
-      { emoji: '🇩🇪', trueSentence: 'I am from Germany.', falseSentence: 'I am from America.', id: 'Aku dari Jerman.' },
-      { emoji: '🇨🇳', trueSentence: 'I am from China.', falseSentence: 'I am from Korea.', id: 'Aku dari Tiongkok.' },
-      { emoji: '🇰🇷', trueSentence: 'I am from Korea.', falseSentence: 'I am from China.', id: 'Aku dari Korea.' },
-      { emoji: '🇦🇺', trueSentence: 'I am from Australia.', falseSentence: 'I am from India.', id: 'Aku dari Australia.' },
-      { emoji: '🇮🇳', trueSentence: 'I am from India.', falseSentence: 'I am from Australia.', id: 'Aku dari India.' },
+    "id": "cek-negara",
+    "title": "Kartu Pos dari Teman (Postcards from Friends)",
+    "scene": "🌏",
+    "desc": "Kartu pos & pesan",
+    "texts": [
+      {
+        "genre": "note",
+        "heading": "🗾 A Postcard from Japan",
+        "lines": [
+          {
+            "en": "Hi Rani!",
+            "id": "Hai Rani!"
+          },
+          {
+            "en": "I am in Japan with my family.",
+            "id": "Aku di Jepang bersama keluargaku.",
+            "pic": 0
+          },
+          {
+            "en": "It is cold here.",
+            "id": "Di sini dingin.",
+            "pic": 1
+          },
+          {
+            "en": "We eat sushi every day.",
+            "id": "Kami makan sushi setiap hari.",
+            "pic": 2
+          },
+          {
+            "en": "I can see Mount Fuji from my window.",
+            "id": "Aku bisa melihat Gunung Fuji dari jendela.",
+            "pic": 3
+          },
+          {
+            "en": "See you soon, Kiko",
+            "id": "Sampai jumpa, Kiko"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is Kiko?",
+            "qId": "Kiko ada di mana?",
+            "options": [
+              "In Japan",
+              "In Indonesia",
+              "In Australia"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What is the weather like?",
+            "qId": "Cuacanya seperti apa?",
+            "options": [
+              "Cold",
+              "Hot",
+              "Rainy"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What does Kiko eat every day?",
+            "qId": "Kiko makan apa setiap hari?",
+            "options": [
+              "Sushi",
+              "Pizza",
+              "Fried rice"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What can Kiko see from the window?",
+            "qId": "Kiko bisa melihat apa dari jendela?",
+            "options": [
+              "Mount Fuji",
+              "The sea",
+              "A tall tower"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who is the postcard for?",
+            "qId": "Kartu pos ini untuk siapa?",
+            "options": [
+              "Rani",
+              "Kiko",
+              "Kiko's family"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🗾",
+            "label": "family"
+          },
+          {
+            "emoji": "🧣",
+            "label": "here"
+          },
+          {
+            "emoji": "🍣",
+            "label": "day"
+          },
+          {
+            "emoji": "🗻",
+            "label": "window"
+          }
+        ]
+      },
+      {
+        "genre": "note",
+        "heading": "🇦🇺 A Postcard from Australia",
+        "lines": [
+          {
+            "en": "Hello Dimas!",
+            "id": "Halo Dimas!",
+            "pic": 0
+          },
+          {
+            "en": "I am in Sydney, Australia.",
+            "id": "Aku di Sydney, Australia.",
+            "pic": 1
+          },
+          {
+            "en": "It is summer here in December.",
+            "id": "Di sini musim panas di bulan Desember.",
+            "pic": 2
+          },
+          {
+            "en": "I saw a kangaroo in the park!",
+            "id": "Aku melihat kanguru di taman!"
+          },
+          {
+            "en": "I speak English at school.",
+            "id": "Aku berbahasa Inggris di sekolah.",
+            "pic": 3
+          },
+          {
+            "en": "Your friend, Tom",
+            "id": "Temanmu, Tom"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is Tom?",
+            "qId": "Tom ada di mana?",
+            "options": [
+              "In Australia",
+              "In Japan",
+              "In England"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What season is it in December there?",
+            "qId": "Di sana musim apa bulan Desember?",
+            "options": [
+              "Summer",
+              "Winter",
+              "Rainy season"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What animal did Tom see?",
+            "qId": "Hewan apa yang Tom lihat?",
+            "options": [
+              "A kangaroo",
+              "A panda",
+              "A tiger"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What language does Tom speak at school?",
+            "qId": "Tom berbahasa apa di sekolah?",
+            "options": [
+              "English",
+              "Japanese",
+              "Indonesian"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who wrote the postcard?",
+            "qId": "Siapa yang menulis kartu pos ini?",
+            "options": [
+              "Tom",
+              "Dimas",
+              "Tom's teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "👋",
+            "label": "dimas"
+          },
+          {
+            "emoji": "🇦🇺",
+            "label": "australia"
+          },
+          {
+            "emoji": "☀️",
+            "label": "december"
+          },
+          {
+            "emoji": "🏫",
+            "label": "school"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "note",
+        "heading": "🇬🇧 A Postcard from England",
+        "lines": [
+          {
+            "en": "Dear Lia,",
+            "id": "Lia yang baik,"
+          },
+          {
+            "en": "I am in London with my aunt.",
+            "id": "Aku di London bersama tanteku."
+          },
+          {
+            "en": "It rains a lot here.",
+            "id": "Di sini sering hujan."
+          },
+          {
+            "en": "Yesterday we saw a big red bus.",
+            "id": "Kemarin kami melihat bus merah besar."
+          },
+          {
+            "en": "We drank tea with milk.",
+            "id": "Kami minum teh susu."
+          },
+          {
+            "en": "Love, Maya",
+            "id": "Salam sayang, Maya"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who is Maya with?",
+            "qId": "Maya bersama siapa?",
+            "options": [
+              "Her aunt",
+              "Her mom",
+              "Lia"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What is the weather like in London?",
+            "qId": "Cuaca di London seperti apa?",
+            "options": [
+              "It rains a lot.",
+              "It is very hot.",
+              "It is snowy."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did they see yesterday?",
+            "qId": "Apa yang mereka lihat kemarin?",
+            "options": [
+              "A big red bus",
+              "A big red car",
+              "A tall tree"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What did they drink?",
+            "qId": "Mereka minum apa?",
+            "options": [
+              "Tea with milk",
+              "Hot chocolate",
+              "Orange juice"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Where is Maya?",
+            "qId": "Maya ada di mana?",
+            "options": [
+              "In London",
+              "In Sydney",
+              "In Tokyo"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "message",
+        "heading": "💬 Ahmad",
+        "lines": [
+          {
+            "en": "Hi Budi! I'm in Egypt now.",
+            "id": "Hai Budi! Aku sekarang di Mesir."
+          },
+          {
+            "en": "It is very hot and sunny.",
+            "id": "Di sini sangat panas dan cerah."
+          },
+          {
+            "en": "Today I rode a camel!",
+            "id": "Hari ini aku naik unta!"
+          },
+          {
+            "en": "It was tall and slow.",
+            "id": "Untanya tinggi dan lambat."
+          },
+          {
+            "en": "Tomorrow we will see the pyramids.",
+            "id": "Besok kami akan melihat piramida."
+          },
+          {
+            "en": "I will send you photos.",
+            "id": "Aku akan mengirimimu foto."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is Ahmad?",
+            "qId": "Ahmad ada di mana?",
+            "options": [
+              "In Egypt",
+              "In England",
+              "In Japan"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What is the weather like?",
+            "qId": "Cuacanya seperti apa?",
+            "options": [
+              "Very hot and sunny",
+              "Cold and rainy",
+              "Windy and cloudy"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did Ahmad ride?",
+            "qId": "Ahmad naik apa?",
+            "options": [
+              "A camel",
+              "A horse",
+              "A bus"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What will Ahmad see tomorrow?",
+            "qId": "Apa yang akan Ahmad lihat besok?",
+            "options": [
+              "The pyramids",
+              "Mount Fuji",
+              "A red bus"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What will Ahmad send?",
+            "qId": "Apa yang akan Ahmad kirim?",
+            "options": [
+              "Photos",
+              "A postcard",
+              "A camel"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-pesta',
-    title: 'Baca & Cek: Pesta (Read & Check: Party)',
-    scene: '🎉',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '🎉', trueSentence: 'This is a party.', falseSentence: 'This is a wish.', id: 'Ini pesta.' },
-      { emoji: '⭐', trueSentence: 'This is a wish.', falseSentence: 'This is a party.', id: 'Ini harapan.' },
-      { emoji: '🎁', trueSentence: 'This is a present.', falseSentence: 'This is a decoration.', id: 'Ini hadiah.' },
-      { emoji: '🎊', trueSentence: 'This is a decoration.', falseSentence: 'This is a present.', id: 'Ini hiasan.' },
-      { emoji: '🕯️', trueSentence: 'This is a candle.', falseSentence: 'This is a card.', id: 'Ini lilin.' },
-      { emoji: '✉️', trueSentence: 'This is a card.', falseSentence: 'This is a candle.', id: 'Ini kartu.' },
-      { emoji: '💌', trueSentence: 'This is an invitation.', falseSentence: 'This is a surprise.', id: 'Ini undangan.' },
-      { emoji: '😲', trueSentence: 'This is a surprise.', falseSentence: 'This is an invitation.', id: 'Ini kejutan.' },
-      { emoji: '👥', trueSentence: 'This is a guest.', falseSentence: 'This is a celebration.', id: 'Ini tamu.' },
-      { emoji: '🥳', trueSentence: 'This is a celebration.', falseSentence: 'This is a guest.', id: 'Ini perayaan.' },
+    "id": "cek-pesta",
+    "title": "Lomba 17 Agustus (Independence Day Games)",
+    "scene": "🇮🇩",
+    "desc": "Poster & pesan lomba",
+    "texts": [
+      {
+        "genre": "sign",
+        "heading": "🇮🇩 Independence Day Games!",
+        "lines": [
+          {
+            "en": "Come to our games on August 17!",
+            "id": "Ayo ikut lomba kami tanggal 17 Agustus!",
+            "pic": 0
+          },
+          {
+            "en": "Games start at eight in the morning.",
+            "id": "Lomba mulai jam delapan pagi.",
+            "pic": 1
+          },
+          {
+            "en": "Try the sack race!",
+            "id": "Ayo ikut lomba balap karung!"
+          },
+          {
+            "en": "The cracker-eating game is at nine.",
+            "id": "Lomba makan kerupuk jam sembilan.",
+            "pic": 2
+          },
+          {
+            "en": "Winners get a prize.",
+            "id": "Pemenang dapat hadiah.",
+            "pic": 3
+          },
+          {
+            "en": "Wear red and white!",
+            "id": "Pakai baju merah putih!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "q": "When do the games start?",
+            "qId": "Jam berapa lomba mulai?",
+            "options": [
+              "At eight",
+              "At nine",
+              "At seventeen"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What game is at nine?",
+            "qId": "Lomba apa yang jam sembilan?",
+            "options": [
+              "The cracker-eating game",
+              "The sack race",
+              "The football game"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What do winners get?",
+            "qId": "Pemenang dapat apa?",
+            "options": [
+              "A prize",
+              "A cracker",
+              "A red shirt"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What colors should you wear?",
+            "qId": "Warna apa yang harus dipakai?",
+            "options": [
+              "Red and white",
+              "Red and blue",
+              "White and green"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this poster about?",
+            "qId": "Poster ini tentang apa?",
+            "options": [
+              "Independence Day games",
+              "A birthday party",
+              "A school test"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🇮🇩",
+            "label": "17"
+          },
+          {
+            "emoji": "⏰",
+            "label": "morning"
+          },
+          {
+            "emoji": "🍘",
+            "label": "nine"
+          },
+          {
+            "emoji": "🏆",
+            "label": "prize"
+          },
+          {
+            "emoji": "👕",
+            "label": "white"
+          }
+        ]
+      },
+      {
+        "genre": "message",
+        "heading": "💬 Class 4 Group",
+        "lines": [
+          {
+            "en": "Hi everyone! We won the sack race!",
+            "id": "Halo semua! Kita menang balap karung!",
+            "pic": 0
+          },
+          {
+            "en": "Andi was very fast.",
+            "id": "Andi sangat cepat."
+          },
+          {
+            "en": "Sinta won the cracker game.",
+            "id": "Sinta menang lomba kerupuk.",
+            "pic": 1
+          },
+          {
+            "en": "Our class got two prizes.",
+            "id": "Kelas kita dapat dua hadiah.",
+            "pic": 2
+          },
+          {
+            "en": "Thank you for cheering!",
+            "id": "Terima kasih sudah menyemangati!",
+            "pic": 3
+          },
+          {
+            "en": "Miss Dewi",
+            "id": "Bu Dewi"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Which race did the class win?",
+            "qId": "Kelas itu menang lomba apa?",
+            "options": [
+              "The sack race",
+              "The swimming race",
+              "The bike race"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Who was very fast?",
+            "qId": "Siapa yang sangat cepat?",
+            "options": [
+              "Andi",
+              "Sinta",
+              "Miss Dewi"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who won the cracker game?",
+            "qId": "Siapa yang menang lomba kerupuk?",
+            "options": [
+              "Sinta",
+              "Andi",
+              "Miss Dewi"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How many prizes did the class get?",
+            "qId": "Kelas itu dapat berapa hadiah?",
+            "options": [
+              "Two",
+              "One",
+              "Three"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why does Miss Dewi say thank you?",
+            "qId": "Kenapa Bu Dewi berterima kasih?",
+            "options": [
+              "For cheering",
+              "For the crackers",
+              "For the prizes"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🏅",
+            "label": "race"
+          },
+          {
+            "emoji": "🍘",
+            "label": "game"
+          },
+          {
+            "emoji": "🏆",
+            "label": "prizes"
+          },
+          {
+            "emoji": "📣",
+            "label": "cheering"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "sign",
+        "heading": "🎉 Costume Party",
+        "lines": [
+          {
+            "en": "Our class costume party!",
+            "id": "Pesta kostum kelas kita!"
+          },
+          {
+            "en": "It is on Friday after school.",
+            "id": "Pestanya hari Jumat sepulang sekolah."
+          },
+          {
+            "en": "Come as your favorite animal.",
+            "id": "Datang dengan kostum hewan favoritmu."
+          },
+          {
+            "en": "Bring one snack to share.",
+            "id": "Bawa satu camilan untuk dibagi."
+          },
+          {
+            "en": "There will be music and games.",
+            "id": "Akan ada musik dan permainan."
+          },
+          {
+            "en": "The best costume wins a book!",
+            "id": "Kostum terbaik dapat hadiah buku!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "When is the party?",
+            "qId": "Kapan pestanya?",
+            "options": [
+              "On Friday after school",
+              "On Friday morning",
+              "On Saturday"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What costume should you wear?",
+            "qId": "Kostum apa yang harus dipakai?",
+            "options": [
+              "Your favorite animal",
+              "A school uniform",
+              "A red and white shirt"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What should you bring?",
+            "qId": "Apa yang harus dibawa?",
+            "options": [
+              "One snack to share",
+              "A book",
+              "A game"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What will the best costume win?",
+            "qId": "Kostum terbaik dapat apa?",
+            "options": [
+              "A book",
+              "A snack",
+              "A game"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this poster about?",
+            "qId": "Poster ini tentang apa?",
+            "options": [
+              "A costume party",
+              "A book shop",
+              "A music test"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "genre": "message",
+        "heading": "💬 Nina",
+        "lines": [
+          {
+            "en": "Hi Lulu! I have my costume!",
+            "id": "Hai Lulu! Kostumku sudah siap!"
+          },
+          {
+            "en": "I will be a panda.",
+            "id": "Aku akan jadi panda."
+          },
+          {
+            "en": "My mom made black ears for me.",
+            "id": "Ibuku membuatkan telinga hitam untukku."
+          },
+          {
+            "en": "What will you be?",
+            "id": "Kamu akan jadi apa?"
+          },
+          {
+            "en": "Can we go to the party together?",
+            "id": "Kita berangkat ke pesta bareng, yuk?"
+          },
+          {
+            "en": "Nina",
+            "id": "Nina"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What will Nina be?",
+            "qId": "Nina akan jadi apa?",
+            "options": [
+              "A panda",
+              "A lion",
+              "A cat"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who made the ears?",
+            "qId": "Siapa yang membuat telinganya?",
+            "options": [
+              "Nina's mom",
+              "Nina",
+              "Lulu"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What color are the ears?",
+            "qId": "Telinganya warna apa?",
+            "options": [
+              "Black",
+              "White",
+              "Brown"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What does Nina ask Lulu?",
+            "qId": "Nina bertanya apa ke Lulu?",
+            "options": [
+              "What Lulu will be",
+              "Where the party is",
+              "When the party is"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does Nina want to do?",
+            "qId": "Nina ingin melakukan apa?",
+            "options": [
+              "Go to the party with Lulu",
+              "Make a cake",
+              "Stay at home"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'cek-dapur',
-    title: 'Baca & Cek: Dapur (Read & Check: Kitchen)',
-    scene: '🍳',
-    desc: '10 kalimat',
-    checks: [
-      { emoji: '🍲', trueSentence: 'This is a pot.', falseSentence: 'This is a pan.', id: 'Ini panci.' },
-      { emoji: '🍳', trueSentence: 'This is a pan.', falseSentence: 'This is a pot.', id: 'Ini wajan.' },
-      { emoji: '🥄', trueSentence: 'This is a spoon.', falseSentence: 'This is a fork.', id: 'Ini sendok.' },
-      { emoji: '🍴', trueSentence: 'This is a fork.', falseSentence: 'This is a spoon.', id: 'Ini garpu.' },
-      { emoji: '🔪', trueSentence: 'This is a knife.', falseSentence: 'This is a plate.', id: 'Ini pisau.' },
-      { emoji: '🍽️', trueSentence: 'This is a plate.', falseSentence: 'This is a knife.', id: 'Ini piring.' },
-      { emoji: '🥣', trueSentence: 'This is a bowl.', falseSentence: 'This is a cup.', id: 'Ini mangkuk.' },
-      { emoji: '☕', trueSentence: 'This is a cup.', falseSentence: 'This is a bowl.', id: 'Ini cangkir.' },
-      { emoji: '🫖', trueSentence: 'This is a kettle.', falseSentence: 'This is a pot.', id: 'Ini ketel.' },
-      { emoji: '🥢', trueSentence: 'These are chopsticks.', falseSentence: 'These are forks.', id: 'Ini sumpit.' },
+    "id": "cek-dapur",
+    "title": "Resep Sederhana (Easy Recipes)",
+    "scene": "🍳",
+    "desc": "Resep & aturan dapur",
+    "texts": [
+      {
+        "genre": "note",
+        "heading": "🍌 Banana Milkshake",
+        "lines": [
+          {
+            "en": "You need one banana and some milk.",
+            "id": "Kamu butuh satu pisang dan susu.",
+            "pic": 0
+          },
+          {
+            "en": "First, peel the banana.",
+            "id": "Pertama, kupas pisangnya."
+          },
+          {
+            "en": "Ask an adult to cut it.",
+            "id": "Minta orang dewasa memotongnya.",
+            "pic": 1
+          },
+          {
+            "en": "Put it in a blender with milk.",
+            "id": "Masukkan ke blender dengan susu.",
+            "pic": 2
+          },
+          {
+            "en": "Blend for one minute.",
+            "id": "Blender selama satu menit.",
+            "pic": 3
+          },
+          {
+            "en": "Pour it into a glass. Yum!",
+            "id": "Tuang ke gelas. Enak!",
+            "pic": 4
+          }
+        ],
+        "questions": [
+          {
+            "q": "What do you need?",
+            "qId": "Kamu butuh apa?",
+            "options": [
+              "A banana and milk",
+              "An apple and milk",
+              "A banana and water"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What do you do first?",
+            "qId": "Apa yang dilakukan pertama?",
+            "options": [
+              "Peel the banana",
+              "Pour it into a glass",
+              "Blend it"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who should cut the banana?",
+            "qId": "Siapa yang harus memotong pisang?",
+            "options": [
+              "An adult",
+              "A friend",
+              "You alone"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How long do you blend it?",
+            "qId": "Berapa lama diblender?",
+            "options": [
+              "One minute",
+              "Ten minutes",
+              "One hour"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is this text?",
+            "qId": "Teks ini apa?",
+            "options": [
+              "A recipe",
+              "A shopping list",
+              "A menu"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🍌",
+            "label": "milk"
+          },
+          {
+            "emoji": "🔪",
+            "label": "it"
+          },
+          {
+            "emoji": "🥛",
+            "label": "milk"
+          },
+          {
+            "emoji": "⏱️",
+            "label": "minute"
+          },
+          {
+            "emoji": "🥤",
+            "label": "yum"
+          }
+        ]
+      },
+      {
+        "genre": "note",
+        "heading": "🥪 Egg Sandwich",
+        "lines": [
+          {
+            "en": "You need bread, one egg and cheese.",
+            "id": "Kamu butuh roti, satu telur, dan keju.",
+            "pic": 0
+          },
+          {
+            "en": "Ask an adult to cook the egg.",
+            "id": "Minta orang dewasa memasak telurnya.",
+            "pic": 1
+          },
+          {
+            "en": "Put the egg on the bread.",
+            "id": "Taruh telur di atas roti."
+          },
+          {
+            "en": "Add a slice of cheese.",
+            "id": "Tambahkan selembar keju.",
+            "pic": 2
+          },
+          {
+            "en": "Put more bread on top.",
+            "id": "Tutup dengan roti lagi."
+          },
+          {
+            "en": "Now eat your sandwich!",
+            "id": "Sekarang makan roti lapismu!",
+            "pic": 3
+          }
+        ],
+        "questions": [
+          {
+            "q": "What do you need?",
+            "qId": "Kamu butuh apa?",
+            "options": [
+              "Bread, an egg and cheese",
+              "Bread, milk and jam",
+              "Rice and an egg"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Who cooks the egg?",
+            "qId": "Siapa yang memasak telur?",
+            "options": [
+              "An adult",
+              "You",
+              "A friend"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What goes on the egg?",
+            "qId": "Apa yang ditaruh di atas telur?",
+            "options": [
+              "A slice of cheese",
+              "A banana",
+              "Some jam"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What goes on top at the end?",
+            "qId": "Apa yang ditaruh paling atas?",
+            "options": [
+              "More bread",
+              "More cheese",
+              "An egg"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What do you make?",
+            "qId": "Kamu membuat apa?",
+            "options": [
+              "An egg sandwich",
+              "A banana cake",
+              "A milkshake"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "pictures": [
+          {
+            "emoji": "🍞",
+            "label": "cheese"
+          },
+          {
+            "emoji": "🍳",
+            "label": "egg"
+          },
+          {
+            "emoji": "🧀",
+            "label": "cheese"
+          },
+          {
+            "emoji": "🥪",
+            "label": "sandwich"
+          }
+        ]
+      }
     ],
+    "newTexts": [
+      {
+        "genre": "note",
+        "heading": "🍇 Fruit Salad",
+        "lines": [
+          {
+            "en": "You need a banana, an apple and grapes.",
+            "id": "Kamu butuh pisang, apel, dan anggur."
+          },
+          {
+            "en": "Ask an adult to cut the fruit.",
+            "id": "Minta orang dewasa memotong buahnya."
+          },
+          {
+            "en": "Put the fruit in a big bowl.",
+            "id": "Masukkan buah ke mangkuk besar."
+          },
+          {
+            "en": "Add two spoons of yogurt.",
+            "id": "Tambahkan dua sendok yoghurt."
+          },
+          {
+            "en": "Mix it with a spoon.",
+            "id": "Aduk dengan sendok."
+          },
+          {
+            "en": "Put it in the fridge for ten minutes.",
+            "id": "Masukkan ke kulkas selama sepuluh menit."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many kinds of fruit do you need?",
+            "qId": "Butuh berapa jenis buah?",
+            "options": [
+              "Three",
+              "Two",
+              "Ten"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where do you put the fruit?",
+            "qId": "Buahnya dimasukkan ke mana?",
+            "options": [
+              "In a big bowl",
+              "In a glass",
+              "In a blender"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How much yogurt?",
+            "qId": "Berapa banyak yoghurt?",
+            "options": [
+              "Two spoons",
+              "One cup",
+              "Ten spoons"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How long does it stay in the fridge?",
+            "qId": "Berapa lama di kulkas?",
+            "options": [
+              "Ten minutes",
+              "Two minutes",
+              "One hour"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What do you make?",
+            "qId": "Kamu membuat apa?",
+            "options": [
+              "A fruit salad",
+              "A milkshake",
+              "A sandwich"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "genre": "sign",
+        "heading": "🍳 Kitchen Rules",
+        "lines": [
+          {
+            "en": "Wash your hands first.",
+            "id": "Cuci tangan dulu."
+          },
+          {
+            "en": "Ask an adult before you use the stove.",
+            "id": "Tanya orang dewasa sebelum memakai kompor."
+          },
+          {
+            "en": "Only adults use sharp knives.",
+            "id": "Hanya orang dewasa yang memakai pisau tajam."
+          },
+          {
+            "en": "Clean the table after cooking.",
+            "id": "Bersihkan meja sesudah memasak."
+          },
+          {
+            "en": "Put the dishes in the sink.",
+            "id": "Taruh piring kotor di bak cuci."
+          },
+          {
+            "en": "Have fun cooking!",
+            "id": "Selamat memasak!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What do you do first?",
+            "qId": "Apa yang dilakukan pertama?",
+            "options": [
+              "Wash your hands",
+              "Clean the table",
+              "Use the stove"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Who uses sharp knives?",
+            "qId": "Siapa yang memakai pisau tajam?",
+            "options": [
+              "Only adults",
+              "Only children",
+              "Everyone"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When do you clean the table?",
+            "qId": "Kapan meja dibersihkan?",
+            "options": [
+              "After cooking",
+              "Before cooking",
+              "At night"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where do the dishes go?",
+            "qId": "Piring kotor ditaruh di mana?",
+            "options": [
+              "In the sink",
+              "On the table",
+              "In the fridge"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Where would you see this sign?",
+            "qId": "Di mana kamu akan melihat papan ini?",
+            "options": [
+              "In a kitchen",
+              "In a classroom",
+              "In a park"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
+  {
+    "id": "undangan-ulang-tahun",
+    "title": "Undangan Ulang Tahun (Birthday Invitation)",
+    "scene": "🎈",
+    "desc": "Undangan & pesan balasan",
+    "texts": [
+      {
+        "genre": "invitation",
+        "heading": "🎈 Party Time!",
+        "pictures": [
+          {
+            "emoji": "🎉",
+            "label": "party"
+          },
+          {
+            "emoji": "📅",
+            "label": "calendar"
+          },
+          {
+            "emoji": "🕒",
+            "label": "clock"
+          },
+          {
+            "emoji": "🎂",
+            "label": "cake"
+          },
+          {
+            "emoji": "🩱",
+            "label": "swimsuit"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Dear Budi,",
+            "id": "Budi yang baik,"
+          },
+          {
+            "en": "Come to my birthday party!",
+            "id": "Datang ke pesta ulang tahunku, ya!",
+            "pic": 0
+          },
+          {
+            "en": "It is on Saturday.",
+            "id": "Pestanya hari Sabtu.",
+            "pic": 1
+          },
+          {
+            "en": "It starts at three and ends at five.",
+            "id": "Mulai jam tiga dan selesai jam lima.",
+            "pic": 2
+          },
+          {
+            "en": "We will eat cake and play games.",
+            "id": "Kita akan makan kue dan main games.",
+            "pic": 3
+          },
+          {
+            "en": "Please bring your swimsuit for the pool.",
+            "id": "Tolong bawa baju renangmu untuk kolam renang.",
+            "pic": 4
+          },
+          {
+            "en": "Love, Rani",
+            "id": "Salam sayang, Rani"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who wrote this card?",
+            "qId": "Siapa yang menulis kartu ini?",
+            "options": [
+              "Rani",
+              "Budi",
+              "Rani's mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What day is the party?",
+            "qId": "Pestanya hari apa?",
+            "options": [
+              "Saturday",
+              "Sunday",
+              "Friday"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "When does the party end?",
+            "qId": "Jam berapa pestanya selesai?",
+            "options": [
+              "At five",
+              "At three",
+              "At one"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What should Budi bring?",
+            "qId": "Apa yang harus dibawa Budi?",
+            "options": [
+              "A swimsuit",
+              "A cake",
+              "A game"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is this card about?",
+            "qId": "Kartu ini tentang apa?",
+            "options": [
+              "A birthday party",
+              "A swimming lesson",
+              "A new game"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "genre": "message",
+        "heading": "💬 Budi",
+        "pictures": [
+          {
+            "emoji": "💌",
+            "label": "card"
+          },
+          {
+            "emoji": "👧",
+            "label": "little sister"
+          },
+          {
+            "emoji": "🎁",
+            "label": "gift"
+          },
+          {
+            "emoji": "📅",
+            "label": "calendar"
+          }
+        ],
+        "lines": [
+          {
+            "en": "Hi Rani! Thanks for the card.",
+            "id": "Hai Rani! Makasih untuk kartunya.",
+            "pic": 0
+          },
+          {
+            "en": "Yes, I can come to your party.",
+            "id": "Ya, aku bisa datang ke pestamu."
+          },
+          {
+            "en": "My little sister wants to come too.",
+            "id": "Adik perempuanku juga ingin datang.",
+            "pic": 1
+          },
+          {
+            "en": "Is that okay?",
+            "id": "Boleh tidak?"
+          },
+          {
+            "en": "I will bring a gift for you.",
+            "id": "Aku akan bawa hadiah untukmu.",
+            "pic": 2
+          },
+          {
+            "en": "See you on Saturday!",
+            "id": "Sampai jumpa hari Sabtu!",
+            "pic": 3
+          }
+        ],
+        "questions": [
+          {
+            "q": "Can Budi come to the party?",
+            "qId": "Apakah Budi bisa datang ke pesta?",
+            "options": [
+              "Yes, he can.",
+              "No, he can't.",
+              "He doesn't know."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Who wants to come too?",
+            "qId": "Siapa yang juga ingin datang?",
+            "options": [
+              "Budi's sister",
+              "Rani's sister",
+              "Budi's mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What will Budi bring?",
+            "qId": "Apa yang akan dibawa Budi?",
+            "options": [
+              "A gift",
+              "A card",
+              "A cake"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why does Budi say thanks?",
+            "qId": "Kenapa Budi berterima kasih?",
+            "options": [
+              "For the card",
+              "For the gift",
+              "For the party food"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What does Budi ask Rani?",
+            "qId": "Budi bertanya apa ke Rani?",
+            "options": [
+              "Can his sister come?",
+              "What time is the party?",
+              "Where does Rani live?"
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              3
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "invitation",
+        "heading": "🧺 Picnic Day!",
+        "lines": [
+          {
+            "en": "Hello friends,",
+            "id": "Halo teman-teman,"
+          },
+          {
+            "en": "Let's have a picnic in the park!",
+            "id": "Ayo piknik di taman!"
+          },
+          {
+            "en": "It is on Sunday morning.",
+            "id": "Pikniknya hari Minggu pagi."
+          },
+          {
+            "en": "We will meet at the big tree.",
+            "id": "Kita ketemu di pohon besar."
+          },
+          {
+            "en": "I will bring sandwiches and juice.",
+            "id": "Aku akan bawa roti lapis dan jus."
+          },
+          {
+            "en": "Please bring a ball and a hat.",
+            "id": "Tolong bawa bola dan topi."
+          },
+          {
+            "en": "From, Dimas",
+            "id": "Dari, Dimas"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where will they meet?",
+            "qId": "Mereka ketemu di mana?",
+            "options": [
+              "At the big tree",
+              "At the school gate",
+              "At Dimas's house"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "When is the picnic?",
+            "qId": "Kapan pikniknya?",
+            "options": [
+              "On Sunday morning",
+              "On Saturday afternoon",
+              "On Sunday night"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What will Dimas bring?",
+            "qId": "Apa yang akan dibawa Dimas?",
+            "options": [
+              "Sandwiches and juice",
+              "A ball and a hat",
+              "Cake and ice cream"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who is this letter for?",
+            "qId": "Surat ini untuk siapa?",
+            "options": [
+              "Dimas's friends",
+              "Dimas's teacher",
+              "Dimas's mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What is this letter about?",
+            "qId": "Surat ini tentang apa?",
+            "options": [
+              "A picnic in the park",
+              "A party at home",
+              "A game at school"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "genre": "note",
+        "heading": "📝 Note from Mom",
+        "lines": [
+          {
+            "en": "Rani, I am at Grandma's house.",
+            "id": "Rani, Mama ada di rumah Nenek."
+          },
+          {
+            "en": "I will come home at six.",
+            "id": "Mama pulang jam enam."
+          },
+          {
+            "en": "Your lunch is in the fridge.",
+            "id": "Makan siangmu ada di kulkas."
+          },
+          {
+            "en": "Please do your homework first.",
+            "id": "Tolong kerjakan PR-mu dulu."
+          },
+          {
+            "en": "Then you can feed the cat.",
+            "id": "Setelah itu kamu boleh kasih makan kucing."
+          },
+          {
+            "en": "Love, Mom",
+            "id": "Salam sayang, Mama"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where is Mom now?",
+            "qId": "Mama sekarang ada di mana?",
+            "options": [
+              "At Grandma's house",
+              "At home",
+              "At the shop"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What time will Mom come home?",
+            "qId": "Jam berapa Mama pulang?",
+            "options": [
+              "At six",
+              "At two",
+              "At nine"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where is Rani's lunch?",
+            "qId": "Makan siang Rani ada di mana?",
+            "options": [
+              "In the fridge",
+              "On the table",
+              "In her bag"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What must Rani do first?",
+            "qId": "Apa yang harus Rani kerjakan dulu?",
+            "options": [
+              "Her homework",
+              "Feed the cat",
+              "Eat lunch"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Who wrote this note?",
+            "qId": "Siapa yang menulis catatan ini?",
+            "options": [
+              "Mom",
+              "Rani",
+              "Grandma"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 /**
- * Reading Trailblazer (12+ th, ≈B1) — 🔒 revisi user: target Trailblazer
- * dinaikkan dari "low-effort, 1-2 modul preview" (PRD §9 lama) jadi
- * **minimal 5 topik/skill** (CLAUDE.md "Target Kelengkapan Konten per
- * Modul" poin 1) — TETAP lebih ringan dari 5 level lain (≥10), levelnya
- * tetap "jalur lanjutan" opsional. TETAP format LAMA `ReadingTopic` (BUKAN
- * tipe baru) — riset (`materi/reading.md` §9.5) TIDAK menemukan alasan kuat
- * utk revisi mekanik penuh spt Listening dulu (lompatan Cambridge KET→PET
- * utk Reading lebih ke "teks lebih panjang, tipe soal serupa", bukan
- * kategori skill baru) — cukup reuse format Achiever dgn konten LEBIH berat
- * lagi (kalimat majemuk, konektor "however/although/instead", tema B1 anak
- * 12+: wawancara, liburan, lingkungan, teknologi, kerja sosial). Semua 10
- * topik py `question` akhir INFERENSI (pola sama Achiever) — cerita tidak
- * pernah menyebutkan simpulannya literal, anak gabungkan ≥2 info.
- *
- * **🔒 Digenapkan 5→10 topik + audit konten existing** (permintaan user
- * "tambah 5 materi untuk level trailblazer dan audit juga materi saat ini
- * apakah sudah relevan?", `materi/reading.md` §18) — audit menemukan gap
- * NYATA: 5 topik pertama TIDAK PERNAH benar² pakai konektor "however"/
- * "although" walau dokumentasi desain awal (di atas) mengklaim itu ciri
- * pembeda utama dari Achiever — dicek via grep, cuma "but"/"instead" yg
- * dipakai (0× "however"/"although" di 5 topik awal). **Diperbaiki**: 3 dari
- * 5 topik lama (`liburan-yang-berubah`/`kompetisi-robot`/`proyek-
- * lingkungan`) direvisi ringan (1 kata sambung diganti per topik, MAKNA
- * sama, opsi jawaban/logic TIDAK diubah) supaya korpusnya benar² py variasi
- * konektor B1 spt yg diklaim. **5 topik BARU** (riset WebSearch: Cambridge
- * B1 Preliminary/PET tema resmi remaja — sports & fitness, art & music,
- * food & cooking, friends & parties, money & saving/future plans, SEMUA
- * tema yg belum disentuh 5 topik lama) SENGAJA py "however"/"although"/
- * "even though" GENUINE sejak awal ditulis (bukan retrofit) + struktur
- * kalimat lebih kompleks (klausa relatif "who is much taller", klausa
- * konsesif) supaya benar² lebih berat dari Achiever, bukan cuma beda tema:
- * `seleksi-tim-basket`, `pameran-seni-sekolah`, `kelas-memasak-mingguan`,
- * `pesta-kejutan-sahabat`, `menabung-untuk-sepeda` (yg terakhir REUSE pola
- * "perhitungan matematika aktual" dari Achiever `menggalang-dana-sekolah` —
- * anak hitung sendiri selisih 1.600.000-1.400.000=200.000, bukan re-baca
- * fakta). **Deviasi SADAR dari target baku Trailblazer (≥5)** — user
- * eksplisit minta +5 lagi, preseden sama dgn Listening/Grammar Trailblazer
- * yg jg dibangun ke 10/10 penuh atas permintaan eksplisit sebelumnya.
+ * Reading trailblazer — format "Baca Teks" (`ReadingTextTopic`, materi/reading.md §19–§22).
+ * Email, artikel opini, iklan, transkrip — tier Lanjut (4 opsi). Id topik lama DIPERTAHANKAN (urutan menu sama); progres format
+ * lama tidak terbaca krn section-nya beda (`latihan-teks`/`tantangan-teks`).
  */
-export const READING_TOPICS_TRAILBLAZER: ReadingTopic[] = [
+export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
   {
-    id: 'wawancara-radio-sekolah',
-    title: 'Wawancara Radio Sekolah (School Radio Interview)',
-    scene: '🎙️',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Sarah joins the school radio club this semester.', 'She wants to interview interesting students and teachers.'], id: 'Sarah bergabung dengan klub radio sekolah semester ini. Dia ingin mewawancarai murid dan guru yang menarik.' },
-      { passage: ['Her first interview is with the school’s chess champion.', 'She prepares five questions the night before.'], id: 'Wawancara pertamanya dengan juara catur sekolah. Dia menyiapkan lima pertanyaan malam sebelumnya.' },
-    ],
-    drill: [
+    "id": "wawancara-radio-sekolah",
+    "title": "Wawancara Radio Sekolah (School Radio Interview)",
+    "scene": "🎙️",
+    "desc": "Transkrip radio, email & artikel",
+    "texts": [
       {
-        passage: ['Sarah plans to record the interview in the library, but it is too noisy there.', 'She decides to use the music room instead because it is quiet.'],
-        id: 'Sarah berencana merekam wawancara di perpustakaan, tapi di sana terlalu berisik. Dia memutuskan memakai ruang musik karena tenang.',
-        question: 'Where does Sarah record the interview?',
-        questionId: 'Di mana Sarah merekam wawancaranya?',
-        opts: [{ emoji: '🎵', lbl: 'The music room', ok: true }, { emoji: '📚', lbl: 'The library' }, { emoji: '🏫', lbl: 'The classroom' }],
+        "genre": "dialog",
+        "heading": "🎙️ School Radio: Meet the Chess Champion",
+        "lines": [
+          {
+            "en": "Host: Today we're talking to Nadia, our new chess champion.",
+            "id": "Penyiar: Hari ini kita berbincang dengan Nadia, juara catur baru kita."
+          },
+          {
+            "en": "Nadia: Thanks for having me! I'm still a bit surprised.",
+            "id": "Nadia: Terima kasih sudah mengundang! Aku masih agak kaget."
+          },
+          {
+            "en": "Host: How long have you been playing chess?",
+            "id": "Penyiar: Sudah berapa lama kamu main catur?"
+          },
+          {
+            "en": "Nadia: About three years. My grandfather taught me.",
+            "id": "Nadia: Sekitar tiga tahun. Kakekku yang mengajariku."
+          },
+          {
+            "en": "Host: Was the final game difficult?",
+            "id": "Penyiar: Apakah pertandingan finalnya sulit?",
+            "br": true
+          },
+          {
+            "en": "Nadia: Very! I almost lost, but I stayed calm and waited for a mistake.",
+            "id": "Nadia: Sangat! Aku hampir kalah, tapi aku tetap tenang dan menunggu lawan salah langkah."
+          },
+          {
+            "en": "Host: What advice would you give to beginners?",
+            "id": "Penyiar: Apa saranmu untuk pemula?",
+            "br": true
+          },
+          {
+            "en": "Nadia: Don't be afraid of losing. Every game teaches you something.",
+            "id": "Nadia: Jangan takut kalah. Setiap permainan mengajarkan sesuatu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who taught Nadia chess?",
+            "qId": "Siapa yang mengajari Nadia catur?",
+            "options": [
+              "Her grandfather",
+              "Her teacher",
+              "Her mother",
+              "The host"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How does Nadia feel about winning?",
+            "qId": "Bagaimana perasaan Nadia soal kemenangannya?",
+            "options": [
+              "A bit surprised",
+              "Completely bored",
+              "Angry with herself",
+              "Worried about school"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How did Nadia win the final game?",
+            "qId": "Bagaimana Nadia memenangkan final?",
+            "options": [
+              "She stayed calm and waited for a mistake.",
+              "She played very fast.",
+              "Her opponent left early.",
+              "She practised the night before."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is Nadia's main advice for beginners?",
+            "qId": "Apa saran utama Nadia untuk pemula?",
+            "options": [
+              "Losing is part of learning.",
+              "Only play against friends.",
+              "Never make mistakes.",
+              "Practise for three years first."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          },
+          {
+            "q": "What is the purpose of this interview?",
+            "qId": "Apa tujuan wawancara ini?",
+            "options": [
+              "To introduce the school's chess champion",
+              "To teach the rules of chess",
+              "To advertise a chess shop",
+              "To complain about a game"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ],
+        "sequence": [
+          3,
+          5,
+          7
+        ]
       },
       {
-        passage: ['The chess champion says he practices every day after school.', 'He also says weekends are for resting, not practicing.'],
-        id: 'Juara catur itu bilang dia berlatih setiap hari sepulang sekolah. Dia juga bilang akhir pekan untuk istirahat, bukan berlatih.',
-        question: 'When does the chess champion practice?',
-        questionId: 'Kapan juara catur itu berlatih?',
-        opts: [{ emoji: '📅', lbl: 'Every day after school', ok: true }, { emoji: '🌞', lbl: 'On weekends' }, { emoji: '🌙', lbl: 'Only at night' }],
+        "genre": "email",
+        "heading": "✉️ From: Radio Club · To: All students · Subject: Be on air!",
+        "lines": [
+          {
+            "en": "Dear students,",
+            "id": "Para siswa,"
+          },
+          {
+            "en": "The school radio club is looking for new presenters.",
+            "id": "Klub radio sekolah sedang mencari penyiar baru."
+          },
+          {
+            "en": "You don't need any experience, although a clear voice helps.",
+            "id": "Kamu tidak perlu pengalaman, walaupun suara yang jelas membantu."
+          },
+          {
+            "en": "Presenters read the news and interview teachers twice a week.",
+            "id": "Penyiar membacakan berita dan mewawancarai guru dua kali seminggu."
+          },
+          {
+            "en": "The club meets on Wednesdays after school in Room 12.",
+            "id": "Klub bertemu setiap Rabu sepulang sekolah di Ruang 12.",
+            "br": true
+          },
+          {
+            "en": "However, you must finish your homework before you record.",
+            "id": "Namun, kamu harus menyelesaikan PR sebelum rekaman."
+          },
+          {
+            "en": "If you're interested, send us a short voice message by Friday.",
+            "id": "Kalau tertarik, kirim pesan suara singkat paling lambat Jumat.",
+            "br": true
+          },
+          {
+            "en": "We can't wait to hear you! The Radio Club",
+            "id": "Kami tidak sabar mendengarmu! Klub Radio"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is the radio club looking for?",
+            "qId": "Klub radio sedang mencari apa?",
+            "options": [
+              "New presenters",
+              "New teachers",
+              "A new room",
+              "Music for the radio"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Do you need experience?",
+            "qId": "Apakah kamu perlu pengalaman?",
+            "options": [
+              "No, but a clear voice helps.",
+              "Yes, at least one year.",
+              "Only if you are a teacher.",
+              "Yes, you need your own radio."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What must you do before recording?",
+            "qId": "Apa yang harus kamu lakukan sebelum rekaman?",
+            "options": [
+              "Finish your homework",
+              "Interview a teacher",
+              "Go to Room 12",
+              "Send a letter"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "How do you apply?",
+            "qId": "Bagaimana cara mendaftar?",
+            "options": [
+              "Send a short voice message by Friday",
+              "Visit Room 12 on Friday",
+              "Email a teacher",
+              "Read the news on Wednesday"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How does the club seem to feel about new members?",
+            "qId": "Bagaimana perasaan klub terhadap anggota baru?",
+            "options": [
+              "Excited",
+              "Worried",
+              "Bored",
+              "Unsure"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "dialog",
+        "heading": "🎙️ School Radio: The Canteen Chef",
+        "lines": [
+          {
+            "en": "Host: This week we're in the canteen with Bu Siti, our chef.",
+            "id": "Penyiar: Minggu ini kita di kantin bersama Bu Siti, juru masak kita."
+          },
+          {
+            "en": "Bu Siti: Hello everyone! I've been cooking here for ten years.",
+            "id": "Bu Siti: Halo semua! Saya sudah memasak di sini sepuluh tahun."
+          },
+          {
+            "en": "Host: What is the most popular food?",
+            "id": "Penyiar: Makanan apa yang paling laris?"
+          },
+          {
+            "en": "Bu Siti: Chicken noodles, although fried rice is a close second.",
+            "id": "Bu Siti: Mi ayam, walaupun nasi goreng hampir menyamai."
+          },
+          {
+            "en": "Host: Have you ever changed the menu because of students?",
+            "id": "Penyiar: Pernah mengubah menu karena siswa?",
+            "br": true
+          },
+          {
+            "en": "Bu Siti: Yes! Last year students asked for more vegetables, so I added a salad bar.",
+            "id": "Bu Siti: Pernah! Tahun lalu siswa minta lebih banyak sayur, jadi saya menambah meja salad."
+          },
+          {
+            "en": "Host: Is it popular?",
+            "id": "Penyiar: Apakah laris?"
+          },
+          {
+            "en": "Bu Siti: More than I expected. Even the teachers love it!",
+            "id": "Bu Siti: Melebihi dugaan saya. Bahkan guru-guru menyukainya!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How long has Bu Siti worked in the canteen?",
+            "qId": "Sudah berapa lama Bu Siti bekerja di kantin?",
+            "options": [
+              "Ten years",
+              "One year",
+              "Two years",
+              "Since last year"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Which food is the second most popular?",
+            "qId": "Makanan apa yang paling laris kedua?",
+            "options": [
+              "Fried rice",
+              "Chicken noodles",
+              "Salad",
+              "Soup"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why did Bu Siti add a salad bar?",
+            "qId": "Kenapa Bu Siti menambah meja salad?",
+            "options": [
+              "Students asked for more vegetables.",
+              "Teachers asked for it.",
+              "Salad is cheaper.",
+              "The noodles were too popular."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does 'it' refer to in 'Is it popular?'",
+            "qId": "'It' dalam 'Is it popular?' merujuk ke apa?",
+            "options": [
+              "The salad bar",
+              "The canteen",
+              "The radio show",
+              "The chicken noodles"
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "How does Bu Siti feel about the salad bar's success?",
+            "qId": "Bagaimana perasaan Bu Siti atas larisnya meja salad?",
+            "options": [
+              "Pleasantly surprised",
+              "Disappointed",
+              "Worried",
+              "Annoyed"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'After the interview, Sarah listens to the recording carefully.',
-      'She notices her voice sounds nervous at the beginning but calmer later.',
-      'Her teacher says this is normal for a first interview and tells her to keep practicing.',
-      'Sarah feels proud because she finished her very first project for the radio club.',
-    ],
-    storyId: 'Setelah wawancara, Sarah mendengarkan rekamannya dengan saksama. Dia sadar suaranya terdengar gugup di awal tapi lebih tenang belakangan. Gurunya bilang ini wajar untuk wawancara pertama dan menyuruhnya terus berlatih. Sarah merasa bangga karena sudah menyelesaikan proyek pertamanya untuk klub radio.',
-    question: {
-      text: 'How does Sarah probably feel about her first interview by the end of the story?',
-      id: 'Bagaimana perasaan Sarah tentang wawancara pertamanya di akhir cerita?',
-      opts: [{ emoji: '😊', lbl: 'Proud, even though it wasn’t perfect', ok: true }, { emoji: '😢', lbl: 'Sad because she failed' }, { emoji: '😠', lbl: 'Angry at her teacher' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Why Our School Needs a Radio Station",
+        "lines": [
+          {
+            "en": "Two years ago, our school started a small radio station.",
+            "id": "Dua tahun lalu, sekolah kami memulai stasiun radio kecil."
+          },
+          {
+            "en": "At first, some teachers thought it would distract students.",
+            "id": "Awalnya, sebagian guru mengira radio itu akan mengganggu siswa."
+          },
+          {
+            "en": "However, the results have been very positive.",
+            "id": "Namun, hasilnya sangat positif."
+          },
+          {
+            "en": "Shy students have become more confident speakers.",
+            "id": "Siswa pemalu menjadi pembicara yang lebih percaya diri.",
+            "br": true
+          },
+          {
+            "en": "Others have learned to write clear, short news reports.",
+            "id": "Yang lain belajar menulis laporan berita yang jelas dan singkat."
+          },
+          {
+            "en": "The station also shares important messages, like changes to the timetable.",
+            "id": "Stasiun itu juga menyampaikan pesan penting, seperti perubahan jadwal."
+          },
+          {
+            "en": "In my opinion, every school should have one.",
+            "id": "Menurut saya, setiap sekolah sebaiknya punya satu.",
+            "br": true
+          },
+          {
+            "en": "It gives students a real reason to communicate well.",
+            "id": "Radio memberi siswa alasan nyata untuk berkomunikasi dengan baik."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What did some teachers worry about at first?",
+            "qId": "Apa kekhawatiran sebagian guru awalnya?",
+            "options": [
+              "That it would distract students",
+              "That it would be too expensive",
+              "That nobody would listen",
+              "That it would be too loud"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How has the radio helped shy students?",
+            "qId": "Bagaimana radio membantu siswa pemalu?",
+            "options": [
+              "They have become more confident.",
+              "They have become quieter.",
+              "They no longer come to school.",
+              "They now write for newspapers."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What kind of messages does the station share?",
+            "qId": "Pesan apa yang disampaikan stasiun itu?",
+            "options": [
+              "Important messages like timetable changes",
+              "Only music",
+              "Advertisements",
+              "Jokes from teachers"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the writer's opinion?",
+            "qId": "Apa pendapat penulis?",
+            "options": [
+              "Every school should have a radio station.",
+              "Radio stations are a waste of time.",
+              "Only shy students should use radio.",
+              "Teachers should run the station."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "Which word best describes the writer's attitude?",
+            "qId": "Kata apa yang paling tepat menggambarkan sikap penulis?",
+            "options": [
+              "Positive",
+              "Negative",
+              "Uncertain",
+              "Angry"
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'liburan-yang-berubah',
-    title: 'Liburan yang Berubah (A Holiday That Changed)',
-    scene: '🌦️',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['The Putra family plans a beach holiday for the weekend.', 'They pack swimsuits, sunscreen, and beach towels.'], id: 'Keluarga Putra merencanakan liburan pantai akhir pekan. Mereka mengemas baju renang, tabir surya, dan handuk pantai.' },
-      { passage: ['On Saturday morning, the weather forecast shows heavy rain.', 'The family must change their plan quickly.'], id: 'Sabtu pagi, ramalan cuaca menunjukkan hujan deras. Keluarga itu harus mengubah rencana dengan cepat.' },
-    ],
-    drill: [
+    "id": "liburan-yang-berubah",
+    "title": "Liburan yang Berubah (A Holiday That Changed)",
+    "scene": "🧳",
+    "desc": "Diary, artikel, email & cerita",
+    "texts": [
       {
-        passage: ['Instead of the beach, they decide to visit a science museum in the city.', 'Rudi, the youngest, is disappointed at first, however he changes his mind after seeing the dinosaur exhibit.'],
-        id: 'Alih-alih ke pantai, mereka memutuskan mengunjungi museum sains di kota. Rudi, yang paling kecil, kecewa di awal, tapi dia berubah pikiran setelah melihat pameran dinosaurus.',
-        question: 'Where does the family go instead of the beach?',
-        questionId: 'Ke mana keluarga itu pergi selain ke pantai?',
-        opts: [{ emoji: '🏛️', lbl: 'A science museum', ok: true }, { emoji: '🎬', lbl: 'A cinema' }, { emoji: '🛍️', lbl: 'A shopping mall' }],
+        "genre": "diary",
+        "heading": "📔 Plan B Holiday",
+        "lines": [
+          {
+            "en": "We had planned to spend our holiday at the beach in Lombok.",
+            "id": "Kami sudah merencanakan liburan ke pantai di Lombok."
+          },
+          {
+            "en": "However, two days before we left, Dad's flight was cancelled.",
+            "id": "Namun, dua hari sebelum berangkat, penerbangan Ayah dibatalkan."
+          },
+          {
+            "en": "I was really disappointed, because I had packed everything.",
+            "id": "Aku sangat kecewa, karena sudah mengemas semuanya."
+          },
+          {
+            "en": "Instead, Mom suggested exploring our own city like tourists.",
+            "id": "Sebagai gantinya, Ibu mengusulkan menjelajahi kota kami sendiri seperti turis.",
+            "br": true
+          },
+          {
+            "en": "Although I wasn't excited at first, I agreed to try.",
+            "id": "Walaupun awalnya tidak antusias, aku setuju mencoba."
+          },
+          {
+            "en": "We visited a chocolate factory and a batik workshop.",
+            "id": "Kami mengunjungi pabrik cokelat dan bengkel batik."
+          },
+          {
+            "en": "On the last day, we stayed in a hotel just twenty minutes from home.",
+            "id": "Di hari terakhir, kami menginap di hotel yang cuma dua puluh menit dari rumah.",
+            "br": true
+          },
+          {
+            "en": "It sounds silly, but it felt like a real adventure!",
+            "id": "Kedengarannya konyol, tapi rasanya seperti petualangan sungguhan!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why couldn't the family go to Lombok?",
+            "qId": "Kenapa keluarga itu tidak jadi ke Lombok?",
+            "options": [
+              "Dad's flight was cancelled.",
+              "It rained in Lombok.",
+              "Mom was sick.",
+              "The hotel was full."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How did the writer feel when the plan changed?",
+            "qId": "Bagaimana perasaan penulis saat rencana berubah?",
+            "options": [
+              "Disappointed",
+              "Relieved",
+              "Excited",
+              "Angry with Mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did Mom suggest?",
+            "qId": "Apa usul Ibu?",
+            "options": [
+              "Exploring their city like tourists",
+              "Waiting for a new flight",
+              "Going to a nearby beach",
+              "Staying at home all week"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How far was the hotel from home?",
+            "qId": "Seberapa jauh hotel itu dari rumah?",
+            "options": [
+              "Twenty minutes",
+              "Two days",
+              "Two hours",
+              "Very far away"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How did the writer's feelings change?",
+            "qId": "Bagaimana perasaan penulis berubah?",
+            "options": [
+              "From disappointed to happy",
+              "From happy to bored",
+              "From excited to angry",
+              "They did not change."
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          6
+        ]
       },
       {
-        passage: ['The museum has a special show about space at two o’clock.', 'The family arrives at one thirty so they have time to look around first.'],
-        id: 'Museum itu punya pertunjukan khusus tentang luar angkasa jam dua siang. Keluarga itu tiba jam satu setengah supaya sempat melihat-lihat dulu.',
-        question: 'What time does the space show start?',
-        questionId: 'Jam berapa pertunjukan luar angkasanya dimulai?',
-        opts: [{ emoji: '🕑', lbl: 'Two o’clock', ok: true }, { emoji: '🕐', lbl: 'One o’clock' }, { emoji: '🕜', lbl: 'One thirty' }],
+        "genre": "article",
+        "heading": "📰 Staycations Are Growing",
+        "lines": [
+          {
+            "en": "A 'staycation' is a holiday spent near your own home.",
+            "id": "'Staycation' adalah liburan di dekat rumah sendiri."
+          },
+          {
+            "en": "More families are choosing them, especially when travel is expensive.",
+            "id": "Makin banyak keluarga memilihnya, terutama saat bepergian mahal."
+          },
+          {
+            "en": "Although they may sound boring, staycations have many benefits.",
+            "id": "Walaupun terdengar membosankan, staycation punya banyak manfaat."
+          },
+          {
+            "en": "Families spend less time travelling and more time together.",
+            "id": "Keluarga menghabiskan lebih sedikit waktu di jalan dan lebih banyak waktu bersama.",
+            "br": true
+          },
+          {
+            "en": "They also discover places they have never noticed before.",
+            "id": "Mereka juga menemukan tempat yang belum pernah mereka perhatikan."
+          },
+          {
+            "en": "Local businesses, such as small restaurants, earn more money too.",
+            "id": "Usaha lokal, seperti rumah makan kecil, juga mendapat lebih banyak uang."
+          },
+          {
+            "en": "Of course, some people still prefer to travel far away.",
+            "id": "Tentu saja, sebagian orang tetap lebih suka bepergian jauh.",
+            "br": true
+          },
+          {
+            "en": "But a staycation can be a great first choice.",
+            "id": "Tapi staycation bisa jadi pilihan pertama yang bagus."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is a staycation?",
+            "qId": "Apa itu staycation?",
+            "options": [
+              "A holiday near your own home",
+              "A long trip abroad",
+              "A school trip",
+              "A holiday at a friend's house"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Why are more families choosing staycations?",
+            "qId": "Kenapa makin banyak keluarga memilih staycation?",
+            "options": [
+              "Travel can be expensive.",
+              "Beaches are closed.",
+              "Children must study.",
+              "Hotels are full."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How do local businesses benefit?",
+            "qId": "Bagaimana usaha lokal diuntungkan?",
+            "options": [
+              "They earn more money.",
+              "They close earlier.",
+              "They need fewer workers.",
+              "They move to other cities."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does 'them' refer to in 'More families are choosing them'?",
+            "qId": "'Them' dalam 'More families are choosing them' merujuk ke apa?",
+            "options": [
+              "Staycations",
+              "Families",
+              "Restaurants",
+              "Places"
+            ],
+            "answer": 0,
+            "evidence": [
+              0,
+              1
+            ]
+          },
+          {
+            "q": "What is the writer's overall view?",
+            "qId": "Apa pandangan penulis secara keseluruhan?",
+            "options": [
+              "Staycations are a good option.",
+              "Staycations are always boring.",
+              "Everyone should travel abroad.",
+              "Families should never travel."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Aunt Sari · To: Rina · Subject: Change of plans",
+        "lines": [
+          {
+            "en": "Hi Rina,",
+            "id": "Hai Rina,"
+          },
+          {
+            "en": "I'm sorry, but we can't visit you in Jakarta next week.",
+            "id": "Maaf, kami tidak bisa berkunjung ke Jakarta minggu depan."
+          },
+          {
+            "en": "Uncle Bima has to work on an important project.",
+            "id": "Om Bima harus mengerjakan proyek penting."
+          },
+          {
+            "en": "Instead, why don't you and your parents come to Malang?",
+            "id": "Bagaimana kalau kamu dan orang tuamu yang datang ke Malang?",
+            "br": true
+          },
+          {
+            "en": "Our house is big enough, and the weather is lovely now.",
+            "id": "Rumah kami cukup besar, dan cuacanya sedang bagus."
+          },
+          {
+            "en": "We could take you to the apple farms in Batu.",
+            "id": "Kami bisa mengajakmu ke kebun apel di Batu."
+          },
+          {
+            "en": "Although it's a long drive, I think you'd enjoy it.",
+            "id": "Walaupun perjalanannya jauh, Tante rasa kamu akan suka.",
+            "br": true
+          },
+          {
+            "en": "Let me know what your parents think! Love, Aunt Sari",
+            "id": "Kabari Tante pendapat orang tuamu, ya! Salam sayang, Tante Sari"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why can't Aunt Sari visit Jakarta?",
+            "qId": "Kenapa Tante Sari tidak bisa ke Jakarta?",
+            "options": [
+              "Uncle Bima has to work.",
+              "The weather is bad.",
+              "Their house is too small.",
+              "Rina is busy."
+            ],
+            "answer": 0,
+            "evidence": [
+              1,
+              2
+            ]
+          },
+          {
+            "q": "What does Aunt Sari suggest instead?",
+            "qId": "Apa usul Tante Sari sebagai gantinya?",
+            "options": [
+              "Rina's family could visit Malang.",
+              "They could meet in Batu next year.",
+              "Rina could visit alone.",
+              "They could talk on the phone."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What could they do in Batu?",
+            "qId": "Apa yang bisa mereka lakukan di Batu?",
+            "options": [
+              "Visit apple farms",
+              "Go to the beach",
+              "Visit Jakarta",
+              "Climb a volcano"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does Aunt Sari admit is a problem?",
+            "qId": "Apa yang diakui Tante Sari sebagai kekurangannya?",
+            "options": [
+              "It's a long drive.",
+              "The house is small.",
+              "The weather is bad.",
+              "The farms are closed."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What does Aunt Sari want Rina to do?",
+            "qId": "Tante Sari ingin Rina melakukan apa?",
+            "options": [
+              "Ask her parents",
+              "Book a flight",
+              "Call Uncle Bima",
+              "Visit next month"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'The space show turns out to be the best part of the day.',
-      'Rudi asks so many questions that the guide invites him to press the buttons on the model rocket.',
-      'That night, Rudi tells his parents he wants to be an astronaut someday.',
-      'His parents smile and say the rainy day turned into a lucky day after all.',
-    ],
-    storyId: 'Pertunjukan luar angkasa ternyata jadi bagian terbaik hari itu. Rudi bertanya begitu banyak sampai pemandunya mengajaknya menekan tombol pada model roket. Malam itu, Rudi bilang ke orang tuanya dia ingin jadi astronaut suatu hari nanti. Orang tuanya tersenyum dan bilang hari hujan itu ternyata berubah jadi hari yang beruntung.',
-    question: {
-      text: 'Why do the parents call it a lucky day?',
-      id: 'Mengapa orang tuanya menyebutnya hari yang beruntung?',
-      opts: [{ emoji: '🚀', lbl: 'The rain led them to a trip Rudi loved', ok: true }, { emoji: '💰', lbl: 'They won some money' }, { emoji: '🏖️', lbl: 'The rain stopped and they went to the beach' }],
-    },
+      {
+        "genre": "story",
+        "heading": "🌧️ The Rainy Camping Trip",
+        "lines": [
+          {
+            "en": "Fajar's scout group had planned a two-night camping trip.",
+            "id": "Regu pramuka Fajar sudah merencanakan kemah dua malam."
+          },
+          {
+            "en": "On the first night, however, heavy rain flooded the campsite.",
+            "id": "Namun, di malam pertama, hujan deras membanjiri perkemahan."
+          },
+          {
+            "en": "Everyone's sleeping bags were wet, and some younger scouts started to cry.",
+            "id": "Kantong tidur semua basah, dan beberapa adik pramuka mulai menangis."
+          },
+          {
+            "en": "Although Fajar was cold too, he stayed calm.",
+            "id": "Walaupun Fajar juga kedinginan, dia tetap tenang.",
+            "br": true
+          },
+          {
+            "en": "He helped the leaders move everyone to the village hall.",
+            "id": "Dia membantu para pembina memindahkan semua ke balai desa."
+          },
+          {
+            "en": "There, the group played word games and shared snacks until morning.",
+            "id": "Di sana, mereka main tebak kata dan berbagi camilan sampai pagi."
+          },
+          {
+            "en": "The next day, the leader thanked Fajar in front of everyone.",
+            "id": "Keesokan harinya, pembina berterima kasih pada Fajar di depan semua.",
+            "br": true
+          },
+          {
+            "en": "It wasn't the trip they expected, but nobody forgot it.",
+            "id": "Kemahnya tidak sesuai harapan, tapi tidak ada yang melupakannya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What happened on the first night?",
+            "qId": "Apa yang terjadi di malam pertama?",
+            "options": [
+              "Heavy rain flooded the campsite.",
+              "The scouts got lost.",
+              "The tents were stolen.",
+              "The leaders went home."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How did some younger scouts react?",
+            "qId": "Bagaimana reaksi beberapa adik pramuka?",
+            "options": [
+              "They started to cry.",
+              "They laughed.",
+              "They fell asleep.",
+              "They went swimming."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What does the text suggest about Fajar?",
+            "qId": "Apa yang tersirat tentang Fajar?",
+            "options": [
+              "He was calm and helpful.",
+              "He was afraid and silent.",
+              "He wanted to go home.",
+              "He was angry with the leader."
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "Where did the group spend the night?",
+            "qId": "Di mana regu itu bermalam?",
+            "options": [
+              "In the village hall",
+              "In their tents",
+              "On a bus",
+              "At the leader's house"
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "What is the best title for this story?",
+            "qId": "Judul yang paling cocok untuk cerita ini?",
+            "options": [
+              "A Trip Nobody Forgot",
+              "The Perfect Weekend",
+              "Fajar Goes Home Early",
+              "Games in the Sun"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'proyek-lingkungan',
-    title: 'Proyek Lingkungan (Environmental Project)',
-    scene: '♻️',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Dea’s class starts a recycling project this month.', 'Every student brings used paper and plastic bottles from home.'], id: 'Kelas Dea memulai proyek daur ulang bulan ini. Setiap murid membawa kertas bekas dan botol plastik dari rumah.' },
-      { passage: ['They sort the materials into different bins.', 'Paper goes in one bin, and plastic goes in another.'], id: 'Mereka memilah bahan ke tempat sampah berbeda. Kertas masuk ke satu tempat, plastik ke tempat lain.' },
-    ],
-    drill: [
+    "id": "proyek-lingkungan",
+    "title": "Proyek Lingkungan (Environmental Project)",
+    "scene": "🌱",
+    "desc": "Laporan, pengumuman, email & cerita",
+    "texts": [
       {
-        passage: ['Dea’s group collects the most plastic bottles, although another group collects the most paper.', 'The teacher says both groups did equally well.'],
-        id: 'Kelompok Dea mengumpulkan botol plastik paling banyak, meski kelompok lain mengumpulkan kertas paling banyak. Gurunya bilang kedua kelompok sama-sama hebat.',
-        question: 'What does Dea’s group collect the most of?',
-        questionId: 'Apa yang paling banyak dikumpulkan kelompok Dea?',
-        opts: [{ emoji: '🍾', lbl: 'Plastic bottles', ok: true }, { emoji: '📄', lbl: 'Paper' }, { emoji: '🥫', lbl: 'Cans' }],
+        "genre": "article",
+        "heading": "📰 Our School's Plastic Challenge",
+        "lines": [
+          {
+            "en": "Last semester, our school joined a 'No Plastic Month' challenge.",
+            "id": "Semester lalu, sekolah kami ikut tantangan 'Bulan Tanpa Plastik'."
+          },
+          {
+            "en": "First, students counted the plastic bottles thrown away each day.",
+            "id": "Pertama, siswa menghitung botol plastik yang dibuang setiap hari."
+          },
+          {
+            "en": "The result was shocking: more than 300 bottles!",
+            "id": "Hasilnya mengejutkan: lebih dari 300 botol!"
+          },
+          {
+            "en": "Then the student council asked everyone to bring reusable bottles.",
+            "id": "Lalu OSIS meminta semua membawa botol minum sendiri.",
+            "br": true
+          },
+          {
+            "en": "The canteen also stopped selling drinks in plastic cups.",
+            "id": "Kantin juga berhenti menjual minuman dalam gelas plastik."
+          },
+          {
+            "en": "By the end of the month, the number fell to just 40 bottles a day.",
+            "id": "Di akhir bulan, jumlahnya turun jadi hanya 40 botol sehari."
+          },
+          {
+            "en": "Although not everyone joined, most students took it seriously.",
+            "id": "Walaupun tidak semua ikut, sebagian besar siswa serius menjalaninya.",
+            "br": true
+          },
+          {
+            "en": "We hope to make the challenge permanent next year.",
+            "id": "Kami berharap tantangan ini jadi tetap tahun depan."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What did students count first?",
+            "qId": "Apa yang pertama dihitung siswa?",
+            "options": [
+              "Plastic bottles thrown away each day",
+              "Students who walk to school",
+              "Trees in the school",
+              "Cups in the canteen"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How did students feel about the first result?",
+            "qId": "Bagaimana perasaan siswa terhadap hasil pertama?",
+            "options": [
+              "Shocked",
+              "Pleased",
+              "Bored",
+              "Confused"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What did the canteen do?",
+            "qId": "Apa yang dilakukan kantin?",
+            "options": [
+              "It stopped selling drinks in plastic cups.",
+              "It closed for a month.",
+              "It sold more bottles.",
+              "It gave away free water."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "By about how many bottles a day did the number fall?",
+            "qId": "Jumlahnya turun sekitar berapa botol sehari?",
+            "options": [
+              "About 260",
+              "About 40",
+              "About 300",
+              "About 340"
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              5
+            ]
+          },
+          {
+            "q": "What does the school hope for?",
+            "qId": "Apa harapan sekolah itu?",
+            "options": [
+              "To make the challenge permanent",
+              "To stop the challenge",
+              "To sell more bottles",
+              "To join a new school"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          5
+        ]
       },
       {
-        passage: ['The class uses the collected paper to make new notebooks.', 'They use the plastic bottles to build a small greenhouse for the school garden.'],
-        id: 'Kelas itu memakai kertas yang terkumpul untuk membuat buku catatan baru. Mereka memakai botol plastik untuk membangun rumah kaca kecil di kebun sekolah.',
-        question: 'What do they build with the plastic bottles?',
-        questionId: 'Apa yang mereka bangun dari botol plastik?',
-        opts: [{ emoji: '🏡', lbl: 'A small greenhouse', ok: true }, { emoji: '📓', lbl: 'Notebooks' }, { emoji: '🎨', lbl: 'A painting' }],
+        "genre": "sign",
+        "heading": "🌱 Green Club Notice",
+        "lines": [
+          {
+            "en": "Green Club: Join us this Saturday!",
+            "id": "Klub Hijau: Bergabunglah Sabtu ini!"
+          },
+          {
+            "en": "We are planting 50 trees along the river near school.",
+            "id": "Kami menanam 50 pohon di sepanjang sungai dekat sekolah."
+          },
+          {
+            "en": "Meet at the school gate at 7 a.m.",
+            "id": "Kumpul di gerbang sekolah jam 7 pagi."
+          },
+          {
+            "en": "Wear old clothes and bring gloves if you have them.",
+            "id": "Pakai baju lama dan bawa sarung tangan kalau punya.",
+            "br": true
+          },
+          {
+            "en": "Water and snacks will be provided.",
+            "id": "Air minum dan camilan disediakan."
+          },
+          {
+            "en": "Parents are welcome to help, although they must register first.",
+            "id": "Orang tua boleh membantu, walaupun harus mendaftar dulu."
+          },
+          {
+            "en": "In case of heavy rain, the event will move to Sunday.",
+            "id": "Kalau hujan deras, acara dipindah ke hari Minggu.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "What will the club do on Saturday?",
+            "qId": "Apa yang akan dilakukan klub hari Sabtu?",
+            "options": [
+              "Plant trees along the river",
+              "Clean the classrooms",
+              "Collect plastic bottles",
+              "Visit a farm"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What should volunteers bring if they can?",
+            "qId": "Apa yang sebaiknya dibawa relawan kalau bisa?",
+            "options": [
+              "Gloves",
+              "Snacks",
+              "Trees",
+              "Water"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What must parents do before helping?",
+            "qId": "Apa yang harus dilakukan orang tua sebelum membantu?",
+            "options": [
+              "Register",
+              "Bring trees",
+              "Wear old clothes",
+              "Arrive at 6 a.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What will happen if it rains heavily?",
+            "qId": "Apa yang terjadi kalau hujan deras?",
+            "options": [
+              "The event will move to Sunday.",
+              "The event will be cancelled.",
+              "They will plant indoors.",
+              "They will meet at the river."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "Who is this notice mainly for?",
+            "qId": "Pengumuman ini terutama untuk siapa?",
+            "options": [
+              "Students who want to volunteer",
+              "Teachers only",
+              "Shop owners",
+              "Tourists"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Dimas · To: Mayor's Office · Subject: A request from a student",
+        "lines": [
+          {
+            "en": "Dear Sir or Madam,",
+            "id": "Bapak/Ibu yang terhormat,"
+          },
+          {
+            "en": "I am a Year 7 student at SMP Harapan.",
+            "id": "Saya siswa kelas 7 di SMP Harapan."
+          },
+          {
+            "en": "Every day, I walk past the park on Jalan Melati.",
+            "id": "Setiap hari, saya berjalan melewati taman di Jalan Melati."
+          },
+          {
+            "en": "Sadly, there are no rubbish bins there, so people leave litter on the grass.",
+            "id": "Sayangnya, di sana tidak ada tempat sampah, jadi orang membuang sampah di rumput.",
+            "br": true
+          },
+          {
+            "en": "Last week, my friends and I collected three bags of rubbish.",
+            "id": "Minggu lalu, saya dan teman-teman mengumpulkan tiga kantong sampah."
+          },
+          {
+            "en": "However, the park was dirty again after only two days.",
+            "id": "Namun, taman itu kotor lagi setelah dua hari."
+          },
+          {
+            "en": "Could you please put some bins in the park?",
+            "id": "Bisakah Bapak/Ibu memasang tempat sampah di taman itu?",
+            "br": true
+          },
+          {
+            "en": "I believe this small change would make a big difference. Yours faithfully, Dimas",
+            "id": "Saya yakin perubahan kecil ini akan membawa perbedaan besar. Hormat saya, Dimas"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why is the park dirty?",
+            "qId": "Kenapa taman itu kotor?",
+            "options": [
+              "There are no rubbish bins.",
+              "Students play there.",
+              "It rains a lot.",
+              "The grass is too long."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What did Dimas and his friends do?",
+            "qId": "Apa yang dilakukan Dimas dan teman-temannya?",
+            "options": [
+              "They collected three bags of rubbish.",
+              "They built new bins.",
+              "They planted trees.",
+              "They wrote to their teacher."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What happened after two days?",
+            "qId": "Apa yang terjadi setelah dua hari?",
+            "options": [
+              "The park was dirty again.",
+              "Bins were added.",
+              "The park closed.",
+              "The grass grew back."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is Dimas asking for?",
+            "qId": "Apa yang diminta Dimas?",
+            "options": [
+              "Rubbish bins in the park",
+              "A new park",
+              "More trees",
+              "A cleaning job"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the tone of the email?",
+            "qId": "Bagaimana nada email ini?",
+            "options": [
+              "Polite and hopeful",
+              "Rude and angry",
+              "Funny and silly",
+              "Sad and hopeless"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
       },
-    ],
-    story: [
-      'At the end of the month, the school invites parents to see the greenhouse.',
-      'Dea explains how the project reduced trash and grew fresh vegetables at the same time.',
-      'One parent asks if other classes can join next semester.',
-      'The principal agrees and says the whole school will start recycling next year.',
-    ],
-    storyId: 'Di akhir bulan, sekolah mengundang orang tua melihat rumah kaca itu. Dea menjelaskan bagaimana proyek ini mengurangi sampah sekaligus menumbuhkan sayuran segar. Seorang orang tua bertanya apakah kelas lain bisa ikut semester depan. Kepala sekolah setuju dan bilang seluruh sekolah akan mulai daur ulang tahun depan.',
-    question: {
-      text: 'What will most likely happen next semester?',
-      id: 'Apa yang kemungkinan besar terjadi semester depan?',
-      opts: [{ emoji: '🏫', lbl: 'More classes will join the recycling project', ok: true }, { emoji: '🛑', lbl: 'The project will stop completely' }, { emoji: '🏖️', lbl: 'The school will go on a trip instead' }],
-    },
+      {
+        "genre": "story",
+        "heading": "🐢 Turtle Nights",
+        "lines": [
+          {
+            "en": "During the holiday, Lia volunteered at a turtle conservation centre.",
+            "id": "Saat liburan, Lia menjadi relawan di pusat konservasi penyu."
+          },
+          {
+            "en": "Her job was to protect turtle eggs buried in the sand.",
+            "id": "Tugasnya melindungi telur penyu yang terkubur di pasir."
+          },
+          {
+            "en": "Every night, she helped the rangers check the nests.",
+            "id": "Setiap malam, dia membantu penjaga memeriksa sarang."
+          },
+          {
+            "en": "One evening, the first baby turtles came out.",
+            "id": "Suatu malam, tukik pertama keluar dari sarang.",
+            "br": true
+          },
+          {
+            "en": "They were tiny, but they moved quickly toward the sea.",
+            "id": "Mereka sangat kecil, tapi bergerak cepat ke arah laut."
+          },
+          {
+            "en": "Lia had to keep the tourists' torches away, because bright lights confuse them.",
+            "id": "Lia harus menjauhkan senter turis, karena cahaya terang membingungkan tukik."
+          },
+          {
+            "en": "By morning, 80 baby turtles had reached the water.",
+            "id": "Menjelang pagi, 80 tukik sudah sampai ke laut.",
+            "br": true
+          },
+          {
+            "en": "Lia says it was the most meaningful week of her life.",
+            "id": "Lia bilang itu minggu paling bermakna dalam hidupnya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What was Lia's job?",
+            "qId": "Apa tugas Lia?",
+            "options": [
+              "Protecting turtle eggs",
+              "Selling tickets",
+              "Feeding fish",
+              "Cleaning hotels"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why did Lia keep the torches away?",
+            "qId": "Kenapa Lia menjauhkan senter?",
+            "options": [
+              "Bright lights confuse the baby turtles.",
+              "The tourists were noisy.",
+              "The rangers wanted to sleep.",
+              "The torches were broken."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does 'them' refer to in 'bright lights confuse them'?",
+            "qId": "'Them' dalam 'bright lights confuse them' merujuk ke apa?",
+            "options": [
+              "The baby turtles",
+              "The tourists",
+              "The rangers",
+              "The torches"
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4,
+              5
+            ]
+          },
+          {
+            "q": "How many baby turtles reached the water?",
+            "qId": "Berapa tukik yang sampai ke laut?",
+            "options": [
+              "80",
+              "8",
+              "18",
+              "800"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "How does Lia feel about the experience?",
+            "qId": "Bagaimana perasaan Lia tentang pengalaman itu?",
+            "options": [
+              "It was very meaningful.",
+              "It was boring.",
+              "It was too tiring.",
+              "It was scary."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kompetisi-robot',
-    title: 'Kompetisi Robot (Robotics Competition)',
-    scene: '🤖',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Bayu and his team build a small robot for a school competition.', 'The robot must move through a maze without touching the walls.'], id: 'Bayu dan timnya membangun robot kecil untuk lomba sekolah. Robot itu harus melewati labirin tanpa menyentuh dinding.' },
-      { passage: ['They practice for three weeks before the competition day.', 'Bayu is in charge of programming the robot’s sensors.'], id: 'Mereka berlatih tiga minggu sebelum hari lomba. Bayu bertanggung jawab memprogram sensor robotnya.' },
-    ],
-    drill: [
+    "id": "kompetisi-robot",
+    "title": "Kompetisi Robot (Robotics Competition)",
+    "scene": "🤖",
+    "desc": "Cerita, aturan, email & artikel opini",
+    "texts": [
       {
-        passage: ['During practice, the robot works perfectly on a flat floor.', 'However, on the competition day, the floor has small bumps that confuse the sensors.'],
-        id: 'Saat latihan, robotnya bekerja sempurna di lantai rata. Namun, pada hari lomba, lantainya punya benjolan kecil yang membingungkan sensornya.',
-        question: 'What confuses the robot’s sensors on competition day?',
-        questionId: 'Apa yang membingungkan sensor robot pada hari lomba?',
-        opts: [{ emoji: '🪨', lbl: 'Small bumps on the floor', ok: true }, { emoji: '💡', lbl: 'Bright lights' }, { emoji: '🔊', lbl: 'Loud noise' }],
+        "genre": "story",
+        "heading": "🤖 The Robot That Stopped",
+        "lines": [
+          {
+            "en": "Rafi's team spent two months building a robot for the national competition.",
+            "id": "Tim Rafi menghabiskan dua bulan membuat robot untuk lomba nasional."
+          },
+          {
+            "en": "It could follow a line and pick up small blocks.",
+            "id": "Robot itu bisa mengikuti garis dan mengambil balok kecil."
+          },
+          {
+            "en": "On the morning of the contest, everything worked perfectly.",
+            "id": "Di pagi hari lomba, semuanya berjalan sempurna."
+          },
+          {
+            "en": "However, during the final round, the robot suddenly stopped.",
+            "id": "Namun, di babak final, robot itu tiba-tiba berhenti.",
+            "br": true
+          },
+          {
+            "en": "A wire had come loose, and the clock was running.",
+            "id": "Sebuah kabel terlepas, dan waktu terus berjalan."
+          },
+          {
+            "en": "Although everyone was nervous, Rafi fixed it in ninety seconds.",
+            "id": "Walaupun semua tegang, Rafi memperbaikinya dalam sembilan puluh detik."
+          },
+          {
+            "en": "The robot finished the course just in time.",
+            "id": "Robot itu menyelesaikan lintasan tepat waktu.",
+            "br": true
+          },
+          {
+            "en": "They came third, but the judges praised their teamwork.",
+            "id": "Mereka juara tiga, tapi juri memuji kerja sama mereka."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How long did the team spend building the robot?",
+            "qId": "Berapa lama tim itu membuat robotnya?",
+            "options": [
+              "Two months",
+              "Two weeks",
+              "Ninety seconds",
+              "One year"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What went wrong in the final round?",
+            "qId": "Apa yang salah di babak final?",
+            "options": [
+              "A wire came loose.",
+              "The battery died.",
+              "The blocks were missing.",
+              "The judges stopped it."
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "How quickly did Rafi fix the problem?",
+            "qId": "Seberapa cepat Rafi memperbaikinya?",
+            "options": [
+              "In ninety seconds",
+              "In two minutes",
+              "In one hour",
+              "Before the contest"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What did the judges praise?",
+            "qId": "Apa yang dipuji juri?",
+            "options": [
+              "Their teamwork",
+              "Their speed",
+              "Their robot's colour",
+              "Their costumes"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          },
+          {
+            "q": "What does the story suggest about Rafi?",
+            "qId": "Apa yang tersirat tentang Rafi?",
+            "options": [
+              "He could stay calm under pressure.",
+              "He wanted to give up.",
+              "He was not part of the team.",
+              "He broke the robot."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          }
+        ],
+        "sequence": [
+          2,
+          3,
+          6
+        ]
       },
       {
-        passage: ['Bayu quickly changes one line of the program before their turn.', 'His teammate Wati checks the wheels one more time.'],
-        id: 'Bayu cepat-cepat mengubah satu baris program sebelum giliran mereka. Rekan timnya Wati memeriksa rodanya sekali lagi.',
-        question: 'What does Bayu do before their turn?',
-        questionId: 'Apa yang dilakukan Bayu sebelum giliran mereka?',
-        opts: [{ emoji: '💻', lbl: 'Changes the program', ok: true }, { emoji: '🔧', lbl: 'Checks the wheels' }, { emoji: '🔋', lbl: 'Charges the battery' }],
+        "genre": "sign",
+        "heading": "📌 Junior Robotics Contest: Rules",
+        "lines": [
+          {
+            "en": "Junior Robotics Contest: Rules",
+            "id": "Lomba Robotik Junior: Aturan"
+          },
+          {
+            "en": "Teams must have three or four members, aged 11 to 15.",
+            "id": "Tim harus beranggota tiga atau empat orang, usia 11 sampai 15."
+          },
+          {
+            "en": "Robots must be smaller than 30 cm on each side.",
+            "id": "Robot harus lebih kecil dari 30 cm di setiap sisi."
+          },
+          {
+            "en": "Teams have three minutes to complete the course.",
+            "id": "Tim punya tiga menit untuk menyelesaikan lintasan.",
+            "br": true
+          },
+          {
+            "en": "Adults may help with safety, but students must build and program the robot.",
+            "id": "Orang dewasa boleh membantu soal keamanan, tapi siswa harus membuat dan memprogram robotnya."
+          },
+          {
+            "en": "Points are given for speed, accuracy and creativity.",
+            "id": "Poin diberikan untuk kecepatan, ketepatan, dan kreativitas."
+          },
+          {
+            "en": "Registration closes on 15 May.",
+            "id": "Pendaftaran ditutup 15 Mei.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "How many members can a team have?",
+            "qId": "Berapa anggota yang boleh ada dalam satu tim?",
+            "options": [
+              "Three or four",
+              "Two or three",
+              "Four or five",
+              "Up to ten"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What is the size limit for robots?",
+            "qId": "Berapa batas ukuran robot?",
+            "options": [
+              "Smaller than 30 cm on each side",
+              "Bigger than 30 cm",
+              "Exactly 15 cm",
+              "There is no limit."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What can adults help with?",
+            "qId": "Orang dewasa boleh membantu apa?",
+            "options": [
+              "Safety",
+              "Programming",
+              "Building",
+              "Driving the robot"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Which of these is NOT used for points?",
+            "qId": "Mana yang TIDAK dipakai untuk poin?",
+            "options": [
+              "Colour",
+              "Speed",
+              "Accuracy",
+              "Creativity"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "When is the last day to register?",
+            "qId": "Kapan hari terakhir pendaftaran?",
+            "options": [
+              "15 May",
+              "3 May",
+              "30 May",
+              "11 May"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Coach Arya · To: Robotics team · Subject: After the contest",
+        "lines": [
+          {
+            "en": "Dear team,",
+            "id": "Tim yang baik,"
+          },
+          {
+            "en": "I'm incredibly proud of how you handled yesterday's problem.",
+            "id": "Saya sangat bangga dengan cara kalian menangani masalah kemarin."
+          },
+          {
+            "en": "Many teams panic when something breaks, but you stayed focused.",
+            "id": "Banyak tim panik saat ada yang rusak, tapi kalian tetap fokus."
+          },
+          {
+            "en": "However, we should learn from it.",
+            "id": "Namun, kita harus belajar darinya.",
+            "br": true
+          },
+          {
+            "en": "Next time, we'll check every wire twice before each round.",
+            "id": "Lain kali, kita periksa setiap kabel dua kali sebelum tiap babak."
+          },
+          {
+            "en": "I've also booked the lab for Tuesdays and Thursdays.",
+            "id": "Saya juga sudah memesan lab untuk hari Selasa dan Kamis."
+          },
+          {
+            "en": "Although third place is great, I believe we can win next year.",
+            "id": "Walaupun juara tiga sudah hebat, saya yakin kita bisa menang tahun depan.",
+            "br": true
+          },
+          {
+            "en": "Enjoy your weekend! Coach Arya",
+            "id": "Selamat berakhir pekan! Pelatih Arya"
+          }
+        ],
+        "questions": [
+          {
+            "q": "How does Coach Arya feel about the team?",
+            "qId": "Bagaimana perasaan Pelatih Arya terhadap tim?",
+            "options": [
+              "Very proud",
+              "Disappointed",
+              "Angry",
+              "Worried"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did the team do differently from many others?",
+            "qId": "Apa yang dilakukan tim itu berbeda dari tim lain?",
+            "options": [
+              "They stayed focused.",
+              "They panicked.",
+              "They left early.",
+              "They built two robots."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What will they do next time?",
+            "qId": "Apa yang akan mereka lakukan lain kali?",
+            "options": [
+              "Check every wire twice",
+              "Build a bigger robot",
+              "Practise only on weekends",
+              "Change the team"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When will the team use the lab?",
+            "qId": "Kapan tim memakai lab?",
+            "options": [
+              "Tuesdays and Thursdays",
+              "Every weekend",
+              "Only Mondays",
+              "Every day"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does the coach believe?",
+            "qId": "Apa keyakinan pelatih?",
+            "options": [
+              "They can win next year.",
+              "Third place is disappointing.",
+              "They should stop competing.",
+              "The judges were unfair."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'When it is finally their turn, the robot moves slowly but carefully through the maze.',
-      'It stops once, but Bayu’s quick fix from earlier helps it continue.',
-      'The team does not win first place, but they finish the maze completely, unlike two other teams.',
-      'Bayu says the competition taught him that mistakes can be fixed if you stay calm.',
-    ],
-    storyId: 'Ketika akhirnya giliran mereka, robotnya bergerak pelan tapi hati-hati melewati labirin. Robotnya berhenti sekali, tapi perbaikan cepat Bayu tadi membantunya terus jalan. Tim itu tidak menang juara satu, tapi mereka menyelesaikan labirinnya penuh, tidak seperti dua tim lain. Bayu bilang lomba ini mengajarkannya bahwa kesalahan bisa diperbaiki kalau tetap tenang.',
-    question: {
-      text: 'What lesson does Bayu learn from the competition?',
-      id: 'Pelajaran apa yang didapat Bayu dari lomba ini?',
-      opts: [{ emoji: '🧠', lbl: 'Mistakes can be fixed if you stay calm', ok: true }, { emoji: '🏆', lbl: 'Winning is the only thing that matters' }, { emoji: '😴', lbl: 'Practicing is not necessary' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Should Apps Do Our Homework?",
+        "lines": [
+          {
+            "en": "Some new apps can now write essays and solve maths problems.",
+            "id": "Beberapa aplikasi baru kini bisa menulis esai dan menyelesaikan soal matematika."
+          },
+          {
+            "en": "Many students think this sounds amazing.",
+            "id": "Banyak siswa merasa ini luar biasa."
+          },
+          {
+            "en": "However, teachers warn that it could stop students from learning.",
+            "id": "Namun, guru mengingatkan bahwa ini bisa membuat siswa berhenti belajar."
+          },
+          {
+            "en": "If a machine does the work, your brain does not practise.",
+            "id": "Kalau mesin yang bekerja, otakmu tidak berlatih.",
+            "br": true
+          },
+          {
+            "en": "On the other hand, these tools can explain difficult ideas clearly.",
+            "id": "Di sisi lain, alat ini bisa menjelaskan konsep sulit dengan jelas."
+          },
+          {
+            "en": "In my view, the answer is balance.",
+            "id": "Menurut saya, jawabannya adalah keseimbangan.",
+            "br": true
+          },
+          {
+            "en": "Use technology to understand, not to copy.",
+            "id": "Gunakan teknologi untuk memahami, bukan untuk menyalin."
+          },
+          {
+            "en": "That way, it becomes a helpful study partner.",
+            "id": "Dengan begitu, teknologi jadi teman belajar yang membantu."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What can some new apps do?",
+            "qId": "Apa yang bisa dilakukan beberapa aplikasi baru?",
+            "options": [
+              "Write essays and solve maths problems",
+              "Clean your room",
+              "Teach classes at school",
+              "Build robots"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What are teachers worried about?",
+            "qId": "Apa kekhawatiran guru?",
+            "options": [
+              "Students might stop learning.",
+              "Apps are too expensive.",
+              "Students will sleep less.",
+              "Apps are too slow."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is one advantage of these tools?",
+            "qId": "Apa satu kelebihan alat ini?",
+            "options": [
+              "They can explain difficult ideas clearly.",
+              "They make homework longer.",
+              "They replace teachers.",
+              "They are always correct."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is the writer's opinion?",
+            "qId": "Apa pendapat penulis?",
+            "options": [
+              "Use technology to understand, not to copy.",
+              "Never use technology.",
+              "Let apps do all homework.",
+              "Only teachers should use apps."
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "What does 'it' refer to in 'it becomes a helpful study partner'?",
+            "qId": "'It' dalam 'it becomes a helpful study partner' merujuk ke apa?",
+            "options": [
+              "Technology",
+              "Your brain",
+              "Homework",
+              "A teacher"
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kerja-sukarela',
-    title: 'Hari Kerja Sukarela (Volunteer Day)',
-    scene: '🤝',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Nina’s school organizes a volunteer day at a local animal shelter.', 'Students help clean cages and feed the animals.'], id: 'Sekolah Nina mengadakan hari sukarelawan di penampungan hewan setempat. Murid-murid membantu membersihkan kandang dan memberi makan hewan.' },
-      { passage: ['Nina chooses to help with the cats because she loves them the most.', 'Her friend Tio prefers to walk the dogs.'], id: 'Nina memilih membantu kucing karena dia paling menyukainya. Temannya Tio lebih suka mengajak anjing jalan-jalan.' },
-    ],
-    drill: [
+    "id": "kerja-sukarela",
+    "title": "Hari Kerja Sukarela (Volunteer Day)",
+    "scene": "🙋",
+    "desc": "Diary, iklan relawan, email & artikel",
+    "texts": [
       {
-        passage: ['Nina notices one shy cat that hides in the corner all morning.', 'She sits quietly near the cage until the cat slowly comes closer.'],
-        id: 'Nina memperhatikan seekor kucing pemalu yang bersembunyi di sudut sepanjang pagi. Dia duduk diam di dekat kandang sampai kucingnya perlahan mendekat.',
-        question: 'What does the shy cat do at first?',
-        questionId: 'Apa yang dilakukan kucing pemalu itu di awal?',
-        opts: [{ emoji: '🙈', lbl: 'Hides in the corner', ok: true }, { emoji: '😼', lbl: 'Comes closer immediately' }, { emoji: '😴', lbl: 'Sleeps the whole time' }],
+        "genre": "diary",
+        "heading": "📔 My Day at the Animal Shelter",
+        "lines": [
+          {
+            "en": "On Saturday, I volunteered at an animal shelter for the first time.",
+            "id": "Hari Sabtu, aku menjadi relawan di penampungan hewan untuk pertama kali."
+          },
+          {
+            "en": "I had to clean the cages and fill the water bowls.",
+            "id": "Aku harus membersihkan kandang dan mengisi mangkuk air."
+          },
+          {
+            "en": "Honestly, the work was harder and dirtier than I expected.",
+            "id": "Jujur, pekerjaannya lebih berat dan kotor dari dugaanku."
+          },
+          {
+            "en": "In the afternoon, I walked an old dog called Bruno.",
+            "id": "Siangnya, aku mengajak jalan anjing tua bernama Bruno.",
+            "br": true
+          },
+          {
+            "en": "At first, he was nervous and wouldn't come near me.",
+            "id": "Awalnya, dia gugup dan tidak mau mendekatiku."
+          },
+          {
+            "en": "However, after I sat quietly with him, he rested his head on my lap.",
+            "id": "Namun, setelah aku duduk diam bersamanya, dia menyandarkan kepala di pangkuanku."
+          },
+          {
+            "en": "Before I left, the manager said Bruno rarely trusts new people.",
+            "id": "Sebelum aku pulang, pengelola bilang Bruno jarang percaya pada orang baru.",
+            "br": true
+          },
+          {
+            "en": "I'm definitely going back next week.",
+            "id": "Aku pasti kembali minggu depan."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What were the writer's first jobs?",
+            "qId": "Apa tugas pertama penulis?",
+            "options": [
+              "Cleaning cages and filling water bowls",
+              "Walking dogs",
+              "Feeding cats",
+              "Answering phones"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How did the writer find the work?",
+            "qId": "Bagaimana penulis menilai pekerjaannya?",
+            "options": [
+              "Harder than expected",
+              "Easier than expected",
+              "Boring",
+              "Too short"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How did Bruno behave at first?",
+            "qId": "Bagaimana sikap Bruno awalnya?",
+            "options": [
+              "He was nervous.",
+              "He was very playful.",
+              "He was asleep.",
+              "He was angry."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why is the manager's comment special?",
+            "qId": "Kenapa komentar pengelola istimewa?",
+            "options": [
+              "Bruno rarely trusts new people.",
+              "The writer was late.",
+              "Bruno is very young.",
+              "The shelter is closing."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What will the writer do next week?",
+            "qId": "Apa yang akan dilakukan penulis minggu depan?",
+            "options": [
+              "Go back to the shelter",
+              "Adopt Bruno",
+              "Stay at home",
+              "Work at a zoo"
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          6
+        ]
       },
       {
-        passage: ['Tio walks three dogs before lunch and two more after lunch.', 'He says the energetic puppy is the hardest to walk.'],
-        id: 'Tio mengajak jalan tiga anjing sebelum makan siang dan dua lagi setelahnya. Dia bilang anak anjing yang enerjik itu paling sulit diajak jalan.',
-        question: 'How many dogs does Tio walk before lunch?',
-        questionId: 'Berapa anjing yang diajak jalan Tio sebelum makan siang?',
-        opts: [{ emoji: '3️⃣', lbl: 'Three', ok: true }, { emoji: '2️⃣', lbl: 'Two' }, { emoji: '5️⃣', lbl: 'Five' }],
+        "genre": "sign",
+        "heading": "🙋 Volunteers Needed!",
+        "lines": [
+          {
+            "en": "Volunteers Needed: Community Library Reading Hour",
+            "id": "Dicari Relawan: Jam Baca Perpustakaan Warga"
+          },
+          {
+            "en": "Help younger children, aged 5 to 8, enjoy books.",
+            "id": "Bantu anak usia 5 sampai 8 tahun menikmati buku."
+          },
+          {
+            "en": "Every Sunday from 9 to 11 a.m.",
+            "id": "Setiap Minggu jam 9 sampai 11 pagi."
+          },
+          {
+            "en": "Volunteers read stories aloud and help with simple crafts.",
+            "id": "Relawan membacakan cerita dan membantu kerajinan sederhana.",
+            "br": true
+          },
+          {
+            "en": "You must be at least 12 years old.",
+            "id": "Kamu harus berusia minimal 12 tahun."
+          },
+          {
+            "en": "No experience is needed, although patience is important!",
+            "id": "Tidak perlu pengalaman, walaupun kesabaran itu penting!"
+          },
+          {
+            "en": "Sign up at the library front desk.",
+            "id": "Daftar di meja depan perpustakaan.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who will volunteers help?",
+            "qId": "Relawan akan membantu siapa?",
+            "options": [
+              "Children aged 5 to 8",
+              "Teenagers",
+              "Old people",
+              "Librarians"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "When is the reading hour?",
+            "qId": "Kapan jam bacanya?",
+            "options": [
+              "Sundays, 9 to 11 a.m.",
+              "Saturdays, 5 to 8 p.m.",
+              "Every day",
+              "Sundays, 12 to 2 p.m."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How old must volunteers be?",
+            "qId": "Berapa usia minimal relawan?",
+            "options": [
+              "At least 12",
+              "Under 8",
+              "Exactly 15",
+              "At least 18"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What quality is important?",
+            "qId": "Sifat apa yang penting?",
+            "options": [
+              "Patience",
+              "Speed",
+              "Strength",
+              "Experience"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Where can you sign up?",
+            "qId": "Di mana kamu bisa mendaftar?",
+            "options": [
+              "At the library front desk",
+              "Online only",
+              "At school",
+              "At the park"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Mrs. Rahma · To: Volunteers · Subject: Thank you",
+        "lines": [
+          {
+            "en": "Dear volunteers,",
+            "id": "Para relawan,"
+          },
+          {
+            "en": "Thank you for helping at the flood relief centre last weekend.",
+            "id": "Terima kasih sudah membantu di posko banjir akhir pekan lalu."
+          },
+          {
+            "en": "Together, you packed more than 500 food boxes.",
+            "id": "Bersama-sama, kalian mengemas lebih dari 500 kotak makanan."
+          },
+          {
+            "en": "Many families received them on Monday morning.",
+            "id": "Banyak keluarga menerimanya Senin pagi.",
+            "br": true
+          },
+          {
+            "en": "One mother told me her children cried with happiness.",
+            "id": "Seorang ibu bercerita anak-anaknya menangis bahagia."
+          },
+          {
+            "en": "Although the work was tiring, you never complained.",
+            "id": "Walaupun melelahkan, kalian tidak pernah mengeluh."
+          },
+          {
+            "en": "We still need help sorting clothes next Saturday.",
+            "id": "Kami masih butuh bantuan memilah pakaian Sabtu depan.",
+            "br": true
+          },
+          {
+            "en": "If you can come, please reply to this email. Mrs. Rahma",
+            "id": "Kalau bisa datang, tolong balas email ini. Bu Rahma"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where did the volunteers help?",
+            "qId": "Di mana para relawan membantu?",
+            "options": [
+              "At a flood relief centre",
+              "At a school",
+              "At a hospital",
+              "At a library"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How many food boxes did they pack?",
+            "qId": "Berapa kotak makanan yang mereka kemas?",
+            "options": [
+              "More than 500",
+              "Exactly 50",
+              "About 5",
+              "Fewer than 100"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What does 'them' refer to in 'received them'?",
+            "qId": "'Them' dalam 'received them' merujuk ke apa?",
+            "options": [
+              "The food boxes",
+              "The volunteers",
+              "The children",
+              "The clothes"
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              3
+            ]
+          },
+          {
+            "q": "What does Mrs. Rahma say about the volunteers' attitude?",
+            "qId": "Apa kata Bu Rahma tentang sikap para relawan?",
+            "options": [
+              "They never complained.",
+              "They complained a lot.",
+              "They left early.",
+              "They were late."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What help is still needed?",
+            "qId": "Bantuan apa yang masih dibutuhkan?",
+            "options": [
+              "Sorting clothes next Saturday",
+              "Packing food on Monday",
+              "Cooking meals",
+              "Driving trucks"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'By the afternoon, the shy cat finally lets Nina pet her.',
-      'Nina feels very happy and asks the shelter staff if she can visit again next month.',
-      'The staff member smiles and says volunteers like Nina help the animals trust people again.',
-      'On the bus home, Nina tells Tio she wants to volunteer every month from now on.',
-    ],
-    storyId: 'Menjelang sore, kucing pemalu itu akhirnya membiarkan Nina mengelusnya. Nina merasa sangat senang dan bertanya ke staf penampungan apakah dia boleh berkunjung lagi bulan depan. Stafnya tersenyum dan bilang sukarelawan seperti Nina membantu hewan-hewan belajar percaya lagi pada manusia. Di bus pulang, Nina bilang ke Tio dia ingin jadi sukarelawan setiap bulan mulai sekarang.',
-    question: {
-      text: 'Why does the staff member say volunteers like Nina are important?',
-      id: 'Mengapa staf itu bilang sukarelawan seperti Nina itu penting?',
-      opts: [{ emoji: '🐾', lbl: 'They help animals learn to trust people', ok: true }, { emoji: '🧹', lbl: 'They clean the shelter faster' }, { emoji: '💰', lbl: 'They bring money to the shelter' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Is Volunteering Good for Teens?",
+        "lines": [
+          {
+            "en": "More teenagers are volunteering than ever before.",
+            "id": "Makin banyak remaja menjadi relawan dibanding sebelumnya."
+          },
+          {
+            "en": "Some do it to help others, while others want experience for the future.",
+            "id": "Ada yang melakukannya untuk menolong, ada yang ingin pengalaman untuk masa depan."
+          },
+          {
+            "en": "Research shows that volunteering can make young people happier.",
+            "id": "Penelitian menunjukkan kegiatan relawan bisa membuat anak muda lebih bahagia.",
+            "br": true
+          },
+          {
+            "en": "It also helps them build skills like communication and teamwork.",
+            "id": "Kegiatan ini juga membantu mereka membangun keterampilan seperti komunikasi dan kerja sama."
+          },
+          {
+            "en": "However, experts warn that teens should not take on too much.",
+            "id": "Namun, para ahli mengingatkan remaja jangan mengambil terlalu banyak."
+          },
+          {
+            "en": "School work and rest are important too.",
+            "id": "Tugas sekolah dan istirahat juga penting.",
+            "br": true
+          },
+          {
+            "en": "A few hours a month can be enough to make a difference.",
+            "id": "Beberapa jam sebulan sudah cukup untuk membuat perbedaan."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why do some teens volunteer?",
+            "qId": "Kenapa sebagian remaja menjadi relawan?",
+            "options": [
+              "To help others or gain experience",
+              "Because it is required",
+              "To earn money",
+              "To skip school"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What can volunteering do for young people?",
+            "qId": "Apa manfaat kegiatan relawan bagi anak muda?",
+            "options": [
+              "Make them happier",
+              "Make them tired",
+              "Make them rich",
+              "Make them famous"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What skills can teens build?",
+            "qId": "Keterampilan apa yang bisa dibangun remaja?",
+            "options": [
+              "Communication and teamwork",
+              "Cooking and driving",
+              "Maths and science",
+              "Singing and drawing"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What do experts warn about?",
+            "qId": "Apa peringatan para ahli?",
+            "options": [
+              "Taking on too much",
+              "Volunteering alone",
+              "Working at night",
+              "Meeting new people"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is the article's main message?",
+            "qId": "Apa pesan utama artikel ini?",
+            "options": [
+              "Volunteering is good in balanced amounts.",
+              "Teens should volunteer every day.",
+              "Volunteering is a waste of time.",
+              "Only adults should volunteer."
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'seleksi-tim-basket',
-    title: 'Seleksi Tim Basket (Basketball Team Tryouts)',
-    scene: '🏀',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Vino has been practicing basketball every morning for a month, hoping to make the school team this year.', 'Although he is not the tallest player trying out, he is one of the fastest.'], id: 'Vino sudah berlatih basket setiap pagi selama sebulan, berharap masuk tim sekolah tahun ini. Meskipun dia bukan pemain tertinggi yang ikut seleksi, dia salah satu yang tercepat.' },
-      { passage: ['The coach announces that tryouts will have two rounds: a fitness test and a skills test.', 'Vino feels confident about the fitness test, but nervous about shooting free throws.'], id: 'Pelatihnya mengumumkan seleksi akan ada dua babak: tes kebugaran dan tes keterampilan. Vino merasa percaya diri soal tes kebugaran, tapi gugup soal melempar bola bebas.' },
-    ],
-    drill: [
+    "id": "seleksi-tim-basket",
+    "title": "Seleksi Tim Basket (Basketball Team Tryouts)",
+    "scene": "🏀",
+    "desc": "Cerita, pengumuman, email & artikel",
+    "texts": [
       {
-        passage: ['Vino finishes the fitness test in record time, however his legs feel shaky afterward from the effort.', 'He drinks some water and stretches before the skills test begins.'],
-        id: 'Vino menyelesaikan tes kebugaran dengan waktu rekor, namun kakinya terasa gemetar setelahnya karena usahanya. Dia minum air dan meregangkan otot sebelum tes keterampilan dimulai.',
-        question: 'How does Vino feel after the fitness test?',
-        questionId: 'Bagaimana perasaan Vino setelah tes kebugaran?',
-        opts: [{ emoji: '🦵', lbl: 'His legs feel shaky', ok: true }, { emoji: '⚡', lbl: 'Full of energy' }, { emoji: '😴', lbl: 'Bored' }],
+        "genre": "story",
+        "heading": "🏀 Not Tall Enough?",
+        "lines": [
+          {
+            "en": "Dina wanted to join the school basketball team.",
+            "id": "Dina ingin masuk tim basket sekolah."
+          },
+          {
+            "en": "However, she was the shortest girl at the tryouts.",
+            "id": "Namun, dia anak perempuan paling pendek di seleksi."
+          },
+          {
+            "en": "Some players laughed when she walked onto the court.",
+            "id": "Beberapa pemain tertawa waktu dia masuk lapangan."
+          },
+          {
+            "en": "Although she couldn't jump very high, Dina was incredibly fast.",
+            "id": "Walaupun tidak bisa melompat tinggi, Dina luar biasa cepat.",
+            "br": true
+          },
+          {
+            "en": "She stole the ball three times and made clever passes.",
+            "id": "Dia merebut bola tiga kali dan memberi umpan cerdik."
+          },
+          {
+            "en": "The coach noticed that her team scored more when she played.",
+            "id": "Pelatih memperhatikan timnya mencetak lebih banyak poin saat dia bermain."
+          },
+          {
+            "en": "At the end, Dina's name was on the list.",
+            "id": "Di akhir, nama Dina ada di daftar.",
+            "br": true
+          },
+          {
+            "en": "The coach said, 'Height isn't everything. Smart players win games.'",
+            "id": "Pelatih berkata, 'Tinggi bukan segalanya. Pemain cerdas yang memenangkan pertandingan.'"
+          }
+        ],
+        "questions": [
+          {
+            "q": "What was Dina's disadvantage?",
+            "qId": "Apa kekurangan Dina?",
+            "options": [
+              "She was the shortest girl.",
+              "She was slow.",
+              "She was new.",
+              "She was injured."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What was Dina's strength?",
+            "qId": "Apa kelebihan Dina?",
+            "options": [
+              "She was incredibly fast.",
+              "She could jump very high.",
+              "She was the tallest.",
+              "She was the loudest."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What did the coach notice?",
+            "qId": "Apa yang diperhatikan pelatih?",
+            "options": [
+              "Her team scored more when she played.",
+              "She missed every shot.",
+              "She was late.",
+              "She laughed at others."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does the coach mean?",
+            "qId": "Apa maksud pelatih?",
+            "options": [
+              "Being smart matters more than being tall.",
+              "Only tall players can win.",
+              "Dina should grow taller.",
+              "Height is the most important thing."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          },
+          {
+            "q": "How did the players who laughed probably feel at the end?",
+            "qId": "Kira-kira bagaimana perasaan pemain yang tertawa di akhir?",
+            "options": [
+              "Surprised",
+              "Proud of themselves",
+              "Bored",
+              "Angry with the coach"
+            ],
+            "answer": 0,
+            "evidence": [
+              2,
+              6
+            ]
+          }
+        ],
+        "sequence": [
+          2,
+          4,
+          6
+        ]
       },
       {
-        passage: ['During the skills test, Vino makes seven out of ten free throws, although his hands are still shaking a little.', 'The player before him only makes four out of ten.'],
-        id: 'Saat tes keterampilan, Vino memasukkan tujuh dari sepuluh lemparan bebas, walaupun tangannya masih sedikit gemetar. Pemain sebelum dia cuma memasukkan empat dari sepuluh.',
-        question: 'How many free throws does Vino make?',
-        questionId: 'Berapa lemparan bebas yang berhasil dimasukkan Vino?',
-        opts: [{ emoji: '7️⃣', lbl: 'Seven', ok: true }, { emoji: '4️⃣', lbl: 'Four' }, { emoji: '🔟', lbl: 'Ten' }],
+        "genre": "sign",
+        "heading": "📌 Basketball Tryouts",
+        "lines": [
+          {
+            "en": "School Basketball Tryouts",
+            "id": "Seleksi Tim Basket Sekolah"
+          },
+          {
+            "en": "Open to students in Years 7 to 9.",
+            "id": "Terbuka untuk siswa kelas 7 sampai 9."
+          },
+          {
+            "en": "Tuesday and Thursday, 3:30 to 5 p.m., in the sports hall.",
+            "id": "Selasa dan Kamis, jam 15.30 sampai 17.00, di aula olahraga."
+          },
+          {
+            "en": "Bring sports shoes, water and a signed parent form.",
+            "id": "Bawa sepatu olahraga, air minum, dan formulir bertanda tangan orang tua.",
+            "br": true
+          },
+          {
+            "en": "You do not need to have played in a team before.",
+            "id": "Kamu tidak perlu pernah main di tim sebelumnya."
+          },
+          {
+            "en": "The coach will look for effort, teamwork and attitude, not just skill.",
+            "id": "Pelatih akan menilai usaha, kerja sama, dan sikap, bukan hanya keterampilan."
+          },
+          {
+            "en": "Results will be posted on Friday.",
+            "id": "Hasil diumumkan hari Jumat.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Who can try out?",
+            "qId": "Siapa yang boleh ikut seleksi?",
+            "options": [
+              "Students in Years 7 to 9",
+              "Only Year 9 students",
+              "Any adult",
+              "Primary school students"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where are the tryouts?",
+            "qId": "Di mana seleksinya?",
+            "options": [
+              "In the sports hall",
+              "On the field",
+              "At the park",
+              "In the library"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What must you bring?",
+            "qId": "Apa yang harus dibawa?",
+            "options": [
+              "Sports shoes, water and a signed parent form",
+              "A basketball and a jacket",
+              "Your own team shirt",
+              "Nothing"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What will the coach look for?",
+            "qId": "Apa yang dinilai pelatih?",
+            "options": [
+              "Effort, teamwork and attitude",
+              "Only height",
+              "Only skill",
+              "Only speed"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "When will the results be posted?",
+            "qId": "Kapan hasilnya diumumkan?",
+            "options": [
+              "On Friday",
+              "On Tuesday",
+              "On Thursday",
+              "Next month"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Kevin · To: Coach Hendra · Subject: Tryouts",
+        "lines": [
+          {
+            "en": "Dear Coach Hendra,",
+            "id": "Pak Pelatih Hendra yang terhormat,"
+          },
+          {
+            "en": "I'm writing about the basketball tryouts on Tuesday.",
+            "id": "Saya menulis tentang seleksi basket hari Selasa."
+          },
+          {
+            "en": "Unfortunately, I have a dentist appointment at 4 p.m. that day.",
+            "id": "Sayangnya, saya ada janji ke dokter gigi jam 4 sore hari itu."
+          },
+          {
+            "en": "Would it be possible to try out on Thursday instead?",
+            "id": "Apakah saya bisa ikut seleksi hari Kamis saja?",
+            "br": true
+          },
+          {
+            "en": "I've been practising every evening since the notice was posted.",
+            "id": "Saya sudah berlatih setiap sore sejak pengumuman ditempel."
+          },
+          {
+            "en": "Although I've never played for a team, I really want to learn.",
+            "id": "Walaupun belum pernah main di tim, saya sangat ingin belajar."
+          },
+          {
+            "en": "Thank you for understanding. Kevin, 8B",
+            "id": "Terima kasih atas pengertiannya. Kevin, 8B",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why is Kevin writing?",
+            "qId": "Kenapa Kevin menulis?",
+            "options": [
+              "He cannot come on Tuesday.",
+              "He wants to leave the team.",
+              "He lost his form.",
+              "He wants to be the coach."
+            ],
+            "answer": 0,
+            "evidence": [
+              1,
+              2
+            ]
+          },
+          {
+            "q": "What does Kevin ask for?",
+            "qId": "Apa yang diminta Kevin?",
+            "options": [
+              "To try out on Thursday",
+              "To skip the tryouts",
+              "To change the time to 4 p.m.",
+              "To bring a friend"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What has Kevin been doing?",
+            "qId": "Apa yang sudah Kevin lakukan?",
+            "options": [
+              "Practising every evening",
+              "Visiting the dentist every day",
+              "Playing for another team",
+              "Writing notices"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What can we infer about Kevin?",
+            "qId": "Apa yang bisa disimpulkan tentang Kevin?",
+            "options": [
+              "He is keen and hardworking.",
+              "He does not like basketball.",
+              "He is an experienced player.",
+              "He is angry with the coach."
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "Which class is Kevin in?",
+            "qId": "Kevin di kelas berapa?",
+            "options": [
+              "8B",
+              "7B",
+              "9A",
+              "8A"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'That evening, the coach posts the team list on the school notice board.',
-      'Vino’s friend Doni, who is much taller, does not see his own name on the list, however he claps for Vino when he sees his friend’s name there.',
-      'The coach later explains that the team needed more players who could run fast and pass accurately, not just players who were tall.',
-      'Vino promises Doni that he will ask the coach if Doni can join the practice sessions anyway.',
-    ],
-    storyId: 'Malam itu, pelatih menempel daftar tim di papan pengumuman sekolah. Teman Vino, Doni, yang jauh lebih tinggi, tidak melihat namanya sendiri di daftar itu, namun dia tetap bertepuk tangan untuk Vino saat melihat nama temannya di sana. Pelatihnya kemudian menjelaskan tim butuh lebih banyak pemain yang bisa berlari cepat dan mengoper dengan akurat, bukan cuma pemain yang tinggi. Vino berjanji ke Doni akan bertanya ke pelatih apakah Doni boleh ikut sesi latihan meski begitu.',
-    question: {
-      text: 'Why does Vino make the team instead of Doni?',
-      id: 'Kenapa Vino masuk tim, bukan Doni?',
-      opts: [{ emoji: '💨', lbl: 'The coach values speed and passing over height', ok: true }, { emoji: '📏', lbl: 'Doni is too tall for the team' }, { emoji: '😢', lbl: 'Doni decided not to try out' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Teamwork on the Court",
+        "lines": [
+          {
+            "en": "Many people think basketball is only about scoring points.",
+            "id": "Banyak orang mengira basket hanya soal mencetak poin."
+          },
+          {
+            "en": "However, good teams depend on more than their best shooter.",
+            "id": "Namun, tim yang bagus bergantung pada lebih dari penembak terbaiknya."
+          },
+          {
+            "en": "Players must communicate constantly, calling out names and plans.",
+            "id": "Pemain harus terus berkomunikasi, memanggil nama dan menyampaikan rencana.",
+            "br": true
+          },
+          {
+            "en": "They also need to trust each other to be in the right place.",
+            "id": "Mereka juga harus saling percaya bahwa rekannya ada di posisi yang tepat."
+          },
+          {
+            "en": "A team of average players who work together can beat a team of stars.",
+            "id": "Tim berisi pemain biasa yang kompak bisa mengalahkan tim bintang."
+          },
+          {
+            "en": "This is why coaches often choose team players over talented individuals.",
+            "id": "Itulah sebabnya pelatih sering memilih pemain yang kompak daripada individu berbakat.",
+            "br": true
+          },
+          {
+            "en": "Basketball, in short, teaches a lesson for life.",
+            "id": "Singkatnya, basket mengajarkan pelajaran untuk hidup."
+          }
+        ],
+        "questions": [
+          {
+            "q": "According to the article, what do good teams depend on?",
+            "qId": "Menurut artikel, tim yang bagus bergantung pada apa?",
+            "options": [
+              "More than their best shooter",
+              "Only their best shooter",
+              "Tall players",
+              "Expensive shoes"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What must players do constantly?",
+            "qId": "Apa yang harus terus dilakukan pemain?",
+            "options": [
+              "Communicate",
+              "Shoot",
+              "Run",
+              "Rest"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What can a team of average players do?",
+            "qId": "Apa yang bisa dilakukan tim berisi pemain biasa?",
+            "options": [
+              "Beat a team of stars",
+              "Never win",
+              "Only play for fun",
+              "Score more than 100 points"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why do coaches often choose team players?",
+            "qId": "Kenapa pelatih sering memilih pemain yang kompak?",
+            "options": [
+              "Working together can beat talent.",
+              "They are taller.",
+              "They are cheaper.",
+              "They score more alone."
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "What is the main idea?",
+            "qId": "Apa ide pokoknya?",
+            "options": [
+              "Teamwork matters more than individual talent.",
+              "Stars always win.",
+              "Basketball is only about scoring.",
+              "Coaches choose the tallest players."
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'pameran-seni-sekolah',
-    title: 'Pameran Seni Sekolah (School Art Exhibition)',
-    scene: '🎨',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Every year, the school holds an art exhibition where students display their best paintings.', 'Citra has been working on a large painting of her grandmother’s garden for three weeks.'], id: 'Setiap tahun, sekolah mengadakan pameran seni tempat murid memamerkan lukisan terbaik mereka. Citra sudah mengerjakan lukisan besar tentang kebun neneknya selama tiga minggu.' },
-      { passage: ['Although painting is not her strongest subject, Citra loves spending time on details like flower petals and leaves.', 'Her art teacher encourages her to enter the exhibition this year.'], id: 'Meskipun melukis bukan pelajaran terkuatnya, Citra suka menghabiskan waktu untuk detail seperti kelopak bunga dan daun. Guru senirya mendorongnya untuk ikut pameran tahun ini.' },
-    ],
-    drill: [
+    "id": "pameran-seni-sekolah",
+    "title": "Pameran Seni Sekolah (School Art Exhibition)",
+    "scene": "🎨",
+    "desc": "Cerita, panduan, email & artikel",
+    "texts": [
       {
-        passage: ['On the day before the exhibition, Citra accidentally spills orange paint on the corner of her painting.', 'She panics for a moment, however she quickly decides to turn the stain into a small sun in the sky.'],
-        id: 'Sehari sebelum pameran, Citra tidak sengaja menumpahkan cat oranye di sudut lukisannya. Dia panik sesaat, namun dia cepat memutuskan mengubah nodanya jadi matahari kecil di langit.',
-        question: 'What does Citra turn the paint stain into?',
-        questionId: 'Noda catnya diubah jadi apa oleh Citra?',
-        opts: [{ emoji: '☀️', lbl: 'A small sun', ok: true }, { emoji: '🌸', lbl: 'A flower' }, { emoji: '🐾', lbl: 'A bird' }],
+        "genre": "story",
+        "heading": "🎨 The Empty Wall",
+        "lines": [
+          {
+            "en": "The school art exhibition was only one week away.",
+            "id": "Pameran seni sekolah tinggal seminggu lagi."
+          },
+          {
+            "en": "Everyone in Nita's class had finished their paintings except her.",
+            "id": "Semua teman sekelas Nita sudah menyelesaikan lukisannya kecuali dia."
+          },
+          {
+            "en": "She had tried three times, but she hated every picture.",
+            "id": "Dia sudah mencoba tiga kali, tapi tidak suka satu pun hasilnya."
+          },
+          {
+            "en": "Her teacher suggested painting something she really cared about.",
+            "id": "Gurunya menyarankan melukis sesuatu yang benar-benar dia pedulikan.",
+            "br": true
+          },
+          {
+            "en": "That evening, Nita painted her grandmother's hands making batik.",
+            "id": "Malam itu, Nita melukis tangan neneknya yang sedang membatik."
+          },
+          {
+            "en": "It took four nights, although she usually finished in one.",
+            "id": "Butuh empat malam, walaupun biasanya dia selesai dalam satu malam."
+          },
+          {
+            "en": "At the exhibition, many visitors stopped in front of her painting.",
+            "id": "Di pameran, banyak pengunjung berhenti di depan lukisannya.",
+            "br": true
+          },
+          {
+            "en": "One of them was her grandmother, who had tears in her eyes.",
+            "id": "Salah satunya neneknya, yang matanya berkaca-kaca."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why was Nita worried?",
+            "qId": "Kenapa Nita khawatir?",
+            "options": [
+              "She hadn't finished her painting.",
+              "She lost her paints.",
+              "She was sick.",
+              "The exhibition was cancelled."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What did her teacher suggest?",
+            "qId": "Apa saran gurunya?",
+            "options": [
+              "Painting something she cared about",
+              "Copying a famous painting",
+              "Giving up",
+              "Asking a friend for help"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What did Nita finally paint?",
+            "qId": "Apa yang akhirnya Nita lukis?",
+            "options": [
+              "Her grandmother's hands making batik",
+              "A beautiful beach",
+              "Her school",
+              "A batik shop"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How was this painting different from usual?",
+            "qId": "Apa bedanya lukisan ini dari biasanya?",
+            "options": [
+              "It took four nights.",
+              "It was very small.",
+              "It was her first painting.",
+              "It took one hour."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why did her grandmother have tears in her eyes?",
+            "qId": "Kenapa mata neneknya berkaca-kaca?",
+            "options": [
+              "She was deeply moved by the painting.",
+              "She was sad about the exhibition.",
+              "She was hurt.",
+              "She disliked the painting."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          3,
+          4,
+          6
+        ]
       },
       {
-        passage: ['At the exhibition, three teachers walk past Citra’s painting without stopping.', 'But the fourth teacher, the school principal, stops and stares at it for almost a minute.'],
-        id: 'Di pameran, tiga guru berjalan melewati lukisan Citra tanpa berhenti. Tapi guru keempat, kepala sekolahnya, berhenti dan menatapnya hampir satu menit.',
-        question: 'Who stops to look at Citra’s painting for almost a minute?',
-        questionId: 'Siapa yang berhenti melihat lukisan Citra hampir satu menit?',
-        opts: [{ emoji: '🧑‍💼', lbl: 'The principal', ok: true }, { emoji: '🎨', lbl: 'An art teacher' }, { emoji: '🧑‍🎓', lbl: 'A classmate' }],
+        "genre": "sign",
+        "heading": "🖼️ Art Exhibition Visitor Guide",
+        "lines": [
+          {
+            "en": "Welcome to the Year 8 Art Exhibition!",
+            "id": "Selamat datang di Pameran Seni Kelas 8!"
+          },
+          {
+            "en": "The paintings are in the main hall, and the sculptures are in Room 5.",
+            "id": "Lukisan ada di aula utama, dan patung ada di Ruang 5."
+          },
+          {
+            "en": "Please do not touch the artworks.",
+            "id": "Tolong jangan sentuh karya seni."
+          },
+          {
+            "en": "You may take photos, but flash is not allowed.",
+            "id": "Kamu boleh memotret, tapi tanpa lampu kilat.",
+            "br": true
+          },
+          {
+            "en": "Vote for your favourite piece at the front desk.",
+            "id": "Pilih karya favoritmu di meja depan."
+          },
+          {
+            "en": "The winner will receive a place in the city art show.",
+            "id": "Pemenang akan mendapat tempat di pameran seni kota."
+          },
+          {
+            "en": "Open daily from 10 a.m. to 4 p.m. until Friday.",
+            "id": "Buka setiap hari jam 10 pagi sampai 4 sore hingga Jumat.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "Where are the sculptures?",
+            "qId": "Di mana patung-patungnya?",
+            "options": [
+              "In Room 5",
+              "In the main hall",
+              "At the front desk",
+              "Outside"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What is not allowed when taking photos?",
+            "qId": "Apa yang tidak boleh saat memotret?",
+            "options": [
+              "Using flash",
+              "Taking selfies",
+              "Standing close",
+              "Taking more than one"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Where can visitors vote?",
+            "qId": "Di mana pengunjung bisa memilih?",
+            "options": [
+              "At the front desk",
+              "In Room 5",
+              "Online",
+              "In the main hall"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What will the winner get?",
+            "qId": "Apa yang didapat pemenang?",
+            "options": [
+              "A place in the city art show",
+              "Money",
+              "A trophy",
+              "Free paints"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "When does the exhibition end?",
+            "qId": "Kapan pameran berakhir?",
+            "options": [
+              "On Friday",
+              "On Monday",
+              "Next month",
+              "Today"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Rina · To: Nita · Subject: Your painting!",
+        "lines": [
+          {
+            "en": "Hi Nita!",
+            "id": "Hai Nita!"
+          },
+          {
+            "en": "I visited the exhibition today, and I have to tell you something.",
+            "id": "Hari ini aku ke pameran, dan aku harus memberitahumu sesuatu."
+          },
+          {
+            "en": "Your painting was my favourite by far.",
+            "id": "Lukisanmu paling kusuka, jauh di atas yang lain."
+          },
+          {
+            "en": "At first I thought it was just two hands, but then I saw the details.",
+            "id": "Awalnya kukira cuma dua tangan, tapi lalu aku melihat detailnya.",
+            "br": true
+          },
+          {
+            "en": "The tiny drops of wax looked almost real!",
+            "id": "Tetesan malam yang kecil-kecil itu tampak hampir nyata!"
+          },
+          {
+            "en": "I voted for you, and so did my brother.",
+            "id": "Aku memilihmu, dan kakakku juga."
+          },
+          {
+            "en": "Whether you win or not, you should be really proud. Rina",
+            "id": "Menang atau tidak, kamu harus benar-benar bangga. Rina",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "What does Rina think of Nita's painting?",
+            "qId": "Apa pendapat Rina tentang lukisan Nita?",
+            "options": [
+              "It was her favourite.",
+              "It was too small.",
+              "It was boring.",
+              "It was unfinished."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How did Rina's opinion change as she looked?",
+            "qId": "Bagaimana pendapat Rina berubah saat melihatnya?",
+            "options": [
+              "She noticed the details and liked it more.",
+              "She liked it less.",
+              "She got bored.",
+              "She thought it was a photo."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What looked almost real?",
+            "qId": "Apa yang tampak hampir nyata?",
+            "options": [
+              "The drops of wax",
+              "The hands",
+              "The frame",
+              "The colours"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Who else voted for Nita?",
+            "qId": "Siapa lagi yang memilih Nita?",
+            "options": [
+              "Rina's brother",
+              "Nita's teacher",
+              "Rina's mother",
+              "Nita's grandmother"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is Rina's message at the end?",
+            "qId": "Apa pesan Rina di akhir?",
+            "options": [
+              "Nita should be proud whatever happens.",
+              "Nita will definitely win.",
+              "Nita should paint again.",
+              "Nita lost the vote."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'The principal finally speaks and asks Citra about the small sun in the corner of the painting.',
-      'Citra explains honestly that it started as a mistake, although she tried her best to make it look natural.',
-      'The principal smiles and says that turning mistakes into something beautiful is exactly what good artists do.',
-      'A week later, Citra’s painting is chosen to hang permanently in the school library.',
-    ],
-    storyId: 'Kepala sekolah akhirnya bicara dan bertanya ke Citra tentang matahari kecil di sudut lukisannya. Citra menjelaskan dengan jujur itu awalnya kesalahan, meski dia berusaha sebaik mungkin membuatnya terlihat alami. Kepala sekolah tersenyum dan bilang mengubah kesalahan jadi sesuatu yang indah itu persis yang dilakukan seniman hebat. Seminggu kemudian, lukisan Citra terpilih untuk dipajang permanen di perpustakaan sekolah.',
-    question: {
-      text: 'Why is Citra’s painting chosen for the library?',
-      id: 'Kenapa lukisan Citra dipilih untuk perpustakaan?',
-      opts: [{ emoji: '🎨', lbl: 'The principal admires how she handled her mistake creatively', ok: true }, { emoji: '👵', lbl: 'It is the only painting about a grandmother' }, { emoji: '🖌️', lbl: 'It is the biggest painting in the exhibition' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Why Art Matters at School",
+        "lines": [
+          {
+            "en": "Some people believe art is less important than maths or science.",
+            "id": "Sebagian orang menganggap seni kurang penting dibanding matematika atau IPA."
+          },
+          {
+            "en": "However, art teaches skills that other subjects often miss.",
+            "id": "Namun, seni mengajarkan keterampilan yang sering terlewat di pelajaran lain."
+          },
+          {
+            "en": "When students paint or draw, they learn to notice small details.",
+            "id": "Saat melukis atau menggambar, siswa belajar memperhatikan detail kecil.",
+            "br": true
+          },
+          {
+            "en": "They also learn to express feelings that are hard to put into words.",
+            "id": "Mereka juga belajar mengungkapkan perasaan yang sulit diungkapkan dengan kata."
+          },
+          {
+            "en": "Art can even help students solve problems creatively in other subjects.",
+            "id": "Seni bahkan membantu siswa memecahkan masalah secara kreatif di pelajaran lain."
+          },
+          {
+            "en": "For these reasons, schools should protect art lessons.",
+            "id": "Karena itu, sekolah sebaiknya mempertahankan pelajaran seni.",
+            "br": true
+          },
+          {
+            "en": "Cutting them would be a serious mistake.",
+            "id": "Menghapusnya adalah kesalahan besar."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What do some people believe?",
+            "qId": "Apa anggapan sebagian orang?",
+            "options": [
+              "Art is less important than maths or science.",
+              "Art is the most important subject.",
+              "Maths is boring.",
+              "Science should be cut."
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What does art teach students to notice?",
+            "qId": "Seni mengajarkan siswa memperhatikan apa?",
+            "options": [
+              "Small details",
+              "Numbers",
+              "Grammar",
+              "Time"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What can art help students express?",
+            "qId": "Seni membantu siswa mengungkapkan apa?",
+            "options": [
+              "Feelings that are hard to put into words",
+              "Maths answers",
+              "Science facts",
+              "Sports results"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What is the writer's opinion about cutting art lessons?",
+            "qId": "Apa pendapat penulis tentang menghapus pelajaran seni?",
+            "options": [
+              "It would be a serious mistake.",
+              "It would be a good idea.",
+              "It does not matter.",
+              "It would help maths."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the purpose of the article?",
+            "qId": "Apa tujuan artikel ini?",
+            "options": [
+              "To argue that art lessons are important",
+              "To teach how to paint",
+              "To advertise an art shop",
+              "To explain science"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'kelas-memasak-mingguan',
-    title: 'Kelas Memasak Mingguan (Weekly Cooking Class)',
-    scene: '🍳',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Every Friday afternoon, Yoga joins an after-school cooking class with his classmates.', 'This week, the class is learning how to make traditional soto soup.'], id: 'Setiap Jumat siang, Yoga ikut kelas memasak sepulang sekolah bersama teman-teman sekelasnya. Minggu ini, kelasnya belajar membuat soto tradisional.' },
-      { passage: ['The teacher explains that soto recipes are different in almost every region of Indonesia.', 'Yoga is paired with his classmate Mira to cook together.'], id: 'Gurunya menjelaskan resep soto berbeda-beda di hampir setiap daerah di Indonesia. Yoga dipasangkan dengan teman sekelasnya, Mira, untuk memasak bersama.' },
-    ],
-    drill: [
+    "id": "kelas-memasak-mingguan",
+    "title": "Kelas Memasak Mingguan (Weekly Cooking Class)",
+    "scene": "🍳",
+    "desc": "Diary, aturan dapur, email & artikel",
+    "texts": [
       {
-        passage: ['Mira wants to add a lot of chili to their soto, however Yoga reminds her that some classmates cannot eat spicy food.', 'They agree to add the chili separately as a side condiment instead.'],
-        id: 'Mira ingin menambahkan banyak cabai ke soto mereka, namun Yoga mengingatkan beberapa teman sekelas tidak bisa makan pedas. Mereka sepakat menambahkan cabainya terpisah sebagai sambal saja.',
-        question: 'How do Yoga and Mira decide to serve the chili?',
-        questionId: 'Bagaimana Yoga dan Mira memutuskan menyajikan cabainya?',
-        opts: [{ emoji: '🌶️', lbl: 'As a separate side condiment', ok: true }, { emoji: '🍲', lbl: 'Mixed into the soup' }, { emoji: '🚫', lbl: 'Not at all' }],
+        "genre": "diary",
+        "heading": "📔 Cooking Class, Week 3",
+        "lines": [
+          {
+            "en": "Today's cooking class was a disaster at first.",
+            "id": "Kelas memasak hari ini awalnya berantakan."
+          },
+          {
+            "en": "We were making pisang goreng, but I forgot to heat the oil properly.",
+            "id": "Kami membuat pisang goreng, tapi aku lupa memanaskan minyak dengan benar."
+          },
+          {
+            "en": "My bananas soaked up the oil and became soft and greasy.",
+            "id": "Pisangku menyerap minyak dan jadi lembek dan berminyak."
+          },
+          {
+            "en": "Chef Andi showed me how to test the oil with a small piece of batter.",
+            "id": "Chef Andi menunjukkan cara mengetes minyak dengan sedikit adonan.",
+            "br": true
+          },
+          {
+            "en": "If it floats and bubbles, the oil is ready.",
+            "id": "Kalau adonannya mengapung dan berbuih, minyaknya siap."
+          },
+          {
+            "en": "My second batch was golden and crispy!",
+            "id": "Gorengan keduaku keemasan dan renyah!"
+          },
+          {
+            "en": "Although I made a mistake, I learned more than in the first two weeks.",
+            "id": "Walaupun aku berbuat salah, aku belajar lebih banyak dari dua minggu pertama.",
+            "br": true
+          },
+          {
+            "en": "Next week, we're making soto, which sounds much harder.",
+            "id": "Minggu depan kami membuat soto, yang kedengarannya jauh lebih sulit."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What was the writer making?",
+            "qId": "Apa yang dibuat penulis?",
+            "options": [
+              "Pisang goreng",
+              "Soto",
+              "Fried rice",
+              "Banana cake"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What was the writer's mistake?",
+            "qId": "Apa kesalahan penulis?",
+            "options": [
+              "They didn't heat the oil properly.",
+              "They used too much sugar.",
+              "They burned the bananas.",
+              "They forgot the batter."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How can you tell the oil is ready?",
+            "qId": "Bagaimana tahu minyaknya sudah siap?",
+            "options": [
+              "A piece of batter floats and bubbles.",
+              "It turns black.",
+              "It smells sweet.",
+              "It stops making noise."
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "What was the second batch like?",
+            "qId": "Seperti apa gorengan kedua?",
+            "options": [
+              "Golden and crispy",
+              "Soft and greasy",
+              "Burned",
+              "Too salty"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does the writer think about the mistake?",
+            "qId": "Apa pendapat penulis tentang kesalahannya?",
+            "options": [
+              "It helped them learn a lot.",
+              "It ruined the whole class.",
+              "It was the teacher's fault.",
+              "It was not important."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          5
+        ]
       },
       {
-        passage: ['Although the recipe says to cook the broth for one hour, Yoga and Mira only have thirty minutes left before class ends.', 'They turn up the heat slightly to make the broth ready faster.'],
-        id: 'Meskipun resepnya bilang merebus kaldu selama satu jam, Yoga dan Mira cuma punya sisa waktu tiga puluh menit sebelum kelas berakhir. Mereka membesarkan apinya sedikit supaya kaldunya lebih cepat siap.',
-        question: 'How much time do Yoga and Mira have left before class ends?',
-        questionId: 'Berapa sisa waktu Yoga dan Mira sebelum kelas berakhir?',
-        opts: [{ emoji: '⏱️', lbl: 'Thirty minutes', ok: true }, { emoji: '⏰', lbl: 'One hour' }, { emoji: '⌛', lbl: 'Ten minutes' }],
+        "genre": "sign",
+        "heading": "🍳 Kitchen Safety Rules",
+        "lines": [
+          {
+            "en": "Cooking Class: Kitchen Safety Rules",
+            "id": "Kelas Memasak: Aturan Keamanan Dapur"
+          },
+          {
+            "en": "Tie back long hair and roll up your sleeves.",
+            "id": "Ikat rambut panjang dan gulung lengan bajumu."
+          },
+          {
+            "en": "Always use a cloth to hold hot pans.",
+            "id": "Selalu pakai kain untuk memegang panci panas."
+          },
+          {
+            "en": "Never leave the stove on when you walk away.",
+            "id": "Jangan pernah meninggalkan kompor menyala.",
+            "br": true
+          },
+          {
+            "en": "Tell the chef immediately if you cut or burn yourself.",
+            "id": "Segera beri tahu chef kalau kamu teriris atau terkena panas."
+          },
+          {
+            "en": "Wash your hands after touching raw meat or eggs.",
+            "id": "Cuci tangan setelah memegang daging mentah atau telur."
+          },
+          {
+            "en": "A safe kitchen is a happy kitchen!",
+            "id": "Dapur yang aman adalah dapur yang menyenangkan!",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "What should you do with long hair?",
+            "qId": "Apa yang harus dilakukan pada rambut panjang?",
+            "options": [
+              "Tie it back",
+              "Cover it with a cloth",
+              "Wash it",
+              "Cut it short"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How should you hold hot pans?",
+            "qId": "Bagaimana cara memegang panci panas?",
+            "options": [
+              "With a cloth",
+              "With bare hands",
+              "With a spoon",
+              "With your sleeves"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What should you never do?",
+            "qId": "Apa yang tidak boleh dilakukan?",
+            "options": [
+              "Leave the stove on when you walk away",
+              "Wash your hands",
+              "Tell the chef",
+              "Roll up your sleeves"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "When should you wash your hands?",
+            "qId": "Kapan harus cuci tangan?",
+            "options": [
+              "After touching raw meat or eggs",
+              "Only at the end of class",
+              "Before leaving the room",
+              "Never"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What is the purpose of these rules?",
+            "qId": "Apa tujuan aturan ini?",
+            "options": [
+              "To keep everyone safe",
+              "To make cooking faster",
+              "To save money",
+              "To make food tastier"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Chef Andi · To: Cooking class · Subject: Next week's soto",
+        "lines": [
+          {
+            "en": "Hello cooks!",
+            "id": "Halo para koki!"
+          },
+          {
+            "en": "Next week we're making soto ayam, a classic Indonesian soup.",
+            "id": "Minggu depan kita membuat soto ayam, sup khas Indonesia."
+          },
+          {
+            "en": "Although it takes longer than fried snacks, it isn't difficult.",
+            "id": "Walaupun lebih lama dari gorengan, soto tidak sulit."
+          },
+          {
+            "en": "Please bring an apron and a container to take some home.",
+            "id": "Tolong bawa celemek dan wadah untuk membawa pulang.",
+            "br": true
+          },
+          {
+            "en": "Students with allergies to peanuts should tell me before Monday.",
+            "id": "Siswa yang alergi kacang tolong beri tahu saya sebelum Senin."
+          },
+          {
+            "en": "Some versions use peanut sauce, but I can make a separate pot.",
+            "id": "Beberapa versi memakai sambal kacang, tapi saya bisa membuat panci terpisah."
+          },
+          {
+            "en": "Remember: cooking is about patience, not speed! Chef Andi",
+            "id": "Ingat: memasak itu soal kesabaran, bukan kecepatan! Chef Andi",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "What will the class cook next week?",
+            "qId": "Apa yang akan dimasak minggu depan?",
+            "options": [
+              "Soto ayam",
+              "Pisang goreng",
+              "Peanut sauce",
+              "Fried snacks"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How does the chef describe the dish?",
+            "qId": "Bagaimana chef menggambarkan masakan itu?",
+            "options": [
+              "It takes longer but isn't difficult.",
+              "It is very difficult.",
+              "It is quick and easy.",
+              "It is very spicy."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What should students bring?",
+            "qId": "Apa yang harus dibawa siswa?",
+            "options": [
+              "An apron and a container",
+              "Their own chicken",
+              "Peanuts",
+              "A pot"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why should students with peanut allergies tell the chef?",
+            "qId": "Kenapa siswa alergi kacang harus memberi tahu chef?",
+            "options": [
+              "He can make a separate pot for them.",
+              "They must stay home.",
+              "They must bring their own food.",
+              "They will cook the sauce."
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "What is Chef Andi's final advice?",
+            "qId": "Apa nasihat terakhir Chef Andi?",
+            "options": [
+              "Cooking needs patience.",
+              "Cook as fast as possible.",
+              "Always use peanuts.",
+              "Buy soto instead."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'When the teacher tastes every group’s soto, she pauses longest at Yoga and Mira’s bowl.',
-      'She says the broth tastes rich and well-balanced, even though it was cooked in less time than the recipe suggested.',
-      'Yoga admits they were worried the shortcut would ruin the flavor.',
-      'The teacher laughs and says sometimes cooks discover better methods by accident, under pressure.',
-    ],
-    storyId: 'Ketika gurunya mencicipi soto setiap kelompok, dia berhenti paling lama di mangkuk Yoga dan Mira. Dia bilang kaldunya terasa kaya dan seimbang, meskipun dimasak dalam waktu lebih singkat dari yang disarankan resep. Yoga mengakui mereka khawatir jalan pintas itu akan merusak rasanya. Gurunya tertawa dan bilang terkadang juru masak menemukan cara yang lebih baik secara tidak sengaja, di bawah tekanan.',
-    question: {
-      text: 'What does the teacher’s reaction suggest about Yoga and Mira’s soto?',
-      id: 'Apa yang tersirat dari reaksi gurunya soal soto Yoga dan Mira?',
-      opts: [{ emoji: '😋', lbl: 'It turned out surprisingly delicious despite the shortcut', ok: true }, { emoji: '🤢', lbl: 'It tasted bad because it cooked too fast' }, { emoji: '😐', lbl: 'It tasted exactly the same as everyone else’s' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Why Kids Should Learn to Cook",
+        "lines": [
+          {
+            "en": "Fewer young people know how to cook than in the past.",
+            "id": "Lebih sedikit anak muda yang bisa memasak dibanding dulu."
+          },
+          {
+            "en": "Many rely on instant noodles or food delivery apps.",
+            "id": "Banyak yang mengandalkan mi instan atau aplikasi pesan antar."
+          },
+          {
+            "en": "However, cooking is a valuable life skill.",
+            "id": "Namun, memasak adalah keterampilan hidup yang berharga.",
+            "br": true
+          },
+          {
+            "en": "Children who cook often eat more vegetables and less junk food.",
+            "id": "Anak yang sering memasak cenderung makan lebih banyak sayur dan lebih sedikit makanan tidak sehat."
+          },
+          {
+            "en": "Cooking also teaches maths, like measuring and timing.",
+            "id": "Memasak juga mengajarkan matematika, seperti menakar dan mengatur waktu."
+          },
+          {
+            "en": "Perhaps most importantly, it builds confidence and independence.",
+            "id": "Mungkin yang paling penting, memasak membangun rasa percaya diri dan kemandirian.",
+            "br": true
+          },
+          {
+            "en": "Schools and families should give children more chances to cook.",
+            "id": "Sekolah dan keluarga sebaiknya memberi anak lebih banyak kesempatan memasak."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is true about young people today?",
+            "qId": "Apa yang benar tentang anak muda sekarang?",
+            "options": [
+              "Fewer know how to cook.",
+              "More cook every day.",
+              "They never order food.",
+              "They all cook well."
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "What do many young people rely on?",
+            "qId": "Apa yang diandalkan banyak anak muda?",
+            "options": [
+              "Instant noodles or delivery apps",
+              "Their grandparents",
+              "School canteens",
+              "Expensive restaurants"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "How does cooking help with maths?",
+            "qId": "Bagaimana memasak membantu matematika?",
+            "options": [
+              "Through measuring and timing",
+              "Through reading recipes aloud",
+              "Through tasting food",
+              "Through shopping"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What does the writer think is most important?",
+            "qId": "Apa yang menurut penulis paling penting?",
+            "options": [
+              "Cooking builds confidence and independence.",
+              "Cooking saves money.",
+              "Cooking is fun.",
+              "Cooking is fast."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does the writer want?",
+            "qId": "Apa yang diinginkan penulis?",
+            "options": [
+              "More chances for children to cook",
+              "Fewer cooking classes",
+              "More delivery apps",
+              "Children to eat less"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'pesta-kejutan-sahabat',
-    title: 'Pesta Kejutan untuk Sahabat (A Surprise Party for a Friend)',
-    scene: '🎉',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Nadia wants to plan a surprise birthday party for her best friend, Zahra.', 'She asks five other classmates to help keep the secret.'], id: 'Nadia ingin merencanakan pesta ulang tahun kejutan untuk sahabatnya, Zahra. Dia meminta lima teman sekelas lain untuk membantu menjaga rahasianya.' },
-      { passage: ['The plan is to invite Zahra to a fake study group, however the real party will be waiting at Nadia’s house.', 'Everyone promises not to say a single word to Zahra.'], id: 'Rencananya adalah mengundang Zahra ke kelompok belajar palsu, padahal pesta sungguhannya sudah menunggu di rumah Nadia. Semua orang berjanji tidak akan bilang sepatah kata pun ke Zahra.' },
-    ],
-    drill: [
+    "id": "pesta-kejutan-sahabat",
+    "title": "Pesta Kejutan untuk Sahabat (A Surprise Party for a Friend)",
+    "scene": "🎉",
+    "desc": "Cerita, rencana, email & artikel",
+    "texts": [
       {
-        passage: ['Two days before the party, one classmate almost tells Zahra by accident, although he stops himself just in time.', 'Nadia reminds everyone again to be extra careful.'],
-        id: 'Dua hari sebelum pesta, seorang teman sekelas hampir memberi tahu Zahra tanpa sengaja, meski dia menahan diri tepat waktu. Nadia mengingatkan semua orang lagi untuk lebih hati-hati.',
-        question: 'What almost happens two days before the party?',
-        questionId: 'Apa yang hampir terjadi dua hari sebelum pesta?',
-        opts: [{ emoji: '🤭', lbl: 'A classmate almost tells the secret', ok: true }, { emoji: '🚫', lbl: 'The party gets cancelled' }, { emoji: '💌', lbl: 'Zahra finds an invitation' }],
+        "genre": "story",
+        "heading": "🎉 The Almost-Ruined Surprise",
+        "lines": [
+          {
+            "en": "Maya and her friends planned a surprise party for Lulu's thirteenth birthday.",
+            "id": "Maya dan teman-temannya merencanakan pesta kejutan untuk ulang tahun ke-13 Lulu."
+          },
+          {
+            "en": "They decorated Maya's garage with lights and paper stars.",
+            "id": "Mereka menghias garasi Maya dengan lampu dan bintang kertas."
+          },
+          {
+            "en": "Everything was ready by five o'clock.",
+            "id": "Semua sudah siap jam lima."
+          },
+          {
+            "en": "However, at 4:45, Lulu called Maya and asked to come over early.",
+            "id": "Namun, jam 16.45, Lulu menelepon Maya dan minta datang lebih awal.",
+            "br": true
+          },
+          {
+            "en": "Maya had to think quickly.",
+            "id": "Maya harus berpikir cepat."
+          },
+          {
+            "en": "She said her mom needed help in the kitchen, so Lulu should come at six.",
+            "id": "Dia bilang ibunya butuh bantuan di dapur, jadi Lulu sebaiknya datang jam enam."
+          },
+          {
+            "en": "When Lulu finally arrived, everyone jumped out and shouted 'Surprise!'",
+            "id": "Waktu Lulu akhirnya datang, semua melompat keluar dan berteriak 'Kejutan!'",
+            "br": true
+          },
+          {
+            "en": "Lulu laughed so hard that she almost dropped her phone.",
+            "id": "Lulu tertawa sampai hampir menjatuhkan ponselnya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Whose birthday was it?",
+            "qId": "Ulang tahun siapa?",
+            "options": [
+              "Lulu's",
+              "Maya's",
+              "Maya's mom's",
+              "A new friend's"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "Where was the party?",
+            "qId": "Di mana pestanya?",
+            "options": [
+              "In Maya's garage",
+              "At Lulu's house",
+              "At school",
+              "In a restaurant"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "What problem happened at 4:45?",
+            "qId": "Masalah apa yang terjadi jam 16.45?",
+            "options": [
+              "Lulu wanted to come early.",
+              "The lights broke.",
+              "It started to rain.",
+              "The cake fell."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Why did Maya say her mom needed help?",
+            "qId": "Kenapa Maya bilang ibunya butuh bantuan?",
+            "options": [
+              "To keep the surprise secret",
+              "Because her mom was sick",
+              "Because the kitchen was messy",
+              "To make Lulu angry"
+            ],
+            "answer": 0,
+            "evidence": [
+              4,
+              5
+            ]
+          },
+          {
+            "q": "How did Lulu react to the surprise?",
+            "qId": "Bagaimana reaksi Lulu?",
+            "options": [
+              "She laughed very hard.",
+              "She cried and left.",
+              "She was angry.",
+              "She didn't notice."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          1,
+          3,
+          6
+        ]
       },
       {
-        passage: ['On the day of the party, Zahra suspects something is strange because all her friends are busy at the same time.', 'She decides not to ask any questions and just waits to see what happens.'],
-        id: 'Pada hari pestanya, Zahra curiga ada yang aneh karena semua temannya sibuk di waktu yang sama. Dia memutuskan tidak bertanya apa-apa dan cuma menunggu apa yang akan terjadi.',
-        question: 'What does Zahra decide to do about her suspicion?',
-        questionId: 'Apa yang diputuskan Zahra soal kecurigaannya?',
-        opts: [{ emoji: '⏳', lbl: 'Wait and see what happens', ok: true }, { emoji: '❓', lbl: 'Ask her friends directly' }, { emoji: '🚫', lbl: 'Cancel the study group' }],
+        "genre": "note",
+        "heading": "📝 Party Plan: Who Does What",
+        "lines": [
+          {
+            "en": "Lulu's Surprise Party: Who Does What",
+            "id": "Pesta Kejutan Lulu: Siapa Mengerjakan Apa"
+          },
+          {
+            "en": "Maya: decorations and music.",
+            "id": "Maya: dekorasi dan musik."
+          },
+          {
+            "en": "Rio: order the cake, chocolate with strawberries.",
+            "id": "Rio: pesan kue, cokelat dengan stroberi."
+          },
+          {
+            "en": "Sinta: make the photo wall with pictures from Year 1 to now.",
+            "id": "Sinta: buat dinding foto dengan foto dari kelas 1 sampai sekarang.",
+            "br": true
+          },
+          {
+            "en": "Budi: keep Lulu busy on Saturday afternoon.",
+            "id": "Budi: buat Lulu sibuk di Sabtu sore."
+          },
+          {
+            "en": "Everyone: arrive by 4:30 and hide your shoes!",
+            "id": "Semua: datang sebelum jam 16.30 dan sembunyikan sepatu kalian!"
+          },
+          {
+            "en": "Remember: it's a secret, so don't post anything online!",
+            "id": "Ingat: ini rahasia, jadi jangan unggah apa pun ke internet!",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is Rio responsible for?",
+            "qId": "Rio bertanggung jawab atas apa?",
+            "options": [
+              "Ordering the cake",
+              "Decorations",
+              "The photo wall",
+              "Keeping Lulu busy"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What will the photo wall show?",
+            "qId": "Dinding foto akan menampilkan apa?",
+            "options": [
+              "Pictures from Year 1 to now",
+              "Only this year's photos",
+              "Pictures of the cake",
+              "Famous people"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What is Budi's job?",
+            "qId": "Apa tugas Budi?",
+            "options": [
+              "Keep Lulu busy",
+              "Order the cake",
+              "Play music",
+              "Hide the shoes"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why should everyone hide their shoes?",
+            "qId": "Kenapa semua harus menyembunyikan sepatu?",
+            "options": [
+              "So Lulu doesn't guess there are guests",
+              "Because the floor is clean",
+              "Because Maya wants to dance",
+              "To keep them dry"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why shouldn't anyone post online?",
+            "qId": "Kenapa tidak boleh mengunggah ke internet?",
+            "options": [
+              "It would ruin the secret.",
+              "Phones are not allowed.",
+              "The photos are bad.",
+              "Lulu has no phone."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Lulu · To: Maya · Subject: THANK YOU!",
+        "lines": [
+          {
+            "en": "Dear Maya,",
+            "id": "Maya sayang,"
+          },
+          {
+            "en": "I still can't believe you organised all that for me!",
+            "id": "Aku masih tidak percaya kalian menyiapkan semua itu untukku!"
+          },
+          {
+            "en": "When you said your mom needed help, I didn't suspect anything.",
+            "id": "Waktu kamu bilang ibumu butuh bantuan, aku sama sekali tidak curiga."
+          },
+          {
+            "en": "The photo wall made me laugh and cry at the same time.",
+            "id": "Dinding foto itu membuatku tertawa sekaligus terharu.",
+            "br": true
+          },
+          {
+            "en": "I'd forgotten how short my hair was in Year 3!",
+            "id": "Aku sudah lupa betapa pendeknya rambutku waktu kelas 3!"
+          },
+          {
+            "en": "Please thank everyone, especially Budi.",
+            "id": "Tolong sampaikan terima kasih ke semua, terutama Budi."
+          },
+          {
+            "en": "He kept me at the bookshop for two hours, which must have been boring for him.",
+            "id": "Dia menahanku di toko buku dua jam, pasti membosankan buatnya.",
+            "br": true
+          },
+          {
+            "en": "You're the best friends anyone could have. Lulu",
+            "id": "Kalian sahabat terbaik yang bisa dimiliki siapa pun. Lulu"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Did Lulu suspect the surprise?",
+            "qId": "Apakah Lulu curiga soal kejutan itu?",
+            "options": [
+              "No, not at all.",
+              "Yes, from the start.",
+              "Only a little.",
+              "Budi told her."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How did the photo wall make Lulu feel?",
+            "qId": "Bagaimana perasaan Lulu melihat dinding foto?",
+            "options": [
+              "Both happy and emotional",
+              "Only angry",
+              "Bored",
+              "Confused"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What had Lulu forgotten?",
+            "qId": "Apa yang sudah Lulu lupakan?",
+            "options": [
+              "How short her hair was in Year 3",
+              "Her birthday",
+              "Budi's name",
+              "The bookshop"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why does Lulu especially thank Budi?",
+            "qId": "Kenapa Lulu terutama berterima kasih pada Budi?",
+            "options": [
+              "He kept her busy at the bookshop for hours.",
+              "He made the cake.",
+              "He decorated the garage.",
+              "He took the photos."
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "What is the main purpose of Lulu's email?",
+            "qId": "Apa tujuan utama email Lulu?",
+            "options": [
+              "To thank her friends",
+              "To complain about Budi",
+              "To plan another party",
+              "To ask for photos"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
       },
-    ],
-    story: [
-      'When Zahra walks into Nadia’s living room expecting a boring study session, the lights suddenly turn on and everyone shouts, “Surprise!”',
-      'Zahra freezes for a second, and then her eyes fill with tears of joy.',
-      'She later tells Nadia she had actually guessed something was happening, however she never imagined it would be this big.',
-      'Nadia smiles and says keeping the secret for two whole weeks was the hardest part.',
-    ],
-    storyId: 'Ketika Zahra masuk ke ruang tamu Nadia sambil menyangka akan ada sesi belajar yang membosankan, lampunya tiba-tiba menyala dan semua orang berteriak, "Kejutan!" Zahra membeku sesaat, lalu matanya berkaca-kaca karena bahagia. Belakangan dia bilang ke Nadia sebenarnya dia sudah menduga ada sesuatu yang terjadi, namun dia tidak pernah membayangkan akan sebesar ini. Nadia tersenyum dan bilang menjaga rahasia selama dua minggu penuh adalah bagian tersulit.',
-    question: {
-      text: 'What was the hardest part of the surprise for Nadia?',
-      id: 'Apa bagian tersulit dari kejutan itu bagi Nadia?',
-      opts: [{ emoji: '🤫', lbl: 'Keeping the secret for two weeks', ok: true }, { emoji: '💸', lbl: 'Paying for the decorations' }, { emoji: '📞', lbl: 'Inviting all the classmates' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 How to Keep a Secret",
+        "lines": [
+          {
+            "en": "Planning a surprise can be exciting, but keeping it secret is hard.",
+            "id": "Merencanakan kejutan itu seru, tapi merahasiakannya sulit."
+          },
+          {
+            "en": "The first rule is to tell as few people as possible.",
+            "id": "Aturan pertama: beri tahu sesedikit mungkin orang."
+          },
+          {
+            "en": "The more people know, the more likely someone will slip.",
+            "id": "Makin banyak yang tahu, makin besar kemungkinan ada yang keceplosan.",
+            "br": true
+          },
+          {
+            "en": "Secondly, use a 'cover story' so the person doesn't get suspicious.",
+            "id": "Kedua, pakai 'cerita samaran' supaya orangnya tidak curiga."
+          },
+          {
+            "en": "For example, invite them to a normal activity at the same time.",
+            "id": "Misalnya, ajak dia ke kegiatan biasa di waktu yang sama."
+          },
+          {
+            "en": "Finally, be careful online, because one photo can ruin everything.",
+            "id": "Terakhir, hati-hati di internet, karena satu foto bisa merusak segalanya.",
+            "br": true
+          },
+          {
+            "en": "With good planning, the look on your friend's face will be worth it.",
+            "id": "Dengan rencana yang baik, ekspresi wajah temanmu akan sepadan dengan usahanya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is the first rule?",
+            "qId": "Apa aturan pertama?",
+            "options": [
+              "Tell as few people as possible.",
+              "Tell everyone early.",
+              "Post it online.",
+              "Buy a gift first."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Why should few people know?",
+            "qId": "Kenapa sebaiknya sedikit orang yang tahu?",
+            "options": [
+              "Someone is more likely to slip if many know.",
+              "It is cheaper.",
+              "Parties must be small.",
+              "People forget quickly."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What is a 'cover story'?",
+            "qId": "Apa itu 'cerita samaran'?",
+            "options": [
+              "A normal reason that hides the surprise",
+              "A book cover",
+              "A story told at the party",
+              "A secret password"
+            ],
+            "answer": 0,
+            "evidence": [
+              3,
+              4
+            ]
+          },
+          {
+            "q": "Why be careful online?",
+            "qId": "Kenapa harus hati-hati di internet?",
+            "options": [
+              "One photo can ruin the surprise.",
+              "Photos are expensive.",
+              "Phones break easily.",
+              "People dislike photos."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does the writer mean by 'worth it'?",
+            "qId": "Apa maksud penulis dengan 'sepadan'?",
+            "options": [
+              "Your friend's happy reaction makes the effort worthwhile.",
+              "The party costs a lot.",
+              "Secrets are bad.",
+              "Planning is easy."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
-    id: 'menabung-untuk-sepeda',
-    title: 'Menabung untuk Sepeda Baru (Saving for a New Bike)',
-    scene: '🚲',
-    desc: '2 bacaan pendek',
-    primer: [
-      { passage: ['Arya has wanted a new mountain bike for months, however the one he likes costs one million five hundred thousand rupiah.', 'He decides to save his allowance instead of asking his parents to buy it for him.'], id: 'Arya sudah ingin sepeda gunung baru selama berbulan-bulan, namun yang dia suka harganya satu juta lima ratus ribu rupiah. Dia memutuskan menabung uang jajannya alih-alih meminta orang tuanya membelikannya.' },
-      { passage: ['His parents give him ten thousand rupiah a day, but Arya usually spends half of it on snacks.', 'He decides to change his habit starting this week.'], id: 'Orang tuanya memberinya sepuluh ribu rupiah sehari, tapi Arya biasanya menghabiskan setengahnya untuk jajan. Dia memutuskan mengubah kebiasaannya mulai minggu ini.' },
-    ],
-    drill: [
+    "id": "menabung-untuk-sepeda",
+    "title": "Menabung untuk Sepeda Baru (Saving for a New Bike)",
+    "scene": "🚲",
+    "desc": "Cerita, rencana tabungan, email & artikel",
+    "texts": [
       {
-        passage: ['In the first month, Arya saves two hundred thousand rupiah, although he still buys snacks twice a week.', 'He keeps the money in a locked box under his bed.'],
-        id: 'Bulan pertama, Arya menabung dua ratus ribu rupiah, meski dia masih jajan dua kali seminggu. Dia menyimpan uangnya di kotak terkunci di bawah tempat tidurnya.',
-        question: 'How much does Arya save in the first month?',
-        questionId: 'Berapa yang ditabung Arya di bulan pertama?',
-        opts: [{ emoji: '💰', lbl: 'Two hundred thousand', ok: true }, { emoji: '💵', lbl: 'One hundred thousand' }, { emoji: '💴', lbl: 'Three hundred thousand' }],
+        "genre": "story",
+        "heading": "🚲 Saving for a Bike",
+        "lines": [
+          {
+            "en": "Arga wanted a new bike that cost 1,800,000 rupiah.",
+            "id": "Arga ingin sepeda baru seharga 1.800.000 rupiah."
+          },
+          {
+            "en": "His parents agreed to pay half if he saved the rest.",
+            "id": "Orang tuanya setuju membayar separuh kalau dia menabung sisanya."
+          },
+          {
+            "en": "At first, Arga saved only 20,000 a week from his pocket money.",
+            "id": "Awalnya, Arga hanya menabung 20.000 seminggu dari uang sakunya."
+          },
+          {
+            "en": "Then he started washing neighbours' cars on weekends.",
+            "id": "Lalu dia mulai mencuci mobil tetangga di akhir pekan.",
+            "br": true
+          },
+          {
+            "en": "He earned 50,000 every Saturday and 50,000 every Sunday.",
+            "id": "Dia mendapat 50.000 setiap Sabtu dan 50.000 setiap Minggu."
+          },
+          {
+            "en": "Although he sometimes wanted to buy snacks, he stayed focused.",
+            "id": "Walaupun kadang ingin membeli camilan, dia tetap fokus."
+          },
+          {
+            "en": "After a few months, he finally had enough.",
+            "id": "Setelah beberapa bulan, akhirnya uangnya cukup.",
+            "br": true
+          },
+          {
+            "en": "Riding the bike felt better because he had worked for it.",
+            "id": "Naik sepeda itu terasa lebih menyenangkan karena dia bekerja keras untuknya."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How much did Arga need to save himself?",
+            "qId": "Berapa yang harus Arga tabung sendiri?",
+            "options": [
+              "900,000 rupiah",
+              "1,800,000 rupiah",
+              "50,000 rupiah",
+              "20,000 rupiah"
+            ],
+            "answer": 0,
+            "evidence": [
+              0,
+              1
+            ]
+          },
+          {
+            "q": "How did Arga earn extra money?",
+            "qId": "Bagaimana Arga mendapat uang tambahan?",
+            "options": [
+              "Washing neighbours' cars",
+              "Selling snacks",
+              "Delivering newspapers",
+              "Fixing bikes"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How much did he earn from car washing each weekend?",
+            "qId": "Berapa hasil cuci mobil setiap akhir pekan?",
+            "options": [
+              "100,000 rupiah",
+              "50,000 rupiah",
+              "20,000 rupiah",
+              "200,000 rupiah"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What does 'stayed focused' suggest?",
+            "qId": "Apa arti 'tetap fokus' di cerita ini?",
+            "options": [
+              "He didn't spend his savings on snacks.",
+              "He studied hard.",
+              "He watched the bike shop.",
+              "He washed cars faster."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why did riding the bike feel better?",
+            "qId": "Kenapa naik sepeda itu terasa lebih menyenangkan?",
+            "options": [
+              "He had worked for it.",
+              "It was very expensive.",
+              "His parents paid for all of it.",
+              "It was a surprise gift."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          }
+        ],
+        "sequence": [
+          2,
+          3,
+          6
+        ]
       },
       {
-        passage: ['Arya’s neighbor offers to pay him to water the plants every morning before school.', 'Arya agrees, even though it means waking up fifteen minutes earlier.'],
-        id: 'Tetangga Arya menawarkan membayarnya untuk menyiram tanaman setiap pagi sebelum sekolah. Arya setuju, meski itu berarti bangun lima belas menit lebih awal.',
-        question: 'What job does Arya’s neighbor offer him?',
-        questionId: 'Pekerjaan apa yang ditawarkan tetangga Arya?',
-        opts: [{ emoji: '🌱', lbl: 'Watering plants', ok: true }, { emoji: '🚗', lbl: 'Washing the car' }, { emoji: '🐶', lbl: 'Walking the dog' }],
+        "genre": "note",
+        "heading": "📝 Arga's Savings Plan",
+        "lines": [
+          {
+            "en": "Goal: a new bike (my share: 900,000)",
+            "id": "Target: sepeda baru (bagianku: 900.000)"
+          },
+          {
+            "en": "Pocket money: save 20,000 every week.",
+            "id": "Uang saku: tabung 20.000 setiap minggu."
+          },
+          {
+            "en": "Car washing: 100,000 every weekend.",
+            "id": "Cuci mobil: 100.000 setiap akhir pekan."
+          },
+          {
+            "en": "No buying snacks at school on weekdays!",
+            "id": "Tidak beli camilan di sekolah pada hari sekolah!",
+            "br": true
+          },
+          {
+            "en": "Keep the money in the tin, not in my wallet.",
+            "id": "Simpan uang di kaleng, bukan di dompet."
+          },
+          {
+            "en": "Check my total every Sunday night.",
+            "id": "Cek jumlahnya setiap Minggu malam."
+          },
+          {
+            "en": "Target date: before the school holiday in June.",
+            "id": "Batas waktu: sebelum libur sekolah bulan Juni.",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "What is Arga's share of the bike price?",
+            "qId": "Berapa bagian Arga dari harga sepeda?",
+            "options": [
+              "900,000",
+              "1,800,000",
+              "100,000",
+              "20,000"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "q": "How much will Arga save from pocket money each week?",
+            "qId": "Berapa yang Arga tabung dari uang saku tiap minggu?",
+            "options": [
+              "20,000",
+              "100,000",
+              "900,000",
+              "50,000"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Where will Arga keep his money?",
+            "qId": "Di mana Arga menyimpan uangnya?",
+            "options": [
+              "In the tin",
+              "In his wallet",
+              "At the bank",
+              "With his parents"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "When will he check his total?",
+            "qId": "Kapan dia mengecek jumlahnya?",
+            "options": [
+              "Every Sunday night",
+              "Every day",
+              "Once a month",
+              "In June"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Why does Arga avoid buying snacks?",
+            "qId": "Kenapa Arga tidak membeli camilan?",
+            "options": [
+              "To save money for the bike",
+              "Because snacks are unhealthy",
+              "Because the school banned them",
+              "Because he is on a diet"
+            ],
+            "answer": 0,
+            "evidence": [
+              0,
+              3
+            ]
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Arga · To: Grandpa · Subject: Guess what!",
+        "lines": [
+          {
+            "en": "Dear Grandpa,",
+            "id": "Kakek yang baik,"
+          },
+          {
+            "en": "I finally bought the bike I told you about!",
+            "id": "Akhirnya aku membeli sepeda yang pernah kuceritakan!"
+          },
+          {
+            "en": "It's dark green, with seven gears and a bell.",
+            "id": "Warnanya hijau tua, dengan tujuh gigi dan sebuah bel."
+          },
+          {
+            "en": "Saving took four months, which felt like forever.",
+            "id": "Menabungnya butuh empat bulan, rasanya lama sekali.",
+            "br": true
+          },
+          {
+            "en": "However, I learned that small amounts really add up.",
+            "id": "Namun, aku belajar bahwa jumlah kecil benar-benar bisa terkumpul banyak."
+          },
+          {
+            "en": "I've even started saving again, this time for a helmet with lights.",
+            "id": "Aku bahkan mulai menabung lagi, kali ini untuk helm berlampu."
+          },
+          {
+            "en": "Can I ride it to your house when we visit next month? Love, Arga",
+            "id": "Boleh aku naik sepeda ke rumah Kakek waktu kami berkunjung bulan depan? Sayang, Arga",
+            "br": true
+          }
+        ],
+        "questions": [
+          {
+            "q": "What colour is the bike?",
+            "qId": "Sepedanya warna apa?",
+            "options": [
+              "Dark green",
+              "Blue",
+              "Red",
+              "Black"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "How long did saving take?",
+            "qId": "Berapa lama menabungnya?",
+            "options": [
+              "Four months",
+              "Four weeks",
+              "Seven months",
+              "One year"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What lesson did Arga learn?",
+            "qId": "Pelajaran apa yang Arga dapat?",
+            "options": [
+              "Small amounts really add up.",
+              "Saving is impossible.",
+              "Bikes are cheap.",
+              "Grandpa should pay."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is Arga saving for now?",
+            "qId": "Sekarang Arga menabung untuk apa?",
+            "options": [
+              "A helmet with lights",
+              "Another bike",
+              "A trip to Grandpa's",
+              "A new bell"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does Arga ask Grandpa?",
+            "qId": "Apa yang Arga tanyakan pada Kakek?",
+            "options": [
+              "If he can ride the bike to Grandpa's house",
+              "If Grandpa can buy a helmet",
+              "If Grandpa likes green",
+              "If Grandpa can visit him"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          }
+        ]
       },
-    ],
-    story: [
-      'After three months of saving allowance and watering plants, Arya counts his money one evening.',
-      'He has exactly one million four hundred thousand rupiah, however the bike he wants now costs one million six hundred thousand because the price went up.',
-      'Arya feels disappointed for a moment, but his older sister offers to lend him the difference until his next birthday.',
-      'Arya thanks his sister and promises to pay her back with his allowance over the next two months.',
-    ],
-    storyId: 'Setelah tiga bulan menabung uang jajan dan menyiram tanaman, suatu malam Arya menghitung uangnya. Dia punya tepat satu juta empat ratus ribu rupiah, namun sepeda yang dia inginkan sekarang harganya satu juta enam ratus ribu karena harganya naik. Arya merasa kecewa sesaat, tapi kakak perempuannya menawarkan meminjamkan selisihnya sampai ulang tahunnya berikutnya. Arya berterima kasih ke kakaknya dan berjanji akan membayarnya kembali dengan uang jajannya selama dua bulan ke depan.',
-    question: {
-      text: 'How much money does Arya still need to reach his goal after counting his savings?',
-      id: 'Berapa uang yang masih dibutuhkan Arya setelah menghitung tabungannya?',
-      opts: [{ emoji: '💰', lbl: 'Two hundred thousand rupiah', ok: true }, { emoji: '💵', lbl: 'One hundred thousand rupiah' }, { emoji: '💴', lbl: 'Four hundred thousand rupiah' }],
-    },
+      {
+        "genre": "article",
+        "heading": "📰 Smart Saving for Teens",
+        "lines": [
+          {
+            "en": "Saving money is not always easy, especially for teenagers.",
+            "id": "Menabung tidak selalu mudah, apalagi bagi remaja."
+          },
+          {
+            "en": "However, a few simple habits can make a big difference.",
+            "id": "Namun, beberapa kebiasaan sederhana bisa membuat perbedaan besar."
+          },
+          {
+            "en": "First, set a clear goal, such as a bike or a phone.",
+            "id": "Pertama, tentukan target yang jelas, misalnya sepeda atau ponsel.",
+            "br": true
+          },
+          {
+            "en": "A goal makes it easier to say no to small, unplanned purchases.",
+            "id": "Target membuat kita lebih mudah menolak belanja kecil yang tidak direncanakan."
+          },
+          {
+            "en": "Second, save a little every week rather than waiting for a large amount.",
+            "id": "Kedua, menabunglah sedikit setiap minggu daripada menunggu jumlah besar."
+          },
+          {
+            "en": "Finally, track your progress, because seeing your total grow is motivating.",
+            "id": "Terakhir, pantau kemajuanmu, karena melihat jumlahnya bertambah itu memotivasi.",
+            "br": true
+          },
+          {
+            "en": "Remember: patience today means more freedom tomorrow.",
+            "id": "Ingat: sabar hari ini berarti lebih bebas besok."
+          }
+        ],
+        "questions": [
+          {
+            "q": "Why is setting a goal helpful?",
+            "qId": "Kenapa menentukan target membantu?",
+            "options": [
+              "It makes saying no to small purchases easier.",
+              "It makes things cheaper.",
+              "It helps you earn more.",
+              "It means parents pay."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What does the writer suggest instead of waiting for a large amount?",
+            "qId": "Apa saran penulis daripada menunggu jumlah besar?",
+            "options": [
+              "Saving a little every week",
+              "Borrowing money",
+              "Buying things on sale",
+              "Asking friends"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "Why should you track your progress?",
+            "qId": "Kenapa kamu harus memantau kemajuan?",
+            "options": [
+              "Seeing your total grow is motivating.",
+              "Banks require it.",
+              "It is fun to count coins.",
+              "Parents ask for it."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does 'patience today means more freedom tomorrow' mean?",
+            "qId": "Apa arti 'sabar hari ini berarti lebih bebas besok'?",
+            "options": [
+              "Saving now lets you buy what you want later.",
+              "You should wait before going out.",
+              "Teens should work less.",
+              "Freedom is expensive."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "q": "What is the article mainly about?",
+            "qId": "Artikel ini terutama tentang apa?",
+            "options": [
+              "Habits that help teens save money",
+              "How to buy a bike",
+              "Why teens should get jobs",
+              "How banks work"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
   },
+  {
+    "id": "memilih-klub-sekolah",
+    "title": "Memilih Klub Sekolah (Choosing a School Club)",
+    "scene": "🎭",
+    "desc": "Email, artikel & iklan",
+    "texts": [
+      {
+        "genre": "email",
+        "heading": "✉️ From: Laras · To: Kevin · Subject: Joining a club",
+        "sequence": [
+          2,
+          3,
+          6
+        ],
+        "lines": [
+          {
+            "en": "Hi Kevin,",
+            "id": "Hai Kevin,"
+          },
+          {
+            "en": "Thanks for your message about the new school clubs.",
+            "id": "Makasih untuk pesanmu soal klub sekolah yang baru."
+          },
+          {
+            "en": "I was going to join the drama club, although I'm quite shy.",
+            "id": "Tadinya aku mau ikut klub drama, walaupun aku agak pemalu."
+          },
+          {
+            "en": "However, my brother told me the coding club is more useful.",
+            "id": "Tapi, kakakku bilang klub coding lebih berguna.",
+            "br": true
+          },
+          {
+            "en": "I'm not sure he is right, because I don't really enjoy computers.",
+            "id": "Aku tidak yakin dia benar, karena aku kurang suka komputer."
+          },
+          {
+            "en": "What I love most is designing posters and drawing characters.",
+            "id": "Yang paling aku suka adalah mendesain poster dan menggambar tokoh.",
+            "br": true
+          },
+          {
+            "en": "Then I found out the school magazine needs an illustrator!",
+            "id": "Lalu aku tahu majalah sekolah butuh ilustrator!"
+          },
+          {
+            "en": "It meets on Thursdays, which is perfect for me.",
+            "id": "Pertemuannya hari Kamis, pas sekali untukku."
+          },
+          {
+            "en": "Which club are you going to choose?",
+            "id": "Kamu mau pilih klub apa?",
+            "br": true
+          },
+          {
+            "en": "Laras",
+            "id": "Laras"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Which club does Laras finally prefer?",
+            "qId": "Klub mana yang akhirnya dipilih Laras?",
+            "options": [
+              "The school magazine",
+              "The drama club",
+              "The coding club",
+              "The art exhibition"
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          },
+          {
+            "q": "Why did Laras's brother suggest the coding club?",
+            "qId": "Kenapa kakak Laras menyarankan klub coding?",
+            "options": [
+              "He thinks it is more useful.",
+              "He is in the coding club.",
+              "Laras loves computers.",
+              "It meets on Thursdays."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "How does Laras feel about her brother's advice?",
+            "qId": "Bagaimana sikap Laras terhadap saran kakaknya?",
+            "options": [
+              "She doubts it.",
+              "She agrees completely.",
+              "She is angry about it.",
+              "She doesn't understand it."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What does 'It' refer to in 'It meets on Thursdays'?",
+            "qId": "'It' dalam 'It meets on Thursdays' merujuk ke apa?",
+            "options": [
+              "The school magazine",
+              "The drama club",
+              "The coding club",
+              "Laras's class"
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          },
+          {
+            "q": "Why does Laras write this email?",
+            "qId": "Kenapa Laras menulis email ini?",
+            "options": [
+              "To share her plans and ask about Kevin's",
+              "To invite Kevin to a party",
+              "To complain about her brother",
+              "To ask for help with homework"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "genre": "article",
+        "heading": "📰 Why Join a School Club?",
+        "lines": [
+          {
+            "en": "Many students think clubs are only for fun.",
+            "id": "Banyak siswa mengira klub hanya untuk bersenang-senang."
+          },
+          {
+            "en": "In fact, clubs can teach skills that lessons don't.",
+            "id": "Sebenarnya, klub bisa mengajarkan keterampilan yang tidak ada di pelajaran."
+          },
+          {
+            "en": "In a debate club, for example, you learn to listen before you answer.",
+            "id": "Di klub debat, misalnya, kamu belajar mendengar dulu sebelum menjawab."
+          },
+          {
+            "en": "A sports team shows you how to win and lose politely.",
+            "id": "Tim olahraga mengajarkan cara menang dan kalah dengan sopan.",
+            "br": true
+          },
+          {
+            "en": "Some parents worry that clubs take time away from homework.",
+            "id": "Sebagian orang tua khawatir klub menyita waktu mengerjakan PR."
+          },
+          {
+            "en": "However, research suggests that students in clubs often manage their time better.",
+            "id": "Tapi, penelitian menunjukkan siswa yang ikut klub sering lebih pandai mengatur waktu."
+          },
+          {
+            "en": "They learn to plan because their free time is limited.",
+            "id": "Mereka belajar membuat rencana karena waktu luangnya terbatas.",
+            "br": true
+          },
+          {
+            "en": "Of course, joining five clubs at once is not a good idea.",
+            "id": "Tentu saja, ikut lima klub sekaligus bukan ide bagus."
+          },
+          {
+            "en": "My advice is simple: choose one or two clubs you truly enjoy.",
+            "id": "Saranku sederhana: pilih satu atau dua klub yang benar-benar kamu sukai."
+          }
+        ],
+        "questions": [
+          {
+            "q": "According to the writer, what can a debate club teach?",
+            "qId": "Menurut penulis, apa yang diajarkan klub debat?",
+            "options": [
+              "To listen before answering",
+              "To win every time",
+              "To finish homework faster",
+              "To speak more loudly"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "What worry do some parents have?",
+            "qId": "Apa kekhawatiran sebagian orang tua?",
+            "options": [
+              "Clubs take time from homework.",
+              "Clubs are too expensive.",
+              "Clubs are only for sport.",
+              "Students become shy."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "What is the writer's opinion about joining many clubs?",
+            "qId": "Apa pendapat penulis tentang ikut banyak klub?",
+            "options": [
+              "It is not a good idea.",
+              "It is the best way to learn.",
+              "It helps with homework.",
+              "Parents should decide."
+            ],
+            "answer": 0,
+            "evidence": [
+              7
+            ]
+          },
+          {
+            "q": "Why do students in clubs often manage time better?",
+            "qId": "Kenapa siswa yang ikut klub sering lebih pandai mengatur waktu?",
+            "options": [
+              "Their free time is limited, so they plan.",
+              "Teachers give them less homework.",
+              "They don't do homework.",
+              "Clubs finish early."
+            ],
+            "answer": 0,
+            "evidence": [
+              5,
+              6
+            ]
+          },
+          {
+            "q": "What is the main idea of the article?",
+            "qId": "Apa ide pokok artikel ini?",
+            "options": [
+              "Clubs can teach useful skills if you choose wisely.",
+              "Homework is more important than clubs.",
+              "Every student should join five clubs.",
+              "Sports clubs are the best clubs."
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ],
+    "newTexts": [
+      {
+        "genre": "sign",
+        "heading": "📌 Holiday Workshops",
+        "lines": [
+          {
+            "en": "Photo Walk: explore the old town with a camera. Saturdays, 7–9 a.m.",
+            "id": "Photo Walk: jelajahi kota tua dengan kamera. Sabtu, jam 7–9 pagi."
+          },
+          {
+            "en": "No camera? You can borrow one from us.",
+            "id": "Tidak punya kamera? Kamu bisa pinjam dari kami."
+          },
+          {
+            "en": "Young Chefs: cook healthy snacks and take them home. Fridays, 3–5 p.m.",
+            "id": "Young Chefs: masak camilan sehat dan bawa pulang. Jumat, jam 3–5 sore.",
+            "br": true
+          },
+          {
+            "en": "Please tell us about any food allergies.",
+            "id": "Beri tahu kami kalau punya alergi makanan."
+          },
+          {
+            "en": "Stage Stars: practise acting and perform a short play for parents.",
+            "id": "Stage Stars: latihan akting dan tampilkan drama pendek untuk orang tua.",
+            "br": true
+          },
+          {
+            "en": "Sundays, 10 a.m.–12 p.m. Beginners welcome!",
+            "id": "Minggu, jam 10–12 siang. Pemula dipersilakan!"
+          }
+        ],
+        "questions": [
+          {
+            "q": "Which workshop is best for someone who wants to cook?",
+            "qId": "Workshop mana yang paling cocok untuk yang ingin memasak?",
+            "options": [
+              "Young Chefs",
+              "Photo Walk",
+              "Stage Stars",
+              "None of them"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Dina has no camera. What can she do?",
+            "qId": "Dina tidak punya kamera. Apa yang bisa dia lakukan?",
+            "options": [
+              "Borrow one from the workshop",
+              "Buy one first",
+              "Join Stage Stars instead",
+              "Stay at home"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "q": "Budi is busy every Saturday and Sunday. Which workshop can he join?",
+            "qId": "Budi sibuk setiap Sabtu dan Minggu. Workshop mana yang bisa dia ikuti?",
+            "options": [
+              "Young Chefs",
+              "Photo Walk",
+              "Stage Stars",
+              "All of them"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "q": "Why does Young Chefs ask about allergies?",
+            "qId": "Kenapa Young Chefs menanyakan alergi?",
+            "options": [
+              "To keep students safe when they eat",
+              "To choose the best cooks",
+              "To make a shopping list",
+              "To plan the show"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "Which workshop ends with a show for families?",
+            "qId": "Workshop mana yang diakhiri pertunjukan untuk keluarga?",
+            "options": [
+              "Stage Stars",
+              "Photo Walk",
+              "Young Chefs",
+              "All of them"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          }
+        ]
+      },
+      {
+        "genre": "article",
+        "heading": "📰 My First Month at Chess Club",
+        "lines": [
+          {
+            "en": "When my mum signed me up for chess club, I was not happy.",
+            "id": "Waktu ibuku mendaftarkanku ke klub catur, aku tidak senang."
+          },
+          {
+            "en": "I thought chess was slow and boring.",
+            "id": "Kupikir catur itu lambat dan membosankan."
+          },
+          {
+            "en": "In the first week, I lost every single game.",
+            "id": "Di minggu pertama, aku kalah di semua permainan.",
+            "br": true
+          },
+          {
+            "en": "Although I felt embarrassed, our coach, Mr. Hadi, was patient.",
+            "id": "Walaupun aku malu, pelatih kami, Pak Hadi, sabar sekali."
+          },
+          {
+            "en": "He showed me that each mistake teaches you something.",
+            "id": "Dia menunjukkan bahwa setiap kesalahan mengajarkan sesuatu."
+          },
+          {
+            "en": "By the third week, I won my first game against an older student.",
+            "id": "Di minggu ketiga, aku menang pertama kali melawan kakak kelas.",
+            "br": true
+          },
+          {
+            "en": "Now I practise online every evening.",
+            "id": "Sekarang aku berlatih online setiap sore."
+          },
+          {
+            "en": "I still lose sometimes, but I don't mind anymore.",
+            "id": "Kadang aku masih kalah, tapi aku tidak keberatan lagi."
+          }
+        ],
+        "questions": [
+          {
+            "q": "How did the writer feel about chess at first?",
+            "qId": "Bagaimana perasaan penulis tentang catur awalnya?",
+            "options": [
+              "Unhappy, because it seemed boring",
+              "Excited to start",
+              "Afraid of the coach",
+              "Proud of winning"
+            ],
+            "answer": 0,
+            "evidence": [
+              0,
+              1
+            ]
+          },
+          {
+            "q": "What was Mr. Hadi like?",
+            "qId": "Pak Hadi orangnya seperti apa?",
+            "options": [
+              "Patient",
+              "Strict",
+              "Boring",
+              "Embarrassed"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "q": "What did the writer learn from Mr. Hadi?",
+            "qId": "Apa yang penulis pelajari dari Pak Hadi?",
+            "options": [
+              "Mistakes can teach you something.",
+              "Winning is everything.",
+              "Chess is too slow.",
+              "Practice is not important."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How has the writer's attitude changed?",
+            "qId": "Bagaimana sikap penulis berubah?",
+            "options": [
+              "From bored to keen",
+              "From happy to sad",
+              "From patient to angry",
+              "It has not changed."
+            ],
+            "answer": 0,
+            "evidence": [
+              6,
+              7
+            ]
+          },
+          {
+            "q": "What is the best title for this article?",
+            "qId": "Judul yang paling cocok untuk artikel ini?",
+            "options": [
+              "How I Learned to Love Chess",
+              "Why Chess Is Boring",
+              "My Coach's Best Games",
+              "Winning Every Game"
+            ],
+            "answer": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 export const READING_TOPICS_BY_LEVEL: Partial<Record<LevelKey, AnyReadingTopic[]>> = {

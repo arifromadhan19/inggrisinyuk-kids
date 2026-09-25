@@ -491,6 +491,128 @@ Level TERAKHIR yg masih di bawah target ≥10 — sesi ini menutup Reading skill
 
 **Reading Trailblazer sekarang 10/10 topik** (melebihi target baku ≥5 atas permintaan eksplisit) — konsisten dgn Listening & Grammar Trailblazer yg jg sudah 10/10, Speaking & Vocab Trailblazer TETAP 5/5 (memenuhi target baku, belum diminta lebih).
 
+## 19. Audit Redundansi Reading vs Skill Lain + Usulan Identitas Reading (2026-09-24, BELUM diimplementasikan)
+
+Permintaan user: *"sekilas materi reading sama dengan vocabulary — coba research di Cambridge, LIA, EF dan lembaga lainnya bagaimana materi reading sehingga tidak redundant dengan materi lainnya, baik secara format, alur dan lain-lainnya; setidaknya jangan terlalu mirip, jika mirip mungkin dikit… update doc yang related sebelum di implementasi"*. Pembeda level (lapis mekanik) & semua sumber: [pembeda_level.md](pembeda_level.md) § Reading. Bagian ini = lapis format & alur.
+
+### 19.1 Temuan — di mana Reading sekarang menyalin skill lain
+
+| Bagian Reading sekarang | Kembarannya | Kenapa redundan |
+|---|---|---|
+| Little Stars "Baca Kata" — 99/100 item = kata Vocab yang persis sama (`kata-hewan` = `hewan-peliharaan`, dst) | Vocab Little Stars | Materi yang sama, cuma ganti nama skill |
+| Latihan Inti LS/Starter "kata → pilih gambar" | Vocab Latihan Inti (`toEn`/`toId`/`hear` + kartu gambar) & Kenalan 🎮 Vocab "Dengar & Tunjuk" | Yang diuji = arti 1 kata |
+| Tantangan LS/Starter "gambar → pilih kata" | Vocab Latihan Inti arah sebaliknya | Sama, arah dibalik |
+| Explorer "Baca & Nilai" — "The elephant is big." vs salahnya "…small." (10 kata sifat Vocab `kata-sifat`) | Vocab Explorer `kata-sifat`; bentuk Benar/Salah = Listening Latihan Inti & Grammar 🎮 "Cocok?" | Cukup tahu arti 1 kata sifat, tidak perlu membaca kalimatnya utuh |
+| Kenalan semua format — daftar baris + 🔊🎤🎮 | Kenalan Vocab/Listening/Grammar | Tampilan & alur identik |
+| 🎮 Kenalan Adventurer+ "Susun Kalimat" | Vocab Tantangan Susun Kalimat, Grammar Latihan Inti scramble | Menguji urutan kata (grammar), bukan membaca |
+| Adventurer+ cerita 2–5 kalimat + 1 pertanyaan + opsi gambar | Listening format lama (`story` + `question`) | Bentuk data & soal sama; beda cuma teks tidak dibacakan. Opsi gambar sering bisa ditebak dari gambarnya |
+
+Catatan: memakai kosakata yang SAMA dgn Vocab itu **wajar** — CP Fase D sendiri menyebut "kosakata yang familiar" & perjenjangan buku mensyaratkan kosakata "akrab". Yang redundan adalah **tugasnya** (arti kata) dan **kemasannya** (daftar kata + kartu gambar), bukan kosakatanya.
+
+### 19.2 Identitas Reading (prinsip, disarikan dari riset)
+
+1. **Satuan terkecil = TEKS/KALIMAT, bukan kata.** Bahkan di level paling awal: Fase A "teks tulis yang dibacakan", Kemendikbud jenjang A = buku bergambar 1–3 kalimat/halaman, Kumon 6A *recite… sentences*, Raz-Kids level aa = buku mini. Tugas "arti 1 kata" tetap di Vocab.
+2. **Jawaban harus ADA di teks & bisa ditunjuk.** Improvement utama (tidak ada di kompetitor yang diriset dalam bentuk interaktif): setelah menjawab, anak (atau Petunjuk, tergantung level) **menunjuk kalimat buktinya** — "🔎 Buktinya di mana?". Ini sekaligus pembeda paling tegas dari Vocab (tidak ada teks) & Listening (teks sudah hilang begitu didengar).
+3. **Teks tetap di layar & boleh dibaca ulang** (Listening: audio lewat). Pertanyaan muncul di bawah teks, teks tidak disembunyikan.
+4. **Jenis teks nyata beragam, tampil sesuai jenisnya** — buku gambar, papan tanda, pesan/chat, undangan, jadwal, menu, diary, email, artikel (Movers "signs and simple notices", Flyers "diary or a letter", KET "notices… text messages… websites", Fase D "pesan singkat, iklan"). Tampilan kartu per jenis (papan tanda, gelembung chat, kertas undangan) = pembeda visual dari daftar kata Vocab.
+5. **Topik = situasi/teks, bukan daftar kata.** "Undangan Ulang Tahun Rani", "Papan Tanda di Kebun Binatang", "Pesan dari Ibu" — memakai kosakata topik Vocab, tapi yang dilatih: cari info, topik/judul, urutan kejadian, maksud pesan.
+6. **Soal tidak boleh bisa dijawab dari arti 1 kata saja.** Kalimat Benar/Salah punya ≥2 unsur (Starters P2: "The woman is throwing the ball to the girl" → keduanya harus benar); opsi teks di Adventurer+ ditulis sbg parafrase, bukan salinan kata dari teks (Movers "sentences can be turned around whilst retaining their meaning").
+
+### 19.3 Usulan alur 3 tahap (nama & bentuk BEDA dari skill lain)
+
+| Tahap | Sekarang | Usulan | Bentuk tugas |
+|---|---|---|---|
+| **Kenalan → "📖 Baca Bareng"** | daftar kata/kalimat + 🔊🎤🎮 | tampilan **halaman buku/teks** (bukan daftar), 1 halaman/bagian per layar, geser antar halaman. 🔊 = bacakan halaman + sorot (LS/Starter otomatis). 🎤 = **baca nyaring 1 halaman** (skor proporsional + Play Suaramu, pola Raz-Kids "Read & record"). 🎮 = **"Tunjuk di Gambar"** (LS–Explorer: tap bagian gambar/emoji adegan yang disebut kalimat) atau **"Urutkan Cerita"** (Adventurer+: susun 3–4 KALIMAT/bagian cerita, Kumon *visualising a passage*) | membaca + memahami urutan, bukan urutan kata |
+| **Latihan Inti → "🔎 Baca & Temukan"** | cerita pendek + 1 pertanyaan + opsi gambar, diulang dari 3 teks | teks yang **sama** dgn Kenalan (baca ulang, CP "teks familiar"), pertanyaan detail per kalimat + **tunjuk bukti** di teks | cari info di teks (Fase C, KET P2 *locating specific information*) |
+| **Tantangan → "📚 Baca Sendiri"** | teks lain, format sama | **teks BARU** sejenis (jenis teks sama, isi beda), tanpa audio (Menengah+), campuran jenis soal per tier: benar/salah berunsur banyak, judul/topik, respons dialog, rujukan, sikap penulis, kalimat hilang | pemahaman mandiri (Fase D "secara mandiri") |
+
+Alur "familiar dulu, lalu baru" meniru Raz-Kids (dengar → baca → kuis pada buku yang sama) & Reading Eggspress (pra-baca → baca → kuis), lalu ditambah teks baru di Tantangan supaya tidak cuma menghafal isi Kenalan.
+
+### 19.4 Pemetaan format per level (usulan, detail angka di pembeda_level.md)
+
+| Level | Format usulan | Contoh 1 topik |
+|---|---|---|
+| Little Stars | **Buku Gambar Mini** — 3–5 halaman × 1 kalimat ≤4 kata, dibacakan + sorot | "My Cat" — "I have a cat." / "My cat is small." / "My cat can jump." → tunjuk gambar yang cocok kalimat |
+| Starter | Buku Gambar Mini + **Benar/Salah seluruh kalimat** | "At the Park" — 1 gambar taman, "The boy is on the red bike." (✅/❌, unsur warna & benda harus cocok semua) |
+| Explorer | **Adegan & Pesan** — 1 gambar adegan + 3–5 kalimat, atau kartu/pesan/label | "Kartu Ulang Tahun dari Nenek" → "Siapa yang menulis?", "Kartunya tentang apa?" (topik, Fase C) |
+| Adventurer | **Cerita & Tanda** — cerita 3 bagian + papan tanda/notice + dialog pendek | "Hari di Kebun Binatang" + papan "Do not feed the animals" → pilih judul, pilih respons dialog |
+| Achiever | **Cerita, Info & Diary** — 2–3 paragraf, teks faktual, halaman diary | "Diary Liburan Dimas" → rujukan ("Who is 'he' in line 3?"), inferensi awal |
+| Trailblazer | **Email, Artikel & Iklan** — 3 teks pendek dicocokkan, artikel opini, teks dgn kalimat hilang | "Klub Sekolah" — cocokkan 3 anak ke 5 iklan klub; sikap penulis |
+
+### 19.5 Garis batas dgn skill lain (setelah usulan)
+
+| Skill | Yang diuji | Reading TIDAK mengambil |
+|---|---|---|
+| Vocabulary | arti kata, ejaan, kata dalam 1 kalimat contoh | kartu kata ↔ gambar, Eja Kata, definisi |
+| Listening | memahami ucapan (audio hilang setelah didengar) | teks yang cuma dibacakan tanpa ditampilkan |
+| Grammar | bentuk & urutan kata | Susun Kata, rumpang bentuk kata (is/are, -ed) |
+| Speaking | menghasilkan ucapan sendiri | — (🎤 Reading = baca nyaring teks yang ada, bukan menjawab bebas) |
+| **Reading** | **memahami teks tertulis: info, topik/judul, urutan, rujukan, maksud & sikap, dgn bukti di teks** | |
+
+Yang **masih boleh mirip dikit** (sesuai permintaan user): kosakata topik, tombol 🔊/🎤 di Kenalan, kartu opsi & feedback benar/salah (aturan wajib app-wide), quiz-dot & Petunjuk.
+
+### 19.6 Status
+
+**Pilot 1 topik Explorer SUDAH dibangun — lihat §20.** Sisanya masih usulan. Keputusan yang dibutuhkan dari user sebelum implementasi: pembeda_level.md § Reading "Keputusan yang Dibutuhkan" (Kenalan 🎤/🎮, rombak LS/Starter jadi buku mini, rombak Explorer, perpanjang teks Adventurer–Trailblazer). Kalau disetujui, bisa dikerjakan bertahap per level (disarankan mulai 1 level pilot, pola sama preseden pilot di skill lain).
+
+## 20. PILOT "Baca Teks" — Explorer `undangan-ulang-tahun` (2026-09-24, DIIMPLEMENTASIKAN)
+
+User setuju alur §19 ("ok mulai") → dibangun 1 topik percobaan di Explorer (level yang formatnya paling mirip Vocab). 10 topik "Baca & Nilai" lama TIDAK diubah — topik pilot ditaruh di AKHIR `READING_TOPICS_EXPLORER` (topik ke-11).
+
+**Data** — format KEEMPAT `ReadingTextTopic` (types.ts): `texts` (Kenalan + Latihan Inti) & `newTexts` (Tantangan, teks BARU), tiap `ReadingText` = `genre` (`invitation`/`message`/`note`) + `heading` + `lines {en,id,pic?}` + `pictures?` + `questions {q,qId,options,answer,evidence[]}`. Pembeda runtime `'texts' in topic` (dicek PALING AWAL di `app.ts` & `boss.ts`).
+
+**Isi topik**: Kenalan/Latihan Inti = undangan ulang tahun Rani (7 kalimat) + balasan chat Budi (6 kalimat), 5 pertanyaan per teks; Tantangan = undangan piknik Dimas + catatan dari Mama (teks baru, 5 pertanyaan per teks). Distraktor sengaja ikut disebut di teks ("three"/"five", "cake"/"swimsuit", "Rani"/"Budi", "home"/"Grandma's house") → tidak bisa dijawab cuma dgn mencocokkan kata; 2 pertanyaan "tentang apa?" (topik teks, CP Fase C) tanpa langkah 🔎.
+
+**Layar** (`games/reading.ts`):
+- **📖 Baca Bareng** (`renderKenalanText`) — kartu per halaman (undangan = pinggir putus-putus, pesan = gelembung chat, catatan = kertas kuning), tap kalimat = pilih + dengar, 🔊 Dengar Semua, 🎤 Baca Nyaring kalimat terpilih (skor proporsional + Play Suaramu), 🌐 Arti, 🎮 Tunjuk di Gambar (`runTextPointGame`: kalimat → 1 dari 4 gambar adegan, bullet progress 9 kalimat, slot `'kenalan'` +100), tombol halaman sebelumnya/berikutnya.
+- **🔎 Baca & Temukan** (`runLatihanIntiText`, section `latihan`, 10 soal) — kartu tetap di layar, 3 opsi TEKS (1 kolom), 💡 Petunjuk = arti pertanyaan. Setelah benar: "🔎 Buktinya di mana?" → kalimat di kartu bisa ditap; benar = hijau + tone + confetti, salah = merah + getar + tetot (boleh tap lagi). Lanjut selalu tersedia (🔎 = bonus).
+- **📚 Baca Sendiri** (`runTantanganText`, section `tantangan-teks`, 10 soal) — mekanik sama, teks baru.
+- Persen topik: `readingTopicPercent(latihan, {tantangan-teks})`; Tantangan Bos melewati topik format ini (opsinya teks, tidak muat di MCQ emoji babak Reading).
+- Build: `checkReadingTextData` (`verify-content-duplicates.mjs`) — kalimat Tantangan tidak boleh sama dgn teks Kenalan, index jawaban/bukti/gambar valid, opsi tidak dobel, arti ada.
+
+**Diverifikasi** (Playwright, 390px & 1280px): Kenalan 2 halaman, tap kalimat & 🌐, 🎮 9 titik & 4 gambar (grid 2×2), Latihan Inti jawab → salah tunjuk bukti (merah) → benar (hijau, merah dibersihkan) → Lanjut ke soal 2, Tantangan jawaban salah merah; menuntaskan Tantangan saja TIDAK memunculkan "Kerja Bagus!", setelah Latihan Inti juga tuntas → "Kerja Bagus!" & kartu topik 100%. 0 pageerror, `npm run build` lolos.
+
+**Belum** (tunggu feedback user atas pilot): tier per level (pembeda_level.md § Reading), format ini di level lain, mengganti 10 topik "Baca & Nilai" Explorer.
+
+## 21. Pilot "Baca Teks" per Level + Tier Mekanik (2026-09-24, permintaan user "buatkan pilot per level: little star, starter, adventurer, achiver, trailblazer")
+
+Setelah pilot Explorer (§20) disetujui konsepnya, user minta **1 pilot di tiap level lain** + khusus PAUD (Little Stars) dibuat ramah anak ("bagaimana membuat kids friendly apa lagi untuk little star yang masih anak paud"). Semua pakai format yang sama `ReadingTextTopic` (1 mesin), beda lewat **konten + tier dari `contentLevel`** (pembeda_level.md § Reading). Topik pilot ditaruh di AKHIR array tiap level (index & progres topik lama tidak bergeser); topik lama TIDAK diubah.
+
+### 21.1 Rencana per level
+
+| Level | Topik pilot | Jenis teks | Soal Latihan Inti / Tantangan | Audio di soal | 💡 Petunjuk | 🎮 Kenalan |
+|---|---|---|---|---|---|---|
+| Little Stars | Buku Mini: Di Taman | **buku gambar mini** (1 kalimat berpola/halaman, "I see a…"/"I have a…") | tunjuk 1 dari 3 **gambar**, lalu "👆 Mana tulisan *kite*?" tap kata di kalimat | Latihan: dibacakan otomatis + kata disorot; Tantangan: tap 🔊 | arti Indonesia kalimat | Urutkan Halaman (3 gambar) |
+| Starter | Buku Mini: Di Pantai | buku gambar mini (kalimat ≤5 kata, hitungan & benda) | campur tunjuk gambar + **✅/❌ seluruh kalimat harus cocok** (Starters P1/P2) | tap 🔊 | arti Indonesia | Urutkan Halaman (4 gambar) |
+| Explorer | (§20) Undangan Ulang Tahun | undangan, chat, catatan | 3 opsi teks + 🔎 bukti | tidak ada | arti pertanyaan | Tunjuk di Gambar |
+| Adventurer | Hari Kemah | **cerita 3 bagian + papan aturan + dialog** | 3 opsi teks: detail, **urutan**, **judul**, **balasan dialog**, maksud tanda | tidak ada | **sorot kalimat bukti** (bukan terjemahan) | Urutkan Cerita |
+| Achiever | Buku Harian Liburan | **diary + teks info** (paragraf) | 3 opsi: detail lintas kalimat, **rujukan** ("she"/"this"), **inferensi**, tujuan teks | tidak ada | 🔒 terbuka setelah 1x coba, sorot bukti | Urutkan Cerita |
+| Trailblazer | Memilih Klub Sekolah | **email, artikel opini, iklan workshop** | **4 opsi**: sikap/opini penulis, rujukan, mencocokkan orang ke workshop, ide pokok | tidak ada | 🔒 setelah 1x coba, eliminasi 1 opsi | Urutkan Cerita |
+
+### 21.2 Khusus PAUD (Little Stars)
+- Satuan = **halaman buku**: gambar besar + 1 kalimat ≤4 kata, pola berulang supaya anak bisa "membaca" dari pola & gambar (emergent reading; Kemendikbud jenjang A, Kumon 7A).
+- Kenalan: halaman dibacakan otomatis & kata disorot satu per satu (karaoke, perkiraan waktu — Web Speech tidak menjamin event per kata); tap kata = kata dibacakan; tombol ikon besar. Instruksi punya tombol 🔈 (dibacakan Indonesia).
+- Jawaban selalu **gambar** (2–3 pilihan), 1 soal = 1 tap; langkah bukti = tap kata yang disebut (hubungan tulisan ↔ bunyi), bukan kalimat.
+- Benda mati dulu (bola, layangan, mobil…), aturan feedback app tetap (benar = pujian+confetti, salah = merah+getar+tetot, teks semangat).
+
+### 21.3 Perubahan kode (SUDAH diimplementasikan, lihat §21.4)
+- `ReadingTextGenre` + `book`, `story`, `sign`, `dialog`, `diary`, `article`, `email`; `ReadingTextLine.br` (awal paragraf); `ReadingText.sequence` (urutan kalimat utk 🎮 Urutkan); `ReadingTextQuestion.kind` (`text` default / `picture` / `truefalse`), `about` (kalimat yang ditanya), `picture` (gambar pernyataan ✅/❌), `evidenceWord` (kata yang ditap PAUD).
+- `games/reading.ts`: tier `textTier(contentLevel)`; Kenalan mode buku; `runTextOrderGame`; soal gambar & ✅/❌; Petunjuk bertingkat.
+- `app.ts`: kirim `contentLevel` ke 3 fungsi "Baca Teks".
+- `verify-content-duplicates.mjs`: cek kind baru (kata bukti ada di kalimat, ✅/❌ 2 opsi, sequence valid).
+
+### 21.4 Status implementasi & verifikasi (2026-09-24)
+
+**Semua 5 pilot SUDAH dibangun** — topik ke-11 di Reading tiap level (index 10): Little Stars `buku-di-taman`, Starter `buku-di-pantai`, Adventurer `hari-kemah`, Achiever `buku-harian-liburan`, Trailblazer `memilih-klub-sekolah` (+ Explorer `undangan-ulang-tahun` §20). Masing-masing 2 teks Kenalan/Latihan Inti (10 soal) + 2 teks BARU Tantangan (10 soal).
+- `textTier(contentLevel)` (`games/reading.ts`) memasang pembeda per level: audio soal (LS Latihan otomatis + sorot kata, LS Tantangan & Starter tombol 🔊, Explorer+ tanpa audio), Petunjuk (LS/Starter arti kalimat, Explorer arti pertanyaan, Adventurer sorot kalimat bukti, Achiever sorot bukti 🔒 setelah 1x coba, Trailblazer eliminasi 1 opsi 🔒), jumlah opsi dari data (gambar 3, teks 3, Trailblazer 4).
+- Kenalan mode buku (1 halaman/layar, gambar besar, kata disorot saat dibacakan, tap kata = dengar kata), instruksi punya 🔈 (dibacakan Indonesia); 🎮 "Urutkan Halaman" (buku) / "Urutkan Cerita" (teks) via `runTextOrderGame`; Explorer tetap 🎮 "Tunjuk di Gambar".
+- Soal `picture` → setelah benar "👆 Mana tulisan X?" (tap kata); soal `truefalse` → ✅ Cocok / ❌ Tidak Cocok; soal `text` → 🔎 tunjuk kalimat bukti.
+- Build (`checkReadingTextData`) mengecek juga: kata bukti ada di kalimat, jawaban gambar = gambar halamannya, ✅/❌ 2 opsi + gambar, `sequence` valid.
+
+**Diverifikasi live** (Playwright, login akun tes 124, 390px & 1280px, 5 level): Kenalan + 🎮 terbuka dgn badge benar, jawaban benar → tunjuk kata/kalimat bukti hijau, Achiever/Trailblazer Petunjuk terkunci di awal & terbuka setelah jawaban salah, Adventurer menyorot kalimat bukti, Trailblazer mencoret 1 opsi, Starter ✅/❌ jalan, Tantangan terbuka — 0 pageerror, `npm run build` lolos. Diperbaiki saat verifikasi: sorotan karaoke tertinggal setelah menjawab, garis kertas diary tidak sejajar teks.
+
+**Belum**: rollout ke topik lain tiap level (topik lama tetap format lama), panjang teks sesuai tabel tier (pilot Adventurer ~70 kata, Achiever ~90–100 kata, Trailblazer ~110 kata — sudah di atas topik lama, masih di bawah batas atas usulan), karaoke per kata masih perkiraan waktu.
+
 ---
 
 ## Sumber Riset Web
@@ -556,3 +678,6 @@ Level TERAKHIR yg masih di bawah target ≥10 — sesi ini menutup Reading skill
 
 ### §18 — Reading Trailblazer genapkan 5→10 + audit
 - Cambridge B1 Preliminary (PET) tema resmi remaja (sports/art/food/friends/money): https://www.examenglish.com/PET/PET_reading.html · https://test-english.com/exams/b1-preliminary/b1-pet-exam-1-reading/
+
+### §19 — Audit redundansi & identitas Reading
+- Lengkap di [pembeda_level.md](pembeda_level.md) § Reading → Sumber (Handbook YLE, A2 Key & B1 Preliminary for Schools 2020, CP Kurikulum Merdeka, Pedoman Perjenjangan Buku BSKAP 2022, Kumon Table of Learning, Raz-Kids, Reading Eggspress, LIA GEYL/Story Central, EF).

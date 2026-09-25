@@ -60,7 +60,10 @@ saja yang berubah.
 ```bash
 npm install     # sekali saja
 npm run dev     # bundle (esbuild watch) + serve di http://127.0.0.1:8200, auto-rebuild tiap perubahan
+npm run dev:all # sama + nyalakan portal/ (API login, port 3000) sekaligus
 ```
+
+**Login/placement test/sync progres butuh `portal/` jalan** (`cd portal && npm run dev`, port 3000) — portal TIDAK ikut nyala otomatis. Kalau mati, SEMUA akun (termasuk akun tes "123"/"124") gagal login dgn pesan "Server akun belum jalan". `npm run dev` memberi peringatan di terminal kalau portal belum jalan; `npm run dev:all` menyalakan keduanya.
 
 Buka **http://127.0.0.1:8200** di browser (bukan buka file `index.html` langsung). Ini penting khusus untuk fitur mikrofon (Speaking) — Chrome cuma nyimpen izin mikrofon secara permanen untuk origin `http://`/`https://` (termasuk localhost), sedangkan untuk `file://` izinnya sering kebersihkan lagi tiap reload sehingga terus-terusan minta izin ulang. Biarkan `npm run dev` tetap berjalan di terminal selama development; berhenti dengan `Ctrl+C`.
 

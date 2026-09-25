@@ -17,6 +17,10 @@ const KEY = 'inggrisinyuk-kids.account.v1';
 // env-var build-time di app/ (sama seperti PORTAL_URL lama, lihat app.ts).
 const API_BASE = 'http://127.0.0.1:3000';
 
+const SERVER_UNREACHABLE_MESSAGE = /127\.0\.0\.1|localhost/.test(API_BASE)
+  ? 'Server akun belum jalan. Nyalakan dulu: cd portal && npm run dev'
+  : 'Server akun tidak bisa dihubungi. Cek internet, lalu coba lagi.';
+
 /** Hasil percobaan placement test terakhir — dipakai kartu "Hasil Placement
  *  Test" di Beranda, di bawah Progres Harian (permintaan user). */
 export interface CachedPlacementResult {
@@ -216,7 +220,16 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
   };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  } catch {
+    // Server tidak bisa dihubungi sama sekali (portal/ mati, CORS ditolak,
+    // offline) — status 0, dibedakan dari error yang DIBALAS server (mis.
+    // 404 "belum terdaftar"), supaya layar login tidak menyamarkan
+    // "server mati" jadi seolah akunnya bermasalah.
+    throw new ApiRequestError(SERVER_UNREACHABLE_MESSAGE, 0);
+  }
   const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
   if (!res.ok) {
     const message = typeof data.error === 'string' ? data.error : 'Terjadi kesalahan, coba lagi.';

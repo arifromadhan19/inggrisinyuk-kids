@@ -2840,3 +2840,116 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
     scroll-behavior:auto !important;
   }
 }
+
+/* ================================================================
+   Reading format "Baca Teks" (PILOT Explorer, `ReadingTextTopic`,
+   materi/reading.md §19–§20) — kartu TEKS NYATA utuh, tampil beda per
+   jenis teks (undangan / pesan chat / catatan) supaya tidak terlihat
+   seperti daftar kata Vocab. Kalimat bisa ditap (pilih + dengar di
+   Kenalan, 🔎 tunjuk bukti di Latihan Inti/Tantangan).
+   ================================================================ */
+.rt-card{
+  max-width:520px; margin:8px auto 14px; padding:16px 16px 14px;
+  background:var(--surface); border:3px solid var(--line); border-radius:var(--r-md);
+}
+.rt-heading{
+  font-family:var(--font-head); font-weight:800; color:var(--ink);
+  font-size:1.125rem; text-align:center; margin-bottom:8px;
+}
+.rt-line{
+  font-family:var(--font-head); font-weight:700; color:var(--ink);
+  font-size:clamp(1.0625rem,1rem + .4vw,1.25rem); line-height:1.45;
+  padding:5px 10px; margin:2px 0; border-radius:12px;
+  transition:background .15s ease, box-shadow .15s ease;
+}
+.rt-line .rt-id{ display:block; font-size:.875rem; font-weight:600; color:var(--ink-3); margin-top:1px; }
+/* Undangan — pinggir putus-putus warna skill Reading */
+.rt-invitation{ background:var(--c-read-bg); border:3px dashed var(--c-read); }
+.rt-invitation .rt-line{ text-align:center; }
+/* Pesan — nama pengirim di atas, tiap kalimat jadi gelembung chat */
+.rt-message{ background:var(--brand-50); border-color:var(--brand-300); }
+.rt-message .rt-heading{ text-align:left; color:var(--brand-800); }
+.rt-message .rt-line{
+  width:fit-content; max-width:100%; background:var(--surface);
+  border-radius:16px 16px 16px 4px; margin:6px 0; box-shadow:0 1px 0 var(--line);
+}
+/* Catatan — kertas tempel kuning */
+.rt-note{ background:var(--sun-100); border-color:var(--sun-300); }
+.rt-note .rt-heading{ text-align:left; color:var(--sun-600); }
+/* Status kalimat — spesifisitas 3 kelas supaya menang dari gaya genre */
+.rt-card.tappable .rt-line{ cursor:pointer; }
+.rt-card.tappable .rt-line:hover{ box-shadow:inset 0 0 0 2px var(--brand-300); }
+.rt-card.asking .rt-line{ outline:2px dashed var(--brand-300); outline-offset:-2px; }
+.rt-card .rt-line.selected{ background:var(--sun-300); box-shadow:inset 4px 0 0 var(--sun-500); }
+.rt-card .rt-line.is-evidence{ background:var(--ok-bg); box-shadow:inset 0 0 0 2px var(--ok); color:var(--ok); outline:none; }
+.rt-card .rt-line.is-wrong{ background:var(--try-bg); box-shadow:inset 0 0 0 2px var(--try); animation:shake .3s ease; }
+.rt-page{ font-size:.8125rem; font-weight:700; color:var(--ink-3); }
+/* Grid 2 kolom: 4 tombol = 2×2 rapi di HP & desktop (flex-wrap sempat
+   jadi 3+1 di desktop). */
+.rt-actions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 auto 14px; max-width:520px; }
+.rt-act{
+  font-family:var(--font-head); font-weight:700; font-size:.875rem; color:var(--ink);
+  background:var(--surface); border:2px solid var(--line); border-radius:var(--r-pill);
+  padding:8px 14px; cursor:pointer; box-shadow:var(--sh-1);
+}
+.rt-act.done{ background:var(--ok-bg); border-color:var(--ok); color:var(--ok); }
+.rt-act.listening{ background:var(--try); border-color:var(--try); color:#fff; animation:pulse 1s infinite; }
+/* 3 opsi teks → 1 kolom (2 kolom menyisakan 1 kartu ganjil, CLAUDE.md
+   "Desain Harus Bagus di Mobile MAUPUN Desktop") */
+.opt-grid.rt-opts{ grid-template-columns:1fr; max-width:520px; margin-left:auto; margin-right:auto; }
+.opt-grid.rt-opts .opt-btn-text{ font-size:1.125rem; padding:14px; }
+.rt-evidence-ask{ text-align:center; font-family:var(--font-head); font-weight:700; color:var(--brand-700); margin:8px 0; }
+
+/* --- "Baca Teks" per level (materi/reading.md §21) --- */
+/* Buku gambar mini (Little Stars/Starter): gambar besar dominan (Kemendikbud
+   jenjang A) + 1 kalimat huruf besar tanpa kait; tiap kata = span agar bisa
+   disorot saat dibacakan & ditap. */
+.rt-book-page{
+  max-width:520px; margin:8px auto 14px; padding:14px 16px 18px; text-align:center;
+  background:var(--surface); border:3px solid var(--c-read); border-radius:var(--r-lg);
+  box-shadow:var(--sh-1);
+}
+.rt-book-pic{ font-size:clamp(88px,26vw,140px); line-height:1.15; margin:4px 0 8px; }
+.rt-book-text{
+  font-family:var(--font-body); font-weight:800; color:var(--ink);
+  font-size:clamp(1.75rem,1.4rem + 1.4vw,2.375rem); line-height:1.35;
+}
+.rt-book-id{ margin-top:6px; font-size:1rem; }
+.rt-quiz-sentence{ padding:18px 16px; }
+.rt-word{ display:inline-block; padding:0 4px; border-radius:10px; transition:background .12s ease; cursor:pointer; }
+.rt-word.lit{ background:var(--sun-300); }
+.rt-book-text.asking .rt-word{ outline:2px dashed var(--brand-300); outline-offset:-1px; margin:2px 0; }
+.rt-word.is-evidence{ background:var(--ok-bg); color:var(--ok); box-shadow:inset 0 0 0 2px var(--ok); outline:none !important; }
+.rt-word.is-wrong{ background:var(--try-bg); box-shadow:inset 0 0 0 2px var(--try); animation:shake .3s ease; }
+.rt-instr{ display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+.rt-say{
+  width:34px; height:34px; border-radius:50%; border:2px solid var(--line); background:var(--surface);
+  font-size:15px; cursor:pointer; display:inline-grid; place-items:center; box-shadow:var(--sh-1); flex:none;
+}
+.rt-pic-opt{ font-size:clamp(46px,13vw,64px); padding:16px 8px; }
+.opt-grid.rt-tf{ max-width:520px; margin-left:auto; margin-right:auto; }
+.rt-hint-text{ margin:-4px auto 12px; max-width:520px; }
+.rt-card .rt-line.hinted{ background:var(--brand-100); box-shadow:inset 0 0 0 2px var(--brand-500); }
+.rt-card .rt-line.rt-br{ margin-top:12px; }
+.rt-speaker{ color:var(--brand-700); }
+/* 🎮 Urutkan — nomor urut muncul di pojok kartu yang sudah benar */
+.rt-order-card{ position:relative; }
+.rt-order-card:not(.opt-btn-text){ font-size:clamp(46px,13vw,64px); padding:16px 8px; }
+.rt-order-no{
+  position:absolute; top:6px; left:8px; min-width:26px; height:26px; border-radius:50%;
+  background:var(--ok); color:#fff; font:800 .875rem/26px var(--font-head); text-align:center; display:none;
+}
+.rt-order-card.correct .rt-order-no{ display:block; }
+.rt-order-card.opt-btn-text{ padding-left:42px; text-align:left; }
+/* Jenis teks tambahan */
+.rt-story{ background:var(--surface); }
+.rt-story .rt-heading, .rt-diary .rt-heading, .rt-article .rt-heading, .rt-email .rt-heading{ text-align:left; }
+.rt-sign{ background:#FFF6E0; border:4px solid var(--sun-600); }
+.rt-sign .rt-heading{ color:var(--sun-600); }
+.rt-sign .rt-line{ text-align:center; }
+.rt-dialog{ background:var(--brand-50); border-color:var(--brand-300); }
+.rt-diary{ background:#FFFDF6; border-color:var(--sun-300); border-left:8px solid var(--c-read); }
+.rt-article{ background:var(--surface); border-color:var(--ink-3); }
+.rt-article .rt-heading{ border-bottom:2px solid var(--line); padding-bottom:6px; }
+.rt-email{ background:var(--surface); border-color:var(--brand-300); }
+.rt-email .rt-heading{ font-size:.9375rem; background:var(--brand-50); margin:-16px -16px 10px; padding:10px 16px; border-radius:15px 15px 0 0; color:var(--brand-800); }

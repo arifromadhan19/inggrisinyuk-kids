@@ -722,7 +722,11 @@ export function speakingTopicPercent(topicId: string, latihanTotal: number, tant
 export function readingTopicPercent(
   topicId: string,
   itemCount: number,
-  tantangan?: { section: SectionName; total: number }
+  tantangan?: { section: SectionName; total: number },
+  /** Section Latihan Inti — default `'latihan'`; format "Baca Teks" pakai
+   *  `'latihan-teks'` (id topik lama dipertahankan, progres format lama
+   *  yang basi tidak ikut terbaca). */
+  latihanSection: SectionName = 'latihan'
 ): number {
   if (itemCount <= 0) return 0;
   const skill: SkillKey = 'reading';
@@ -741,7 +745,7 @@ export function readingTopicPercent(
   const sectionTotal = (section: SectionName, fallback: number): number =>
     getSection(skill, topicId, section)?.plan?.length ?? fallback;
 
-  const latihanPct = stepPct('latihan', sectionTotal('latihan', itemCount));
+  const latihanPct = stepPct(latihanSection, sectionTotal(latihanSection, itemCount));
   // `tantangan` opsional — default `'tantangan-baca'` (Little Stars/Starter,
   // `ReadingWordTopic`) supaya pemanggil lama TIDAK perlu diubah; Explorer
   // (`ReadingCheckTopic`) manggil dgn `{section:'tantangan-cek', total}`

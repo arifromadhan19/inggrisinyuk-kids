@@ -908,6 +908,10 @@ function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): 
     // (`ReadingCheckTopic`, "Baca & Nilai") py section granular sejak revisi
     // feedback user — format LAMA (Adventurer/Achiever, `ReadingTopic`)
     // TIDAK, tetap jatuh ke fallback `isStepVisited` di bawah.
+    if (readingTopic && 'texts' in readingTopic) {
+      const totals = readingGame.textQuizTotals(readingTopic);
+      return readingTopicPercent(topicId, totals.latihan, { section: 'tantangan-teks', total: totals.tantangan }, 'latihan-teks');
+    }
     if (readingTopic && 'items' in readingTopic) {
       return readingTopicPercent(topicId, readingTopic.items.length, {
         section: 'tantangan-baca',
@@ -2211,7 +2215,13 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
       // `'items' in topic` lalu `'checks' in topic` (types.ts komentar
       // `AnyReadingTopic`), sama pola persis dgn `AnyListeningTopic`. JANGAN
       // migrasi format lama ke sini tanpa arahan baru user.
-      if ('items' in topic) {
+      // Format KEEMPAT "Baca Teks" (PILOT Explorer, `'texts' in topic`) dicek
+      // PALING AWAL — materi/reading.md §19–§20.
+      if ('texts' in topic) {
+        if (state.step === 0) readingGame.renderKenalanText(stage, topic, nextStep, praiseLevel, contentLevel);
+        else if (state.step === 1) readingGame.runLatihanIntiText(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+        else readingGame.runTantanganText(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+      } else if ('items' in topic) {
         if (state.step === 0) readingGame.renderKenalanWord(stage, topic, nextStep, praiseLevel);
         else if (state.step === 1) readingGame.runLatihanIntiWord(stage, topic, nextStepWithSync, praiseLevel);
         else readingGame.runTantanganWord(stage, topic, nextStepWithSync, praiseLevel);

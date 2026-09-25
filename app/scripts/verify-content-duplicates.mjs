@@ -173,11 +173,60 @@ function checkGrammarData(byLevel, errors) {
   }
 }
 
+/**
+ * Reading format "Baca Teks" (`ReadingTextTopic`, PILOT Explorer —
+ * materi/reading.md §19–§20): (1) teks Tantangan (`newTexts`) WAJIB teks
+ * BARU — tidak ada kalimat yang 100% sama dgn teks Kenalan/Latihan Inti
+ * (`texts`); (2) tiap pertanyaan: index jawaban & bukti valid, opsi tidak
+ * dobel, arti Indonesia ada; (3) kalimat ber-`pic` menunjuk gambar yang ada.
+ */
+function checkReadingTextData(byLevel, errors) {
+  for (const [level, topics] of Object.entries(byLevel ?? {})) {
+    for (const t of topics ?? []) {
+      if (!('texts' in t)) continue;
+      const where = `Reading "${t.id}" (${level})`;
+      const seen = new Set(t.texts.flatMap((x) => x.lines.map((l) => norm(l.en))));
+      for (const x of t.newTexts) {
+        for (const l of x.lines) {
+          if (isSentenceLike(l.en) && seen.has(norm(l.en))) errors.push(`${where}: kalimat Tantangan "${l.en}" sama dgn teks Kenalan — Tantangan wajib teks baru.`);
+        }
+      }
+      for (const [group, texts] of [['texts', t.texts], ['newTexts', t.newTexts]]) {
+        texts.forEach((x, ti) => {
+          x.lines.forEach((l, li) => {
+            if (!l.id) errors.push(`${where} ${group}[${ti}] baris ${li}: arti Indonesia kosong.`);
+            if (l.pic !== undefined && !(x.pictures ?? [])[l.pic]) errors.push(`${where} ${group}[${ti}] baris ${li}: pic ${l.pic} tidak ada di pictures.`);
+          });
+          x.questions.forEach((q, qi) => {
+            const w = `${where} ${group}[${ti}] soal ${qi}`;
+            if (!q.qId) errors.push(`${w}: qId kosong.`);
+            if (!(q.answer >= 0 && q.answer < q.options.length)) errors.push(`${w}: answer di luar rentang opsi.`);
+            if (new Set(q.options.map(norm)).size !== q.options.length) errors.push(`${w}: opsi dobel.`);
+            if (q.evidence.some((e) => !(e >= 0 && e < x.lines.length))) errors.push(`${w}: evidence menunjuk baris yang tidak ada.`);
+            if (q.kind === 'picture') {
+              const line = x.lines[q.about];
+              if (!line) errors.push(`${w}: about menunjuk baris yang tidak ada.`);
+              else if (q.evidenceWord) {
+                const ws = line.en.toLowerCase().split(/\s+/).map((t) => t.replace(/[^a-z0-9']/g, ''));
+                if (!ws.includes(q.evidenceWord.toLowerCase())) errors.push(`${w}: evidenceWord "${q.evidenceWord}" tidak ada sbg kata utuh di "${line.en}".`);
+              }
+              const pics = line?.pic !== undefined ? (x.pictures ?? [])[line.pic]?.emoji : undefined;
+              if (pics && q.options[q.answer] !== pics) errors.push(`${w}: jawaban gambar tidak sama dgn gambar halaman "${line.en}".`);
+            }
+            if (q.kind === 'truefalse' && (q.options.length !== 2 || !q.picture)) errors.push(`${w}: truefalse wajib 2 opsi & picture.`);
+          });
+          if (x.sequence && x.sequence.some((e) => !(e >= 0 && e < x.lines.length))) errors.push(`${where} ${group}[${ti}]: sequence menunjuk baris yang tidak ada.`);
+        });
+      }
+    }
+  }
+}
+
 function isOldListening(t) {
   return !('items' in t) && Array.isArray(t.drill) && Array.isArray(t.story);
 }
 function isOldReading(t) {
-  return !('items' in t) && !('checks' in t) && Array.isArray(t.primer) && Array.isArray(t.drill) && Array.isArray(t.story);
+  return !('items' in t) && !('checks' in t) && !('texts' in t) && Array.isArray(t.primer) && Array.isArray(t.drill) && Array.isArray(t.story);
 }
 function isOldSpeaking(t) {
   return !('items' in t) && !('turns' in t) && !('stories' in t) && Array.isArray(t.model) && Array.isArray(t.drill) && Array.isArray(t.roleplay);
@@ -433,6 +482,7 @@ async function main() {
   checkTopics('Reading', mod.READING_TOPICS_BY_LEVEL, isOldReading, stimuliReading, errors);
   checkTopics('Speaking', mod.SPEAKING_TOPICS_BY_LEVEL, isOldSpeaking, stimuliSpeaking, errors);
   checkGrammarData(mod.GRAMMAR_TOPICS_BY_LEVEL, errors);
+  checkReadingTextData(mod.READING_TOPICS_BY_LEVEL, errors);
   checkSpeakingStoryDuplicates(mod.SPEAKING_TOPICS_BY_LEVEL, errors);
   checkListeningPracticeVariants(mod.LISTENING_TOPICS_BY_LEVEL, errors);
   checkListeningGlobalUnique(mod.LISTENING_TOPICS_BY_LEVEL, errors);

@@ -168,6 +168,19 @@ function roundActionsHtml(isLast: boolean): string {
     </div>`;
 }
 
+/** Bullet progress read-only di dalam 1 markas (permintaan user "pada game
+ *  tambahkan bullet progress juga") — pola SAMA PERSIS `games/storyquest.ts`
+ *  `dotsHtml()` (`.quiz-dot.static`, warna ikut Raja lewat `.raja-stage`).
+ *  Duplikat lokal per file game (konvensi sama `roundActionsHtml`). */
+function progressDotsHtml(total: number, isDone: (i: number) => boolean, current: number): string {
+  const dots = Array.from({ length: total }, (_, i) => {
+    const done = isDone(i);
+    const cls = [done ? 'done' : '', i === current ? 'current' : ''].filter(Boolean).join(' ');
+    return `<span class="quiz-dot static ${cls}" aria-hidden="true">${done ? '✓' : i + 1}</span>`;
+  }).join('');
+  return `<div class="quiz-nav"><div class="quiz-dots">${dots}</div></div>`;
+}
+
 /** "Cara Main" — duplikat lokal, lihat komentar lengkap `gameHowToHtml`
  *  `games/wordmatch.ts`. */
 function gameHowToHtml(steps: string[]): string {
@@ -253,7 +266,7 @@ function runSentencePuzzleRound(
     const built = answerText();
     container.innerHTML = `
       ${journey?.headerHtml ?? ''}
-      <div class="sp-head"><span class="tag">${roundIndex + 1}/${ROUND_COUNT} kalimat</span></div>
+      ${progressDotsHtml(ROUND_COUNT, (i) => i < roundIndex || (i === roundIndex && answered), roundIndex)}
       <div class="sp-sky" aria-hidden="true">
         <span class="sp-moon">🌙</span>
         <span class="sp-bird">🐦</span>

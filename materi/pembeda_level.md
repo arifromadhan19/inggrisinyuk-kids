@@ -606,3 +606,135 @@ Prinsip: **perbaiki fondasi dulu, baru pasang tier** — tier di atas data 1–2
 
 
 # Reading
+
+Status: **riset selesai 2026-09-24; format & alur baru SUDAH dipilot 1 topik Explorer** (`undangan-ulang-tahun`, [reading.md](reading.md) §20). **Pilot per level (1 topik tiap level, [reading.md](reading.md) §21) + tier mekanik (audio, Petunjuk, opsi) SUDAH diimplementasikan** lewat `textTier(contentLevel)`; topik lama tiap level belum dimigrasi. Angka & aturan bertanda **[F]** (fakta dari sumber) atau **[U]** (usulan desain, belum diuji ke anak). Pertanyaan yang dijawab (permintaan user): *"sekilas materi reading sama dengan vocabulary — research di Cambridge, LIA, EF dan lembaga lainnya bagaimana materi reading sehingga tidak redundant dengan materi lainnya, baik secara format, alur dan lain-lainnya; kemudian cari pembeda level"*.
+
+Reading punya **2 lapis pembeda** (pola sama Listening/Speaking/Grammar):
+1. **Lapis format & alur — identitas Reading vs skill lain.** Di Reading ini BELUM beres (beda dari 3 skill lain): Reading sekarang tumpang tindih dgn Vocabulary (dan sebagian Listening/Grammar). Rincian redundansi & usulan format baru: [reading.md](reading.md) §19. Ringkasannya ada di bawah krn pembeda level tidak masuk akal sebelum identitas Reading-nya jelas.
+2. **Lapis mekanik per level (dokumen ini)** — panjang teks, jenis teks, bantuan audio, peran gambar, jenis pertanyaan, bentuk & jumlah opsi, bantuan Petunjuk.
+
+## Ringkasan (High-Level)
+
+Temuan inti:
+1. **[F] Reading di Cambridge SELALU berupa memahami TEKS, bukan arti kata lepas.** Satu-satunya tugas "kata" di kertas Reading & Writing YLE adalah ejaan (Starters Part 3) & definisi (Movers/Flyers Part 1) — dan dua itu justru rumahnya skill Vocabulary di app ini. Tugas Reading sesungguhnya: kalimat ↔ gambar yang SELURUH kalimatnya harus benar ("if any element of the sentence is false, then they must write no"), rumpang dalam teks, jawab pertanyaan cerita 3 gambar, pilih respons dialog, pilih JUDUL cerita (gist), teks faktual, pesan/diary.
+2. **[F] Yang naik per tingkat Cambridge**: panjang & jenis teks (1 kalimat + gambar → cerita 3 bagian → teks faktual → diary/surat → notice, email, artikel), peran gambar ("The pictures do not provide answers to the questions" mulai Movers Part 5), rujukan antarkalimat (Flyers: "identifying different ways of referring to people... John, he, him, Paul's brother"; jawaban bisa bergantung pada "something said further back or further ahead in the text"), dan fokus pertanyaan (detail → gist/judul → main idea → opini & sikap penulis → kohesi teks di PET Part 4).
+3. **[F] Kurikulum Merdeka (Membaca–Memirsa) naik sangat jelas**: Fase A = teks **dibacakan guru**, anak merespons non-verbal; Fase B = kata sehari-hari **dengan bantuan gambar**, teks visual/multimodal; Fase C = **menemukan informasi dalam kalimat & menjelaskan topik teks**; Fase D = membaca **mandiri**, ide utama & info spesifik, **tujuan teks**, **mulai inferensi**.
+4. **[F] Pedoman Perjenjangan Buku Kemendikbud (2022)** memberi batas konkret per jenjang: A (pembaca dini) maks **5 kata/kalimat, 3 kalimat/halaman, gambar dominan**; B1 maks 7 kata/kalimat, 5 kalimat/hal; B2 maks 9 kata/kalimat, 7 kalimat/hal, 50–100 kata; B3 maks 12 kata/kalimat, 3 paragraf × 3 kalimat, 100–200 kata, gambar:teks 50:50; C maks 12 kata/kalimat, 4 paragraf × 5 kalimat, variasi narasi/deskripsi/eksposisi, gambar hanya pendukung. (Pedoman ini utk bahasa ibu — utk bahasa Inggris sbg bahasa asing, level app dipetakan 1–2 jenjang lebih rendah [U].)
+5. **[F] Kumon English** naik lewat tahap: *Repeating and reciting* → *Learning to read and write* → *Visualising a passage* → *Identifying the topic of each paragraph* → meringkas paragraf → *critical reading*. **Raz-Kids**: tiap buku = Dengar (kata disorot) → Baca/rekam → Kuis, teks makin panjang tiap level. **Reading Eggspress**: pra-baca ("On the cover", tebak dari sampul) → baca → kuis 10 soal; strategi naik dari *main idea & details* → *inferences, conclusions, visualize* → *summarize, fact & opinion, audience & purpose*.
+6. **Gap terbesar di app sekarang (dicek dari data, bukan asumsi)**:
+   - **Little Stars 99/100 item Reading = kata Vocab yang persis sama** (`kata-hewan` = `hewan-peliharaan`, dst); Explorer `baca-dan-cek` = 10 kata sifat Vocab `kata-sifat` dgn kalimat "The X is <adj>" & salahnya = lawan kata → yang diuji arti kata sifat (Vocab), bukan membaca.
+   - **Alur & tampilan sama dgn Vocab**: Kenalan daftar kata/kalimat + 🔊🎤🎮, kartu opsi gambar 2×2, 🎮 Susun Kalimat (bentuk yang sama dgn Susun Kalimat Vocab & Grammar).
+   - **Teks terlalu pendek utk levelnya**: rata-rata kata per teks — Little Stars 1, Starter 2,4, Explorer 4, Adventurer 19,9, Achiever 34, Trailblazer 39,3 (maks 81). Satu bagian cerita Movers Part 5 saja sudah lebih panjang dari rata-rata Adventurer.
+   - **Mekanik identik 3 level atas**: Adventurer = Achiever = Trailblazer (teks + 1 pertanyaan + 3 opsi gambar, Petunjuk = terjemahan penuh, 10 soal dari 3 teks yang diulang).
+   - **Belum ada jenis teks selain cerita** (tanda/notice, pesan, undangan, jadwal, menu, email) padahal ini ciri paling khas Reading di KET ("notices and signs, packaging information, notes, emails, cards, text messages") & Kurikulum Merdeka ("teks khusus: pesan singkat, iklan").
+
+### Tier yang Diusulkan (semua [U], belum diuji ke anak)
+
+| Level | Tier | Jenis teks | Panjang teks | Audio | Gambar | Fokus pertanyaan | Opsi | 💡 Petunjuk |
+|---|---|---|---|---|---|---|---|---|
+| Little Stars | Dasar | buku gambar mini (label/caption) | 3–5 halaman × 1 kalimat, ≤4 kata | **dibacakan otomatis**, kata disorot | dominan, jadi jawaban | tunjuk gambar yang cocok kalimat | 2–3 gambar | arti Indonesia |
+| Starter | Dasar | buku gambar mini | 4–6 halaman × 1–2 kalimat, ≤5 kata | dibacakan kalau ditap | dominan | benar/salah — **seluruh** kalimat harus cocok (Starters P1/P2) | 2 (✅/❌) / 3 gambar | arti Indonesia |
+| Explorer | Menengah | kartu/pesan/label/deskripsi gambar | 3–5 kalimat, ≤7 kata/kalimat (~25 kata) | 🔊 per kalimat hanya lewat Petunjuk | pendukung | temukan info di 1 kalimat + **topik teks** (Fase C) | 3 (gambar/teks) | arti kalimat yang ditanya |
+| Adventurer | Menengah | cerita + tanda/notice + dialog | 50–80 kata, ≤9 kata/kalimat | tidak ada (Latihan Inti/Tantangan) | konteks, **bukan jawaban** (Movers P5) | detail + **judul** (gist) + pilih respons dialog | 3 teks | **sorot kalimat bukti** (bukan terjemahan) |
+| Achiever | Lanjut | cerita + teks faktual + diary/pesan | 80–150 kata, 2–3 paragraf, ≤12 kata/kalimat | tidak ada | 1 gambar suasana | detail lintas kalimat, **rujukan** (he/it/there), inferensi awal (Fase D) | 3 teks | 🔒 setelah 1x coba, sorot paragraf |
+| Trailblazer | Lanjut | email, artikel, iklan, 3 teks pendek utk dicocokkan (KET P2/PET P2) | 150–250 kata | tidak ada | minim / tanpa | ide pokok, **sikap/opini penulis**, tujuan teks, kalimat yang hilang (PET P3/P4) | **4 teks** (PET) | 🔒 setelah 1x coba, eliminasi 1 |
+
+Intinya: **Dasar** = "dibacakan sambil lihat tulisannya" (Fase A, Raz-Kids "Listen", Kumon *repeating & reciting*) — satuan terkecilnya tetap KALIMAT/HALAMAN buku, bukan kartu kata. **Menengah** = membaca sendiri teks pendek sehari-hari, audio hilang, gambar turun jadi konteks, pertanyaan mulai soal topik/judul. **Lanjut** = teks lebih panjang & beragam, jawaban tersebar di beberapa kalimat, bantuan tidak lagi berupa terjemahan tapi "lihat bagian ini".
+
+## Kondisi Sekarang (Baseline di Kode)
+
+| Aspek | Sekarang | Beda per level? |
+|---|---|---|
+| Format | 3 format: "Baca Kata" (LS/Starter), "Baca & Nilai" (Explorer), cerita + soal (Adventurer–Trailblazer) | Ya, tapi 3 level atas identik |
+| Satuan teks | kata (LS), frasa 2–4 kata (Starter), 1 kalimat (Explorer), 2–5 kalimat (Adv–Trail) | Ya (terlalu pendek, lihat Ringkasan #6) |
+| Isi | LS & Explorer = daftar kata topik Vocab yang sama | — |
+| Jenis teks | kata/frasa/kalimat lepas & cerita | Tidak ada notice/pesan/email |
+| Audio | LS/Starter semua tahap; Explorer tidak ada; Adv+ hanya Kenalan | Sebagian |
+| Kenalan | daftar + 🔊🎤🎮 (sama Vocab) | Tidak |
+| 🎮 Main | LS/Starter kata→gambar (= Latihan Inti); Adv+ Susun Kalimat (= Vocab/Grammar) | Tidak |
+| Opsi | LS/Starter 4, Explorer biner/4 gambar, Adv+ 3 gambar | Sebagian |
+| 💡 Petunjuk | LS–Explorer eliminasi 2; Adv+ terjemahan penuh teks + pertanyaan, sejak awal | Tidak (Adv–Trail sama) |
+| Parameter `contentLevel` | TIDAK ADA di `games/reading.ts` | — |
+
+## Bukti Riset per Sumbu
+
+| Sumbu | Temuan | Sumber |
+|---|---|---|
+| **Satuan & panjang teks** | Starters: kalimat + gambar, rumpang teks pendek, cerita 3 gambar. Movers P5: "story is divided into three sections, each with an illustration". Flyers P5: "one continuous text and one picture"; Can-do Flyers: "CAN understand longer texts about everyday topics, even if they do not know all the words". Kemendikbud: A ≤5 kata/kalimat … C ≤4 paragraf × 5 kalimat | Handbook YLE; Pedoman Perjenjangan Buku |
+| **Jenis teks** | Movers can-do: "CAN understand signs and simple notices". Flyers P7: "diary or a letter". KET P1: "notices and signs, packaging information, notes, emails, cards, text messages"; P2–P4: majalah, brosur, website, ensiklopedia sederhana. Fase D: narasi, deskripsi, prosedur, teks khusus (pesan singkat, iklan) | Handbook YLE; A2 Key for Schools Handbook; CP Kemendikbud |
+| **Audio** | Fase A: "teks tulis yang dibacakan oleh guru". Raz-Kids "Listen" (kata disorot) sebelum "Read". Kumon 7A–6A: *repeating and reciting* sambil melihat kata. Mulai Fase D: "secara mandiri" | CP Kemendikbud; Raz-Kids; Kumon |
+| **Peran gambar** | Starters P1/P2 gambar = bahan penilaian; Movers P5 "The pictures do not provide answers"; Flyers P5 gambar = "context for the story"; Kemendikbud A "proporsi gambar lebih dominan", B3 50:50, C "mendukung teks" | Handbook YLE; Pedoman Perjenjangan Buku |
+| **Fokus pertanyaan** | Starters: cocok/tidak + jawaban 1 kata dari cerita. Movers P4: "Reading for specific information and gist… choose the best title". Flyers P3: "discourse features and referencing". KET: "main message" (P1), "locating specific information by reading quickly" (P2), "main ideas and some details" (P3). PET P3: "gist, inference and global meaning, as well as writer's attitude and opinion"; P4: "how coherent and well-structured text is formed". Fase C: "menemukan informasi pada sebuah kalimat dan menjelaskan topik"; Fase D: "tujuan teks… inferensi" | Handbook YLE; KET & PET Handbooks; CP Kemendikbud |
+| **Jumlah opsi** | YLE & KET: 3 opsi; PET P3 & P5: 4 opsi | Handbooks |
+| **Strategi membaca** | Kumon: *visualising a passage* → *topic of each paragraph* → meringkas → *critical reading*. Reading Eggspress: *main idea and details* → *inferences, conclusions* → *summarize, fact and opinion, audience and purpose* | Kumon Table of Learning; Reading Eggspress |
+| **Lembaga Indonesia** | LIA GEYL (6 level per kelas SD) memakai buku **Story Central** (Macmillan, Pre A1–B1): tiap unit dibangun di sekitar 1 cerita + Reader terpisah, kemampuan membaca & berpikir kritis lewat cerita. EF Small Stars/High Flyers: phonics & membaca pertama kali, buku cerita, kartu. Tidak ada yang menerbitkan mekanik per level | LIA Depok/Semarang/lblia.com; EF/English1 |
+
+## Rujukan Institusi
+
+**Cambridge — Reading per tingkat (Handbook YLE, A2 Key & B1 Preliminary for Schools 2020)**
+
+| Level app | Backbone | Tugas membaca (bukan ejaan/definisi) |
+|---|---|---|
+| Little Stars/Starter | pra-Starters (Fase A) | teks dibacakan, tunjuk gambar |
+| Explorer | Pre A1 Starters | P1 kalimat ↔ gambar ✓/✗ · P2 1 gambar + 5 kalimat yes/no · P4 rumpang teks (kata benda, 2 kata lebih) · P5 cerita 3 gambar, jawaban 1 kata |
+| Adventurer | A1 Movers | P2 yes/no · P3 dialog, pilih respons (3 opsi) · P4 rumpang + **pilih judul** · P5 cerita 3 bagian, lengkapi kalimat 1–3 kata (gambar bukan jawaban) · P6 teks faktual (fokus grammar) |
+| Achiever | A2 Flyers | P2 yes/no (7) · P3 dialog A–H (1 lebih) · P4 rumpang + judul · P5 1 teks + 1 gambar, lengkapi 1–4 kata · P6 teks faktual · P7 diary/surat rumpang terbuka |
+| Trailblazer | A2 Key → B1 Preliminary | KET: 6 teks nyata (pesan utama) · cocokkan 7 pertanyaan ke 3 teks (scan) · 1 teks panjang (ide utama & detail). PET: 5 teks nyata · cocokkan 5 orang ke 8 teks · teks panjang 4 opsi (**sikap & opini**) · teks dgn 5 **kalimat hilang** |
+
+**Kemendikbud — Pedoman Perjenjangan Buku (SK BSKAP 030/P/2022)**: A 5–20 kosakata, ≤5 kata/kalimat, ≤3 kalimat/hal · B1 25–40 kosakata, ≤7 kata/kalimat, ≤5 kalimat/hal · B2 50–100 kata, ≤9 kata/kalimat, ≤7 kalimat/hal · B3 100–200 kata, ≤12 kata/kalimat, ≤3 paragraf × 3 kalimat, gambar 50:50 · C ≤12 kata/kalimat, ≤4 paragraf × 5 kalimat, narasi/deskripsi/eksposisi, gambar pendukung.
+
+## Usulan
+
+| # | Usulan | Dasar bukti | Usaha | Catatan |
+|---|---|---|---|---|
+| 1 | **Petunjuk bertingkat** — LS/Starter arti Indonesia; Explorer arti kalimat yang ditanya saja; Adventurer+ **sorot kalimat bukti** di teks (bukan terjemahan); Achiever/Trailblazer 🔒 sampai 1x coba | Flyers "even if they do not know all the words"; KET/PET tanpa bantuan | Rendah–Sedang | Butuh field `evidence` (index kalimat) per soal |
+| 2 | **Audio per tier** — LS dibacakan otomatis + sorot kata; Starter ditap; Explorer lewat Petunjuk; Adventurer+ tanpa audio di luar Kenalan | Fase A → D; Raz-Kids Listen→Read | Rendah (LS/Starter) | Sorot kata = fitur baru di `speech.ts` (event `boundary` Web Speech, tidak didukung semua browser → cukup sorot per kalimat sbg fallback) |
+| 3 | **Panjang teks per tier** (tabel di atas) — dicek otomatis di build (kata/kalimat maks & kata/teks min–maks per level) | Kemendikbud jenjang; YLE | Tinggi (konten) | Terbesar di Adventurer–Trailblazer: tulis ulang teks jadi 2–5x lebih panjang |
+| 4 | **Jenis teks per tier** — Explorer pesan/label/kartu; Adventurer + tanda & dialog; Achiever + teks faktual & diary; Trailblazer email/artikel/iklan | Movers "signs and notices", Flyers P7, KET P1, Fase D | Tinggi (konten) | Jenis teks tampil beda (kartu pesan, papan tanda, layar email) — ini sekaligus pembeda visual dari Vocab |
+| 5 | **Jenis pertanyaan per tier** — Explorer detail + topik; Adventurer + judul & respons dialog; Achiever + rujukan & inferensi awal; Trailblazer + sikap penulis & kalimat hilang | YLE/KET/PET; Fase C–D; Reading Eggspress | Sedang | Field `kind` per soal (`detail`/`gist`/`reference`/`inference`/`attitude`) → cek build: tiap topik punya ≥1 jenis khas levelnya |
+| 6 | **Peran gambar** — LS–Starter jawaban; Explorer pendukung; Adventurer+ gambar tidak boleh jadi jawaban (opsi TEKS) | Movers P5 "pictures do not provide answers" | Rendah | Opsi gambar Adv+ sekarang bisa ditebak dari gambar → ganti opsi teks |
+| 7 | **Jumlah opsi** — Dasar 2–3, Menengah & Achiever 3, Trailblazer 4 | YLE/KET 3, PET 4 | Rendah | |
+
+Urutan yang disarankan: format/alur baru reading.md §19 dulu (tanpa itu tier cuma merapikan redundansi) → #1, #2, #6, #7 (mekanik murah) → #5 → #3, #4 (konten besar, per level).
+
+## Keputusan yang Dibutuhkan (sebelum implementasi)
+
+1. **Kenalan 🎤/🎮** — aturan lama user "Kenalan tetap ada fitur mic dan main". Usulan reading.md §19: tetap ada, tapi isinya diganti (🎤 = baca nyaring 1 halaman, 🎮 = "Tunjuk di Gambar"/"Urutkan Cerita") supaya tidak sama dgn Vocab. Perlu konfirmasi.
+2. **Little Stars/Starter berubah dari kartu kata ke buku gambar mini** — 20 topik konten ditulis ulang (bukan cuma kode).
+3. **Explorer "Baca & Nilai" dirombak** — kalimat berunsur banyak dari 1 gambar adegan (Starters P2) menggantikan "The X is <adj>" + lawan kata.
+4. **Panjang teks Adventurer–Trailblazer** — 30 topik ditulis ulang/diperpanjang; bisa bertahap per level.
+
+## Yang SENGAJA Tidak Dibedakan
+
+1. **Retry tanpa batas, "Lanjut" selalu ada, teks non-punitive, tanpa timer** — aturan wajib app (handbook YLE menyarankan batas waktu latihan kelas, tidak ditiru).
+2. **Tanpa mengetik jawaban** — Cambridge meminta menulis/menyalin kata (Starters P5, Movers P5, Flyers P7, KET/PET open cloze); app tap-based di semua skill → diganti pilih/tap di teks. Tugas "salin kata dari teks" bisa jadi "tap kata di teks" (tetap menguji membaca).
+3. **Ejaan & definisi kata** (Starters P3, Movers/Flyers P1) — itu Vocab (Eja Kata), jangan dipindah ke Reading.
+4. **Rumpang berfokus grammar** (Movers/Flyers P6, KET P5, PET P6) — itu Grammar ("Pilih Bentuk yang Pas", rencana Grammar Tahap 0); Reading hanya memakai rumpang yang butuh isi teks (judul, kalimat hilang).
+5. **Instruksi layar berbahasa Indonesia** di semua level.
+
+## Gotcha
+
+- `games/reading.ts` belum menerima `contentLevel` — tambahkan parameter terpisah dari `level` (praise), pola Vocab/Listening.
+- Opsi di format lama sekarang **gambar dgn label tersembunyi** (`optHtml`, sengaja anti-cocok-teks). Usulan #6 (opsi teks di Adventurer+) harus tetap mencegah celah "kata di opsi = kata di teks": tulis opsi sebagai **parafrase**, bukan salinan kata dari teks (pola Movers "sentences can be turned around whilst retaining their meaning").
+- `verify-content-duplicates.mjs` belum mengecek `ReadingCheckTopic`; format baru apa pun wajib ditambahkan ke skrip.
+- Id topik baru wajib unik lintas level (key progres tanpa level).
+
+## Batasan Riset (Jujur)
+
+- Handbook YLE, A2 Key for Schools, B1 Preliminary for Schools (2020), CP Kurikulum Merdeka, Pedoman Perjenjangan Buku & Kumon Table of Learning **dibaca langsung** (teks PDF diekstrak) → confidence tinggi.
+- Cambridge tidak menerbitkan jumlah kata teks per tingkat YLE; angka panjang teks di tabel tier adalah **usulan [U]** yang dijangkarkan ke Pedoman Perjenjangan (bahasa ibu), diturunkan 1–2 jenjang utk bahasa asing.
+- LIA & EF tidak menerbitkan mekanik membaca per level; LIA hanya terkonfirmasi memakai Story Central (struktur unit dari halaman Macmillan, tidak dibaca rinci). Raz-Kids & Reading Eggspress dari halaman resmi/ringkasan.
+- Semua angka tier adalah desain, wajib diuji ke anak.
+
+## Sumber
+
+- Cambridge YLE Handbook for Teachers: https://www.britishschoolrc.com/userfiles/files/Young_Learners_English_Handbook.pdf
+- A2 Key for Schools Handbook (2020): https://www.cambridgeenglish.org/images/504506-a2-key-for-schools-handbook-2020.pdf
+- B1 Preliminary for Schools Handbook (2020): https://www.cambridgeenglish.org/es/Images/168143-cambridge-english-preliminary-for-schools-teachers-handbook.pdf
+- CP Bahasa Inggris Fase A–F: https://sdn2jambu.weebly.com/uploads/1/3/9/4/139407191/11._cp_bahasa_inggris.pdf
+- Pedoman Perjenjangan Buku (BSKAP 2022): https://www.ikapi.org/wp-content/uploads/2022/06/Pedoman-Perjenjangan-Buku-Pusat-Perbukuan-BSKAP.pdf · https://repositori.kemendikdasmen.go.id/26569/
+- Kumon Table of Learning (English): https://kumon.sg/wp-content/uploads/2021/08/Table-of-Learning-ENGLISH.pdf
+- Raz-Kids: https://www.raz-kids.com/main/aboutrazkids/ · https://climbtheladder.com/what-is-raz-kids-leveled-reading-for-k-5-students/
+- Reading Eggspress: https://readingeggspress.com/about/lesson-overview/comprehension/lesson-details/
+- LIA GEYL: https://lblia.com/kursus-bahasa-inggris-anak-sd/ · https://lbppliamedan.com/english-children-ec/ · Story Central: https://www.macmillanenglish.com/de/catalogue/courses/young-learners/story-central-plus/levels-samples
+- EF: https://www.ef.co.id/englishfirst/kids/highflyers/ · https://et2.ef-cdn.com/englishfirst/courses/kids/early.aspx
