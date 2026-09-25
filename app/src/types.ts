@@ -593,39 +593,75 @@ export interface SpeakingStoryTopic {
  *  persis dgn `AnyListeningTopic`/`AnyReadingTopic`. */
 export type AnySpeakingTopic = SpeakingTopic | SpeakingPhraseTopic | SpeakingInterviewTopic | SpeakingStoryTopic;
 
-export interface GrammarExample {
+/**
+ * Format KALIMAT Grammar (`GrammarSentenceTopic`) — Explorer, Adventurer,
+ * Achiever (7–13 th, sudah bisa baca kalimat sendiri). Menggantikan format
+ * LAMA `examples`/`scramble`/`fill` (audit 2026-09-24, `materi/
+ * pembeda_level.md` § Grammar: 1–2 kalimat diulang sampai 10 soal, tanpa
+ * arti, Tantangan yang semua opsinya benar). Tiap kalimat ditulis SEKALI &
+ * dipakai lintas Kenalan (daftar + arti), Latihan Inti (susun kata + kata
+ * jebakan) & Tantangan (pilih bentuk yang pas) — pola `items` (BUKAN
+ * pelanggaran aturan "kalimat tidak boleh sama lintas tahap").
+ */
+export interface GrammarSentence {
   en: string;
-  emoji: string;
+  id: string;
+  /** Ikon Kenalan — isi HANYA kalau genuinely relevan (CLAUDE.md "Ikon WAJIB
+   *  Relevan"); tidak pernah tampil di Susun Kalimat. */
+  emoji?: string;
+  /** SATU kata di `en` yang membawa pola grammar topik (muncul tepat 1x sbg
+   *  kata utuh) — disorot di Kenalan, dikosongkan di Tantangan. */
+  key: string;
+  /** Tepat 2 bentuk lain yang SALAH di kalimat ini (mis. key "are" → "is",
+   *  "am") — opsi salah Tantangan & kata jebakan Susun Kalimat. Wajib benar-
+   *  benar tidak gramatikal di kalimat ini (kecuali topik `meaningNeeded`,
+   *  di mana opsi salahnya gramatikal tapi artinya beda dari `id`). */
+  wrong: [string, string];
+  /** Urutan kata lain yang juga benar utk Susun Kalimat (kata sama persis,
+   *  mis. keterangan waktu di depan) — tanpa ini anak yang menyusun benar
+   *  bisa dianggap salah. */
+  alt?: string[];
 }
 
-export interface GrammarScramble {
-  emoji: string;
-  target: string[];
+/** Teks pendek 2–3 kalimat utk Tantangan tier Lanjut (Achiever) — pola
+ *  Cambridge Flyers Part 7: jawaban rumpang bergantung pada kalimat LAIN
+ *  ("further back ... in the text"), bukan kalimat yang dirumpangkan.
+ *  Rumpang selalu di kalimat TERAKHIR. */
+export interface GrammarMiniText {
+  en: string[];
+  /** Arti seluruh teks. */
+  id: string;
+  /** Jawaban (boleh >1 kata, mis. "is swimming") — tepat 1x di kalimat terakhir. */
+  key: string;
+  /** 2 opsi salah — minimal 1 di antaranya gramatikal kalau kalimat terakhir
+   *  dibaca SENDIRIAN (jadi anak wajib membaca kalimat sebelumnya), tapi
+   *  salah menurut isi kalimat sebelumnya. */
+  wrong: [string, string];
+  /** Kata/frasa di kalimat SEBELUMNYA yang menentukan jawaban — disorot
+   *  sesudah anak menjawab ("🔑 Kuncinya"). */
+  cue: string;
 }
 
-export interface GrammarFillOption {
-  word: string;
-  emoji: string;
-}
-
-export interface GrammarFill {
-  before: string[];
-  after: string[];
-  options: GrammarFillOption[];
-}
-
-export interface GrammarTopic {
+export interface GrammarSentenceTopic {
   id: string;
   title: string;
   desc: string;
-  examples: GrammarExample[];
-  scramble: GrammarScramble[];
-  fill: GrammarFill;
+  /** Aturan 1 baris dlm bahasa sehari-hari, TANPA istilah tata bahasa —
+   *  tampil di Kenalan tier Lanjut (Achiever) saja. */
+  rule?: string;
+  /** `true` kalau opsi salah SENDIRI gramatikal & cuma beda arti (preposisi,
+   *  kata tanya, because/so) — arti Indonesia lalu SELALU tampil di Latihan
+   *  Inti & Tantangan (tanpanya >1 jawaban benar), apa pun tier-nya. */
+  meaningNeeded?: boolean;
+  sentences: GrammarSentence[];
+  /** Tier Lanjut saja: 3 teks pendek yang menggantikan 3 dari 10 soal
+   *  Tantangan (`games/grammar.ts` `runTantanganSentence`). */
+  texts?: GrammarMiniText[];
 }
 
 /**
  * Format KEDUA Grammar (`GrammarPatternTopic`) — khusus Little Stars (3–6 th)
- * & Starter (5–7 th), audio+gambar murni (BUKAN teks-first spt `GrammarTopic`
+ * & Starter (5–7 th), audio+gambar murni (BUKAN teks-first spt `GrammarSentenceTopic`
  * lama — anak di kedua level ini belum/baru bisa baca kalimat sendiri).
  * Riset awal (`materi/grammar.md` §3/§4, Little Stars) mengonfirmasi TIDAK
  * ADA institusi (LIA GEVYL, EF Small Stars, Kumon) maupun app kompetitor yang
@@ -723,7 +759,7 @@ export interface GrammarPatternTopic {
  * (passive voice, reported speech, conditionals) diuji Cambridge sendiri
  * lewat **key-word sentence transformation** (Writing Part 1 resmi PET —
  * tulis ulang kalimat B supaya bermakna sama dgn kalimat A) — task shape yang
- * TIDAK BISA dijawab `GrammarTopic` (scramble 1 kalimat/fill 1 kata) ATAUPUN
+ * TIDAK BISA dijawab `GrammarSentenceTopic` (susun 1 kalimat/pilih 1 kata) ATAUPUN
  * `GrammarPatternTopic` (2 bentuk kalimat TETAP, bukan transformasi terbuka)
  * — genuinely butuh format baru, sama alasan Listening (`ListeningDialogueTopic`)
  * & Speaking (`SpeakingInterviewTopic`) py format baru sendiri utk Trailblazer.
@@ -757,6 +793,12 @@ export interface GrammarTransformItem {
    *  dari `original` sesama item topik (kutipan tokoh LAIN, otomatis jadi
    *  opsi salah yang masuk akal, pola sama `buildWordOptions`). */
   reportedOptions: GrammarTransformOption[];
+  /** Tantangan "Siapa Bilang Apa?" — tepat 3 kutipan langsung LAIN dgn isi
+   *  SAMA tapi bentuk beda (tense/modal/jenis kalimat) yang kalau dilaporkan
+   *  TIDAK menghasilkan kalimat reported yang benar. Dulu opsi diambil dari
+   *  kutipan sesama item (isi beda) → 98/100 soal bisa ditebak cukup dgn
+   *  mencocokkan kata benda (audit 2026-09-24). */
+  originalOptions: [string, string, string];
 }
 
 export interface GrammarTransformTopic {
@@ -766,16 +808,16 @@ export interface GrammarTransformTopic {
   transforms: GrammarTransformItem[];
 }
 
-/** Union dipakai `GRAMMAR_TOPICS_BY_LEVEL` (content.ts) supaya format LAMA
- *  (`GrammarTopic`, Explorer/Adventurer/Achiever, teks-first scramble/fill),
+/** Union dipakai `GRAMMAR_TOPICS_BY_LEVEL` (content.ts) supaya format KALIMAT
+ *  (`GrammarSentenceTopic`, Explorer/Adventurer/Achiever, py `sentences`),
  *  format KEDUA "py `items`" (`GrammarPatternTopic`, Little Stars/Starter,
  *  audio+gambar), & format KETIGA "py `transforms`" (`GrammarTransformTopic`,
  *  Trailblazer, transformasi kalimat) bisa hidup berdampingan — pembeda
  *  runtime tingkat-1 `'items' in topic` (format kedua vs lainnya), tingkat-2
- *  `'transforms' in topic` (format ketiga vs format lama) — dicek di
+ *  `'transforms' in topic` (format ketiga vs format kalimat) — dicek di
  *  `app.ts` `runStage`, `games/boss.ts` grammar phase,
  *  sama pola persis dgn `AnySpeakingTopic`. */
-export type AnyGrammarTopic = GrammarTopic | GrammarPatternTopic | GrammarTransformTopic;
+export type AnyGrammarTopic = GrammarSentenceTopic | GrammarPatternTopic | GrammarTransformTopic;
 
 export type SkillKey = 'vocabulary' | 'listening' | 'reading' | 'speaking' | 'grammar';
 

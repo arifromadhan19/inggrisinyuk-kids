@@ -131,6 +131,7 @@ const ALLOWED_EMOJI_WORD_EXCEPTIONS = new Set([
   '👴::grandfather',
   '👵::grandma',
   '👵::grandmother',
+  "👵::grandma's house", // Grammar Starter `pergi-tidak-pergi` — rumah nenek
 ]);
 
 async function main() {
@@ -224,10 +225,26 @@ async function main() {
     }
   }
 
+  // Grammar: emoji makhluk hidup juga ikut denylist (Kenalan & kartu kontras).
+  for (const [level, topics] of Object.entries(mod.GRAMMAR_TOPICS_BY_LEVEL ?? {})) {
+    for (const topic of topics) {
+      const checks = [];
+      for (const s of topic.sentences ?? []) checks.push([s.en, s.emoji]);
+      for (const it of topic.items ?? []) checks.push([it.en, it.emoji]);
+      for (const tr of topic.transforms ?? []) checks.push([tr.original, tr.emoji]);
+      for (const [word, val] of checks) {
+        const key = word.trim().toLowerCase();
+        if (val && PROBLEMATIC_EMOJI.has(val) && !ALLOWED_EMOJI_WORD_EXCEPTIONS.has(`${val}::${key}`)) {
+          errors.push(`Grammar "${topic.id}" (${level}) "${word}" (emoji="${val}"): ${PROBLEMATIC_EMOJI.get(val)}.`);
+        }
+      }
+    }
+  }
+
   // Judul topik WAJIB "Indonesia (English)", mis. "Hari di Kalender (Days on
-  // the Calendar)" — aturan CLAUDE.md, dicek di Vocab/Listening/Speaking.
+  // the Calendar)" — aturan CLAUDE.md, dicek di Vocab/Listening/Speaking/Grammar.
   const TITLE_RE = /^[^()]+ \([^()]+\)$/;
-  for (const [skill, byLevel] of [['Vocab', VOCAB_TOPICS_BY_LEVEL], ['Listening', mod.LISTENING_TOPICS_BY_LEVEL], ['Speaking', mod.SPEAKING_TOPICS_BY_LEVEL]]) {
+  for (const [skill, byLevel] of [['Vocab', VOCAB_TOPICS_BY_LEVEL], ['Listening', mod.LISTENING_TOPICS_BY_LEVEL], ['Speaking', mod.SPEAKING_TOPICS_BY_LEVEL], ['Grammar', mod.GRAMMAR_TOPICS_BY_LEVEL]]) {
     for (const [level, topics] of Object.entries(byLevel ?? {})) {
       for (const topic of topics) {
         if (!TITLE_RE.test(topic.title ?? '')) {

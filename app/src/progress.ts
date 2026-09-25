@@ -763,11 +763,11 @@ export function readingTopicPercent(
  * dihitung). Section Tantangan-nya `'tantangan-pola'` (mekanik pilih ucapan
  * cocok dgn gambar, beda dari `'tantangan-baca'` Reading/`'tantangan-susun'`
  * Listening — nama section sengaja dibedakan biar jelas dari dump data mana
- * pun). Format LAMA (`GrammarTopic`, Explorer/Adventurer/Achiever) & format
- * KETIGA (`GrammarTransformTopic`, Trailblazer) TIDAK pakai fungsi ini —
- * TETAP fallback `isStepVisited`, belum py section granular.
+ * pun). Format KALIMAT (`GrammarSentenceTopic`, section `'tantangan-bentuk'`)
+ * & format KETIGA (`GrammarTransformTopic`, `'tantangan-transform'`) memakai
+ * fungsi yang sama lewat `tantanganSection`.
  */
-export function grammarTopicPercent(topicId: string, itemCount: number, tantanganTotal: number): number {
+export function grammarTopicPercent(topicId: string, itemCount: number, tantanganTotal: number, tantanganSection: SectionName = 'tantangan-pola'): number {
   if (itemCount <= 0) return 0;
   const skill: SkillKey = 'grammar';
 
@@ -786,7 +786,7 @@ export function grammarTopicPercent(topicId: string, itemCount: number, tantanga
     getSection(skill, topicId, section)?.plan?.length ?? fallback;
 
   const latihanPct = stepPct('latihan', sectionTotal('latihan', itemCount));
-  const tantanganPct = stepPct('tantangan-pola', sectionTotal('tantangan-pola', tantanganTotal));
+  const tantanganPct = stepPct(tantanganSection, sectionTotal(tantanganSection, tantanganTotal));
 
   return Math.round(((latihanPct + tantanganPct) / 2) * 100);
 }

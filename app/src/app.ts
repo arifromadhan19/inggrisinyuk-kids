@@ -921,16 +921,24 @@ function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): 
       });
     }
   }
+  const stepsVisited = isStepVisited(key, topicId, 'latihan') && isStepVisited(key, topicId, 'tantangan');
   if (key === 'grammar') {
     const grammarTopic = grammarTopicsForLevel(level).find((t) => t.id === topicId);
-    // Format KEDUA (`GrammarPatternTopic`, "Satu atau Banyak?") py section
-    // granular — format LAMA (Explorer/Adventurer, `GrammarTopic`) TIDAK,
-    // tetap jatuh ke fallback `isStepVisited` di bawah.
+    // Semua 3 format py section per soal. Format kalimat & transform: topik
+    // yang SUDAH tuntas di alur lama (cuma tercatat `isStepVisited`) tetap
+    // 100% — non-punitive, sama pola Speaking.
     if (grammarTopic && 'items' in grammarTopic) {
       return grammarTopicPercent(topicId, grammarTopic.items.length, Math.min(grammarTopic.items.length, 10));
     }
+    if (grammarTopic && 'transforms' in grammarTopic) {
+      const n = grammarTopic.transforms.length;
+      return stepsVisited ? 100 : grammarTopicPercent(topicId, n, n, 'tantangan-transform');
+    }
+    if (grammarTopic && 'sentences' in grammarTopic) {
+      const n = grammarTopic.sentences.length;
+      return stepsVisited ? 100 : grammarTopicPercent(topicId, n, n, 'tantangan-bentuk');
+    }
   }
-  const stepsVisited = isStepVisited(key, topicId, 'latihan') && isStepVisited(key, topicId, 'tantangan');
   if (key === 'speaking') {
     const speakingTopic = speakingTopicsForLevel(level).find((t) => t.id === topicId);
     if (speakingTopic) {
@@ -2020,7 +2028,9 @@ function renderActivity(): void {
         ? listeningGame.listeningDefaultRate(level.key)
         : key === 'speaking'
           ? speakingGame.speakingDefaultRate(level.key)
-          : DEFAULT_RATE
+          : key === 'grammar'
+            ? grammarGame.grammarDefaultRate(level.key)
+            : DEFAULT_RATE
   );
 
   const steps = STEP_LABELS.map((label, i) => {
@@ -2218,26 +2228,26 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
     }
     case 'grammar': {
       const topic = grammarTopicsForLevel(contentLevel)[state.topicIndex];
-      // `AnyGrammarTopic` — format LAMA (Explorer/Adventurer/Achiever,
-      // `examples`/`scramble`/`fill`, teks-first) vs format KEDUA "py
+      // `AnyGrammarTopic` — format KALIMAT (Explorer/Adventurer/Achiever,
+      // `sentences`, teks-first) vs format KEDUA "py
       // `items`" (Little Stars/Starter, kontras 2-kalimat audio+gambar) vs
       // format KETIGA "py `transforms`" (Trailblazer, transformasi kalimat
       // MCQ), dibedakan runtime tingkat-1 `'items' in topic`, tingkat-2
       // `'transforms' in topic` (types.ts komentar `AnyGrammarTopic`), sama
-      // pola persis dgn `AnySpeakingTopic`. JANGAN migrasi format lama ke
-      // sini tanpa arahan baru user.
+      // pola persis dgn `AnySpeakingTopic`. `contentLevel` = pembeda level
+      // (tier, `materi/pembeda_level.md` § Grammar).
       if ('items' in topic) {
         if (state.step === 0) grammarGame.renderKenalanPattern(stage, topic, nextStep, praiseLevel);
-        else if (state.step === 1) grammarGame.runLatihanIntiPattern(stage, topic, nextStepWithSync, praiseLevel);
+        else if (state.step === 1) grammarGame.runLatihanIntiPattern(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
         else grammarGame.runTantanganPattern(stage, topic, nextStepWithSync, praiseLevel);
       } else if ('transforms' in topic) {
         if (state.step === 0) grammarGame.renderKenalanTransform(stage, topic, nextStep);
-        else if (state.step === 1) grammarGame.runLatihanIntiTransform(stage, topic, nextStepWithSync, praiseLevel);
-        else grammarGame.runTantanganTransform(stage, topic, nextStepWithSync, praiseLevel);
+        else if (state.step === 1) grammarGame.runLatihanIntiTransform(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+        else grammarGame.runTantanganTransform(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       } else {
-        if (state.step === 0) grammarGame.renderKenalan(stage, topic, nextStep);
-        else if (state.step === 1) grammarGame.runLatihanInti(stage, topic, nextStepWithSync, praiseLevel);
-        else grammarGame.runTantangan(stage, topic, nextStepWithSync);
+        if (state.step === 0) grammarGame.renderKenalanSentence(stage, topic, nextStep, contentLevel);
+        else if (state.step === 1) grammarGame.runLatihanIntiSentence(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
+        else grammarGame.runTantanganSentence(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       }
       return;
     }

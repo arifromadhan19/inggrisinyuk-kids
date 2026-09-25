@@ -4,7 +4,7 @@ import type {
   AnyReadingTopic,
   AnySpeakingTopic,
   GrammarPatternTopic,
-  GrammarTopic,
+  GrammarSentenceTopic,
   GrammarTransformTopic,
   LevelKey,
   LevelMeta,
@@ -2514,299 +2514,187 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
   },
 ];
 
-export const GRAMMAR_TOPICS: GrammarTopic[] = [
+/**
+ * Grammar Explorer (7–9 th, Cambridge Pre A1 Starters) — format KALIMAT
+ * (`GrammarSentenceTopic`, types.ts). 10 kalimat per topik; `key` = kata yang
+ * membawa pola, `wrong` = 2 bentuk yang salah di kalimat itu (opsi salah
+ * Tantangan & kata jebakan Susun Kalimat). Pengecoh = BENTUK (is/are, a/an,
+ * -s/-ing), bukan kata lain — pola Starters/Movers (`materi/pembeda_level.md`
+ * § Grammar). Topik `meaningNeeded` (preposisi, kata tanya) opsi salahnya
+ * gramatikal & cuma beda arti, jadi arti Indonesia selalu tampil.
+ */
+export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
   {
     id: 'this-is',
-    title: 'Pola "This is..."',
-    desc: 'To be — perkenalan',
-    examples: [{ en: 'This is a cat.', emoji: '🐱' }, { en: 'This is a dog.', emoji: '🐶' }],
-    scramble: [
-      { emoji: '🐰', target: ['This', 'is', 'a', 'rabbit'] },
-      { emoji: '⚽', target: ['This', 'is', 'a', 'ball'] },
+    title: 'Ini dan Itu (This Is / That Is)',
+    desc: 'This is a… / That is an…',
+    sentences: [
+      { en: 'This is a ball.', id: 'Ini sebuah bola.', emoji: '⚽', key: 'a', wrong: ['an', 'two'] },
+      { en: 'This is an apple.', id: 'Ini sebuah apel.', emoji: '🍎', key: 'an', wrong: ['a', 'two'] },
+      { en: 'This is my bag.', id: 'Ini tasku.', emoji: '🎒', key: 'This', wrong: ['These', 'Those'] },
+      { en: 'That is a kite.', id: 'Itu sebuah layang-layang.', emoji: '🪁', key: 'That', wrong: ['These', 'Those'] },
+      { en: 'This is an egg.', id: 'Ini sebutir telur.', emoji: '🥚', key: 'an', wrong: ['a', 'two'] },
+      { en: 'That is an orange.', id: 'Itu sebuah jeruk.', emoji: '🍊', key: 'an', wrong: ['a', 'two'] },
+      { en: 'This is a pencil.', id: 'Ini sebuah pensil.', emoji: '✏️', key: 'This', wrong: ['These', 'Those'] },
+      { en: 'That is my chair.', id: 'Itu kursiku.', emoji: '🪑', key: 'is', wrong: ['are', 'am'] },
+      { en: 'This is an umbrella.', id: 'Ini sebuah payung.', emoji: '☂️', key: 'an', wrong: ['a', 'two'] },
+      { en: 'This is a clock.', id: 'Ini sebuah jam.', emoji: '🕰️', key: 'is', wrong: ['are', 'am'] },
     ],
-    fill: {
-      before: ['This', 'is', 'my'],
-      after: [],
-      options: [{ word: 'book', emoji: '📕' }, { word: 'ball', emoji: '⚽' }, { word: 'cat', emoji: '🐱' }],
-    },
   },
   {
     id: 'there-is',
-    title: 'There is / There are',
-    desc: 'Menyebut benda',
-    examples: [{ en: 'There is a ball.', emoji: '⚽' }, { en: 'There are two cats.', emoji: '🐱🐱' }],
-    scramble: [{ emoji: '📦', target: ['There', 'is', 'a', 'box'] }],
-    fill: {
-      before: ['There', 'is', 'a'],
-      after: [],
-      options: [{ word: 'cat', emoji: '🐱' }, { word: 'dog', emoji: '🐶' }, { word: 'book', emoji: '📕' }],
-    },
+    title: 'Ada Berapa? (There Is / There Are)',
+    desc: 'There is + satu, There are + banyak',
+    sentences: [
+      { en: 'There is a book on the desk.', id: 'Ada sebuah buku di atas meja.', emoji: '📕', key: 'is', wrong: ['are', 'am'] },
+      { en: 'There are two books on the desk.', id: 'Ada dua buku di atas meja.', emoji: '📚', key: 'are', wrong: ['is', 'am'] },
+      { en: 'There is a clock in the kitchen.', id: 'Ada sebuah jam di dapur.', emoji: '🕰️', key: 'is', wrong: ['are', 'am'] },
+      { en: 'There are three cups on the table.', id: 'Ada tiga cangkir di atas meja.', emoji: '☕', key: 'are', wrong: ['is', 'am'] },
+      { en: 'There is an egg in the fridge.', id: 'Ada sebutir telur di dalam kulkas.', emoji: '🥚', key: 'an', wrong: ['a', 'two'] },
+      { en: 'There are four chairs in the room.', id: 'Ada empat kursi di dalam kamar.', emoji: '🪑', key: 'are', wrong: ['is', 'am'] },
+      { en: 'There is a ball under the bed.', id: 'Ada sebuah bola di bawah tempat tidur.', emoji: '⚽', key: 'is', wrong: ['are', 'am'] },
+      { en: 'There are five pencils in my bag.', id: 'Ada lima pensil di dalam tasku.', emoji: '✏️', key: 'are', wrong: ['is', 'am'] },
+      { en: 'There is a kite in the sky.', id: 'Ada sebuah layang-layang di langit.', emoji: '🪁', key: 'a', wrong: ['an', 'two'] },
+      { en: 'There are six apples in the basket.', id: 'Ada enam apel di dalam keranjang.', emoji: '🍎', key: 'are', wrong: ['is', 'am'] },
+    ],
   },
   {
     id: 'pronouns',
-    title: 'Kata Ganti Orang',
-    desc: 'I / You / He / She',
-    examples: [{ en: 'I am happy.', emoji: '😊' }, { en: 'She is my sister.', emoji: '👧' }],
-    scramble: [{ emoji: '😴', target: ['He', 'is', 'tired'] }],
-    fill: {
-      before: ['I', 'like'],
-      after: [],
-      options: [{ word: 'apples', emoji: '🍎' }, { word: 'blue', emoji: '🔵' }, { word: 'football', emoji: '⚽' }],
-    },
+    title: 'Kata Ganti Orang (I, You, He, She)',
+    desc: 'I am, you are, he/she is',
+    sentences: [
+      { en: 'I am happy.', id: 'Aku senang.', emoji: '😊', key: 'am', wrong: ['is', 'are'] },
+      { en: 'You are my friend.', id: 'Kamu temanku.', emoji: '👥', key: 'are', wrong: ['am', 'is'] },
+      { en: 'He is tired.', id: 'Dia (laki-laki) lelah.', emoji: '😴', key: 'is', wrong: ['am', 'are'] },
+      { en: 'She is my sister.', id: 'Dia saudara perempuanku.', emoji: '👧', key: 'She', wrong: ['I', 'You'] },
+      { en: 'We are in the park.', id: 'Kami ada di taman.', emoji: '🌳', key: 'We', wrong: ['I', 'He'] },
+      { en: 'They are at school.', id: 'Mereka ada di sekolah.', emoji: '🏫', key: 'They', wrong: ['He', 'I'] },
+      { en: 'It is a big box.', id: 'Itu sebuah kotak besar.', emoji: '📦', key: 'It', wrong: ['They', 'We'] },
+      { en: 'I am seven years old.', id: 'Aku berumur tujuh tahun.', emoji: '🎂', key: 'I', wrong: ['He', 'They'] },
+      { en: 'He is my brother.', id: 'Dia saudara laki-lakiku.', emoji: '👦', key: 'is', wrong: ['am', 'are'] },
+      { en: 'We are hungry.', id: 'Kami lapar.', emoji: '🍽️', key: 'are', wrong: ['is', 'am'] },
+    ],
   },
-  /**
-   * Topik ke-4 (permintaan riset per-level, `materi/grammar.md` §9) —
-   * "Prepositions of Place" (in/on/under) — struktur Cambridge YLE Starters
-   * yang belum diklaim topik Explorer manapun (`this-is`/`there-is`/
-   * `pronouns`). Dipetakan dari `VOCAB_TOPICS` `peralatan-dapur` (Kitchen
-   * Tools) — benda dapur naturally duduk "in the bowl"/"on the table"/"under
-   * the shelf", validasi kuat EF Indonesia High Flyers (7–9 th) "grammar
-   * sistematis dalam bentuk kalimat" & LearnEnglish Kids yang py kartu
-   * referensi + game preposisi eksplisit di usia ini. Emoji opsi `fill`
-   * (⬆️/📦/⬇️) proxy VISUAL preposisinya sendiri (bukan kata benda konkret,
-   * beda dari 3 topik di atas) krn preposisi tidak py "benda"-nya sendiri.
-   */
   {
     id: 'prepositions-of-place',
-    title: 'Preposisi Tempat (In, On, Under)',
+    title: 'Di Mana Letaknya? (In, On, Under)',
     desc: 'In / On / Under',
-    examples: [
-      { en: 'The spoon is in the bowl.', emoji: '🥄' },
-      { en: 'The cup is on the table.', emoji: '☕' },
-      { en: 'The pan is under the shelf.', emoji: '🍳' },
+    meaningNeeded: true,
+    sentences: [
+      { en: 'The spoon is in the bowl.', id: 'Sendok ada di dalam mangkuk.', emoji: '🥄', key: 'in', wrong: ['on', 'under'] },
+      { en: 'The cup is on the table.', id: 'Cangkir ada di atas meja.', emoji: '☕', key: 'on', wrong: ['in', 'under'] },
+      { en: 'The shoes are under the bed.', id: 'Sepatu ada di bawah tempat tidur.', emoji: '👟', key: 'under', wrong: ['in', 'on'] },
+      { en: 'The key is in the drawer.', id: 'Kunci ada di dalam laci.', emoji: '🔑', key: 'in', wrong: ['on', 'under'] },
+      { en: 'The lamp is on the desk.', id: 'Lampu ada di atas meja belajar.', emoji: '💡', key: 'on', wrong: ['in', 'under'] },
+      { en: 'The ball is under the chair.', id: 'Bola ada di bawah kursi.', emoji: '⚽', key: 'under', wrong: ['in', 'on'] },
+      { en: 'The book is in my bag.', id: 'Buku ada di dalam tasku.', emoji: '📕', key: 'in', wrong: ['on', 'under'] },
+      { en: 'The clock is on the wall.', id: 'Jam ada di (menempel pada) dinding.', emoji: '🕰️', key: 'on', wrong: ['in', 'under'] },
+      { en: 'The pencil is under the paper.', id: 'Pensil ada di bawah kertas.', emoji: '✏️', key: 'under', wrong: ['in', 'on'] },
+      { en: 'The milk is in the fridge.', id: 'Susu ada di dalam kulkas.', emoji: '🥛', key: 'in', wrong: ['on', 'under'] },
     ],
-    scramble: [
-      { emoji: '🔑', target: ['The', 'key', 'is', 'in', 'the', 'drawer'] },
-      { emoji: '💡', target: ['The', 'lamp', 'is', 'on', 'the', 'desk'] },
-    ],
-    fill: {
-      before: ['The', 'fork', 'is'],
-      after: ['the', 'plate'],
-      options: [
-        { word: 'on', emoji: '⬆️' },
-        { word: 'in', emoji: '📦' },
-        { word: 'under', emoji: '⬇️' },
-      ],
-    },
   },
-  /**
-   * Topik ke-5 (riset per-level lanjutan, `materi/grammar.md` §15) —
-   * "Present Continuous" (Cambridge Pre-A1 Starters kategori #6, "What are
-   * you doing? / The cat's sleeping.", dikonfirmasi jg Kurikulum Merdeka
-   * Fase B kelas 3-4 SD & British Council LearnEnglish Kids yg py kategori
-   * "Grammar: present progressive" berdiri sendiri persis di usia ini).
-   * BUKAN duplikat kontras `continuous-vs-simple` Achiever — itu KONTRAS
-   * continuous VS simple, ini pengenalan continuous POLOS (tangga di
-   * BAWAHNYA, genuinely unclaimed struktur). Dipetakan dari domain Vocab
-   * `waktu-harian` (Times of Day) — scene aktivitas harian di waktu
-   * tertentu (pagi/sore/malam), REUSE domain+emoji yg SAMA PERSIS dgn item
-   * Vocab-nya (🌅/🌇/🌃), bukan kata baru.
-   */
   {
     id: 'present-continuous',
     title: 'Sedang Terjadi (Present Continuous)',
-    desc: 'Sedang Apa Sekarang?',
-    examples: [
-      { en: 'She is eating breakfast in the morning.', emoji: '🌅' },
-      { en: 'He is doing homework in the evening.', emoji: '🌇' },
-      { en: 'They are sleeping at night.', emoji: '🌃' },
+    desc: 'am/is/are + -ing',
+    sentences: [
+      { en: 'She is eating breakfast.', id: 'Dia sedang sarapan.', emoji: '🍳', key: 'eating', wrong: ['eat', 'eats'] },
+      { en: 'He is doing his homework.', id: 'Dia sedang mengerjakan PR-nya.', emoji: '📝', key: 'doing', wrong: ['do', 'does'] },
+      { en: 'They are sleeping.', id: 'Mereka sedang tidur.', emoji: '😴', key: 'sleeping', wrong: ['sleep', 'sleeps'] },
+      { en: 'I am reading a book.', id: 'Aku sedang membaca buku.', emoji: '📖', key: 'reading', wrong: ['read', 'reads'] },
+      { en: 'We are playing football.', id: 'Kami sedang bermain sepak bola.', emoji: '⚽', key: 'playing', wrong: ['play', 'plays'] },
+      { en: 'You are drawing a picture.', id: 'Kamu sedang menggambar.', emoji: '🎨', key: 'drawing', wrong: ['draw', 'draws'] },
+      { en: 'She is drinking milk.', id: 'Dia sedang minum susu.', emoji: '🥛', key: 'is', wrong: ['are', 'am'] },
+      { en: 'They are riding their bikes.', id: 'Mereka sedang naik sepeda.', emoji: '🚲', key: 'are', wrong: ['is', 'am'] },
+      { en: 'He is washing the car.', id: 'Dia sedang mencuci mobil.', emoji: '🚗', key: 'washing', wrong: ['wash', 'washes'] },
+      { en: 'I am brushing my teeth.', id: 'Aku sedang menggosok gigi.', emoji: '🪥', key: 'am', wrong: ['is', 'are'] },
     ],
-    scramble: [
-      { emoji: '🌅', target: ['She', 'is', 'eating', 'breakfast'] },
-      { emoji: '🌃', target: ['They', 'are', 'sleeping'] },
-    ],
-    fill: {
-      before: ['She', 'is'],
-      after: [],
-      options: [
-        { word: 'sleeping', emoji: '😴' },
-        { word: 'eating', emoji: '🍽️' },
-        { word: 'playing', emoji: '⚽' },
-      ],
-    },
   },
-  /**
-   * Topik ke-6 — "Question Words" (Starters kategori #13, "Who is that
-   * man? / Where is Alex?") — kategori yg SEBELUMNYA dicatat sesi Little
-   * Stars (§13) butuh format teks-first (bukan mekanik kontras biner),
-   * sekarang genap terisi di sini. Dipetakan dari domain Vocab `keluarga`
-   * (Family) — pola tanya "Siapa dia?/Di mana dia?" paling natural
-   * ditanyakan TENTANG anggota keluarga, emoji jawaban REUSE PERSIS dari
-   * item Vocab-nya (👧 Sister/👵 Grandmother/🧑 Cousin/👩‍🦱 Aunt).
-   *
-   * `fill` (Tantangan) SENGAJA menguji separuh JAWABAN ("She is my ___"),
-   * BUKAN kata tanya itu sendiri — batasan struktural `runTantangan` yg
-   * SELALU menambah "." di akhir kalimat (lihat `sentence + '.'` di kode),
-   * jadi template ber-"?" akan menghasilkan tanda baca ganda yg janggal
-   * ("...girl? ."). Kata tanya-nya sendiri TETAP dilatih penuh lewat
-   * `examples` (tampil apa adanya, tanda baca bebas krn cuma teks statis)
-   * & `scramble` (susun urutan kata tanya — tidak butuh tanda baca sama
-   * sekali krn dicek kata-per-kata, bukan kalimat jadi).
-   */
   {
     id: 'question-words',
-    title: 'Kata Tanya Who, Where, What (Question Words)',
+    title: 'Kata Tanya (Who, Where, What)',
     desc: 'Siapa, Di Mana, Apa',
-    examples: [
-      { en: 'Who is that girl? She is my sister.', emoji: '👧' },
-      { en: 'Where is your grandmother? She is in the garden.', emoji: '👵' },
-      { en: 'What is his name? His name is Kevin.', emoji: '👦' },
+    meaningNeeded: true,
+    sentences: [
+      { en: 'Who is that girl?', id: 'Siapa anak perempuan itu?', emoji: '👧', key: 'Who', wrong: ['Where', 'What'] },
+      { en: 'Where is your bag?', id: 'Di mana tasmu?', emoji: '🎒', key: 'Where', wrong: ['Who', 'What'] },
+      { en: 'What is in the box?', id: 'Apa isi kotak itu?', emoji: '📦', key: 'What', wrong: ['Who', 'Where'] },
+      { en: 'Where is my pencil?', id: 'Di mana pensilku?', emoji: '✏️', key: 'Where', wrong: ['Who', 'What'] },
+      { en: 'Who is your teacher?', id: 'Siapa gurumu?', emoji: '🧑‍🏫', key: 'Who', wrong: ['Where', 'What'] },
+      { en: 'What is on the table?', id: 'Apa yang ada di atas meja?', emoji: '🍽️', key: 'What', wrong: ['Who', 'Where'] },
+      { en: 'Where are my shoes?', id: 'Di mana sepatuku?', emoji: '👟', key: 'Where', wrong: ['Who', 'What'] },
+      { en: 'Who is at the door?', id: 'Siapa yang ada di pintu?', emoji: '🚪', key: 'Who', wrong: ['Where', 'What'] },
+      { en: 'What is your favorite color?', id: 'Apa warna kesukaanmu?', emoji: '🎨', key: 'What', wrong: ['Who', 'Where'] },
+      { en: 'Where is the library?', id: 'Di mana perpustakaannya?', emoji: '📚', key: 'Where', wrong: ['Who', 'What'] },
     ],
-    scramble: [
-      { emoji: '👧', target: ['Who', 'is', 'that', 'girl'] },
-      { emoji: '👵', target: ['Where', 'is', 'your', 'grandmother'] },
-    ],
-    fill: {
-      before: ['She', 'is', 'my'],
-      after: [],
-      options: [
-        { word: 'sister', emoji: '👧' },
-        { word: 'aunt', emoji: '👩‍🦱' },
-        { word: 'cousin', emoji: '🧑' },
-      ],
-    },
   },
-  /**
-   * Topik ke-7 — "Would Like + Noun" (Starters kategori #20, "I would like
-   * some grapes. / Would you like to colour that ball?") — register
-   * permintaan SOPAN, beda dari `suka-tidak-suka` Starter (present simple
-   * OPINI "I like painting", bukan permintaan). Dipetakan dari domain
-   * Vocab `belanja-uang` (Shopping & Money) — konteks toko/kasir adalah
-   * panggung paling natural utk "would like" dlm bahasa Inggris anak
-   * (dialog klasik "May I help you? I would like..."), walau kata benda
-   * yg diminta (apel/roti/jus) bukan item vocab domain itu sendiri — pola
-   * yg SAMA dgn `prepositions-of-place` di atas (domain jadi PANGGUNG,
-   * bukan sumber kata harfiah). Kata benda dipilih TAK-TERHITUNG ("some
-   * X") di `fill` supaya opsi tidak perlu mengurus beda artikel a/an.
-   */
   {
     id: 'would-like',
     title: 'Meminta dengan Sopan (Would Like)',
-    desc: 'I Would Like...',
-    examples: [
-      { en: 'I would like an apple, please.', emoji: '🍎' },
-      { en: 'She would like some bread.', emoji: '🍞' },
-      { en: 'Would you like some juice?', emoji: '🧃' },
+    desc: 'I would like…',
+    sentences: [
+      { en: 'I would like an apple, please.', id: 'Aku ingin sebuah apel, ya.', emoji: '🍎', key: 'an', wrong: ['a', 'two'] },
+      { en: 'She would like some bread.', id: 'Dia ingin roti.', emoji: '🍞', key: 'like', wrong: ['likes', 'liking'] },
+      { en: 'Would you like some juice?', id: 'Kamu mau jus?', emoji: '🧃', key: 'like', wrong: ['likes', 'liking'] },
+      { en: 'I would like a sandwich.', id: 'Aku ingin sebuah roti lapis.', emoji: '🥪', key: 'a', wrong: ['an', 'two'] },
+      { en: 'We would like some water.', id: 'Kami ingin air.', emoji: '💧', key: 'like', wrong: ['likes', 'liking'] },
+      { en: 'They would like some ice cream.', id: 'Mereka ingin es krim.', emoji: '🍦', key: 'like', wrong: ['likes', 'liking'] },
+      { en: 'He would like an orange.', id: 'Dia ingin sebuah jeruk.', emoji: '🍊', key: 'an', wrong: ['a', 'two'] },
+      { en: 'Would you like a banana?', id: 'Kamu mau sebuah pisang?', emoji: '🍌', key: 'a', wrong: ['an', 'two'] },
+      { en: 'She would like a cup of tea.', id: 'Dia ingin secangkir teh.', emoji: '🍵', key: 'a', wrong: ['an', 'two'] },
+      { en: 'I would like some rice, please.', id: 'Aku ingin nasi, ya.', emoji: '🍚', key: 'like', wrong: ['likes', 'liking'] },
     ],
-    scramble: [
-      { emoji: '🍎', target: ['I', 'would', 'like', 'an', 'apple'] },
-      { emoji: '🍰', target: ['He', 'would', 'like', 'some', 'cake'] },
-    ],
-    fill: {
-      before: ['I', 'would', 'like', 'some'],
-      after: [],
-      options: [
-        { word: 'juice', emoji: '🧃' },
-        { word: 'bread', emoji: '🍞' },
-        { word: 'rice', emoji: '🍚' },
-      ],
-    },
   },
-  /**
-   * Topik ke-8 — "Let's..." (Starters kategori #17, "Let's go to the
-   * zoo!") — pola ajakan frekuensi tinggi, dipetakan dari domain Vocab
-   * `pesta-perayaan` (Celebrations) krn ajakan bersama paling natural
-   * muncul di konteks perayaan/pesta. `fill` SENGAJA berhenti di kata
-   * kerja polos ("Let's ___.") tanpa objek/tanda seru — alasan sama dgn
-   * `question-words` di atas: `runTantangan` selalu menambah "." di
-   * akhir, jadi template dijaga selalu berakhir wajar sbg pernyataan,
-   * bukan seruan bertanda ganda.
-   */
   {
     id: 'lets-suggestion',
-    title: "Ayo... (Let's...)",
-    desc: 'Mengajak Bersama',
-    examples: [
-      { en: "Let's sing a song!", emoji: '🎤' },
-      { en: "Let's eat the cake!", emoji: '🎂' },
-      { en: "Let's play a game!", emoji: '🎮' },
+    title: "Ayo Bersama (Let's...)",
+    desc: "Let's + kata kerja dasar",
+    sentences: [
+      { en: "Let's sing a song!", id: 'Ayo menyanyikan lagu!', emoji: '🎤', key: 'sing', wrong: ['sings', 'singing'] },
+      { en: "Let's eat the cake!", id: 'Ayo makan kuenya!', emoji: '🎂', key: 'eat', wrong: ['eats', 'eating'] },
+      { en: "Let's play a game!", id: 'Ayo bermain sebuah permainan!', emoji: '🎮', key: 'play', wrong: ['plays', 'playing'] },
+      { en: "Let's read a book!", id: 'Ayo membaca buku!', emoji: '📖', key: 'read', wrong: ['reads', 'reading'] },
+      { en: "Let's draw a picture!", id: 'Ayo menggambar!', emoji: '🎨', key: 'draw', wrong: ['draws', 'drawing'] },
+      { en: "Let's go to the park!", id: 'Ayo pergi ke taman!', emoji: '🌳', key: 'go', wrong: ['goes', 'going'] },
+      { en: "Let's clean the room!", id: 'Ayo membersihkan kamar!', emoji: '🧹', key: 'clean', wrong: ['cleans', 'cleaning'] },
+      { en: "Let's make a kite!", id: 'Ayo membuat layang-layang!', emoji: '🪁', key: 'make', wrong: ['makes', 'making'] },
+      { en: "Let's watch a movie!", id: 'Ayo menonton film!', emoji: '🎬', key: 'watch', wrong: ['watches', 'watching'] },
+      { en: "Let's ride our bikes!", id: 'Ayo naik sepeda kita!', emoji: '🚲', key: 'ride', wrong: ['rides', 'riding'] },
     ],
-    scramble: [
-      { emoji: '📖', target: ["Let's", 'read', 'a', 'book'] },
-      { emoji: '🎨', target: ["Let's", 'draw', 'a', 'picture'] },
-    ],
-    fill: {
-      before: ["Let's"],
-      after: [],
-      options: [
-        { word: 'sing', emoji: '🎤' },
-        { word: 'dance', emoji: '🎵' },
-        { word: 'run', emoji: '💨' },
-      ],
-    },
   },
-  /**
-   * Topik ke-9 (riset per-level lanjutan, `materi/grammar.md` §16) — "Can
-   * for Requests/Permission" (Cambridge Pre-A1 Starters kategori #8, kategori
-   * TERPISAH dari "Can for ability" kategori #7 yg sudah diklaim Little
-   * Stars `bisa-tidak-bisa` — fungsi pragmatiknya beda: MINTA IZIN, bukan
-   * menyatakan KEMAMPUAN, jadi genuinely bukan duplikat). Dipetakan dari
-   * domain Vocab `pesta-perayaan` (Celebrations) — konteks pesta paling
-   * natural utk minta izin ("Can I have some cake?", contoh resmi Cambridge
-   * sendiri). `fill` menguji separuh JAWABAN pemberian izin ("Yes, you can
-   * have a ___"), BUKAN pertanyaannya sendiri — pola sama `question-words`/
-   * `lets-suggestion` di atas krn `runTantangan` selalu menambah "." di
-   * akhir (kalimat tanya "Can I...?" tidak bisa jadi template fill tanpa
-   * tanda baca ganda). Pertanyaannya sendiri tetap dilatih penuh lewat
-   * `examples` (teks statis) & `scramble` (susun kata, tanpa tanda baca).
-   */
   {
     id: 'can-requests',
-    title: 'Minta Izin dengan Sopan (Can I...?)',
-    desc: 'Can I...? / Boleh Aku...?',
-    examples: [
-      { en: 'Can I have a balloon, please?', emoji: '🎈' },
-      { en: 'Can I play with the ball?', emoji: '⚽' },
-      { en: 'Can I have some cake, please?', emoji: '🎂' },
+    title: 'Minta Izin dengan Sopan (Can I…?)',
+    desc: 'Can I + kata kerja dasar?',
+    sentences: [
+      { en: 'Can I have a balloon, please?', id: 'Boleh aku minta sebuah balon?', emoji: '🎈', key: 'have', wrong: ['has', 'having'] },
+      { en: 'Can I play with the ball?', id: 'Boleh aku bermain dengan bola itu?', emoji: '⚽', key: 'play', wrong: ['plays', 'playing'] },
+      { en: 'Can I open the window?', id: 'Boleh aku membuka jendela?', emoji: '🪟', key: 'open', wrong: ['opens', 'opening'] },
+      { en: 'Can I borrow your pencil?', id: 'Boleh aku pinjam pensilmu?', emoji: '✏️', key: 'borrow', wrong: ['borrows', 'borrowing'] },
+      { en: 'Can I sit here?', id: 'Boleh aku duduk di sini?', emoji: '🪑', key: 'sit', wrong: ['sits', 'sitting'] },
+      { en: 'Can I go outside?', id: 'Boleh aku keluar?', emoji: '🚪', key: 'go', wrong: ['goes', 'going'] },
+      { en: 'Can I use your crayons?', id: 'Boleh aku memakai krayonmu?', emoji: '🖍️', key: 'use', wrong: ['uses', 'using'] },
+      { en: 'Can I drink some water?', id: 'Boleh aku minum air?', emoji: '💧', key: 'drink', wrong: ['drinks', 'drinking'] },
+      { en: 'Can I watch TV now?', id: 'Boleh aku menonton TV sekarang?', emoji: '📺', key: 'watch', wrong: ['watches', 'watching'] },
+      { en: 'Can I help you?', id: 'Boleh aku membantumu?', emoji: '🤝', key: 'help', wrong: ['helps', 'helping'] },
     ],
-    scramble: [
-      { emoji: '🪟', target: ['Can', 'I', 'open', 'the', 'window'] },
-      { emoji: '🐶', target: ['Can', 'I', 'hold', 'the', 'puppy'] },
-    ],
-    fill: {
-      before: ['Yes,', 'you', 'can', 'have', 'a'],
-      after: [],
-      options: [
-        { word: 'balloon', emoji: '🎈' },
-        { word: 'cookie', emoji: '🍪' },
-        { word: 'present', emoji: '🎁' },
-      ],
-    },
   },
-  /**
-   * Topik ke-10 — "Prepositions of Time" (Cambridge Pre-A1 Starters kategori
-   * #12, separuh WAKTU dari kategori yg sama dgn `prepositions-of-place`
-   * (separuh TEMPAT) di atas — Cambridge sendiri mendaftar keduanya sbg 1
-   * kategori, tapi app ini sudah pisah jadi 2 topik krn muatannya beda
-   * total (posisi statis benda vs waktu kejadian). Dipetakan dari domain
-   * Vocab `waktu-harian` (Times of Day, REUSE dari `present-continuous` di
-   * atas — emoji sama 🌅/🌇/🌙) — British Council LearnEnglish Kids py unit
-   * "Prepositions of time" berdiri sendiri persis dgn contoh "in the
-   * morning/evening"+"at night" yg sama, mengonfirmasi kategori ini genuinely
-   * dilatih terpisah dari preposisi tempat di usia ini.
-   */
   {
     id: 'prepositions-of-time',
-    title: 'Preposisi Waktu (In, At)',
-    desc: 'In the Morning / At Night',
-    examples: [
-      { en: 'We go to school in the morning.', emoji: '🌅' },
-      { en: 'I do my homework in the evening.', emoji: '🌇' },
-      { en: 'They go to sleep at night.', emoji: '🌙' },
+    title: 'Kapan Waktunya? (In, On, At)',
+    desc: 'in the morning, on Monday, at night',
+    sentences: [
+      { en: 'We go to school in the morning.', id: 'Kami pergi ke sekolah pada pagi hari.', emoji: '🌅', key: 'in', wrong: ['on', 'at'], alt: ['In the morning we go to school'] },
+      { en: 'I do my homework in the evening.', id: 'Aku mengerjakan PR pada sore hari.', emoji: '🌇', key: 'in', wrong: ['on', 'at'], alt: ['In the evening I do my homework'] },
+      { en: 'They go to sleep at night.', id: 'Mereka tidur pada malam hari.', emoji: '🌙', key: 'at', wrong: ['in', 'on'], alt: ['At night they go to sleep'] },
+      { en: 'I play football on Saturday.', id: 'Aku bermain sepak bola pada hari Sabtu.', emoji: '⚽', key: 'on', wrong: ['in', 'at'], alt: ['On Saturday I play football'] },
+      { en: "She eats lunch at twelve o'clock.", id: 'Dia makan siang pada pukul dua belas.', emoji: '🕛', key: 'at', wrong: ['in', 'on'], alt: ["At twelve o'clock she eats lunch"] },
+      { en: 'My birthday is in July.', id: 'Ulang tahunku pada bulan Juli.', emoji: '🎂', key: 'in', wrong: ['on', 'at'] },
+      { en: 'We have art class on Monday.', id: 'Kami ada kelas seni pada hari Senin.', emoji: '🎨', key: 'on', wrong: ['in', 'at'], alt: ['On Monday we have art class'] },
+      { en: "He wakes up at six o'clock.", id: 'Dia bangun pada pukul enam.', emoji: '⏰', key: 'at', wrong: ['in', 'on'], alt: ["At six o'clock he wakes up"] },
+      { en: 'It is hot in the afternoon.', id: 'Udaranya panas pada siang hari.', emoji: '☀️', key: 'in', wrong: ['on', 'at'], alt: ['In the afternoon it is hot'] },
+      { en: 'We go to the market on Sunday.', id: 'Kami pergi ke pasar pada hari Minggu.', emoji: '🛒', key: 'on', wrong: ['in', 'at'], alt: ['On Sunday we go to the market'] },
     ],
-    scramble: [
-      { emoji: '🍳', target: ['She', 'eats', 'breakfast', 'in', 'the', 'morning'] },
-      { emoji: '📺', target: ['He', 'watches', 'TV', 'in', 'the', 'evening'] },
-    ],
-    fill: {
-      before: ['I', 'like', 'to', 'read', 'books'],
-      after: [],
-      options: [
-        { word: 'in the morning', emoji: '🌅' },
-        { word: 'in the evening', emoji: '🌇' },
-        { word: 'at night', emoji: '🌙' },
-      ],
-    },
   },
 ];
 
@@ -7115,313 +7003,185 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
   },
 ];
 
-export const GRAMMAR_TOPICS_ADVENTURER: GrammarTopic[] = [
+/**
+ * Grammar Adventurer (9–11 th, Cambridge A1 Movers) — format KALIMAT
+ * (`GrammarSentenceTopic`). Pengecoh = bentuk kata yang salah di kalimat itu
+ * (Movers Part 6 "grammatical focus"): lampau vs dasar vs -ing, bigger vs
+ * big vs biggest, happily vs happy vs happiness, must + kata kerja dasar.
+ * Kalimat berketerangan waktu di depan diterima lewat `alt`.
+ */
+export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
   {
     id: 'simple-past',
     title: 'Kata Kerja Lampau (Simple Past)',
-    desc: 'Cerita kejadian kemarin',
-    examples: [
-      { en: 'I played football yesterday.', emoji: '⚽' },
-      { en: 'She watched a movie.', emoji: '🎬' },
-      { en: 'We visited grandma.', emoji: '👵' },
+    desc: 'Cerita kejadian kemarin (-ed)',
+    sentences: [
+      { en: 'I played football yesterday.', id: 'Aku bermain sepak bola kemarin.', emoji: '⚽', key: 'played', wrong: ['play', 'playing'], alt: ['Yesterday I played football'] },
+      { en: 'She watched a movie last night.', id: 'Dia menonton film tadi malam.', emoji: '🎬', key: 'watched', wrong: ['watch', 'watching'], alt: ['Last night she watched a movie'] },
+      { en: 'We visited the museum last week.', id: 'Kami mengunjungi museum minggu lalu.', emoji: '🏛️', key: 'visited', wrong: ['visit', 'visiting'], alt: ['Last week we visited the museum'] },
+      { en: 'He cleaned his room yesterday.', id: 'Dia membersihkan kamarnya kemarin.', emoji: '🧹', key: 'cleaned', wrong: ['clean', 'cleaning'], alt: ['Yesterday he cleaned his room'] },
+      { en: 'They cooked dinner last night.', id: 'Mereka memasak makan malam tadi malam.', emoji: '🍲', key: 'cooked', wrong: ['cook', 'cooking'], alt: ['Last night they cooked dinner'] },
+      { en: 'You painted a picture yesterday.', id: 'Kamu melukis sebuah gambar kemarin.', emoji: '🎨', key: 'painted', wrong: ['paint', 'painting'], alt: ['Yesterday you painted a picture'] },
+      { en: 'I washed my hands this morning.', id: 'Aku mencuci tangan tadi pagi.', emoji: '🧼', key: 'washed', wrong: ['wash', 'washing'], alt: ['This morning I washed my hands'] },
+      { en: 'She opened the window an hour ago.', id: 'Dia membuka jendela sejam yang lalu.', emoji: '🪟', key: 'opened', wrong: ['open', 'opening'], alt: ['An hour ago she opened the window'] },
+      { en: 'We walked to school yesterday.', id: 'Kami berjalan kaki ke sekolah kemarin.', emoji: '🏫', key: 'walked', wrong: ['walk', 'walking'], alt: ['Yesterday we walked to school'] },
+      { en: 'My dad fixed my bike yesterday.', id: 'Ayahku memperbaiki sepedaku kemarin.', emoji: '🚲', key: 'fixed', wrong: ['fix', 'fixing'], alt: ['Yesterday my dad fixed my bike'] },
     ],
-    scramble: [
-      { emoji: '🧹', target: ['He', 'cleaned', 'his', 'room'] },
-      { emoji: '🍲', target: ['They', 'cooked', 'dinner'] },
-      { emoji: '🎨', target: ['You', 'painted', 'a', 'picture'] },
-    ],
-    fill: {
-      before: ['Yesterday,', 'I'],
-      after: [],
-      options: [{ word: 'played', emoji: '⚽' }, { word: 'walked', emoji: '👣' }, { word: 'cooked', emoji: '🍳' }],
-    },
   },
-  /**
-   * Topik ke-2 (permintaan riset per-level, `materi/grammar.md` §9) —
-   * "Comparatives" (bigger/smaller/taller than) — struktur TERBESAR yang
-   * ditambahkan Cambridge A1 Movers di atas Starters (dikonfirmasi riset:
-   * Movers py comparative/superlative, have got/had to, past simple —
-   * `simple-past` di atas sudah menutup satu, ini menutup yang lain).
-   * Dipetakan dari `VOCAB_TOPICS_ADVENTURER` `binatang` (Animals) — ukuran
-   * hewan adalah domain comparative KLASIK yang dipakai Cambridge Movers
-   * sendiri di soal officialnya ("The elephant is bigger than the cat.").
-   */
   {
     id: 'comparatives',
-    title: 'Kata Sifat Perbandingan (Comparatives)',
-    desc: 'Bigger / Smaller / Taller Than',
-    examples: [
-      { en: 'The elephant is bigger than the monkey.', emoji: '⛰️' },
-      { en: 'The giraffe is taller than the zebra.', emoji: '📏' },
-      { en: 'The monkey is smaller than the lion.', emoji: '🐵' },
+    title: 'Lebih dari yang Lain (Comparatives)',
+    desc: 'bigger / taller / faster than',
+    sentences: [
+      { en: 'The lion is bigger than the monkey.', id: 'Singa lebih besar daripada monyet.', emoji: '🦁', key: 'bigger', wrong: ['big', 'biggest'] },
+      { en: 'My bag is heavier than your bag.', id: 'Tasku lebih berat daripada tasmu.', emoji: '🎒', key: 'heavier', wrong: ['heavy', 'heaviest'] },
+      { en: 'The bus is longer than the car.', id: 'Bus lebih panjang daripada mobil.', emoji: '🚌', key: 'longer', wrong: ['long', 'longest'] },
+      { en: 'The tiger is faster than the bear.', id: 'Harimau lebih cepat daripada beruang.', emoji: '🐯', key: 'faster', wrong: ['fast', 'fastest'] },
+      { en: 'This pencil is shorter than that pencil.', id: 'Pensil ini lebih pendek daripada pensil itu.', emoji: '✏️', key: 'shorter', wrong: ['short', 'shortest'] },
+      { en: 'Today is hotter than yesterday.', id: 'Hari ini lebih panas daripada kemarin.', emoji: '☀️', key: 'hotter', wrong: ['hot', 'hottest'] },
+      { en: 'The mouse is smaller than the cat.', id: 'Tikus lebih kecil daripada kucing.', emoji: '🐭', key: 'smaller', wrong: ['small', 'smallest'] },
+      { en: 'My brother is taller than me.', id: 'Saudara laki-lakiku lebih tinggi daripada aku.', emoji: '📏', key: 'taller', wrong: ['tall', 'tallest'] },
+      { en: 'The river is wider than the road.', id: 'Sungai itu lebih lebar daripada jalan.', emoji: '🏞️', key: 'wider', wrong: ['wide', 'widest'] },
+      { en: 'My new shoes are cleaner than my old shoes.', id: 'Sepatu baruku lebih bersih daripada sepatu lamaku.', emoji: '👟', key: 'cleaner', wrong: ['clean', 'cleanest'] },
     ],
-    scramble: [
-      { emoji: '🦁', target: ['The', 'lion', 'is', 'bigger', 'than', 'the', 'monkey'] },
-      { emoji: '🐻', target: ['The', 'bear', 'is', 'bigger', 'than', 'the', 'panda'] },
-    ],
-    fill: {
-      before: ['The', 'elephant', 'is', 'bigger', 'than', 'the'],
-      after: [],
-      options: [
-        { word: 'bear', emoji: '🐻' },
-        { word: 'panda', emoji: '🐼' },
-        { word: 'tiger', emoji: '🐯' },
-      ],
-    },
   },
-  /**
-   * 8 topik lanjutan (riset per-level, `materi/grammar.md` §17) — struktur
-   * Cambridge A1 Movers (Handbook for Teachers) di ATAS `simple-past`/
-   * `comparatives` yg sudah ada, dikonfirmasi Kurikulum Merdeka Fase C
-   * (kelas 5-6 SD, ≈usia Adventurer) yg secara eksplisit menyebut nama
-   * "Simple Past Tense" & "adjektiva komparatif DAN SUPERLATIF" sbg CP
-   * fase ini — superlative & irregular past jadi prioritas krn keduanya
-   * separuh struktur yg BELUM ditutup 2 topik lama (`simple-past` cuma
-   * verb reguler, `comparatives` cuma comparative). Modal `can` (ability)
-   * sudah diklaim Little Stars — modal Movers LAIN (`must`/`mustn't`,
-   * `could` bentuk lampau) genuinely struktur baru, dikonfirmasi British
-   * Council LearnEnglish Kids py unit "Modals: must and mustn't" berdiri
-   * sendiri di usia ini. `prepositions-of-movement` beda dari
-   * `prepositions-of-place`/`prepositions-of-time` Explorer (posisi/waktu
-   * STATIS) — Movers resmi menambah preposisi GERAKAN (into/over/across/
-   * through/dst) sbg kategori terpisah. Semua 8 dipetakan ke domain Vocab
-   * Adventurer yg BELUM dipakai topik Grammar lain (`binatang` REUSE dari
-   * `comparatives` sengaja, kelanjutan langsung; sisanya domain baru).
-   */
-  /**
-   * Topik ke-3 — "Superlatives" (Cambridge Movers, "Anna is my best
-   * friend.") — separuh SUPERLATIF dari kategori yg sama dgn
-   * `comparatives` (Cambridge sendiri mendaftar comparative+superlative
-   * sbg 1 kategori, app ini pisah jadi 2 topik krn muatannya beda cukup
-   * jauh utk anak). Dari domain `binatang`, REUSE PERSIS domain
-   * `comparatives` (kelanjutan langsung, bukan topik baru tanpa konteks).
-   */
   {
     id: 'superlatives',
-    title: 'Kata Sifat Superlatif (Superlatives)',
-    desc: 'The Biggest / The Fastest',
-    examples: [
-      { en: 'The elephant is the biggest animal.', emoji: '⛰️' },
-      { en: 'The cheetah is the fastest animal.', emoji: '🏎️' },
-      { en: 'The snail is the slowest animal.', emoji: '⏳' },
+    title: 'Paling dari Semua (Superlatives)',
+    desc: 'the biggest / the fastest',
+    sentences: [
+      { en: 'Rina is the tallest in our class.', id: 'Rina yang paling tinggi di kelas kami.', emoji: '📏', key: 'tallest', wrong: ['tall', 'taller'] },
+      { en: 'This box is the heaviest of all.', id: 'Kotak ini yang paling berat dari semuanya.', emoji: '📦', key: 'heaviest', wrong: ['heavy', 'heavier'] },
+      { en: 'The blue car is the fastest of all.', id: 'Mobil biru itu yang paling cepat dari semuanya.', emoji: '🚗', key: 'fastest', wrong: ['fast', 'faster'] },
+      { en: 'My pencil is the shortest in my bag.', id: 'Pensilku yang paling pendek di tasku.', emoji: '✏️', key: 'shortest', wrong: ['short', 'shorter'] },
+      { en: 'The whale is the biggest of all sea animals.', id: 'Paus yang paling besar dari semua hewan laut.', key: 'biggest', wrong: ['big', 'bigger'] },
+      { en: 'Budi is the youngest in his family.', id: 'Budi yang paling muda di keluarganya.', key: 'youngest', wrong: ['young', 'younger'] },
+      { en: 'This river is the longest in Indonesia.', id: 'Sungai ini yang paling panjang di Indonesia.', emoji: '🏞️', key: 'longest', wrong: ['long', 'longer'] },
+      { en: 'The mouse is the smallest of all the animals here.', id: 'Tikus yang paling kecil dari semua hewan di sini.', emoji: '🐭', key: 'smallest', wrong: ['small', 'smaller'] },
+      { en: 'That building is the highest in the city.', id: 'Gedung itu yang paling tinggi di kota.', emoji: '🏢', key: 'highest', wrong: ['high', 'higher'] },
+      { en: 'Maya is the oldest of the three children.', id: 'Maya yang paling tua dari tiga anak itu.', key: 'oldest', wrong: ['old', 'older'] },
     ],
-    scramble: [
-      { emoji: '📏', target: ['The', 'giraffe', 'is', 'the', 'tallest', 'animal'] },
-      { emoji: '🐭', target: ['The', 'ant', 'is', 'the', 'smallest', 'animal'] },
-    ],
-    fill: {
-      before: ['The', 'giraffe', 'is', 'the'],
-      after: ['animal', 'in', 'the', 'zoo'],
-      options: [
-        { word: 'tallest', emoji: '📏' },
-        { word: 'biggest', emoji: '⛰️' },
-        { word: 'smallest', emoji: '🐭' },
-      ],
-    },
   },
-  /**
-   * Topik ke-4 — "Irregular Past Simple" (Cambridge Movers, "past simple
-   * regular AND IRREGULAR forms") — separuh IRREGULAR yg belum ditutup
-   * `simple-past` (cuma verb reguler: played/watched/visited). Dari domain
-   * `kata-kerja-harian` — kata kerja umum sehari-hari natural memunculkan
-   * bentuk lampau tak-beraturan (go→went, eat→ate, see→saw, write→wrote).
-   */
   {
     id: 'past-simple-irregular',
-    title: 'Kata Kerja Lampau Tidak Beraturan (Irregular Past Simple)',
-    desc: 'Went, Ate, Saw, Wrote...',
-    examples: [
-      { en: 'I went to school yesterday.', emoji: '👣' },
-      { en: 'She ate breakfast this morning.', emoji: '🍳' },
-      { en: 'He saw a rabbit in the garden.', emoji: '🐰' },
+    title: 'Kata Kerja Lampau Tidak Beraturan (Irregular Past)',
+    desc: 'went, ate, saw, wrote…',
+    sentences: [
+      { en: 'I went to school yesterday.', id: 'Aku pergi ke sekolah kemarin.', emoji: '🏫', key: 'went', wrong: ['go', 'going'], alt: ['Yesterday I went to school'] },
+      { en: 'She ate breakfast this morning.', id: 'Dia sarapan tadi pagi.', emoji: '🍳', key: 'ate', wrong: ['eat', 'eating'], alt: ['This morning she ate breakfast'] },
+      { en: 'He saw a rainbow yesterday.', id: 'Dia melihat pelangi kemarin.', emoji: '🌈', key: 'saw', wrong: ['see', 'seeing'], alt: ['Yesterday he saw a rainbow'] },
+      { en: 'She wrote a letter last week.', id: 'Dia menulis surat minggu lalu.', emoji: '✉️', key: 'wrote', wrong: ['write', 'writing'], alt: ['Last week she wrote a letter'] },
+      { en: 'They ran to the park yesterday.', id: 'Mereka berlari ke taman kemarin.', emoji: '🌳', key: 'ran', wrong: ['run', 'running'], alt: ['Yesterday they ran to the park'] },
+      { en: 'We made a kite last Sunday.', id: 'Kami membuat layang-layang hari Minggu lalu.', emoji: '🪁', key: 'made', wrong: ['make', 'making'], alt: ['Last Sunday we made a kite'] },
+      { en: 'I drank some milk this morning.', id: 'Aku minum susu tadi pagi.', emoji: '🥛', key: 'drank', wrong: ['drink', 'drinking'], alt: ['This morning I drank some milk'] },
+      { en: 'He took a photo last weekend.', id: 'Dia mengambil foto akhir pekan lalu.', emoji: '📷', key: 'took', wrong: ['take', 'taking'], alt: ['Last weekend he took a photo'] },
+      { en: 'My mom bought a new bag yesterday.', id: 'Ibuku membeli tas baru kemarin.', emoji: '👜', key: 'bought', wrong: ['buy', 'buying'], alt: ['Yesterday my mom bought a new bag'] },
+      { en: 'We sang a song last night.', id: 'Kami menyanyikan lagu tadi malam.', emoji: '🎤', key: 'sang', wrong: ['sing', 'singing'], alt: ['Last night we sang a song'] },
     ],
-    scramble: [
-      { emoji: '✍️', target: ['She', 'wrote', 'a', 'letter', 'to', 'her', 'friend'] },
-      { emoji: '💨', target: ['They', 'ran', 'to', 'the', 'park'] },
-    ],
-    fill: {
-      before: ['Yesterday,', 'I'],
-      after: ['a', 'letter', 'to', 'my', 'grandma'],
-      options: [
-        { word: 'wrote', emoji: '✍️' },
-        { word: 'sent', emoji: '📮' },
-        { word: 'read', emoji: '📖' },
-      ],
-    },
   },
-  /**
-   * Topik ke-5 — "Could" (Cambridge Movers, modal lampau — "I could see
-   * some birds in the tree.") — perpanjangan bentuk LAMPAU dari `can`
-   * (kemampuan present, sudah diklaim Little Stars `bisa-tidak-bisa`),
-   * genuinely struktur baru bukan re-skin. Dari domain `olahraga`.
-   */
   {
     id: 'past-ability-could',
-    title: 'Bisa di Masa Lalu (Could)',
-    desc: 'Dulu Aku Bisa...',
-    examples: [
-      { en: 'I could swim when I was five.', emoji: '🌊' },
-      { en: 'She could run fast last year.', emoji: '💨' },
-      { en: 'He could catch the ball yesterday.', emoji: '⚾' },
+    title: 'Dulu Aku Bisa (Could)',
+    desc: 'could + kata kerja dasar',
+    sentences: [
+      { en: 'I could swim when I was five.', id: 'Aku sudah bisa berenang waktu umur lima tahun.', emoji: '🌊', key: 'could', wrong: ['can', 'will'], alt: ['When I was five I could swim'] },
+      { en: 'She could run fast last year.', id: 'Dia bisa berlari cepat tahun lalu.', emoji: '👟', key: 'run', wrong: ['ran', 'running'], alt: ['Last year she could run fast'] },
+      { en: 'He could catch the ball yesterday.', id: 'Dia bisa menangkap bola kemarin.', emoji: '⚾', key: 'catch', wrong: ['caught', 'catching'], alt: ['Yesterday he could catch the ball'] },
+      { en: 'We could see the stars last night.', id: 'Kami bisa melihat bintang tadi malam.', emoji: '⭐', key: 'see', wrong: ['saw', 'seeing'], alt: ['Last night we could see the stars'] },
+      { en: 'They could jump high last year.', id: 'Mereka bisa melompat tinggi tahun lalu.', key: 'jump', wrong: ['jumped', 'jumping'], alt: ['Last year they could jump high'] },
+      { en: 'My grandpa could climb trees when he was young.', id: 'Kakekku bisa memanjat pohon waktu dia masih muda.', emoji: '🌳', key: 'could', wrong: ['can', 'will'], alt: ['When he was young my grandpa could climb trees'] },
+      { en: "I couldn't open the jar yesterday.", id: 'Aku tidak bisa membuka toples itu kemarin.', emoji: '🫙', key: 'open', wrong: ['opened', 'opening'], alt: ["Yesterday I couldn't open the jar"] },
+      { en: 'She could read when she was four.', id: 'Dia sudah bisa membaca waktu umur empat tahun.', emoji: '📖', key: 'could', wrong: ['can', 'will'], alt: ['When she was four she could read'] },
+      { en: 'We could hear the music last night.', id: 'Kami bisa mendengar musiknya tadi malam.', emoji: '🎵', key: 'hear', wrong: ['heard', 'hearing'], alt: ['Last night we could hear the music'] },
+      { en: "He couldn't find his shoes this morning.", id: 'Dia tidak bisa menemukan sepatunya tadi pagi.', emoji: '👟', key: 'find', wrong: ['found', 'finding'], alt: ["This morning he couldn't find his shoes"] },
     ],
-    scramble: [
-      { emoji: '🎤', target: ['He', 'could', 'sing', 'very', 'well'] },
-      { emoji: '🐸', target: ['They', 'could', 'jump', 'high', 'last', 'summer'] },
-    ],
-    fill: {
-      before: ['Last', 'year', 'I', 'could'],
-      after: ['every', 'morning'],
-      options: [
-        { word: 'swim', emoji: '🌊' },
-        { word: 'run', emoji: '💨' },
-        { word: 'jump', emoji: '🐸' },
-      ],
-    },
   },
-  /**
-   * Topik ke-6 — "Must / Mustn't" (Cambridge Movers modal — "He must do
-   * his homework." / "You mustn't give the rabbit cheese.") — modal yg
-   * BELUM ada di curriculum manapun (Little Stars/Starter cuma py `can`).
-   * Dari domain `alat-sekolah`, dibingkai aturan kelas.
-   */
   {
     id: 'must-mustnt',
     title: "Harus & Tidak Boleh (Must / Mustn't)",
-    desc: 'Aturan di Kelas',
-    examples: [
-      { en: 'You must bring your pencil case.', emoji: '✏️' },
-      { en: 'You must bring your book to class.', emoji: '📚' },
-      { en: "You mustn't forget your ruler.", emoji: '📏' },
+    desc: 'must + kata kerja dasar',
+    sentences: [
+      { en: 'You must wear your uniform.', id: 'Kamu harus memakai seragammu.', emoji: '👕', key: 'wear', wrong: ['wears', 'wearing'] },
+      { en: "You mustn't run in the hallway.", id: 'Kamu tidak boleh berlari di lorong.', emoji: '🚫', key: 'run', wrong: ['runs', 'running'] },
+      { en: 'We must bring our books to class.', id: 'Kami harus membawa buku ke kelas.', emoji: '📚', key: 'bring', wrong: ['brings', 'bringing'] },
+      { en: 'You must listen to the teacher.', id: 'Kamu harus mendengarkan guru.', emoji: '👂', key: 'listen', wrong: ['listens', 'listening'] },
+      { en: "You mustn't eat in the library.", id: 'Kamu tidak boleh makan di perpustakaan.', emoji: '📚', key: 'eat', wrong: ['eats', 'eating'] },
+      { en: 'She must finish her homework.', id: 'Dia harus menyelesaikan PR-nya.', emoji: '📝', key: 'finish', wrong: ['finishes', 'finishing'] },
+      { en: "We mustn't shout in class.", id: 'Kami tidak boleh berteriak di kelas.', emoji: '🤫', key: 'shout', wrong: ['shouts', 'shouting'] },
+      { en: 'You must wash your hands before lunch.', id: 'Kamu harus mencuci tangan sebelum makan siang.', emoji: '🧼', key: 'wash', wrong: ['washes', 'washing'] },
+      { en: "He mustn't forget his ruler.", id: 'Dia tidak boleh lupa membawa penggarisnya.', emoji: '📏', key: 'forget', wrong: ['forgets', 'forgetting'] },
+      { en: 'We must keep the classroom clean.', id: 'Kami harus menjaga kelas tetap bersih.', emoji: '🧹', key: 'keep', wrong: ['keeps', 'keeping'] },
     ],
-    scramble: [
-      { emoji: '👕', target: ['You', 'must', 'wear', 'your', 'uniform'] },
-      { emoji: '💨', target: ["You", "mustn't", 'run', 'in', 'the', 'hallway'] },
-    ],
-    fill: {
-      before: ['In', 'class,', 'you', 'must', 'bring', 'your'],
-      after: [],
-      options: [
-        { word: 'pencil', emoji: '✏️' },
-        { word: 'ruler', emoji: '📏' },
-        { word: 'eraser', emoji: '🧽' },
-      ],
-    },
   },
-  /**
-   * Topik ke-7 — "Go + -ing" (Cambridge Movers, "I went riding on
-   * Saturday.") — pola idiomatik TERPISAH dari `like + -ing` (opini,
-   * sudah diklaim Starter `suka-tidak-suka`) — ini konstruksi tetap
-   * "pergi lalu beraktivitas". Dari domain `alam-lingkungan`.
-   */
   {
     id: 'go-plus-ing',
     title: 'Pergi Beraktivitas (Go + -ing)',
-    desc: 'Go Camping, Go Fishing',
-    examples: [
-      { en: 'We went camping in the mountains.', emoji: '⛺' },
-      { en: 'They went fishing by the river.', emoji: '🎣' },
-      { en: 'I went hiking in the forest.', emoji: '🥾' },
+    desc: 'go camping, go fishing',
+    sentences: [
+      { en: 'We went camping in the mountains.', id: 'Kami pergi berkemah di pegunungan.', emoji: '⛺', key: 'camping', wrong: ['camp', 'camped'] },
+      { en: 'They went fishing by the river.', id: 'Mereka pergi memancing di tepi sungai.', emoji: '🎣', key: 'fishing', wrong: ['fish', 'fished'] },
+      { en: 'I went hiking in the forest.', id: 'Aku pergi mendaki di hutan.', emoji: '🥾', key: 'hiking', wrong: ['hike', 'hiked'] },
+      { en: 'He went skating at the park.', id: 'Dia pergi bermain sepatu roda di taman.', emoji: '🛼', key: 'skating', wrong: ['skate', 'skated'] },
+      { en: 'She went swimming at the beach.', id: 'Dia pergi berenang di pantai.', emoji: '🌊', key: 'swimming', wrong: ['swim', 'swam'] },
+      { en: 'We go shopping every Saturday.', id: 'Kami pergi berbelanja setiap hari Sabtu.', emoji: '🛍️', key: 'shopping', wrong: ['shop', 'shopped'], alt: ['Every Saturday we go shopping'] },
+      { en: 'My family goes cycling on Sunday.', id: 'Keluargaku pergi bersepeda pada hari Minggu.', emoji: '🚲', key: 'cycling', wrong: ['cycle', 'cycled'], alt: ['On Sunday my family goes cycling'] },
+      { en: 'They went sailing on the lake.', id: 'Mereka pergi berlayar di danau.', emoji: '⛵', key: 'sailing', wrong: ['sail', 'sailed'] },
+      { en: 'Dad goes jogging every morning.', id: 'Ayah pergi joging setiap pagi.', emoji: '👟', key: 'jogging', wrong: ['jog', 'jogged'], alt: ['Every morning Dad goes jogging'] },
+      { en: 'We went bowling last weekend.', id: 'Kami pergi bermain bowling akhir pekan lalu.', emoji: '🎳', key: 'bowling', wrong: ['bowl', 'bowled'], alt: ['Last weekend we went bowling'] },
     ],
-    scramble: [
-      { emoji: '⛸️', target: ['He', 'went', 'skating', 'at', 'the', 'park'] },
-      { emoji: '🌊', target: ['She', 'went', 'swimming', 'at', 'the', 'beach'] },
-    ],
-    fill: {
-      before: ['Last', 'weekend,', 'we', 'went'],
-      after: ['near', 'the', 'lake'],
-      options: [
-        { word: 'fishing', emoji: '🎣' },
-        { word: 'swimming', emoji: '🌊' },
-        { word: 'camping', emoji: '⛺' },
-      ],
-    },
   },
-  /**
-   * Topik ke-8 — "Prepositions of Movement" (Cambridge Movers, kategori
-   * TERPISAH dari preposisi statis Starters — into/out of/over/across/
-   * through/dst) — beda total dari `prepositions-of-place`/`prepositions-
-   * of-time` Explorer (posisi/waktu STATIS). Dari domain `transportasi`.
-   */
   {
     id: 'prepositions-of-movement',
-    title: 'Preposisi Gerakan (Prepositions of Movement)',
-    desc: 'Over / Under / Across / Through',
-    examples: [
-      { en: 'The car drove under the bridge.', emoji: '🚗' },
-      { en: 'The plane flew over the mountain.', emoji: '✈️' },
-      { en: 'The train went through the tunnel.', emoji: '🚆' },
+    title: 'Bergerak ke Mana? (Prepositions of Movement)',
+    desc: 'over / under / through / across',
+    meaningNeeded: true,
+    sentences: [
+      { en: 'The car drove under the bridge.', id: 'Mobil itu melaju di bawah jembatan.', emoji: '🚗', key: 'under', wrong: ['over', 'into'] },
+      { en: 'The plane flew over the mountain.', id: 'Pesawat itu terbang melewati atas gunung.', emoji: '✈️', key: 'over', wrong: ['under', 'through'] },
+      { en: 'The train went through the tunnel.', id: 'Kereta itu melaju melewati bagian dalam terowongan.', emoji: '🚆', key: 'through', wrong: ['over', 'along'] },
+      { en: 'The ball rolled along the street.', id: 'Bola itu menggelinding menyusuri jalan.', emoji: '⚽', key: 'along', wrong: ['through', 'into'] },
+      { en: 'The kite flew across the sky.', id: 'Layang-layang itu terbang melintasi langit.', emoji: '🪁', key: 'across', wrong: ['into', 'under'] },
+      { en: 'The boat sailed across the river.', id: 'Perahu itu berlayar menyeberangi sungai.', emoji: '⛵', key: 'across', wrong: ['into', 'under'] },
+      { en: 'The ball fell into the water.', id: 'Bola itu jatuh masuk ke dalam air.', emoji: '💧', key: 'into', wrong: ['over', 'along'] },
+      { en: 'We walked through the park.', id: 'Kami berjalan melewati tengah taman.', emoji: '🌳', key: 'through', wrong: ['under', 'into'] },
+      { en: 'The bird flew over the house.', id: 'Burung itu terbang melewati atas rumah.', emoji: '🏠', key: 'over', wrong: ['through', 'along'] },
+      { en: 'The boy ran up the hill.', id: 'Anak laki-laki itu berlari naik ke atas bukit.', emoji: '⛰️', key: 'up', wrong: ['down', 'into'] },
     ],
-    scramble: [
-      { emoji: '⚽', target: ['The', 'ball', 'rolled', 'along', 'the', 'street'] },
-      { emoji: '🪁', target: ['The', 'kite', 'flew', 'across', 'the', 'sky'] },
-    ],
-    fill: {
-      before: ['The', 'boat', 'sailed'],
-      after: ['the', 'river'],
-      options: [
-        { word: 'across', emoji: '↔️' },
-        { word: 'along', emoji: '➡️' },
-        { word: 'down', emoji: '🔽' },
-      ],
-    },
   },
-  /**
-   * Topik ke-9 — "Adverbs of Manner" (Cambridge Movers kategori Adverbs,
-   * "He sang loudly.") — kelas struktur yg BELUM ada sama sekali di
-   * curriculum (bukan cuma belum di Adventurer). Dari domain `perasaan`
-   * (kata sifat perasaan → bentuk adverbianya: happy→happily, sad→sadly).
-   */
   {
     id: 'adverbs-of-manner',
-    title: 'Kata Keterangan Cara (Adverbs of Manner)',
-    desc: 'Happily, Slowly, Loudly',
-    examples: [
-      { en: 'She smiled happily.', emoji: '😊' },
-      { en: 'He shouted angrily.', emoji: '😠' },
-      { en: 'The boy cried sadly.', emoji: '😢' },
+    title: 'Bagaimana Caranya? (Adverbs of Manner)',
+    desc: 'happily, carefully, gently',
+    sentences: [
+      { en: 'She smiled happily.', id: 'Dia tersenyum dengan gembira.', emoji: '😊', key: 'happily', wrong: ['happy', 'happiness'] },
+      { en: 'He shouted angrily.', id: 'Dia berteriak dengan marah.', emoji: '😠', key: 'angrily', wrong: ['angry', 'anger'] },
+      { en: 'The boy cried sadly.', id: 'Anak laki-laki itu menangis dengan sedih.', emoji: '😢', key: 'sadly', wrong: ['sad', 'sadness'] },
+      { en: 'The girl sang beautifully.', id: 'Anak perempuan itu bernyanyi dengan indah.', emoji: '🎤', key: 'beautifully', wrong: ['beautiful', 'beauty'] },
+      { en: 'Please write carefully.', id: 'Tolong menulis dengan hati-hati.', emoji: '✏️', key: 'carefully', wrong: ['careful', 'care'] },
+      { en: 'The leaves fell gently.', id: 'Daun-daun itu jatuh dengan pelan.', emoji: '🍂', key: 'gently', wrong: ['gentle', 'gentleness'] },
+      { en: 'She solved the puzzle easily.', id: 'Dia menyelesaikan teka-teki itu dengan mudah.', emoji: '🧩', key: 'easily', wrong: ['easy', 'ease'] },
+      { en: 'The children laughed cheerfully.', id: 'Anak-anak itu tertawa dengan riang.', emoji: '😄', key: 'cheerfully', wrong: ['cheerful', 'cheer'] },
+      { en: 'She spoke softly.', id: 'Dia berbicara dengan lembut.', emoji: '🤫', key: 'softly', wrong: ['soft', 'softness'] },
+      { en: 'We waited patiently.', id: 'Kami menunggu dengan sabar.', emoji: '⏳', key: 'patiently', wrong: ['patient', 'patience'] },
     ],
-    scramble: [
-      { emoji: '🐱', target: ['The', 'cat', 'walked', 'quietly'] },
-      { emoji: '📢', target: ['The', 'girl', 'sang', 'loudly'] },
-    ],
-    fill: {
-      before: ['The', 'kitten', 'walked'],
-      after: ['across', 'the', 'room'],
-      options: [
-        { word: 'quietly', emoji: '🤫' },
-        { word: 'slowly', emoji: '⏳' },
-        { word: 'happily', emoji: '😊' },
-      ],
-    },
   },
-  /**
-   * Topik ke-10 — "Because" (Cambridge Movers kategori Conjunctions —
-   * because/so/but/or) — struktur penghubung sebab-akibat yg BELUM ada
-   * sama sekali di curriculum. Dari domain `cuaca` — pasangan sebab-akibat
-   * pakaian/tindakan↔cuaca paling natural utk anak.
-   */
   {
     id: 'because-reasons',
     title: 'Memberi Alasan (Because)',
-    desc: 'Karena Cuacanya...',
-    examples: [
-      { en: 'I wear a coat because it is cold.', emoji: '🧥' },
-      { en: 'We stay inside because it is raining.', emoji: '☔' },
-      { en: 'She wears sunglasses because it is sunny.', emoji: '🕶️' },
+    desc: 'Karena cuacanya…',
+    meaningNeeded: true,
+    sentences: [
+      { en: 'I wear a jacket because it is cold.', id: 'Aku memakai jaket karena udaranya dingin.', emoji: '🧥', key: 'because', wrong: ['so', 'but'], alt: ['Because it is cold I wear a jacket'] },
+      { en: 'We stay inside because it is raining.', id: 'Kami tetap di dalam karena sedang hujan.', emoji: '☔', key: 'because', wrong: ['so', 'but'], alt: ['Because it is raining we stay inside'] },
+      { en: 'She wears sunglasses because it is sunny.', id: 'Dia memakai kacamata hitam karena cuacanya cerah.', emoji: '🕶️', key: 'because', wrong: ['so', 'but'], alt: ['Because it is sunny she wears sunglasses'] },
+      { en: 'He turns on the fan because it is hot.', id: 'Dia menyalakan kipas karena udaranya panas.', emoji: '🌡️', key: 'because', wrong: ['so', 'but'], alt: ['Because it is hot he turns on the fan'] },
+      { en: 'He closes the window because it is windy.', id: 'Dia menutup jendela karena anginnya kencang.', emoji: '🌬️', key: 'because', wrong: ['so', 'but'], alt: ['Because it is windy he closes the window'] },
+      { en: 'I drink water because I am thirsty.', id: 'Aku minum air karena aku haus.', emoji: '💧', key: 'because', wrong: ['so', 'but'], alt: ['Because I am thirsty I drink water'] },
+      { en: 'She is happy because she has a new book.', id: 'Dia senang karena dia punya buku baru.', emoji: '📕', key: 'because', wrong: ['so', 'but'], alt: ['Because she has a new book she is happy'] },
+      { en: 'We take an umbrella because it is cloudy.', id: 'Kami membawa payung karena cuacanya mendung.', emoji: '☁️', key: 'because', wrong: ['so', 'but'], alt: ['Because it is cloudy we take an umbrella'] },
+      { en: 'I go to bed early because I am tired.', id: 'Aku tidur lebih awal karena aku lelah.', emoji: '🛏️', key: 'because', wrong: ['so', 'but'], alt: ['Because I am tired I go to bed early'] },
+      { en: 'He is eating because he is hungry.', id: 'Dia sedang makan karena dia lapar.', emoji: '🍽️', key: 'because', wrong: ['so', 'but'], alt: ['Because he is hungry he is eating'] },
     ],
-    scramble: [
-      { emoji: '🌡️', target: ['He', 'turns', 'on', 'the', 'fan', 'because', 'it', 'is', 'hot'] },
-      { emoji: '🌬️', target: ['He', 'closes', 'the', 'window', 'because', 'it', 'is', 'windy'] },
-    ],
-    fill: {
-      before: ['I', 'carry', 'an', 'umbrella', 'because', 'it', 'is'],
-      after: [],
-      options: [
-        { word: 'rainy', emoji: '🌧️' },
-        { word: 'cloudy', emoji: '☁️' },
-        { word: 'windy', emoji: '🌬️' },
-      ],
-    },
   },
 ];
 
@@ -17015,363 +16775,265 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
 ];
 
 /**
- * Grammar Achiever (11–13 th) — REUSE `GrammarTopic` LAMA (examples/scramble/
- * fill), BUKAN format baru — riset per-level (`materi/grammar.md` §9)
- * mengonfirmasi A2 Flyers (backbone Achiever) py struktur BARU "present
- * continuous VS present simple" (kontrasnya, bukan continuous doang) yang
- * masih terjawab dgn 3-bagian teks-first yang sama asal KONTENNYA dikurasi
- * sbg pasangan kontras (`examples` sengaja berpasang "every day"/"right now"
- * per aktivitas yang sama) — pola sama "Format C+ via konten, bukan mekanik
- * baru" yang sudah dipakai Achiever Reading. Dipetakan dari
- * `VOCAB_TOPICS_ACHIEVER` `kata-kerja-lanjutan` (Advanced Actions).
+ * Grammar Achiever (11–13 th, Cambridge A2 Flyers) — format KALIMAT
+ * (`GrammarSentenceTopic`). Tier Lanjut: arti Indonesia lewat 💡 Petunjuk
+ * (terkunci sampai 1x coba), 2 kata jebakan, jawaban baru ditunjukkan
+ * setelah 3x salah, dan `rule` 1 baris tampil di Kenalan.
  */
-export const GRAMMAR_TOPICS_ACHIEVER: GrammarTopic[] = [
+export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
   {
     id: 'continuous-vs-simple',
     title: 'Sedang vs Biasa Dilakukan (Present Continuous vs Simple)',
-    desc: 'Kontras -ing vs Sehari-hari',
-    examples: [
-      { en: 'I climb the tree every day.', emoji: '🪜' },
-      { en: 'I am climbing the tree right now.', emoji: '🪜' },
-      { en: 'She laughs at jokes every day.', emoji: '😂' },
-      { en: 'She is laughing right now.', emoji: '😂' },
+    desc: 'every day vs right now',
+    rule: 'Kebiasaan (every day) → kata kerja biasa (+s untuk he/she/it). Sedang terjadi (now) → am/is/are + -ing.',
+    sentences: [
+      { en: 'I climb the tree every day.', id: 'Aku memanjat pohon itu setiap hari.', emoji: '🌳', key: 'climb', wrong: ['climbing', 'climbs'], alt: ['Every day I climb the tree'] },
+      { en: 'I am climbing the tree right now.', id: 'Aku sedang memanjat pohon itu sekarang.', emoji: '🌳', key: 'climbing', wrong: ['climb', 'climbs'], alt: ['Right now I am climbing the tree'] },
+      { en: 'She laughs at jokes every day.', id: 'Dia tertawa mendengar lelucon setiap hari.', emoji: '😂', key: 'laughs', wrong: ['laugh', 'laughing'], alt: ['Every day she laughs at jokes'] },
+      { en: 'She is laughing right now.', id: 'Dia sedang tertawa sekarang.', emoji: '😂', key: 'laughing', wrong: ['laugh', 'laughs'], alt: ['Right now she is laughing'] },
+      { en: 'He reads the newspaper every morning.', id: 'Dia membaca koran setiap pagi.', emoji: '📰', key: 'reads', wrong: ['read', 'reading'], alt: ['Every morning he reads the newspaper'] },
+      { en: 'He is reading a comic now.', id: 'Dia sedang membaca komik sekarang.', emoji: '📖', key: 'reading', wrong: ['read', 'reads'], alt: ['Now he is reading a comic'] },
+      { en: 'We play badminton every Sunday.', id: 'Kami bermain bulu tangkis setiap hari Minggu.', emoji: '🏸', key: 'play', wrong: ['plays', 'playing'], alt: ['Every Sunday we play badminton'] },
+      { en: 'We are playing chess at the moment.', id: 'Kami sedang bermain catur saat ini.', emoji: '♟️', key: 'playing', wrong: ['play', 'plays'], alt: ['At the moment we are playing chess'] },
+      { en: 'My mom cooks dinner every evening.', id: 'Ibuku memasak makan malam setiap sore.', emoji: '🍲', key: 'cooks', wrong: ['cook', 'cooking'], alt: ['Every evening my mom cooks dinner'] },
+      { en: 'Look! It is raining now.', id: 'Lihat! Sekarang sedang hujan.', emoji: '🌧️', key: 'raining', wrong: ['rain', 'rains'] },
     ],
-    scramble: [
-      { emoji: '🐸', target: ['She', 'is', 'jumping', 'right', 'now'] },
-      { emoji: '📢', target: ['He', 'shouts', 'every', 'morning'] },
+    texts: [
+      { en: ['Rudi usually plays football on Saturday.', 'Today is different. Look at him!', 'He is swimming in the sea.'], id: 'Rudi biasanya bermain sepak bola hari Sabtu. Hari ini berbeda. Lihat dia! Dia sedang berenang di laut.', key: 'is swimming', wrong: ['swims', 'swam'], cue: 'Look at him' },
+      { en: ['Every morning is the same for my grandma.', 'Before breakfast, she waters her plants.'], id: 'Setiap pagi sama saja bagi nenekku. Sebelum sarapan, dia menyiram tanamannya.', key: 'waters', wrong: ['is watering', 'watered'], cue: 'Every morning' },
+      { en: ['Shh! Please be quiet.', 'Dad is sleeping on the sofa.'], id: 'Ssst! Tolong jangan berisik. Ayah sedang tidur di sofa.', key: 'is sleeping', wrong: ['sleeps', 'slept'], cue: 'Please be quiet' },
     ],
-    fill: {
-      before: ['Right', 'now', 'I', 'am'],
-      after: [],
-      options: [
-        { word: 'laughing', emoji: '😂' },
-        { word: 'crying', emoji: '😭' },
-        { word: 'whispering', emoji: '🤫' },
-      ],
-    },
   },
-  /**
-   * 10 topik lanjutan (riset per-level, `materi/grammar.md` §18) — struktur
-   * Cambridge A2 Flyers Handbook for Teachers (2018, tabel resmi hlm.80),
-   * diverifikasi LANGSUNG dari dokumen asli (bukan cuma ringkasan pihak
-   * ketiga) — semua struktur BARU yg ditambahkan Flyers di atas A1 Movers,
-   * di luar `continuous-vs-simple` yg sudah ada. Kurikulum Merdeka Fase D
-   * (CP resmi, diverifikasi via dokumen primer Kemendikbud, BUKAN cuma
-   * parafrase blog) mengonfirmasi "future tense" & konjungsi "because/so/
-   * when/but" sbg materi fase ini — mendukung `going-to-vs-will`/`so-result`
-   * — TAPI "passive voice"/"relative pronouns" yg sempat diduga (riset sesi
-   * sebelumnya) TERNYATA TIDAK ada di teks CP resmi Fase D, jadi relative
-   * clauses & full passive voice SENGAJA TIDAK dipakai sesi ini (dicatat
-   * sbg kandidat masa depan, bukan lupa — beda dari `made-of` yg memang ADA
-   * di tabel resmi Flyers sbg chunk pasif terbatas). Modal `must/mustn't`
-   * (juga muncul di tabel Flyers) SENGAJA DILEWATI krn sudah diklaim
-   * Adventurer — `should`/`could`(saran)/`might` yg dipilih di sini semua
-   * genuinely BELUM ada di level manapun. `could` di sini bermakna SARAN
-   * ("You could try..."), sengaja beda makna dari `past-ability-could`
-   * Adventurer (kemampuan lampau) — Cambridge sendiri mendaftar 2 makna
-   * `could` sbg entri terpisah di tabelnya.
-   */
-  /**
-   * Topik ke-2 — "Past Continuous" (Cambridge Flyers, "I was walking down
-   * the road when I saw her.") — BEDA dari `present-continuous` Explorer
-   * (present) & `continuous-vs-simple` di atas (kontras present). Dari
-   * domain `tempat-di-kota` (Places in Town).
-   */
   {
     id: 'past-continuous',
     title: 'Sedang Terjadi di Masa Lalu (Past Continuous)',
-    desc: 'Was/Were + -ing',
-    examples: [
-      { en: 'I was walking to the bank when it started to rain.', emoji: '🏦' },
-      { en: 'She was shopping at the supermarket when she saw her teacher.', emoji: '🏬' },
-      { en: 'We were watching a movie at the cinema when the lights went out.', emoji: '🎬' },
+    desc: 'was/were + -ing',
+    rule: 'Sedang berlangsung di masa lalu → was (I/he/she/it) atau were (you/we/they) + -ing.',
+    sentences: [
+      { en: 'I was walking to the library when it started to rain.', id: 'Aku sedang berjalan ke perpustakaan ketika hujan mulai turun.', emoji: '🌧️', key: 'was', wrong: ['were', 'am'], alt: ['When it started to rain I was walking to the library'] },
+      { en: 'She was shopping at the supermarket when she saw her teacher.', id: 'Dia sedang berbelanja di supermarket ketika dia melihat gurunya.', emoji: '🛒', key: 'shopping', wrong: ['shop', 'shops'], alt: ['When she saw her teacher she was shopping at the supermarket'] },
+      { en: 'We were watching a movie when the lights went out.', id: 'Kami sedang menonton film ketika lampunya padam.', emoji: '🎬', key: 'were', wrong: ['was', 'are'], alt: ['When the lights went out we were watching a movie'] },
+      { en: "They were playing football at four o'clock yesterday.", id: 'Mereka sedang bermain sepak bola pukul empat kemarin.', emoji: '⚽', key: 'were', wrong: ['was', 'are'], alt: ["At four o'clock yesterday they were playing football"] },
+      { en: 'He was sleeping when the phone rang.', id: 'Dia sedang tidur ketika telepon berdering.', emoji: '📱', key: 'sleeping', wrong: ['sleep', 'sleeps'], alt: ['When the phone rang he was sleeping'] },
+      { en: "My dad was cooking dinner at seven o'clock.", id: 'Ayahku sedang memasak makan malam pukul tujuh.', emoji: '🍲', key: 'was', wrong: ['were', 'is'], alt: ["At seven o'clock my dad was cooking dinner"] },
+      { en: 'You were reading a book when I called you.', id: 'Kamu sedang membaca buku ketika aku meneleponmu.', emoji: '📖', key: 'were', wrong: ['was', 'is'], alt: ['When I called you you were reading a book'] },
+      { en: 'It was raining when we left school.', id: 'Sedang hujan ketika kami pulang sekolah.', emoji: '☔', key: 'raining', wrong: ['rain', 'rains'], alt: ['When we left school it was raining'] },
+      { en: 'The children were singing when the teacher came in.', id: 'Anak-anak sedang bernyanyi ketika guru masuk.', emoji: '🎤', key: 'were', wrong: ['was', 'is'], alt: ['When the teacher came in the children were singing'] },
+      { en: "I was doing my homework at eight o'clock last night.", id: 'Aku sedang mengerjakan PR pukul delapan tadi malam.', emoji: '📝', key: 'doing', wrong: ['do', 'did'], alt: ["At eight o'clock last night I was doing my homework"] },
     ],
-    scramble: [
-      { emoji: '🏦', target: ['I', 'was', 'walking', 'to', 'the', 'bank'] },
-      { emoji: '🎬', target: ['We', 'were', 'watching', 'a', 'movie'] },
+    texts: [
+      { en: ['Yesterday at seven o\'clock, everyone at home was busy.', 'Mom was cooking dinner.', 'My brothers were doing their homework.'], id: 'Kemarin pukul tujuh, semua orang di rumah sibuk. Ibu sedang memasak makan malam. Saudara-saudara laki-lakiku sedang mengerjakan PR mereka.', key: 'were doing', wrong: ['are doing', 'do'], cue: 'Yesterday at seven o\'clock' },
+      { en: ['Last night the lights suddenly went out.', 'My sister and I were watching a movie.'], id: 'Tadi malam lampu tiba-tiba padam. Aku dan saudara perempuanku sedang menonton film.', key: 'were watching', wrong: ['are watching', 'watch'], cue: 'Last night' },
+      { en: ['It was a rainy afternoon last Sunday.', 'The children were playing board games in the living room.'], id: 'Hari Minggu lalu, sore itu hujan. Anak-anak sedang bermain permainan papan di ruang keluarga.', key: 'were playing', wrong: ['are playing', 'play'], cue: 'last Sunday' },
     ],
-    fill: {
-      before: ['I', 'was', 'walking', 'to', 'the'],
-      after: ['when', 'it', 'started', 'to', 'rain'],
-      options: [
-        { word: 'library', emoji: '📚' },
-        { word: 'stadium', emoji: '🏟️' },
-        { word: 'airport', emoji: '✈️' },
-      ],
-    },
   },
-  /**
-   * Topik ke-3 — "Present Perfect" (Cambridge Flyers, "Have you ever been
-   * to the circus?") — struktur BARU sepenuhnya, belum ada di level
-   * manapun. Dari domain `hiburan-waktu-luang` (Leisure & Entertainment).
-   */
   {
     id: 'present-perfect',
     title: 'Pernah atau Belum? (Present Perfect)',
-    desc: "Have/Has + Kata Kerja ke-3",
-    examples: [
-      { en: 'I have never played chess.', emoji: '♟️' },
-      { en: 'She has already watched a play at the theater.', emoji: '🎭' },
-      { en: 'Have you ever ridden a roller coaster at the amusement park?', emoji: '🎡' },
+    desc: 'have/has + kata kerja bentuk ke-3',
+    rule: 'Pengalaman/sudah terjadi → have (I/you/we/they) atau has (he/she/it) + kata kerja bentuk ke-3 (eaten, seen, been).',
+    sentences: [
+      { en: 'I have never played chess.', id: 'Aku belum pernah bermain catur.', emoji: '♟️', key: 'have', wrong: ['has', 'am'] },
+      { en: 'She has already watched that movie.', id: 'Dia sudah menonton film itu.', emoji: '🎬', key: 'has', wrong: ['have', 'is'] },
+      { en: 'He has never eaten sushi.', id: 'Dia belum pernah makan sushi.', emoji: '🍣', key: 'eaten', wrong: ['eat', 'ate'] },
+      { en: 'Have you ever ridden a horse?', id: 'Apakah kamu pernah naik kuda?', emoji: '🐴', key: 'ridden', wrong: ['ride', 'rode'] },
+      { en: 'We have seen that play at the theater.', id: 'Kami sudah menonton drama itu di teater.', emoji: '🎭', key: 'seen', wrong: ['see', 'saw'] },
+      { en: 'They have just finished their project.', id: 'Mereka baru saja menyelesaikan proyek mereka.', emoji: '📝', key: 'have', wrong: ['has', 'is'] },
+      { en: 'I have written three stories this year.', id: 'Aku sudah menulis tiga cerita tahun ini.', emoji: '✍️', key: 'written', wrong: ['write', 'wrote'], alt: ['This year I have written three stories'] },
+      { en: 'She has been to Bali twice.', id: 'Dia sudah pernah ke Bali dua kali.', emoji: '🏝️', key: 'been', wrong: ['be', 'was'] },
+      { en: 'My dad has taken many photos.', id: 'Ayahku sudah mengambil banyak foto.', emoji: '📷', key: 'taken', wrong: ['take', 'took'] },
+      { en: 'Have you ever flown in a plane?', id: 'Apakah kamu pernah naik pesawat?', emoji: '✈️', key: 'flown', wrong: ['fly', 'flew'] },
     ],
-    scramble: [
-      { emoji: '🍣', target: ['He', 'has', 'never', 'eaten', 'sushi'] },
-      { emoji: '🎭', target: ['She', 'has', 'already', 'watched', 'a', 'play'] },
+    texts: [
+      { en: ['Rina: Have you ever been to Bali?', 'Budi: Yes, I have been there twice.'], id: 'Rina: Kamu pernah ke Bali? Budi: Ya, aku sudah pernah ke sana dua kali.', key: 'have been', wrong: ['am', 'will be'], cue: 'Have you ever been' },
+      { en: ['Dad: Have you finished your homework?', 'Sari: Yes, I have finished it.'], id: 'Ayah: Kamu sudah menyelesaikan PR-mu? Sari: Ya, aku sudah menyelesaikannya.', key: 'have finished', wrong: ['will finish', 'am finishing'], cue: 'Have you finished' },
+      { en: ['Mom: Has your brother eaten lunch?', 'Tia: Yes, he has eaten it already.'], id: 'Ibu: Saudara laki-lakimu sudah makan siang? Tia: Ya, dia sudah memakannya.', key: 'has eaten', wrong: ['is eating', 'will eat'], cue: 'Has your brother eaten' },
     ],
-    fill: {
-      before: ['I', 'have', 'never', 'played'],
-      after: [],
-      options: [
-        { word: 'tennis', emoji: '🎾' },
-        { word: 'basketball', emoji: '🏀' },
-        { word: 'badminton', emoji: '🏸' },
-      ],
-    },
   },
-  /**
-   * Topik ke-4 — "Going To vs Will" (Cambridge Flyers, "be going to" &
-   * "will" KEDUANYA struktur baru) — dual-sourced, Kurikulum Merdeka Fase D
-   * eksplisit menyebut "future tense" sbg materi fase ini. BUKAN duplikat
-   * `go-plus-ing` Adventurer (idiom "pergi lalu beraktivitas", struktur
-   * beda total). Dari domain `mata-pelajaran` (School Subjects). Scramble
-   * SENGAJA menyertakan SATU contoh tiap bentuk (going-to DAN will) —
-   * pola sama `continuous-vs-simple` di atas yg scramble-nya jg mewakili
-   * kedua sisi kontras, bukan cuma satu.
-   */
   {
     id: 'going-to-vs-will',
     title: 'Rencana vs Keputusan Mendadak (Going To vs Will)',
-    desc: 'Kontras Going To vs Will',
-    examples: [
-      { en: 'I am going to study Math after school.', emoji: '🔢' },
-      { en: 'She will help her friend with Science homework.', emoji: '🔬' },
-      { en: 'We are going to have an English test tomorrow.', emoji: '🇬🇧' },
+    desc: 'going to + rencana, will + keputusan saat itu',
+    rule: 'Sudah direncanakan → am/is/are going to + kata kerja dasar. Baru memutuskan saat itu → will + kata kerja dasar.',
+    sentences: [
+      { en: 'I am going to study Math after school.', id: 'Aku akan belajar Matematika sepulang sekolah (sudah direncanakan).', emoji: '🔢', key: 'going', wrong: ['will', 'go'], alt: ['After school I am going to study Math'] },
+      { en: 'The phone is ringing. I will answer it.', id: 'Teleponnya berdering. Aku akan mengangkatnya.', emoji: '📱', key: 'will', wrong: ['am', 'going'] },
+      { en: 'We are going to have an English test tomorrow.', id: 'Kami akan ada ujian Bahasa Inggris besok.', emoji: '📝', key: 'going', wrong: ['will', 'go'], alt: ['Tomorrow we are going to have an English test'] },
+      { en: 'It is very hot. I will open the window.', id: 'Panas sekali. Aku akan membuka jendela.', emoji: '🪟', key: 'will', wrong: ['am', 'going'] },
+      { en: 'She is going to visit her aunt this weekend.', id: 'Dia akan mengunjungi bibinya akhir pekan ini.', emoji: '🚗', key: 'going', wrong: ['will', 'go'], alt: ['This weekend she is going to visit her aunt'] },
+      { en: 'You look tired. I will carry your bag.', id: 'Kamu kelihatan lelah. Aku akan membawakan tasmu.', emoji: '🎒', key: 'will', wrong: ['am', 'going'] },
+      { en: 'They are going to build a sandcastle at the beach.', id: 'Mereka akan membuat istana pasir di pantai.', emoji: '🏖️', key: 'going', wrong: ['will', 'go'] },
+      { en: 'It is starting to rain. I will close the door.', id: 'Mulai hujan. Aku akan menutup pintu.', emoji: '🚪', key: 'will', wrong: ['am', 'going'] },
+      { en: 'He is going to join the art club next month.', id: 'Dia akan bergabung dengan klub seni bulan depan.', emoji: '🎨', key: 'going', wrong: ['will', 'go'], alt: ['Next month he is going to join the art club'] },
+      { en: 'The box looks heavy. I will help you.', id: 'Kotaknya kelihatan berat. Aku akan membantumu.', emoji: '📦', key: 'will', wrong: ['am', 'going'] },
     ],
-    scramble: [
-      { emoji: '🔢', target: ['I', 'am', 'going', 'to', 'study', 'Math'] },
-      { emoji: '🔬', target: ['She', 'will', 'help', 'her', 'friend'] },
+    texts: [
+      { en: ['Sari bought train tickets for next Saturday.', 'On that day, she is going to visit her grandma.'], id: 'Sari membeli tiket kereta untuk hari Sabtu depan. Hari itu, dia akan mengunjungi neneknya.', key: 'is going to visit', wrong: ['visited', 'was visiting'], cue: 'next Saturday' },
+      { en: ['Next month is our school\'s art festival.', 'Our class is going to make a big painting of our city.'], id: 'Bulan depan ada festival seni di sekolah kami. Kelas kami akan membuat lukisan besar tentang kota kami.', key: 'is going to make', wrong: ['made', 'was making'], cue: 'Next month' },
+      { en: ['My uncle already has a plan for his holiday next year.', 'He is going to climb Mount Bromo with his friends.'], id: 'Pamanku sudah punya rencana untuk liburannya tahun depan. Dia akan mendaki Gunung Bromo bersama teman-temannya.', key: 'is going to climb', wrong: ['climbed', 'was climbing'], cue: 'next year' },
     ],
-    fill: {
-      before: ['I', 'am', 'going', 'to', 'study'],
-      after: ['after', 'school'],
-      options: [
-        { word: 'art', emoji: '🎨' },
-        { word: 'science', emoji: '🔬' },
-        { word: 'history', emoji: '📜' },
-      ],
-    },
   },
-  /**
-   * Topik ke-5 — "Should vs Could (saran)" (Cambridge Flyers, "should" BARU
-   * + "could" bermakna SARAN — Cambridge mendaftar makna ini TERPISAH dari
-   * "could" kemampuan lampau, jadi BUKAN duplikat `past-ability-could`
-   * Adventurer walau kata sama). Dari domain `teknologi-internet`
-   * (perangkat saja, tanpa medsos, konsisten batasan Vocab domain ini).
-   */
   {
     id: 'should-vs-could',
     title: 'Saran & Pilihan (Should vs Could)',
-    desc: 'Kontras Should vs Could',
-    examples: [
-      { en: 'You should charge your computer before school.', emoji: '💻' },
-      { en: 'You could try a new password for your email.', emoji: '🔑' },
-      { en: 'You should not look at the screen for too long.', emoji: '🖥️' },
+    desc: 'should/could + kata kerja dasar',
+    rule: 'should = sebaiknya (saran), could = bisa juga (pilihan). Sesudahnya selalu kata kerja dasar.',
+    sentences: [
+      { en: 'You should charge your phone before school.', id: 'Sebaiknya kamu mengisi daya ponselmu sebelum sekolah.', emoji: '📱', key: 'charge', wrong: ['charges', 'charging'] },
+      { en: 'You could try a new password.', id: 'Kamu bisa mencoba kata sandi baru.', emoji: '🔑', key: 'try', wrong: ['tries', 'trying'] },
+      { en: 'You should not look at the screen for too long.', id: 'Sebaiknya kamu tidak melihat layar terlalu lama.', emoji: '🖥️', key: 'look', wrong: ['looks', 'looking'] },
+      { en: 'We could watch a video about volcanoes.', id: 'Kita bisa menonton video tentang gunung berapi.', emoji: '🌋', key: 'watch', wrong: ['watches', 'watching'] },
+      { en: 'He should ask his teacher for help.', id: 'Sebaiknya dia meminta bantuan gurunya.', emoji: '🙋', key: 'ask', wrong: ['asks', 'asking'] },
+      { en: 'You could use a dictionary app.', id: 'Kamu bisa memakai aplikasi kamus.', emoji: '📖', key: 'use', wrong: ['uses', 'using'] },
+      { en: 'She should go to bed early tonight.', id: 'Sebaiknya dia tidur lebih awal malam ini.', emoji: '🛏️', key: 'go', wrong: ['goes', 'going'] },
+      { en: 'We could meet at the library after school.', id: 'Kita bisa bertemu di perpustakaan sepulang sekolah.', emoji: '📚', key: 'meet', wrong: ['meets', 'meeting'], alt: ['After school we could meet at the library'] },
+      { en: 'You should turn off the computer when you finish.', id: 'Sebaiknya kamu mematikan komputer kalau sudah selesai.', emoji: '💻', key: 'turn', wrong: ['turns', 'turning'], alt: ['When you finish you should turn off the computer'] },
+      { en: 'They could send the photo by email.', id: 'Mereka bisa mengirim fotonya lewat email.', emoji: '📧', key: 'send', wrong: ['sends', 'sending'] },
     ],
-    scramble: [
-      { emoji: '💻', target: ['You', 'should', 'charge', 'your', 'computer'] },
-      { emoji: '🔑', target: ['You', 'could', 'try', 'a', 'new', 'password'] },
+    texts: [
+      { en: ['You have a big test tomorrow.', 'You should go to bed early tonight.'], id: 'Besok kamu ada ujian besar. Sebaiknya kamu tidur lebih awal malam ini.', key: 'should', wrong: ['shouldn\'t', 'mustn\'t'], cue: 'a big test tomorrow' },
+      { en: ['Your eyes look red and tired.', 'You shouldn\'t play games on your phone for so long.'], id: 'Matamu kelihatan merah dan lelah. Sebaiknya kamu tidak bermain game di ponsel terlalu lama.', key: 'shouldn\'t', wrong: ['should', 'must'], cue: 'red and tired' },
+      { en: ['The library is closed today, but you need a book for your project.', 'You could borrow one from Rina.'], id: 'Perpustakaan tutup hari ini, padahal kamu butuh buku untuk proyekmu. Kamu bisa meminjam satu dari Rina.', key: 'could', wrong: ['mustn\'t', 'shouldn\'t'], cue: 'library is closed' },
     ],
-    fill: {
-      before: ['You', 'should', 'charge', 'your'],
-      after: ['before', 'school'],
-      options: [
-        { word: 'watch', emoji: '⌚' },
-        { word: 'phone', emoji: '📱' },
-        { word: 'camera', emoji: '📷' },
-      ],
-    },
   },
-  /**
-   * Topik ke-6 — "Might for Possibility" (Cambridge Flyers, "Vicky might
-   * come to the party.") — struktur BARU, belum ada di level manapun.
-   * Dari domain `arah-posisi` (Directions & Position) — "might be
-   * [posisi]" natural utk menebak lokasi.
-   */
   {
     id: 'might-possibility',
-    title: 'Mungkin Saja (Might for Possibility)',
-    desc: 'Modal Might',
-    examples: [
-      { en: 'My keys might be behind the sofa.', emoji: '🛋️' },
-      { en: 'The bakery might be near the corner.', emoji: '📐' },
-      { en: 'She might turn left at the next street.', emoji: '⬅️' },
+    title: 'Mungkin Saja (Might)',
+    desc: 'might + kata kerja dasar',
+    rule: 'Belum pasti → might + kata kerja dasar (might be, might go, might rain).',
+    sentences: [
+      { en: 'My keys might be behind the sofa.', id: 'Kunciku mungkin ada di belakang sofa.', emoji: '🛋️', key: 'be', wrong: ['is', 'are'] },
+      { en: 'The bakery might be near the corner.', id: 'Toko roti itu mungkin ada di dekat tikungan.', emoji: '🥐', key: 'be', wrong: ['is', 'are'] },
+      { en: 'She might turn left at the next street.', id: 'Dia mungkin belok kiri di jalan berikutnya.', emoji: '⬅️', key: 'turn', wrong: ['turns', 'turning'] },
+      { en: 'The remote might be under the cushion.', id: 'Remotnya mungkin ada di bawah bantal kursi.', emoji: '📺', key: 'be', wrong: ['is', 'are'] },
+      { en: 'It might rain this afternoon.', id: 'Mungkin hujan siang ini.', emoji: '🌧️', key: 'rain', wrong: ['rains', 'raining'], alt: ['This afternoon it might rain'] },
+      { en: 'We might go to the museum on Saturday.', id: 'Kami mungkin pergi ke museum hari Sabtu.', emoji: '🏛️', key: 'go', wrong: ['goes', 'going'], alt: ['On Saturday we might go to the museum'] },
+      { en: 'He might be late for school.', id: 'Dia mungkin terlambat ke sekolah.', emoji: '⏰', key: 'be', wrong: ['is', 'are'] },
+      { en: 'They might visit us next week.', id: 'Mereka mungkin mengunjungi kami minggu depan.', emoji: '🏠', key: 'visit', wrong: ['visits', 'visiting'], alt: ['Next week they might visit us'] },
+      { en: 'The library might close early today.', id: 'Perpustakaan mungkin tutup lebih awal hari ini.', emoji: '📚', key: 'close', wrong: ['closes', 'closing'], alt: ['Today the library might close early'] },
+      { en: 'I might join the drawing contest.', id: 'Aku mungkin ikut lomba menggambar.', emoji: '🎨', key: 'join', wrong: ['joins', 'joining'] },
     ],
-    scramble: [
-      { emoji: '📺', target: ['The', 'remote', 'might', 'be', 'under', 'the', 'couch'] },
-      { emoji: '⬅️', target: ['She', 'might', 'turn', 'left'] },
+    texts: [
+      { en: ['I\'m not sure where my keys are.', 'They might be in my bag.'], id: 'Aku tidak yakin di mana kunciku. Mungkin ada di tasku.', key: 'might be', wrong: ['are', 'were'], cue: 'not sure' },
+      { en: ['The sky is a little grey, but the weather report didn\'t say anything.', 'It might rain later.'], id: 'Langitnya agak kelabu, tapi ramalan cuaca tidak bilang apa-apa. Mungkin nanti hujan.', key: 'might rain', wrong: ['rained', 'rains'], cue: 'a little grey' },
+      { en: ['Budi hasn\'t decided about the weekend yet.', 'He might go to the beach with his cousins.'], id: 'Budi belum memutuskan rencana akhir pekannya. Dia mungkin pergi ke pantai bersama sepupunya.', key: 'might go', wrong: ['went', 'goes'], cue: 'hasn\'t decided' },
     ],
-    fill: {
-      before: ['She', 'might', 'turn'],
-      after: ['at', 'the', 'corner'],
-      options: [
-        { word: 'left', emoji: '⬅️' },
-        { word: 'right', emoji: '➡️' },
-        { word: 'around', emoji: '🔄' },
-      ],
-    },
   },
-  /**
-   * Topik ke-7 — "Conjunction So" (Cambridge Flyers kategori Conjunctions —
-   * "so") — dual-sourced, Kurikulum Merdeka Fase D py set konjungsi
-   * because/so/when/but; `because-reasons` sudah diklaim Adventurer, "so"
-   * (akibat, arah sebaliknya dari "because") masih kosong. Dari domain
-   * `sifat-kepribadian` (Personality Traits) — sifat→akibat sosial paling
-   * natural dirangkai "so".
-   */
   {
     id: 'so-result',
-    title: 'Jadi, Akibatnya... (Conjunction So)',
-    desc: 'Sebab-Akibat dengan So',
-    examples: [
-      { en: 'Dio is very kind, so everyone likes him.', emoji: '🤗' },
-      { en: 'She is very funny, so her friends laugh a lot.', emoji: '😂' },
-      { en: 'He is very honest, so people trust him.', emoji: '🤝' },
+    title: 'Jadi, Akibatnya... (So)',
+    desc: 'Sebab, so + akibat',
+    rule: 'so = jadi/sehingga (menunjukkan akibat). because = karena (menunjukkan sebab).',
+    meaningNeeded: true,
+    sentences: [
+      { en: 'Dio is very kind, so everyone likes him.', id: 'Dio sangat baik hati, jadi semua orang menyukainya.', emoji: '🤗', key: 'so', wrong: ['because', 'but'] },
+      { en: 'She is very funny, so her friends laugh a lot.', id: 'Dia sangat lucu, jadi teman-temannya banyak tertawa.', emoji: '😂', key: 'so', wrong: ['because', 'but'] },
+      { en: 'He is very honest, so people trust him.', id: 'Dia sangat jujur, jadi orang-orang percaya padanya.', emoji: '🤝', key: 'so', wrong: ['because', 'but'] },
+      { en: 'Andi is very brave, so he helps others.', id: 'Andi sangat berani, jadi dia menolong orang lain.', emoji: '💪', key: 'so', wrong: ['because', 'but'] },
+      { en: 'Maya is very generous, so she shares her toys.', id: 'Maya sangat murah hati, jadi dia berbagi mainannya.', emoji: '🎁', key: 'so', wrong: ['because', 'but'] },
+      { en: 'It was raining, so we stayed at home.', id: 'Hari itu hujan, jadi kami tetap di rumah.', emoji: '☔', key: 'so', wrong: ['because', 'but'] },
+      { en: 'I was tired, so I went to bed early.', id: 'Aku lelah, jadi aku tidur lebih awal.', emoji: '🛏️', key: 'so', wrong: ['because', 'but'] },
+      { en: 'The shop was closed, so we went home.', id: 'Tokonya tutup, jadi kami pulang.', emoji: '🏪', key: 'so', wrong: ['because', 'but'] },
+      { en: 'Rudi practiced every day, so he won the race.', id: 'Rudi berlatih setiap hari, jadi dia memenangkan lomba lari.', emoji: '🏅', key: 'so', wrong: ['because', 'but'] },
+      { en: 'The soup was hot, so I waited a minute.', id: 'Supnya panas, jadi aku menunggu sebentar.', emoji: '🍲', key: 'so', wrong: ['because', 'but'] },
     ],
-    scramble: [
-      { emoji: '🎭', target: ['Andi', 'is', 'very', 'brave', 'so', 'he', 'helps', 'others'] },
-      { emoji: '🎁', target: ['Maya', 'is', 'very', 'generous', 'so', 'she', 'shares', 'her', 'toys'] },
+    texts: [
+      { en: ['It rained all afternoon.', 'So we played board games inside.'], id: 'Hujan turun sepanjang sore. Jadi, kami bermain permainan papan di dalam.', key: 'So', wrong: ['But', 'Because'], cue: 'rained all afternoon' },
+      { en: ['Rudi practiced very hard for the race.', 'But he didn\'t win this time.'], id: 'Rudi berlatih sangat keras untuk lomba itu. Tapi, kali ini dia tidak menang.', key: 'But', wrong: ['So', 'Because'], cue: 'practiced very hard' },
+      { en: ['Maya\'s little brother was sad because he lost his toy.', 'So Maya gave him one of her toys.'], id: 'Adik laki-laki Maya sedih karena mainannya hilang. Jadi, Maya memberinya salah satu mainannya.', key: 'So', wrong: ['But', 'Because'], cue: 'was sad' },
     ],
-    fill: {
-      before: ['Dio', 'is', 'very'],
-      after: ['so', 'everyone', 'likes', 'him'],
-      options: [
-        { word: 'helpful', emoji: '🙌' },
-        { word: 'funny', emoji: '😂' },
-        { word: 'friendly', emoji: '😊' },
-      ],
-    },
   },
-  /**
-   * Topik ke-8 — "Look Like" (Cambridge Flyers, "Be/look/sound/feel/taste/
-   * smell like" — "What's your new teacher like?") — struktur BARU. Dari
-   * domain `ciri-ciri-fisik` (Physical Appearance) — domain jadi PANGGUNG
-   * tema kemiripan wajah/fisik, bukan sumber kata harfiah (pola sama
-   * `prepositions-of-place` Explorer).
-   */
   {
     id: 'look-like',
     title: 'Mirip Siapa? (Look Like)',
-    desc: 'Look Like + Orang',
-    examples: [
-      { en: 'My brother looks like our dad.', emoji: '👨' },
-      { en: 'She looks like her older sister.', emoji: '👧' },
-      { en: 'The puppy looks like a little bear.', emoji: '🐻' },
+    desc: 'look like + orang/benda',
+    rule: 'Mirip sesuatu → look like + benda/orang. Untuk he/she/it pakai looks like.',
+    sentences: [
+      { en: 'My brother looks like our dad.', id: 'Saudara laki-lakiku mirip ayah kami.', key: 'looks', wrong: ['look', 'looking'] },
+      { en: 'She looks like her older sister.', id: 'Dia mirip kakak perempuannya.', emoji: '👧', key: 'looks', wrong: ['look', 'looking'] },
+      { en: 'The puppy looks like a little bear.', id: 'Anak anjing itu mirip beruang kecil.', emoji: '🐻', key: 'like', wrong: ['likes', 'as'] },
+      { en: 'The kitten looks like a small tiger.', id: 'Anak kucing itu mirip harimau kecil.', emoji: '🐯', key: 'like', wrong: ['likes', 'as'] },
+      { en: 'He looks like his grandfather.', id: 'Dia mirip kakeknya.', key: 'looks', wrong: ['look', 'looking'] },
+      { en: 'This cloud looks like a rabbit.', id: 'Awan ini mirip kelinci.', emoji: '☁️', key: 'like', wrong: ['likes', 'as'] },
+      { en: 'You look like your mom.', id: 'Kamu mirip ibumu.', key: 'look', wrong: ['looks', 'looking'] },
+      { en: 'These cookies look like stars.', id: 'Kue-kue ini mirip bintang.', emoji: '⭐', key: 'look', wrong: ['looks', 'looking'] },
+      { en: 'That rock looks like a turtle.', id: 'Batu itu mirip kura-kura.', emoji: '🪨', key: 'like', wrong: ['likes', 'as'] },
+      { en: 'The twins look like each other.', id: 'Anak kembar itu mirip satu sama lain.', emoji: '👥', key: 'look', wrong: ['looks', 'looking'] },
     ],
-    scramble: [
-      { emoji: '🐯', target: ['The', 'kitten', 'looks', 'like', 'a', 'small', 'tiger'] },
-      { emoji: '👴', target: ['He', 'looks', 'like', 'his', 'grandfather'] },
+    texts: [
+      { en: ['My brother and I have the same smile.', 'Everyone says he looks like me.'], id: 'Aku dan saudara laki-lakiku punya senyum yang sama. Semua orang bilang dia mirip aku.', key: 'me', wrong: ['him', 'her'], cue: 'My brother and I' },
+      { en: ['Rina has curly hair, just like her grandma.', 'Everyone says Rina looks like her.'], id: 'Rambut Rina keriting, sama seperti neneknya. Semua orang bilang Rina mirip neneknya.', key: 'her', wrong: ['him', 'them'], cue: 'her grandma' },
+      { en: ['Dito and his dad both wear glasses and have short hair.', 'People say Dito looks like him.'], id: 'Dito dan ayahnya sama-sama berkacamata dan berambut pendek. Orang-orang bilang Dito mirip ayahnya.', key: 'him', wrong: ['her', 'them'], cue: 'his dad' },
     ],
-    fill: {
-      before: ['My', 'brother', 'looks', 'like', 'our'],
-      after: [],
-      options: [
-        { word: 'uncle', emoji: '🧔' },
-        { word: 'mom', emoji: '👩' },
-        { word: 'grandpa', emoji: '👴' },
-      ],
-    },
   },
-  /**
-   * Topik ke-9 — "Be Made Of" (Cambridge Flyers, "The toy is made of
-   * wood.") — chunk semi-pasif TERBATAS yg memang ADA di tabel resmi
-   * Flyers, BUKAN full passive voice (itu tetap di luar scope, tier
-   * KET/PET). Dari domain `sifat-benda-lanjutan` (Object Qualities).
-   */
   {
     id: 'made-of',
     title: 'Terbuat dari Apa? (Be Made Of)',
-    desc: 'Be Made Of + Bahan',
-    examples: [
-      { en: 'This spoon is made of metal, so it feels hard.', emoji: '🥄' },
-      { en: 'My pillow is made of cotton, so it feels soft.', emoji: '🛏️' },
-      { en: 'The plate is made of glass, so it feels smooth.', emoji: '🍽️' },
+    desc: 'is/are made of + bahan',
+    rule: 'Bahan pembuat → is (satu) / are (banyak) made of + bahan.',
+    sentences: [
+      { en: 'This spoon is made of metal.', id: 'Sendok ini terbuat dari logam.', emoji: '🥄', key: 'made', wrong: ['make', 'making'] },
+      { en: 'My pillow is made of cotton.', id: 'Bantalku terbuat dari kapas.', emoji: '🛏️', key: 'is', wrong: ['are', 'am'] },
+      { en: 'The plate is made of glass.', id: 'Piring itu terbuat dari kaca.', emoji: '🍽️', key: 'made', wrong: ['make', 'making'] },
+      { en: 'These chairs are made of wood.', id: 'Kursi-kursi ini terbuat dari kayu.', emoji: '🪑', key: 'are', wrong: ['is', 'am'] },
+      { en: 'My bag is made of cloth.', id: 'Tasku terbuat dari kain.', emoji: '👜', key: 'made', wrong: ['make', 'making'] },
+      { en: 'The window is made of glass.', id: 'Jendela itu terbuat dari kaca.', emoji: '🪟', key: 'is', wrong: ['are', 'am'] },
+      { en: 'These toys are made of plastic.', id: 'Mainan-mainan ini terbuat dari plastik.', emoji: '🧸', key: 'are', wrong: ['is', 'am'] },
+      { en: 'The house is made of bricks.', id: 'Rumah itu terbuat dari batu bata.', emoji: '🧱', key: 'made', wrong: ['make', 'making'] },
+      { en: 'My socks are made of wool.', id: 'Kaus kakiku terbuat dari wol.', emoji: '🧦', key: 'are', wrong: ['is', 'am'] },
+      { en: 'This ring is made of gold.', id: 'Cincin ini terbuat dari emas.', emoji: '💍', key: 'made', wrong: ['make', 'making'] },
     ],
-    scramble: [
-      { emoji: '🥄', target: ['This', 'spoon', 'is', 'made', 'of', 'metal'] },
-      { emoji: '🛏️', target: ['My', 'pillow', 'is', 'made', 'of', 'cotton'] },
+    texts: [
+      { en: ['Long ago, people in my village built boats by hand.', 'The boats were made of wood.'], id: 'Dulu sekali, orang-orang di desaku membuat perahu dengan tangan. Perahu-perahu itu terbuat dari kayu.', key: 'were', wrong: ['are', 'will be'], cue: 'Long ago' },
+      { en: ['Last year, our class made a robot for the science fair.', 'It was made of old boxes and bottles.'], id: 'Tahun lalu, kelas kami membuat robot untuk pameran sains. Robot itu terbuat dari kotak dan botol bekas.', key: 'was', wrong: ['is going to be', 'are'], cue: 'Last year' },
+      { en: ['My mom is going to buy a new table next week.', 'It will be made of metal, not wood.'], id: 'Ibuku akan membeli meja baru minggu depan. Meja itu akan terbuat dari logam, bukan kayu.', key: 'will be', wrong: ['was', 'were'], cue: 'next week' },
     ],
-    fill: {
-      before: ['This', 'toy', 'is', 'made', 'of'],
-      after: [],
-      options: [
-        { word: 'wood', emoji: '🪵' },
-        { word: 'plastic', emoji: '🧴' },
-        { word: 'metal', emoji: '🔩' },
-      ],
-    },
   },
-  /**
-   * Topik ke-10 — "Zero Conditional" (Cambridge Flyers, "If it's sunny, we
-   * go swimming.") — BEDA dari `because-reasons` Adventurer (konjungsi
-   * sebab, bukan klausa if). Dari domain `kata-kerja-lanjutan` (REUSE dari
-   * `continuous-vs-simple` di atas — kata kerja lanjutan natural utk
-   * reaksi/kebiasaan "if X maka Y").
-   */
   {
     id: 'zero-conditional',
     title: 'Kalau... Maka... (Zero Conditional)',
-    desc: 'If + Present Simple',
-    examples: [
-      { en: 'If I climb the tree, I feel happy.', emoji: '🪜' },
-      { en: 'If she hears a joke, she laughs.', emoji: '😂' },
-      { en: 'If the ball comes, he catches it.', emoji: '⚽' },
+    desc: 'If + kata kerja sekarang, kata kerja sekarang',
+    rule: 'Hal yang selalu terjadi → If + kata kerja sekarang, lalu kata kerja sekarang (+s untuk he/she/it).',
+    sentences: [
+      { en: 'If you heat ice, it melts.', id: 'Kalau kamu memanaskan es, es itu mencair.', emoji: '🧊', key: 'melts', wrong: ['melt', 'melting'] },
+      { en: 'If it rains, we stay at home.', id: 'Kalau hujan, kami tetap di rumah.', emoji: '☔', key: 'rains', wrong: ['rain', 'raining'], alt: ['We stay at home if it rains'] },
+      { en: 'If she hears a joke, she laughs.', id: 'Kalau dia mendengar lelucon, dia tertawa.', emoji: '😂', key: 'laughs', wrong: ['laugh', 'laughing'], alt: ['She laughs if she hears a joke'] },
+      { en: 'If I feel tired, I go to bed early.', id: 'Kalau aku merasa lelah, aku tidur lebih awal.', emoji: '🛏️', key: 'feel', wrong: ['feels', 'feeling'], alt: ['I go to bed early if I feel tired'] },
+      { en: 'If you mix red and blue, you get purple.', id: 'Kalau kamu mencampur merah dan biru, kamu mendapat ungu.', emoji: '🎨', key: 'get', wrong: ['gets', 'getting'], alt: ['You get purple if you mix red and blue'] },
+      { en: "If plants don't get water, they dry up.", id: 'Kalau tanaman tidak mendapat air, tanaman itu mengering.', emoji: '🌱', key: 'dry', wrong: ['dries', 'drying'] },
+      { en: 'If he studies hard, he passes the test.', id: 'Kalau dia belajar dengan giat, dia lulus ujian.', emoji: '📝', key: 'studies', wrong: ['study', 'studying'], alt: ['He passes the test if he studies hard'] },
+      { en: 'If you press this button, the light turns on.', id: 'Kalau kamu menekan tombol ini, lampunya menyala.', emoji: '💡', key: 'turns', wrong: ['turn', 'turning'], alt: ['The light turns on if you press this button'] },
+      { en: 'If I eat too much candy, my stomach hurts.', id: 'Kalau aku makan terlalu banyak permen, perutku sakit.', emoji: '🍬', key: 'hurts', wrong: ['hurt', 'hurting'], alt: ['My stomach hurts if I eat too much candy'] },
+      { en: 'If water gets very cold, it becomes ice.', id: 'Kalau air menjadi sangat dingin, air itu berubah jadi es.', emoji: '💧', key: 'becomes', wrong: ['become', 'becoming'] },
     ],
-    scramble: [
-      { emoji: '📝', target: ['If', 'he', 'studies', 'hard', 'he', 'passes', 'the', 'test'] },
-      { emoji: '☔', target: ['If', 'it', 'rains', 'we', 'stay', 'home'] },
+    texts: [
+      { en: ['Dito is afraid of thunder.', 'If thunder comes, he hides under his blanket.'], id: 'Dito takut petir. Kalau ada petir, dia bersembunyi di bawah selimutnya.', key: 'he', wrong: ['she', 'they'], cue: 'Dito' },
+      { en: ['My mom has a rule for my sister and me.', 'If our homework is finished, we can watch TV.'], id: 'Ibuku punya aturan untukku dan saudara perempuanku. Kalau PR kami sudah selesai, kami boleh menonton TV.', key: 'we', wrong: ['he', 'it'], cue: 'my sister and me' },
+      { en: ['Sari\'s cat loves fish.', 'If Sari opens a can of fish, it runs to the kitchen.'], id: 'Kucing Sari suka ikan. Kalau Sari membuka kaleng ikan, kucing itu berlari ke dapur.', key: 'it', wrong: ['he', 'they'], cue: 'loves fish' },
     ],
-    fill: {
-      before: ['If', 'I', 'feel', 'scared,', 'I'],
-      after: [],
-      options: [
-        { word: 'hide', emoji: '🙈' },
-        { word: 'cry', emoji: '😭' },
-        { word: 'shout', emoji: '📢' },
-      ],
-    },
   },
-  /**
-   * Topik ke-11 — "Many vs Much" (kategori kuantifier — Cambridge
-   * mendaftar "much"/"a few"/"a little" di daftar KOSAKATA Flyers, bukan
-   * tabel struktur grammar, tapi kontras countable/uncountable ini genuinely
-   * konten baru di tier ini, dikonfirmasi jg pola umum ESL scope-and-
-   * sequence A1→A2 British Council/Wordwall). Dari domain `angka-puluhan`
-   * (Bigger Numbers) — tema hitung-menghitung jadi panggung natural.
-   * Scramble menyertakan SATU contoh tiap sisi kontras (many DAN much),
-   * pola sama `continuous-vs-simple`/`going-to-vs-will` di atas.
-   */
   {
     id: 'many-vs-much',
     title: 'Banyak yang Bisa Dihitung vs Tidak (Many vs Much)',
-    desc: 'Kontras Many vs Much',
-    examples: [
-      { en: 'I have many friends at school.', emoji: '👥' },
-      { en: "We don't have much water left.", emoji: '💧' },
-      { en: 'How many students are in your class?', emoji: '🏫' },
+    desc: 'many + bisa dihitung, much + tidak bisa dihitung',
+    rule: 'Bisa dihitung (friends, books) → many. Tidak bisa dihitung (water, milk, time) → much.',
+    sentences: [
+      { en: 'I have many friends at school.', id: 'Aku punya banyak teman di sekolah.', emoji: '👥', key: 'many', wrong: ['much', 'a'] },
+      { en: "We don't have much water left.", id: 'Air kami tinggal sedikit.', emoji: '💧', key: 'much', wrong: ['many', 'a'] },
+      { en: 'How many students are in your class?', id: 'Ada berapa murid di kelasmu?', emoji: '🏫', key: 'many', wrong: ['much', 'a'] },
+      { en: 'How much milk do you drink?', id: 'Berapa banyak susu yang kamu minum?', emoji: '🥛', key: 'much', wrong: ['many', 'a'] },
+      { en: 'There are many books on the shelf.', id: 'Ada banyak buku di rak.', emoji: '📚', key: 'many', wrong: ['much', 'a'] },
+      { en: "She doesn't have much time today.", id: 'Dia tidak punya banyak waktu hari ini.', emoji: '⏰', key: 'much', wrong: ['many', 'a'], alt: ["Today she doesn't have much time"] },
+      { en: 'He ate too many cookies.', id: 'Dia makan terlalu banyak kue kering.', emoji: '🍪', key: 'many', wrong: ['much', 'a'] },
+      { en: "Don't put too much sugar in my tea.", id: 'Jangan taruh terlalu banyak gula di tehku.', emoji: '🍵', key: 'much', wrong: ['many', 'a'] },
+      { en: 'How many apples do you need?', id: 'Berapa banyak apel yang kamu perlukan?', emoji: '🍎', key: 'many', wrong: ['much', 'a'] },
+      { en: "We didn't get much rain this month.", id: 'Bulan ini tidak banyak hujan.', emoji: '🌧️', key: 'much', wrong: ['many', 'a'], alt: ["This month we didn't get much rain"] },
     ],
-    scramble: [
-      { emoji: '👥', target: ['I', 'have', 'many', 'friends'] },
-      { emoji: '💧', target: ['We', "don't", 'have', 'much', 'water'] },
+    texts: [
+      { en: ['We need some flour for the cake.', 'How much do we have?'], id: 'Kita butuh tepung untuk kuenya. Tepung kita ada berapa banyak?', key: 'much', wrong: ['many', 'a'], cue: 'flour' },
+      { en: ['Rina wants to buy some stickers.', 'How many does she want?'], id: 'Rina ingin membeli stiker. Dia mau berapa banyak?', key: 'many', wrong: ['much', 'a'], cue: 'stickers' },
+      { en: ['Grandpa likes coffee in the morning.', 'He doesn\'t drink much in the evening.'], id: 'Kakek suka minum kopi di pagi hari. Dia tidak minum banyak di malam hari.', key: 'much', wrong: ['many', 'a'], cue: 'coffee' },
     ],
-    fill: {
-      before: ['I', 'have', 'many'],
-      after: ['at', 'school'],
-      options: [
-        { word: 'lessons', emoji: '📖' },
-        { word: 'books', emoji: '📚' },
-        { word: 'classes', emoji: '🏫' },
-      ],
-    },
   },
 ];
 
@@ -17397,7 +17059,7 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarTopic[] = [
 export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
   {
     id: 'reported-speech',
-    title: 'Reported Speech — Dia Bilang…',
+    title: 'Dia Bilang Apa? (Reported Speech)',
     desc: '10 kutipan',
     transforms: [
       {
@@ -17407,10 +17069,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku belajar tata bahasa setiap hari.',
         reportedOptions: [
           { text: 'Rani said that she studied grammar every day.', ok: true },
-          { text: 'Rani said that she studies grammar every day.', ok: false },
           { text: 'Rani said that I studied grammar every day.', ok: false },
+          { text: 'Rani said that she had studied grammar every day.', ok: false },
           { text: 'Rani said that she will study grammar every day.', ok: false },
         ],
+        originalOptions: ['I have studied grammar every day.', 'I will study grammar every day.', 'I am studying grammar every day.'],
       },
       {
         speaker: 'Dimas',
@@ -17419,10 +17082,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku fasih berbahasa Inggris.',
         reportedOptions: [
           { text: 'Dimas said that he was fluent in English.', ok: true },
-          { text: 'Dimas said that he is fluent in English.', ok: false },
           { text: 'Dimas said that she was fluent in English.', ok: false },
-          { text: 'Dimas said that he will be fluent in English.', ok: false },
+          { text: 'Dimas said that he were fluent in English.', ok: false },
+          { text: 'Dimas said that he had been fluent in English.', ok: false },
         ],
+        originalOptions: ['I can be fluent in English.', 'I will be fluent in English.', 'I have been fluent in English.'],
       },
       {
         speaker: 'Sari',
@@ -17431,10 +17095,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku punya aksen Inggris.',
         reportedOptions: [
           { text: 'Sari said that she had an English accent.', ok: true },
-          { text: 'Sari said that she has an English accent.', ok: false },
           { text: 'Sari said that I had an English accent.', ok: false },
           { text: 'Sari said that she will have an English accent.', ok: false },
+          { text: 'Sari said that he had an English accent.', ok: false },
         ],
+        originalOptions: ['I would have an English accent.', 'I will have an English accent.', 'I have had an English accent.'],
       },
       {
         speaker: 'Budi',
@@ -17443,10 +17108,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku berlatih pengucapan setiap malam.',
         reportedOptions: [
           { text: 'Budi said that he practiced pronunciation every night.', ok: true },
-          { text: 'Budi said that he practices pronunciation every night.', ok: false },
-          { text: 'Budi said that she practiced pronunciation every night.', ok: false },
-          { text: 'Budi said that he will practice pronunciation every night.', ok: false },
+          { text: 'Budi said that he practice pronunciation every night.', ok: false },
+          { text: 'Budi said that he had practiced pronunciation every night.', ok: false },
+          { text: 'Budi said that I practiced pronunciation every night.', ok: false },
         ],
+        originalOptions: ['I have practiced pronunciation every night.', 'I will practice pronunciation every night.', 'I am practicing pronunciation every night.'],
       },
       {
         speaker: 'Wati',
@@ -17455,10 +17121,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku belajar kosakata baru setiap minggu.',
         reportedOptions: [
           { text: 'Wati said that she learned new vocabulary every week.', ok: true },
-          { text: 'Wati said that she learns new vocabulary every week.', ok: false },
-          { text: 'Wati said that I learned new vocabulary every week.', ok: false },
+          { text: 'Wati said that he learned new vocabulary every week.', ok: false },
           { text: 'Wati said that she will learn new vocabulary every week.', ok: false },
+          { text: 'Wati said that she learn new vocabulary every week.', ok: false },
         ],
+        originalOptions: ['I have learned new vocabulary every week.', 'I will learn new vocabulary every week.', 'I am learning new vocabulary every week.'],
       },
       {
         speaker: 'Andi',
@@ -17467,10 +17134,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku mencari kata di kamus.',
         reportedOptions: [
           { text: 'Andi said that he looked up words in a dictionary.', ok: true },
-          { text: 'Andi said that he looks up words in a dictionary.', ok: false },
+          { text: 'Andi said that I looked up words in a dictionary.', ok: false },
+          { text: 'Andi said that he had looked up words in a dictionary.', ok: false },
           { text: 'Andi said that she looked up words in a dictionary.', ok: false },
-          { text: 'Andi said that he will look up words in a dictionary.', ok: false },
         ],
+        originalOptions: ['I have looked up words in a dictionary.', 'I will look up words in a dictionary.', 'I am looking up words in a dictionary.'],
       },
       {
         speaker: 'Lina',
@@ -17479,10 +17147,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku dwibahasa.',
         reportedOptions: [
           { text: 'Lina said that she was bilingual.', ok: true },
-          { text: 'Lina said that she is bilingual.', ok: false },
-          { text: 'Lina said that he was bilingual.', ok: false },
+          { text: 'Lina said that she were bilingual.', ok: false },
           { text: 'Lina said that she will be bilingual.', ok: false },
+          { text: 'Lina said that I was bilingual.', ok: false },
         ],
+        originalOptions: ['I can be bilingual.', 'I will be bilingual.', 'I have been bilingual.'],
       },
       {
         speaker: 'Doni',
@@ -17491,10 +17160,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku menerjemahkan kalimat itu.',
         reportedOptions: [
           { text: 'Doni said that he translated the sentence.', ok: true },
-          { text: 'Doni said that he translates the sentence.', ok: false },
+          { text: 'Doni said that he had translated the sentence.', ok: false },
           { text: 'Doni said that she translated the sentence.', ok: false },
-          { text: 'Doni said that he will translate the sentence.', ok: false },
+          { text: 'Doni said that he translate the sentence.', ok: false },
         ],
+        originalOptions: ['I have translated the sentence.', 'I will translate the sentence.', 'I am translating the sentence.'],
       },
       {
         speaker: 'Maya',
@@ -17503,10 +17173,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku bicara dengan penutur asli.',
         reportedOptions: [
           { text: 'Maya said that she talked to a native speaker.', ok: true },
-          { text: 'Maya said that she talks to a native speaker.', ok: false },
           { text: 'Maya said that I talked to a native speaker.', ok: false },
           { text: 'Maya said that she will talk to a native speaker.', ok: false },
+          { text: 'Maya said that she had talked to a native speaker.', ok: false },
         ],
+        originalOptions: ['I have talked to a native speaker.', 'I will talk to a native speaker.', 'I am talking to a native speaker.'],
       },
       {
         speaker: 'Fajar',
@@ -17515,10 +17186,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku bekerja sebagai penerjemah lisan.',
         reportedOptions: [
           { text: 'Fajar said that he worked as an interpreter.', ok: true },
-          { text: 'Fajar said that he works as an interpreter.', ok: false },
           { text: 'Fajar said that she worked as an interpreter.', ok: false },
+          { text: 'Fajar said that he work as an interpreter.', ok: false },
           { text: 'Fajar said that he will work as an interpreter.', ok: false },
         ],
+        originalOptions: ['I have worked as an interpreter.', 'I will work as an interpreter.', 'I am working as an interpreter.'],
       },
     ],
   },
@@ -17561,10 +17233,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang menonton serial anime baru.',
         reportedOptions: [
           { text: 'Dimas said that he was watching a new anime series.', ok: true },
-          { text: 'Dimas said that he is watching a new anime series.', ok: false },
+          { text: 'Dimas said that he had been watching a new anime series.', ok: false },
           { text: 'Dimas said that she was watching a new anime series.', ok: false },
-          { text: 'Dimas said that he watched a new anime series.', ok: false },
+          { text: 'Dimas said that he were watching a new anime series.', ok: false },
         ],
+        originalOptions: ['I have been watching a new anime series.', 'I watch a new anime series.', 'I will watch a new anime series.'],
       },
       {
         speaker: 'Sari',
@@ -17573,10 +17246,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang mendengarkan podcast tentang musik.',
         reportedOptions: [
           { text: 'Sari said that she was listening to a podcast about music.', ok: true },
-          { text: 'Sari said that she is listening to a podcast about music.', ok: false },
-          { text: 'Sari said that he was listening to a podcast about music.', ok: false },
-          { text: 'Sari said that she listened to a podcast about music.', ok: false },
+          { text: 'Sari said that I was listening to a podcast about music.', ok: false },
+          { text: 'Sari said that she was listen to a podcast about music.', ok: false },
+          { text: 'Sari said that she had been listening to a podcast about music.', ok: false },
         ],
+        originalOptions: ['I have been listening to a podcast about music.', 'I listen to a podcast about music.', 'I will listen to a podcast about music.'],
       },
       {
         speaker: 'Andi',
@@ -17585,10 +17259,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang main gim daring bareng teman-temanku.',
         reportedOptions: [
           { text: 'Andi said that he was playing an online game with his friends.', ok: true },
-          { text: 'Andi said that he is playing an online game with his friends.', ok: false },
+          { text: 'Andi said that he were playing an online game with his friends.', ok: false },
+          { text: 'Andi said that I was playing an online game with my friends.', ok: false },
           { text: 'Andi said that she was playing an online game with her friends.', ok: false },
-          { text: 'Andi said that he played an online game with his friends.', ok: false },
         ],
+        originalOptions: ['I have been playing an online game with my friends.', 'I play an online game with my friends.', 'I will play an online game with my friends.'],
       },
       {
         speaker: 'Rani',
@@ -17597,10 +17272,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang menonton serial drama.',
         reportedOptions: [
           { text: 'Rani said that she was watching a drama series.', ok: true },
-          { text: 'Rani said that she is watching a drama series.', ok: false },
+          { text: 'Rani said that she was watch a drama series.', ok: false },
           { text: 'Rani said that he was watching a drama series.', ok: false },
-          { text: 'Rani said that she watched a drama series.', ok: false },
+          { text: 'Rani said that she had been watching a drama series.', ok: false },
         ],
+        originalOptions: ['I have been watching a drama series.', 'I watch a drama series.', 'I will watch a drama series.'],
       },
       {
         speaker: 'Budi',
@@ -17609,10 +17285,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang merekam lagu baru.',
         reportedOptions: [
           { text: 'Budi said that he was recording a new song.', ok: true },
-          { text: 'Budi said that he is recording a new song.', ok: false },
-          { text: 'Budi said that she was recording a new song.', ok: false },
-          { text: 'Budi said that he recorded a new song.', ok: false },
+          { text: 'Budi said that I was recording a new song.', ok: false },
+          { text: 'Budi said that he were recording a new song.', ok: false },
+          { text: 'Budi said that he was record a new song.', ok: false },
         ],
+        originalOptions: ['I have been recording a new song.', 'I record a new song.', 'I will record a new song.'],
       },
       {
         speaker: 'Wati',
@@ -17621,10 +17298,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang menggambar komik untuk majalah sekolah.',
         reportedOptions: [
           { text: 'Wati said that she was drawing a comic for the school magazine.', ok: true },
-          { text: 'Wati said that she is drawing a comic for the school magazine.', ok: false },
+          { text: 'Wati said that she had been drawing a comic for the school magazine.', ok: false },
+          { text: 'Wati said that I was drawing a comic for the school magazine.', ok: false },
           { text: 'Wati said that he was drawing a comic for the school magazine.', ok: false },
-          { text: 'Wati said that she drew a comic for the school magazine.', ok: false },
         ],
+        originalOptions: ['I have been drawing a comic for the school magazine.', 'I draw a comic for the school magazine.', 'I will draw a comic for the school magazine.'],
       },
       {
         speaker: 'Lina',
@@ -17633,10 +17311,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang mengedit video untuk vlogku.',
         reportedOptions: [
           { text: 'Lina said that she was editing a video for her vlog.', ok: true },
-          { text: 'Lina said that she is editing a video for her vlog.', ok: false },
-          { text: 'Lina said that he was editing a video for his vlog.', ok: false },
-          { text: 'Lina said that she edited a video for her vlog.', ok: false },
+          { text: 'Lina said that she were editing a video for her vlog.', ok: false },
+          { text: 'Lina said that she was edit a video for her vlog.', ok: false },
+          { text: 'Lina said that I was editing a video for my vlog.', ok: false },
         ],
+        originalOptions: ['I have been editing a video for my vlog.', 'I edit a video for my vlog.', 'I will edit a video for my vlog.'],
       },
       {
         speaker: 'Doni',
@@ -17645,10 +17324,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang membaca buku komik.',
         reportedOptions: [
           { text: 'Doni said that he was reading a comic book.', ok: true },
-          { text: 'Doni said that he is reading a comic book.', ok: false },
+          { text: 'Doni said that he had been reading a comic book.', ok: false },
           { text: 'Doni said that she was reading a comic book.', ok: false },
-          { text: 'Doni said that he read a comic book.', ok: false },
+          { text: 'Doni said that he was read a comic book.', ok: false },
         ],
+        originalOptions: ['I have been reading a comic book.', 'I read a comic book.', 'I will read a comic book.'],
       },
       {
         speaker: 'Maya',
@@ -17657,10 +17337,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang bernyanyi karaoke bareng sepupu-sepupuku.',
         reportedOptions: [
           { text: 'Maya said that she was singing karaoke with her cousins.', ok: true },
-          { text: 'Maya said that she is singing karaoke with her cousins.', ok: false },
-          { text: 'Maya said that he was singing karaoke with his cousins.', ok: false },
-          { text: 'Maya said that she sang karaoke with her cousins.', ok: false },
+          { text: 'Maya said that she were singing karaoke with her cousins.', ok: false },
+          { text: 'Maya said that I was singing karaoke with my cousins.', ok: false },
+          { text: 'Maya said that she had been singing karaoke with her cousins.', ok: false },
         ],
+        originalOptions: ['I have been singing karaoke with my cousins.', 'I sing karaoke with my cousins.', 'I will sing karaoke with my cousins.'],
       },
       {
         speaker: 'Fajar',
@@ -17669,10 +17350,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang menari mengikuti lagu favoritku.',
         reportedOptions: [
           { text: 'Fajar said that he was dancing to his favorite song.', ok: true },
-          { text: 'Fajar said that he is dancing to his favorite song.', ok: false },
           { text: 'Fajar said that she was dancing to her favorite song.', ok: false },
-          { text: 'Fajar said that he danced to his favorite song.', ok: false },
+          { text: 'Fajar said that he was dance to his favorite song.', ok: false },
+          { text: 'Fajar said that he were dancing to his favorite song.', ok: false },
         ],
+        originalOptions: ['I have been dancing to my favorite song.', 'I dance to my favorite song.', 'I will dance to my favorite song.'],
       },
     ],
   },
@@ -17697,10 +17379,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku mengunjungi Lombok bersama keluargaku.',
         reportedOptions: [
           { text: 'Wati said that she had visited Lombok with her family.', ok: true },
-          { text: 'Wati said that she visited Lombok with her family.', ok: false },
-          { text: 'Wati said that he had visited Lombok with his family.', ok: false },
-          { text: 'Wati said that she was visiting Lombok with her family.', ok: false },
+          { text: 'Wati said that she had visit Lombok with her family.', ok: false },
+          { text: 'Wati said that I had visited Lombok with my family.', ok: false },
+          { text: 'Wati said that she would visit Lombok with her family.', ok: false },
         ],
+        originalOptions: ['I visit Lombok with my family.', 'I will visit Lombok with my family.', 'I am visiting Lombok with my family.'],
       },
       {
         speaker: 'Fajar',
@@ -17709,10 +17392,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku mengemas tasku sebelum perjalanan.',
         reportedOptions: [
           { text: 'Fajar said that he had packed his bag before the trip.', ok: true },
-          { text: 'Fajar said that he packed his bag before the trip.', ok: false },
           { text: 'Fajar said that she had packed her bag before the trip.', ok: false },
+          { text: 'Fajar said that he had pack his bag before the trip.', ok: false },
           { text: 'Fajar said that he was packing his bag before the trip.', ok: false },
         ],
+        originalOptions: ['I pack my bag before the trip.', 'I will pack my bag before the trip.', 'I am packing my bag before the trip.'],
       },
       {
         speaker: 'Maya',
@@ -17721,10 +17405,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku mengambil banyak foto di air terjun itu.',
         reportedOptions: [
           { text: 'Maya said that she had taken many photos at the waterfall.', ok: true },
-          { text: 'Maya said that she took many photos at the waterfall.', ok: false },
-          { text: 'Maya said that he had taken many photos at the waterfall.', ok: false },
-          { text: 'Maya said that she was taking many photos at the waterfall.', ok: false },
+          { text: 'Maya said that I had taken many photos at the waterfall.', ok: false },
+          { text: 'Maya said that she would take many photos at the waterfall.', ok: false },
+          { text: 'Maya said that she had took many photos at the waterfall.', ok: false },
         ],
+        originalOptions: ['I take many photos at the waterfall.', 'I will take many photos at the waterfall.', 'I am taking many photos at the waterfall.'],
       },
       {
         speaker: 'Dimas',
@@ -17733,10 +17418,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku mendaki bukit kecil dekat desa itu.',
         reportedOptions: [
           { text: 'Dimas said that he had climbed a small hill near the village.', ok: true },
-          { text: 'Dimas said that he climbed a small hill near the village.', ok: false },
+          { text: 'Dimas said that he had climb a small hill near the village.', ok: false },
           { text: 'Dimas said that she had climbed a small hill near the village.', ok: false },
-          { text: 'Dimas said that he was climbing a small hill near the village.', ok: false },
+          { text: 'Dimas said that he would climb a small hill near the village.', ok: false },
         ],
+        originalOptions: ['I climb a small hill near the village.', 'I will climb a small hill near the village.', 'I am climbing a small hill near the village.'],
       },
       {
         speaker: 'Sari',
@@ -17745,10 +17431,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku bepergian naik kereta ke Yogyakarta.',
         reportedOptions: [
           { text: 'Sari said that she had traveled by train to Yogyakarta.', ok: true },
-          { text: 'Sari said that she traveled by train to Yogyakarta.', ok: false },
-          { text: 'Sari said that he had traveled by train to Yogyakarta.', ok: false },
           { text: 'Sari said that she was traveling by train to Yogyakarta.', ok: false },
+          { text: 'Sari said that I had traveled by train to Yogyakarta.', ok: false },
+          { text: 'Sari said that she had travel by train to Yogyakarta.', ok: false },
         ],
+        originalOptions: ['I travel by train to Yogyakarta.', 'I will travel by train to Yogyakarta.', 'I am traveling by train to Yogyakarta.'],
       },
       {
         speaker: 'Budi',
@@ -17757,10 +17444,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku memesan kamar di hotel kecil.',
         reportedOptions: [
           { text: 'Budi said that he had booked a room at a small hotel.', ok: true },
-          { text: 'Budi said that he booked a room at a small hotel.', ok: false },
+          { text: 'Budi said that he would book a room at a small hotel.', ok: false },
           { text: 'Budi said that she had booked a room at a small hotel.', ok: false },
-          { text: 'Budi said that he was booking a room at a small hotel.', ok: false },
+          { text: 'Budi said that he had book a room at a small hotel.', ok: false },
         ],
+        originalOptions: ['I book a room at a small hotel.', 'I will book a room at a small hotel.', 'I am booking a room at a small hotel.'],
       },
       {
         speaker: 'Rani',
@@ -17769,10 +17457,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku menjelajahi kota tua itu dengan berjalan kaki.',
         reportedOptions: [
           { text: 'Rani said that she had explored the old town on foot.', ok: true },
-          { text: 'Rani said that she explored the old town on foot.', ok: false },
-          { text: 'Rani said that he had explored the old town on foot.', ok: false },
+          { text: 'Rani said that I had explored the old town on foot.', ok: false },
           { text: 'Rani said that she was exploring the old town on foot.', ok: false },
+          { text: 'Rani said that she had explore the old town on foot.', ok: false },
         ],
+        originalOptions: ['I explore the old town on foot.', 'I will explore the old town on foot.', 'I am exploring the old town on foot.'],
       },
       {
         speaker: 'Andi',
@@ -17781,10 +17470,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku berlayar ke pulau kecil bersama pamanku.',
         reportedOptions: [
           { text: 'Andi said that he had sailed to a small island with his uncle.', ok: true },
-          { text: 'Andi said that he sailed to a small island with his uncle.', ok: false },
+          { text: 'Andi said that he had sail to a small island with his uncle.', ok: false },
           { text: 'Andi said that she had sailed to a small island with her uncle.', ok: false },
-          { text: 'Andi said that he was sailing to a small island with his uncle.', ok: false },
+          { text: 'Andi said that he would sail to a small island with his uncle.', ok: false },
         ],
+        originalOptions: ['I sail to a small island with my uncle.', 'I will sail to a small island with my uncle.', 'I am sailing to a small island with my uncle.'],
       },
       {
         speaker: 'Lina',
@@ -17793,10 +17483,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku mencoba makanan khas di pasar itu.',
         reportedOptions: [
           { text: 'Lina said that she had tried the local food at the market.', ok: true },
-          { text: 'Lina said that she tried the local food at the market.', ok: false },
-          { text: 'Lina said that he had tried the local food at the market.', ok: false },
-          { text: 'Lina said that she was trying the local food at the market.', ok: false },
+          { text: 'Lina said that she would try the local food at the market.', ok: false },
+          { text: 'Lina said that I had tried the local food at the market.', ok: false },
+          { text: 'Lina said that she had try the local food at the market.', ok: false },
         ],
+        originalOptions: ['I try the local food at the market.', 'I will try the local food at the market.', 'I am trying the local food at the market.'],
       },
       {
         speaker: 'Doni',
@@ -17805,10 +17496,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku berkemah dekat danau selama dua malam.',
         reportedOptions: [
           { text: 'Doni said that he had camped near the lake for two nights.', ok: true },
-          { text: 'Doni said that he camped near the lake for two nights.', ok: false },
-          { text: 'Doni said that she had camped near the lake for two nights.', ok: false },
           { text: 'Doni said that he was camping near the lake for two nights.', ok: false },
+          { text: 'Doni said that she had camped near the lake for two nights.', ok: false },
+          { text: 'Doni said that he had camp near the lake for two nights.', ok: false },
         ],
+        originalOptions: ['I camp near the lake for two nights.', 'I will camp near the lake for two nights.', 'I am camping near the lake for two nights.'],
       },
     ],
   },
@@ -17832,10 +17524,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku bisa main gitar.',
         reportedOptions: [
           { text: 'Doni said that he could play the guitar.', ok: true },
-          { text: 'Doni said that he can play the guitar.', ok: false },
-          { text: 'Doni said that she could play the guitar.', ok: false },
           { text: 'Doni said that he would play the guitar.', ok: false },
+          { text: 'Doni said that she could play the guitar.', ok: false },
+          { text: 'Doni said that he could to play the guitar.', ok: false },
         ],
+        originalOptions: ['I will play the guitar.', 'I must play the guitar.', 'I may play the guitar.'],
       },
       {
         speaker: 'Wati',
@@ -17844,10 +17537,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku akan ikut klub debat.',
         reportedOptions: [
           { text: 'Wati said that she would join the debate club.', ok: true },
-          { text: 'Wati said that she will join the debate club.', ok: false },
-          { text: 'Wati said that he would join the debate club.', ok: false },
+          { text: 'Wati said that I would join the debate club.', ok: false },
           { text: 'Wati said that she could join the debate club.', ok: false },
+          { text: 'Wati said that she would joined the debate club.', ok: false },
         ],
+        originalOptions: ['I can join the debate club.', 'I must join the debate club.', 'I may join the debate club.'],
       },
       {
         speaker: 'Andi',
@@ -17856,10 +17550,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku harus mengumpulkan proyekku sebelum hari Senin.',
         reportedOptions: [
           { text: 'Andi said that he had to submit his project by Monday.', ok: true },
-          { text: 'Andi said that he must submit his project by Monday.', ok: false },
-          { text: 'Andi said that she had to submit her project by Monday.', ok: false },
+          { text: 'Andi said that he had must submit his project by Monday.', ok: false },
           { text: 'Andi said that he might submit his project by Monday.', ok: false },
+          { text: 'Andi said that I had to submit my project by Monday.', ok: false },
         ],
+        originalOptions: ['I can submit my project by Monday.', 'I will submit my project by Monday.', 'I may submit my project by Monday.'],
       },
       {
         speaker: 'Lina',
@@ -17868,10 +17563,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku bisa berenang menyeberangi kolam itu.',
         reportedOptions: [
           { text: 'Lina said that she could swim across the pool.', ok: true },
-          { text: 'Lina said that she can swim across the pool.', ok: false },
           { text: 'Lina said that he could swim across the pool.', ok: false },
           { text: 'Lina said that she would swim across the pool.', ok: false },
+          { text: 'Lina said that she could swam across the pool.', ok: false },
         ],
+        originalOptions: ['I will swim across the pool.', 'I must swim across the pool.', 'I may swim across the pool.'],
       },
       {
         speaker: 'Fajar',
@@ -17880,10 +17576,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku akan tampil di drama sekolah.',
         reportedOptions: [
           { text: 'Fajar said that he would perform in the school play.', ok: true },
-          { text: 'Fajar said that he will perform in the school play.', ok: false },
+          { text: 'Fajar said that he would performed in the school play.', ok: false },
           { text: 'Fajar said that she would perform in the school play.', ok: false },
           { text: 'Fajar said that he could perform in the school play.', ok: false },
         ],
+        originalOptions: ['I can perform in the school play.', 'I must perform in the school play.', 'I may perform in the school play.'],
       },
       {
         speaker: 'Maya',
@@ -17892,10 +17589,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku harus menyelesaikan PR-ku sebelum makan malam.',
         reportedOptions: [
           { text: 'Maya said that she had to finish her homework before dinner.', ok: true },
-          { text: 'Maya said that she must finish her homework before dinner.', ok: false },
-          { text: 'Maya said that he had to finish his homework before dinner.', ok: false },
+          { text: 'Maya said that she had to finished her homework before dinner.', ok: false },
+          { text: 'Maya said that I had to finish my homework before dinner.', ok: false },
           { text: 'Maya said that she might finish her homework before dinner.', ok: false },
         ],
+        originalOptions: ['I can finish my homework before dinner.', 'I will finish my homework before dinner.', 'I may finish my homework before dinner.'],
       },
       {
         speaker: 'Rani',
@@ -17904,10 +17602,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku bisa melukis dengan sangat baik.',
         reportedOptions: [
           { text: 'Rani said that she could paint very well.', ok: true },
-          { text: 'Rani said that she can paint very well.', ok: false },
-          { text: 'Rani said that he could paint very well.', ok: false },
           { text: 'Rani said that she would paint very well.', ok: false },
+          { text: 'Rani said that I could paint very well.', ok: false },
+          { text: 'Rani said that she could painted very well.', ok: false },
         ],
+        originalOptions: ['I will paint very well.', 'I must paint very well.', 'I may paint very well.'],
       },
       {
         speaker: 'Budi',
@@ -17916,10 +17615,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku akan bernyanyi di konser itu.',
         reportedOptions: [
           { text: 'Budi said that he would sing at the concert.', ok: true },
-          { text: 'Budi said that he will sing at the concert.', ok: false },
           { text: 'Budi said that she would sing at the concert.', ok: false },
           { text: 'Budi said that he could sing at the concert.', ok: false },
+          { text: 'Budi said that he would to sing at the concert.', ok: false },
         ],
+        originalOptions: ['I can sing at the concert.', 'I must sing at the concert.', 'I may sing at the concert.'],
       },
       {
         speaker: 'Sari',
@@ -17928,10 +17628,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku harus mengembalikan buku perpustakaan itu.',
         reportedOptions: [
           { text: 'Sari said that she had to return the library book.', ok: true },
-          { text: 'Sari said that she must return the library book.', ok: false },
+          { text: 'Sari said that she had must return the library book.', ok: false },
           { text: 'Sari said that he had to return the library book.', ok: false },
           { text: 'Sari said that she might return the library book.', ok: false },
         ],
+        originalOptions: ['I can return the library book.', 'I will return the library book.', 'I may return the library book.'],
       },
       {
         speaker: 'Dimas',
@@ -17940,10 +17641,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku mungkin akan ikut klub lari.',
         reportedOptions: [
           { text: 'Dimas said that he might join the running club.', ok: true },
-          { text: 'Dimas said that he may join the running club.', ok: false },
-          { text: 'Dimas said that she might join the running club.', ok: false },
           { text: 'Dimas said that he would join the running club.', ok: false },
+          { text: 'Dimas said that I might join the running club.', ok: false },
+          { text: 'Dimas said that he might joined the running club.', ok: false },
         ],
+        originalOptions: ['I can join the running club.', 'I will join the running club.', 'I must join the running club.'],
       },
     ],
   },
@@ -17969,9 +17671,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Budi asked Sari if she understood the lesson.', ok: true },
           { text: 'Budi asked Sari if did she understand the lesson.', ok: false },
-          { text: 'Budi asked Sari if he understood the lesson.', ok: false },
-          { text: 'Budi asked Sari if she understands the lesson.', ok: false },
+          { text: 'Budi asked Sari if you understood the lesson.', ok: false },
+          { text: 'Budi asked Sari that she understood the lesson.', ok: false },
         ],
+        originalOptions: ['Have you understood the lesson?', 'Will you understand the lesson?', 'Can you understand the lesson?'],
       },
       {
         speaker: 'Lina',
@@ -17980,10 +17683,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Apakah kamu suka menyelesaikan soal matematika?',
         reportedOptions: [
           { text: 'Lina asked Doni if he liked solving math problems.', ok: true },
-          { text: 'Lina asked Doni if did he like solving math problems.', ok: false },
           { text: 'Lina asked Doni if she liked solving math problems.', ok: false },
-          { text: 'Lina asked Doni if he likes solving math problems.', ok: false },
+          { text: 'Lina asked Doni if he had liked solving math problems.', ok: false },
+          { text: 'Lina asked Doni if did he like solving math problems.', ok: false },
         ],
+        originalOptions: ['Have you liked solving math problems?', 'Would you like solving math problems?', 'Will you like solving math problems?'],
       },
       {
         speaker: 'Andi',
@@ -17992,10 +17696,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Apakah kamu bawa kartu pelajarmu?',
         reportedOptions: [
           { text: 'Andi asked Wati if she had her ID card with her.', ok: true },
+          { text: 'Andi asked Wati if you had your ID card with you.', ok: false },
+          { text: 'Andi asked Wati that she had her ID card with her.', ok: false },
           { text: 'Andi asked Wati if did she have her ID card with her.', ok: false },
-          { text: 'Andi asked Wati if he had his ID card with him.', ok: false },
-          { text: 'Andi asked Wati if she has her ID card with her.', ok: false },
         ],
+        originalOptions: ['Would you have your ID card with you?', 'Will you have your ID card with you?', 'Can you have your ID card with you?'],
       },
       {
         speaker: 'Maya',
@@ -18004,10 +17709,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Apakah kamu menyelesaikan PR-mu setiap hari?',
         reportedOptions: [
           { text: 'Maya asked Fajar if he finished his homework every day.', ok: true },
-          { text: 'Maya asked Fajar if did he finish his homework every day.', ok: false },
+          { text: 'Maya asked Fajar he finished his homework every day.', ok: false },
           { text: 'Maya asked Fajar if she finished her homework every day.', ok: false },
-          { text: 'Maya asked Fajar if he finishes his homework every day.', ok: false },
+          { text: 'Maya asked Fajar if did he finish his homework every day.', ok: false },
         ],
+        originalOptions: ['Would you finish your homework every day?', 'Will you finish your homework every day?', 'Can you finish your homework every day?'],
       },
       {
         speaker: 'Rani',
@@ -18017,9 +17723,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Rani asked Dimas if he enjoyed science class.', ok: true },
           { text: 'Rani asked Dimas if did he enjoy science class.', ok: false },
-          { text: 'Rani asked Dimas if she enjoyed science class.', ok: false },
-          { text: 'Rani asked Dimas if he enjoys science class.', ok: false },
+          { text: 'Rani asked Dimas that he enjoyed science class.', ok: false },
+          { text: 'Rani asked Dimas if you enjoyed science class.', ok: false },
         ],
+        originalOptions: ['Have you enjoyed science class?', 'Will you enjoy science class?', 'Are you enjoying science class?'],
       },
       {
         speaker: 'Wati',
@@ -18028,10 +17735,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Apakah kamu punya penggaris?',
         reportedOptions: [
           { text: 'Wati asked Andi if he had a ruler.', ok: true },
-          { text: 'Wati asked Andi if did he have a ruler.', ok: false },
           { text: 'Wati asked Andi if she had a ruler.', ok: false },
-          { text: 'Wati asked Andi if he has a ruler.', ok: false },
+          { text: 'Wati asked Andi if did he have a ruler.', ok: false },
+          { text: 'Wati asked Andi if he had had a ruler.', ok: false },
         ],
+        originalOptions: ['Would you have a ruler?', 'Will you have a ruler?', 'Can you have a ruler?'],
       },
       {
         speaker: 'Doni',
@@ -18041,9 +17749,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Doni asked Lina if she brought her own lunch to school.', ok: true },
           { text: 'Doni asked Lina if did she bring her own lunch to school.', ok: false },
-          { text: 'Doni asked Lina if he brought his own lunch to school.', ok: false },
-          { text: 'Doni asked Lina if she brings her own lunch to school.', ok: false },
+          { text: 'Doni asked Lina if you brought your own lunch to school.', ok: false },
+          { text: 'Doni asked Lina that she brought her own lunch to school.', ok: false },
         ],
+        originalOptions: ['Have you brought your own lunch to school?', 'Will you bring your own lunch to school?', 'Can you bring your own lunch to school?'],
       },
       {
         speaker: 'Sari',
@@ -18054,8 +17763,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Sari asked Budi if he was reading the new novel for class.', ok: true },
           { text: 'Sari asked Budi if was he reading the new novel for class.', ok: false },
           { text: 'Sari asked Budi if she was reading the new novel for class.', ok: false },
-          { text: 'Sari asked Budi if he is reading the new novel for class.', ok: false },
+          { text: 'Sari asked Budi if he had been reading the new novel for class.', ok: false },
         ],
+        originalOptions: ['Do you read the new novel for class?', 'Did you read the new novel for class?', 'Will you read the new novel for class?'],
       },
       {
         speaker: 'Fajar',
@@ -18065,9 +17775,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Fajar asked Maya if she wrote in her journal every night.', ok: true },
           { text: 'Fajar asked Maya if did she write in her journal every night.', ok: false },
+          { text: 'Fajar asked Maya that she wrote in her journal every night.', ok: false },
           { text: 'Fajar asked Maya if he wrote in his journal every night.', ok: false },
-          { text: 'Fajar asked Maya if she writes in her journal every night.', ok: false },
         ],
+        originalOptions: ['Would you write in your journal every night?', 'Will you write in your journal every night?', 'Can you write in your journal every night?'],
       },
       {
         speaker: 'Andi',
@@ -18077,9 +17788,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Andi asked Rani if she liked art class.', ok: true },
           { text: 'Andi asked Rani if did she like art class.', ok: false },
-          { text: 'Andi asked Rani if he liked art class.', ok: false },
-          { text: 'Andi asked Rani if she likes art class.', ok: false },
+          { text: 'Andi asked Rani if you liked art class.', ok: false },
+          { text: 'Andi asked Rani if she had liked art class.', ok: false },
         ],
+        originalOptions: ['Have you liked art class?', 'Would you like art class?', 'Will you like art class?'],
       },
     ],
   },
@@ -18104,9 +17816,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Maya asked Fajar where he practiced basketball.', ok: true },
           { text: 'Maya asked Fajar where did he practice basketball.', ok: false },
+          { text: 'Maya asked Fajar where you practiced basketball.', ok: false },
           { text: 'Maya asked Fajar where she practiced basketball.', ok: false },
-          { text: 'Maya asked Fajar where he practices basketball.', ok: false },
         ],
+        originalOptions: ['Where have you practiced basketball?', 'Where will you practice basketball?', 'Where are you practicing basketball?'],
       },
       {
         speaker: 'Doni',
@@ -18116,9 +17829,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Doni asked Rani why she liked traveling so much.', ok: true },
           { text: 'Doni asked Rani why did she like traveling so much.', ok: false },
-          { text: 'Doni asked Rani why he liked traveling so much.', ok: false },
-          { text: 'Doni asked Rani why she likes traveling so much.', ok: false },
+          { text: 'Doni asked Rani why she had liked traveling so much.', ok: false },
+          { text: 'Doni asked Rani why you liked traveling so much.', ok: false },
         ],
+        originalOptions: ['Why would you like traveling so much?', 'Why have you liked traveling so much?', 'Why are you traveling so much?'],
       },
       {
         speaker: 'Sari',
@@ -18129,8 +17843,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Sari asked Budi how he stayed confident before a performance.', ok: true },
           { text: 'Sari asked Budi how did he stay confident before a performance.', ok: false },
           { text: 'Sari asked Budi how she stayed confident before a performance.', ok: false },
-          { text: 'Sari asked Budi how he stays confident before a performance.', ok: false },
+          { text: 'Sari asked Budi how he had stayed confident before a performance.', ok: false },
         ],
+        originalOptions: ['How have you stayed confident before a performance?', 'How will you stay confident before a performance?', 'How can you stay confident before a performance?'],
       },
       {
         speaker: 'Wati',
@@ -18140,9 +17855,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Wati asked Andi what music he listened to.', ok: true },
           { text: 'Wati asked Andi what music did he listen to.', ok: false },
+          { text: 'Wati asked Andi what music you listened to.', ok: false },
           { text: 'Wati asked Andi what music she listened to.', ok: false },
-          { text: 'Wati asked Andi what music he listens to.', ok: false },
         ],
+        originalOptions: ['What music have you listened to?', 'What music will you listen to?', 'What music are you listening to?'],
       },
       {
         speaker: 'Lina',
@@ -18152,9 +17868,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Lina asked Doni when he studied for exams.', ok: true },
           { text: 'Lina asked Doni when did he study for exams.', ok: false },
-          { text: 'Lina asked Doni when she studied for exams.', ok: false },
-          { text: 'Lina asked Doni when he studies for exams.', ok: false },
+          { text: 'Lina asked Doni when he had studied for exams.', ok: false },
+          { text: 'Lina asked Doni when you studied for exams.', ok: false },
         ],
+        originalOptions: ['When have you studied for exams?', 'When will you study for exams?', 'When can you study for exams?'],
       },
       {
         speaker: 'Fajar',
@@ -18165,8 +17882,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Fajar asked Maya what she usually painted.', ok: true },
           { text: 'Fajar asked Maya what did she usually paint.', ok: false },
           { text: 'Fajar asked Maya what he usually painted.', ok: false },
-          { text: 'Fajar asked Maya what she usually paints.', ok: false },
+          { text: 'Fajar asked Maya what you usually painted.', ok: false },
         ],
+        originalOptions: ['What have you painted?', 'What will you paint?', 'What are you painting?'],
       },
       {
         speaker: 'Rani',
@@ -18177,8 +17895,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Rani asked Dimas how often he practiced football.', ok: true },
           { text: 'Rani asked Dimas how often did he practice football.', ok: false },
           { text: 'Rani asked Dimas how often she practiced football.', ok: false },
-          { text: 'Rani asked Dimas how often he practices football.', ok: false },
+          { text: 'Rani asked Dimas how often he had practiced football.', ok: false },
         ],
+        originalOptions: ['How often have you practiced football?', 'How often will you practice football?', 'How often can you practice football?'],
       },
       {
         speaker: 'Budi',
@@ -18189,8 +17908,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Budi asked Sari what her favorite movie genre was.', ok: true },
           { text: 'Budi asked Sari what was her favorite movie genre.', ok: false },
           { text: 'Budi asked Sari what his favorite movie genre was.', ok: false },
-          { text: 'Budi asked Sari what her favorite movie genre is.', ok: false },
+          { text: 'Budi asked Sari what your favorite movie genre was.', ok: false },
         ],
+        originalOptions: ['What would your favorite movie genre be?', 'What will your favorite movie genre be?', 'What has been your favorite movie genre?'],
       },
       {
         speaker: 'Andi',
@@ -18200,9 +17920,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Andi asked Wati what she usually cooked on weekends.', ok: true },
           { text: 'Andi asked Wati what did she usually cook on weekends.', ok: false },
+          { text: 'Andi asked Wati what you usually cooked on weekends.', ok: false },
           { text: 'Andi asked Wati what he usually cooked on weekends.', ok: false },
-          { text: 'Andi asked Wati what she usually cooks on weekends.', ok: false },
         ],
+        originalOptions: ['What have you cooked on weekends?', 'What will you cook on weekends?', 'What are you cooking on weekends?'],
       },
       {
         speaker: 'Maya',
@@ -18213,8 +17934,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Maya asked Fajar why he had joined the school choir.', ok: true },
           { text: 'Maya asked Fajar why did he join the school choir.', ok: false },
           { text: 'Maya asked Fajar why she had joined the school choir.', ok: false },
-          { text: 'Maya asked Fajar why he joined the school choir.', ok: false },
+          { text: 'Maya asked Fajar why you had joined the school choir.', ok: false },
         ],
+        originalOptions: ['Why do you join the school choir?', 'Why will you join the school choir?', 'Why are you joining the school choir?'],
       },
     ],
   },
@@ -18240,10 +17962,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bisakah kamu memotret kami?',
         reportedOptions: [
           { text: 'Sari asked Doni to take a photo of them.', ok: true },
-          { text: 'Sari asked Doni if he could take a photo of them.', ok: false },
-          { text: 'Sari asked Doni to take a photo of her.', ok: false },
           { text: 'Sari asked Doni take a photo of them.', ok: false },
+          { text: 'Sari said Doni to take a photo of them.', ok: false },
+          { text: 'Sari asked Doni taking a photo of them.', ok: false },
         ],
+        originalOptions: ['Please don\'t take a photo of us.', 'Did you take a photo of us?', 'I took a photo of us.'],
       },
       {
         speaker: 'Budi',
@@ -18252,10 +17975,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bisakah kamu jagain kursiku sebentar?',
         reportedOptions: [
           { text: 'Budi asked Lina to hold his seat for a minute.', ok: true },
-          { text: 'Budi asked Lina if she could hold his seat for a minute.', ok: false },
           { text: 'Budi asked Lina to hold her seat for a minute.', ok: false },
           { text: 'Budi asked Lina hold his seat for a minute.', ok: false },
+          { text: 'Budi said Lina to hold his seat for a minute.', ok: false },
         ],
+        originalOptions: ['Please don\'t hold my seat for a minute.', 'Did you hold my seat for a minute?', 'I held your seat for a minute.'],
       },
       {
         speaker: 'Wati',
@@ -18264,10 +17988,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Tolong matikan ponselmu selama film diputar.',
         reportedOptions: [
           { text: 'Wati asked Andi to turn off his phone during the movie.', ok: true },
-          { text: 'Wati asked Andi if he could turn off his phone during the movie.', ok: false },
           { text: 'Wati asked Andi to turn off her phone during the movie.', ok: false },
-          { text: 'Wati asked Andi turn off his phone during the movie.', ok: false },
+          { text: 'Wati asked Andi turning off his phone during the movie.', ok: false },
+          { text: 'Wati asked Andi that turn off his phone during the movie.', ok: false },
         ],
+        originalOptions: ['Please don\'t turn off your phone during the movie.', 'Did you turn off your phone during the movie?', 'I turned off my phone during the movie.'],
       },
       {
         speaker: 'Rani',
@@ -18276,10 +18001,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bisakah kamu mengecilkan volumemu?',
         reportedOptions: [
           { text: 'Rani asked Fajar to turn down his volume.', ok: true },
-          { text: 'Rani asked Fajar if he could turn down his volume.', ok: false },
-          { text: 'Rani asked Fajar to turn down her volume.', ok: false },
           { text: 'Rani asked Fajar turn down his volume.', ok: false },
+          { text: 'Rani said Fajar to turn down his volume.', ok: false },
+          { text: 'Rani asked Fajar to turn down her volume.', ok: false },
         ],
+        originalOptions: ['Please don\'t turn down your volume.', 'Did you turn down your volume?', 'I turned down my volume.'],
       },
       {
         speaker: 'Dimas',
@@ -18288,10 +18014,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bisakah kamu membelikan kami popcorn?',
         reportedOptions: [
           { text: 'Dimas asked Maya to buy some popcorn for them.', ok: true },
-          { text: 'Dimas asked Maya if she could buy some popcorn for them.', ok: false },
-          { text: 'Dimas asked Maya to buy some popcorn for him.', ok: false },
+          { text: 'Dimas asked Maya buying some popcorn for them.', ok: false },
+          { text: 'Dimas asked Maya that buy some popcorn for them.', ok: false },
           { text: 'Dimas asked Maya buy some popcorn for them.', ok: false },
         ],
+        originalOptions: ['Please don\'t buy any popcorn for us.', 'Did you buy some popcorn for us?', 'I bought some popcorn for us.'],
       },
       {
         speaker: 'Doni',
@@ -18300,10 +18027,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bisakah kamu menyimpan dua tiket untuk teman-temanmu?',
         reportedOptions: [
           { text: 'Doni asked Sari to save two tickets for her friends.', ok: true },
-          { text: 'Doni asked Sari if she could save two tickets for her friends.', ok: false },
           { text: 'Doni asked Sari to save two tickets for his friends.', ok: false },
+          { text: 'Doni said Sari to save two tickets for her friends.', ok: false },
           { text: 'Doni asked Sari save two tickets for her friends.', ok: false },
         ],
+        originalOptions: ['Please don\'t save two tickets for your friends.', 'Did you save two tickets for your friends?', 'I saved two tickets for my friends.'],
       },
       {
         speaker: 'Lina',
@@ -18312,10 +18040,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Tolong pinjamkan aku remote TV-mu.',
         reportedOptions: [
           { text: 'Lina asked Budi to lend her his remote control.', ok: true },
-          { text: 'Lina asked Budi if he could lend her his remote control.', ok: false },
           { text: 'Lina asked Budi to lend him his remote control.', ok: false },
-          { text: 'Lina asked Budi lend her his remote control.', ok: false },
+          { text: 'Lina asked Budi lending her his remote control.', ok: false },
+          { text: 'Lina asked Budi that lend her his remote control.', ok: false },
         ],
+        originalOptions: ['Please don\'t lend me your remote control.', 'Did you lend me your remote control?', 'I lent you my remote control.'],
       },
       {
         speaker: 'Andi',
@@ -18324,10 +18053,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bisakah kamu meminjamkan earphone-mu padaku?',
         reportedOptions: [
           { text: 'Andi asked Wati to share her earphones with him.', ok: true },
-          { text: 'Andi asked Wati if she could share her earphones with him.', ok: false },
           { text: 'Andi asked Wati to share his earphones with him.', ok: false },
+          { text: 'Andi said Wati to share her earphones with him.', ok: false },
           { text: 'Andi asked Wati share her earphones with him.', ok: false },
         ],
+        originalOptions: ['Please don\'t share your earphones with me.', 'Did you share your earphones with me?', 'I shared my earphones with you.'],
       },
       {
         speaker: 'Maya',
@@ -18336,10 +18066,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bisakah kamu membantuku memilih kostum?',
         reportedOptions: [
           { text: 'Maya asked Rani to help her choose a costume.', ok: true },
-          { text: 'Maya asked Rani if she could help her choose a costume.', ok: false },
+          { text: 'Maya asked Rani helping her choose a costume.', ok: false },
           { text: 'Maya asked Rani to help him choose a costume.', ok: false },
-          { text: 'Maya asked Rani help her choose a costume.', ok: false },
+          { text: 'Maya asked Rani that help her choose a costume.', ok: false },
         ],
+        originalOptions: ['Please don\'t help me choose a costume.', 'Did you help me choose a costume?', 'I helped you choose a costume.'],
       },
       {
         speaker: 'Fajar',
@@ -18348,10 +18079,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Tolong kirimkan aku foto-foto dari konser itu.',
         reportedOptions: [
           { text: 'Fajar asked Dimas to send him the photos from the concert.', ok: true },
-          { text: 'Fajar asked Dimas if he could send him the photos from the concert.', ok: false },
           { text: 'Fajar asked Dimas to send her the photos from the concert.', ok: false },
-          { text: 'Fajar asked Dimas send him the photos from the concert.', ok: false },
+          { text: 'Fajar asked Dimas sending him the photos from the concert.', ok: false },
+          { text: 'Fajar said Dimas to send him the photos from the concert.', ok: false },
         ],
+        originalOptions: ['Please don\'t send me the photos from the concert.', 'Did you send me the photos from the concert?', 'I sent you the photos from the concert.'],
       },
     ],
   },
@@ -18376,9 +18108,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Wati told the students to close their books.', ok: true },
           { text: 'Wati told the students that close their books.', ok: false },
+          { text: 'Wati told the students closing their books.', ok: false },
           { text: 'Wati told the students to close her books.', ok: false },
-          { text: 'Wati told the students close their books.', ok: false },
         ],
+        originalOptions: ['Don\'t close your books, please.', 'Did you close your books?', 'I closed my book.'],
       },
       {
         speaker: 'Andi',
@@ -18387,10 +18120,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Oper bolanya ke rekan setimmu!',
         reportedOptions: [
           { text: 'Andi told Doni to pass the ball to his teammate.', ok: true },
-          { text: 'Andi told Doni that pass the ball to his teammate.', ok: false },
-          { text: 'Andi told Doni to pass the ball to her teammate.', ok: false },
+          { text: 'Andi said Doni to pass the ball to his teammate.', ok: false },
           { text: 'Andi told Doni pass the ball to his teammate.', ok: false },
+          { text: 'Andi told Doni to pass the ball to her teammate.', ok: false },
         ],
+        originalOptions: ['Don\'t pass the ball to your teammate!', 'Did you pass the ball to your teammate?', 'I passed the ball to my teammate.'],
       },
       {
         speaker: 'Lina',
@@ -18399,10 +18133,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Kembalikan bukumu sebelum hari Jumat.',
         reportedOptions: [
           { text: 'Lina told Fajar to return his book by Friday.', ok: true },
+          { text: 'Lina told Fajar returning his book by Friday.', ok: false },
           { text: 'Lina told Fajar that return his book by Friday.', ok: false },
-          { text: 'Lina told Fajar to return her book by Friday.', ok: false },
-          { text: 'Lina told Fajar return his book by Friday.', ok: false },
+          { text: 'Lina said Fajar to return his book by Friday.', ok: false },
         ],
+        originalOptions: ['Don\'t return your book by Friday.', 'Did you return your book by Friday?', 'I returned my book by Friday.'],
       },
       {
         speaker: 'Budi',
@@ -18411,10 +18146,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Tulis namamu di bagian atas halaman.',
         reportedOptions: [
           { text: 'Budi told the students to write their names at the top of the page.', ok: true },
-          { text: 'Budi told the students that write their names at the top of the page.', ok: false },
-          { text: 'Budi told the students to write his name at the top of the page.', ok: false },
           { text: 'Budi told the students write their names at the top of the page.', ok: false },
+          { text: 'Budi said the students to write their names at the top of the page.', ok: false },
+          { text: 'Budi told the students to write his name at the top of the page.', ok: false },
         ],
+        originalOptions: ['Don\'t write your name at the top of the page.', 'Did you write your name at the top of the page?', 'I wrote my name at the top of the page.'],
       },
       {
         speaker: 'Sari',
@@ -18423,10 +18159,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bawa perlengkapan senimu ke kelas.',
         reportedOptions: [
           { text: 'Sari told Rani to bring her art supplies to class.', ok: true },
-          { text: 'Sari told Rani that bring her art supplies to class.', ok: false },
+          { text: 'Sari told Rani bringing her art supplies to class.', ok: false },
           { text: 'Sari told Rani to bring his art supplies to class.', ok: false },
-          { text: 'Sari told Rani bring her art supplies to class.', ok: false },
+          { text: 'Sari told Rani that bring her art supplies to class.', ok: false },
         ],
+        originalOptions: ['Don\'t bring your art supplies to class.', 'Did you bring your art supplies to class?', 'I brought my art supplies to class.'],
       },
       {
         speaker: 'Maya',
@@ -18435,10 +18172,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Pakai kacamata pelindungmu di laboratorium.',
         reportedOptions: [
           { text: 'Maya told Dimas to wear his safety goggles in the lab.', ok: true },
-          { text: 'Maya told Dimas that wear his safety goggles in the lab.', ok: false },
-          { text: 'Maya told Dimas to wear her safety goggles in the lab.', ok: false },
+          { text: 'Maya said Dimas to wear his safety goggles in the lab.', ok: false },
           { text: 'Maya told Dimas wear his safety goggles in the lab.', ok: false },
+          { text: 'Maya told Dimas to wear her safety goggles in the lab.', ok: false },
         ],
+        originalOptions: ['Don\'t wear your safety goggles in the lab.', 'Did you wear your safety goggles in the lab?', 'I wore my safety goggles in the lab.'],
       },
       {
         speaker: 'Doni',
@@ -18447,10 +18185,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Latih lagumu sebelum konser.',
         reportedOptions: [
           { text: 'Doni told Wati to practice her song before the concert.', ok: true },
+          { text: 'Doni told Wati practicing her song before the concert.', ok: false },
           { text: 'Doni told Wati that practice her song before the concert.', ok: false },
           { text: 'Doni told Wati to practice his song before the concert.', ok: false },
-          { text: 'Doni told Wati practice her song before the concert.', ok: false },
         ],
+        originalOptions: ['Don\'t practice your song before the concert.', 'Did you practice your song before the concert?', 'I practiced my song before the concert.'],
       },
       {
         speaker: 'Fajar',
@@ -18459,10 +18198,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Bersihkan meja kalian setelah kelas selesai.',
         reportedOptions: [
           { text: 'Fajar told the students to clean their desks after class.', ok: true },
-          { text: 'Fajar told the students that clean their desks after class.', ok: false },
-          { text: 'Fajar told the students to clean his desk after class.', ok: false },
+          { text: 'Fajar said the students to clean their desks after class.', ok: false },
           { text: 'Fajar told the students clean their desks after class.', ok: false },
+          { text: 'Fajar told the students cleaning their desks after class.', ok: false },
         ],
+        originalOptions: ['Don\'t clean your desks after class.', 'Did you clean your desks after class?', 'I cleaned my desk after class.'],
       },
       {
         speaker: 'Andi',
@@ -18471,10 +18211,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Angkat tanganmu untuk menjawab.',
         reportedOptions: [
           { text: 'Andi told Lina to raise her hand to answer.', ok: true },
-          { text: 'Andi told Lina that raise her hand to answer.', ok: false },
           { text: 'Andi told Lina to raise his hand to answer.', ok: false },
-          { text: 'Andi told Lina raise her hand to answer.', ok: false },
+          { text: 'Andi told Lina that raise her hand to answer.', ok: false },
+          { text: 'Andi said Lina to raise her hand to answer.', ok: false },
         ],
+        originalOptions: ['Don\'t raise your hand to answer.', 'Did you raise your hand to answer?', 'I raised my hand to answer.'],
       },
       {
         speaker: 'Rani',
@@ -18483,10 +18224,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Gunakan penggarismu untuk menggambar garis itu.',
         reportedOptions: [
           { text: 'Rani told Budi to use his ruler to draw the line.', ok: true },
-          { text: 'Rani told Budi that use his ruler to draw the line.', ok: false },
-          { text: 'Rani told Budi to use her ruler to draw the line.', ok: false },
           { text: 'Rani told Budi use his ruler to draw the line.', ok: false },
+          { text: 'Rani told Budi using his ruler to draw the line.', ok: false },
+          { text: 'Rani told Budi to use her ruler to draw the line.', ok: false },
         ],
+        originalOptions: ['Don\'t use your ruler to draw the line.', 'Did you use your ruler to draw the line?', 'I used my ruler to draw the line.'],
       },
     ],
   },
@@ -18512,9 +18254,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Rani told the tourists not to feed the monkeys.', ok: true },
           { text: 'Rani told the tourists to feed the monkeys.', ok: false },
-          { text: 'Rani told him not to feed the monkeys.', ok: false },
-          { text: 'Rani told the tourists to not feed the monkeys.', ok: false },
+          { text: 'Rani told the tourists don\'t feed the monkeys.', ok: false },
+          { text: 'Rani told the tourists not feed the monkeys.', ok: false },
         ],
+        originalOptions: ['Feed the monkeys!', 'Did you feed the monkeys?', 'We don\'t feed the monkeys.'],
       },
       {
         speaker: 'Budi',
@@ -18523,10 +18266,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Jangan tinggalkan sampah di jalur pendakian.',
         reportedOptions: [
           { text: 'Budi told the hikers not to leave any trash on the trail.', ok: true },
-          { text: 'Budi told the hikers to leave any trash on the trail.', ok: false },
-          { text: 'Budi told her not to leave any trash on the trail.', ok: false },
-          { text: 'Budi told the hikers to not leave any trash on the trail.', ok: false },
+          { text: 'Budi told the hikers to leave trash on the trail.', ok: false },
+          { text: 'Budi said the hikers not to leave any trash on the trail.', ok: false },
+          { text: 'Budi told the hikers to don\'t leave any trash on the trail.', ok: false },
         ],
+        originalOptions: ['Leave your trash on the trail.', 'Did you leave any trash on the trail?', 'We don\'t leave any trash on the trail.'],
       },
       {
         speaker: 'Sari',
@@ -18535,10 +18279,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Jangan sentuh terumbu karangnya.',
         reportedOptions: [
           { text: 'Sari told the divers not to touch the coral reef.', ok: true },
+          { text: 'Sari told the divers not touch the coral reef.', ok: false },
           { text: 'Sari told the divers to touch the coral reef.', ok: false },
-          { text: 'Sari told him not to touch the coral reef.', ok: false },
-          { text: 'Sari told the divers to not touch the coral reef.', ok: false },
+          { text: 'Sari said the divers not to touch the coral reef.', ok: false },
         ],
+        originalOptions: ['Touch the coral reef.', 'Did you touch the coral reef?', 'We don\'t touch the coral reef.'],
       },
       {
         speaker: 'Wati',
@@ -18547,10 +18292,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Jangan berisik di lorong.',
         reportedOptions: [
           { text: 'Wati told the guests not to make noise in the hallway.', ok: true },
+          { text: 'Wati told the guests don\'t make noise in the hallway.', ok: false },
+          { text: 'Wati told the guests to don\'t make noise in the hallway.', ok: false },
           { text: 'Wati told the guests to make noise in the hallway.', ok: false },
-          { text: 'Wati told him not to make noise in the hallway.', ok: false },
-          { text: 'Wati told the guests to not make noise in the hallway.', ok: false },
         ],
+        originalOptions: ['Make some noise in the hallway.', 'Did you make noise in the hallway?', 'We don\'t make noise in the hallway.'],
       },
       {
         speaker: 'Andi',
@@ -18559,10 +18305,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Jangan nyalakan api dekat tenda.',
         reportedOptions: [
           { text: 'Andi told the campers not to light a fire near the tent.', ok: true },
+          { text: 'Andi said the campers not to light a fire near the tent.', ok: false },
+          { text: 'Andi told the campers not light a fire near the tent.', ok: false },
           { text: 'Andi told the campers to light a fire near the tent.', ok: false },
-          { text: 'Andi told her not to light a fire near the tent.', ok: false },
-          { text: 'Andi told the campers to not light a fire near the tent.', ok: false },
         ],
+        originalOptions: ['Light a fire near the tent.', 'Did you light a fire near the tent?', 'We don\'t light a fire near the tent.'],
       },
       {
         speaker: 'Doni',
@@ -18572,9 +18319,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Doni told the visitors not to take photos inside the museum.', ok: true },
           { text: 'Doni told the visitors to take photos inside the museum.', ok: false },
-          { text: 'Doni told her not to take photos inside the museum.', ok: false },
-          { text: 'Doni told the visitors to not take photos inside the museum.', ok: false },
+          { text: 'Doni told the visitors don\'t take photos inside the museum.', ok: false },
+          { text: 'Doni told the visitors to don\'t take photos inside the museum.', ok: false },
         ],
+        originalOptions: ['Take photos inside the museum.', 'Did you take photos inside the museum?', 'We don\'t take photos inside the museum.'],
       },
       {
         speaker: 'Lina',
@@ -18583,10 +18331,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Jangan berdiri di dalam bus.',
         reportedOptions: [
           { text: 'Lina told the passengers not to stand on the bus.', ok: true },
+          { text: 'Lina told the passengers not stand on the bus.', ok: false },
+          { text: 'Lina said the passengers not to stand on the bus.', ok: false },
           { text: 'Lina told the passengers to stand on the bus.', ok: false },
-          { text: 'Lina told him not to stand on the bus.', ok: false },
-          { text: 'Lina told the passengers to not stand on the bus.', ok: false },
         ],
+        originalOptions: ['Stand on the bus.', 'Did you stand on the bus?', 'We don\'t stand on the bus.'],
       },
       {
         speaker: 'Maya',
@@ -18596,9 +18345,10 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         reportedOptions: [
           { text: 'Maya told the tourists not to chase the puppies in the garden.', ok: true },
           { text: 'Maya told the tourists to chase the puppies in the garden.', ok: false },
-          { text: 'Maya told him not to chase the puppies in the garden.', ok: false },
-          { text: 'Maya told the tourists to not chase the puppies in the garden.', ok: false },
+          { text: 'Maya told the tourists to don\'t chase the puppies in the garden.', ok: false },
+          { text: 'Maya told the tourists don\'t chase the puppies in the garden.', ok: false },
         ],
+        originalOptions: ['Chase the puppies in the garden.', 'Did you chase the puppies in the garden?', 'We don\'t chase the puppies in the garden.'],
       },
       {
         speaker: 'Fajar',
@@ -18607,10 +18357,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Jangan berjalan keluar dari jalur yang ditandai.',
         reportedOptions: [
           { text: 'Fajar told the group not to walk off the marked path.', ok: true },
+          { text: 'Fajar said the group not to walk off the marked path.', ok: false },
+          { text: 'Fajar told the group not walk off the marked path.', ok: false },
           { text: 'Fajar told the group to walk off the marked path.', ok: false },
-          { text: 'Fajar told her not to walk off the marked path.', ok: false },
-          { text: 'Fajar told the group to not walk off the marked path.', ok: false },
         ],
+        originalOptions: ['Walk off the marked path.', 'Did you walk off the marked path?', 'We don\'t walk off the marked path.'],
       },
       {
         speaker: 'Rani',
@@ -18619,10 +18370,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Jangan berenang terlalu jauh dari pantai.',
         reportedOptions: [
           { text: 'Rani told the swimmers not to swim too far from the shore.', ok: true },
-          { text: 'Rani told the swimmers to swim too far from the shore.', ok: false },
-          { text: 'Rani told him not to swim too far from the shore.', ok: false },
-          { text: 'Rani told the swimmers to not swim too far from the shore.', ok: false },
+          { text: 'Rani told the swimmers to swim far from the shore.', ok: false },
+          { text: 'Rani told the swimmers don\'t swim too far from the shore.', ok: false },
+          { text: 'Rani told the swimmers not swim too far from the shore.', ok: false },
         ],
+        originalOptions: ['Swim far from the shore.', 'Did you swim too far from the shore?', 'We don\'t swim too far from the shore.'],
       },
     ],
   },
@@ -18652,10 +18404,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku akan tiba di sini besok.',
         reportedOptions: [
           { text: 'Fajar said that he was arriving there the next day.', ok: true },
-          { text: 'Fajar said that he was arriving here tomorrow.', ok: false },
+          { text: 'Fajar said that he was arriving there the day before.', ok: false },
           { text: 'Fajar said that she was arriving there the next day.', ok: false },
-          { text: 'Fajar said that he is arriving there the next day.', ok: false },
+          { text: 'Fajar said that he was arriving there the following week.', ok: false },
         ],
+        originalOptions: ['I am arriving here today.', 'I am arriving here next week.', 'I arrived here yesterday.'],
       },
       {
         speaker: 'Maya',
@@ -18664,10 +18417,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang sibuk sekarang.',
         reportedOptions: [
           { text: 'Maya said that she was busy then.', ok: true },
-          { text: 'Maya said that she was busy now.', ok: false },
+          { text: 'Maya said that she was busy the day before.', ok: false },
           { text: 'Maya said that he was busy then.', ok: false },
-          { text: 'Maya said that she is busy then.', ok: false },
+          { text: 'Maya said that she was busy the next day.', ok: false },
         ],
+        originalOptions: ['I was busy yesterday.', 'I will be busy tomorrow.', 'I am busy today.'],
       },
       {
         speaker: 'Rani',
@@ -18676,10 +18430,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku menyelesaikan buku ini kemarin.',
         reportedOptions: [
           { text: 'Rani said that she had finished that book the day before.', ok: true },
-          { text: 'Rani said that she had finished this book yesterday.', ok: false },
+          { text: 'Rani said that she had finished that book the next day.', ok: false },
           { text: 'Rani said that he had finished that book the day before.', ok: false },
-          { text: 'Rani said that she finished that book the day before.', ok: false },
+          { text: 'Rani said that she had finish that book the day before.', ok: false },
         ],
+        originalOptions: ['I finished this book today.', 'I will finish this book tomorrow.', 'I am finishing this book now.'],
       },
       {
         speaker: 'Dimas',
@@ -18688,10 +18443,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku akan menyelesaikan laporan ini hari ini.',
         reportedOptions: [
           { text: 'Dimas said that he would finish the report that day.', ok: true },
-          { text: 'Dimas said that he would finish the report today.', ok: false },
+          { text: 'Dimas said that he would finish the report the day before.', ok: false },
           { text: 'Dimas said that she would finish the report that day.', ok: false },
-          { text: 'Dimas said that he will finish the report that day.', ok: false },
+          { text: 'Dimas said that he would finish the report the next day.', ok: false },
         ],
+        originalOptions: ['I will finish the report tomorrow.', 'I finished the report yesterday.', 'I am finishing the report now.'],
       },
       {
         speaker: 'Sari',
@@ -18700,10 +18456,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku akan mengunjungi kota ini minggu depan.',
         reportedOptions: [
           { text: 'Sari said that she would visit that city the following week.', ok: true },
-          { text: 'Sari said that she would visit this city next week.', ok: false },
+          { text: 'Sari said that she would visit that city the week before.', ok: false },
           { text: 'Sari said that he would visit that city the following week.', ok: false },
-          { text: 'Sari said that she will visit that city the following week.', ok: false },
+          { text: 'Sari said that she would visit that city the day before.', ok: false },
         ],
+        originalOptions: ['I will visit this city tomorrow.', 'I visited this city last week.', 'I will visit this city today.'],
       },
       {
         speaker: 'Budi',
@@ -18712,10 +18469,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku mengirim email itu kemarin.',
         reportedOptions: [
           { text: 'Budi said that he had sent the email the day before.', ok: true },
-          { text: 'Budi said that he had sent the email yesterday.', ok: false },
+          { text: 'Budi said that he had sent the email the next day.', ok: false },
           { text: 'Budi said that she had sent the email the day before.', ok: false },
-          { text: 'Budi said that he sent the email the day before.', ok: false },
+          { text: 'Budi said that he had send the email the day before.', ok: false },
         ],
+        originalOptions: ['I sent the email today.', 'I will send the email tomorrow.', 'I am sending the email now.'],
       },
       {
         speaker: 'Wati',
@@ -18724,10 +18482,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku akan tinggal di sini selama dua hari lagi.',
         reportedOptions: [
           { text: 'Wati said that she was staying there for two more days.', ok: true },
-          { text: 'Wati said that she was staying here for two more days.', ok: false },
           { text: 'Wati said that he was staying there for two more days.', ok: false },
-          { text: 'Wati said that she is staying there for two more days.', ok: false },
+          { text: 'Wati said that she had stayed there for two more days.', ok: false },
+          { text: 'Wati said that she was stay there for two more days.', ok: false },
         ],
+        originalOptions: ['I stayed here for two more days.', 'I will stay here for two more days.', 'I was staying here for two more days.'],
       },
       {
         speaker: 'Andi',
@@ -18736,10 +18495,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku akan menyelesaikan proyek ini besok.',
         reportedOptions: [
           { text: 'Andi said that he would finish that project the next day.', ok: true },
-          { text: 'Andi said that he would finish this project tomorrow.', ok: false },
+          { text: 'Andi said that he would finish that project the day before.', ok: false },
           { text: 'Andi said that she would finish that project the next day.', ok: false },
-          { text: 'Andi said that he will finish that project the next day.', ok: false },
+          { text: 'Andi said that he would finish that project the week before.', ok: false },
         ],
+        originalOptions: ['I will finish this project today.', 'I finished this project yesterday.', 'I will finish this project next week.'],
       },
       {
         speaker: 'Lina',
@@ -18748,10 +18508,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku sedang senggang sekarang.',
         reportedOptions: [
           { text: 'Lina said that she was free then.', ok: true },
-          { text: 'Lina said that she was free now.', ok: false },
+          { text: 'Lina said that she was free the day before.', ok: false },
           { text: 'Lina said that he was free then.', ok: false },
-          { text: 'Lina said that she is free then.', ok: false },
+          { text: 'Lina said that she was free the following week.', ok: false },
         ],
+        originalOptions: ['I was free yesterday.', 'I will be free tomorrow.', 'I am free today.'],
       },
       {
         speaker: 'Doni',
@@ -18760,10 +18521,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalId: 'Aku membeli ini kemarin.',
         reportedOptions: [
           { text: 'Doni said that he had bought that the day before.', ok: true },
-          { text: 'Doni said that he had bought this yesterday.', ok: false },
+          { text: 'Doni said that he had bought that the next day.', ok: false },
           { text: 'Doni said that she had bought that the day before.', ok: false },
-          { text: 'Doni said that he bought that the day before.', ok: false },
+          { text: 'Doni said that he had buy that the day before.', ok: false },
         ],
+        originalOptions: ['I bought this today.', 'I will buy this tomorrow.', 'I am buying this now.'],
       },
     ],
   },

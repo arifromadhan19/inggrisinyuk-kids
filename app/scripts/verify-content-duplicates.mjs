@@ -97,23 +97,80 @@ function stimuliSpeaking(topic) {
   return out;
 }
 
-/** Kumpulkan {phase, text} dari 1 topik `GrammarTopic` (format LAMA).
- *  `fill` dicek per OPSI yang sudah dirakit jadi kalimat utuh (before+word+
- *  after), BUKAN cuma template mentah dgn "___" — versi lama cuma bandingkan
- *  template ("I have never played ___") yg TIDAK PERNAH bisa match `examples`
- *  apa pun (examples selalu kalimat utuh, bukan ada blank-nya) — false-negative
- *  yg sama sifatnya dgn bug `norm()` di atas, ditemukan sesi audit yg sama. */
-function stimuliGrammar(topic) {
-  const out = [];
-  for (const ex of topic.examples ?? []) out.push({ phase: 'examples', text: ex.en });
-  for (const sc of topic.scramble ?? []) out.push({ phase: 'scramble', text: (sc.target ?? []).join(' ') });
-  if (topic.fill) {
-    for (const opt of topic.fill.options ?? []) {
-      const sentence = [...(topic.fill.before ?? []), opt.word, ...(topic.fill.after ?? [])].join(' ');
-      out.push({ phase: `fill(${opt.word})`, text: sentence });
+/**
+ * Grammar format KALIMAT (`GrammarSentenceTopic`, Explorer/Adventurer/
+ * Achiever) & format KETIGA (`GrammarTransformTopic`, Trailblazer) — cek
+ * struktur yang membuat soal bisa salah/bisa ditebak (`materi/pembeda_level.md`
+ * § Grammar, audit 2026-09-24):
+ *  - ≥10 kalimat per topik;
+ *  - `key` 1 kata, muncul TEPAT 1x sbg kata utuh di `en` (dikosongkan di
+ *    Tantangan, disorot di Kenalan);
+ *  - `wrong` = 2 kata beda, bukan `key`, & tidak ada di kalimat (jadi kata
+ *    jebakan Susun Kalimat — kalau sudah ada di kalimat, bank jadi dobel);
+ *  - tiap `alt` = kata yang SAMA PERSIS dgn `en` (cuma urutan beda);
+ *  - Trailblazer: `originalOptions` 3 kutipan beda, bukan `original`.
+ */
+function checkGrammarData(byLevel, errors) {
+  const tokens = (t) => t.replace(/[.,!?]/g, '').split(/\s+/).filter(Boolean).map((w) => w.toLowerCase());
+  for (const [level, topics] of Object.entries(byLevel ?? {})) {
+    for (const t of topics) {
+      if (Array.isArray(t.sentences)) {
+        if (t.sentences.length < 10) errors.push(`Grammar "${t.id}" (${level}): cuma ${t.sentences.length} kalimat (minimal 10).`);
+        const seen = new Set();
+        for (const s of t.sentences) {
+          const where = `Grammar "${t.id}" (${level}) "${s.en}"`;
+          const tk = tokens(s.en);
+          if (seen.has(tk.join(' '))) errors.push(`${where}: kalimat dobel dalam 1 topik.`);
+          seen.add(tk.join(' '));
+          if (!s.id) errors.push(`${where}: arti Indonesia (id) kosong.`);
+          if (/\s/.test(s.key)) errors.push(`${where}: key "${s.key}" harus 1 kata.`);
+          const hits = tk.filter((w) => w === s.key.toLowerCase()).length;
+          if (hits !== 1) errors.push(`${where}: key "${s.key}" muncul ${hits}x (harus tepat 1x sbg kata utuh).`);
+          if (!Array.isArray(s.wrong) || s.wrong.length !== 2) errors.push(`${where}: wrong harus tepat 2 kata.`);
+          const wl = (s.wrong ?? []).map((w) => w.toLowerCase());
+          if (new Set(wl).size !== wl.length || wl.includes(s.key.toLowerCase())) errors.push(`${where}: wrong dobel / sama dgn key.`);
+          for (const w of wl) {
+            if (/\s/.test(w)) errors.push(`${where}: wrong "${w}" harus 1 kata.`);
+            if (tk.includes(w)) errors.push(`${where}: wrong "${w}" sudah ada di kalimat (kata jebakan jadi dobel).`);
+          }
+          const sorted = [...tk].sort().join(' ');
+          for (const alt of s.alt ?? []) {
+            if ([...tokens(alt)].sort().join(' ') !== sorted) errors.push(`${where}: alt "${alt}" katanya tidak sama persis dgn kalimat.`);
+            if (tokens(alt).join(' ') === tk.join(' ')) errors.push(`${where}: alt "${alt}" sama dgn kalimat aslinya.`);
+          }
+        }
+      }
+      if (Array.isArray(t.texts)) {
+        if (level !== 'achiever') errors.push(`Grammar "${t.id}" (${level}): texts cuma dipakai tier Lanjut (Achiever).`);
+        if (t.texts.length < 3) errors.push(`Grammar "${t.id}" (${level}): texts minimal 3 (3 soal Tantangan).`);
+        const wordRe = (w) => new RegExp(`(^|[^A-Za-z'])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=[^A-Za-z']|$)`, 'gi');
+        for (const x of t.texts) {
+          const where = `Grammar "${t.id}" (${level}) teks "${(x.en ?? []).join(' ')}"`;
+          if (!Array.isArray(x.en) || x.en.length < 2 || x.en.length > 3) errors.push(`${where}: harus 2–3 kalimat.`);
+          const last = x.en[x.en.length - 1] ?? '';
+          const before = x.en.slice(0, -1).join(' ');
+          const hits = (last.match(wordRe(x.key)) ?? []).length;
+          if (hits !== 1) errors.push(`${where}: key "${x.key}" muncul ${hits}x di kalimat terakhir (harus tepat 1x).`);
+          if (!Array.isArray(x.wrong) || x.wrong.length !== 2) errors.push(`${where}: wrong harus tepat 2.`);
+          const opts = [x.key, ...(x.wrong ?? [])].map((o) => o.toLowerCase());
+          if (new Set(opts).size !== opts.length) errors.push(`${where}: opsi dobel.`);
+          if (!x.cue || !wordRe(x.cue).test(before)) errors.push(`${where}: cue "${x.cue}" tidak ada di kalimat sebelumnya.`);
+          if (x.cue && wordRe(x.cue).test(last)) errors.push(`${where}: cue "${x.cue}" ada di kalimat berumpang (petunjuk harus di kalimat lain).`);
+          if (!x.id) errors.push(`${where}: arti (id) kosong.`);
+        }
+      }
+      if (Array.isArray(t.transforms)) {
+        for (const tr of t.transforms) {
+          const where = `Grammar "${t.id}" (${level}) "${tr.original}"`;
+          const oo = tr.originalOptions ?? [];
+          if (oo.length !== 3) errors.push(`${where}: originalOptions harus tepat 3.`);
+          const all = [tr.original, ...oo].map((x) => x.toLowerCase());
+          if (new Set(all).size !== all.length) errors.push(`${where}: originalOptions dobel / sama dgn original.`);
+          if ((tr.reportedOptions ?? []).filter((o) => o.ok).length !== 1) errors.push(`${where}: reportedOptions harus tepat 1 ok:true.`);
+        }
+      }
     }
   }
-  return out;
 }
 
 function isOldListening(t) {
@@ -124,9 +181,6 @@ function isOldReading(t) {
 }
 function isOldSpeaking(t) {
   return !('items' in t) && !('turns' in t) && !('stories' in t) && Array.isArray(t.model) && Array.isArray(t.drill) && Array.isArray(t.roleplay);
-}
-function isOldGrammar(t) {
-  return !('items' in t) && !('transforms' in t) && Array.isArray(t.examples) && Array.isArray(t.scramble) && t.fill;
 }
 
 /** `SpeakingStoryTopic` (format KEEMPAT, `materi/speaking.md` §16) py
@@ -378,7 +432,7 @@ async function main() {
   checkTopics('Listening', mod.LISTENING_TOPICS_BY_LEVEL, isOldListening, stimuliListening, errors);
   checkTopics('Reading', mod.READING_TOPICS_BY_LEVEL, isOldReading, stimuliReading, errors);
   checkTopics('Speaking', mod.SPEAKING_TOPICS_BY_LEVEL, isOldSpeaking, stimuliSpeaking, errors);
-  checkTopics('Grammar', mod.GRAMMAR_TOPICS_BY_LEVEL, isOldGrammar, stimuliGrammar, errors);
+  checkGrammarData(mod.GRAMMAR_TOPICS_BY_LEVEL, errors);
   checkSpeakingStoryDuplicates(mod.SPEAKING_TOPICS_BY_LEVEL, errors);
   checkListeningPracticeVariants(mod.LISTENING_TOPICS_BY_LEVEL, errors);
   checkListeningGlobalUnique(mod.LISTENING_TOPICS_BY_LEVEL, errors);
@@ -393,7 +447,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('✅ Verifikasi duplikat kalimat lolos — tidak ada kalimat soal yang 100% sama antar tahap dalam 1 topik (format lama Listening/Reading/Speaking/Grammar), Latihan Inti Listening (items) ≥70% pakai kalimat practice beda dari Kenalan, kalimat utuh Listening unik antar topik/level, & Kenalan Listening ≥10 item tanpa pertanyaan yang memuat teks opsinya, & subjek pertanyaan Listening cocok dgn kalimatnya.');
+  console.log('✅ Verifikasi duplikat kalimat lolos — tidak ada kalimat soal yang 100% sama antar tahap dalam 1 topik (format lama Listening/Reading/Speaking), data Grammar (kunci/opsi salah/urutan alternatif) valid, Latihan Inti Listening (items) ≥70% pakai kalimat practice beda dari Kenalan, kalimat utuh Listening unik antar topik/level, & Kenalan Listening ≥10 item tanpa pertanyaan yang memuat teks opsinya, & subjek pertanyaan Listening cocok dgn kalimatnya.');
 }
 
 main().catch((err) => {

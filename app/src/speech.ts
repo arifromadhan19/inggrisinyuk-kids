@@ -204,8 +204,16 @@ function stripEmojiForSpeech(text: string): string {
   return /[\p{L}\p{N}]/u.test(cleaned) ? cleaned : '';
 }
 
-export function speak(text: string): void {
-  if (!ttsSupported || !stripEmojiForSpeech(text)) return;
+/** `onEnd` opsional — dipanggil begitu ucapan selesai/terpotong/gagal (mis.
+ *  utk mematikan animasi "sedang bersuara" di ikon 🔊). Tanpa TTS langsung
+ *  dipanggil. Pemanggil tetap perlu fallback timer sendiri: kalau `speak()`
+ *  lain membatalkan timer SEBELUM ucapan ini mulai, event-nya tidak pernah
+ *  datang. */
+export function speak(text: string, onEnd?: () => void): void {
+  if (!ttsSupported || !stripEmojiForSpeech(text)) {
+    onEnd?.();
+    return;
+  }
   stopListening(); // lihat komentar di atas `stopListening()` — cegah race condition mic vs TTS
   clearPendingTimers();
   window.speechSynthesis.cancel();
@@ -213,6 +221,10 @@ export function speak(text: string): void {
   u.lang = utteranceLang();
   u.rate = playbackRate;
   if (selectedVoice) u.voice = selectedVoice;
+  if (onEnd) {
+    u.onend = () => onEnd();
+    u.onerror = () => onEnd();
+  }
   const timerId = setTimeout(() => window.speechSynthesis.speak(u), SPEAK_SAFETY_DELAY_MS);
   pendingTimers.push(timerId);
 }

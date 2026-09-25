@@ -401,4 +401,208 @@ Urutan yang disarankan kalau dikerjakan: #1, #6, #4, #5 (murah, mekanik saja) �
 
 # Grammar
 
+Status: **DIIMPLEMENTASIKAN 2026-09-24 (opsi A)** — lihat "Status Implementasi" di bawah; audit & rencana tetap disimpan sbg latar belakang. Semua angka & aturan bertanda **[F]** (fakta dari sumber) atau **[U]** (usulan desain, belum diuji ke anak). Pertanyaan yang dijawab: selain FORMAT soal & DAFTAR struktur, apa yang membedakan level Grammar di Cambridge & lembaga lain, dan mana yang layak ditiru app ini.
+
+Grammar punya **2 lapis pembeda**, jangan dicampur (pola sama Listening/Speaking):
+1. **Lapis format & konten (SUDAH ADA)** — 3 format berdampingan (kontras 2 kalimat audio+gambar Little Stars/Starter → susun kata + lengkapi kalimat Explorer–Achiever → transformasi reported speech Trailblazer) + struktur yang naik mengikuti daftar resmi Starters → Movers → Flyers → PET. Alasan & riset: [grammar.md](grammar.md) §0, §9, §13–§22. Dokumen ini TIDAK mengulang itu.
+2. **Lapis mekanik (dokumen ini)** — bentuk pengecoh, jumlah opsi, konteks soal (gambar/kalimat/teks), banyaknya bantuan, dan cara pola dikenalkan (tanpa aturan → aturan 1 baris).
+
+## Ringkasan (High-Level)
+
+Temuan inti:
+1. **[F]** Cambridge YLE **tidak punya tes grammar terpisah**. Grammar diuji lewat bagian Reading & Writing, dan bentuk tugasnya naik jelas per tingkat (Handbook YLE, dibaca langsung):
+   - **Starters**: gambar + kalimat → ✓/✗ atau yes/no; isi rumpang dari kotak kata+gambar yang **semuanya kata benda tunggal/jamak**, dgn **2 kata lebih**.
+   - **Movers**: + Part 6 "**This task has a grammatical focus**": teks faktual 5 rumpang, **pilih 1 dari 3 kata**; + pilih respons dialog (3 opsi); + lengkapi kalimat 1–3 kata dari cerita.
+   - **Flyers**: Part 6 jadi **10 rumpang** (tetap 3 opsi); + **Part 7 rumpang terbuka: "There is no list of words... Both lexis and grammar are tested"**; dialog pakai daftar respons A–H dgn 1 respons lebih.
+2. **[F]** Pengecoh berubah jenis: Starters menguji "kalimat cocok dgn gambar?" ("if any element of the sentence is false, then they must write no"); Movers/Flyers menguji **bentuk kata** ("choosing the right form of words (plural/singular nouns, adjectives, verbs)", "if the gap is preceded by 'some', the answer cannot be a countable singular noun").
+3. **[F]** Konteks yang dibutuhkan melebar: Starters 1 kalimat + gambar; Flyers Part 7 "Their choice of a correct answer may depend on something said **further back or further ahead** in the text"; Movers & Flyers melatih kalimat diputar dgn makna sama ("On Friday the family ate breakfast in the garden" → "The family had breakfast in the garden on Friday").
+4. **[F]** KET (A2 Key for Schools 2020): pilihan ganda rumpang 3 opsi + **rumpang terbuka** di email (kata grammar). PET (B1 Preliminary 2020): pilihan ganda rumpang **4 opsi (A–D)** + rumpang terbuka. **Koreksi penting**: revisi 2020 **MENGHAPUS** tugas sentence transformation dari PET (Writing jadi 2 bagian: email + artikel/cerita). Premis "key-word sentence transformation = Writing Part 1 resmi PET" di grammar.md §9 sudah usang — lihat Gotcha.
+5. **[F]** Yang **KONSTAN** di semua level YLE: tiap bagian dibuka dgn 1–2 contoh ("Each part begins with one or two examples"), soal hanya memakai struktur di daftar resmi, dan tidak ada soal istilah tata bahasa (yang diuji selalu bentuk dalam kalimat, bukan nama rumus).
+6. **[F] Lembaga Indonesia**: Kurikulum Merdeka mengajarkan tata bahasa **terpadu dalam teks** (tidak ada unit rumus terpisah); LIA GEYL menyajikan grammar lewat cerita & game per unit; EF High Flyers (6–10 th) mulai memberi GrammarPro® (latihan grammar sistematis) sebagai jembatan ke Trailblazers (10–14 th); Kumon naik dari "Familiar Sentence Structures" (menirukan) → melengkapi kalimat sederhana → subjek/predikat → "various kinds of tenses and voices... correct word order, verb forms" → analisis kalimat majemuk. Tak satu pun menerbitkan mekanik soal per level (jumlah opsi/bantuan).
+7. **[F] Riset pemerolehan bahasa**: anak 5–7 th ternyata juga terbantu instruksi eksplisit (Lichtman 2016, bahasa buatan), dan form-focused instruction mulai memperkuat kemampuan analisis bahasa di usia 8–9 (Roehr-Brackin & Tellier 2019) — tapi belajar implisit tidak bergantung usia, sedangkan belajar eksplisit makin kuat seiring usia. Artinya: aturan eksplisit boleh muncul, **makin tua makin banyak**, tidak pernah jadi pengganti contoh.
+8. **Gap terbesar di app sekarang**: dalam 1 format mekaniknya **identik antar level** — Little Stars = Starter (2 kartu, tanpa Petunjuk); Explorer = Adventurer = Achiever (susun kata tanpa kata jebakan, reveal jawaban setelah 2x salah, Tantangan "Bikin Sendiri" 3 opsi yang SEMUANYA benar, auto-advance). Pembeda antar level saat ini HANYA struktur yang diajarkan (lapis 1), lapis 2 nol. Selain itu 2 kekurangan baseline: Susun Kalimat format lama **tanpa arti/audio sama sekali** (anak menyusun kata tanpa tahu kalimat apa yang dituju), dan Tantangan format lama tidak pernah menguji bentuk yang salah (padahal Movers/Flyers Part 6 justru menguji itu).
+
+### Tier yang Diusulkan (semua [U], belum diuji ke anak)
+
+| Level | Tier | Konteks soal | Jenis pengecoh | Opsi Tantangan | Kata jebakan Susun Kalimat | 💡 Petunjuk / reveal | Pengenalan pola di Kenalan |
+|---|---|---|---|---|---|---|---|
+| Little Stars | Dasar | 1 kalimat + gambar | beda makna (gambar lain) | 2 (biner) | — | tanpa Petunjuk (biner) | contoh saja |
+| Starter | Dasar | 1 kalimat + gambar | beda makna, **seluruh kalimat harus cocok** | 2 → **3 kartu** | — | tanpa Petunjuk | contoh saja |
+| Explorer | Menengah | 1 kalimat + arti Indonesia | **beda bentuk** (is/are, -s, a/an) | 3 (1 benar) | **1** | reveal setelah 2x salah | contoh + **kata pembeda disorot** |
+| Adventurer | Menengah | 1 kalimat, arti via Petunjuk | beda bentuk | 3 | **2** | reveal setelah 2x salah | contoh + sorot |
+| Achiever | Lanjut | **teks pendek 2–3 kalimat** (jawaban bergantung kalimat lain) | bentuk hampir-benar | 3 | **2** | reveal setelah **3x** salah | contoh + sorot + **aturan 1 baris** |
+| Trailblazer | Lanjut | teks pendek / kutipan | bentuk hampir-benar (sudah ada) | 4 (sudah ada) | n/a (format transformasi) | Petunjuk **🔒 sampai 1x coba**, eliminasi **1** opsi | contoh + aturan 1 baris |
+
+Intinya: **Dasar** = mencocokkan kalimat dgn gambar (Starters Part 1–2); Starter naik sedikit dgn kartu ke-3 yang menuntut SELURUH kalimat didengar. **Menengah** = pengecoh berganti dari "gambar lain" ke "bentuk kata lain" (Movers Part 6) dan kata jebakan mulai muncul. **Lanjut** = jawaban bergantung konteks di luar kalimat itu sendiri (Flyers Part 7, KET/PET cloze), bantuan lebih pelit, aturan boleh disebut 1 baris.
+
+## Kondisi Sekarang (Baseline di Kode)
+
+| Aspek | Sekarang | Beda per level? |
+|---|---|---|
+| Format & struktur | 3 format + struktur naik per tier Cambridge | **Ya** (lapis 1) |
+| Little Stars vs Starter | `runLatihanIntiPattern`/`runTantanganPattern`: 2 kartu/2 ucapan, tanpa Petunjuk | Tidak |
+| Susun Kalimat (Explorer–Achiever) | `runLatihanInti`: bank kata = persis kata target (0 jebakan), tanpa arti/audio, "💡 Jawabannya" setelah `wrongSoFar >= 2` | Tidak |
+| Tantangan format lama | `runTantangan`: 3 opsi `fill`, **semua benar** (personalisasi), `setTimeout(onDone, 1400)` | Tidak |
+| Trailblazer | 4 opsi, Petunjuk eliminasi 2 sejak awal | — (1 level) |
+| Kenalan | daftar contoh + 🔊 ("Perhatikan polanya lewat contoh (bukan rumus!)"), tanpa sorotan kata pembeda | Tidak |
+| Kecepatan TTS | `DEFAULT_RATE` 0.75x (Grammar tidak ikut `applyDefaultRate` per level) | Tidak |
+| Parameter `contentLevel` | TIDAK ADA di `games/grammar.ts` — cuma `level` (praise) | — |
+
+## Bukti Riset per Sumbu
+
+| Sumbu | Temuan | Sumber |
+|---|---|---|
+| **Bentuk tugas** | Starters: ✓/✗ & yes/no kalimat vs gambar, rumpang dari kotak (kata benda tunggal/jamak). Movers: + 3-opsi "grammatical focus", dialog 3 opsi, lengkapi 1–3 kata. Flyers: + 10 rumpang 3-opsi, rumpang terbuka tanpa daftar kata, lengkapi 1–4 kata. KET: MC cloze 3 opsi + open cloze email. PET: MC gap fill 4 opsi + open gap fill. | Handbook YLE; A2 Key for Schools 2020; B1 Preliminary 2020 update |
+| **Jenis pengecoh** | Starters: "if any element of the sentence is false... write no"; latih "mixing up plurals and singulars". Movers/Flyers: "choosing the right form of words", "some → cannot be a countable singular noun"; beri "more pictures than sentences" (is riding a bike vs has got a bike). | Handbook YLE |
+| **Kata lebih (extra)** | Starters Part 4: 2 kata lebih; Movers Part 4: 2 kata lebih; Flyers Part 4: 4 kata lebih; Flyers Part 3: 1 respons lebih. Jumlah pengecoh naik per level. | Handbook YLE |
+| **Luas konteks** | Starters: 1 kalimat + gambar. Movers Part 5: gambar "do not provide answers". Flyers Part 7: jawaban bisa bergantung "further back or further ahead in the text"; latih rujukan kata ganti (John, he, him, Paul's brother). | Handbook YLE |
+| **Kalimat diputar** | Movers & Flyers: latih "how sentences can be turned around whilst retaining their meaning". | Handbook YLE |
+| **Contoh dulu** | Semua bagian YLE dibuka 1–2 contoh. | Handbook YLE |
+| **Eksplisit vs implisit** | Anak 5–7 th juga terbantu instruksi eksplisit (Lichtman 2016); usia 8–9 form-focused instruction memperkuat analisis bahasa (Roehr-Brackin & Tellier 2019); belajar eksplisit makin kuat seiring usia. | RiPL summary; Tandfonline (kindergartners); ResearchGate (Muñoz) |
+| **Kurikulum Merdeka** | Tata bahasa terpadu dalam teks bermakna, bukan unit terpisah; komunikasi "pada tingkat teks, bukan hanya sekadar kalimat". | UNESA (panduan modul ajar); ringkasan CP |
+| **LIA / EF / Kumon** | LIA GEYL: SD kelas 1–6, 6 level × sub-level, unit berbasis cerita + game. EF: Small Stars 3–6, High Flyers 6–10 (+GrammarPro®), Trailblazers 10–14. Kumon: menirukan struktur → melengkapi kalimat → subjek/predikat → tenses & voices, urutan kata → kalimat majemuk. Tidak ada yang menerbitkan jumlah opsi/bantuan per level. | lblia.com; LIA Depok; english1.co.id; Kumon Table of Learning |
+| **Buku grammar anak** | Macmillan *Grammar Goals* (6–12 th, 6 level): tiap unit 3 tingkat tantangan bronze/silver/gold, konteks kehidupan anak, latihan gaya ujian Cambridge. | Macmillan |
+
+## Rujukan Institusi
+
+**Cambridge — cara grammar diuji per tingkat**
+
+| Level app | Backbone | Tugas grammar | Pengecoh | Konteks |
+|---|---|---|---|---|
+| Little Stars/Starter | (pra-Starters) | — | — | — |
+| Explorer | Pre A1 Starters | ✓/✗ & yes/no kalimat vs gambar; rumpang dari kotak (2 kata lebih) | makna vs gambar; tunggal/jamak | 1 kalimat + gambar |
+| Adventurer | A1 Movers | + 3-opsi "grammatical focus" (5 rumpang); dialog 3 opsi | bentuk kata (kata benda/sifat/kerja, present & past) | teks faktual pendek |
+| Achiever | A2 Flyers | 10 rumpang 3-opsi; **rumpang terbuka tanpa daftar**; dialog A–H (1 lebih) | bentuk + makna teks | teks, jawaban bisa bergantung kalimat lain |
+| Trailblazer | A2 Key → B1 Preliminary | MC cloze (3 → 4 opsi); open cloze | kata grammar (preposisi, kata bantu, kata ganti) | email/teks utuh |
+
+## Usulan
+
+| # | Usulan | Dasar bukti | Usaha | Catatan |
+|---|---|---|---|---|
+| 1 | **Arti Indonesia di Susun Kalimat** (Explorer tampil; Adventurer+ lewat 💡 Petunjuk) | baseline: anak menyusun tanpa tahu kalimat apa yang dituju; YLE selalu memberi konteks (gambar/teks) | Sedang (data: `GrammarScramble.id` utk ±31 topik) | Bukan tier murni — perbaikan baseline, tapi letak artinya ditier. Tetap TANPA ikon (aturan Susun Kalimat CLAUDE.md) |
+| 2 | **Kata jebakan bentuk** di Susun Kalimat — Explorer 1, Adventurer 2, Achiever 2 | Starters/Movers 2 kata lebih, Flyers 4; pengecoh bentuk ("mixing up plurals and singulars", "right form of words") | Sedang | Jebakan = BENTUK SALAH kata yang ada (is↔are, go↔goes, a↔an), **diauthoring per soal** (field `decoys`), bukan acak — jebakan acak bisa membentuk kalimat lain yang juga benar (pelajaran Listening `pickDecoy`). Dicek build: jebakan tidak boleh ada di `target` |
+| 3 | **Tantangan format lama dapat 1 jawaban benar** — "Pilih Bentuk yang Pas" 3 opsi (1 benar + 2 bentuk salah) sebelum/sesudah "Bikin Sendiri" | Movers/Flyers Part 6 "grammatical focus", 3 opsi | Tinggi | Ini menyentuh lapis 1 (format) → **butuh keputusan user**. "Bikin Sendiri" (personalisasi) tetap boleh dipertahankan sbg penutup yang non-punitive. Wajib ikut aturan merah+getar+tetot & quiz-dot |
+| 4 | **Reveal "💡 Jawabannya" setelah 3x salah di Achiever** (Explorer/Adventurer tetap 2x) | Flyers "minimal assistance"; pola sama Vocab `isFlyersOrAbove` | Rendah | Satu angka di `runLatihanInti` |
+| 5 | **Petunjuk Trailblazer 🔒 sampai 1x coba & eliminasi 1 opsi** (bukan 2) | KET "very little prompting"; pola sama Vocab Lanjut & Speaking #4 | Rendah | `wireTransformHint` |
+| 6 | **Starter: kartu ke-3** di Latihan Inti pola — bentuk sama, benda lain (mis. "They're cars." → kartu 🚗🚗 / 🚗 / 🚌🚌) | Starters Part 2 "if any element is false, write no" — anak harus dengar SELURUH kalimat | Sedang | Little Stars tetap 2 kartu. Cek aturan "Soal Tidak Boleh Ditebak": kartu ke-3 tidak boleh bisa dieliminasi tanpa dengar bentuknya |
+| 7 | **Sorotan kata pembeda di Kenalan** (Explorer+) & **aturan 1 baris** (Achiever+, mis. "Pola: dia/Ia → kata kerja + s") | Lichtman 2016; Roehr-Brackin & Tellier 2019; EF GrammarPro mulai usia SD; Kurikulum Merdeka tetap berbasis contoh | Sedang (data: penanda kata di `examples`, 1 kalimat aturan per topik) | Aturan dalam Bahasa Indonesia sehari-hari, TANPA istilah ("simple present", "auxiliary"). Dasar tetap contoh murni |
+| 8 | **Konteks teks pendek di Achiever** — 2–3 soal per topik berupa 2–3 kalimat, rumpang yang jawabannya bergantung kalimat lain (kata ganti, waktu lampau) | Flyers Part 7 "further back or further ahead"; KET/PET cloze; Kurikulum Merdeka "tingkat teks" | Tinggi (konten baru) | Ikut usulan #3; tetap tap (bukan ketik) — app tidak punya input menulis bebas |
+| 9 | **Kecepatan audio** ikut Listening (0.75x s.d. Explorer, 1x Adventurer+) di Latihan Inti/Tantangan Grammar | CEFR; konsistensi dgn Speaking #6 | Rendah | `app.ts` `applyDefaultRate` tinggal tambah cabang `grammar`. Little Stars/Starter tetap 0.75x (audio = soal itu sendiri) |
+
+Urutan pengerjaan: lihat "Rencana Implementasi di App" di bawah (direvisi setelah audit — fondasi data dulu, baru tier).
+
+## Status Implementasi (2026-09-24, opsi A)
+
+| Rencana | Status | Di kode |
+|---|---|---|
+| Tahap 0.1 judul 4 topik + cek build | ✅ | `verify-vocab-content.mjs` (Grammar ikut cek judul & emoji) |
+| Tahap 0.2 Trailblazer Tantangan tidak bisa ditebak | ✅ | `GrammarTransformItem.originalOptions` (100 item); tebakan kata isi 98/100 → 11/100 |
+| Tahap 0.3 migrasi format lama → format kalimat | ✅ | `GrammarSentenceTopic` 31 topik × 10 kalimat; `renderKenalanSentence`/`runLatihanIntiSentence`/`runTantanganSentence`; tipe `GrammarTopic` dihapus |
+| Tahap 1 kerangka tier | ✅ | `grammarTier`, `sentenceSettings`, `grammarDefaultRate` (+ `app.ts applyDefaultRate`), `contentLevel` ke 5 fungsi |
+| Tahap 2 kata jebakan, arti, Pilih Bentuk, kartu ke-3 Starter | ✅ | `wrong` → jebakan (Explorer 1, Adventurer/Achiever 2); `buildContrastCards` |
+| Tahap 3 sorotan kata & aturan 1 baris | ✅ | `mark.g-key` (semua), `topic.rule` (Achiever) |
+| Tahap 3 soal teks pendek Achiever (#8) | ✅ 2026-09-25 | `GrammarSentenceTopic.texts` (33 teks), 3 dari 10 soal Tantangan Achiever (keputusan user: menggantikan, total tetap 10), kata kunci disorot sesudah menjawab |
+
+Catatan desain yang berubah dari tabel usulan: Petunjuk di format kalimat = ungkap arti + coret 1 dari 3 opsi (bukan 2 dari 4); Explorer tanpa tombol Petunjuk di Susun Kalimat (arti sudah tampil). Verifikasi: `npm run build` lolos; Playwright 390px & 1280px (Explorer/Adventurer/Achiever/Trailblazer/Starter × 3 langkah) 0 pageerror — susun benar → pujian, jawab salah → merah+tetot, Petunjuk 🔒 terbuka setelah Coba Lagi di Achiever, Starter 3 kartu.
+
+## Audit Materi, Alur & Format (2026-09-24)
+
+Diaudit dari data asli (`GRAMMAR_TOPICS_BY_LEVEL` di-bundle esbuild) + `games/grammar.ts`. Termasuk perubahan Kenalan "🎮 Main · Cocok?" yang saat audit masih belum di-commit (sesi paralel).
+
+**Yang sudah baik**
+- Little Stars & Starter (20 topik × 10 kata): 0 kebocoran angka, pembeda formA/formB tipis (1–2 kata, mis. "I like / I don't like") = memang struktur yang diuji. Alur 3 tahap bentuknya beda-beda: Main = nilai cocok/tidak, Latihan Inti = kalimat→gambar, Tantangan = gambar→kalimat (pola Starters Part 1–2).
+- Trailblazer (10 topik × 10 kutipan): tiap soal tepat 1 `ok:true`, 4 opsi, pengecoh bentuk (tense tidak digeser / kata ganti salah / "will").
+- Susun Kalimat format lama sudah punya quiz-dot, persist, merah+getar+tetot, reveal setelah 2x salah.
+
+**Temuan (urut dampak)**
+
+| # | Temuan | Bukti | Dampak |
+|---|---|---|---|
+| A1 | **Konten format lama sangat tipis** — 30 dari 31 topik Explorer/Adventurer/Achiever cuma punya ≤2 kalimat `scramble`; `there-is` & `pronouns` cuma 1. Latihan Inti 10 soal = 2 kalimat diulang 5x (atau 1 kalimat 10x). `examples` (Kenalan) cuma 2–4 kalimat | audit data | Target "≥10 materi & ≥10 soal" (CLAUDE.md) tidak tercapai; pembeda level mustahil diterapkan di 2 kalimat yang diulang |
+| A2 | **Tantangan format lama tidak menguji grammar** — 1 soal saja, 3 opsi SEMUA benar, dan opsinya kata benda/kosakata, bukan bentuk grammar (`question-words`: "She is my ___" sister/aunt/cousin; `must-mustnt`: "you must bring your ___" pencil/ruler/eraser; `comparatives`: "bigger than the ___" bear/panda/tiger) | audit data | Tahap tersulit justru tidak menguji struktur topiknya |
+| A3 | **Tantangan format lama melanggar aturan respons** — tanpa `playCorrectTone`/confetti, tanpa quiz-dot, `setTimeout(onDone, 1400)` auto-advance, teks pujian hardcode 1 bahasa (bukan `pickPraise`) | `runTantangan` | Pelanggaran "Setiap Percobaan Anak Harus Direspons" & "Tombol Coba Lagi/Lanjut" |
+| A4 | **Tantangan Trailblazer bisa ditebak tanpa paham grammar** — opsi = 4 kutipan BEDA isi; cukup cocokkan kata benda/kerja → **98/100 soal** terjawab benar hanya dgn tumpang-tindih kata isi | skrip audit | Pola kebocoran #2 ("Soal Tidak Boleh Bisa Ditebak") |
+| A5 | **Susun Kalimat format lama tanpa arti & audio** — anak tidak tahu kalimat mana yang dituju; `scramble`/`examples` tidak punya field `id` sama sekali | `GrammarScramble {emoji,target}` | Anak menebak urutan, bukan memahami pola |
+| A6 | **Urutan lain yang sama-sama benar dianggap salah** — mis. "She eats breakfast in the morning" vs "In the morning she eats breakfast"; "He shouts every morning"; "They could jump high last summer" | 11 kalimat berketerangan waktu/sebab | Anak benar tapi dapat merah+tetot |
+| A7 | **Judul belum "Indonesia (English)"** — `Pola "This is..."`, `There is / There are`, `Kata Ganti Orang` (Explorer), `Reported Speech — Dia Bilang…` (Trailblazer) | regex aturan judul | Aturan wajib judul; skrip build belum mengecek Grammar |
+| A8 | **Mekanik identik antar level** (lihat "Kondisi Sekarang") — tidak ada `contentLevel` di `games/grammar.ts` | kode | Pembeda level (dokumen ini) belum bisa dipasang |
+| A9 | Progres format lama masih fallback `isStepVisited` (Latihan Inti sudah punya section per soal, Tantangan belum) | `topicProgressPercent` | "Selesai" format lama tidak sepresisi Vocab/Listening |
+
+## Rencana Implementasi di App
+
+Prinsip: **perbaiki fondasi dulu, baru pasang tier** — tier di atas data 1–2 kalimat tidak ada artinya (A1), dan pembeda "pengecoh bentuk" tidak bisa dipasang di Tantangan yang semua opsinya benar (A2).
+
+**Tahap 0 — Perbaikan fondasi (bukan tier, tapi syarat)**
+1. Judul 4 topik (A7) + cek judul Grammar di `verify-vocab-content.mjs`.
+2. Tantangan Trailblazer (A4): opsi diganti **4 versi kutipan dari kalimat yang SAMA** (mis. "I study grammar every day." / "I studied grammar every day." / "You study grammar every day." / "I will study grammar every day.") — field baru `originalOptions` diauthoring per item. Yang diuji jadi "geser balik tense & kata ganti", bukan cocok isi.
+3. **Keputusan user**: format lama dimigrasi ke bentuk `items` (usulan tipe `GrammarSentenceTopic`: per kalimat `en`/`id`/`emoji?` + `blank: {answer, options}` + `decoys?`), ≥10 kalimat per topik, 1 kalimat dipakai lintas Kenalan/Latihan Inti/Tantangan (boleh, pola `items` — bukan duplikat). Ini sekaligus menutup A1, A2, A5, A9. Susun Kalimat menerima semua urutan yang ditulis di `alt?: string[][]` (A6). Tantangan jadi "🔎 Pilih Bentuk yang Pas" 10 soal, 3 opsi, 1 benar (Movers/Flyers Part 6), lalu "Bikin Sendiri" boleh tetap jadi penutup.
+   - Alternatif tanpa migrasi: tambah field ke `GrammarTopic` lama (`scramble[].id`, `scramble[].decoys`, `fill` → array soal bertanda `ok`) + tulis ≥10 `scramble` per topik. Lebih kecil kodenya, tapi `examples`/`scramble`/`fill` tetap 3 array terpisah yang wajib dijaga tidak duplikat.
+4. Tantangan lama (sementara, kalau migrasi belum jalan): tone+confetti+`pickPraise`, tombol Lanjut manual (A3).
+
+**Tahap 1 — Kerangka tier (murah, 1 PR)**
+- `app.ts`: kirim `level.key` sebagai `contentLevel` ke 9 fungsi Grammar (parameter baru, `level` praise tetap).
+- `games/grammar.ts`: `grammarTier(contentLevel)` → `'dasar' | 'menengah' | 'lanjut'` (duplikat lokal pola `isAboveStarter`/`isFlyersOrAbove` Vocab) + 1 tabel setelan:
+
+| Setelan | Dasar (LS/Starter) | Menengah (Explorer/Adventurer) | Lanjut (Achiever/Trailblazer) |
+|---|---|---|---|
+| `revealAfter` (💡 Jawabannya) | 2 | 2 | 3 |
+| `hintGate` (Petunjuk terkunci s.d. 1x coba) | tidak | tidak | ya |
+| `hintEliminate` (4 opsi) | — | 2 | 1 |
+| `showMeaning` (arti Indonesia soal) | — | Explorer tampil; Adventurer via Petunjuk | via Petunjuk |
+| `decoys` Susun Kalimat | — | Explorer 1, Adventurer 2 | Achiever 2 |
+| `options` Tantangan | 2 (Starter: 3 kartu) | 3 | Achiever 3, Trailblazer 4 |
+| Kecepatan audio Latihan Inti/Tantangan | 0.75x | Explorer 0.75x, Adventurer 1x | 1x |
+
+- Langsung aktif tanpa data baru: `revealAfter`, `hintGate`/`hintEliminate` Trailblazer, kecepatan audio (`app.ts` `applyDefaultRate` cabang `grammar`).
+
+**Tahap 2 — Tier yang butuh data (setelah Tahap 0 poin 3)**
+- `decoys` & `showMeaning` di Susun Kalimat; "Pilih Bentuk" 3 opsi; build mengecek: jebakan tidak ada di `target`, tiap soal tepat 1 benar, pengecoh = bentuk lain dari kata yang sama (bukan kata lain).
+- Starter kartu ke-3 (bentuk sama, benda lain dari topik — dibangun otomatis dari `items`, tanpa data baru).
+
+**Tahap 3 — Lanjutan (keputusan user)**
+- Achiever: 2–3 soal per topik berupa teks pendek 2–3 kalimat (jawaban bergantung kalimat lain).
+- Kenalan: sorot kata pembeda (Explorer+), aturan 1 baris tanpa istilah (Achiever+).
+
+**Verifikasi tiap tahap**: `npm run build`; Playwright 390px & 1280px per tier (1 topik Dasar/Menengah/Lanjut); skrip audit tebakan-kata-isi Trailblazer harus turun jauh dari 98/100.
+
+## Yang SENGAJA Tidak Dibedakan
+
+1. **Contoh dulu, lalu latihan** — YLE membuka tiap bagian dgn contoh di semua level; Kenalan tetap ada di semua level.
+2. **Retry tanpa batas, "Lanjut" selalu ada, teks non-punitive** — aturan wajib app (CLAUDE.md), sama di semua level.
+3. **Tanpa istilah tata bahasa ke anak** — Cambridge tidak menguji istilah; Kurikulum Merdeka terpadu dalam teks. Aturan 1 baris (#7) pun ditulis tanpa istilah.
+4. **Tanpa mengetik jawaban** — rumpang terbuka (Flyers Part 7, KET/PET open cloze) sengaja tidak ditiru: app tap-based di semua skill; yang diambil cuma "tanpa kotak kata" → diganti opsi hampir-benar.
+5. **Tanpa timer** — handbook menyarankan batas waktu utk latihan kelas, tapi app menolak timer (kid-friendly, CLAUDE.md poin 4).
+6. **Kenalan 🎮 Main** — tahap exposure, sama keputusan Vocabulary/Listening.
+
+## Gotcha
+
+- `games/grammar.ts` **belum menerima `contentLevel`** — semua fungsi cuma dapat `level` (praise). Tambahkan parameter terpisah sebelum mengerjakan usulan per-level (lihat "⚠️ Gotcha" Vocabulary). Explorer/Adventurer/Achiever memakai fungsi yang SAMA (`runLatihanInti`), jadi pembeda harus dari `contentLevel`, bukan dari format.
+- **Premis Trailblazer usang**: grammar.md §9/§10.5 membenarkan format transformasi dgn "key-word sentence transformation = Writing Part 1 resmi PET". Revisi PET 2020 menghapus tugas itu (Writing sekarang email + artikel/cerita; grammar diuji lewat Reading Part 5 MC gap fill 4 opsi & Part 6 open gap fill). Formatnya **tetap layak** sbg latihan (reported speech masih materi B1 — konfirmasi pihak ketiga, confidence sedang), tapi alasannya bukan lagi "meniru tugas PET". Kalau Trailblazer dikembangkan lagi, kandidat yang lebih setia ke PET 2020 = rumpang pilihan ganda 4 opsi dalam teks pendek (usulan #8 versi Lanjut).
+- `runTantangan` format lama menambah "." di akhir kalimat & merayakan SEMUA opsi (grammar.md §15.3) — usulan #3 butuh fungsi/section baru, jangan ubah `runTantangan` lama diam-diam (semua topik Explorer–Achiever ikut berubah).
+- Kata jebakan (#2) di Susun Kalimat: evaluasi otomatis sudah memakai `answer.length === sc.target.length` (bukan "bank habis"), jadi jebakan aman ditambahkan ke `bank` — tapi `bank` dibangun ulang dari `sc.target` di 3 tempat (awal, "Bersihkan", "Coba Lagi"); ketiganya wajib ikut memasukkan jebakan.
+
+## Batasan Riset (Jujur)
+
+- Handbook YLE (Starters/Movers/Flyers) dibaca langsung (teks penuh diekstrak) → confidence tinggi untuk bentuk tugas, jumlah soal, kata lebih, dan saran persiapan.
+- Format PET 2020 dibaca langsung dari dokumen resmi "2020 exam update" → confidence tinggi soal penghapusan sentence transformation. Format KET 2020 dari ringkasan pihak ketiga (examenglish) + judul handbook resmi → confidence sedang-tinggi. Daftar grammar B1 (reported speech) dari sumber pihak ketiga → confidence sedang.
+- LIA, EF, Kumon tidak menerbitkan mekanik soal per level; Kumon yang terbaca adalah program native English (Kumon Singapura), bukan EFL Indonesia. Kurikulum Merdeka dari ringkasan (UNESA/artikel), situs Kemendikbud tidak dibaca langsung sesi ini.
+- Studi Lichtman memakai bahasa buatan dalam 6 hari — bukan bukti langsung untuk app ini, hanya arah umum.
+- Semua angka usulan (jumlah jebakan, 3x reveal, kartu ke-3) adalah **desain**, bukan angka dari sumber — wajib dicoba ke anak.
+
+## Sumber
+
+- Cambridge YLE Handbook for Teachers (Starters/Movers/Flyers): https://www.britishschoolrc.com/userfiles/files/Young_Learners_English_Handbook.pdf , https://res.cloudinary.com/swiss-exams/image/upload/v1697905392/Cambridge_Pre_A1_A2_Young_Learners_Handbook_for_teachers_pdf_dc10b199e4.pdf
+- B1 Preliminary 2020 exam update: https://www.cambridgeenglish.org/images/update-2020-b1-preliminary.pdf
+- A2 Key for Schools Handbook 2020: https://www.cambridgeenglish.org/images/504506-a2-key-for-schools-handbook-2020.pdf ; ringkasan R&W: https://www.examenglish.com/KET/A2_key_schools_reading_and_writing.html
+- Webinar Cambridge Key & Preliminary 2020: https://assets.cambridgeenglish.org/webinars/key-preliminary-revisions-2020-exam-strategies-for-teachers-oct19.pdf
+- Reported speech B1 (pihak ketiga): https://www.examenglish.com/grammar/B1_reported_speech.htm
+- Flyers grammar structures (ringkasan): https://flyer.us/grammar-structures-in-flyers-cambridge/
+- Lichtman 2016 (RiPL summary): https://ripl.uk/research/one-page-summaries/lichtman-k-2016/ ; explicit instruction kindergartners: https://www.tandfonline.com/doi/full/10.1080/15475441.2021.1941968 ; Muñoz dkk.: https://www.researchgate.net/publication/296056413_Age_and_learning_environment_Are_children_implicit_second_language_learners
+- Kurikulum Merdeka modul ajar Bahasa Inggris: https://s2pendidikanbahasainggris.fbs.unesa.ac.id/post/panduan-lengkap-penyusunan-modul-ajar-bahasa-inggris-dalam-kurikulum-merdeka
+- LIA GEYL: https://lblia.com/kursus-bahasa-inggris-anak-sd/ , https://www.lia-depok.ac.id/program/reguler/?id=11
+- EF (English1) High Flyers / GrammarPro: https://english1.co.id/highflyers ; tangga program EF: https://www.english1.com/blog/about-ef/tefl-partners-info/
+- Kumon Table of Learning (English): https://kumon.sg/wp-content/uploads/2021/08/Table-of-Learning-ENGLISH.pdf
+- Macmillan Grammar Goals: https://www.macmillanenglish.com/us/catalogue/courses/young-learners/grammar-goals/course-information
+
+
 # Reading

@@ -346,6 +346,32 @@ Speaking sekarang py 4 format sekaligus, prinsip pembeda SAMA PERSIS dgn Listeni
 
 6. **PILOT "Ngobrol" Little Stars** — sudah dirollout ke semua level, lihat "Speaking — SATU Alur di Semua Level" di atas.
 
+### ✏️ Grammar — Format KALIMAT + Pembeda Level (2026-09-24, menggantikan format LAMA di bawah)
+
+🔒 Permintaan user ("implementasi opsi A", audit `materi/pembeda_level.md` § Grammar): Explorer/Adventurer/Achiever TIDAK LAGI pakai `GrammarTopic` (`examples`/`scramble`/`fill` — 1–2 kalimat diulang sampai 10 soal, tanpa arti, Tantangan yang semua opsinya benar). Tipe itu sudah DIHAPUS; semua 31 topik jadi **`GrammarSentenceTopic`** (types.ts): `sentences[]` (≥10 per topik) berisi `en`/`id`/`emoji?`/`key` (1 kata pola, muncul tepat 1x)/`wrong` (tepat 2 bentuk yang SALAH di kalimat itu)/`alt?` (urutan kata lain yang juga benar), plus `rule?` (aturan 1 baris tanpa istilah) & `meaningNeeded?` (opsi salah gramatikal tapi beda arti — preposisi, kata tanya, because/so → arti Indonesia SELALU tampil). 1 kalimat dipakai lintas 3 tahap (pola `items`, bukan duplikat):
+1. **Kenalan** (`renderKenalanSentence`) — daftar kalimat + arti, `key` disorot (`mark.g-key`); tier Lanjut menampilkan `rule`.
+2. **Latihan Inti "🎯 Susun Kalimat"** (`runLatihanIntiSentence`, section `latihan`) — 10 soal (tiap kalimat 1x), bank kata + kata jebakan dari `wrong`, evaluasi otomatis begitu jumlah kata = panjang kalimat, `alt` diterima.
+3. **Tantangan "🔎 Pilih Bentuk yang Pas"** (`runTantanganSentence`, section `tantangan-bentuk`) — kalimat dgn `key` dikosongkan, 3 opsi (1 benar + 2 `wrong`), pola Cambridge Movers/Flyers Part 6.
+
+**Pembeda level (tier dari `contentLevel`, BUKAN `level` praise)** — `grammarTier()` di `games/grammar.ts`:
+
+| Setelan | Dasar (Little Stars/Starter) | Menengah (Explorer/Adventurer) | Lanjut (Achiever/Trailblazer) |
+|---|---|---|---|
+| Kata jebakan Susun Kalimat | — | Explorer 1, Adventurer 2 | Achiever 2 |
+| Arti Indonesia | — | Explorer tampil; Adventurer via 💡 Petunjuk | via 💡 Petunjuk |
+| 💡 Petunjuk | langsung | langsung (arti + coret 1 opsi) | 🔒 sampai 1x coba; Trailblazer coret 1 dari 4 |
+| "💡 Jawabannya" otomatis | — | setelah 2x salah | Achiever setelah 3x salah |
+| Kartu Latihan Inti kontras | Little Stars 2; **Starter 3** (kartu ke-3 = bentuk sama, benda lain) | — | — |
+| Kecepatan audio Latihan Inti/Tantangan | 0.75x | Explorer 0.75x, Adventurer 1x | 1x |
+
+- **Achiever: 3 dari 10 soal Tantangan = TEKS PENDEK** (`GrammarSentenceTopic.texts`, `GrammarMiniText`, 3 per topik × 11 topik) — 2–3 kalimat, rumpang di kalimat terakhir, jawabannya ditentukan kalimat SEBELUMNYA (`cue`, Cambridge Flyers Part 7). Badge "📖 Baca Dulu, Lalu Pilih"; sesudah menjawab (benar/salah) `cue` disorot + "🔑 Kuncinya". Plan Tantangan (`ensureTantanganPlan`) = 7 kalimat acak + 3 teks, kind `'sentence'`/`'toEn'` (label pinjaman). **Menulis teks baru**: minimal 1 opsi salah harus gramatikal kalau kalimat terakhir dibaca sendirian (kalau tidak, soalnya tidak butuh konteks), tapi salah menurut kalimat sebelumnya; `cue` wajib ada di kalimat sebelumnya & TIDAK di kalimat berumpang (dicek build).
+- **Trailblazer: pengecoh WAJIB jelas salah, bukan "bentuk opsional"** (audit 2026-09-25) — dalam reported speech, tanpa geser tense ("she studies" utk hal yg masih berlaku), "asked him **if he could** …" utk permintaan, "told them **to not** …", & "told **him** not to …" (penerima tidak disebut) SEMUANYA BENAR; dulu dipakai sbg pengecoh → soal punya 2 jawaban benar. Sekarang pengecoh `reportedOptions` dipilih bervariasi dari jenis yang pasti salah: "I" tetap, kata ganti/gender salah, "will"/"had + V3" (waktu salah), bentuk salah (had visit, could to play, were + he), urutan tanya ("if did she"), "that/said X to/-ing/tanpa to" di perintah, arah waktu salah ("the day before" utk tomorrow). `originalOptions` jg tidak boleh berisi kutipan yang BISA dilaporkan jadi kalimat yang sama (mis. "I studied" → "she studied") — pakai "have + V3"/"will"/"-ing".
+- **Trailblazer Tantangan "Siapa Bilang Apa?"**: opsi = `original` + `originalOptions` (3 kutipan isi SAMA, bentuk beda — tense/modal/jenis kalimat) — dulu opsi diambil dari kutipan sesama item & 98/100 soal bisa ditebak lewat kata benda (sekarang 11/100, di bawah peluang acak).
+- **Progres**: `grammarTopicPercent(..., tantanganSection)` dipakai KETIGA format (`tantangan-pola`/`tantangan-bentuk`/`tantangan-transform`); topik yang sudah tuntas di alur lama tetap 100% (non-punitive, pola Speaking).
+- **Validasi build** (`verify-content-duplicates.mjs` `checkGrammarData`): ≥10 kalimat, `key` tepat 1x, `wrong` 2 kata beda yang tidak ada di kalimat, `alt` = kata sama persis, `originalOptions` 3 beda; `verify-vocab-content.mjs` kini jg cek judul "Indonesia (English)" & denylist emoji Grammar.
+- **Menambah topik/kalimat Grammar Explorer–Achiever**: `wrong` WAJIB genuinely tidak gramatikal di kalimat itu (bentuk lain kata yang sama: is/are, -s/-ing, bigger/biggest, happily/happy) — kalau opsi salahnya gramatikal & cuma beda arti, set `meaningNeeded: true`. Kalimat berketerangan waktu/"because" di depan → isi `alt`.
+- Poin di bawah yang menyebut `runLatihanInti`/`runTantangan`/`scramble`/`fill` Grammar format LAMA = catatan historis.
+
 ### ✏️ Grammar — 3 Format Berdampingan (permintaan user, 2 sesi: sesi 1 "lakukan research bagaimana rule dan flow di modul grammar... fokus ke dalam negri... coba buat 1 materi di little stars" + "wajib ada improvement dimana di fitur kenalan tetap ada fitur mic dan main"; sesi 2 audit "apa objective grammar, beda dari modul lain?" → "summary feedback... urutkan prioritas" → "implementasi feedback" + "research materi grammar per level yang tepat")
 
 Grammar sekarang py 3 format sekaligus, prinsip pembeda SAMA PERSIS dgn Speaking: pembeda tingkat-1 `'items' in topic` (format KEDUA vs lainnya), tingkat-2 `'transforms' in topic` (format KETIGA vs format LAMA) — types.ts `AnyGrammarTopic = GrammarTopic | GrammarPatternTopic | GrammarTransformTopic`, dicek di `app.ts` `runStage`/`runFreePlayRound` & `games/boss.ts` grammar phase — **JANGAN migrasi format lama ke format lain tanpa arahan baru user**.

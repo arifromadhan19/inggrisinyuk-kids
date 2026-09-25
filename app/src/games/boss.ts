@@ -352,15 +352,21 @@ export function runBoss(container: HTMLElement, onWin: (result: BossResult) => v
   // `GrammarScramble` (susun kata dari kalimat formA-nya, tanda titik
   // dibuang biar cocok dgn `target.join(' ')` di `runGrammarPhase`), format
   // KETIGA (`transforms`, Trailblazer) diadaptasi dari kalimat reported
-  // speech yang BENAR per item, format LAMA tetap `.scramble` apa adanya,
+  // speech yang BENAR per item, format KALIMAT (`sentences`) diratakan jadi
+  // susun kata tanpa tanda baca (+ `alt` urutan lain yang juga benar),
   // supaya babak ini TETAP 1 implementasi generik.
-  const grammarScrambles = shuffle(
+  const grammarScrambles: { emoji: string; target: string[]; alt?: string[][] }[] = shuffle(
     grammarTopics.flatMap((t) =>
       'items' in t
         ? t.items.map((it) => ({ emoji: it.emoji, target: it.formA.en.replace(/\.$/, '').split(' ') }))
         : 'transforms' in t
           ? t.transforms.map((tr) => ({ emoji: tr.emoji, target: tr.reportedOptions.find((o) => o.ok)!.text.replace(/\.$/, '').split(' ') }))
-          : t.scramble
+          : t.sentences.map((st) => ({
+              emoji: st.emoji ?? '',
+              target: st.en.replace(/[.,!?]/g, '').split(' '),
+              // Urutan lain yang juga benar (mis. keterangan waktu di depan).
+              alt: (st.alt ?? []).map((a) => a.replace(/[.,!?]/g, '').split(' ')),
+            }))
     )
   ).slice(0, roundsPerSkill);
   // Speaking py 4 format berdampingan (`AnySpeakingTopic`, types.ts) — sama
@@ -717,7 +723,10 @@ export function runBoss(container: HTMLElement, onWin: (result: BossResult) => v
     function checkAnswer(): void {
       const fb = container.querySelector<HTMLElement>('#fb')!;
       const built = answer.map((a) => a.w).join(' ');
-      if (built === sc.target.join(' ')) {
+      // Tidak peka huruf besar/kecil & terima urutan `alt` — sama aturan
+      // Susun Kalimat format kalimat (`games/grammar.ts`).
+      const accepted = [sc.target, ...(sc.alt ?? [])].map((t) => t.join(' ').toLowerCase());
+      if (accepted.includes(built.toLowerCase())) {
         completeRound('grammar', firstTry ? 1 : 0);
         recordAttempt(true);
         playCorrectTone();
