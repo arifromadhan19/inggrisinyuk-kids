@@ -561,3 +561,74 @@ Pola sistemik: `scramble.target` (Latihan Inti) ditulis dari AWAL project (terma
 - **Lanjutan 2026-09-25 (permintaan user "ok kerjakan")**: Achiever dapat 33 teks pendek (3 per topik) — 3 dari 10 soal Tantangan diganti teks 2–3 kalimat yang jawabannya bergantung kalimat sebelumnya (tanda waktu "Yesterday"/"next year", "Look at him!", tanya-jawab "Have you ever…?", rujukan kata ganti "his dad → him", kata benda tak terhitung "flour → much"). Tiap teks: ≥1 opsi salah gramatikal kalau kalimat berumpang dibaca sendiri, salah menurut konteks. Validasi build `checkGrammarData` (2–3 kalimat, key 1x di kalimat terakhir, cue di kalimat sebelumnya saja).
 - **Lanjutan 2026-09-25 — audit Trailblazer & Bos**: 100 soal Latihan Inti Trailblazer ternyata banyak yang punya 2 jawaban benar (pengecoh "tanpa geser tense" yang opsional, "asked him if he could…" utk permintaan, "to not…"/"told him not to…" utk larangan) — semua 300 pengecoh diganti yang pasti salah & bervariasi; 38 `originalOptions` Tantangan diganti karena bisa dilaporkan jadi kalimat yang sama (backshift opsional). Tantangan Bos babak Grammar kini menerima urutan `alt` & tidak peka huruf besar/kecil (diuji live 5 level).
 
+
+## 25. Audit Kesesuaian Level (Sesi 14, 2026-09-26) — Referensi Dalam Negeri Diutamakan (permintaan user "analisis materi grammar, apakah semua sudah sesuai dengan level nya? … di little star sudah ada I've got … utamakan referensi dalam negri karena target market nya anak indonesia")
+
+### 25.1 Acuan
+
+| Level (usia) | Acuan dalam negeri (utama) | Pembanding Cambridge |
+|---|---|---|
+| Little Stars (3–5) | Belum ada CP Bahasa Inggris utk PAUD; LIA "General English for Very Young Learners" (4–6 th) & EF Small Stars = lagu, tema, tebak gambar (pola dihafal, bukan pelajaran tata bahasa) | di bawah Pre A1 |
+| Starter (5–7) | Fase A — *My Next Words* kelas 1–2 (Kemendikbud): "This is my book", "I have four books", "It is a small book", "I like / I don't like", "He is my brother" | Pre A1 Starters |
+| Explorer (7–9) | Fase B — *My Next Words* kelas 3–4: "Do you like swimming?", "There are twenty books on the shelf" | Starters → A1 |
+| Adventurer (9–11) | Fase C kelas 5–6 (past tense, comparatives/superlatives) | A1 Movers |
+| Achiever (11–13) | Fase D — *English for Nusantara* SMP | A2 Flyers |
+| Trailblazer (12+) | Fase D ke atas | B1 PET |
+
+Sumber: buku.kemdikbud.go.id (*My Next Words* Grade 1), guru.kemdikbud.go.id (CP Fase A–C), lblia.com (program 4–6 & GEYL), EF Small Stars, daftar "Grammar and structures" resmi A2 Flyers.
+
+### 25.2 Hasil per level
+
+- **Adventurer ✅** — 10/10 sesuai Movers & Fase C.
+- **Achiever ✅** — 11/11 cocok daftar resmi Flyers (past continuous, present perfect, going to/will, might, should/could, so, look like, made of, zero conditional).
+- **Little Stars / Starter** — pola sudah pas usia, tapi beberapa kalimat benar tata bahasanya namun janggal isinya → diperbaiki (25.3).
+- **Explorer** — `this-is` hampir sama persis dgn Little Stars `ini-itu` ("This is a ball"). **Sudah dikerjakan (2026-09-26)**: 10 kalimat diganti ke bentuk tanya & bukan — "Is this your bag?", "What is that?", "It is an eraser.", "This is not my book." (Fase B, *My Next Words* kelas 2–3). Judul "Tanya Ini dan Itu (Is This? What Is That?)". Opsi salah Tantangan: this/these/those, a/an/two, is/are/am, not/no/don't, your/you/yours.
+- **Trailblazer** — 10/10 topik reported speech → cakupan B1 sempit (passive, first conditional, used to, relative clause belum ada). **Belum dikerjakan**: butuh ubah UI (judul "Ubah Jadi Reported Speech" hardcode). Posisi reported speech di kurikulum Indonesia (dugaan: SMA/Fase E) belum diverifikasi.
+
+### 25.3 Perbaikan yang dikerjakan
+
+1. **Little Stars `punya-tidak-punya`: "I've got / I haven't got" → "I have / I don't have"**. Alasan: (a) *My Next Words* kelas 1 memakai "I have" (Unit 5 "I have four books", Unit 8 "I have two pencils"); (b) "have got" gaya British, sekolah & lembaga Indonesia umumnya gaya Amerika; (c) Cambridge Starters menerima dua-duanya; (d) utk anak 3–5 th beda "I've got"/"I haven't got" cuma "n't" di tengah — "don't" terdengar jelas & polanya sama dgn "I don't want". Benda diganti dari baju/celana/sepatu/kaus kaki ("aku tidak punya celana" janggal) ke barang yang wajar dimiliki atau tidak: topi, gaun, jaket, sarung tangan, syal, kacamata hitam, sepatu bot, payung, tas punggung, jam tangan. Judul "(Do I Have It?)".
+2. **Kalimat janggal**:
+   - Little Stars `bisa-tidak-bisa`: "I can't touch my head / close my eyes" (semua anak bisa) → kemampuan yang memang beda-beda: ride a bike, swim, sing, draw, read, count to ten, kick a ball, fly a kite, climb a tree, tie my shoes. Pertanyaan Main "Apakah aku bisa {x} atau tidak?".
+   - Starter `perlu-tidak-perlu`: "I don't need a friend / the principal", "I need the bell / recess" → barang sekolah "I need my bag / pencil / ruler / book / notebook / uniform / lunchbox / umbrella / crayons / scissors".
+   - Starter `lakukan-jangan-lakukan`: "Don't wash your hands!" (bertentangan dgn kebiasaan sehat) & "Don't write your name!" → "Shout! / Don't shout!", "Look! / Don't look!".
+   - Starter `kita-mereka`: "We are babies / drivers" → "students / players"; terjemahan "Kami" → "Kita" (sama dgn pilihan jawaban).
+3. **Terjemahan**: `satu-banyak` "Itu dua mobil" → "Itu banyak mobil" (kalimat Inggris tidak menyebut angka, pilihan jawabannya "Banyak"); `besar-kecil` 🔷 "berlian" → "wajik" (sama Vocab `bentuk`), ➕ "tanda silang" → "tanda plus"; `dia-siapa` buang "-nya" ("melihat mataharinya" → "melihat matahari").
+
+### 25.4 Sisa temuan (belum dikerjakan)
+
+- ✅ (dikerjakan 2026-09-26) Little Stars `mau-tidak-mau`: "I want some watermelon / I don't want any watermelon" beda 2 tempat (some/any = petunjuk jawaban kedua, sama alasan some/any dicoret di Starter §21) → semangka & nanas diganti alpukat & kelapa ("I want an avocado / a coconut"), pembeda tinggal "don't".
+- ✅ (dikerjakan 2026-09-26) Starter `pergi-tidak-pergi`: gym/downtown/countryside bukan tempat keseharian anak Indonesia → the park / the library / the beach.
+- Little Stars `ada-tidak-ada` & `ini-itu-jamak`: "there is" baru di buku Kemendikbud kelas 3 — sedikit di atas usia, tetap dipertahankan sbg pola hafalan bergambar. 🐷 pig mungkin sensitif utk sebagian keluarga Indonesia (set ini dipakai bersama Vocab).
+- Starter `dia-siapa`: sangat relevan (bahasa Indonesia "dia" tanpa gender → he/she sering tertukar) — pertahankan.
+- ✅ (dikerjakan 2026-09-27) Terjemahan bentuk disamakan lintas skill: 🔷 Diamond = "wajik" (Speaking `cari-bentuk` dulu "berlian"; Listening Little Stars bentuk dulu bergambar 💎 permata → 🔷), ➕ Cross = "tanda plus" (Vocab `bentuk`, Speaking `cari-bentuk`, Listening Little Stars dulu "silang" — di Indonesia "tanda silang" = ✗).
+- Id topik tidak berubah, jadi progres anak di topik yang isinya diganti tetap tersimpan per nomor soal.
+
+Verifikasi: `npm run build` lolos (typecheck, verify:content, verify:duplicates).
+
+## 26. Label Teks di Kartu Kontras Little Stars/Starter (Sesi 15, 2026-09-27) — permintaan user "pada materi Ini atau Itu? di latihan inti tambahkan text seperti di kenalan 'main'… jika icon nya tidak straightforward relevan maka tambahkan text, coba audit"
+
+Audit 7 varian `contrastVisual` (kartu Latihan Inti tadinya gambar + lencana saja, tanpa teks):
+
+| Varian | Topik | Ikon terbaca langsung? | Keputusan |
+|---|---|---|---|
+| `proximity` 🔍/🔭 | ini-itu, ini-itu-jamak, di-sini-di-sana | ❌ kaca pembesar/teleskop asing utk 3–7 th | **+ label** "Ini · dekat"/"Itu · jauh", "Di sini"/"Di sana" |
+| `polarity` ✅/❌ | punya, bisa, senang, mau, ada, lakukan, perlu, pergi | ❌ ✅/❌ terbaca "benar/salah" (alasan yang sama `liking` dipisah dulu) | **+ label** "Mau"/"Tidak mau", "Lakukan"/"Jangan", dst |
+| `liking` 😊/😖 | suka-tidak-suka | ⚠️ 😖 bisa terbaca sakit/sedih | **+ label** "Suka"/"Tidak suka" |
+| `possessor` 🙋/🫵 | punya-siapa | ❌ abstrak | **+ label** "Punyaku"/"Punyamu" |
+| `inclusion` 🙋/👉 | kita-mereka, milik-kita-milik-mereka | ❌ abstrak | **+ label** "Kita"/"Mereka" |
+| `quantity` 1×/2× + angka | satu-banyak, ada-apa-di-sini | ✅ jumlah gambar + angka 1/2 | tanpa label |
+| `size` besar/kecil | besar-kecil | ✅ terlihat langsung | tanpa label |
+| `character` 👦/👧 | miliknya-siapa, dia-siapa | ✅ jelas laki-laki/perempuan | tanpa label |
+
+- Label = konsep dlm bahasa Indonesia (sama dgn kartu 🎮 Main), bukan teks kalimat Inggris → tidak membocorkan jawaban: anak tetap harus paham "don't"/"this"/"we" yang didengar.
+- Latihan Inti tetap beda dari 🎮 Main (4–6 kartu, beberapa benda × 2 bentuk vs 2 kartu 1 benda).
+- Tantangan: gambar stimulus ikut diberi label yang sama.
+- **Bug ikut diperbaiki**: "Senang atau Tidak?" — label 🎮 Main selalu "Senang"/"Tidak senang" walau itemnya sad/hungry/dst. `choice` sekarang `{x}`/`Tidak {x}` → "Sedih"/"Tidak sedih".
+- Verifikasi: `npm run build` lolos; live Chrome 390px & 1280px (Ini atau Itu? Latihan Inti & Tantangan, Kita atau Mereka? 6 kartu, Senang 🎮 Main) — label tampil, 0 pageerror.
+- **Lanjutan (permintaan user "ketika sudah ada text remove saja icon di atas text biar tidak redundan")**: kartu yang berlabel teks tidak lagi menampilkan lencana (✅/❌, 🔍/🔭, 😊/😖, 🙋/🫵, 🙋/👉, 👦/👧, angka 1/2) — berlaku di Latihan Inti & Tantangan (`LABELED_VISUALS`) dan SEMUA kartu 🎮 Main. Beda ukuran gambar (dekat besar/jauh kecil, besar/kecil) & jumlah gambar tetap. Diverifikasi live 390px & 1280px, 0 pageerror.
+- **Lanjutan (permintaan user "pada Satu atau Banyak? samakan text di kenalan main dengan di latihan inti")**: `quantity` masuk `LABELED_VISUALS` — kartu Latihan Inti & gambar Tantangan "Satu atau Banyak?" (Little Stars) & "Ada Apa di Sini?" (Starter, visual sama) berlabel "Satu"/"Banyak", angka 1/2 disembunyikan. Tinggal `size` & `character` yang tanpa label. Diverifikasi live 390px & 1280px, 0 pageerror.
+- **Lanjutan (permintaan user "pada Besar atau Kecil? di latihan inti dan tantangan tambahkan text seperti di kenalan main")**: `size` masuk `LABELED_VISUALS` — kartu Latihan Inti & gambar Tantangan berlabel "Besar"/"Kecil" (ukuran gambar tetap beda). Tinggal `character` (His/Her, He/She) yang tanpa label. Diverifikasi live 390px & 1280px, 0 pageerror.
+- **Lanjutan (permintaan user "pada Punya Siapa? text nya disesuaikan konteks, tidak selalu punyamu dan punyaku")**: label `punya-siapa` `choice.a/b` = `{x}ku`/`{x}mu` → "Papaku"/"Papamu", "Mamaku"/"Mamamu", "Adik bayiku"/"Adik bayimu" (🎮 Main, Latihan Inti, Tantangan). Kata "Papa" dipertahankan (bukan "Ayah") supaya sama dgn terjemahan kalimat "Ini papaku.". Diverifikasi live 390px & 1280px, 0 pageerror.
+- **Lanjutan (permintaan user "remove button Lanjut ke Latihan Inti karena sudah ada button di navbar atas")**: tombol di akhir Kenalan dihapus di KETIGA format Grammar (`renderKenalanSentence`/`renderKenalanPattern`/`renderKenalanTransform`) + Kenalan Speaking (`renderKenalan`) — pindah tahap lewat stepper atas, sama dgn Vocab/Listening. Parameter `onNext` jadi `_onNext` (pemanggil `app.ts` tidak berubah). Reading buku mini TETAP py tombol di halaman terakhir (permintaan user sebelumnya). Diverifikasi live 390px & 1280px: tombol 0, tab "Latihan Inti" atas tetap pindah ke step 1, 0 pageerror.
+- **Lanjutan (permintaan user "Ini-ini atau Itu-itu? … harusnya awan-awan karena lebih dari 1")**: nama benda item `ini-itu-jamak` (dipakai pertanyaan 🎮 Main "Apakah letak {x} dekat atau jauh?") diganti bentuk ulang jamak — "Awan-awan Putih", "Balon-balon Biru", dst — sama dgn terjemahan kalimatnya ("Itu awan-awan putih."). Bahasa Indonesia sebenarnya tidak wajib menandai jamak, tapi topik ini justru mengajarkan jamak (these/those), jadi dibuat konsisten. Diverifikasi live 390px & 1280px, 0 pageerror.

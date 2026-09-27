@@ -499,7 +499,7 @@ Urutan pengerjaan: lihat "Rencana Implementasi di App" di bawah (direvisi setela
 | Tahap 0.2 Trailblazer Tantangan tidak bisa ditebak | ✅ | `GrammarTransformItem.originalOptions` (100 item); tebakan kata isi 98/100 → 11/100 |
 | Tahap 0.3 migrasi format lama → format kalimat | ✅ | `GrammarSentenceTopic` 31 topik × 10 kalimat; `renderKenalanSentence`/`runLatihanIntiSentence`/`runTantanganSentence`; tipe `GrammarTopic` dihapus |
 | Tahap 1 kerangka tier | ✅ | `grammarTier`, `sentenceSettings`, `grammarDefaultRate` (+ `app.ts applyDefaultRate`), `contentLevel` ke 5 fungsi |
-| Tahap 2 kata jebakan, arti, Pilih Bentuk, kartu ke-3 Starter | ✅ | `wrong` → jebakan (Explorer 1, Adventurer/Achiever 2); `buildContrastCards` |
+| Tahap 2 kata jebakan, arti, Pilih Bentuk, kartu ke-3 Starter | ✅ (direvisi 2026-09-26) | `wrong` → jebakan (Explorer 1, Adventurer/Achiever 2); `buildContrastCards` — kini Little Stars 4 kartu (2 benda × 2 bentuk), Starter 6 kartu (3 benda), supaya Latihan Inti tidak sama dgn Kenalan Main |
 | Tahap 3 sorotan kata & aturan 1 baris | ✅ | `mark.g-key` (semua), `topic.rule` (Achiever) |
 | Tahap 3 soal teks pendek Achiever (#8) | ✅ 2026-09-25 | `GrammarSentenceTopic.texts` (33 teks), 3 dari 10 soal Tantangan Achiever (keputusan user: menggantikan, total tetap 10), kata kunci disorot sesudah menjawab |
 

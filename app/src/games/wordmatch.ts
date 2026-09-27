@@ -4,6 +4,10 @@
  * tingkat kesulitannya BUKAN mengikuti LevelKey, dan menang di sini TIDAK
  * PERNAH membuka level baru (progress.ts `gameXp`, bukan `bossCleared`).
  *
+ * 🔒 Pembeda tiap markas (Pemanasan→Legendaris) BUKAN cuma jumlah kata — tiap
+ * markas menambah 1 jenis tantangan (kata mirip bentuk, satu kategori, suara,
+ * petunjuk definisi). Tabel lengkap + bank kata: `games/wordmatch-data.ts`.
+ *
  * Mekanik: tap kata lalu tap gambar yang cocok (atau sebaliknya) — bukan
  * drag, supaya presisi sentuh tetap ramah anak kecil di layar sentuh. Pasangan
  * benar digambar garis penghubung animasi (SVG overlay) sbg reward visual
@@ -67,12 +71,13 @@
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
-import { playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
+import { playCorrectTone, playWrongTone, speak, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
 import { shuffle } from '../util';
 import type { LevelKey, OnDone, WordMatchDifficulty } from '../types';
+import { CATEGORY_GROUPS, LOOKALIKE_GROUPS, RANDOM_BANK, TIER_CONFIG, type WordBankEntry } from './wordmatch-data';
 
 /** `RajaKey` game ini (app.ts `RAJA_LIST`) — dikirim ke `recordAttempt()`
  *  supaya percobaan main tercatat per-game (`Store.gameStats`, permintaan
@@ -81,129 +86,8 @@ import type { LevelKey, OnDone, WordMatchDifficulty } from '../types';
  *  sengaja tidak tahu apa-apa soal Game Hub selain kunci sendiri). */
 const GAME_KEY = 'kata';
 
-interface WordBankEntry {
-  en: string;
-  emoji: string;
-}
-
-/** Tingkat PEMANASAN (BARU, permintaan user "tambahkan 1 sehingga ada 6...
- *  levelnya ada pemanasan, mudah, sedang, sulit, jago, legendaris") — kata
- *  sesederhana BANK_MUDAH (benda sehari-hari super umum), tapi
- *  `pairCount`-nya paling kecil (2, lihat DIFFICULTY_META) supaya markas
- *  pemanasan genuinely paling ringan — sumbu kesulitannya JUMLAH pasangan,
- *  bukan kelangkaan kata (kata pemanasan TIDAK perlu "lebih gampang dari
- *  gampang", cukup ronde pertamanya paling singkat). TIDAK ada kata yang
- *  tumpang tindih dgn bank lain. */
-const BANK_PEMANASAN: WordBankEntry[] = [
-  { en: 'Ball', emoji: '⚽' },
-  { en: 'Hat', emoji: '🎩' },
-  { en: 'Cup', emoji: '☕' },
-  { en: 'Box', emoji: '📦' },
-  { en: 'Bed', emoji: '🛏️' },
-  { en: 'Cow', emoji: '🐮' },
-  { en: 'Pig', emoji: '🐷' },
-  { en: 'Hen', emoji: '🐔' },
-  { en: 'Bus', emoji: '🚌' },
-  { en: 'Pen', emoji: '🖊️' },
-];
-
-const BANK_MUDAH: WordBankEntry[] = [
-  { en: 'Cat', emoji: '🐱' },
-  { en: 'Dog', emoji: '🐶' },
-  { en: 'Sun', emoji: '☀️' },
-  { en: 'Moon', emoji: '🌙' },
-  { en: 'Star', emoji: '⭐' },
-  { en: 'Tree', emoji: '🌳' },
-  { en: 'Fish', emoji: '🐟' },
-  { en: 'Egg', emoji: '🥚' },
-  { en: 'Car', emoji: '🚗' },
-  { en: 'Bee', emoji: '🐝' },
-];
-
-const BANK_SEDANG: WordBankEntry[] = [
-  { en: 'Rabbit', emoji: '🐰' },
-  { en: 'Elephant', emoji: '🐘' },
-  { en: 'Banana', emoji: '🍌' },
-  { en: 'Umbrella', emoji: '☂️' },
-  { en: 'Guitar', emoji: '🎸' },
-  { en: 'Rainbow', emoji: '🌈' },
-  { en: 'Butterfly', emoji: '🦋' },
-  { en: 'Penguin', emoji: '🐧' },
-  { en: 'Pumpkin', emoji: '🎃' },
-  { en: 'Dolphin', emoji: '🐬' },
-  { en: 'Kangaroo', emoji: '🦘' },
-  { en: 'Castle', emoji: '🏰' },
-];
-
-const BANK_SULIT: WordBankEntry[] = [
-  { en: 'Dinosaur', emoji: '🦖' },
-  { en: 'Octopus', emoji: '🐙' },
-  { en: 'Telescope', emoji: '🔭' },
-  { en: 'Volcano', emoji: '🌋' },
-  { en: 'Astronaut', emoji: '🧑‍🚀' },
-  { en: 'Crocodile', emoji: '🐊' },
-  { en: 'Scorpion', emoji: '🦂' },
-  { en: 'Helicopter', emoji: '🚁' },
-  { en: 'Rocket', emoji: '🚀' },
-  { en: 'Hedgehog', emoji: '🦔' },
-  { en: 'Peacock', emoji: '🦚' },
-  { en: 'Flamingo', emoji: '🦩' },
-];
-
-/** Tingkat ke-4/5 (BARU, permintaan user "untuk raja kata minimal 5
- *  kerajaan") — kata lebih panjang/jarang dari BANK_SULIT, TIDAK ada kata
- *  yang tumpang tindih dgn 3 bank di atas (biar kurva kesulitan tetap naik
- *  genuine, bukan anak ketemu kata yang sama persis di kerajaan "lebih
- *  susah"). */
-const BANK_JAGO: WordBankEntry[] = [
-  { en: 'Firefighter', emoji: '🧑‍🚒' },
-  { en: 'Motorcycle', emoji: '🏍️' },
-  { en: 'Parachute', emoji: '🪂' },
-  { en: 'Thermometer', emoji: '🌡️' },
-  { en: 'Compass', emoji: '🧭' },
-  { en: 'Backpack', emoji: '🎒' },
-  { en: 'Stethoscope', emoji: '🩺' },
-  { en: 'Skateboard', emoji: '🛹' },
-  { en: 'Chameleon', emoji: '🦎' },
-  { en: 'Wheelchair', emoji: '🦽' },
-];
-
-const BANK_LEGENDARIS: WordBankEntry[] = [
-  { en: 'Skyscraper', emoji: '🏙️' },
-  { en: 'Tornado', emoji: '🌪️' },
-  { en: 'Meteor', emoji: '☄️' },
-  { en: 'Satellite', emoji: '🛰️' },
-  { en: 'Rollercoaster', emoji: '🎢' },
-  { en: 'Accordion', emoji: '🪗' },
-  { en: 'Saxophone', emoji: '🎷' },
-  { en: 'Microscope', emoji: '🔬' },
-  { en: 'Firework', emoji: '🎆' },
-  { en: 'Trumpet', emoji: '🎺' },
-];
-
-export interface DifficultyMeta {
-  label: string;
-  sub: string;
-  pairCount: number;
-}
-
-export const DIFFICULTY_META: Record<WordMatchDifficulty, DifficultyMeta> = {
-  pemanasan: { label: 'Pemanasan', sub: '2 pasang kata', pairCount: 2 },
-  mudah: { label: 'Mudah', sub: '3 pasang kata', pairCount: 3 },
-  sedang: { label: 'Sedang', sub: '4 pasang kata', pairCount: 4 },
-  sulit: { label: 'Sulit', sub: '5 pasang kata', pairCount: 5 },
-  jago: { label: 'Jago', sub: '6 pasang kata', pairCount: 6 },
-  legendaris: { label: 'Legendaris', sub: '7 pasang kata', pairCount: 7 },
-};
-
-const BANK_BY_DIFFICULTY: Record<WordMatchDifficulty, WordBankEntry[]> = {
-  pemanasan: BANK_PEMANASAN,
-  mudah: BANK_MUDAH,
-  sedang: BANK_SEDANG,
-  sulit: BANK_SULIT,
-  jago: BANK_JAGO,
-  legendaris: BANK_LEGENDARIS,
-};
+/** Jumlah papan per markas (lihat `runWordMatchRound`). */
+const BOARD_COUNT = 10;
 
 interface MatchCard {
   pairId: number;
@@ -271,9 +155,51 @@ interface RoundJourneyCtx {
  *  permintaan user — `export` dibiarkan apa adanya, bukan lagi dipanggil
  *  lintas-file.) */
 export function runWordMatchRound(container: HTMLElement, difficulty: WordMatchDifficulty, onDone: OnDone, level: LevelKey, journey?: RoundJourneyCtx): void {
-  const bank = BANK_BY_DIFFICULTY[difficulty];
-  const pairCount = DIFFICULTY_META[difficulty].pairCount;
-  const pairs: WordBankEntry[] = shuffle(bank).slice(0, pairCount);
+  const cfg = TIER_CONFIG[difficulty];
+  const pairCount = cfg.pairCount;
+  // 🔒 1 markas = BOARD_COUNT papan (permintaan user "1 sub game ada 10").
+  // Tiap picker memakai antrian yang diacak supaya semua kata/grup keluar dulu
+  // sebelum ada yang berulang, & tidak ada kata kembar dalam 1 papan.
+  let boardIndex = 0;
+  let wordQueue: WordBankEntry[] = [];
+  let groupQueue: number[] = [];
+  let categoryName = '';
+
+  function takeGroup(len: number): number {
+    if (groupQueue.length === 0) groupQueue = shuffle(Array.from({ length: len }, (_, i) => i));
+    return groupQueue.shift()!;
+  }
+
+  function nextPairs(): WordBankEntry[] {
+    if (cfg.picker === 'lookalike') {
+      // 2 grup kata mirip bentuk × 2 kata → setiap kata py "kembaran" pengecoh.
+      const picked: WordBankEntry[] = [];
+      while (picked.length < pairCount) {
+        const g = LOOKALIKE_GROUPS[takeGroup(LOOKALIKE_GROUPS.length)];
+        const fresh = shuffle(g).filter((e) => !picked.some((p) => p.en === e.en));
+        picked.push(...fresh.slice(0, Math.min(2, pairCount - picked.length)));
+      }
+      return picked;
+    }
+    if (cfg.picker === 'category') {
+      const g = CATEGORY_GROUPS[takeGroup(CATEGORY_GROUPS.length)];
+      categoryName = g.name;
+      return shuffle(g.items).slice(0, pairCount);
+    }
+    const bank = RANDOM_BANK[difficulty];
+    const picked: WordBankEntry[] = [];
+    while (picked.length < Math.min(pairCount, bank.length)) {
+      if (wordQueue.length === 0) wordQueue = shuffle(bank);
+      const e = wordQueue.shift()!;
+      if (picked.some((p) => p.en === e.en)) {
+        wordQueue.push(e);
+        continue;
+      }
+      picked.push(e);
+    }
+    return picked;
+  }
+  let pairs: WordBankEntry[] = nextPairs();
 
   let wordRow: MatchCard[] = [];
   let picRow: MatchCard[] = [];
@@ -283,6 +209,11 @@ export function runWordMatchRound(container: HTMLElement, difficulty: WordMatchD
   let shakePic: number | null = null;
   let busy = false;
   let matchedCount = 0;
+  // 💡 Petunjuk — sekali per papan, arti bantuannya beda per mode (lihat
+  // tabel `wordmatch-data.ts`): picture = tandai 1 pasangan, audio =
+  // tampilkan tulisan kata, clue = tampilkan arti Indonesia petunjuk.
+  let hintUsed = false;
+  let hintPairId: number | null = null;
 
   function freshRound(): void {
     wordRow = shuffle(pairs.map((entry, i) => ({ pairId: i, entry, matched: false })));
@@ -293,53 +224,102 @@ export function runWordMatchRound(container: HTMLElement, difficulty: WordMatchD
     shakePic = null;
     busy = false;
     matchedCount = 0;
+    hintUsed = false;
+    hintPairId = null;
   }
   freshRound();
 
   function cardClass(row: MatchCard[], i: number, isWord: boolean): string {
     const c = row[i];
     const classes = ['wm-card'];
+    if (!isWord && cfg.mode === 'clue') classes.push('is-text');
+    if (isWord && cfg.mode === 'clue') classes.push('is-clue');
     if (c.matched) classes.push('is-matched');
     else if ((isWord && selectedWord === i) || (!isWord && selectedPic === i)) classes.push('is-selected');
+    else if (!isWord && hintPairId === c.pairId) classes.push('is-hint');
     if ((isWord && shakeWord === i) || (!isWord && shakePic === i)) classes.push('is-wrong');
     return classes.join(' ');
+  }
+
+  /** Isi kartu kiri — kata (picture), 🔊 bernomor (audio), atau petunjuk (clue). */
+  function leftLabel(c: MatchCard, i: number): { html: string; aria: string } {
+    if (cfg.mode === 'audio') {
+      const shown = hintUsed || c.matched;
+      return {
+        html: `<span class="wm-audio">🔊 ${i + 1}</span>${shown ? `<span class="wm-audio-word">${c.entry.en}</span>` : ''}`,
+        aria: shown ? c.entry.en : `Suara ${i + 1}`,
+      };
+    }
+    if (cfg.mode === 'clue') {
+      return {
+        html: `<span class="wm-clue">${c.entry.clue ?? ''}${hintUsed ? `<span class="wm-clue-id">${c.entry.clueId ?? ''}</span>` : ''}</span>`,
+        aria: c.entry.clue ?? '',
+      };
+    }
+    return { html: `<span class="wm-word-text">${c.entry.en}</span>`, aria: c.entry.en };
   }
 
   function cardHtml(row: MatchCard[], i: number, isWord: boolean): string {
     const c = row[i];
     const rowName = isWord ? 'word' : 'pic';
-    const label = isWord
-      ? `<span class="wm-word-text">${c.entry.en}</span>`
-      : `<span class="wm-emoji" aria-hidden="true">${c.entry.emoji}</span>`;
+    let label: string;
+    let aria: string;
+    if (isWord) ({ html: label, aria } = leftLabel(c, i));
+    else if (cfg.mode === 'clue') {
+      label = `<span class="wm-word-text">${c.entry.en}</span>`;
+      aria = c.entry.en;
+    } else {
+      label = `<span class="wm-emoji" aria-hidden="true">${c.entry.emoji}</span>`;
+      aria = `${c.entry.en} picture`;
+    }
     return `
       <button class="${cardClass(row, i, isWord)}" type="button" data-row="${rowName}" data-pair="${c.pairId}"
-        data-action="tapCard" data-payload="${rowName}:${i}" ${c.matched ? 'disabled' : ''}
-        aria-label="${isWord ? c.entry.en : c.entry.en + ' picture'}">
+        data-action="tapCard" data-payload="${rowName}:${i}" ${c.matched ? 'disabled' : ''} aria-label="${aria}">
         ${c.matched ? '<span class="wm-check" aria-hidden="true">✅</span>' : ''}${label}
       </button>`;
   }
 
   function paint(justMatchedPairId: number | null): void {
+    const done = matchedCount >= pairCount;
+    const task = cfg.task.replace('{cat}', categoryName);
+    const hintBtn =
+      cfg.hint && !hintUsed && !done
+        ? `<button class="speak-btn-ghost" type="button" data-action="hint"><span class="hint-bulb">💡</span> Petunjuk</button>`
+        : '';
     container.innerHTML = `
       ${journey?.headerHtml ?? ''}
-      ${progressDotsHtml(pairCount, (i) => i < matchedCount, matchedCount)}
-      <div class="wm-board" id="wmBoard">
+      ${progressDotsHtml(BOARD_COUNT, (i) => i < boardIndex || (i === boardIndex && done), boardIndex)}
+      <div class="wm-head"><p class="wm-task">${task}</p>${hintBtn}</div>
+      <div class="wm-board${cfg.mode === 'clue' ? ' is-clue' : ''}${cfg.mode === 'clue' && hintUsed ? ' show-id' : ''}" id="wmBoard">
         <svg class="wm-lines" id="wmLines" aria-hidden="true"></svg>
         <div class="wm-row" id="wmWordRow">${wordRow.map((_, i) => cardHtml(wordRow, i, true)).join('')}</div>
         <div class="wm-row" id="wmPicRow">${picRow.map((_, i) => cardHtml(picRow, i, false)).join('')}</div>
       </div>
       <div class="feedback" id="fb"></div>
     `;
-    setHandlers({ tapCard: (payload) => onTap(payload ?? '') });
+    setHandlers({ tapCard: (payload) => onTap(payload ?? ''), hint: onHint });
     drawLines(justMatchedPairId);
   }
 
-  /** Ukur posisi kartu SETELAH repaint (rAF), gambar garis SVG antar pusat
-   *  kartu kata↔gambar yang sudah cocok. `pathLength="1"` dipasang di tiap
-   *  <line> supaya CSS bisa animasikan stroke-dashoffset 1→0 tanpa hitung
-   *  panjang garis manual di JS. Cuma pasangan yang BARU cocok dapat class
-   *  `.wm-line-new` (memicu animasi gambar-garis) — pasangan lama digambar
-   *  statis supaya repaint berikutnya tidak mengulang animasinya. */
+  function onHint(): void {
+    if (hintUsed || busy) return;
+    hintUsed = true;
+    if (cfg.mode === 'picture') {
+      // Pilihkan 1 kata yang belum cocok & tandai gambar pasangannya.
+      const wi = selectedWord !== null && !wordRow[selectedWord].matched ? selectedWord : wordRow.findIndex((c) => !c.matched);
+      if (wi >= 0) {
+        selectedWord = wi;
+        selectedPic = null;
+        hintPairId = wordRow[wi].pairId;
+      }
+    }
+    paint(null);
+  }
+
+  /** Garis dari tepi kanan kartu kiri ke tepi kiri kartu kanan (kolom kiri ↔
+   *  kanan), digambar ulang setelah repaint (rAF). `pathLength="1"` supaya CSS
+   *  bisa animasikan stroke-dashoffset; cuma pasangan BARU yang dapat
+   *  `.wm-line-new` biar repaint tidak mengulang animasi pasangan lama. */
   function drawLines(justMatchedPairId: number | null): void {
     requestAnimationFrame(() => {
       const board = container.querySelector<HTMLElement>('#wmBoard');
@@ -359,9 +339,9 @@ export function runWordMatchRound(container: HTMLElement, difficulty: WordMatchD
           const wr = wordEl.getBoundingClientRect();
           const pr = picEl.getBoundingClientRect();
           const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', String(wr.left - boardRect.left + wr.width / 2));
+          line.setAttribute('x1', String(wr.right - boardRect.left));
           line.setAttribute('y1', String(wr.top - boardRect.top + wr.height / 2));
-          line.setAttribute('x2', String(pr.left - boardRect.left + pr.width / 2));
+          line.setAttribute('x2', String(pr.left - boardRect.left));
           line.setAttribute('y2', String(pr.top - boardRect.top + pr.height / 2));
           line.setAttribute('pathLength', '1');
           line.setAttribute('class', pairId === justMatchedPairId ? 'wm-line wm-line-new' : 'wm-line');
@@ -379,7 +359,8 @@ export function runWordMatchRound(container: HTMLElement, difficulty: WordMatchD
     const row = isWord ? wordRow : picRow;
     if (!row[i] || row[i].matched) return;
 
-    if (isWord) selectedWord = selectedWord === i ? null : i;
+    if (isWord && cfg.speakOnTap) speak(row[i].entry.en);
+    if (isWord) selectedWord = selectedWord === i && cfg.mode !== 'audio' ? null : i;
     else selectedPic = selectedPic === i ? null : i;
 
     if (selectedWord === null || selectedPic === null) {
@@ -397,6 +378,7 @@ export function runWordMatchRound(container: HTMLElement, difficulty: WordMatchD
       picRow[pi].matched = true;
       selectedWord = null;
       selectedPic = null;
+      if (hintPairId === pairId) hintPairId = null;
       matchedCount += 1;
       recordAttempt(true, GAME_KEY);
       playCorrectTone();
@@ -408,17 +390,20 @@ export function runWordMatchRound(container: HTMLElement, difficulty: WordMatchD
         fb.className = 'feedback good';
       }
       if (matchedCount >= pairCount) {
-        fb?.insertAdjacentHTML('afterend', roundActionsHtml(journey?.isLast ?? true));
+        const lastBoard = boardIndex === BOARD_COUNT - 1;
+        fb?.insertAdjacentHTML('afterend', roundActionsHtml(lastBoard && (journey?.isLast ?? true)));
         setHandlers({
           tryAgainRound: () => {
-            wordRow.forEach((c) => (c.matched = false));
-            picRow.forEach((c) => (c.matched = false));
-            wordRow = shuffle(wordRow);
-            picRow = shuffle(picRow);
-            matchedCount = 0;
+            freshRound();
             paint(null);
           },
-          nextRound: () => onDone(),
+          nextRound: () => {
+            if (lastBoard) return onDone();
+            boardIndex += 1;
+            pairs = nextPairs();
+            freshRound();
+            paint(null);
+          },
         });
       }
     } else {
@@ -464,7 +449,7 @@ interface JourneyNode {
  *  markas ke-0 `pemanasan` BARU ditambah PALING DEPAN), urut
  *  Pemanasan→Mudah→Sedang→Sulit→Jago→Legendaris — nama tempat cuma bungkus
  *  tema, `difficulty` di baliknya TETAP `WordMatchDifficulty` asli (bank
- *  kata & `pairCount` sama persis `DIFFICULTY_META`, tidak diduplikasi di
+ *  kata & `pairCount` sama persis `TIER_CONFIG` (`wordmatch-data.ts`), tidak diduplikasi di
  *  sini). "Balairung" (bukan "Ruang Tahta") SENGAJA dipilih beda dari
  *  "Throne Room" (dulu `games/talktotheking.ts`, SUDAH DIHAPUS TOTAL —
  *  nama ditulis waktu itu masih ada 2 game bertema Raja, sengaja hindari
@@ -473,8 +458,8 @@ const JOURNEY_NODES: JourneyNode[] = [
   { difficulty: 'pemanasan', place: 'Desa Kata', emoji: '🏘️', guideLine: 'Yuk pemanasan dulu di Desa Kata sebelum masuk gerbang kerajaan!' },
   { difficulty: 'mudah', place: 'Gerbang Kata', emoji: '🚪', guideLine: 'Selamat datang di gerbang Kerajaan Kata! Ayo cocokkan kata-kata pertama ini.' },
   { difficulty: 'sedang', place: 'Istana Kata', emoji: '🏯', guideLine: 'Kamu sudah masuk istana! Kata-katanya mulai sedikit lebih menantang, nih.' },
-  { difficulty: 'sulit', place: 'Balairung Kata', emoji: '🏛️', guideLine: 'Hampir sampai balairung! Ini kata-kata paling menantang di seluruh kerajaan.' },
-  { difficulty: 'jago', place: 'Menara Kata', emoji: '🗼', guideLine: 'Kamu sudah tinggi di menara! Kata-katanya makin panjang dan jarang terdengar.' },
+  { difficulty: 'sulit', place: 'Balairung Kata', emoji: '🏛️', guideLine: 'Hampir sampai balairung! Kamu sudah makin jago.' },
+  { difficulty: 'jago', place: 'Menara Kata', emoji: '🗼', guideLine: 'Kamu sudah tinggi di menara! Sekarang andalkan telingamu.' },
   { difficulty: 'legendaris', place: 'Ruang Harta Kata', emoji: '💎', guideLine: 'Ini dia ruang harta terakhir! Buktikan kamu benar-benar Jago Kata sejati.' },
 ];
 
@@ -571,7 +556,7 @@ export function runWordMatch(container: HTMLElement, onDone: OnDone, level: Leve
       // dari ikon gembok terpisah.
       const pct = cleared ? 100 : 0;
       const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
-      const meta = DIFFICULTY_META[node.difficulty];
+      const meta = TIER_CONFIG[node.difficulty];
       return `
       <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-vocab)">
         ${badge}
@@ -604,9 +589,9 @@ export function runWordMatch(container: HTMLElement, onDone: OnDone, level: Leve
         </div>
         <div class="raja-grid">${stops}</div>
         ${gameHowToHtml([
-          'Tap 1 kata Inggris, lalu tap gambar yang cocok',
-          'Pasangan yang benar langsung tersambung',
-          'Cocokkan semua pasangan di markas itu',
+          'Tap kartu kiri, lalu kartu kanan yang cocok',
+          'Tiap markas tantangannya beda: kata mirip, satu kelompok, dengar suara, tebak dari petunjuk',
+          'Selesaikan 10 papan di tiap markas',
           'Taklukkan markas satu per satu sampai tuntas!',
         ])}
       </div>`;
@@ -614,7 +599,7 @@ export function runWordMatch(container: HTMLElement, onDone: OnDone, level: Leve
   }
 
   function playStage(idx: number): void {
-    setGameRoundActive(true); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi
+    setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runWordMatchRound(

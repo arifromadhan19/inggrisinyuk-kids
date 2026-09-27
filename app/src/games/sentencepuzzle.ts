@@ -1,54 +1,27 @@
 /**
- * Raja Susun — Sentence Puzzle. Redesain total mekanik "Raja Susun" (dulu
- * reuse `vocabularyGame.runSusunKalimat` apa adanya — word bank polos tanpa
- * gambar/distractor/hint) menjadi gaya "bubble pyramid" ala referensi
- * kompetitor yang diberi user (screenshot: gambar di atas, kata-kata dalam
- * gelembung tersusun piramida — makin ke bawah makin lebar, termasuk
- * kata PENGECOH yang bukan bagian jawaban — jawaban terangkai di bar emas
- * bawah, tombol Hint + Dengar). Posisi TETAP persis di bawah Raja Balon
- * (`app.ts` RAJA_LIST, key `'susun'` TIDAK diganti supaya XP/progress lama
- * anak tidak hilang) — user eksplisit pilih "ganti Raja Susun", bukan
- * tambah entri ke-6 baru.
+ * Raja Susun — Sentence Puzzle. Gaya "bubble pyramid" (gelembung kata
+ * tersusun piramida + bar jawaban emas), posisi di roster tepat di bawah
+ * Raja Balon (`app.ts` RAJA_LIST, key `'susun'` TIDAK diganti supaya XP lama
+ * anak tidak hilang). Vocab Tantangan "🔤 Susun Kalimat" (`games/
+ * vocabulary.ts` `runSusunKalimat`) terpisah & tidak disentuh file ini.
  *
- * Vocab Tantangan "🔤 Susun Kalimat" (`games/vocabulary.ts`
- * `runSusunKalimat`) SAMA SEKALI TIDAK disentuh — fitur itu tetap dipakai
- * persis seperti sebelumnya (CLAUDE.md "Format Wajib Materi Vocabulary"),
- * file ini murni menggantikan PEMANGGILAN di Game Hub, bukan fungsinya.
+ * Map Kerajaan Kalimat 6-markas (pola SAMA `games/wordmatch.ts`), 1 markas =
+ * 5 kalimat (`ROUND_COUNT`).
  *
- * Sumber konten (user: "mix emoji dari topik vocab dan kata yang baru"):
- * tiap ronde ambil 1 kalimat target dari `VocabItem.example` topik Vocab
- * level ini (emoji + kalimat sudah ada, tidak perlu data baru), lalu
- * campur kata pengecoh dari DUA sumber sekaligus — (a) kata dari 1-3
- * kalimat SIBLING (item lain di topik yang sama, meniru referensi: 2
- * "kalimat pengecoh" utuh yang kata-katanya diacak masuk piramida,
- * termasuk kata berulang spt "is"/"He") DAN (b) bank kata baru pendek
- * (`EXTRA_FILLER_WORDS`, TIDAK terikat topik/level manapun, konsisten
- * pola Raja Balon/Raja Kata yang jg py bank sendiri) — jadi tiap ronde
- * SELALU mix keduanya, bukan salah satu doang.
+ * 🔒 **Pembeda markas (riset `materi/pembeda_level_game.md` § Sentence
+ * Puzzle)** — dulu keenam markas = dikte dengar yang sama persis, cuma jumlah
+ * pengecoh yang naik (filler acak + kata kalimat saudara dari topik Vocab
+ * level anak). Sekarang tiap markas py BANK KALIMAT sendiri dgn pola kalimat
+ * yang naik (SVO → + keterangan → bentuk kata → tanya/"tidak" → 2 klausa) +
+ * 1 jenis tantangan baru (prompt dengar → arti Indonesia saja, pengecoh kata
+ * lain → bentuk keliru, Petunjuk "isi 1 kata" → "dengar kalimat" 🔒). Tabel
+ * tier & bank: `games/sentencepuzzle-data.ts` (satu-satunya tempat mengubah
+ * pembeda/kalimat, dicek build).
  *
- * Kid-friendly (CLAUDE.md): TANPA timer/nyawa, non-punitive (jawaban salah
- * cuma "Semangaat" + tetap bisa lanjut/ulang), bubble berbentuk pill bulat
- * penuh (bukan lingkaran kaku) supaya kata panjang apa pun dari Vocab tetap
- * terbaca — circle kaku ala referensi cuma cocok utk demo kata pendek.
- *
- * 🔒 **Revisi (permintaan user "update... seperti konsepnya Raja Kata
- * dimana ada sub list game per level dan ada game nya 5 di setiap sub list
- * game per level")** — pola SAMA PERSIS `games/wordmatch.ts`/
- * `games/memorymatch.ts`: fungsi lama (dulu bernama `runSentencePuzzle`,
- * SATU-SATUNYA entry point, langsung main 5 kalimat berturut-turut TANPA
- * Map) direname `runSentencePuzzleRound()` — jadi mesin "1 markas" (5
- * kalimat, `ROUND_COUNT` TIDAK berubah nilainya, kebetulan SUDAH 5 dari
- * awal — cuma sekarang dibingkai sbg "5 kalimat per markas", bukan
- * "5 kalimat lalu langsung Selesai"). `runSentencePuzzle()` (nama EXPORT
- * TETAP SAMA, dipanggil `app.ts`) SEKARANG orkestrator Map Kerajaan Kalimat
- * 6-markas (`pemanasan` BARU ditambah paling depan, permintaan user
- * "tambahkan 1 sehingga ada 6... levelnya ada pemanasan, mudah, sedang,
- * sulit, jago, legendaris") — kesulitan naik lewat JUMLAH kata pengecoh
- * (`DIFFICULTY_META`, sibling+filler makin banyak tiap tingkat, krn kalimat
- * TARGET-nya sendiri ikut `topic.items` Vocab level ini apa adanya, bukan
- * sesuatu yang bisa "diperpanjang" per tingkat). Riwayat desain Map/grid/
- * persentase/"Cara Main"/footer lengkap: lihat komentar `games/
- * wordmatch.ts`, TIDAK diulang detail di sini.
+ * Kid-friendly (CLAUDE.md): TANPA timer/nyawa, non-punitive (belum pas cuma
+ * "Semangaat" + merah/getar/tetot, tetap bisa ulang/lanjut), TANPA ikon di
+ * layar susun kalimat. Gelembung ditulis huruf kecil (kecuali "I" & nama)
+ * supaya huruf kapital tidak membocorkan kata pertama.
  */
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
@@ -58,7 +31,8 @@ import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
 import { shuffle } from '../util';
-import type { LevelKey, OnDone, VocabTopic, WordMatchDifficulty } from '../types';
+import type { LevelKey, OnDone, WordMatchDifficulty } from '../types';
+import { SENTENCE_BANK, TIER_CONFIG, tokenize, type PuzzleSentence } from './sentencepuzzle-data';
 
 /** `RajaKey` game ini — dikirim ke `recordAttempt()`, lihat komentar
  *  `GAME_KEY` `games/wordmatch.ts`. */
@@ -66,80 +40,51 @@ const GAME_KEY = 'susun';
 
 const ROUND_COUNT = 5;
 
-/** Bank kata pengecoh BARU, TIDAK terikat topik/level Vocab manapun (poin
- *  b di komentar atas) — adverb/adjective pendek generik yang aman
- *  dicampur ke kalimat apa pun sbg "noise" murni (bukan dituntut membentuk
- *  kalimat alternatif yang benar), konsisten pola bank sendiri Raja Balon. */
-const EXTRA_FILLER_WORDS = [
-  'quickly',
-  'slowly',
-  'loudly',
-  'quietly',
-  'happily',
-  'today',
-  'again',
-  'also',
-  'very',
-  'little',
-  'tiny',
-  'huge',
-  'nearby',
-  'together',
-  'carefully',
-  'soon',
-];
-
-export interface DifficultyMeta {
-  label: string;
-  sub: string;
-  siblingCount: number;
-  fillerCount: number;
-  maxDistractors: number;
-}
-
-/** Kesulitan naik lewat JUMLAH kata pengecoh (sibling+filler), BUKAN
- *  panjang kalimat target — kalimat target selalu 1:1 dari `topic.items`
- *  Vocab level ini apa adanya (tidak diauthoring ulang per tingkat), jadi
- *  "piramida makin ramai" itulah yang bikin markas belakangan genuinely
- *  lebih sulit dicari (lebih banyak kata yang HARUS disaring anak). */
-export const DIFFICULTY_META: Record<WordMatchDifficulty, DifficultyMeta> = {
-  pemanasan: { label: 'Pemanasan', sub: 'Kata pengecoh paling sedikit', siblingCount: 1, fillerCount: 1, maxDistractors: 3 },
-  mudah: { label: 'Mudah', sub: 'Kata pengecoh sedikit', siblingCount: 1, fillerCount: 2, maxDistractors: 5 },
-  sedang: { label: 'Sedang', sub: 'Kata pengecoh mulai ramai', siblingCount: 1, fillerCount: 3, maxDistractors: 6 },
-  sulit: { label: 'Sulit', sub: 'Kata pengecoh lumayan banyak', siblingCount: 2, fillerCount: 3, maxDistractors: 7 },
-  jago: { label: 'Jago', sub: 'Kata pengecoh banyak', siblingCount: 2, fillerCount: 4, maxDistractors: 8 },
-  legendaris: { label: 'Legendaris', sub: 'Kata pengecoh sangat banyak', siblingCount: 3, fillerCount: 5, maxDistractors: 9 },
-};
-
-function tokenize(sentence: string): string[] {
-  return sentence
-    .replace(/[.?!]+$/, '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+interface Bubble {
+  /** Teks yang tampil (kata pertama kalimat sudah dikecilkan). */
+  text: string;
+  /** Kunci pembanding (huruf kecil). */
+  key: string;
 }
 
 interface PuzzleRound {
-  targetWords: string[];
-  bubbles: string[];
+  sentence: PuzzleSentence;
+  /** Urutan kunci yang diterima: kalimat utama + `alt`. */
+  answers: string[][];
+  bubbles: Bubble[];
 }
 
-function buildRound(topics: VocabTopic[], difficulty: WordMatchDifficulty): PuzzleRound {
-  const meta = DIFFICULTY_META[difficulty];
-  const topic = topics[Math.floor(Math.random() * topics.length)];
-  const items = topic.items;
-  const target = items[Math.floor(Math.random() * items.length)];
-  const targetWords = tokenize(target.example.en);
-  const targetLower = targetWords.map((w) => w.toLowerCase());
+const keyOf = (w: string): string => w.toLowerCase();
 
-  const siblings = shuffle(items.filter((it) => it !== target)).slice(0, meta.siblingCount);
-  const siblingWords = siblings.flatMap((s) => tokenize(s.example.en));
-  const filler = shuffle(EXTRA_FILLER_WORDS.filter((w) => !targetLower.includes(w))).slice(0, meta.fillerCount);
+/** Kecilkan HANYA kata pertama (kecuali "I") — kata lain (nama hari, TV)
+ *  dibiarkan apa adanya. Jadi tidak ada gelembung yang "kelihatan paling
+ *  depan" gara-gara huruf kapital. */
+function displayWords(sentence: string): string[] {
+  return tokenize(sentence).map((w, i) => (i === 0 && w !== 'I' ? w.charAt(0).toLowerCase() + w.slice(1) : w));
+}
 
-  let distractors = [...siblingWords, ...filler];
-  if (distractors.length > meta.maxDistractors) distractors = shuffle(distractors).slice(0, meta.maxDistractors);
-
-  return { targetWords, bubbles: shuffle([...targetWords, ...distractors]) };
+function buildRound(sentence: PuzzleSentence, difficulty: WordMatchDifficulty): PuzzleRound {
+  const cfg = TIER_CONFIG[difficulty];
+  const words = displayWords(sentence.en);
+  const targetKeys = new Set(words.map(keyOf));
+  let distractors: string[];
+  if (cfg.distractor === 'wrong') {
+    distractors = (sentence.wrong ?? []).slice(0, cfg.distractorCount);
+  } else {
+    // Kata dari kalimat LAIN di markas yang sama, yang tidak ada di kalimat
+    // target (huruf kecil, unik) — tidak ada filler acak lagi.
+    const pool = new Map<string, string>();
+    for (const other of shuffle(SENTENCE_BANK[difficulty].filter((s) => s !== sentence))) {
+      for (const w of displayWords(other.en)) {
+        const k = keyOf(w);
+        if (!targetKeys.has(k) && !pool.has(k)) pool.set(k, w);
+      }
+    }
+    distractors = shuffle([...pool.values()]).slice(0, cfg.distractorCount);
+  }
+  const answers = [sentence.en, ...(sentence.alt ?? [])].map((s) => tokenize(s).map(keyOf));
+  const bubbles = shuffle([...words, ...distractors]).map((text) => ({ text, key: keyOf(text) }));
+  return { sentence, answers, bubbles };
 }
 
 /** Susunan baris piramida (jumlah bubble per baris) — makin ke bawah makin
@@ -201,51 +146,54 @@ interface RoundJourneyCtx {
   headerHtml: string;
 }
 
-/** Mesin 1 markas — 5 kalimat berturut-turut (`ROUND_COUNT`) di 1 tingkat
- *  kesulitan. Dulu jadi entry point tunggal bernama `runSentencePuzzle`
- *  (SUDAH DIRENAME, lihat komentar puncak file). Sekarang dipakai
- *  `runSentencePuzzle()` orkestrator di bawah (dipanggil 1× tiap markas
- *  ditap). */
+/** Mesin 1 markas — 5 kalimat berturut-turut dari bank markas itu. Dipakai
+ *  `runSentencePuzzle()` orkestrator di bawah (1× tiap markas ditap). */
 function runSentencePuzzleRound(
   container: HTMLElement,
-  topics: VocabTopic[],
   difficulty: WordMatchDifficulty,
   onDone: OnDone,
   level: LevelKey,
   journey?: RoundJourneyCtx
 ): void {
+  const cfg = TIER_CONFIG[difficulty];
+  const sentences = shuffle(SENTENCE_BANK[difficulty]).slice(0, ROUND_COUNT);
   let roundIndex = 0;
   let round: PuzzleRound;
   let rows: number[] = [];
   let used: boolean[] = [];
   let answer: number[] = [];
   let answered = false;
-  let hintRevealed = false;
+  let solved = false;
+  /** Petunjuk per kalimat: 'next-word' = sudah dipakai, 'listen' = 🔊 sudah dibuka. */
+  let hintUsed = false;
+  let attempted = false;
+
+  const hearsByDefault = cfg.prompt !== 'meaning';
 
   function newRound(): void {
-    round = buildRound(topics, difficulty);
+    round = buildRound(sentences[roundIndex], difficulty);
     rows = pyramidRows(round.bubbles.length);
     used = round.bubbles.map(() => false);
     answer = [];
     answered = false;
-    hintRevealed = false;
+    solved = false;
+    hintUsed = false;
+    attempted = false;
     paint();
-    speak(round.targetWords.join(' '));
+    if (hearsByDefault) speak(round.sentence.en);
   }
 
   function answerText(): string {
-    return answer.map((i) => round.bubbles[i]).join(' ');
+    return answer.map((i) => round.bubbles[i].text).join(' ');
   }
 
-  function bubbleHtml(word: string, i: number): string {
+  function bubbleHtml(b: Bubble, i: number): string {
     // Begitu ronde terjawab, SEMUA bubble diredupkan (bukan cuma yang
-    // dipakai) — supaya kelihatan jelas ronde ini sudah terkunci, tidak ada
-    // bubble yang masih terlihat "hidup" padahal tap-nya sudah tidak ngapa-
-    // ngapain (CLAUDE.md: setiap percobaan anak harus direspons jelas).
+    // dipakai) — supaya kelihatan jelas ronde ini sudah terkunci.
     const isUsed = used[i] || answered;
     return `<button class="sp-bubble${isUsed ? ' is-used' : ''}" type="button" data-action="tapBubble" data-payload="${i}" ${
       isUsed ? 'disabled' : ''
-    }>${word}</button>`;
+    }>${b.text}</button>`;
   }
 
   function rowsHtml(): string {
@@ -254,7 +202,7 @@ function runSentencePuzzleRound(
       .map((count) => {
         const cells = round.bubbles
           .slice(idx, idx + count)
-          .map((w, j) => bubbleHtml(w, idx + j))
+          .map((b, j) => bubbleHtml(b, idx + j))
           .join('');
         idx += count;
         return `<div class="sp-row">${cells}</div>`;
@@ -262,23 +210,31 @@ function runSentencePuzzleRound(
       .join('');
   }
 
+  function hintButtonHtml(): string {
+    if (answered) return '';
+    if (cfg.hint === 'listen' && hintUsed) return '';
+    const locked = cfg.hintGated && !attempted;
+    const disabled = hintUsed || locked;
+    return `<button class="speak-btn-ghost" type="button" data-action="hint" ${disabled ? 'disabled' : ''}>${
+      locked ? '🔒' : '<span class="hint-bulb">💡</span>'
+    } Petunjuk</button>`;
+  }
+
   function paint(): void {
     const built = answerText();
+    const showListen = hearsByDefault || (cfg.hint === 'listen' && hintUsed) || answered;
+    const showMeaning = cfg.prompt !== 'audio' || answered;
     container.innerHTML = `
       ${journey?.headerHtml ?? ''}
       ${progressDotsHtml(ROUND_COUNT, (i) => i < roundIndex || (i === roundIndex && answered), roundIndex)}
-      <div class="sp-sky" aria-hidden="true">
-        <span class="sp-moon">🌙</span>
-        <span class="sp-bird">🐦</span>
-        <span class="sp-bird sp-bird2">🐦</span>
-      </div>
+      <p class="sp-task">${cfg.task}</p>
+      ${showMeaning ? `<p class="sp-meaning">🇮🇩 <b>${round.sentence.id}</b></p>` : ''}
       <div class="speak-row">
-        <button class="speak-btn pt-cta" type="button" data-action="hearSentence">🔊 Dengar</button>
-        <button class="speak-btn-ghost" type="button" data-action="hint" ${hintRevealed || answered ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>
+        ${showListen ? '<button class="speak-btn pt-cta" type="button" data-action="hearSentence">🔊 Dengar</button>' : ''}
+        ${hintButtonHtml()}
       </div>
-      ${hintRevealed ? `<p class="meta" style="text-align:center;margin:0 0 var(--s3)">💡 <b>${round.targetWords.join(' ')}</b></p>` : ''}
       <div class="sp-pyramid">${rowsHtml()}</div>
-      <div class="sp-answer-bar${built ? '' : ' empty'}">${built || 'Tap gelembung katanya 👆'}</div>
+      <div class="sp-answer-bar${built ? '' : ' empty'}">${solved ? round.sentence.en : built || 'Tap gelembung katanya 👆'}</div>
       <div class="feedback" id="fb"></div>
       ${
         answered
@@ -291,12 +247,8 @@ function runSentencePuzzleRound(
     `;
     setHandlers({
       tapBubble: (payload) => onTapBubble(Number(payload)),
-      hearSentence: () => speak(round.targetWords.join(' ')),
-      hint: () => {
-        if (hintRevealed || answered) return;
-        hintRevealed = true;
-        paint();
-      },
+      hearSentence: () => speak(round.sentence.en),
+      hint: useHint,
       removeLastBubble: () => {
         if (answered || answer.length === 0) return;
         const last = answer.pop()!;
@@ -312,45 +264,72 @@ function runSentencePuzzleRound(
     });
   }
 
+  function useHint(): void {
+    if (answered || hintUsed || (cfg.hintGated && !attempted)) return;
+    hintUsed = true;
+    if (cfg.hint === 'listen') {
+      paint();
+      speak(round.sentence.en);
+      return;
+    }
+    // 'next-word': potong susunan ke awalan yang sudah benar, lalu isi 1 kata
+    // berikutnya (non-punitive — kata yang sudah pas tidak dihapus).
+    const target = round.answers[0];
+    let keep = 0;
+    while (keep < answer.length && round.bubbles[answer[keep]].key === target[keep]) keep += 1;
+    for (const i of answer.slice(keep)) used[i] = false;
+    answer = answer.slice(0, keep);
+    const next = round.bubbles.findIndex((b, i) => !used[i] && b.key === target[keep]);
+    if (next >= 0) {
+      used[next] = true;
+      answer.push(next);
+    }
+    paint();
+    if (answer.length === target.length) checkAnswer();
+  }
+
   function onTapBubble(i: number): void {
     if (answered || used[i]) return;
+    if (cfg.speakOnTap) speak(round.bubbles[i].text);
     used[i] = true;
     answer.push(i);
     paint();
-    if (answer.length === round.targetWords.length) checkAnswer();
+    if (answer.length === round.answers[0].length) checkAnswer();
   }
 
   function checkAnswer(): void {
     answered = true;
-    // Konsisten pola `runSusunKalimat`/Eja Kata (CLAUDE.md poin 4): hapus
-    // `.letter-actions` langsung dari DOM di sini, bukan andalkan render
-    // ulang — repaint dari `onTapBubble` barusan sudah kepakai duluan
-    // sebelum `answered` berubah jadi true.
+    attempted = true;
+    // Hapus `.letter-actions` langsung dari DOM (CLAUDE.md poin 4) — repaint
+    // dari `onTapBubble` barusan sudah kepakai sebelum `answered` jadi true.
     container.querySelector('.letter-actions')?.remove();
-    const fb = container.querySelector<HTMLElement>('#fb')!;
-    const correct = answerText().toLowerCase() === round.targetWords.join(' ').toLowerCase();
+    const keys = answer.map((i) => round.bubbles[i].key).join(' ');
+    const correct = round.answers.some((a) => a.join(' ') === keys);
     if (correct) {
+      solved = true;
+      paint();
       recordAttempt(true, GAME_KEY);
       playCorrectTone();
       fireConfetti();
-      fb.textContent = pickPraise(level);
-      fb.className = 'feedback good';
     } else {
       recordAttempt(false, GAME_KEY);
       container.querySelector('.sp-answer-bar')?.classList.add('is-wrong');
       playWrongTone();
       vibrateDevice(160);
-      fb.textContent = pickEncourage(level);
-      fb.className = 'feedback bad';
     }
+    const fb = container.querySelector<HTMLElement>('#fb')!;
+    fb.textContent = correct ? pickPraise(level) : pickEncourage(level);
+    fb.className = correct ? 'feedback good' : 'feedback bad';
     const isLastRoundOfMarkas = roundIndex === ROUND_COUNT - 1;
     fb.insertAdjacentHTML('afterend', roundActionsHtml(isLastRoundOfMarkas && (journey?.isLast ?? true)));
     setHandlers({
+      hearSentence: () => speak(round.sentence.en),
       tryAgainRound: () => {
-        // `answered = false` WAJIB sebelum `paint()` (bug pattern
-        // terdokumentasi CLAUDE.md poin 4) — hint tetap persist (non-
-        // punitive), TAPI susunan jawaban di-reset ke bubble kosong lagi.
+        // `answered = false` WAJIB sebelum `paint()` (CLAUDE.md poin 4) —
+        // Petunjuk yang sudah dibuka tetap (non-punitive), `attempted` tetap
+        // true (🔒 Petunjuk Jago/Legendaris jadi terbuka).
         answered = false;
+        solved = false;
         answer = [];
         used = round.bubbles.map(() => false);
         paint();
@@ -383,12 +362,12 @@ interface JourneyNode {
  *  (hindari nama lokasi persis sama biar tidak tertukar di kepala anak,
  *  pola SAMA alasan `games/wordmatch.ts`). */
 const JOURNEY_NODES: JourneyNode[] = [
-  { difficulty: 'pemanasan', place: 'Halaman Kalimat', emoji: '🏡', guideLine: 'Yuk pemanasan dulu di Halaman Kalimat sebelum masuk taman!' },
-  { difficulty: 'mudah', place: 'Taman Kalimat', emoji: '🌻', guideLine: 'Selamat datang di Taman Kalimat! Susun kalimat pertamamu dari gelembung kata ini.' },
-  { difficulty: 'sedang', place: 'Bengkel Kalimat', emoji: '🔧', guideLine: 'Kamu masuk Bengkel Kalimat! Kata pengecohnya mulai ramai, saring baik-baik.' },
-  { difficulty: 'sulit', place: 'Studio Kalimat', emoji: '🎨', guideLine: 'Sampai di Studio Kalimat! Susun kalimatnya di antara lebih banyak gelembung.' },
-  { difficulty: 'jago', place: 'Panggung Kalimat', emoji: '🎭', guideLine: 'Kamu di Panggung Kalimat! Tunjukkan kehebatanmu menyusun kata.' },
-  { difficulty: 'legendaris', place: 'Puncak Kalimat', emoji: '🏔️', guideLine: 'Ini dia Puncak Kalimat! Gelembungnya paling ramai, buktikan kamu Jago Susun sejati.' },
+  { difficulty: 'pemanasan', place: 'Halaman Kalimat', emoji: '🏡', guideLine: 'Yuk pemanasan! Dengar kalimat pendeknya, lalu susun.' },
+  { difficulty: 'mudah', place: 'Taman Kalimat', emoji: '🌻', guideLine: 'Selamat datang di Taman Kalimat! Kalimatnya sedikit lebih panjang, dengar baik-baik.' },
+  { difficulty: 'sedang', place: 'Bengkel Kalimat', emoji: '🔧', guideLine: 'Di Bengkel Kalimat kamu menyusun dari artinya. Suaranya ada di Petunjuk.' },
+  { difficulty: 'sulit', place: 'Studio Kalimat', emoji: '🎨', guideLine: 'Sampai di Studio Kalimat! Pilih bentuk kata yang pas, ya.' },
+  { difficulty: 'jago', place: 'Panggung Kalimat', emoji: '🎭', guideLine: 'Kamu di Panggung Kalimat! Sekarang ada kalimat tanya dan kalimat "tidak".' },
+  { difficulty: 'legendaris', place: 'Puncak Kalimat', emoji: '🏔️', guideLine: 'Ini dia Puncak Kalimat! Gabungkan 2 ide jadi 1 kalimat panjang.' },
 ];
 
 /** Header dalam layar 1 markas — pola SAMA PERSIS `nodeHeaderHtml()`
@@ -411,7 +390,7 @@ function nodeHeaderHtml(node: JourneyNode, foundCount: number, total: number): s
  * closure ini, TIDAK disimpan progress.ts/localStorage, konsisten semua
  * raja Game Hub lain.
  */
-export function runSentencePuzzle(container: HTMLElement, topics: VocabTopic[], onDone: OnDone, level: LevelKey): void {
+export function runSentencePuzzle(container: HTMLElement, onDone: OnDone, level: LevelKey): void {
   const total = JOURNEY_NODES.length;
   const visited = new Set<number>();
 
@@ -426,7 +405,7 @@ export function runSentencePuzzle(container: HTMLElement, topics: VocabTopic[], 
       const stateClass = cleared ? 'is-cleared' : unlocked ? 'is-open' : 'is-locked';
       const pct = cleared ? 100 : 0;
       const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
-      const meta = DIFFICULTY_META[node.difficulty];
+      const meta = TIER_CONFIG[node.difficulty];
       return `
       <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-gram)">
         ${badge}
@@ -456,9 +435,9 @@ export function runSentencePuzzle(container: HTMLElement, topics: VocabTopic[], 
         </div>
         <div class="raja-grid">${stops}</div>
         ${gameHowToHtml([
+          'Dengar kalimatnya atau baca artinya',
           'Tap gelembung kata untuk menyusun kalimat',
-          'Dengar dulu contohnya, lalu susun kata sampai pas',
-          'Selesaikan 5 kalimat di tiap markas',
+          'Tiap markas punya tantangan baru, 5 kalimat per markas',
           'Taklukkan markas satu per satu sampai tuntas!',
         ])}
       </div>`;
@@ -466,12 +445,11 @@ export function runSentencePuzzle(container: HTMLElement, topics: VocabTopic[], 
   }
 
   function playStage(idx: number): void {
-    setGameRoundActive(true); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi
+    setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runSentencePuzzleRound(
       container,
-      topics,
       node.difficulty,
       () => {
         visited.add(idx);

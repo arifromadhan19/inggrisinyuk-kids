@@ -328,9 +328,10 @@ export interface ReadingText {
   lines: ReadingTextLine[];
   /** Gambar adegan utk 🎮 Kenalan (cuma di `texts`, bukan `newTexts`). */
   pictures?: { emoji: string; label: string }[];
-  /** Index `lines` dlm urutan benar utk 🎮 "Urutkan" di Kenalan (buku:
-   *  urutan halaman; teks: urutan kejadian). Kosong → 🎮 "Tunjuk di Gambar"
-   *  kalau ada `pic`, atau tanpa 🎮. */
+  /** Index `lines` dlm urutan kejadian utk 🎮 "Urutkan Cerita" di Kenalan.
+   *  JANGAN diisi di buku mini (`genre:'book'`) — "Urutkan Halaman" dihapus
+   *  (cuma uji hafalan urutan). Kosong → 🎮 "Tunjuk di Gambar" kalau ada
+   *  `pic` (bukan buku), atau tanpa 🎮. */
   sequence?: number[];
   questions: ReadingTextQuestion[];
 }
@@ -682,7 +683,9 @@ export interface GrammarPatternForm {
   id: string;
 }
 
-export type GrammarContrastVisual = 'quantity' | 'polarity' | 'proximity' | 'size' | 'character' | 'possessor' | 'inclusion';
+/** `'liking'` = suka/tidak suka (gambar + 😊/😖) — dipisah dari `'polarity'`
+ *  (✅/❌) krn ✅/❌ mudah dibaca anak sbg "benar/salah", bukan "suka". */
+export type GrammarContrastVisual = 'quantity' | 'polarity' | 'liking' | 'proximity' | 'size' | 'character' | 'possessor' | 'inclusion';
 
 export interface GrammarPatternItem {
   en: string;
@@ -699,6 +702,13 @@ export interface GrammarPatternTopic {
   /** Default `'quantity'` kalau tidak diisi (kompatibel dgn topik Little
    *  Stars yang sudah ada sebelum field ini ditambahkan). */
   contrastVisual?: GrammarContrastVisual;
+  /** Pertanyaan & label 2 pilihan Kenalan "🎮 Main" SESUAI KONTEKS topik —
+   *  `question` WAJIB diawali kata tanya ("Apakah …"/"Siapa …") & boleh
+   *  memuat `{x}` = nama benda soal itu (`item.id` huruf kecil), mis.
+   *  "Apakah satu atau banyak {x}?" → "Apakah satu atau banyak mobil?".
+   *  `a` = arti formA, `b` = arti formB. Permintaan user: jangan dipukul
+   *  rata 1 pertanyaan generik utk semua topik. */
+  choice: { question: string; a: string; b: string };
   items: GrammarPatternItem[];
 }
 

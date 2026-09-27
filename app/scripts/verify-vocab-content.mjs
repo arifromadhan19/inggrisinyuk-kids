@@ -286,6 +286,69 @@ async function main() {
     }
   }
 
+  // Raja Kata (Word Quest, `src/games/wordmatch-data.ts`) — bank kata game
+  // juga menampilkan emoji makhluk hidup, jadi denylist yang SAMA berlaku.
+  // Legendaris (mode petunjuk) wajib py clue+clueId & clue tidak boleh
+  // memuat katanya sendiri (bocor jawaban, CLAUDE.md "Soal Tidak Boleh Bisa
+  // Ditebak").
+  const wmOut = path.join(__dirname, '.verify-wordmatch-bundle.mjs');
+  await build({ entryPoints: [path.join(__dirname, '../src/games/wordmatch-data.ts')], bundle: true, format: 'esm', platform: 'node', outfile: wmOut, logLevel: 'silent' });
+  let wm;
+  try {
+    wm = await import(`${wmOut}?t=${Date.now()}`);
+  } finally {
+    await unlink(wmOut).catch(() => {});
+  }
+  for (const [tier, bank] of Object.entries(wm.RANDOM_BANK)) {
+    for (const e of bank) {
+      const key = e.en.trim().toLowerCase();
+      if (PROBLEMATIC_EMOJI.has(e.emoji) && !ALLOWED_EMOJI_WORD_EXCEPTIONS.has(`${e.emoji}::${key}`)) {
+        errors.push(`Word Quest (${tier}) kata "${e.en}" (emoji="${e.emoji}"): ${PROBLEMATIC_EMOJI.get(e.emoji)}.`);
+      }
+      if (wm.TIER_CONFIG[tier].mode === 'clue') {
+        if (!e.clue || !e.clueId) errors.push(`Word Quest (${tier}) kata "${e.en}" belum py clue/clueId.`);
+        else if (new RegExp(`\\b${escapeRegExp(e.en)}`, 'i').test(e.clue)) errors.push(`Word Quest (${tier}) clue "${e.clue}" memuat katanya sendiri "${e.en}" (bocor jawaban).`);
+      }
+    }
+  }
+
+  // Sentence Puzzle (`src/games/sentencepuzzle-data.ts`) — bank kalimat per
+  // markas: arti Indonesia wajib, tanpa koma di tengah (gelembung = kata),
+  // jumlah kata sesuai tier, pengecoh `wrong` tepat 2 & tidak ada di
+  // kalimat, `alt` = kata yang sama persis, kalimat tidak kembar antar markas.
+  const spOut = path.join(__dirname, '.verify-sentencepuzzle-bundle.mjs');
+  await build({ entryPoints: [path.join(__dirname, '../src/games/sentencepuzzle-data.ts')], bundle: true, format: 'esm', platform: 'node', outfile: spOut, logLevel: 'silent' });
+  let sp;
+  try {
+    sp = await import(`${spOut}?t=${Date.now()}`);
+  } finally {
+    await unlink(spOut).catch(() => {});
+  }
+  const spSeen = new Map();
+  const spKeys = (s) => sp.tokenize(s).map((w) => w.toLowerCase());
+  for (const [tier, bank] of Object.entries(sp.SENTENCE_BANK)) {
+    const cfg = sp.TIER_CONFIG[tier];
+    if (bank.length < 8) errors.push(`Sentence Puzzle (${tier}) cuma ${bank.length} kalimat — minimal 8 supaya 5 kalimat/markas tetap bervariasi.`);
+    for (const s of bank) {
+      const tag = `Sentence Puzzle (${tier}) "${s.en}"`;
+      const words = spKeys(s.en);
+      if (!s.id) errors.push(`${tag} belum py arti Indonesia (id).`);
+      if (/,/.test(s.en)) errors.push(`${tag} memuat koma — gelembung dipecah per spasi, koma ikut nempel ke kata.`);
+      if (words.length < cfg.minWords || words.length > cfg.maxWords) errors.push(`${tag} ${words.length} kata, tier ini ${cfg.minWords}–${cfg.maxWords}.`);
+      if (cfg.distractor === 'wrong') {
+        const wrong = (s.wrong ?? []).map((w) => w.toLowerCase());
+        if (wrong.length !== 2 || new Set(wrong).size !== 2) errors.push(`${tag} wajib py tepat 2 \`wrong\` yang berbeda.`);
+        for (const w of wrong) if (words.includes(w)) errors.push(`${tag} \`wrong\` "${w}" ada di kalimatnya sendiri.`);
+      }
+      for (const a of s.alt ?? []) {
+        if ([...spKeys(a)].sort().join(' ') !== [...words].sort().join(' ')) errors.push(`${tag} alt "${a}" kata-katanya tidak sama persis dgn kalimat utama.`);
+      }
+      const norm = words.join(' ');
+      if (spSeen.has(norm)) errors.push(`${tag} kembar dgn kalimat di markas ${spSeen.get(norm)}.`);
+      else spSeen.set(norm, tier);
+    }
+  }
+
   if (errors.length > 0) {
     console.error(`\n❌ Verifikasi konten Vocab GAGAL (${errors.length} masalah):\n`);
     for (const e of errors) console.error(`  - ${e}`);

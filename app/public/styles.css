@@ -1405,18 +1405,22 @@ body.is-boss-play .tabbar{ display:none; }
 .mm-text{ font-family:var(--font-head); font-weight:800; font-size:.875rem; color:var(--ink); text-align:center; }
 .mm-check{ position:absolute; top:6px; right:6px; width:20px; height:20px; border-radius:50%; background:var(--ok); color:#fff; display:grid; place-items:center; font-size:11px; }
 
-/* Raja Kata — Word Match (games/wordmatch.ts): dua baris kartu terlihat
-   sekaligus (kata di atas, gambar di bawah, diacak independen) — anak tap
+/* Raja Kata — Word Match (games/wordmatch.ts): dua KOLOM kartu terlihat
+   sekaligus (kata di kiri, gambar di kanan, diacak independen — permintaan
+   user "ubah tampilannya jadi vertikal", dulu 2 baris atas/bawah) — anak tap
    satu kata lalu satu gambar (atau sebaliknya); pasangan benar digambar garis
    penghubung SVG (overlay .wm-lines di atas .wm-board), bukan drag beneran. */
-.wm-head{ display:flex; align-items:center; justify-content:flex-end; margin-bottom:var(--s3); }
-.wm-board{ position:relative; }
+.wm-head{ display:flex; align-items:center; justify-content:space-between; gap:var(--s3); flex-wrap:wrap; margin:var(--s3) auto; max-width:520px; }
+.wm-task{ margin:0; flex:1 1 180px; font-weight:700; color:var(--ink-2); font-size:.9375rem; }
+.wm-board{
+  position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:clamp(28px, 10vw, 120px);
+  max-width:520px; margin:0 auto;
+}
 .wm-lines{ position:absolute; inset:0; pointer-events:none; overflow:visible; }
-.wm-row{ position:relative; z-index:1; display:flex; flex-wrap:wrap; justify-content:center; gap:var(--s3); }
-.wm-row + .wm-row{ margin-top:var(--s5); }
+.wm-row{ position:relative; z-index:1; display:flex; flex-direction:column; gap:var(--s3); }
 .wm-card{
-  position:relative; z-index:1; min-width:88px; border-radius:var(--r-md); border:2px solid var(--line);
-  background:var(--surface); padding:14px 16px; display:flex; align-items:center; justify-content:center;
+  position:relative; z-index:1; height:62px; border-radius:var(--r-md); border:2px solid var(--line);
+  background:var(--surface); padding:8px; display:flex; align-items:center; justify-content:center;
   transition:transform .15s ease, background .15s ease, border-color .15s ease;
 }
 .wm-card:not(:disabled):hover{ transform:translateY(-2px); border-color:var(--brand-500); }
@@ -1424,13 +1428,28 @@ body.is-boss-play .tabbar{ display:none; }
 .wm-card.is-selected{ border-color:var(--accent); background:var(--accent-bg); }
 .wm-card.is-matched{ border-color:var(--ok); background:var(--ok-bg); opacity:.85; }
 .wm-card.is-wrong{ animation:shake .3s ease; border-color:var(--try); background:var(--try-bg); }
-.wm-word-text{ font-family:var(--font-head); font-weight:800; font-size:1.0625rem; color:var(--ink); }
+.wm-word-text{ font-family:var(--font-head); font-weight:800; font-size:clamp(.875rem, 3.6vw, 1.0625rem); color:var(--ink); }
 .wm-emoji{ font-size:2rem; line-height:1; }
+/* Pembeda tiap markas (games/wordmatch-data.ts TIER_CONFIG): Jago = kartu
+   kiri cuma 🔊 bernomor (tulisan muncul lewat 💡/setelah cocok), Legendaris =
+   kartu kiri petunjuk kalimat & kartu kanan kata (tanpa gambar), Sedang/Sulit
+   💡 = gambar pasangan kata terpilih berdenyut (.is-hint). */
+.wm-card{ flex-direction:column; gap:2px; }
+.wm-check{ position:absolute; top:4px; left:6px; font-size:.75rem; line-height:1; }
+.wm-audio{ font-family:var(--font-head); font-weight:800; font-size:1.25rem; color:var(--ink); }
+.wm-audio-word{ font-size:.8125rem; font-weight:700; color:var(--ink-2); }
+.wm-board.is-clue{ grid-template-columns:minmax(0,3fr) minmax(0,2fr); column-gap:clamp(20px, 7vw, 80px); max-width:620px; }
+.wm-board.is-clue .wm-card{ height:96px; }
+.wm-board.is-clue.show-id .wm-card{ height:132px; }
+.wm-card.is-clue{ justify-content:center; align-items:flex-start; text-align:left; }
+.wm-clue{ font-size:clamp(.8125rem, 3.4vw, .9375rem); font-weight:700; color:var(--ink); line-height:1.3; }
+.wm-clue-id{ display:block; margin-top:4px; font-size:.75rem; font-weight:600; color:var(--ink-3); }
+.wm-card.is-hint{ border-color:var(--sun-500); animation:ctaPulse 1.6s ease-in-out infinite; }
 .wm-line{ stroke:var(--ok); stroke-width:3; stroke-linecap:round; }
 .wm-line-new{ stroke-dasharray:1; stroke-dashoffset:1; animation:wmLineDraw .35s ease forwards; }
 @keyframes wmLineDraw{ to{ stroke-dashoffset:0; } }
 @media (prefers-reduced-motion: reduce){
-  .wm-card.is-wrong{ animation:none; }
+  .wm-card.is-wrong, .wm-card.is-hint{ animation:none; }
   .wm-line-new{ animation:none; stroke-dashoffset:0; }
 }
 
@@ -1524,6 +1543,14 @@ body.is-boss-play .tabbar{ display:none; }
   padding:16px; text-align:center; max-width:220px; margin:0 auto var(--s3);
 }
 .sp-picture .big-emoji{ font-size:clamp(44px,11vw,60px); }
+.sp-task{ margin:var(--s2) 0 var(--s2); text-align:center; font-weight:700; color:var(--ink-2); font-size:.9375rem; }
+/* Arti Indonesia kalimat target (Pemanasan & Sedang ke atas, `sentencepuzzle-data.ts` TIER_CONFIG.prompt). */
+.sp-meaning{
+  background:var(--sun-100); color:var(--sun-600); border-radius:var(--r-pill);
+  padding:10px var(--s5); text-align:center; font-family:var(--font-head);
+  font-weight:800; font-size:1rem; margin:0 auto var(--s3); max-width:520px;
+}
+.sp-meaning b{ color:var(--ink); }
 .sp-pyramid{ display:flex; flex-direction:column; gap:10px; align-items:center; margin:var(--s4) 0; }
 .sp-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
 .sp-bubble{
@@ -1981,6 +2008,10 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
    terakhir melebar" di atas TIDAK berlaku (kalau berlaku, kartu ke-3 turun
    sendirian ke baris 2). */
 .opt-grid.three > *:last-child:nth-child(odd){ grid-column:auto; }
+/* Grammar Latihan Inti pola: 4 kartu (2×2) atau 6 kartu (Starter) — HP
+   2 kolom (3 baris), desktop 3 kolom (2 baris rapi). */
+.opt-grid.pattern-cards .opt-btn{ padding-top:12px; padding-bottom:12px; }
+@media (min-width:700px){ .opt-grid.pattern-cards.six{ grid-template-columns:repeat(3,1fr); max-width:600px; } }
 .opt-btn{
   background:var(--surface); border:3px solid var(--line); border-radius:var(--r-md);
   /* 🔒 Permintaan user: gambar/kartu Kenalan "Main" WAJIB ukuran SAMA PERSIS
@@ -2012,6 +2043,46 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
   border:3px solid var(--line); border-radius:var(--r-md); padding:18px 14px;
   text-align:center; font-size:clamp(56px,14vw,78px); line-height:1.1;
 }
+/* Grammar Kenalan 🎮 "Dengar & Pilih" — 2 PANEL berwarna supaya jelas mana
+   soal & mana jawaban (permintaan user): ① panel soal krem-mango (dengar
+   kalimat); ② panel jawaban toska berisi pertanyaan KHUSUS TOPIK + 2 kartu
+   gambar berlabel. Gaya "chunky" (bayangan padat) ala mainan anak. */
+.gm-panel{
+  max-width:600px; margin:var(--s3) auto 0; border-radius:24px; padding:12px 12px 14px;
+}
+.gm-question{ background:var(--sun-100); border:3px solid var(--sun-300); }
+.gm-answer{ background:var(--brand-50); border:3px solid var(--brand-100); }
+.gm-step{
+  display:flex; align-items:center; justify-content:center; gap:8px; margin:0 0 10px;
+  font-family:var(--font-head); font-weight:800; font-size:.9375rem; color:var(--ink); text-align:center;
+}
+.gm-step b{ color:var(--c-gram); }
+.gm-caption{ font-weight:700; font-size:.9375rem; color:var(--ink-2); line-height:1.35; }
+.gm-caption b{ color:var(--c-gram); font-weight:900; }
+.gm-said{ font-family:var(--font-head); font-weight:800; font-size:1rem; color:var(--ink); line-height:1.3; }
+.gm-said-id{ font-family:var(--font-body, inherit); font-weight:700; font-size:.9375rem; color:var(--ink-2); }
+.gm-said-id::before{ content:'· '; color:var(--ink-3); }
+.gm-answers{ margin-top:0; max-width:none; gap:12px; }
+.gm-ans{
+  display:flex; flex-direction:column; align-items:center; gap:4px; padding:14px 8px !important;
+  border-radius:20px; transition:transform .12s ease;
+}
+.gm-ans:active{ transform:translateY(3px); }
+.gm-ans-a:not(.correct):not(.wrong){ border-color:var(--brand-300); box-shadow:0 5px 0 var(--brand-300); }
+.gm-ans-b:not(.correct):not(.wrong){ border-color:var(--sun-400); box-shadow:0 5px 0 var(--sun-400); }
+.gm-ans-label{ font-family:var(--font-head); font-weight:800; font-size:1.125rem; color:var(--ink); }
+/* Panel ① "Dengarkan kalimatnya" — tombol Dengar di tengah, teks/arti
+   kalimat muncul di bawahnya (lewat 💡 Petunjuk atau sesudah menjawab). */
+.gm-listen{ display:flex; flex-direction:column; align-items:center; gap:8px; padding:4px 0 6px; text-align:center; }
+/* Kartu pilihan panel ② — gambar kontras besar + label konteks topik. */
+.gm-choice .gm-choice-pic{ display:flex; flex-direction:column; align-items:center; min-height:96px; justify-content:center; overflow:hidden; max-width:100%; }
+.gm-choice .gm-ans-label{ font-size:1rem; line-height:1.25; }
+/* Lencana pembeda kartu kontras (✅/😊/🔍/👦 …) — dulu ikut `.lbl` 13px. */
+.opt-btn .cv-badge, .cv-badge{ line-height:1.1; margin-top:4px; }
+/* Label konsep di kartu kontras Grammar (Latihan Inti/Tantangan) — cuma utk lencana yang tidak langsung terbaca (LABELED_VISUALS, games/grammar.ts). */
+.pattern-card-label{ display:block; margin-top:6px; font-family:var(--font-head); font-weight:800; font-size:0.9375rem; line-height:1.2; color:var(--ink); }
+.pattern-card-label.big{ font-size:1.125rem; margin-top:8px; }
+
 /* Grammar Tantangan — ikon 🔊 pilihan A/B "bersuara" selama TTS diputar:
    ikon berdenyut + 2 gelombang suara melebar dari ikon. */
 .sound-ic{ position:relative; display:inline-block; line-height:1; }
@@ -2884,9 +2955,17 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .rt-card .rt-line.is-evidence{ background:var(--ok-bg); box-shadow:inset 0 0 0 2px var(--ok); color:var(--ok); outline:none; }
 .rt-card .rt-line.is-wrong{ background:var(--try-bg); box-shadow:inset 0 0 0 2px var(--try); animation:shake .3s ease; }
 .rt-page{ font-size:.8125rem; font-weight:700; color:var(--ink-3); }
+/* Bullet halaman Kenalan Reading (1 deret semua halaman, mis. 2 buku × 5 =
+   10) — di HP titik dikecilkan supaya muat 1 baris, bukan 8 + 2 timpang. */
+@media (max-width: 480px){
+  .rt-page-nav .quiz-dots{ gap:5px; }
+  .rt-page-nav .quiz-dot{ width:26px; height:26px; font-size:.75rem; }
+}
 /* Grid 2 kolom: 4 tombol = 2×2 rapi di HP & desktop (flex-wrap sempat
    jadi 3+1 di desktop). */
-.rt-actions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0 auto 14px; max-width:520px; }
+/* 2–3 tombol (🔊/🎤/🎮) selalu 1 baris sama lebar — tidak ada kartu ganjil
+   sendirian di baris ke-2 sejak 🌐 Arti dihapus. */
+.rt-actions{ display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:8px; margin:0 auto 14px; max-width:520px; }
 .rt-act{
   font-family:var(--font-head); font-weight:700; font-size:.875rem; color:var(--ink);
   background:var(--surface); border:2px solid var(--line); border-radius:var(--r-pill);
@@ -2916,8 +2995,15 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 }
 .rt-book-id{ margin-top:6px; font-size:1rem; }
 .rt-quiz-sentence{ padding:18px 16px; }
+/* Tantangan buku mini (gambar → pilih kalimat): gambar lebih kecil supaya
+   3 kalimat pilihan tetap kelihatan tanpa scroll di HP. */
+.rt-rev-pic{ padding:8px 16px; }
+.rt-rev-pic .rt-book-pic{ font-size:clamp(72px,20vw,110px); margin:0; }
 .rt-word{ display:inline-block; padding:0 4px; border-radius:10px; transition:background .12s ease; cursor:pointer; }
 .rt-word.lit{ background:var(--sun-300); }
+/* Kata di kartu teks (Kenalan level lain): tanpa jarak ekstra & tap tetap ke baris. */
+.rt-card .rt-word{ display:inline; padding:0 1px; border-radius:6px; cursor:inherit; }
+.rt-card .rt-line.selected .rt-word.lit{ background:#fff; box-shadow:inset 0 0 0 2px var(--sun-500); }
 .rt-book-text.asking .rt-word{ outline:2px dashed var(--brand-300); outline-offset:-1px; margin:2px 0; }
 .rt-word.is-evidence{ background:var(--ok-bg); color:var(--ok); box-shadow:inset 0 0 0 2px var(--ok); outline:none !important; }
 .rt-word.is-wrong{ background:var(--try-bg); box-shadow:inset 0 0 0 2px var(--try); animation:shake .3s ease; }

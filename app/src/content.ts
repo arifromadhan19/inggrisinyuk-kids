@@ -2523,20 +2523,23 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
  */
 export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
   {
+    // 🔒 Audit materi/grammar.md §25: dulu "This is a ball…" — sama persis
+    // Little Stars `ini-itu`. Sekarang naik ke bentuk TANYA & BUKAN
+    // (Fase B, My Next Words kelas 2–3: "Is this your…?", "What is that?").
     id: 'this-is',
-    title: 'Ini dan Itu (This Is / That Is)',
-    desc: 'This is a… / That is an…',
+    title: 'Tanya Ini dan Itu (Is This? What Is That?)',
+    desc: 'Is this…? / What is that? / This is not…',
     sentences: [
-      { en: 'This is a ball.', id: 'Ini sebuah bola.', emoji: '⚽', key: 'a', wrong: ['an', 'two'] },
-      { en: 'This is an apple.', id: 'Ini sebuah apel.', emoji: '🍎', key: 'an', wrong: ['a', 'two'] },
-      { en: 'This is my bag.', id: 'Ini tasku.', emoji: '🎒', key: 'This', wrong: ['These', 'Those'] },
-      { en: 'That is a kite.', id: 'Itu sebuah layang-layang.', emoji: '🪁', key: 'That', wrong: ['These', 'Those'] },
-      { en: 'This is an egg.', id: 'Ini sebutir telur.', emoji: '🥚', key: 'an', wrong: ['a', 'two'] },
-      { en: 'That is an orange.', id: 'Itu sebuah jeruk.', emoji: '🍊', key: 'an', wrong: ['a', 'two'] },
-      { en: 'This is a pencil.', id: 'Ini sebuah pensil.', emoji: '✏️', key: 'This', wrong: ['These', 'Those'] },
-      { en: 'That is my chair.', id: 'Itu kursiku.', emoji: '🪑', key: 'is', wrong: ['are', 'am'] },
-      { en: 'This is an umbrella.', id: 'Ini sebuah payung.', emoji: '☂️', key: 'an', wrong: ['a', 'two'] },
-      { en: 'This is a clock.', id: 'Ini sebuah jam.', emoji: '🕰️', key: 'is', wrong: ['are', 'am'] },
+      { en: 'Is this your bag?', id: 'Apakah ini tasmu?', emoji: '🎒', key: 'this', wrong: ['these', 'those'] },
+      { en: 'What is that?', id: 'Itu apa?', key: 'is', wrong: ['are', 'am'] },
+      { en: 'Is that your pencil?', id: 'Apakah itu pensilmu?', emoji: '✏️', key: 'that', wrong: ['those', 'these'] },
+      { en: 'What is this?', id: 'Ini apa?', key: 'this', wrong: ['these', 'those'] },
+      { en: 'It is an eraser.', id: 'Itu penghapus.', key: 'an', wrong: ['a', 'two'] },
+      { en: 'Is this a ruler?', id: 'Apakah ini penggaris?', emoji: '📏', key: 'a', wrong: ['an', 'two'] },
+      { en: 'Is that an orange?', id: 'Apakah itu jeruk?', emoji: '🍊', key: 'an', wrong: ['a', 'two'] },
+      { en: 'This is not my book.', id: 'Ini bukan bukuku.', emoji: '📕', key: 'not', wrong: ['no', "don't"] },
+      { en: 'That is not your cup.', id: 'Itu bukan cangkirmu.', emoji: '☕', key: 'is', wrong: ['are', 'am'] },
+      { en: 'Is this your cap?', id: 'Apakah ini topimu?', emoji: '🧢', key: 'your', wrong: ['you', 'yours'] },
     ],
   },
   {
@@ -5516,7 +5519,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
             { emoji: '⬜', text: 'Square', ok: true },
             { emoji: '⭕', text: 'Circle', ok: false },
             { emoji: '❤️', text: 'Heart', ok: false },
-            { emoji: '💎', text: 'Diamond', ok: false },
+            { emoji: '🔷', text: 'Diamond', ok: false },
           ],
         },
       },
@@ -5566,7 +5569,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           options: [
             { emoji: '❤️', text: 'Heart', ok: true },
             { emoji: '⭐', text: 'Star', ok: false },
-            { emoji: '💎', text: 'Diamond', ok: false },
+            { emoji: '🔷', text: 'Diamond', ok: false },
             { emoji: '⭕', text: 'Circle', ok: false },
           ],
         },
@@ -5574,14 +5577,14 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Diamond',
         id: 'Wajik',
-        emoji: '💎',
-        example: { en: 'The kite is a diamond.', id: 'Layangannya berbentuk wajik.', emoji: '💎' },
+        emoji: '🔷',
+        example: { en: 'The kite is a diamond.', id: 'Layangannya berbentuk wajik.', emoji: '🔷' },
         practice: { en: 'My kite is shaped like a diamond.', id: 'Layanganku berbentuk seperti wajik.' },
         question: {
           en: 'What shape is the kite?',
           id: 'Apa bentuk layangannya?',
           options: [
-            { emoji: '💎', text: 'Diamond', ok: true },
+            { emoji: '🔷', text: 'Diamond', ok: true },
             { emoji: '🔺', text: 'Triangle', ok: false },
             { emoji: '⬜', text: 'Square', ok: false },
             { emoji: '🌙', text: 'Crescent', ok: false },
@@ -5624,10 +5627,10 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       },
       {
         en: 'Cross',
-        id: 'Silang',
+        id: 'Tanda Plus',
         emoji: '➕',
-        example: { en: 'This sticker is a cross.', id: 'Stikernya berbentuk silang.', emoji: '➕' },
-        practice: { en: 'The sticker has a cross shape.', id: 'Stiker itu berbentuk silang.' },
+        example: { en: 'This sticker is a cross.', id: 'Stikernya berbentuk tanda plus.', emoji: '➕' },
+        practice: { en: 'The sticker has a cross shape.', id: 'Stiker itu berbentuk tanda plus.' },
         question: {
           en: 'What shape is the sticker?',
           id: 'Apa bentuk stikernya?',
@@ -5652,7 +5655,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
             { emoji: '➡️', text: 'Arrow', ok: true },
             { emoji: '➕', text: 'Cross', ok: false },
             { emoji: '🥚', text: 'Oval', ok: false },
-            { emoji: '💎', text: 'Diamond', ok: false },
+            { emoji: '🔷', text: 'Diamond', ok: false },
           ],
         },
       },
@@ -11913,7 +11916,7 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
       // dipaksa ke biner bundar/bersudut jd terasa mengada-ada. Keduanya
       // TETAP jadi materi vocab topik ini (kata/emoji/example tidak
       // berubah), cuma tidak ikut mini-game "Kelompokkan" spesifik ini.
-      { en: 'Cross', id: 'Silang', emoji: '➕', example: { en: 'This is a cross.', id: 'Ini tanda silang.', emoji: '➕' } },
+      { en: 'Cross', id: 'Tanda Plus', emoji: '➕', example: { en: 'This is a cross.', id: 'Ini tanda plus.', emoji: '➕' } },
       { en: 'Arrow', id: 'Panah', emoji: '➡️', example: { en: 'This is an arrow.', id: 'Ini panah.', emoji: '➡️' } },
       { en: 'Crescent', id: 'Bulan Sabit', emoji: '🌙', example: { en: 'This is a crescent.', id: 'Ini bulan sabit.', emoji: '🌙' }, group: 'a' },
     ],
@@ -19168,9 +19171,9 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
       { en: 'Triangle', id: 'Segitiga', emoji: '🔺', phrase: { en: 'I see a triangle.', id: 'Aku lihat segitiga.', emoji: '🔺' } },
       { en: 'Star', id: 'Bintang', emoji: '⭐', phrase: { en: 'I draw a star.', id: 'Aku menggambar bintang.', emoji: '⭐' } },
       { en: 'Heart', id: 'Hati', emoji: '❤️', phrase: { en: 'I draw a heart.', id: 'Aku menggambar hati.', emoji: '❤️' } },
-      { en: 'Diamond', id: 'Berlian', emoji: '🔷', phrase: { en: 'I see a diamond.', id: 'Aku lihat berlian.', emoji: '🔷' } },
+      { en: 'Diamond', id: 'Wajik', emoji: '🔷', phrase: { en: 'I see a diamond.', id: 'Aku lihat wajik.', emoji: '🔷' } },
       { en: 'Oval', id: 'Oval', emoji: '🥚', phrase: { en: 'The egg is oval.', id: 'Telurnya oval.', emoji: '🥚' } },
-      { en: 'Cross', id: 'Silang', emoji: '➕', phrase: { en: 'I draw a cross.', id: 'Aku menggambar tanda silang.', emoji: '➕' } },
+      { en: 'Cross', id: 'Tanda Plus', emoji: '➕', phrase: { en: 'I draw a cross.', id: 'Aku menggambar tanda plus.', emoji: '➕' } },
       { en: 'Arrow', id: 'Panah', emoji: '➡️', phrase: { en: 'The arrow points right.', id: 'Panahnya menunjuk ke kanan.', emoji: '➡️' } },
       { en: 'Moon', id: 'Bulan', emoji: '🌙', phrase: { en: 'I see the moon.', id: 'Aku lihat bulan.', emoji: '🌙' } },
     ],
@@ -20352,6 +20355,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
   {
     id: 'satu-banyak',
     title: 'Satu atau Banyak? (One or Many?)',
+    choice: { question: 'Apakah satu atau banyak {x}?', a: 'Satu', b: 'Banyak' },
     desc: '10 kata',
     items: [
       {
@@ -20359,125 +20363,127 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
         id: 'Mobil',
         emoji: '🚗',
         formA: { en: "It's a car.", id: 'Itu satu mobil.' },
-        formB: { en: "They're cars.", id: 'Itu dua mobil.' },
+        formB: { en: "They're cars.", id: 'Itu banyak mobil.' },
       },
       {
         en: 'Bus',
         id: 'Bus',
         emoji: '🚌',
         formA: { en: "It's a bus.", id: 'Itu satu bus.' },
-        formB: { en: "They're buses.", id: 'Itu dua bus.' },
+        formB: { en: "They're buses.", id: 'Itu banyak bus.' },
       },
       {
         en: 'Bike',
         id: 'Sepeda',
         emoji: '🚲',
         formA: { en: "It's a bike.", id: 'Itu satu sepeda.' },
-        formB: { en: "They're bikes.", id: 'Itu dua sepeda.' },
+        formB: { en: "They're bikes.", id: 'Itu banyak sepeda.' },
       },
       {
         en: 'Train',
         id: 'Kereta',
         emoji: '🚆',
         formA: { en: "It's a train.", id: 'Itu satu kereta.' },
-        formB: { en: "They're trains.", id: 'Itu dua kereta.' },
+        formB: { en: "They're trains.", id: 'Itu banyak kereta.' },
       },
       {
         en: 'Airplane',
         id: 'Pesawat',
         emoji: '✈️',
         formA: { en: "It's an airplane.", id: 'Itu satu pesawat.' },
-        formB: { en: "They're airplanes.", id: 'Itu dua pesawat.' },
+        formB: { en: "They're airplanes.", id: 'Itu banyak pesawat.' },
       },
       {
         en: 'Boat',
         id: 'Perahu',
         emoji: '⛵',
         formA: { en: "It's a boat.", id: 'Itu satu perahu.' },
-        formB: { en: "They're boats.", id: 'Itu dua perahu.' },
+        formB: { en: "They're boats.", id: 'Itu banyak perahu.' },
       },
       {
         en: 'Truck',
         id: 'Truk',
         emoji: '🚚',
         formA: { en: "It's a truck.", id: 'Itu satu truk.' },
-        formB: { en: "They're trucks.", id: 'Itu dua truk.' },
+        formB: { en: "They're trucks.", id: 'Itu banyak truk.' },
       },
       {
         en: 'Fire Truck',
         id: 'Truk Pemadam',
         emoji: '🚒',
         formA: { en: "It's a fire truck.", id: 'Itu satu truk pemadam.' },
-        formB: { en: "They're fire trucks.", id: 'Itu dua truk pemadam.' },
+        formB: { en: "They're fire trucks.", id: 'Itu banyak truk pemadam.' },
       },
       {
         en: 'Ambulance',
         id: 'Ambulans',
         emoji: '🚑',
         formA: { en: "It's an ambulance.", id: 'Itu satu ambulans.' },
-        formB: { en: "They're ambulances.", id: 'Itu dua ambulans.' },
+        formB: { en: "They're ambulances.", id: 'Itu banyak ambulans.' },
       },
       {
         en: 'Helicopter',
         id: 'Helikopter',
         emoji: '🚁',
         formA: { en: "It's a helicopter.", id: 'Itu satu helikopter.' },
-        formB: { en: "They're helicopters.", id: 'Itu dua helikopter.' },
+        formB: { en: "They're helicopters.", id: 'Itu banyak helikopter.' },
       },
     ],
   },
   /**
    * Topik 2 (riset lanjutan "genapkan Grammar Little Stars", `materi/
-   * grammar.md` §13) — "have got" utk kepemilikan, struktur RESMI Cambridge
-   * Pre-A1 Starters ("Have you got a pen?"). `contrastVisual: 'polarity'`
-   * (REUSE PERSIS, TANPA kode baru) — struktur positif/negatif yang SAMA
-   * bentuknya dgn "suka/tidak-suka" Starter, cuma kata kerjanya beda ("'ve
-   * got"/"haven't got" vs "like"/"don't like"). Dipetakan dari
-   * `VOCAB_TOPICS_LITTLE_STARS` `pakaian` (Clothes, belum diklaim topik
-   * Grammar/Speaking/Reading manapun).
+   * grammar.md` §13) — "have" utk kepemilikan ("I have / I don't have").
+   * 🔒 Audit §25: dulu "I've got / I haven't got" (British) — diganti krn
+   * buku resmi Kemendikbud *My Next Words* kelas 1 memakai "I have four
+   * books", & Cambridge Starters menerima "have" maupun "have got".
+   * `contrastVisual: 'polarity'` — pola "don't" SAMA dgn "I don't want".
+   * Benda = barang yg wajar dimiliki/tidak dimiliki anak (topi, payung, jam
+   * tangan) — BUKAN baju/celana/sepatu ("aku tidak punya celana" janggal).
    */
   {
     id: 'punya-tidak-punya',
-    title: 'Punya atau Tidak? (Have I Got It?)',
+    title: 'Punya atau Tidak? (Do I Have It?)',
+    choice: { question: 'Apakah aku punya {x} atau tidak?', a: 'Punya', b: 'Tidak punya' },
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
-      { en: 'Shirt', id: 'Baju', emoji: '👕', formA: { en: "I've got a shirt.", id: 'Aku punya baju.' }, formB: { en: "I haven't got a shirt.", id: 'Aku tidak punya baju.' } },
-      { en: 'Pants', id: 'Celana Panjang', emoji: '👖', formA: { en: "I've got pants.", id: 'Aku punya celana panjang.' }, formB: { en: "I haven't got pants.", id: 'Aku tidak punya celana panjang.' } },
-      { en: 'Shoes', id: 'Sepatu', emoji: '👟', formA: { en: "I've got shoes.", id: 'Aku punya sepatu.' }, formB: { en: "I haven't got shoes.", id: 'Aku tidak punya sepatu.' } },
-      { en: 'Socks', id: 'Kaus Kaki', emoji: '🧦', formA: { en: "I've got socks.", id: 'Aku punya kaus kaki.' }, formB: { en: "I haven't got socks.", id: 'Aku tidak punya kaus kaki.' } },
-      { en: 'Hat', id: 'Topi', emoji: '🧢', formA: { en: "I've got a hat.", id: 'Aku punya topi.' }, formB: { en: "I haven't got a hat.", id: 'Aku tidak punya topi.' } },
-      { en: 'Dress', id: 'Gaun', emoji: '👗', formA: { en: "I've got a dress.", id: 'Aku punya gaun.' }, formB: { en: "I haven't got a dress.", id: 'Aku tidak punya gaun.' } },
-      { en: 'Jacket', id: 'Jaket', emoji: '🧥', formA: { en: "I've got a jacket.", id: 'Aku punya jaket.' }, formB: { en: "I haven't got a jacket.", id: 'Aku tidak punya jaket.' } },
-      { en: 'Shorts', id: 'Celana Pendek', emoji: '🩳', formA: { en: "I've got shorts.", id: 'Aku punya celana pendek.' }, formB: { en: "I haven't got shorts.", id: 'Aku tidak punya celana pendek.' } },
-      { en: 'Gloves', id: 'Sarung Tangan', emoji: '🧤', formA: { en: "I've got gloves.", id: 'Aku punya sarung tangan.' }, formB: { en: "I haven't got gloves.", id: 'Aku tidak punya sarung tangan.' } },
-      { en: 'Scarf', id: 'Syal', emoji: '🧣', formA: { en: "I've got a scarf.", id: 'Aku punya syal.' }, formB: { en: "I haven't got a scarf.", id: 'Aku tidak punya syal.' } },
+      { en: 'Hat', id: 'Topi', emoji: '🧢', formA: { en: 'I have a hat.', id: 'Aku punya topi.' }, formB: { en: "I don't have a hat.", id: 'Aku tidak punya topi.' } },
+      { en: 'Dress', id: 'Gaun', emoji: '👗', formA: { en: 'I have a dress.', id: 'Aku punya gaun.' }, formB: { en: "I don't have a dress.", id: 'Aku tidak punya gaun.' } },
+      { en: 'Jacket', id: 'Jaket', emoji: '🧥', formA: { en: 'I have a jacket.', id: 'Aku punya jaket.' }, formB: { en: "I don't have a jacket.", id: 'Aku tidak punya jaket.' } },
+      { en: 'Gloves', id: 'Sarung Tangan', emoji: '🧤', formA: { en: 'I have gloves.', id: 'Aku punya sarung tangan.' }, formB: { en: "I don't have gloves.", id: 'Aku tidak punya sarung tangan.' } },
+      { en: 'Scarf', id: 'Syal', emoji: '🧣', formA: { en: 'I have a scarf.', id: 'Aku punya syal.' }, formB: { en: "I don't have a scarf.", id: 'Aku tidak punya syal.' } },
+      { en: 'Sunglasses', id: 'Kacamata Hitam', emoji: '🕶️', formA: { en: 'I have sunglasses.', id: 'Aku punya kacamata hitam.' }, formB: { en: "I don't have sunglasses.", id: 'Aku tidak punya kacamata hitam.' } },
+      { en: 'Boots', id: 'Sepatu Bot', emoji: '🥾', formA: { en: 'I have boots.', id: 'Aku punya sepatu bot.' }, formB: { en: "I don't have boots.", id: 'Aku tidak punya sepatu bot.' } },
+      { en: 'Umbrella', id: 'Payung', emoji: '☂️', formA: { en: 'I have an umbrella.', id: 'Aku punya payung.' }, formB: { en: "I don't have an umbrella.", id: 'Aku tidak punya payung.' } },
+      { en: 'Backpack', id: 'Tas Punggung', emoji: '🎒', formA: { en: 'I have a backpack.', id: 'Aku punya tas punggung.' }, formB: { en: "I don't have a backpack.", id: 'Aku tidak punya tas punggung.' } },
+      { en: 'Watch', id: 'Jam Tangan', emoji: '⌚', formA: { en: 'I have a watch.', id: 'Aku punya jam tangan.' }, formB: { en: "I don't have a watch.", id: 'Aku tidak punya jam tangan.' } },
     ],
   },
   /**
    * Topik 3 — "can" utk kemampuan, struktur RESMI Cambridge Pre-A1 Starters
    * ("The baby can wave."). `contrastVisual: 'polarity'` (REUSE PERSIS) —
    * positif/negatif "can"/"can't". Dipetakan dari `VOCAB_TOPICS_LITTLE_STARS`
-   * `tubuhku` (My Body) — kata kerja per item SENGAJA divariasikan (touch/
-   * close/open/clap/brush) mengikuti `example.en` asli tiap kata di Vocab
-   * (bukan "touch" diulang 10x) supaya tetap natural per anggota tubuh.
+   * 🔒 Audit §25: dulu dipetakan dari `tubuhku` ("I can't touch my head" —
+   * tidak masuk akal, semua anak bisa). Sekarang KEMAMPUAN yang memang beda
+   * tiap anak (naik sepeda, berenang, menggambar...), dua bentuknya wajar.
    */
   {
     id: 'bisa-tidak-bisa',
     title: 'Bisa atau Tidak Bisa? (I Can or I Can\'t?)',
+    choice: { question: 'Apakah aku bisa {x} atau tidak?', a: 'Bisa', b: 'Tidak bisa' },
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
-      { en: 'Head', id: 'Kepala', emoji: '🙂', formA: { en: 'I can touch my head.', id: 'Aku bisa menyentuh kepalaku.' }, formB: { en: "I can't touch my head.", id: 'Aku tidak bisa menyentuh kepalaku.' } },
-      { en: 'Shoulders', id: 'Bahu', emoji: '🤷', formA: { en: 'I can touch my shoulders.', id: 'Aku bisa menyentuh bahuku.' }, formB: { en: "I can't touch my shoulders.", id: 'Aku tidak bisa menyentuh bahuku.' } },
-      { en: 'Knees', id: 'Lutut', emoji: '🦵', formA: { en: 'I can touch my knees.', id: 'Aku bisa menyentuh lututku.' }, formB: { en: "I can't touch my knees.", id: 'Aku tidak bisa menyentuh lututku.' } },
-      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶', formA: { en: 'I can touch my toes.', id: 'Aku bisa menyentuh jari kakiku.' }, formB: { en: "I can't touch my toes.", id: 'Aku tidak bisa menyentuh jari kakiku.' } },
-      { en: 'Eyes', id: 'Mata', emoji: '👀', formA: { en: 'I can close my eyes.', id: 'Aku bisa menutup mataku.' }, formB: { en: "I can't close my eyes.", id: 'Aku tidak bisa menutup mataku.' } },
-      { en: 'Ears', id: 'Telinga', emoji: '👂', formA: { en: 'I can touch my ears.', id: 'Aku bisa menyentuh telingaku.' }, formB: { en: "I can't touch my ears.", id: 'Aku tidak bisa menyentuh telingaku.' } },
-      { en: 'Nose', id: 'Hidung', emoji: '👃', formA: { en: 'I can touch my nose.', id: 'Aku bisa menyentuh hidungku.' }, formB: { en: "I can't touch my nose.", id: 'Aku tidak bisa menyentuh hidungku.' } },
-      { en: 'Mouth', id: 'Mulut', emoji: '👄', formA: { en: 'I can open my mouth.', id: 'Aku bisa membuka mulutku.' }, formB: { en: "I can't open my mouth.", id: 'Aku tidak bisa membuka mulutku.' } },
-      { en: 'Hands', id: 'Tangan', emoji: '🙌', formA: { en: 'I can clap my hands.', id: 'Aku bisa bertepuk tangan.' }, formB: { en: "I can't clap my hands.", id: 'Aku tidak bisa bertepuk tangan.' } },
-      { en: 'Hair', id: 'Rambut', emoji: '💇', formA: { en: 'I can brush my hair.', id: 'Aku bisa menyisir rambutku.' }, formB: { en: "I can't brush my hair.", id: 'Aku tidak bisa menyisir rambutku.' } },
+      { en: 'Ride a Bike', id: 'Naik Sepeda', emoji: '🚲', formA: { en: 'I can ride a bike.', id: 'Aku bisa naik sepeda.' }, formB: { en: "I can't ride a bike.", id: 'Aku tidak bisa naik sepeda.' } },
+      { en: 'Swim', id: 'Berenang', emoji: '🌊', formA: { en: 'I can swim.', id: 'Aku bisa berenang.' }, formB: { en: "I can't swim.", id: 'Aku tidak bisa berenang.' } },
+      { en: 'Sing', id: 'Bernyanyi', emoji: '🎤', formA: { en: 'I can sing.', id: 'Aku bisa bernyanyi.' }, formB: { en: "I can't sing.", id: 'Aku tidak bisa bernyanyi.' } },
+      { en: 'Draw', id: 'Menggambar', emoji: '🖍️', formA: { en: 'I can draw.', id: 'Aku bisa menggambar.' }, formB: { en: "I can't draw.", id: 'Aku tidak bisa menggambar.' } },
+      { en: 'Read', id: 'Membaca', emoji: '📖', formA: { en: 'I can read.', id: 'Aku bisa membaca.' }, formB: { en: "I can't read.", id: 'Aku tidak bisa membaca.' } },
+      { en: 'Count', id: 'Berhitung', emoji: '🔢', formA: { en: 'I can count to ten.', id: 'Aku bisa berhitung sampai sepuluh.' }, formB: { en: "I can't count to ten.", id: 'Aku tidak bisa berhitung sampai sepuluh.' } },
+      { en: 'Kick a Ball', id: 'Menendang Bola', emoji: '⚽', formA: { en: 'I can kick a ball.', id: 'Aku bisa menendang bola.' }, formB: { en: "I can't kick a ball.", id: 'Aku tidak bisa menendang bola.' } },
+      { en: 'Fly a Kite', id: 'Main Layangan', emoji: '🪁', formA: { en: 'I can fly a kite.', id: 'Aku bisa main layangan.' }, formB: { en: "I can't fly a kite.", id: 'Aku tidak bisa main layangan.' } },
+      { en: 'Climb a Tree', id: 'Memanjat Pohon', emoji: '🌳', formA: { en: 'I can climb a tree.', id: 'Aku bisa memanjat pohon.' }, formB: { en: "I can't climb a tree.", id: 'Aku tidak bisa memanjat pohon.' } },
+      { en: 'Tie My Shoes', id: 'Mengikat Tali Sepatu', emoji: '👟', formA: { en: 'I can tie my shoes.', id: 'Aku bisa mengikat tali sepatu.' }, formB: { en: "I can't tie my shoes.", id: 'Aku tidak bisa mengikat tali sepatu.' } },
     ],
   },
   /**
@@ -20493,6 +20499,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
   {
     id: 'ini-itu',
     title: 'Ini atau Itu? (This or That?)',
+    choice: { question: 'Apakah letak {x} dekat atau jauh?', a: 'Ini · dekat', b: 'Itu · jauh' },
     desc: '10 kata',
     contrastVisual: 'proximity',
     items: [
@@ -20520,6 +20527,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
   {
     id: 'besar-kecil',
     title: 'Besar atau Kecil? (Big or Small?)',
+    choice: { question: 'Apakah ukuran {x} besar atau kecil?', a: 'Besar', b: 'Kecil' },
     desc: '10 kata',
     contrastVisual: 'size',
     items: [
@@ -20528,9 +20536,9 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
       { en: 'Triangle', id: 'Segitiga', emoji: '🔺', formA: { en: "It's a big triangle.", id: 'Itu segitiga besar.' }, formB: { en: "It's a small triangle.", id: 'Itu segitiga kecil.' } },
       { en: 'Star', id: 'Bintang', emoji: '⭐', formA: { en: "It's a big star.", id: 'Itu bintang besar.' }, formB: { en: "It's a small star.", id: 'Itu bintang kecil.' } },
       { en: 'Heart', id: 'Hati', emoji: '❤️', formA: { en: "It's a big heart.", id: 'Itu hati besar.' }, formB: { en: "It's a small heart.", id: 'Itu hati kecil.' } },
-      { en: 'Diamond', id: 'Berlian', emoji: '🔷', formA: { en: "It's a big diamond.", id: 'Itu berlian besar.' }, formB: { en: "It's a small diamond.", id: 'Itu berlian kecil.' } },
+      { en: 'Diamond', id: 'Wajik', emoji: '🔷', formA: { en: "It's a big diamond.", id: 'Itu wajik besar.' }, formB: { en: "It's a small diamond.", id: 'Itu wajik kecil.' } },
       { en: 'Oval', id: 'Oval', emoji: '🥚', formA: { en: "It's a big oval.", id: 'Itu oval besar.' }, formB: { en: "It's a small oval.", id: 'Itu oval kecil.' } },
-      { en: 'Cross', id: 'Silang', emoji: '➕', formA: { en: "It's a big cross.", id: 'Itu tanda silang besar.' }, formB: { en: "It's a small cross.", id: 'Itu tanda silang kecil.' } },
+      { en: 'Cross', id: 'Tanda Plus', emoji: '➕', formA: { en: "It's a big cross.", id: 'Itu tanda plus besar.' }, formB: { en: "It's a small cross.", id: 'Itu tanda plus kecil.' } },
       { en: 'Arrow', id: 'Panah', emoji: '➡️', formA: { en: "It's a big arrow.", id: 'Itu panah besar.' }, formB: { en: "It's a small arrow.", id: 'Itu panah kecil.' } },
       { en: 'Moon', id: 'Bulan', emoji: '🌙', formA: { en: "It's a big moon.", id: 'Itu bulan besar.' }, formB: { en: "It's a small moon.", id: 'Itu bulan kecil.' } },
     ],
@@ -20557,6 +20565,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
   {
     id: 'senang-tidak-senang',
     title: 'Senang atau Tidak? (I Am / I Am Not)',
+    choice: { question: 'Apakah aku {x} atau tidak?', a: '{x}', b: 'Tidak {x}' },
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
@@ -20585,6 +20594,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
   {
     id: 'mau-tidak-mau',
     title: 'Mau atau Tidak? (I Want / I Don\'t Want)',
+    choice: { question: 'Apakah aku mau {x} atau tidak?', a: 'Mau', b: 'Tidak mau' },
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
@@ -20592,10 +20602,10 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
       { en: 'Banana', id: 'Pisang', emoji: '🍌', formA: { en: 'I want a banana.', id: 'Aku mau pisang.' }, formB: { en: "I don't want a banana.", id: 'Aku tidak mau pisang.' } },
       { en: 'Orange', id: 'Jeruk', emoji: '🍊', formA: { en: 'I want an orange.', id: 'Aku mau jeruk.' }, formB: { en: "I don't want an orange.", id: 'Aku tidak mau jeruk.' } },
       { en: 'Grape', id: 'Anggur', emoji: '🍇', formA: { en: 'I want a grape.', id: 'Aku mau anggur.' }, formB: { en: "I don't want a grape.", id: 'Aku tidak mau anggur.' } },
-      { en: 'Watermelon', id: 'Semangka', emoji: '🍉', formA: { en: 'I want some watermelon.', id: 'Aku mau semangka.' }, formB: { en: "I don't want any watermelon.", id: 'Aku tidak mau semangka.' } },
+      { en: 'Avocado', id: 'Alpukat', emoji: '🥑', formA: { en: 'I want an avocado.', id: 'Aku mau alpukat.' }, formB: { en: "I don't want an avocado.", id: 'Aku tidak mau alpukat.' } },
       { en: 'Strawberry', id: 'Stroberi', emoji: '🍓', formA: { en: 'I want a strawberry.', id: 'Aku mau stroberi.' }, formB: { en: "I don't want a strawberry.", id: 'Aku tidak mau stroberi.' } },
       { en: 'Mango', id: 'Mangga', emoji: '🥭', formA: { en: 'I want a mango.', id: 'Aku mau mangga.' }, formB: { en: "I don't want a mango.", id: 'Aku tidak mau mangga.' } },
-      { en: 'Pineapple', id: 'Nanas', emoji: '🍍', formA: { en: 'I want some pineapple.', id: 'Aku mau nanas.' }, formB: { en: "I don't want any pineapple.", id: 'Aku tidak mau nanas.' } },
+      { en: 'Coconut', id: 'Kelapa', emoji: '🥥', formA: { en: 'I want a coconut.', id: 'Aku mau kelapa.' }, formB: { en: "I don't want a coconut.", id: 'Aku tidak mau kelapa.' } },
       { en: 'Pear', id: 'Pir', emoji: '🍐', formA: { en: 'I want a pear.', id: 'Aku mau pir.' }, formB: { en: "I don't want a pear.", id: 'Aku tidak mau pir.' } },
       { en: 'Peach', id: 'Persik', emoji: '🍑', formA: { en: 'I want a peach.', id: 'Aku mau persik.' }, formB: { en: "I don't want a peach.", id: 'Aku tidak mau persik.' } },
     ],
@@ -20617,6 +20627,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
   {
     id: 'punya-siapa',
     title: 'Punya Siapa? (My or Your?)',
+    choice: { question: 'Apakah ini {x}ku atau {x}mu?', a: '{x}ku', b: '{x}mu' },
     desc: '10 kata',
     contrastVisual: 'possessor',
     items: [
@@ -20648,19 +20659,20 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
   {
     id: 'ini-itu-jamak',
     title: 'Ini-ini atau Itu-itu? (These or Those?)',
+    choice: { question: 'Apakah letak {x} dekat atau jauh?', a: 'Ini · dekat', b: 'Itu · jauh' },
     desc: '10 kata',
     contrastVisual: 'proximity',
     items: [
-      { en: 'Red Strawberries', id: 'Stroberi Merah', emoji: '🍓🍓', formA: { en: 'These strawberries are red.', id: 'Ini stroberi-stroberi merah.' }, formB: { en: 'Those strawberries are red.', id: 'Itu stroberi-stroberi merah.' } },
-      { en: 'Blue Balloons', id: 'Balon Biru', emoji: '🎈🎈', formA: { en: 'These balloons are blue.', id: 'Ini balon-balon biru.' }, formB: { en: 'Those balloons are blue.', id: 'Itu balon-balon biru.' } },
-      { en: 'Yellow Stars', id: 'Bintang Kuning', emoji: '⭐⭐', formA: { en: 'These stars are yellow.', id: 'Ini bintang-bintang kuning.' }, formB: { en: 'Those stars are yellow.', id: 'Itu bintang-bintang kuning.' } },
-      { en: 'Green Leaves', id: 'Daun Hijau', emoji: '🍃🍃', formA: { en: 'These leaves are green.', id: 'Ini daun-daun hijau.' }, formB: { en: 'Those leaves are green.', id: 'Itu daun-daun hijau.' } },
-      { en: 'Orange Carrots', id: 'Wortel Oranye', emoji: '🥕🥕', formA: { en: 'These carrots are orange.', id: 'Ini wortel-wortel oranye.' }, formB: { en: 'Those carrots are orange.', id: 'Itu wortel-wortel oranye.' } },
-      { en: 'Purple Grapes', id: 'Anggur Ungu', emoji: '🍇🍇', formA: { en: 'These grapes are purple.', id: 'Ini anggur-anggur ungu.' }, formB: { en: 'Those grapes are purple.', id: 'Itu anggur-anggur ungu.' } },
-      { en: 'Pink Flowers', id: 'Bunga Merah Muda', emoji: '🌸🌸', formA: { en: 'These flowers are pink.', id: 'Ini bunga-bunga merah muda.' }, formB: { en: 'Those flowers are pink.', id: 'Itu bunga-bunga merah muda.' } },
-      { en: 'Black Hats', id: 'Topi Hitam', emoji: '🎩🎩', formA: { en: 'These hats are black.', id: 'Ini topi-topi hitam.' }, formB: { en: 'Those hats are black.', id: 'Itu topi-topi hitam.' } },
-      { en: 'White Clouds', id: 'Awan Putih', emoji: '☁️☁️', formA: { en: 'These clouds are white.', id: 'Ini awan-awan putih.' }, formB: { en: 'Those clouds are white.', id: 'Itu awan-awan putih.' } },
-      { en: 'Brown Bears', id: 'Beruang Cokelat', emoji: '🐻🐻', formA: { en: 'These bears are brown.', id: 'Ini beruang-beruang cokelat.' }, formB: { en: 'Those bears are brown.', id: 'Itu beruang-beruang cokelat.' } },
+      { en: 'Red Strawberries', id: 'Stroberi-stroberi Merah', emoji: '🍓🍓', formA: { en: 'These strawberries are red.', id: 'Ini stroberi-stroberi merah.' }, formB: { en: 'Those strawberries are red.', id: 'Itu stroberi-stroberi merah.' } },
+      { en: 'Blue Balloons', id: 'Balon-balon Biru', emoji: '🎈🎈', formA: { en: 'These balloons are blue.', id: 'Ini balon-balon biru.' }, formB: { en: 'Those balloons are blue.', id: 'Itu balon-balon biru.' } },
+      { en: 'Yellow Stars', id: 'Bintang-bintang Kuning', emoji: '⭐⭐', formA: { en: 'These stars are yellow.', id: 'Ini bintang-bintang kuning.' }, formB: { en: 'Those stars are yellow.', id: 'Itu bintang-bintang kuning.' } },
+      { en: 'Green Leaves', id: 'Daun-daun Hijau', emoji: '🍃🍃', formA: { en: 'These leaves are green.', id: 'Ini daun-daun hijau.' }, formB: { en: 'Those leaves are green.', id: 'Itu daun-daun hijau.' } },
+      { en: 'Orange Carrots', id: 'Wortel-wortel Oranye', emoji: '🥕🥕', formA: { en: 'These carrots are orange.', id: 'Ini wortel-wortel oranye.' }, formB: { en: 'Those carrots are orange.', id: 'Itu wortel-wortel oranye.' } },
+      { en: 'Purple Grapes', id: 'Anggur-anggur Ungu', emoji: '🍇🍇', formA: { en: 'These grapes are purple.', id: 'Ini anggur-anggur ungu.' }, formB: { en: 'Those grapes are purple.', id: 'Itu anggur-anggur ungu.' } },
+      { en: 'Pink Flowers', id: 'Bunga-bunga Merah Muda', emoji: '🌸🌸', formA: { en: 'These flowers are pink.', id: 'Ini bunga-bunga merah muda.' }, formB: { en: 'Those flowers are pink.', id: 'Itu bunga-bunga merah muda.' } },
+      { en: 'Black Hats', id: 'Topi-topi Hitam', emoji: '🎩🎩', formA: { en: 'These hats are black.', id: 'Ini topi-topi hitam.' }, formB: { en: 'Those hats are black.', id: 'Itu topi-topi hitam.' } },
+      { en: 'White Clouds', id: 'Awan-awan Putih', emoji: '☁️☁️', formA: { en: 'These clouds are white.', id: 'Ini awan-awan putih.' }, formB: { en: 'Those clouds are white.', id: 'Itu awan-awan putih.' } },
+      { en: 'Brown Bears', id: 'Beruang-beruang Cokelat', emoji: '🐻🐻', formA: { en: 'These bears are brown.', id: 'Ini beruang-beruang cokelat.' }, formB: { en: 'Those bears are brown.', id: 'Itu beruang-beruang cokelat.' } },
     ],
   },
   /**
@@ -20676,6 +20688,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
   {
     id: 'ada-tidak-ada',
     title: 'Ada atau Tidak Ada? (There Is / There Is No)',
+    choice: { question: 'Apakah ada {x} atau tidak?', a: 'Ada', b: 'Tidak ada' },
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
@@ -20713,8 +20726,9 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'suka-tidak-suka',
     title: 'Suka atau Tidak Suka? (Like It or Not?)',
+    choice: { question: 'Apakah aku suka {x} atau tidak?', a: 'Suka', b: 'Tidak suka' },
     desc: '10 kata',
-    contrastVisual: 'polarity',
+    contrastVisual: 'liking',
     items: [
       { en: 'Drawing', id: 'Menggambar', emoji: '🎨', formA: { en: 'I like drawing.', id: 'Aku suka menggambar.' }, formB: { en: "I don't like drawing.", id: 'Aku tidak suka menggambar.' } },
       { en: 'Singing', id: 'Bernyanyi', emoji: '🎤', formA: { en: 'I like singing.', id: 'Aku suka bernyanyi.' }, formB: { en: "I don't like singing.", id: 'Aku tidak suka bernyanyi.' } },
@@ -20749,6 +20763,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'ada-apa-di-sini',
     title: 'Ada Apa di Sini? (There Is or There Are?)',
+    choice: { question: 'Apakah satu atau banyak {x}?', a: 'Satu', b: 'Banyak' },
     desc: '10 kata',
     contrastVisual: 'quantity',
     items: [
@@ -20778,6 +20793,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'miliknya-siapa',
     title: 'Miliknya Siapa? (His or Hers?)',
+    choice: { question: 'Apakah {x} ini milik laki-laki atau perempuan?', a: 'Laki-laki', b: 'Perempuan' },
     desc: '10 kata',
     contrastVisual: 'character',
     items: [
@@ -20811,19 +20827,20 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'dia-siapa',
     title: 'Dia Laki-laki atau Perempuan? (He or She?)',
+    choice: { question: 'Siapa yang melihat {x}, laki-laki atau perempuan?', a: 'Laki-laki', b: 'Perempuan' },
     desc: '10 kata',
     contrastVisual: 'character',
     items: [
-      { en: 'Sun', id: 'Matahari', emoji: '☀️', formA: { en: 'He sees the sun.', id: 'Kakak laki-laki melihat mataharinya.' }, formB: { en: 'She sees the sun.', id: 'Kakak perempuan melihat mataharinya.' } },
-      { en: 'Moon', id: 'Bulan', emoji: '🌙', formA: { en: 'He sees the moon.', id: 'Kakak laki-laki melihat bulannya.' }, formB: { en: 'She sees the moon.', id: 'Kakak perempuan melihat bulannya.' } },
-      { en: 'Sky', id: 'Langit', emoji: '🌤️', formA: { en: 'He watches the sky.', id: 'Kakak laki-laki memandangi langitnya.' }, formB: { en: 'She watches the sky.', id: 'Kakak perempuan memandangi langitnya.' } },
-      { en: 'Cloud', id: 'Awan', emoji: '☁️', formA: { en: 'He sees the cloud.', id: 'Kakak laki-laki melihat awannya.' }, formB: { en: 'She sees the cloud.', id: 'Kakak perempuan melihat awannya.' } },
-      { en: 'Tree', id: 'Pohon', emoji: '🌳', formA: { en: 'He climbs the tree.', id: 'Kakak laki-laki memanjat pohonnya.' }, formB: { en: 'She climbs the tree.', id: 'Kakak perempuan memanjat pohonnya.' } },
-      { en: 'Flower', id: 'Bunga', emoji: '🌸', formA: { en: 'He smells the flower.', id: 'Kakak laki-laki mencium bunganya.' }, formB: { en: 'She smells the flower.', id: 'Kakak perempuan mencium bunganya.' } },
-      { en: 'Grass', id: 'Rumput', emoji: '🌿', formA: { en: 'He sits on the grass.', id: 'Kakak laki-laki duduk di rumputnya.' }, formB: { en: 'She sits on the grass.', id: 'Kakak perempuan duduk di rumputnya.' } },
-      { en: 'River', id: 'Sungai', emoji: '🌊', formA: { en: 'He swims in the river.', id: 'Kakak laki-laki berenang di sungainya.' }, formB: { en: 'She swims in the river.', id: 'Kakak perempuan berenang di sungainya.' } },
-      { en: 'Stone', id: 'Batu', emoji: '🪨', formA: { en: 'He finds the stone.', id: 'Kakak laki-laki menemukan batunya.' }, formB: { en: 'She finds the stone.', id: 'Kakak perempuan menemukan batunya.' } },
-      { en: 'Star', id: 'Bintang', emoji: '⭐', formA: { en: 'He sees the star.', id: 'Kakak laki-laki melihat bintangnya.' }, formB: { en: 'She sees the star.', id: 'Kakak perempuan melihat bintangnya.' } },
+      { en: 'Sun', id: 'Matahari', emoji: '☀️', formA: { en: 'He sees the sun.', id: 'Kakak laki-laki melihat matahari.' }, formB: { en: 'She sees the sun.', id: 'Kakak perempuan melihat matahari.' } },
+      { en: 'Moon', id: 'Bulan', emoji: '🌙', formA: { en: 'He sees the moon.', id: 'Kakak laki-laki melihat bulan.' }, formB: { en: 'She sees the moon.', id: 'Kakak perempuan melihat bulan.' } },
+      { en: 'Sky', id: 'Langit', emoji: '🌤️', formA: { en: 'He watches the sky.', id: 'Kakak laki-laki memandangi langit.' }, formB: { en: 'She watches the sky.', id: 'Kakak perempuan memandangi langit.' } },
+      { en: 'Cloud', id: 'Awan', emoji: '☁️', formA: { en: 'He sees the cloud.', id: 'Kakak laki-laki melihat awan.' }, formB: { en: 'She sees the cloud.', id: 'Kakak perempuan melihat awan.' } },
+      { en: 'Tree', id: 'Pohon', emoji: '🌳', formA: { en: 'He climbs the tree.', id: 'Kakak laki-laki memanjat pohon.' }, formB: { en: 'She climbs the tree.', id: 'Kakak perempuan memanjat pohon.' } },
+      { en: 'Flower', id: 'Bunga', emoji: '🌸', formA: { en: 'He smells the flower.', id: 'Kakak laki-laki mencium bunga.' }, formB: { en: 'She smells the flower.', id: 'Kakak perempuan mencium bunga.' } },
+      { en: 'Grass', id: 'Rumput', emoji: '🌿', formA: { en: 'He sits on the grass.', id: 'Kakak laki-laki duduk di rumput.' }, formB: { en: 'She sits on the grass.', id: 'Kakak perempuan duduk di rumput.' } },
+      { en: 'River', id: 'Sungai', emoji: '🌊', formA: { en: 'He swims in the river.', id: 'Kakak laki-laki berenang di sungai.' }, formB: { en: 'She swims in the river.', id: 'Kakak perempuan berenang di sungai.' } },
+      { en: 'Stone', id: 'Batu', emoji: '🪨', formA: { en: 'He finds the stone.', id: 'Kakak laki-laki menemukan batu.' }, formB: { en: 'She finds the stone.', id: 'Kakak perempuan menemukan batu.' } },
+      { en: 'Star', id: 'Bintang', emoji: '⭐', formA: { en: 'He sees the star.', id: 'Kakak laki-laki melihat bintang.' }, formB: { en: 'She sees the star.', id: 'Kakak perempuan melihat bintang.' } },
     ],
   },
   /**
@@ -20853,6 +20870,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'di-sini-di-sana',
     title: 'Di Sini atau Di Sana? (Here or There?)',
+    choice: { question: 'Apakah {x} ada di sini atau di sana?', a: 'Di sini', b: 'Di sana' },
     desc: '10 kata',
     contrastVisual: 'proximity',
     items: [
@@ -20881,19 +20899,20 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'kita-mereka',
     title: 'Kita atau Mereka? (We or They?)',
+    choice: { question: 'Siapa yang jadi {x}, kita atau mereka?', a: 'Kita', b: 'Mereka' },
     desc: '10 kata',
     contrastVisual: 'inclusion',
     items: [
-      { en: 'Neighbor', id: 'Tetangga', emoji: '🏘️', formA: { en: 'We are neighbors.', id: 'Kami bertetangga.' }, formB: { en: 'They are neighbors.', id: 'Mereka bertetangga.' } },
-      { en: 'Classmate', id: 'Teman Sekelas', emoji: '🧑‍🎓', formA: { en: 'We are classmates.', id: 'Kami teman sekelas.' }, formB: { en: 'They are classmates.', id: 'Mereka teman sekelas.' } },
-      { en: 'Boy', id: 'Anak Laki-laki', emoji: '👦', formA: { en: 'We are boys.', id: 'Kami anak laki-laki.' }, formB: { en: 'They are boys.', id: 'Mereka anak laki-laki.' } },
-      { en: 'Girl', id: 'Anak Perempuan', emoji: '👧', formA: { en: 'We are girls.', id: 'Kami anak perempuan.' }, formB: { en: 'They are girls.', id: 'Mereka anak perempuan.' } },
-      { en: 'Cousin', id: 'Sepupu', emoji: '🧑', formA: { en: 'We are cousins.', id: 'Kami sepupu.' }, formB: { en: 'They are cousins.', id: 'Mereka sepupu.' } },
-      { en: 'Sibling', id: 'Saudara Kandung', emoji: '🧒', formA: { en: 'We are siblings.', id: 'Kami bersaudara.' }, formB: { en: 'They are siblings.', id: 'Mereka bersaudara.' } },
-      { en: 'Baby', id: 'Bayi', emoji: '👶', formA: { en: 'We are babies.', id: 'Kami bayi.' }, formB: { en: 'They are babies.', id: 'Mereka bayi.' } },
-      { en: 'Driver', id: 'Supir', emoji: '🚕', formA: { en: 'We are drivers.', id: 'Kami supir.' }, formB: { en: 'They are drivers.', id: 'Mereka supir.' } },
-      { en: 'Best Friend', id: 'Sahabat', emoji: '🤝', formA: { en: 'We are best friends.', id: 'Kami sahabat.' }, formB: { en: 'They are best friends.', id: 'Mereka sahabat.' } },
-      { en: 'Twin', id: 'Anak Kembar', emoji: '👥', formA: { en: 'We are twins.', id: 'Kami anak kembar.' }, formB: { en: 'They are twins.', id: 'Mereka anak kembar.' } },
+      { en: 'Neighbor', id: 'Tetangga', emoji: '🏘️', formA: { en: 'We are neighbors.', id: 'Kita bertetangga.' }, formB: { en: 'They are neighbors.', id: 'Mereka bertetangga.' } },
+      { en: 'Classmate', id: 'Teman Sekelas', emoji: '🧑‍🎓', formA: { en: 'We are classmates.', id: 'Kita teman sekelas.' }, formB: { en: 'They are classmates.', id: 'Mereka teman sekelas.' } },
+      { en: 'Boy', id: 'Anak Laki-laki', emoji: '👦', formA: { en: 'We are boys.', id: 'Kita anak laki-laki.' }, formB: { en: 'They are boys.', id: 'Mereka anak laki-laki.' } },
+      { en: 'Girl', id: 'Anak Perempuan', emoji: '👧', formA: { en: 'We are girls.', id: 'Kita anak perempuan.' }, formB: { en: 'They are girls.', id: 'Mereka anak perempuan.' } },
+      { en: 'Cousin', id: 'Sepupu', emoji: '🧑', formA: { en: 'We are cousins.', id: 'Kita sepupu.' }, formB: { en: 'They are cousins.', id: 'Mereka sepupu.' } },
+      { en: 'Sibling', id: 'Saudara Kandung', emoji: '🧒', formA: { en: 'We are siblings.', id: 'Kita bersaudara.' }, formB: { en: 'They are siblings.', id: 'Mereka bersaudara.' } },
+      { en: 'Student', id: 'Murid', emoji: '📚', formA: { en: 'We are students.', id: 'Kita murid.' }, formB: { en: 'They are students.', id: 'Mereka murid.' } },
+      { en: 'Player', id: 'Pemain', emoji: '⚽', formA: { en: 'We are players.', id: 'Kita pemain.' }, formB: { en: 'They are players.', id: 'Mereka pemain.' } },
+      { en: 'Best Friend', id: 'Sahabat', emoji: '🤝', formA: { en: 'We are best friends.', id: 'Kita sahabat.' }, formB: { en: 'They are best friends.', id: 'Mereka sahabat.' } },
+      { en: 'Twin', id: 'Anak Kembar', emoji: '👥', formA: { en: 'We are twins.', id: 'Kita anak kembar.' }, formB: { en: 'They are twins.', id: 'Mereka anak kembar.' } },
     ],
   },
   /**
@@ -20913,6 +20932,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'lakukan-jangan-lakukan',
     title: "Lakukan atau Jangan? (Do It or Don't?)",
+    choice: { question: 'Apakah kamu disuruh {x} atau jangan?', a: 'Lakukan', b: 'Jangan' },
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
@@ -20923,9 +20943,9 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
       { en: 'Clap', id: 'Tepuk Tangan', emoji: '👏', formA: { en: 'Clap your hands!', id: 'Tepuk tanganmu!' }, formB: { en: "Don't clap your hands!", id: 'Jangan tepuk tanganmu!' } },
       { en: 'Open the Door', id: 'Buka Pintu', emoji: '🚪', formA: { en: 'Open the door!', id: 'Buka pintunya!' }, formB: { en: "Don't open the door!", id: 'Jangan buka pintunya!' } },
       { en: 'Close the Window', id: 'Tutup Jendela', emoji: '🪟', formA: { en: 'Close the window!', id: 'Tutup jendelanya!' }, formB: { en: "Don't close the window!", id: 'Jangan tutup jendelanya!' } },
-      { en: 'Wash Your Hands', id: 'Cuci Tangan', emoji: '🧼', formA: { en: 'Wash your hands!', id: 'Cuci tanganmu!' }, formB: { en: "Don't wash your hands!", id: 'Jangan cuci tanganmu!' } },
+      { en: 'Shout', id: 'Berteriak', emoji: '📣', formA: { en: 'Shout!', id: 'Berteriak!' }, formB: { en: "Don't shout!", id: 'Jangan berteriak!' } },
       { en: 'Touch It', id: 'Sentuh Itu', emoji: '🤚', formA: { en: 'Touch it!', id: 'Sentuh itu!' }, formB: { en: "Don't touch it!", id: 'Jangan sentuh itu!' } },
-      { en: 'Write Your Name', id: 'Tulis Namamu', emoji: '✍️', formA: { en: 'Write your name!', id: 'Tulis namamu!' }, formB: { en: "Don't write your name!", id: 'Jangan tulis namamu!' } },
+      { en: 'Look', id: 'Lihat', emoji: '👀', formA: { en: 'Look!', id: 'Lihat!' }, formB: { en: "Don't look!", id: 'Jangan lihat!' } },
     ],
   },
   /**
@@ -20938,19 +20958,20 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'perlu-tidak-perlu',
     title: "Perlu atau Tidak Perlu? (Need or Don't Need?)",
+    choice: { question: 'Apakah aku perlu {x} atau tidak?', a: 'Perlu', b: 'Tidak perlu' },
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
-      { en: 'Coach', id: 'Pelatih', emoji: '📣', formA: { en: 'I need a coach.', id: 'Aku perlu pelatih.' }, formB: { en: "I don't need a coach.", id: 'Aku tidak perlu pelatih.' } },
-      { en: 'Classroom', id: 'Ruang Kelas', emoji: '🏫', formA: { en: 'I need the classroom.', id: 'Aku perlu ruang kelas itu.' }, formB: { en: "I don't need the classroom.", id: 'Aku tidak perlu ruang kelas itu.' } },
-      { en: 'Friend', id: 'Teman', emoji: '👥', formA: { en: 'I need a friend.', id: 'Aku perlu teman.' }, formB: { en: "I don't need a friend.", id: 'Aku tidak perlu teman.' } },
-      { en: 'Principal', id: 'Kepala Sekolah', emoji: '🧑‍💼', formA: { en: 'I need the principal.', id: 'Aku perlu kepala sekolah.' }, formB: { en: "I don't need the principal.", id: 'Aku tidak perlu kepala sekolah.' } },
-      { en: 'Library', id: 'Perpustakaan', emoji: '📚', formA: { en: 'I need the library.', id: 'Aku perlu perpustakaan.' }, formB: { en: "I don't need the library.", id: 'Aku tidak perlu perpustakaan.' } },
-      { en: 'Lunchbox', id: 'Kotak Bekal', emoji: '🍱', formA: { en: 'I need my lunchbox.', id: 'Aku perlu kotak bekalku.' }, formB: { en: "I don't need my lunchbox.", id: 'Aku tidak perlu kotak bekalku.' } },
+      { en: 'Bag', id: 'Tas', emoji: '🎒', formA: { en: 'I need my bag.', id: 'Aku perlu tasku.' }, formB: { en: "I don't need my bag.", id: 'Aku tidak perlu tasku.' } },
+      { en: 'Pencil', id: 'Pensil', emoji: '✏️', formA: { en: 'I need my pencil.', id: 'Aku perlu pensilku.' }, formB: { en: "I don't need my pencil.", id: 'Aku tidak perlu pensilku.' } },
+      { en: 'Ruler', id: 'Penggaris', emoji: '📏', formA: { en: 'I need my ruler.', id: 'Aku perlu penggarisku.' }, formB: { en: "I don't need my ruler.", id: 'Aku tidak perlu penggarisku.' } },
+      { en: 'Book', id: 'Buku', emoji: '📕', formA: { en: 'I need my book.', id: 'Aku perlu bukuku.' }, formB: { en: "I don't need my book.", id: 'Aku tidak perlu bukuku.' } },
+      { en: 'Notebook', id: 'Buku Tulis', emoji: '📓', formA: { en: 'I need my notebook.', id: 'Aku perlu buku tulisku.' }, formB: { en: "I don't need my notebook.", id: 'Aku tidak perlu buku tulisku.' } },
       { en: 'Uniform', id: 'Seragam', emoji: '👕', formA: { en: 'I need my uniform.', id: 'Aku perlu seragamku.' }, formB: { en: "I don't need my uniform.", id: 'Aku tidak perlu seragamku.' } },
-      { en: 'Bell', id: 'Bel', emoji: '🔔', formA: { en: 'I need the bell.', id: 'Aku perlu belnya.' }, formB: { en: "I don't need the bell.", id: 'Aku tidak perlu belnya.' } },
-      { en: 'Homework', id: 'PR', emoji: '📓', formA: { en: 'I need my homework.', id: 'Aku perlu PR-ku.' }, formB: { en: "I don't need my homework.", id: 'Aku tidak perlu PR-ku.' } },
-      { en: 'Recess', id: 'Istirahat', emoji: '🥪', formA: { en: 'I need recess.', id: 'Aku perlu istirahat.' }, formB: { en: "I don't need recess.", id: 'Aku tidak perlu istirahat.' } },
+      { en: 'Lunchbox', id: 'Kotak Bekal', emoji: '🍱', formA: { en: 'I need my lunchbox.', id: 'Aku perlu kotak bekalku.' }, formB: { en: "I don't need my lunchbox.", id: 'Aku tidak perlu kotak bekalku.' } },
+      { en: 'Umbrella', id: 'Payung', emoji: '☂️', formA: { en: 'I need my umbrella.', id: 'Aku perlu payungku.' }, formB: { en: "I don't need my umbrella.", id: 'Aku tidak perlu payungku.' } },
+      { en: 'Crayons', id: 'Krayon', emoji: '🖍️', formA: { en: 'I need my crayons.', id: 'Aku perlu krayonku.' }, formB: { en: "I don't need my crayons.", id: 'Aku tidak perlu krayonku.' } },
+      { en: 'Scissors', id: 'Gunting', emoji: '✂️', formA: { en: 'I need my scissors.', id: 'Aku perlu guntingku.' }, formB: { en: "I don't need my scissors.", id: 'Aku tidak perlu guntingku.' } },
     ],
   },
   /**
@@ -20965,6 +20986,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'milik-kita-milik-mereka',
     title: 'Milik Kita atau Milik Mereka? (Ours or Theirs?)',
+    choice: { question: 'Apakah {x} ini milik kita atau milik mereka?', a: 'Milik kita', b: 'Milik mereka' },
     desc: '10 kata',
     contrastVisual: 'inclusion',
     items: [
@@ -20999,6 +21021,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'pergi-tidak-pergi',
     title: 'Pergi atau Tidak Pergi? (I Go / I Don\'t Go?)',
+    choice: { question: 'Apakah aku pergi ke {x} atau tidak?', a: 'Pergi', b: 'Tidak pergi' },
     desc: '10 kata',
     contrastVisual: 'polarity',
     items: [
@@ -21008,10 +21031,10 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
       { en: 'Swimming Pool', id: 'Kolam Renang', emoji: '🌊', formA: { en: 'I go to the swimming pool.', id: 'Aku pergi ke kolam renang.' }, formB: { en: "I don't go to the swimming pool.", id: 'Aku tidak pergi ke kolam renang.' } },
       { en: 'Dentist', id: 'Dokter Gigi', emoji: '🦷', formA: { en: 'I go to the dentist.', id: 'Aku pergi ke dokter gigi.' }, formB: { en: "I don't go to the dentist.", id: 'Aku tidak pergi ke dokter gigi.' } },
       { en: 'Cinema', id: 'Bioskop', emoji: '🎬', formA: { en: 'I go to the cinema.', id: 'Aku pergi ke bioskop.' }, formB: { en: "I don't go to the cinema.", id: 'Aku tidak pergi ke bioskop.' } },
-      { en: 'Countryside', id: 'Pedesaan', emoji: '🌾', formA: { en: 'I go to the countryside.', id: 'Aku pergi ke pedesaan.' }, formB: { en: "I don't go to the countryside.", id: 'Aku tidak pergi ke pedesaan.' } },
-      { en: 'Downtown', id: 'Pusat Kota', emoji: '🏙️', formA: { en: 'I go downtown.', id: 'Aku pergi ke pusat kota.' }, formB: { en: "I don't go downtown.", id: 'Aku tidak pergi ke pusat kota.' } },
+      { en: 'Beach', id: 'Pantai', emoji: '🏖️', formA: { en: 'I go to the beach.', id: 'Aku pergi ke pantai.' }, formB: { en: "I don't go to the beach.", id: 'Aku tidak pergi ke pantai.' } },
+      { en: 'Library', id: 'Perpustakaan', emoji: '📚', formA: { en: 'I go to the library.', id: 'Aku pergi ke perpustakaan.' }, formB: { en: "I don't go to the library.", id: 'Aku tidak pergi ke perpustakaan.' } },
       { en: "Grandma's House", id: 'Rumah Nenek', emoji: '👵', formA: { en: "I go to grandma's house.", id: 'Aku pergi ke rumah nenek.' }, formB: { en: "I don't go to grandma's house.", id: 'Aku tidak pergi ke rumah nenek.' } },
-      { en: 'Gym', id: 'Pusat Kebugaran', emoji: '💪', formA: { en: 'I go to the gym.', id: 'Aku pergi ke pusat kebugaran.' }, formB: { en: "I don't go to the gym.", id: 'Aku tidak pergi ke pusat kebugaran.' } },
+      { en: 'Park', id: 'Taman', emoji: '🏞️', formA: { en: 'I go to the park.', id: 'Aku pergi ke taman.' }, formB: { en: "I don't go to the park.", id: 'Aku tidak pergi ke taman.' } },
     ],
   },
 ];
@@ -22926,11 +22949,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "farm"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -23066,11 +23084,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "pets"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -23486,11 +23499,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "cloud"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -23626,11 +23634,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "book"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -24046,11 +24049,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "five"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -24186,11 +24184,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "five"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -24606,11 +24599,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "heart"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -24746,11 +24734,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "donut"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -25166,11 +25149,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "family"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -25306,11 +25284,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "happy"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -25726,11 +25699,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "smile"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -25866,11 +25834,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "eyes"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -26286,11 +26249,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "mangoes"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -26426,11 +26384,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "kiwi"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -26846,11 +26799,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "teddy"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -26986,11 +26934,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "teddy"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -27406,11 +27349,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "dress"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -27546,11 +27484,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "scarf"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -27966,11 +27899,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "plane"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -28106,11 +28034,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "scooter"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -28526,11 +28449,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "friend"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       },
       {
@@ -28666,11 +28584,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             ],
             "evidenceWord": "toys"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2
         ]
       }
     ],
@@ -29086,12 +28999,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "library"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -29219,12 +29126,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "market"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -29616,12 +29517,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "fourteen"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -29749,12 +29644,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "nineteen"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -30146,12 +30035,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "football"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -30279,12 +30162,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "School"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -30676,12 +30553,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "chair"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -30809,12 +30680,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "bolt"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -31206,12 +31071,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "rice"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -31339,12 +31198,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "water"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -31736,12 +31589,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "plant"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -31869,12 +31716,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "alarm"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -32266,12 +32107,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "friend"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -32399,12 +32234,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "crayons"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -32796,12 +32625,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "driver"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -32929,12 +32752,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "hat"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -33326,12 +33143,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "rock"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -33459,12 +33270,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "rainbow"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -33856,12 +33661,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "music"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -33989,12 +33788,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "basketball"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],
@@ -34382,12 +34175,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "answer": 1,
             "evidence": []
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       },
       {
@@ -34515,12 +34302,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             ],
             "evidenceWord": "water"
           }
-        ],
-        "sequence": [
-          0,
-          1,
-          2,
-          3
         ]
       }
     ],

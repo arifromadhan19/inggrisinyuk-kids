@@ -522,7 +522,7 @@ function loadPlan(topicId: string, section: string, build: () => LatihanPlanSlot
 /* 1. Kenalan                                                          */
 /* ------------------------------------------------------------------ */
 
-export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, onNext: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, _onNext: OnDone, level: LevelKey, contentLevel: LevelKey): void {
   const { rows } = flowOf(topic);
   const doneCls = (i: number, action: 'listen' | 'mic'): string => (hasWordInteraction('speaking', topic.id, i, action) ? ' done' : '');
 
@@ -548,7 +548,6 @@ export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, o
           )
           .join('')}
       </div>
-      <button class="primary-btn" data-action="advance">Lanjut ke Latihan Inti →</button>
     `;
     setHandlers({
       playRow: (payload) => {
@@ -565,7 +564,6 @@ export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, o
         drawList();
         micFor(i);
       },
-      advance: () => onNext(),
     });
   }
 

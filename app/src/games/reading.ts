@@ -23,13 +23,13 @@ import {
   setSectionCursor,
 } from '../progress';
 import {
+  getPlaybackRate,
   listenAndRecordOnce,
   playCorrectTone,
   playTryAgainTone,
   playWrongTone,
   speak,
   speakLocalized,
-  speakSequence,
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
@@ -136,7 +136,6 @@ type TextAudio = 'auto' | 'button' | 'none';
 interface TextTier {
   latihanAudio: TextAudio;
   tantanganAudio: TextAudio;
-  kenalanAutoRead: boolean;
   /** translate = arti Indonesia kalimat; question = arti pertanyaan;
    *  evidence = sorot kalimat bukti; eliminate = matikan 1 opsi salah. */
   hint: 'translate' | 'question' | 'evidence' | 'eliminate';
@@ -150,17 +149,17 @@ interface TextTier {
 function textTier(level: LevelKey): TextTier {
   switch (level) {
     case 'little-stars':
-      return { latihanAudio: 'auto', tantanganAudio: 'button', kenalanAutoRead: true, hint: 'translate', hintGate: false };
+      return { latihanAudio: 'auto', tantanganAudio: 'button', hint: 'translate', hintGate: false };
     case 'starter':
-      return { latihanAudio: 'button', tantanganAudio: 'button', kenalanAutoRead: false, hint: 'translate', hintGate: false };
+      return { latihanAudio: 'button', tantanganAudio: 'button', hint: 'translate', hintGate: false };
     case 'explorer':
-      return { latihanAudio: 'none', tantanganAudio: 'none', kenalanAutoRead: false, hint: 'question', hintGate: false };
+      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'question', hintGate: false };
     case 'adventurer':
-      return { latihanAudio: 'none', tantanganAudio: 'none', kenalanAutoRead: false, hint: 'evidence', hintGate: false };
+      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'evidence', hintGate: false };
     case 'achiever':
-      return { latihanAudio: 'none', tantanganAudio: 'none', kenalanAutoRead: false, hint: 'evidence', hintGate: true };
+      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'evidence', hintGate: true };
     default:
-      return { latihanAudio: 'none', tantanganAudio: 'none', kenalanAutoRead: false, hint: 'eliminate', hintGate: true };
+      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'eliminate', hintGate: true };
   }
 }
 
@@ -168,10 +167,10 @@ const normWord = (w: string): string => w.toLowerCase().replace(/[^a-z0-9']/g, '
 
 /** Kalimat dipecah per kata (span `.rt-word`) — dipakai sorot karaoke &
  *  "👆 Mana tulisannya?". */
-function wordsHtml(sentence: string): string {
+function wordsHtml(sentence: string, tappable = true): string {
   return sentence
     .split(' ')
-    .map((w, i) => `<span class="rt-word" data-action="rtWord" data-payload="${i}">${w}</span>`)
+    .map((w, i) => (tappable ? `<span class="rt-word" data-action="rtWord" data-payload="${i}">${w}</span>` : `<span class="rt-word">${w}</span>`))
     .join(' ');
 }
 
@@ -209,17 +208,56 @@ function readAlong(scope: HTMLElement, sentence: string): void {
   karaokeTimers.push(window.setTimeout(() => words.forEach((x) => x.classList.remove('lit')), 350 + words.length * step + 400));
 }
 
-function lineHtml(text: ReadingText, l: { en: string; id: string; br?: boolean }, i: number, o: { showId?: boolean; selected?: number | null; hinted?: number[] }): string {
+/** Bacakan SEMUA baris kartu teks berurutan + sorot kata per baris (pola
+ *  karaoke buku Little Stars, permintaan user utk semua level). Baris
+ *  berikutnya mulai begitu ucapan baris ini selesai (`onEnd`), dgn cadangan
+ *  timer kalau event itu tidak datang. */
+function readLinesAlong(card: HTMLElement, lines: string[]): void {
+  stopKaraoke();
+  const lineEls = card.querySelectorAll<HTMLElement>('.rt-line');
+  const step = 420 / getPlaybackRate();
+  const play = (li: number): void => {
+    if (li >= lines.length) return;
+    let moved = false;
+    const lineTimers: number[] = [];
+    const next = (): void => {
+      if (moved) return;
+      moved = true;
+      lineTimers.forEach((t) => clearTimeout(t));
+      lineEls.forEach((el) => el.querySelectorAll('.rt-word.lit').forEach((w) => w.classList.remove('lit')));
+      karaokeTimers.push(window.setTimeout(() => play(li + 1), 350));
+    };
+    const words = lineEls[li]?.querySelectorAll<HTMLElement>('.rt-word') ?? [];
+    speak(lines[li], next);
+    words.forEach((w, i) => {
+      lineTimers.push(
+        window.setTimeout(() => {
+          words.forEach((x) => x.classList.remove('lit'));
+          w.classList.add('lit');
+        }, 250 + i * step)
+      );
+    });
+    // Cadangan kalau `onEnd` tidak pernah datang (lihat komentar `speak`).
+    lineTimers.push(window.setTimeout(next, 250 + words.length * step + 1500));
+    karaokeTimers.push(...lineTimers);
+  };
+  play(0);
+}
+
+function lineHtml(text: ReadingText, l: { en: string; id: string; br?: boolean }, i: number, o: { showId?: boolean; selected?: number | null; hinted?: number[]; words?: boolean }): string {
   const cls = ['rt-line', l.br ? 'rt-br' : '', o.selected === i ? 'selected' : '', o.hinted?.includes(i) ? 'hinted' : ''].filter(Boolean).join(' ');
-  let body = l.en;
+  // `words`: tiap kata jadi span `.rt-word` (TANPA data-action — tap tetap
+  // ke baris) supaya bisa disorot karaoke di Kenalan.
+  const fmt = (t: string): string => (o.words ? wordsHtml(t, false) : t);
+  let body = fmt(l.en);
   if (text.genre === 'dialog') {
     const k = l.en.indexOf(': ');
-    if (k > 0) body = `<b class="rt-speaker">${l.en.slice(0, k)}:</b> ${l.en.slice(k + 2)}`;
+    if (k > 0) body = `<b class="rt-speaker">${fmt(l.en.slice(0, k) + ':')}</b> ${fmt(l.en.slice(k + 2))}`;
   }
   return `<div class="${cls}" data-action="rtLine" data-payload="${i}"><span class="rt-en">${body}</span>${o.showId ? `<span class="rt-id">${l.id}</span>` : ''}</div>`;
 }
 
-function textCardHtml(text: ReadingText, o: { showId?: boolean; selected?: number | null; tappable?: boolean; hinted?: number[] } = {}): string {
+function textCardHtml(text: ReadingText, o: { showId?: boolean; selected?: number | null; tappable?: boolean; hinted?: number[]; words?: boolean } = {}): string {
   return `
     <div class="rt-card rt-${text.genre}${o.tappable ? ' tappable' : ''}">
       <div class="rt-heading">${text.heading}</div>
@@ -276,16 +314,20 @@ function readAloudPopup(topicId: string, target: string, slot: number, said: str
   });
 }
 
-export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopic, onNext: OnDone, level: LevelKey, contentLevel: LevelKey): void {
-  const tier = textTier(contentLevel);
+export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopic, onNext: OnDone, level: LevelKey, _contentLevel: LevelKey): void {
   let page = 0;
   let sub = 0; // halaman di dalam buku (genre 'book')
-  let selected = 0;
-  let showId = false;
+  let selected = -1; // baris yang ditap anak (-1 = belum ada — jangan tutupi sorot karaoke)
+  // Halaman yang sudah dibuka di sesi ini (bullet progress halaman buku —
+  // hijau = sudah dibaca). Kenalan tidak dihitung ke progres topik.
+  const seen = new Set<string>();
+  const positions = topic.texts.flatMap((t, ti) => (t.genre === 'book' ? t.lines.map((_, li) => ({ page: ti, sub: li })) : [{ page: ti, sub: 0 }]));
   const doneCls = (action: 'listen' | 'mic' | 'game'): string => (hasWordInteraction('reading', topic.id, TEXT_PAGE_SLOT_BASE + page, action) ? ' done' : '');
 
   function gameLabel(text: ReadingText): string | null {
-    if (text.sequence?.length) return text.genre === 'book' ? '🎮 Urutkan Halaman' : '🎮 Urutkan Cerita';
+    // Buku mini (Little Stars/Starter) SENGAJA tanpa 🎮 — "Urutkan Halaman"
+    // dihapus (feedback user: sulit & tidak jelas, cuma uji hafalan urutan).
+    if (text.sequence?.length) return '🎮 Urutkan Cerita';
     if (text.lines.some((l) => l.pic !== undefined) && text.genre !== 'book') return '🎮 Tunjuk di Gambar';
     return null;
   }
@@ -296,45 +338,53 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
     const isBook = text.genre === 'book';
     const lastPage = page === topic.texts.length - 1;
     const atEnd = lastPage && (!isBook || sub === text.lines.length - 1);
-    const atStart = page === 0 && (!isBook || sub === 0);
     const game = gameLabel(text);
-    const line = text.lines[isBook ? sub : selected];
+    const line = text.lines[isBook ? sub : Math.max(selected, 0)];
     const pageLabel = isBook ? `Buku ${page + 1} · Halaman ${sub + 1}/${text.lines.length}` : `Halaman ${page + 1} dari ${topic.texts.length}`;
+    seen.add(`${page}:${sub}`);
+    // Bullet progress = SATU deret utk semua halaman di topik (buku: per
+    // halaman buku; teks lain: per kartu) — satu-satunya navigasi halaman.
+    const posIndex = positions.findIndex((q) => q.page === page && q.sub === sub);
+    const pageDots =
+      positions.length > 1 ? quizNavHtml(posIndex, positions.length, (i) => (seen.has(`${positions[i].page}:${positions[i].sub}`) ? 2 : 0)) : '';
     const instr = isBook ? 'Dengarkan ceritanya. Tap satu kata untuk dengar lagi.' : 'Baca kartunya pelan-pelan. Tap satu kalimat buat dengar kalimat itu.';
     const body = isBook
       ? `<div class="rt-book-page">
            <div class="rt-heading">${text.heading}</div>
            <div class="rt-book-pic" aria-hidden="true">${text.pictures?.[line.pic ?? -1]?.emoji ?? ''}</div>
            <div class="rt-book-text">${wordsHtml(line.en)}</div>
-           ${showId ? `<div class="rt-id rt-book-id">${line.id}</div>` : ''}
+           <div class="rt-id rt-book-id">${line.id}</div>
          </div>`
-      : textCardHtml(text, { showId, selected, tappable: true });
+      : textCardHtml(text, { showId: true, selected, tappable: true, words: true });
     container.innerHTML = `
       <div class="latihan-head">
         <span class="stage-badge">📖 Baca Bareng</span>
         <span class="rt-page">${pageLabel}</span>
       </div>
+      ${pageDots ? `<div class="rt-page-nav">${pageDots}</div>` : ''}
       <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
       ${body}
       <div class="rt-actions">
         <button class="rt-act${doneCls('listen')}" type="button" data-action="rtListen">${isBook ? '🔊 Dengar' : '🔊 Dengar Semua'}</button>
         ${sttSupported ? `<button class="rt-act${doneCls('mic')}" type="button" id="rtMic" data-action="rtMic">${isBook ? '🎤 Ikut Baca' : '🎤 Baca Nyaring'}</button>` : ''}
-        <button class="rt-act${showId ? ' done' : ''}" type="button" data-action="rtToggleId">🌐 Arti</button>
         ${game ? `<button class="rt-act${doneCls('game')}" type="button" data-action="rtGame">${game}</button>` : ''}
       </div>
-      <div class="round-actions">
-        ${atStart ? '' : `<button class="ghost-btn" type="button" data-action="rtPrev">⬅️ Sebelumnya</button>`}
-        <button class="primary-btn" type="button" data-action="rtNext" style="margin-top:0">${atEnd ? 'Lanjut ke Latihan Inti →' : isBook ? 'Halaman Berikutnya ➡️' : 'Halaman Berikutnya ➡️'}</button>
-      </div>
+      ${atEnd ? `<div class="round-actions"><button class="primary-btn" type="button" data-action="rtNext" style="margin-top:0">Lanjut ke Latihan Inti →</button></div>` : ''}
     `;
     wireSay();
+    wireQuizNav((i) => {
+      ({ page, sub } = positions[i]);
+      selected = -1;
+      draw(true);
+    });
     const scope = container.querySelector<HTMLElement>('.rt-book-text');
     setHandlers({
       rtLine: (payload) => {
         if (isBook) return;
         selected = Number(payload);
-        speak(text.lines[selected].en);
         draw();
+        const el = container.querySelectorAll<HTMLElement>('.rt-card .rt-line')[selected];
+        if (el) readAlong(el, text.lines[selected].en);
       },
       rtWord: (payload) => {
         const w = line.en.split(' ')[Number(payload)];
@@ -346,13 +396,9 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
           container.querySelector('[data-action="rtListen"]')?.classList.add('done');
           readAlong(scope, line.en);
         } else {
-          speakSequence(text.lines.map((l) => l.en));
           draw();
+          readAllLines();
         }
-      },
-      rtToggleId: () => {
-        showId = !showId;
-        draw();
       },
       rtMic: () => micFor(line.en),
       rtGame: () => {
@@ -362,28 +408,15 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
         if (text.sequence?.length) runTextOrderGame(container, topic, page, () => draw(), level);
         else runTextPointGame(container, topic, page, () => draw(), level);
       },
-      rtPrev: () => {
-        if (isBook && sub > 0) sub -= 1;
-        else {
-          page -= 1;
-          const prev = topic.texts[page];
-          sub = prev.genre === 'book' ? prev.lines.length - 1 : 0;
-        }
-        selected = 0;
-        draw(tier.kenalanAutoRead);
-      },
-      rtNext: () => {
-        if (atEnd) return onNext();
-        if (isBook && sub < text.lines.length - 1) sub += 1;
-        else {
-          page += 1;
-          sub = 0;
-        }
-        selected = 0;
-        draw(tier.kenalanAutoRead);
-      },
+      rtNext: () => onNext(),
     });
     if (autoRead && isBook && scope) readAlong(scope, line.en);
+    else if (autoRead && !isBook) readAllLines();
+  }
+
+  function readAllLines(): void {
+    const card = container.querySelector<HTMLElement>('.rt-card');
+    if (card) readLinesAlong(card, topic.texts[page].lines.map((l) => l.en));
   }
 
   function micFor(target: string): void {
@@ -417,7 +450,7 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
     );
   }
 
-  draw(tier.kenalanAutoRead);
+  draw(true);
 }
 
 /** 🎮 "Tunjuk di Gambar" — baca 1 kalimat, tap gambar adegan yang cocok
@@ -489,10 +522,10 @@ function runTextPointGame(container: HTMLElement, topic: ReadingTextTopic, start
   draw();
 }
 
-/** 🎮 "Urutkan Halaman/Cerita" — tap kartu (gambar halaman buku / kalimat
- *  kejadian) sesuai urutan di teks (Kumon "visualising a passage", urutan
- *  cerita). 1 ronde per teks yang punya `sequence`; bullet progress lintas
- *  teks, mulai di teks yang sedang dibuka. */
+/** 🎮 "Urutkan Cerita" — tap kartu kalimat kejadian sesuai urutan di teks
+ *  (urutan cerita). 1 ronde per teks yang punya `sequence`; bullet progress
+ *  lintas teks, mulai di teks yang sedang dibuka. Buku mini TIDAK pakai ini
+ *  lagi (dulu "Urutkan Halaman", dihapus atas permintaan user). */
 function runTextOrderGame(container: HTMLElement, topic: ReadingTextTopic, startPage: number, onBack: OnDone, level: LevelKey): void {
   const rounds = topic.texts.map((t, ti) => ({ t, ti })).filter((r) => r.t.sequence?.length);
   const total = rounds.length;
@@ -502,23 +535,18 @@ function runTextOrderGame(container: HTMLElement, topic: ReadingTextTopic, start
   function draw(): void {
     const { t } = rounds[current];
     const seq = t.sequence!;
-    const isBook = t.genre === 'book';
     const cards = shuffle(seq.map((li, pos) => ({ li, pos })));
     let next = 0;
     let mistakes = 0;
-    const instr = isBook ? 'Tap gambarnya sesuai urutan di buku: yang pertama dulu.' : 'Tap kejadiannya sesuai urutan di cerita: yang terjadi duluan dulu.';
-    const cardHtml = (c: { li: number; pos: number }, i: number): string => {
-      const l = t.lines[c.li];
-      return isBook
-        ? `<button class="opt-btn rt-order-card" type="button" data-action="rtOrder" data-payload="${i}" aria-label="${t.pictures?.[l.pic ?? -1]?.label ?? ''}"><span class="rt-order-no"></span>${t.pictures?.[l.pic ?? -1]?.emoji ?? ''}</button>`
-        : `<button class="opt-btn opt-btn-text rt-order-card" type="button" data-action="rtOrder" data-payload="${i}"><span class="rt-order-no"></span>${l.en}</button>`;
-    };
+    const instr = 'Tap kejadiannya sesuai urutan di cerita: yang terjadi duluan dulu.';
+    const cardHtml = (c: { li: number; pos: number }, i: number): string =>
+      `<button class="opt-btn opt-btn-text rt-order-card" type="button" data-action="rtOrder" data-payload="${i}"><span class="rt-order-no"></span>${t.lines[c.li].en}</button>`;
     container.innerHTML = `
-      <span class="stage-badge">${isBook ? '🎮 Main · Urutkan Halaman' : '🎮 Main · Urutkan Cerita'}</span>
+      <span class="stage-badge">🎮 Main · Urutkan Cerita</span>
       ${total > 1 ? quizNavHtml(current, total, status) : ''}
       <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
       <div class="rt-heading" style="margin:6px 0 10px">${t.heading}</div>
-      <div class="opt-grid ${isBook ? (cards.length === 3 ? 'three' : '') : 'rt-opts'}">${cards.map(cardHtml).join('')}</div>
+      <div class="opt-grid rt-opts">${cards.map(cardHtml).join('')}</div>
       <div class="feedback" id="fb"></div>
     `;
     wireSay();
@@ -594,7 +622,8 @@ function runTextQuizSet(
   onDone: OnDone,
   level: LevelKey,
   contentLevel: LevelKey,
-  audio: TextAudio
+  audio: TextAudio,
+  reverse = false
 ): void {
   const tier = textTier(contentLevel);
   const items: { text: ReadingText; q: ReadingTextQuestion }[] = texts.flatMap((text) => text.questions.map((q) => ({ text, q })));
@@ -605,6 +634,25 @@ function runTextQuizSet(
   let attempted = false;
   let eliminated = -1;
   let order: number[] = [];
+  // Mode terbalik (Tantangan buku mini): soal `picture` jadi GAMBAR →
+  // pilih KALIMAT. revOpts[0] = kalimat benar, sisanya pengecoh.
+  let revOpts: string[] = [];
+  const isRev = (q: ReadingTextQuestion): boolean => reverse && q.kind === 'picture';
+  const answerIdx = (q: ReadingTextQuestion): number => (isRev(q) ? 0 : q.answer);
+
+  /** Pengecoh = kalimat buku yang gambarnya jadi pengecoh di data; kalau
+   *  gambar pengecoh tidak punya kalimat (mis. topik angka), ambil kalimat
+   *  lain di buku yang sama. */
+  function reverseOptions(text: ReadingText, q: ReadingTextQuestion): string[] {
+    const right = text.lines[q.about ?? 0].en;
+    const fromPics = q.options
+      .filter((_, i) => i !== q.answer)
+      .map((e) => text.lines.find((l) => l.pic !== undefined && text.pictures?.[l.pic]?.emoji === e)?.en)
+      .filter((en): en is string => !!en && en !== right);
+    const others = shuffle(text.lines.map((l) => l.en).filter((en) => en !== right && !fromPics.includes(en)));
+    const wrong = [...new Set([...fromPics, ...others])].slice(0, Math.max(2, q.options.length - 1));
+    return [right, ...wrong];
+  }
 
   function goTo(i: number): void {
     round = i;
@@ -616,8 +664,9 @@ function runTextQuizSet(
     revealed = false;
     attempted = false;
     eliminated = -1;
-    const q = items[round].q;
-    order = q.kind === 'truefalse' ? [0, 1] : shuffle(q.options.map((_, i) => i));
+    const { text, q } = items[round];
+    revOpts = isRev(q) ? reverseOptions(text, q) : [];
+    order = q.kind === 'truefalse' ? [0, 1] : shuffle((isRev(q) ? revOpts : q.options).map((_, i) => i));
     redraw();
     const scope = container.querySelector<HTMLElement>('.rt-book-text');
     if (audio === 'auto' && scope) readAlong(scope, sentenceOf(items[round]));
@@ -640,12 +689,21 @@ function runTextQuizSet(
     const kind = q.kind ?? 'text';
     const locked = tier.hintGate && !attempted;
     const hintedLines = revealed && tier.hint === 'evidence' ? q.evidence : [];
-    const showHintText = revealed && (tier.hint === 'translate' || tier.hint === 'question' || (tier.hint === 'evidence' && !q.evidence.length));
+    const hintMode = isRev(q) ? 'eliminate' : tier.hint;
+    const showHintText = revealed && hintMode !== 'eliminate' && (tier.hint === 'translate' || tier.hint === 'question' || (tier.hint === 'evidence' && !q.evidence.length));
     const hintBtn = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="rtHint" ${revealed || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>`;
     const listenBtn = audio !== 'none' ? `<div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="rtListenQ">🔊 Dengar</button></div>` : '';
     let stimulus = '';
     let optionsHtml = '';
-    if (kind === 'picture') {
+    if (isRev(q)) {
+      // Arah DIBALIK dari Latihan Inti: gambar → baca & pilih kalimatnya.
+      // Tanpa 🔊 (membacakan kalimat = membocorkan jawaban).
+      const instr = 'Lihat gambarnya, lalu pilih kalimat yang cocok.';
+      stimulus = `
+        <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
+        <div class="rt-book-page rt-quiz-sentence rt-rev-pic"><div class="rt-book-pic" aria-hidden="true">${q.options[q.answer]}</div></div>`;
+      optionsHtml = `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${revOpts[oi]}</button>`).join('')}</div>`;
+    } else if (kind === 'picture') {
       const instr = 'Baca kalimatnya, lalu tunjuk gambarnya.';
       stimulus = `
         <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
@@ -698,8 +756,9 @@ function runTextQuizSet(
       rtHint: () => {
         if (revealed || (tier.hintGate && !attempted)) return;
         revealed = true;
-        if (tier.hint === 'eliminate') {
-          const wrong = q.options.map((_, i) => i).filter((i) => i !== q.answer);
+        if (hintMode === 'eliminate') {
+          const n = isRev(q) ? revOpts.length : q.options.length;
+          const wrong = Array.from({ length: n }, (_, i) => i).filter((i) => i !== answerIdx(q));
           eliminated = shuffle(wrong)[0] ?? -1;
         }
         redraw();
@@ -721,7 +780,7 @@ function runTextQuizSet(
   function onAnswer(i: number): void {
     const it = items[round];
     const { q } = it;
-    const correct = order[i] === q.answer;
+    const correct = order[i] === answerIdx(q);
     stopKaraoke();
     lockOptionButtons(container);
     const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
@@ -735,7 +794,7 @@ function runTextQuizSet(
       fireConfetti();
       fb.textContent = pickPraise(level);
       fb.className = 'feedback good';
-      if (q.kind === 'picture' && q.evidenceWord) askWord(it);
+      if (q.kind === 'picture' && q.evidenceWord && !isRev(q)) askWord(it);
       else if ((q.kind ?? 'text') === 'text' && q.evidence.length) askEvidence(it);
     } else {
       attempted = true;
@@ -847,7 +906,7 @@ export function runLatihanIntiText(container: HTMLElement, topic: ReadingTextTop
 }
 
 export function runTantanganText(container: HTMLElement, topic: ReadingTextTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
-  runTextQuizSet(container, topic, topic.newTexts, 'tantangan-teks', '📚 Baca Sendiri', onDone, level, contentLevel, textTier(contentLevel).tantanganAudio);
+  runTextQuizSet(container, topic, topic.newTexts, 'tantangan-teks', '📚 Baca Sendiri', onDone, level, contentLevel, textTier(contentLevel).tantanganAudio, true);
 }
 
 export function textQuizTotals(topic: ReadingTextTopic): { latihan: number; tantangan: number } {

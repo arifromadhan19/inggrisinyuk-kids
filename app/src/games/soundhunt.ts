@@ -331,7 +331,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
   }
 
   function drawLevel(idx: number): void {
-    setGameRoundActive(true); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi
+    setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     const lvl = SOUND_HUNT_LEVELS[idx];
     let revealed = false;
     const play = () => speak(lvl.instruction);

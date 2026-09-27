@@ -477,7 +477,7 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
   }
 
   function playStage(idx: number): void {
-    setGameRoundActive(true); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi
+    setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runBalloonPopRound(

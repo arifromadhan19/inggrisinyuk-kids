@@ -142,7 +142,7 @@ function hintChipHtml(locked: boolean, used: boolean): string {
   return `<button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${locked || used ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>`;
 }
 
-export function renderKenalanSentence(container: HTMLElement, topic: GrammarSentenceTopic, onNext: OnDone, contentLevel: LevelKey): void {
+export function renderKenalanSentence(container: HTMLElement, topic: GrammarSentenceTopic, _onNext: OnDone, contentLevel: LevelKey): void {
   const showRule = grammarTier(contentLevel) === 'lanjut' && !!topic.rule;
   container.innerHTML = `
     <div class="id-text" style="margin-bottom:10px;">Perhatikan kata yang disorot di tiap kalimat</div>
@@ -159,11 +159,9 @@ export function renderKenalanSentence(container: HTMLElement, topic: GrammarSent
         )
         .join('')}
     </div>
-    <button class="primary-btn" data-action="advance">Lanjut ke Latihan Inti →</button>
   `;
   setHandlers({
     play: (payload) => speak(topic.sentences[Number(payload)].en),
-    advance: () => onNext(),
   });
 }
 
@@ -691,7 +689,7 @@ function scorePatternMic(said: string, target: string): MicScore {
  * topik (types.ts `GrammarContrastVisual`, komentar lengkap di sana): 5
  * varian — `'quantity'` (gambar diulang 1x/2x, JUMLAH = jawaban, dipakai jg
  * utk "there is/there are"), `'polarity'` (gambar + lencana ✅/❌, POSITIF/
- * NEGATIF = jawaban — dipakai "suka/tidak-suka" MAUPUN "have got"/"can" krn
+ * NEGATIF = jawaban — dipakai "suka/tidak-suka" MAUPUN "have"/"can" krn
  * strukturnya sama-sama positif-vs-negatif), `'proximity'` (gambar besar+🔍
  * vs kecil+🔭, JARAK dekat/jauh = jawaban, utk this/that), `'size'` (gambar
  * besar vs kecil TANPA lencana tambahan, UKURAN itu sendiri = jawaban, utk
@@ -707,56 +705,98 @@ function scorePatternMic(said: string, target: string): MicScore {
  * dipakai ulang lintas kontras grammar BEDA tanpa mekanik baru per level —
  * cuma variasi visual, bukan variasi task shape.
  */
-function contrastVisualInner(emoji: string, isFormB: boolean, visual: GrammarContrastVisual): string {
-  if (visual === 'polarity') {
-    return `<span style="font-size:34px;display:block" aria-hidden="true">${emoji}</span><span class="lbl">${isFormB ? '❌' : '✅'}</span>`;
-  }
-  if (visual === 'proximity') {
-    return `<span style="font-size:${isFormB ? 22 : 44}px;display:block" aria-hidden="true">${emoji}</span><span class="lbl">${isFormB ? '🔭' : '🔍'}</span>`;
-  }
-  if (visual === 'size') {
-    return `<span style="font-size:${isFormB ? 20 : 46}px;display:block" aria-hidden="true">${emoji}</span>`;
-  }
-  if (visual === 'character') {
-    return `<span style="font-size:34px;display:block" aria-hidden="true">${emoji}</span><span class="lbl">${isFormB ? '👧' : '👦'}</span>`;
-  }
-  if (visual === 'possessor') {
-    return `<span style="font-size:34px;display:block" aria-hidden="true">${emoji}</span><span class="lbl">${isFormB ? '🫵' : '🙋'}</span>`;
-  }
-  if (visual === 'inclusion') {
-    return `<span style="font-size:34px;display:block" aria-hidden="true">${emoji}</span><span class="lbl">${isFormB ? '👉' : '🙋'}</span>`;
-  }
+/** `badges:false` = kartu sudah berlabel teks (🎮 Main, atau `LABELED_VISUALS`
+ *  di Latihan Inti/Tantangan) — lencana ✅/❌, 🔍/🔭, angka 1/2, dst jadi
+ *  dobel info & disembunyikan (permintaan user: "ketika sudah ada text remove
+ *  saja icon di atas text biar tidak redundan"). Beda ukuran gambar
+ *  (proximity/size) & jumlah gambar (quantity) tetap. */
+function contrastVisualInner(emoji: string, isFormB: boolean, visual: GrammarContrastVisual, scale = 1, badges = true): string {
+  // Ukuran dasar dikali `scale` — kartu Latihan Inti 1.3, gambar Kenalan Main
+  // & stimulus Tantangan lebih besar lagi (permintaan user: "gambar/icon
+  // sedikit besar supaya jelas"). Lencana (✅/😊/🔍/👦 …) ikut membesar,
+  // dulu cuma 13px sehingga tanda pembedanya justru paling susah dilihat.
+  const px = (n: number) => Math.round(n * scale);
+  const pic = (size: number, extra = '') => `<span style="font-size:${px(size)}px;display:block;line-height:1.15${extra}" aria-hidden="true">${emoji}</span>`;
+  const badge = (b: string) => (badges ? `<span class="lbl cv-badge" style="font-size:${px(22)}px" aria-hidden="true">${b}</span>` : '');
+  if (visual === 'polarity') return pic(34) + badge(isFormB ? '❌' : '✅');
+  if (visual === 'liking') return pic(34) + badge(isFormB ? '😖' : '😊');
+  if (visual === 'proximity') return pic(isFormB ? 22 : 44) + badge(isFormB ? '🔭' : '🔍');
+  if (visual === 'size') return pic(isFormB ? 20 : 46);
+  if (visual === 'character') return pic(34) + badge(isFormB ? '👧' : '👦');
+  if (visual === 'possessor') return pic(34) + badge(isFormB ? '🫵' : '🙋');
+  if (visual === 'inclusion') return pic(34) + badge(isFormB ? '👉' : '🙋');
   const count = isFormB ? 2 : 1;
-  return `<span style="font-size:34px;display:block${count > 1 ? ';letter-spacing:6px' : ''}" aria-hidden="true">${emoji.repeat(count)}</span><span class="lbl">${count}</span>`;
+  return `<span style="font-size:${px(34)}px;display:block;line-height:1.15${count > 1 ? ';letter-spacing:6px' : ''}" aria-hidden="true">${emoji.repeat(count)}</span>${badges ? `<span class="lbl cv-badge" style="font-size:${px(18)}px">${count}</span>` : ''}`;
+}
+
+/** 🔒 Kontras yang lencananya TIDAK langsung terbaca anak → kartu Latihan
+ *  Inti & gambar Tantangan diberi label teks (sama dgn label kartu 🎮 Main,
+ *  `topic.choice`). Permintaan user: "jika icon nya tidak straightforward
+ *  relevan maka tambahkan text" (audit `materi/grammar.md` §26):
+ *  - polarity ✅/❌ terbaca "benar/salah", bukan "mau/tidak mau";
+ *  - liking 😖 bisa terbaca sakit/sedih, bukan "tidak suka";
+ *  - proximity 🔍/🔭 (kaca pembesar/teleskop) asing utk anak 3–7 th;
+ *  - possessor 🙋/🫵 & inclusion 🙋/👉 (aku/kamu, kita/mereka) abstrak;
+ *  - quantity & size — permintaan user: samakan teks "Satu"/"Banyak" &
+ *    "Besar"/"Kecil" dgn 🎮 Main.
+ *  TANPA label: character (👦/👧 jelas laki-laki/
+ *  perempuan). Label = terjemahan konsep (Indonesia), bukan teks kalimat
+ *  Inggris → anak tetap harus paham kata Inggris yang didengar. */
+const LABELED_VISUALS: ReadonlySet<GrammarContrastVisual> = new Set(['quantity', 'size', 'polarity', 'liking', 'proximity', 'possessor', 'inclusion']);
+
+/** Label kartu kontras — `topic.choice.a/b`, `{x}` diganti nama benda item
+ *  itu (mis. "Senang atau Tidak?": "Sedih"/"Tidak sedih" utk item sad). */
+function choiceLabel(topic: GrammarPatternTopic, item: GrammarPatternItem, isFormB: boolean): string {
+  const raw = (isFormB ? topic.choice.b : topic.choice.a).replace(/\{x\}/g, choiceNoun(item.id));
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
 
 interface ContrastCard {
+  item: GrammarPatternItem;
   emoji: string;
   isFormB: boolean;
   ok: boolean;
 }
 
-/** Kartu jawaban kontras Latihan Inti. 2 kartu (Little Stars): posisi TETAP
- *  formA kiri, formB kanan (jawabannya melekat ke ISI gambar). Starter dapat kartu
- *  ke-3 (pembeda level, `materi/pembeda_level.md` § Grammar #6): bentuk SAMA
- *  dgn yang didengar tapi benda LAIN dari topik — pola Cambridge Starters
- *  "kalau ada bagian kalimat yang tidak cocok, jawabannya no", anak harus
- *  dengar SELURUH kalimat, bukan cuma bentuknya. Posisi 3 kartu diacak. */
+/** Kartu jawaban kontras Latihan Inti — 🔒 WAJIB beda dari Kenalan "🎮 Main"
+ *  (permintaan user: di "Satu atau Banyak" keduanya sempat 100% sama). Main =
+ *  2 kartu 1 benda + label konsep ("Satu"/"Banyak"); Latihan Inti = kartu
+ *  TANPA label berisi beberapa benda × 2 bentuk (Little Stars 2 benda = 4
+ *  kartu, Starter 3 benda = 6 kartu — pembeda level), mis. 🚗 / 🚗🚗 / 🚌 /
+ *  🚌🚌 — anak harus menangkap BENDA dan BENTUK grammar-nya sekaligus (pola
+ *  Cambridge Starters "seluruh kalimat harus cocok"). Posisi kartu diacak;
+ *  benda lain dipilih bergilir per soal supaya pasangannya berganti. */
 function buildContrastCards(topic: GrammarPatternTopic, target: GrammarPatternItem, wantFormB: boolean, round: number, contentLevel: LevelKey): ContrastCard[] {
-  const pair: ContrastCard[] = [
-    { emoji: target.emoji, isFormB: false, ok: !wantFormB },
-    { emoji: target.emoji, isFormB: true, ok: wantFormB },
-  ];
-  if (contentLevel !== 'starter') return pair;
-  const others = topic.items.filter((it) => it.emoji !== target.emoji);
-  if (!others.length) return pair;
-  const other = others[round % others.length];
-  return shuffle([...pair, { emoji: other.emoji, isFormB: wantFormB, ok: false }]);
+  const nObjects = contentLevel === 'starter' ? 3 : 2;
+  // Benda pembanding TIDAK diambil dari tetangga dekat target di daftar topik
+  // (kata mirip biasanya berdampingan, mis. 🎨 drawing & 🖌️ painting) —
+  // supaya yang diuji bentuk grammar-nya, bukan membedakan 2 gambar mirip.
+  const ti = topic.items.indexOf(target);
+  const n = topic.items.length;
+  const far = topic.items.filter((it, i) => it.emoji !== target.emoji && Math.min(Math.abs(i - ti), n - Math.abs(i - ti)) >= 2);
+  const others = far.length ? far : topic.items.filter((it) => it.emoji !== target.emoji);
+  const picked: GrammarPatternItem[] = [];
+  for (let k = 0; picked.length < nObjects - 1 && k < others.length * 2; k++) {
+    const cand = others[(round + k * 3) % others.length];
+    const nearPicked = picked.some((p) => {
+      const d = Math.abs(topic.items.indexOf(p) - topic.items.indexOf(cand));
+      return p.emoji === cand.emoji || Math.min(d, n - d) < 2;
+    });
+    if (!nearPicked) picked.push(cand);
+  }
+  const cards: ContrastCard[] = [];
+  for (const it of [target, ...picked]) {
+    for (const isB of [false, true]) cards.push({ item: it, emoji: it.emoji, isFormB: isB, ok: it === target && isB === wantFormB });
+  }
+  return shuffle(cards);
 }
 
-function contrastCardsHtml(cards: ContrastCard[], visual: GrammarContrastVisual): string {
-  return `<div class="opt-grid${cards.length === 3 ? ' three' : ''}">
-    ${cards.map((c, i) => `<button class="opt-btn" type="button" data-action="pick" data-payload="${i}">${contrastVisualInner(c.emoji, c.isFormB, visual)}</button>`).join('')}
+function contrastCardsHtml(cards: ContrastCard[], topic: GrammarPatternTopic): string {
+  const visual: GrammarContrastVisual = topic.contrastVisual ?? 'quantity';
+  const scale = cards.length > 4 ? 1.1 : 1.3;
+  const label = (c: ContrastCard) => (LABELED_VISUALS.has(visual) ? `<span class="pattern-card-label">${choiceLabel(topic, c.item, c.isFormB)}</span>` : '');
+  return `<div class="opt-grid pattern-cards${cards.length > 4 ? ' six' : ''}">
+    ${cards.map((c, i) => `<button class="opt-btn" type="button" data-action="pick" data-payload="${i}">${contrastVisualInner(c.emoji, c.isFormB, visual, scale, !LABELED_VISUALS.has(visual))}${label(c)}</button>`).join('')}
   </div>`;
 }
 
@@ -770,7 +810,7 @@ const CHOICE_LETTERS = ['A', 'B'];
  * fitur mic dan main", REUSE PERSIS pola `games/reading.ts`
  * `renderKenalanWord` (3 aksi yang sama).
  */
-export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatternTopic, onNext: OnDone, level: LevelKey): void {
+export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatternTopic, _onNext: OnDone, level: LevelKey): void {
   const doneCls = (i: number, action: 'listen' | 'mic' | 'game'): string =>
     hasWordInteraction('grammar', topic.id, i, action) ? ' done' : '';
 
@@ -796,7 +836,6 @@ export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatte
           )
           .join('')}
       </div>
-      <button class="primary-btn" data-action="advance">Lanjut ke Latihan Inti →</button>
     `;
     setHandlers({
       playPattern: (payload) => {
@@ -818,7 +857,6 @@ export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatte
         recordEvent({ kind: 'interact', skill: 'grammar', topicId: topic.id, section: 'kenalan', slot: i, itemRef: topic.items[i].formA.en, activity: 'game' });
         runPatternMiniGame(container, topic, i, drawList, level);
       },
-      advance: () => onNext(),
     });
   }
 
@@ -908,25 +946,43 @@ export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatte
   }
 }
 
-/** 🎮 Main · Cocok atau Tidak? — dipicu dari Kenalan, mulai di kata yang
+/** Keterangan Indonesia dgn kata yang MEMBEDAKAN 2 bentuk ditebalkan (mis.
+ *  "Aku <b>tidak</b> suka menggambar."), dihitung dari selisih kata `formA.id`
+ *  vs `formB.id` — tanpa data baru. */
+function contrastCaptionHtml(text: string, other: string): string {
+  const norm = (w: string) => w.toLowerCase().replace(/[^a-z0-9-]/g, '');
+  const otherWords = new Set(other.split(/\s+/).map(norm));
+  return text
+    .split(/\s+/)
+    .map((w) => (norm(w) && !otherWords.has(norm(w)) ? `<b>${w}</b>` : w))
+    .join(' ');
+}
+
+/** Nama benda utk `{x}` di pertanyaan Main — huruf kecil ("Mobil" → "mobil"),
+ *  KECUALI singkatan (PR) & nama diri (Inggris). */
+function choiceNoun(name: string): string {
+  return name
+    .split(' ')
+    .map((w) => (w.length > 1 && w === w.toUpperCase()) || w === 'Inggris' ? w : w.toLowerCase())
+    .join(' ');
+}
+
+/** 🎮 Main · Dengar & Pilih — dipicu dari Kenalan, mulai di kata yang
  *  ditap (CLAUDE.md "Section Ber-Bullet-Progress" pengecualian Kenalan Main),
- *  lanjut ke kata lain lewat bullet progress (pola sama `games/listening.ts`
- *  `runItemMiniGame`). Permintaan user: dulu shape-nya IDENTIK Latihan Inti
- *  (dengar 1 kalimat → tunjuk 1 dari 2 gambar), sekarang task shape BEDA:
- *  SATU gambar kontras + SATU kalimat didengar → anak NILAI cocok/tidak
- *  (👍/👎 — BUKAN ✅/❌ krn visual `'polarity'` sudah pakai lencana ✅/❌ di
- *  gambarnya sendiri). 3 tahap jadi: Main = verifikasi, Latihan Inti =
- *  kalimat→pilih gambar, Tantangan = gambar→pilih kalimat. Gambar & kalimat
- *  diacak INDEPENDEN (50% cocok), zero data baru. Dot "done" cuma saat soal
- *  BENERAN dijawab (`markSlotAnswered` section 'kenalan' — dikecualikan dari
- *  persentase topik). "💡 Petunjuk" di kanan badge: ungkap teks Inggris +
- *  Indonesia kalimat yang diputar; tetap terungkap lewat "Coba Lagi",
- *  direset saat pindah soal. */
+ *  lanjut ke kata lain lewat bullet progress. Anak dengar SATU kalimat, lalu
+ *  jawab pertanyaan KHUSUS TOPIK (`topic.choice`, mis. "Satu atau banyak?" →
+ *  🚗 Satu / 🚗🚗 Banyak, "Punyaku atau punyamu?") lewat 2 kartu gambar
+ *  kontras berlabel. Permintaan user: sempat 1 format generik "Sama atau
+ *  Beda?" utk semua topik — "jangan dipukul rata, sesuaikan konteks".
+ *  2 panel bernomor: ① soal (dengar kalimat), ② jawaban (pertanyaan topik +
+ *  2 kartu, pertanyaan diawali kata tanya + nama benda, mis. "Apakah satu
+ *  atau banyak mobil?"). Sesudah menjawab kalimat Inggris + artinya tampil (kata pembeda
+ *  ditebalkan). 💡 Petunjuk = teks Inggris kalimatnya + terjemahannya di
+ *  sebelahnya (sesudah menjawab, arti tampil lewat caption di bawahnya). */
 function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, startIndex: number, onBack: OnDone, level: LevelKey): void {
   const visual: GrammarContrastVisual = topic.contrastVisual ?? 'quantity';
   const total = topic.items.length;
   let current = startIndex;
-  let pictureIsFormB = false;
   let sentenceIsFormB = false;
   let answered = false;
   let revealed = false;
@@ -934,34 +990,34 @@ function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, 
   const kenalanStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'kenalan', i)?.st ?? 0;
   const sentence = () => (sentenceIsFormB ? topic.items[current].formB : topic.items[current].formA);
 
-  function roll(): void {
-    pictureIsFormB = Math.random() < 0.5;
-    sentenceIsFormB = Math.random() < 0.5;
-  }
-
   function paint(): void {
     const item = topic.items[current];
     const said = sentence();
+    const other = sentenceIsFormB ? item.formA : item.formB;
+    const choiceCard = (isB: boolean) => `
+          <button class="opt-btn gm-ans gm-choice ${isB ? 'gm-ans-b' : 'gm-ans-a'}" type="button" data-action="pick" data-payload="${isB ? 1 : 0}">
+            <span class="gm-choice-pic">${contrastVisualInner(item.emoji, isB, visual, 1.4, false)}</span>
+            <span class="gm-ans-label">${choiceLabel(topic, item, isB)}</span>
+          </button>`;
     container.innerHTML = `
       <div class="latihan-head no-wrap">
-        <span class="stage-badge">🎮 Main · Cocok?</span>
-        <button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>
+        <span class="stage-badge">🎮 Main · Dengar &amp; Pilih</span>
+        ${answered ? '' : `<button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>`}
       </div>
       ${quizNavHtml(current, total, kenalanStatus)}
-      <div class="id-text">Lihat gambarnya, dengarkan kalimatnya. Cocok, nggak?</div>
-      <div class="pattern-scene">${contrastVisualInner(item.emoji, pictureIsFormB, visual)}</div>
-      <div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button></div>
-      ${revealed ? `<div class="en-text">${said.en}</div><div class="id-text">${said.id}</div>` : ''}
-      <div class="opt-grid">
-        <button class="opt-btn answer-card" type="button" data-action="pick" data-payload="yes">
-          <span class="answer-card-emoji" aria-hidden="true">👍</span>
-          <span class="answer-card-bottom"><span class="answer-card-label">Cocok</span></span>
-        </button>
-        <button class="opt-btn answer-card" type="button" data-action="pick" data-payload="no">
-          <span class="answer-card-emoji" aria-hidden="true">👎</span>
-          <span class="answer-card-bottom"><span class="answer-card-label">Tidak Cocok</span></span>
-        </button>
-      </div>
+      <section class="gm-panel gm-question" aria-label="Soal">
+        <div class="gm-step">Dengarkan kalimatnya</div>
+        <div class="gm-listen">
+          <button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button>
+          ${revealed || answered ? `<div class="gm-said">"${said.en}"${revealed && !answered ? ` <span class="gm-said-id">${said.id}</span>` : ''}</div>` : ''}
+          ${answered ? `<div class="gm-caption">${contrastCaptionHtml(said.id, other.id)}</div>` : ''}
+        </div>
+      </section>
+      <section class="gm-panel gm-answer" aria-label="Jawaban">
+        <div class="gm-step">${topic.choice.question.replace(/\{x\}/g, choiceNoun(item.id))}</div>
+        <div class="opt-grid gm-answers">${choiceCard(false)}${choiceCard(true)}
+        </div>
+      </section>
       <div class="feedback" id="fb"></div>
     `;
     wireQuizNav(goTo);
@@ -974,15 +1030,15 @@ function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, 
       },
       pick: (payload) => {
         if (answered) return;
-        const saidMatch = payload === 'yes';
-        onAnswer(saidMatch === (pictureIsFormB === sentenceIsFormB), saidMatch ? 0 : 1);
+        const i = Number(payload);
+        onAnswer(i === (sentenceIsFormB ? 1 : 0), i);
       },
     });
   }
 
   function goTo(i: number): void {
     current = Math.min(Math.max(i, 0), total - 1);
-    roll();
+    sentenceIsFormB = Math.random() < 0.5;
     answered = false;
     revealed = false;
     speak(sentence().en);
@@ -993,8 +1049,9 @@ function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, 
     const said = sentence();
     answered = true;
     markSlotAnswered('grammar', topic.id, 'kenalan', current, correct, { itemRef: topic.items[current].formA.en });
+    // Gambar ulang: kalimat Inggris & artinya kini tampil di panel ①.
+    paint();
     lockOptionButtons(container);
-    container.querySelector<HTMLButtonElement>('[data-action="petunjuk"]')?.remove();
     const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
     const fb = container.querySelector<HTMLElement>('#fb')!;
     if (correct) {
@@ -1027,7 +1084,7 @@ function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, 
     });
   }
 
-  roll();
+  sentenceIsFormB = Math.random() < 0.5;
   speak(sentence().en);
   paint();
 }
@@ -1039,7 +1096,6 @@ function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, 
  * kontras yang cocok — audio→gambar, comprehension murni.
  */
 export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatternTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
-  const visual: GrammarContrastVisual = topic.contrastVisual ?? 'quantity';
   const buildPlan = () => buildPatternPlan(topic, LATIHAN_ROUND_SIZE);
   let section = ensureSection('grammar', topic.id, 'latihan', buildPlan);
   const expectedCoverage = Math.min(topic.items.length, LATIHAN_ROUND_SIZE);
@@ -1089,8 +1145,8 @@ export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatt
       <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
       <div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="replay">🔊 Dengar</button></div>
       ${revealed ? `<div class="en-text">${form.en}</div><div class="id-text">${form.id}</div>` : ''}
-      <div class="id-text" style="font-weight:800;margin:6px 0 4px">Mana yang cocok dengan yang kamu dengar?</div>
-      ${contrastCardsHtml(cards, visual)}
+      <div class="id-text" style="font-weight:800;margin:6px 0 4px">Cari gambar yang pas dengan kalimatnya</div>
+      ${contrastCardsHtml(cards, topic)}
       <div class="feedback" id="fb"></div>
     `;
     wireQuizNav(goTo);
@@ -1230,7 +1286,7 @@ export function runTantanganPattern(container: HTMLElement, topic: GrammarPatter
         </div>
         ${quizNavHtml(round, order.length, slotStatus)}
         <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
-        <div style="text-align:center;margin:14px 0" aria-hidden="true">${contrastVisualInner(target.emoji, wantFormB, visual)}</div>
+        <div style="text-align:center;margin:14px 0">${contrastVisualInner(target.emoji, wantFormB, visual, 1.7, !LABELED_VISUALS.has(visual))}${LABELED_VISUALS.has(visual) ? `<span class="pattern-card-label big">${choiceLabel(topic, target, wantFormB)}</span>` : ''}</div>
         <div class="id-text" style="font-weight:800;margin:6px 0 4px">Dengarkan tiap pilihan (boleh berkali-kali), lalu pilih yang cocok dengan gambar ini</div>
         <div class="opt-grid">
           ${choices
@@ -1405,7 +1461,7 @@ function buildTransformPlan(topic: GrammarTransformTopic): LatihanPlanSlot[] {
   return shuffle(topic.transforms.map((_, i) => i)).map((item) => ({ kind: 'hear', item }));
 }
 
-export function renderKenalanTransform(container: HTMLElement, topic: GrammarTransformTopic, onNext: OnDone): void {
+export function renderKenalanTransform(container: HTMLElement, topic: GrammarTransformTopic, _onNext: OnDone): void {
   container.innerHTML = `
     <div class="id-text" style="margin-bottom:10px;">Perhatikan bagaimana ucapan langsung berubah jadi reported speech</div>
     <div class="primer-list">
@@ -1424,7 +1480,6 @@ export function renderKenalanTransform(container: HTMLElement, topic: GrammarTra
         })
         .join('')}
     </div>
-    <button class="primary-btn" data-action="advance">Lanjut ke Latihan Inti →</button>
   `;
   setHandlers({
     play: (payload) => {
@@ -1432,7 +1487,6 @@ export function renderKenalanTransform(container: HTMLElement, topic: GrammarTra
       const correct = t.reportedOptions.find((o) => o.ok)!;
       speakSequence([t.original, correct.text]);
     },
-    advance: () => onNext(),
   });
 }
 

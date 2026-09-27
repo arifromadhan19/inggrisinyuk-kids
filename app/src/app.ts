@@ -48,7 +48,7 @@ import {
   ICON_RAPOR,
   ICON_SETTINGS,
 } from './icons';
-import { bindDelegatedClicks, clearHandlers, isGameRoundActive, setGameRoundActive, setHandlers } from './interaction';
+import { bindDelegatedClicks, clearHandlers, getGameMapReturn, isGameRoundActive, setGameRoundActive, setHandlers } from './interaction';
 import { CLOUD, HILLS_RIDGE, HILLS_SHORE, rajaMascot, TRAIL_BEND_LEFT, TRAIL_BEND_RIGHT, placeFor } from './scenery';
 import type { LastSpot, Store, TopicSignal } from './progress';
 import {
@@ -3581,11 +3581,19 @@ function renderGamePlay(): void {
         go('game');
         return;
       }
+      // 🔒 Keluar dari 1 markas → balik ke Map markas game itu (bukan `/game`),
+      // lihat `getGameMapReturn` `interaction.ts`. Game tanpa Map → `/game`.
+      const exit = () => {
+        stopSpeaking();
+        const backToMap = getGameMapReturn();
+        if (backToMap) backToMap();
+        else go('game');
+      };
       placementGame.renderExitConfirm(
         () => {
           /* "Yuk Lanjut" — overlay sudah menutup dirinya sendiri, tidak perlu apa-apa lagi di sini */
         },
-        () => go('game')
+        exit
       );
     },
   });
@@ -3602,10 +3610,9 @@ function renderGamePlay(): void {
  *  Kerajaan Balon 5-markas TANPA picker tingkat kesulitan lagi, lihat
  *  `balloonPopGame.runBalloonPop`); Raja Ingatan jg py bank kata sendiri
  *  (games/memorymatch.ts, TIDAK terikat level/topik Vocab manapun —
- *  permintaan user "dedicated game"); Sentence Puzzle ('susun')
- *  SATU-SATUNYA yang masih butuh `topics` topik Vocab level ini krn tiap
- *  ronde memilih topik+kata pengecoh sibling sendiri secara internal
- *  (`games/sentencepuzzle.ts`). */
+ *  permintaan user "dedicated game"); Sentence Puzzle ('susun') jg py
+ *  bank kalimat sendiri per markas (`games/sentencepuzzle-data.ts`, dulu
+ *  memakai topik Vocab level anak). */
 function runRajaRound(key: RajaKey): void {
   const stage = qs<HTMLDivElement>(root, '#rajaStage');
   const level = currentPlayableLevel().key;
@@ -3620,6 +3627,9 @@ function runRajaRound(key: RajaKey): void {
   if (key === 'kelompok') {
     const pool = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic);
     const topic = pool[Math.floor(Math.random() * pool.length)];
+    // Level tanpa topik sortable (roster sudah menyembunyikan game ini) —
+    // URL langsung `/game/raja-kelompok` jangan crash, balik ke list game.
+    if (!topic) return go('game');
     vocabularyGame.runKelompokkan(stage, topic.id, topic.items, topic.sortBaskets, onRoundDone, praiseLevel);
     return;
   }
@@ -3641,8 +3651,7 @@ function runRajaRound(key: RajaKey): void {
   }
 
   if (key === 'susun') {
-    const topics = vocabTopicsForLevel(level);
-    sentencePuzzleGame.runSentencePuzzle(stage, topics, onRoundDone, praiseLevel);
+    sentencePuzzleGame.runSentencePuzzle(stage, onRoundDone, praiseLevel);
     return;
   }
 

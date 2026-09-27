@@ -775,7 +775,7 @@ export function runStoryQuest(container: HTMLElement, onDone: OnDone, level: Lev
   }
 
   function playStage(idx: number): void {
-    setGameRoundActive(true); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi
+    setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     const book = STORY_BOOKS[idx];
     const isLast = idx === total - 1;
     runStoryBookRound(

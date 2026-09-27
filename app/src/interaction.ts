@@ -30,13 +30,23 @@ export function clearHandlers(): void {
  * "Pop Up Konfirmasi Keluar Game" utk aturan lengkapnya.
  */
 let gameRoundActive = true;
+/** 🔒 Permintaan user: keluar dari 1 markas (tombol balik ATAU "Keluar" di
+ *  popup konfirmasi) balik ke Map/list markas game itu, BUKAN ke list game
+ *  `/game`. Diisi orkestrator lewat `setGameRoundActive(true, renderMap)`;
+ *  `null` = tidak ada Map (Raja Kelompok) atau sedang di Map → ke `/game`. */
+let gameMapReturn: (() => void) | null = null;
 
-export function setGameRoundActive(active: boolean): void {
+export function setGameRoundActive(active: boolean, backToMap?: () => void): void {
   gameRoundActive = active;
+  gameMapReturn = active ? backToMap ?? null : null;
 }
 
 export function isGameRoundActive(): boolean {
   return gameRoundActive;
+}
+
+export function getGameMapReturn(): (() => void) | null {
+  return gameMapReturn;
 }
 
 export function bindDelegatedClicks(root: HTMLElement): void {
