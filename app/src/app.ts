@@ -922,7 +922,7 @@ function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): 
     }
     if (grammarTopic && 'transforms' in grammarTopic) {
       const n = grammarTopic.transforms.length;
-      return stepsVisited ? 100 : grammarTopicPercent(topicId, n, n, 'tantangan-transform');
+      return stepsVisited ? 100 : grammarTopicPercent(topicId, n, n, 'tantangan-transform', null);
     }
     if (grammarTopic && 'sentences' in grammarTopic) {
       const n = grammarTopic.sentences.length;
@@ -2002,26 +2002,16 @@ function renderActivity(): void {
   // Panel kecepatan/suara cuma relevan kalau skill-nya benar-benar pakai TTS
   // (`speak()`)/mic di suatu titik (revisi user: sempat digerbang ke
   // listening/speaking saja, TAPI Vocabulary & Grammar juga pakai dengar 🔊/
-  // ucap 🎤 di Kenalan-nya, jadi salah kalau ikut disembunyikan). Reading
-  // SATU-SATUNYA skill yang sengaja TANPA TTS sama sekali (dibaca sendiri,
-  // types.ts) — cuma itu yang panelnya benar-benar tidak relevan.
-  const showVoicePanel = key !== 'reading';
+  // ucap 🎤 di Kenalan-nya, jadi salah kalau ikut disembunyikan). Reading:
+  // Kenalan (dibacakan otomatis) & Latihan Inti (🔊 per tier) pakai TTS →
+  // panel tampil (permintaan user); Tantangan "Baca Sendiri" tetap tanpa panel.
+  const showVoicePanel = key !== 'reading' || state.step < 2;
 
-  // Default kecepatan suara: Latihan Inti/Tantangan Listening & Speaking ikut
-  // level topik (`listeningDefaultRate`/`speakingDefaultRate`), sisanya
-  // (termasuk Kenalan) 0.75x. Tidak menimpa
-  // pill kecepatan yang sudah dipilih user sendiri.
-  applyDefaultRate(
-    state.step === 0
-      ? DEFAULT_RATE
-      : key === 'listening'
-        ? listeningGame.listeningDefaultRate(level.key)
-        : key === 'speaking'
-          ? speakingGame.speakingDefaultRate(level.key)
-          : key === 'grammar'
-            ? grammarGame.grammarDefaultRate(level.key)
-            : DEFAULT_RATE
-  );
+  // Default kecepatan suara 0.75x di SEMUA skill, level & tahap (permintaan
+  // user "defaultkan semua di 0.75 di semua level" — dulu Listening/Speaking/
+  // Grammar Adventurer+ 1x di Latihan Inti/Tantangan). Tidak menimpa pill
+  // kecepatan yang sudah dipilih user sendiri.
+  applyDefaultRate(DEFAULT_RATE);
 
   const steps = STEP_LABELS.map((label, i) => {
     const cls = i === state.step ? 'active' : i < state.step ? 'done' : '';
@@ -2379,7 +2369,7 @@ function renderSettings(): void {
     paintLevelChips();
   });
 
-  renderVoicePanel(qs<HTMLDivElement>(root, '#voicePanelMount'));
+  renderVoicePanel(qs<HTMLDivElement>(root, '#voicePanelMount'), { withIndonesian: true });
 }
 
 /* ------------------------------------------------------------- homepage -- */

@@ -503,6 +503,29 @@ export function markSlotAnswered(
   write(store);
 }
 
+/** 💡 Petunjuk pernah dibuka di soal ini — disimpan TANPA mengubah status
+ *  jawab (`st`), supaya Petunjuk yang sudah diklik tidak terkunci 🔒 lagi
+ *  saat soal dibuka ulang (bullet progress/reload), permintaan user. */
+export function markSlotHint(skill: SkillKey, topicId: string, section: SectionName, slot: number): void {
+  const store = read();
+  const key = sectionKey(skill, topicId, section);
+  const s = store.sections[key] ?? EMPTY_SECTION();
+  const cur = s.slots[slot] ?? { st: 0 };
+  if (cur.h) return;
+  s.slots[slot] = { ...cur, h: 1 };
+  store.sections[key] = s;
+  write(store);
+}
+
+/** Petunjuk yang terkunci 🔒 "sampai 1x coba" (tier Lanjut) sudah terbuka
+ *  PERMANEN di soal ini: anak pernah menjawab (`n`) ATAU pernah membuka
+ *  Petunjuk (`h`). Dipakai tiap soal dibuka ulang — sekali terbuka tidak
+ *  pernah terkunci lagi. */
+export function isHintUnlocked(skill: SkillKey, topicId: string, section: SectionName, slot: number): boolean {
+  const s = getSlot(skill, topicId, section, slot);
+  return (s?.n ?? 0) > 0 || !!s?.h;
+}
+
 /**
  * Penanda RINGAN "step ini pernah dituntaskan 1x" (permintaan user: gating
  * layar "Kerja Bagus" ke progress BENERAN 100%, bukan "kebetulan step
@@ -771,7 +794,7 @@ export function readingTopicPercent(
  * & format KETIGA (`GrammarTransformTopic`, `'tantangan-transform'`) memakai
  * fungsi yang sama lewat `tantanganSection`.
  */
-export function grammarTopicPercent(topicId: string, itemCount: number, tantanganTotal: number, tantanganSection: SectionName = 'tantangan-pola', secondTab: SectionName = 'tantangan-susun'): number {
+export function grammarTopicPercent(topicId: string, itemCount: number, tantanganTotal: number, tantanganSection: SectionName = 'tantangan-pola', secondTab: SectionName | null = 'tantangan-susun'): number {
   if (itemCount <= 0) return 0;
   const skill: SkillKey = 'grammar';
 
@@ -793,10 +816,10 @@ export function grammarTopicPercent(topicId: string, itemCount: number, tantanga
   // Tantangan = 2 tab (`games/grammar.ts` `runTantanganTabs`): soal utama
   // format itu + tab ke-2 5 soal (`tantangan-susun` "🔤 Susun Kalimat", atau
   // `tantangan-detektif` "🕵️ Detektif Kalimat" utk Explorer–Achiever) —
-  // dirata-rata spt 3 tab Tantangan Vocab.
+  // dirata-rata spt 3 tab Tantangan Vocab. `secondTab: null` = Tantangan
+  // cuma 1 aktivitas (Trailblazer, permintaan user tanpa Susun Kalimat).
   const mainPct = stepPct(tantanganSection, sectionTotal(tantanganSection, tantanganTotal));
-  const susunPct = stepPct(secondTab, sectionTotal(secondTab, 5));
-  const tantanganPct = (mainPct + susunPct) / 2;
+  const tantanganPct = secondTab ? (mainPct + stepPct(secondTab, sectionTotal(secondTab, 5))) / 2 : mainPct;
 
   return Math.round(((latihanPct + tantanganPct) / 2) * 100);
 }

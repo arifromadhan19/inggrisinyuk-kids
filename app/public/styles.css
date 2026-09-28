@@ -1681,6 +1681,10 @@ body.is-boss-play .tabbar{ display:none; }
 .voice-flush .voice-panel{ border:none; box-shadow:none; padding:0; border-radius:0; }
 .voice-panel-row{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
 .voice-panel-label{ font-size:var(--fs-meta); font-weight:800; color:var(--ink-2); flex:none; }
+.voice-panel-group{
+  font-size:var(--fs-meta); font-weight:800; color:var(--ink); text-transform:uppercase; letter-spacing:.04em;
+}
+.voice-panel-group ~ .voice-panel-group{ margin-top:6px; padding-top:12px; border-top:1px dashed var(--line); }
 .voice-panel-pills{ display:inline-flex; background:var(--muted); border-radius:var(--r-pill); padding:4px; gap:2px; }
 .pill-btn{
   border:none; background:transparent; color:var(--ink-2);
@@ -1907,6 +1911,10 @@ mark.g-key{ background:var(--sun-300); color:var(--ink); border-radius:6px; padd
 .g-rule{ background:var(--surface); border:2px dashed var(--line); border-radius:var(--r-md); padding:10px 14px; margin:0 auto 12px; max-width:560px; font-weight:700; font-size:var(--fs-meta); color:var(--ink-2); line-height:1.45; }
 .g-blank{ display:inline-block; min-width:3.2em; border-bottom:3px solid var(--accent); color:transparent; }
 .g-meaning{ margin-top:4px; }
+/* Terjemahan Indonesia di soal Grammar yang soalnya kalimat INGGRIS (Pilih
+   Bentuk, Detektif Kalimat) — dibuat menonjol (permintaan user "user kurang
+   aware") tapi SENGAJA lebih kecil dari `.en-text` (kalimat Inggris = soal). */
+.g-trans{ font-family:var(--font-head); font-weight:700; font-size:clamp(1.0625rem,1rem + .3vw,1.1875rem); line-height:1.35; color:var(--c-gram); text-align:center; margin:6px 0 2px; }
 .g-decoy-note{ text-align:center; margin:6px 0 0; }
 /* Teks pendek Tantangan Achiever: kalimat konteks di atas kalimat berumpang,
    kata kunci disorot setelah menjawab. */
@@ -1995,7 +2003,18 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
   display:grid; grid-template-columns:1fr 1fr; gap:var(--s3);
   margin:var(--s4) auto 0; max-width:520px;
 }
-.opt-grid.three{ grid-template-columns:repeat(3,1fr); }
+.opt-grid.three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.opt-grid.three .opt-btn{ min-width:0; overflow-wrap:anywhere; }
+/* Grammar Tantangan "Pilih Bentuk" — 4 opsi 2×2 (permintaan user "4 card
+   atau 2 card supaya tidak ganjil"; dulu 3 kolom & opsi panjang meluber di
+   HP). Opsi panjang ("is going to visit") turun baris DI DALAM kartu. */
+/* Trailblazer (format transform): 4 opsi kalimat utuh → 1 kolom. */
+.opt-grid.g-transform{ grid-template-columns:1fr; max-width:620px; margin-left:auto; margin-right:auto; }
+.opt-grid.g-transform .opt-btn-text{ font-size:1.0625rem; padding:14px 16px; line-height:1.35; }
+.opt-grid.g-choose{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+.opt-grid.g-choose > *:last-child:nth-child(odd){ grid-column:auto; }
+.opt-grid.g-choose .opt-btn{ min-width:0; overflow-wrap:anywhere; }
+.opt-grid.g-choose.long .opt-btn{ font-size:1.0625rem; padding:16px 10px; line-height:1.25; }
 /* 🔒 5 opsi (Latihan Inti Achiever/Trailblazer, `latihanDistractorCount`) —
    kartu TERAKHIR yang sekaligus JUMLAH GANJIL (selector `:last-child:nth-
    child(odd)` — cuma match kalau total anak ganjil, mis. 3 atau 5) melebar
@@ -2083,7 +2102,7 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .pattern-card-label{ display:block; margin-top:6px; font-family:var(--font-head); font-weight:800; font-size:0.9375rem; line-height:1.2; color:var(--ink); }
 /* Grammar Tantangan "🕵️ Detektif Kalimat" — kata kalimat bisa di-tap. */
 .dt-sentence{ gap:8px; }
-.chip.dt-word{ cursor:pointer; }
+.chip.dt-word{ cursor:pointer; font-size:clamp(1.25rem,1.1rem + .6vw,1.5rem); }
 .chip.dt-found{ background:var(--ok-bg); border-color:var(--ok); color:var(--ok); }
 .chip.dt-found s{ opacity:.6; }
 .chip.dt-miss.is-wrong{ background:var(--try-bg); border-color:var(--try); color:var(--try); animation:shake .3s ease; }
@@ -2984,6 +3003,16 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .opt-grid.rt-opts{ grid-template-columns:1fr; max-width:520px; margin-left:auto; margin-right:auto; }
 .opt-grid.rt-opts .opt-btn-text{ font-size:1.125rem; padding:14px; }
 .rt-evidence-ask{ text-align:center; font-family:var(--font-head); font-weight:700; color:var(--brand-700); margin:8px 0; }
+.rt-ask-word{
+  display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px;
+  font-size:clamp(1.25rem,1.05rem + 0.9vw,1.6rem); color:var(--ink);
+  background:var(--sun-100); border:2px solid var(--sun-400); border-radius:var(--r-md);
+  padding:12px 16px; margin:12px auto; max-width:520px;
+  animation:askPop .35s ease-out;
+}
+.rt-ask-word b{ color:var(--brand-700); font-weight:800; padding:0 .15em; border-bottom:3px solid var(--sun-500); }
+@keyframes askPop{ from{ transform:scale(.92); opacity:0; } to{ transform:none; opacity:1; } }
+@media (prefers-reduced-motion: reduce){ .rt-ask-word{ animation:none; } }
 
 /* --- "Baca Teks" per level (materi/reading.md §21) --- */
 /* Buku gambar mini (Little Stars/Starter): gambar besar dominan (Kemendikbud
@@ -3001,6 +3030,11 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 }
 .rt-book-id{ margin-top:6px; font-size:1rem; }
 .rt-quiz-sentence{ padding:18px 16px; }
+.rt-book-id{
+  margin-top:10px; padding-top:10px; border-top:2px dashed var(--line);
+  font-family:var(--font-body); font-weight:800; color:var(--brand-700);
+  font-size:clamp(1.3rem,1.1rem + 0.9vw,1.75rem); line-height:1.35;
+}
 /* Tantangan buku mini (gambar → pilih kalimat): gambar lebih kecil supaya
    3 kalimat pilihan tetap kelihatan tanpa scroll di HP. */
 .rt-rev-pic{ padding:8px 16px; }
@@ -3019,6 +3053,15 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
   font-size:15px; cursor:pointer; display:inline-grid; place-items:center; box-shadow:var(--sh-1); flex:none;
 }
 .rt-pic-opt{ font-size:clamp(46px,13vw,64px); padding:16px 8px; }
+.rt-pic-multi{ display:inline-flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:.06em; max-width:100%; line-height:1.1; vertical-align:middle; }
+.rt-pic-multi > span{ display:block; }
+/* Kartu pilihan jawaban (sempit): susunan hitung tetap — 2/3 sebaris,
+   4 = 2×2, 5 = 3+2 — bukan pecah acak 2+1. */
+.rt-pic-opt .rt-pic-multi{ display:inline-grid; grid-template-columns:repeat(3,auto); justify-content:center; font-size:.58em !important; }
+.rt-pic-opt .rt-pic-multi[data-n="2"],
+.rt-pic-opt .rt-pic-multi[data-n="4"]{ grid-template-columns:repeat(2,auto); font-size:.72em !important; }
+.rt-pic-opt .rt-pic-multi[data-n="5"] > span:nth-child(n+4){ transform:translateX(50%); }
+.rt-pic-img{ height:1em; width:auto; max-width:100%; border-radius:.14em; vertical-align:middle; }
 .opt-grid.rt-tf{ max-width:520px; margin-left:auto; margin-right:auto; }
 .rt-hint-text{ margin:-4px auto 12px; max-width:520px; }
 .rt-card .rt-line.hinted{ background:var(--brand-100); box-shadow:inset 0 0 0 2px var(--brand-500); }

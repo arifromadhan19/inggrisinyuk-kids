@@ -10,10 +10,13 @@
  * dari Listening), dan jawaban bisa DITUNJUK di teks (🔎 bukti) — beda dari
  * Vocab yang menguji arti kata lepas.
  */
+import { readingPicHtml } from '../reading-pic';
 import type { LevelKey, OnDone, ReadingText, ReadingTextQuestion, ReadingTextTopic } from '../types';
 import { setHandlers } from '../interaction';
 import {
   getSlot,
+  isHintUnlocked,
+  markSlotHint,
   firstUnansweredSlot,
   hasWordInteraction,
   markSlotAnswered,
@@ -72,7 +75,7 @@ function nextUnfinishedRound(round: number, total: number, statusOf: (i: number)
 /** Opsi gambar (emoji) — `lbl` cuma `aria-label`, SENGAJA tidak tampil
  *  (supaya anak tidak mencocokkan teks label dgn kata di kalimat). */
 function optHtml(o: { emoji: string; lbl?: string; ok?: boolean }, i: number, action: string): string {
-  return `<button class="opt-btn" data-action="${action}" data-payload="${i}" ${o.lbl ? `aria-label="${o.lbl}"` : ''}>${o.emoji}</button>`;
+  return `<button class="opt-btn" data-action="${action}" data-payload="${i}" ${o.lbl ? `aria-label="${o.lbl}"` : ''}>${readingPicHtml(o.emoji)}</button>`;
 }
 
 function roundActionsHtml(isLast: boolean): string {
@@ -184,62 +187,88 @@ function wireSay(): void {
 }
 
 let karaokeTimers: number[] = [];
+/** Naik tiap `stopKaraoke()` — ucapan lama yang dibatalkan (`cancel()` memicu
+ *  `onerror`/`onend`-nya) tidak boleh lanjut ke baris berikutnya. */
+let karaokeGen = 0;
 function stopKaraoke(): void {
+  karaokeGen++;
   karaokeTimers.forEach((t) => clearTimeout(t));
   karaokeTimers = [];
   document.querySelectorAll('.rt-word.lit').forEach((w) => w.classList.remove('lit'));
 }
-/** Bacakan kalimat + sorot kata satu per satu. Waktu per kata PERKIRAAN
- *  (Web Speech tidak menjamin event per kata di semua browser) — cukup
- *  utk menunjukkan arah baca kiri→kanan. */
+/** Perkiraan durasi per huruf pada kecepatan 1x (±14 huruf/detik — tempo
+ *  voice Web Speech rata-rata). Dibagi `getPlaybackRate()` supaya sorot kata
+ *  ikut pill kecepatan (0.5x → 2x lebih lambat, 1.5x → lebih cepat). */
+const KARAOKE_MS_PER_CHAR = 70;
+
+/** Ucapkan 1 baris + sorot `.rt-word`-nya selaras suara. Kalau browser
+ *  mengirim event `boundary` per kata, sorot mengikuti event itu (paling
+ *  akurat, otomatis ikut kecepatan & voice); kalau tidak, pakai perkiraan
+ *  waktu dari panjang kata ÷ kecepatan, dihitung sejak suara benar-benar
+ *  mulai (`onStart`). `onDone` dipanggil sekali begitu baris selesai. */
+function karaokeLine(words: ArrayLike<HTMLElement>, sentence: string, onDone?: () => void): void {
+  const list = Array.from(words);
+  const gen = karaokeGen;
+  const lit = (i: number): void => {
+    if (gen !== karaokeGen) return;
+    list.forEach((x) => x.classList.remove('lit'));
+    list[i]?.classList.add('lit');
+  };
+  const rate = getPlaybackRate();
+  const perChar = KARAOKE_MS_PER_CHAR / rate;
+  const estTimers: number[] = [];
+  let usingBoundary = false;
+  let started = false;
+  let finished = false;
+  const startEstimate = (): void => {
+    if (started) return;
+    started = true;
+    let t = 0;
+    list.forEach((w, i) => {
+      estTimers.push(window.setTimeout(() => !usingBoundary && lit(i), t));
+      t += ((w.textContent ?? '').length + 1) * perChar;
+    });
+    karaokeTimers.push(...estTimers);
+  };
+  const finish = (): void => {
+    if (finished) return;
+    finished = true;
+    estTimers.forEach((t) => clearTimeout(t));
+    if (gen !== karaokeGen) return;
+    list.forEach((x) => x.classList.remove('lit'));
+    onDone?.();
+  };
+  speak(sentence, finish, {
+    onStart: startEstimate,
+    onWord: (i) => {
+      usingBoundary = true;
+      started = true;
+      lit(i);
+    },
+  });
+  // Cadangan: `onstart` tidak datang (TTS tidak didukung/terpotong) → mulai
+  // perkiraan sendiri; `onEnd` tidak datang → akhiri setelah perkiraan penuh.
+  const chars = list.reduce((n, w) => n + (w.textContent ?? '').length + 1, 0);
+  karaokeTimers.push(window.setTimeout(startEstimate, 400));
+  karaokeTimers.push(window.setTimeout(finish, 400 + chars * perChar + 2000));
+}
+
+/** Bacakan kalimat + sorot kata satu per satu, selaras kecepatan suara. */
 function readAlong(scope: HTMLElement, sentence: string): void {
   stopKaraoke();
-  speak(sentence);
-  const words = scope.querySelectorAll<HTMLElement>('.rt-word');
-  const step = 560;
-  words.forEach((w, i) => {
-    karaokeTimers.push(
-      window.setTimeout(() => {
-        words.forEach((x) => x.classList.remove('lit'));
-        w.classList.add('lit');
-      }, 350 + i * step)
-    );
-  });
-  karaokeTimers.push(window.setTimeout(() => words.forEach((x) => x.classList.remove('lit')), 350 + words.length * step + 400));
+  karaokeLine(scope.querySelectorAll<HTMLElement>('.rt-word'), sentence);
 }
 
 /** Bacakan SEMUA baris kartu teks berurutan + sorot kata per baris (pola
  *  karaoke buku Little Stars, permintaan user utk semua level). Baris
- *  berikutnya mulai begitu ucapan baris ini selesai (`onEnd`), dgn cadangan
- *  timer kalau event itu tidak datang. */
+ *  berikutnya mulai begitu ucapan baris ini selesai. */
 function readLinesAlong(card: HTMLElement, lines: string[]): void {
   stopKaraoke();
   const lineEls = card.querySelectorAll<HTMLElement>('.rt-line');
-  const step = 420 / getPlaybackRate();
   const play = (li: number): void => {
     if (li >= lines.length) return;
-    let moved = false;
-    const lineTimers: number[] = [];
-    const next = (): void => {
-      if (moved) return;
-      moved = true;
-      lineTimers.forEach((t) => clearTimeout(t));
-      lineEls.forEach((el) => el.querySelectorAll('.rt-word.lit').forEach((w) => w.classList.remove('lit')));
-      karaokeTimers.push(window.setTimeout(() => play(li + 1), 350));
-    };
     const words = lineEls[li]?.querySelectorAll<HTMLElement>('.rt-word') ?? [];
-    speak(lines[li], next);
-    words.forEach((w, i) => {
-      lineTimers.push(
-        window.setTimeout(() => {
-          words.forEach((x) => x.classList.remove('lit'));
-          w.classList.add('lit');
-        }, 250 + i * step)
-      );
-    });
-    // Cadangan kalau `onEnd` tidak pernah datang (lihat komentar `speak`).
-    lineTimers.push(window.setTimeout(next, 250 + words.length * step + 1500));
-    karaokeTimers.push(...lineTimers);
+    karaokeLine(words, lines[li], () => karaokeTimers.push(window.setTimeout(() => play(li + 1), 350)));
   };
   play(0);
 }
@@ -351,7 +380,7 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
     const body = isBook
       ? `<div class="rt-book-page">
            <div class="rt-heading">${text.heading}</div>
-           <div class="rt-book-pic" aria-hidden="true">${text.pictures?.[line.pic ?? -1]?.emoji ?? ''}</div>
+           <div class="rt-book-pic" aria-hidden="true">${readingPicHtml(text.pictures?.[line.pic ?? -1]?.emoji)}</div>
            <div class="rt-book-text">${wordsHtml(line.en)}</div>
            <div class="rt-id rt-book-id">${line.id}</div>
          </div>`
@@ -662,7 +691,9 @@ function runTextQuizSet(
   function draw(): void {
     stopKaraoke();
     revealed = false;
-    attempted = false;
+    // 🔒 Petunjuk yang sudah terbuka (pernah dijawab / pernah diklik) TETAP
+    // terbuka saat soal ini dibuka lagi (bullet progress/reload).
+    attempted = isHintUnlocked('reading', topic.id, section, round);
     eliminated = -1;
     const { text, q } = items[round];
     revOpts = isRev(q) ? reverseOptions(text, q) : [];
@@ -693,6 +724,10 @@ function runTextQuizSet(
     const showHintText = revealed && hintMode !== 'eliminate' && (tier.hint === 'translate' || tier.hint === 'question' || (tier.hint === 'evidence' && !q.evidence.length));
     const hintBtn = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="rtHint" ${revealed || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>`;
     const listenBtn = audio !== 'none' ? `<div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="rtListenQ">🔊 Dengar</button></div>` : '';
+    // Soal kalimat buku (Little Stars/Starter): terjemahan tampil DI DALAM
+    // kartu, tepat di bawah kalimat Inggrisnya (bukan di bawah tombol Dengar).
+    const hintInCard = showHintText && !isRev(q) && (kind === 'picture' || kind === 'truefalse');
+    const inlineHint = hintInCard ? `<div class="rt-book-id">${hintText(it)}</div>` : '';
     let stimulus = '';
     let optionsHtml = '';
     if (isRev(q)) {
@@ -701,22 +736,23 @@ function runTextQuizSet(
       const instr = 'Lihat gambarnya, lalu pilih kalimat yang cocok.';
       stimulus = `
         <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
-        <div class="rt-book-page rt-quiz-sentence rt-rev-pic"><div class="rt-book-pic" aria-hidden="true">${q.options[q.answer]}</div></div>`;
+        <div class="rt-book-page rt-quiz-sentence rt-rev-pic"><div class="rt-book-pic" aria-hidden="true">${readingPicHtml(q.options[q.answer])}</div></div>`;
       optionsHtml = `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${revOpts[oi]}</button>`).join('')}</div>`;
     } else if (kind === 'picture') {
       const instr = 'Baca kalimatnya, lalu tunjuk gambarnya.';
       stimulus = `
         <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
-        <div class="rt-book-page rt-quiz-sentence"><div class="rt-book-text">${wordsHtml(text.lines[q.about ?? 0].en)}</div></div>
+        <div class="rt-book-page rt-quiz-sentence"><div class="rt-book-text">${wordsHtml(text.lines[q.about ?? 0].en)}</div>${inlineHint}</div>
         ${listenBtn}`;
-      optionsHtml = `<div class="opt-grid ${order.length === 3 ? 'three' : ''}">${order.map((oi, i) => `<button class="opt-btn rt-pic-opt" type="button" data-action="rtPick" data-payload="${i}">${q.options[oi]}</button>`).join('')}</div>`;
+      optionsHtml = `<div class="opt-grid ${order.length === 3 ? 'three' : ''}">${order.map((oi, i) => `<button class="opt-btn rt-pic-opt" type="button" data-action="rtPick" data-payload="${i}">${readingPicHtml(q.options[oi])}</button>`).join('')}</div>`;
     } else if (kind === 'truefalse') {
       const instr = 'Lihat gambarnya. Apakah kalimatnya cocok dengan gambar?';
       stimulus = `
         <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
         <div class="rt-book-page rt-quiz-sentence">
-          <div class="rt-book-pic" aria-hidden="true">${q.picture ?? ''}</div>
+          <div class="rt-book-pic" aria-hidden="true">${readingPicHtml(q.picture)}</div>
           <div class="rt-book-text">${wordsHtml(q.q)}</div>
+          ${inlineHint}
         </div>
         ${listenBtn}`;
       optionsHtml = `<div class="opt-grid rt-tf">
@@ -738,7 +774,7 @@ function runTextQuizSet(
       </div>
       ${quizNavHtml(round, total, status)}
       ${stimulus}
-      ${showHintText ? `<div class="id-text rt-hint-text">💡 ${hintText(it)}</div>` : ''}
+      ${showHintText && !hintInCard ? `<div class="id-text rt-hint-text">💡 ${hintText(it)}</div>` : ''}
       ${optionsHtml}
       <div class="feedback" id="fb"></div>
       <div class="rt-evidence" id="rtEvidence"></div>
@@ -755,6 +791,7 @@ function runTextQuizSet(
     setHandlers({
       rtHint: () => {
         if (revealed || (tier.hintGate && !attempted)) return;
+        markSlotHint('reading', topic.id, section, round);
         revealed = true;
         if (hintMode === 'eliminate') {
           const n = isRev(q) ? revOpts.length : q.options.length;
@@ -792,9 +829,16 @@ function runTextQuizSet(
       btn.classList.add('correct', 'win-burst');
       playCorrectTone();
       fireConfetti();
-      fb.textContent = pickPraise(level);
-      fb.className = 'feedback good';
-      if (q.kind === 'picture' && q.evidenceWord && !isRev(q)) askWord(it);
+      const praise = pickPraise(level); // tetap dipanggil: suara pujian (TTS)
+      const followWord = q.kind === 'picture' && !!q.evidenceWord && !isRev(q);
+      // Ada pertanyaan lanjutan 👆 → teks pujian TIDAK ditampilkan (permintaan
+      // user) supaya perhatian anak langsung ke pertanyaan berikutnya; pujian
+      // tertulis muncul sesudah tulisannya ketemu ("👆 Ketemu! …").
+      if (!followWord) {
+        fb.textContent = praise;
+        fb.className = 'feedback good';
+      }
+      if (followWord) askWord(it);
       else if ((q.kind ?? 'text') === 'text' && q.evidence.length) askEvidence(it);
     } else {
       attempted = true;
@@ -828,7 +872,7 @@ function runTextQuizSet(
     const target = normWord(it.q.evidenceWord ?? '');
     if (!box || !scope || !target) return;
     scope.classList.add('asking');
-    box.innerHTML = `<div class="rt-evidence-ask">👆 Mana tulisan <b>${it.q.evidenceWord}</b>? <button class="rt-say" type="button" data-action="rtSayWord" aria-label="Dengarkan kata">🔊</button></div>`;
+    box.innerHTML = `<div class="rt-evidence-ask rt-ask-word"><span>👆 Mana tulisan <b>${it.q.evidenceWord}</b>?</span> <button class="rt-say" type="button" data-action="rtSayWord" aria-label="Dengarkan kata">🔊</button></div>`;
     window.setTimeout(() => speak(it.q.evidenceWord ?? ''), 900);
     let found = false;
     setHandlers({

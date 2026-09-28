@@ -562,11 +562,12 @@ export interface GrammarSentence {
   /** SATU kata di `en` yang membawa pola grammar topik (muncul tepat 1x sbg
    *  kata utuh) — disorot di Kenalan, dikosongkan di Tantangan. */
   key: string;
-  /** Tepat 2 bentuk lain yang SALAH di kalimat ini (mis. key "are" → "is",
+  /** Tepat 3 bentuk lain yang SALAH di kalimat ini (2 pertama 1 kata = kata
+   *  jebakan Susun Kalimat; ke-3 boleh >1 kata, cuma opsi ke-4 Tantangan) (mis. key "are" → "is",
    *  "am") — opsi salah Tantangan & kata jebakan Susun Kalimat. Wajib benar-
    *  benar tidak gramatikal di kalimat ini (kecuali topik `meaningNeeded`,
    *  di mana opsi salahnya gramatikal tapi artinya beda dari `id`). */
-  wrong: [string, string];
+  wrong: [string, string, string];
   /** Urutan kata lain yang juga benar utk Susun Kalimat (kata sama persis,
    *  mis. keterangan waktu di depan) — tanpa ini anak yang menyusun benar
    *  bisa dianggap salah. */
@@ -586,7 +587,7 @@ export interface GrammarMiniText {
   /** 2 opsi salah — minimal 1 di antaranya gramatikal kalau kalimat terakhir
    *  dibaca SENDIRIAN (jadi anak wajib membaca kalimat sebelumnya), tapi
    *  salah menurut isi kalimat sebelumnya. */
-  wrong: [string, string];
+  wrong: [string, string, string];
   /** Kata/frasa di kalimat SEBELUMNYA yang menentukan jawaban — disorot
    *  sesudah anak menjawab ("🔑 Kuncinya"). */
   cue: string;
@@ -737,10 +738,11 @@ export interface GrammarTransformOption {
 }
 
 export interface GrammarTransformItem {
-  /** Nama tokoh yang mengucapkan kalimat langsung, mis. "Rani" — ditampilkan
+  /** (Reported speech saja — materi lain tanpa tokoh.) Nama tokoh yang
+   *  mengucapkan kalimat langsung, mis. "Rani" — ditampilkan
    *  sbg label kutipan, TIDAK PERNAH diucapkan TTS sendiri (cuma `original`/
    *  opsi `reportedOptions`), sama pola `ListeningDialogueLine.speaker`. */
-  speaker: string;
+  speaker?: string;
   emoji: string;
   original: string;
   originalId: string;
@@ -760,10 +762,17 @@ export interface GrammarTransformItem {
   originalOptions: [string, string, string];
 }
 
+/** Jenis ubahan di `GrammarTransformTopic` — menentukan judul layar &
+ *  instruksi (`TRANSFORM_UI`, games/grammar.ts). Tanpa `kind` = reported
+ *  speech (topik lama). Audit `materi/grammar.md` §28: Trailblazer dulu
+ *  10/10 reported speech, sekarang 4 reported speech + 6 struktur B1 lain. */
+export type GrammarTransformKind = 'reported' | 'passive' | 'conditional' | 'relative' | 'usedTo';
+
 export interface GrammarTransformTopic {
   id: string;
   title: string;
   desc: string;
+  kind?: GrammarTransformKind;
   transforms: GrammarTransformItem[];
 }
 

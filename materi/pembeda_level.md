@@ -1,3 +1,5 @@
+> **🔒 Revisi 2026-09-28 — kecepatan audio SERAGAM 0.75x di semua skill & level** (permintaan user "defaultkan semua di 0.75 di semua level"). Pembeda kecepatan per level (dulu Listening/Speaking/Grammar Adventurer+ 1x di Latihan Inti/Tantangan) **DICABUT**: `listeningDefaultRate`/`speakingDefaultRate`/`grammarDefaultRate` dihapus, `app.ts renderActivity()` selalu `applyDefaultRate(DEFAULT_RATE)` (0.75x). Pill kecepatan pilihan user tetap menang. Semua sebutan "1x" di tabel/usulan di bawah = riwayat, bukan perilaku sekarang.
+
 # Vocabulary
 
 Status: **diimplementasikan** (`app/src/games/vocabulary.ts`). Model pembeda-nya 2 sumbu bertingkat, keduanya dihitung dari `contentLevel` (level TOPIK yang sedang dimainkan — lihat "⚠️ Gotcha" di bawah, BUKAN level badge asli anak), bukan cuma "flat semua level sama" atau "tiap level beda sendiri-sendiri tanpa pola". Riset acuan: progresi Cambridge YLE Movers→Flyers→KET/PET (lihat "Rujukan Institusi" di bawah).
@@ -121,9 +123,9 @@ Temuan inti:
 | Little Stars | Dasar | 0.75x | panjang (≥2000 ms) | 1 suara | tidak ada | teks EN+ID + eliminasi 2 (sudah) |
 | Starter | Dasar | 0.75x | panjang (≥2000 ms) | 1 suara | tidak ada | sama (sudah) |
 | Explorer | Menengah | 0.75x | 1900 ms (cerita) | kalimat tanya-jawab Kenalan 2 suara; 3 dari 10 cerita dialog 2 suara | halus 40% + opsi jebakan acak | eliminasi 2 (sudah) |
-| Adventurer | Menengah | 1x | 1900 ms (cerita) | kalimat tanya-jawab Kenalan 2 suara; 4 dari 10 cerita dialog 2 suara | halus 60% + 4 dari 10 soal punya opsi ke-3 + jebakan acak | eliminasi 2 (sudah) |
-| Achiever | Lanjut | 1x | 1200 ms | 5 dari 10 catatan dialog 2 suara, sisanya narasi 1 suara | halus 75% + jebakan acak | teks EN+ID, **tanpa eliminasi** |
-| Trailblazer | Lanjut | 1x | 1200 ms | **2 suara (wanita+pria)**, 10/10 | halus 77% + jebakan acak | teks EN+ID, **tanpa eliminasi** |
+| Adventurer | Menengah | 0.75x (dulu 1x) | 1900 ms (cerita) | kalimat tanya-jawab Kenalan 2 suara; 4 dari 10 cerita dialog 2 suara | halus 60% + 4 dari 10 soal punya opsi ke-3 + jebakan acak | eliminasi 2 (sudah) |
+| Achiever | Lanjut | 0.75x (dulu 1x) | 1200 ms | 5 dari 10 catatan dialog 2 suara, sisanya narasi 1 suara | halus 75% + jebakan acak | teks EN+ID, **tanpa eliminasi** |
+| Trailblazer | Lanjut | 0.75x (dulu 1x) | 1200 ms | **2 suara (wanita+pria)**, 10/10 | halus 77% + jebakan acak | teks EN+ID, **tanpa eliminasi** |
 
 Nilai kecepatan/jeda adalah **usulan** (CEFR hanya kualitatif) — wajib diuji telinga; pill kecepatan user (0.5–1.5x) tetap menang atas default level. "Jeda" = jarak **start-ke-start** antar kalimat (`speakSequence`, dibagi kecepatan), bukan jeda hening murni — kalimat yang lebih panjang dari jarak itu langsung antre. Explorer/Adventurer format lama tetap `speakSequence` 1900 ms (tidak diubah).
 
@@ -137,7 +139,7 @@ Nilai kecepatan/jeda adalah **usulan** (CEFR hanya kualitatif) — wajib diuji t
 | 💡 Petunjuk Latihan Inti (format `items`) | teks EN+ID + eliminasi 2; **Achiever/Trailblazer: teks saja** | **Ya** (baru) |
 | Reveal jawaban Susun Kalimat | setelah 2x salah | Tidak |
 | Kata jebakan Susun Kalimat | 2 kata (level di atas Starter saja, `applyDecoys`) | Sebagian |
-| Kecepatan suara | default 0.75x; Latihan Inti/Tantangan Listening: Adventurer/Achiever/Trailblazer **1x** (`listeningDefaultRate`), pill user menang | **Ya** (baru) |
+| Kecepatan suara | 0.75x di semua level (revisi 2026-09-28; dulu Adventurer+ 1x via `listeningDefaultRate`, dihapus), pill user menang | Tidak |
 | Jeda antar kalimat | Latihan Inti/catatan/dialog: 2000 ms (Little Stars/Starter) vs 1200 ms (Achiever/Trailblazer); Kenalan 1600, story lama 1900 | **Ya** (baru) |
 | Suara dialog 2 tokoh | wanita+pria bergantian (`speakDialogue`): Trailblazer 10/10, Achiever 5/10 catatan, Explorer 2/10 & Adventurer 4/10 cerita + primer tanya-jawab | **Ya** (baru) |
 | Aksen | pilihan user US/UK, global | Tidak |
@@ -234,16 +236,16 @@ Angka Adventurer/Achiever/Trailblazer sedikit di atas target karena heuristik ik
 
 ### Detail Implementasi
 
-- **Kecepatan default** — `speech.ts`: `setPlaybackRate()` (dipanggil pill user) menandai `rateChosenByUser`; `applyDefaultRate(rate)` no-op kalau flag itu true. `app.ts` `renderActivity()` memanggilnya tiap render: Listening step ≥1 → `listeningDefaultRate(contentLevel)` (Little Stars/Starter/Explorer 0.75x; Adventurer/Achiever/Trailblazer 1x), selain itu (Kenalan, skill lain) 0.75x. State kecepatan cuma di memori (reload = default lagi).
+- **Kecepatan default** — `speech.ts`: `setPlaybackRate()` (dipanggil pill user) menandai `rateChosenByUser`; `applyDefaultRate(rate)` no-op kalau flag itu true. `app.ts` `renderActivity()` memanggilnya tiap render dgn `DEFAULT_RATE` 0.75x di semua skill/level/tahap (revisi 2026-09-28; `listeningDefaultRate` dihapus). State kecepatan cuma di memori (reload = default lagi).
 - **2 suara** — `speech.ts` `speakDialogue(lines: {text, gender}[], gapMs)`: voice wanita/pria dari `pickVoice(aksen, gender)`; kalau keduanya resolve ke voice yang sama, dibedakan `pitch` (1.25 vs 0.75, belum diuji di device 1-voice). Pilihan gender global user tidak dipakai di dialog. Gender tokoh: tabel nama `MALE_SPEAKERS` di `games/listening.ts` (`dialogueGenders`); 2 tokoh yang kebetulan sama gender otomatis dipaksa beda. **Tokoh dialog baru → tambahkan nama pria ke `MALE_SPEAKERS`** (nama lain dianggap wanita).
-- **Tier helper** (`games/listening.ts`): `listeningDefaultRate`, `listeningGapMs`, `hintEliminatesOptions`, semuanya dari `contentLevel`. `runLatihanIntiSentence`/`runTantanganNote`/`runTantanganDialogue` sekarang menerima parameter `contentLevel` (setelah `level`).
+- **Tier helper** (`games/listening.ts`): `listeningGapMs`, `hintEliminatesOptions`, semuanya dari `contentLevel`. `runLatihanIntiSentence`/`runTantanganNote`/`runTantanganDialogue` sekarang menerima parameter `contentLevel` (setelah `level`).
 - **Distraktor lisan** — 5 `notePassage` Achiever diedit (1 kalimat/topik, jumlah kalimat tetap): `siapa-dia` (usia "eleven" disebut), `akhir-pekan-seru` (video game), `di-taman-bermain` (under the slide), `teman-baikku` (heights), `di-toko-kerajinan` (glitter pertama "dark"; pertanyaan gap diubah jadi "How is the glitter that Made picks?" biar tidak ambigu). 5 topik lain sudah menyebut pilihan salah secara insidental. Aturan authoring: sebut pilihan salah sebagai hal yang **bukan** jawaban ("but…", "instead"), jangan bikin 2 opsi sama-sama benar.
 - **Diverifikasi live** (Playwright, 390px & 1280px): pill kecepatan tertandai benar per level & pilihan manual bertahan saat pindah tahap; Petunjuk Latihan Inti eliminasi 2 (Little Stars) vs 0 (Achiever/Trailblazer); dialog Trailblazer bergantian Samantha/Aaron dengan jarak 1200 ms; `npm run build` lolos.
 
 ## Gotcha
 
 - Pakai **`contentLevel`** (level topik yang tampil), BUKAN `level` (badge/praise anak). Listening sudah punya contoh benar: `renderKenalanSentence`/`runSusunKalimatSentence` menerima `contentLevel`. Fungsi format lama (`runLatihanInti`/`runTantangan` Explorer–Adventurer) belum menerima parameter itu — tambahkan bila usulan #2–#4 dikerjakan.
-- `setPlaybackRate` hanya menerima nilai `SPEEDS` (0.5, 0.75, 1, 1.25, 1.5); default per level harus salah satunya (`listeningDefaultRate` mengembalikan `0.75 | 1`).
+- `setPlaybackRate` hanya menerima nilai `SPEEDS` (0.5, 0.75, 1, 1.25, 1.5); default harus salah satunya (`DEFAULT_RATE` 0.75).
 
 ## Batasan Riset (Jujur)
 
@@ -286,9 +288,9 @@ Temuan inti:
 | Little Stars | Dasar | 1 kata → 1 frasa pendek | **60% / 30%** | sejak awal | ada (kata + arti) | 0.75x | **2 dtk** |
 | Starter | Dasar | 1 frasa / kalimat pendek | 60% / 30% | sejak awal | ada | 0.75x | 2 dtk |
 | Explorer | Menengah | 1 kalimat | 80% / 40% (sekarang) | sejak awal | pertanyaan saja | 0.75x | 1,6 dtk |
-| Adventurer | Menengah | 1–2 kalimat + alasan ("because") | 80% / 40% | sejak awal | pertanyaan saja | **1x** | 1,6 dtk |
-| Achiever | Lanjut | 2–3 kalimat + penghubung | 80% / 40% + **bonus penghubung** | **setelah 1x coba** | tidak ada | 1x | 1,3 dtk (sekarang) |
-| Trailblazer | Lanjut | 3+ kalimat (~30 dtk), opini + alasan | 80% / 40% + bonus penghubung | setelah 1x coba | tidak ada | 1x | 1,3 dtk |
+| Adventurer | Menengah | 1–2 kalimat + alasan ("because") | 80% / 40% | sejak awal | pertanyaan saja | 0.75x (dulu 1x) | 1,6 dtk |
+| Achiever | Lanjut | 2–3 kalimat + penghubung | 80% / 40% + **bonus penghubung** | **setelah 1x coba** | tidak ada | 0.75x (dulu 1x) | 1,3 dtk (sekarang) |
+| Trailblazer | Lanjut | 3+ kalimat (~30 dtk), opini + alasan | 80% / 40% + bonus penghubung | setelah 1x coba | tidak ada | 0.75x (dulu 1x) | 1,3 dtk |
 
 Intinya: **Dasar** = skor longgar, waktu berpikir panjang, bantuan penuh (ASR suara anak kecil paling tidak akurat, dan Starters sendiri cuma minta 1 kata). **Menengah** = sama seperti sekarang, tapi jawaban Tantangan mulai dituntut berupa kalimat. **Lanjut** = jawaban lebih panjang & tersambung, bantuan baru dibuka setelah mencoba — mendekati KET/PET ("very little prompting and support").
 
@@ -344,7 +346,7 @@ Intinya: **Dasar** = skor longgar, waktu berpikir panjang, bantuan penuh (ASR su
 | 3 | ↩️ diganti | Bonus kata penghubung DIHAPUS (sama alasan #2) — kata penghubung kini ADA di kalimat pilihan Trailblazer (because/but/so), jadi tetap dilatih |
 | 4 | ✅ | 💡 Petunjuk Tantangan 🔒 sampai 1x coba di tier Lanjut |
 | 5 | ✅ (direvisi) | Arti Indonesia pertanyaan "Ngobrol" disembunyikan di SEMUA level, dibuka lewat 💡 Petunjuk (permintaan user). Beda per level tinggal di "Tanya Temanmu" (Menengah dapat chip kata tanya, Lanjut tidak) & Petunjuk 🔒 di tier Lanjut. Latihan Inti tetap tampil arti (jangkar "Lengkapi Kalimat") |
-| 6 | ✅ | `speakingDefaultRate` dipanggil `app.ts` `renderActivity` (Latihan Inti & Tantangan) |
+| 6 | ↩️ dicabut 2026-09-28 | `speakingDefaultRate` dihapus — semua level 0.75x (permintaan user) |
 | 7 | ✅ | `SILENCE_MS` → `listenAndRecordOnce(..., { silenceMs })`, default global tetap 1300 |
 | 8 | ✅ | Tantangan tab "🙋 Giliranmu Bertanya" (mulai Starter): Starter "Tebak Isi Kotak" ("Is it … ?"), Explorer+ "Tanya Temanmu" (ucapkan pertanyaan dari artinya; chip kata tanya di Menengah). Tanpa LLM — pertanyaan & jawaban teman diambil dari data yang sudah ada. Versi berpasangan sungguhan (2 anak) tetap di luar jangkauan app solo |
 
@@ -357,7 +359,7 @@ Intinya: **Dasar** = skor longgar, waktu berpikir panjang, bantuan penuh (ASR su
 | 3 | **Bonus penghubung** (Achiever/Trailblazer): ⭐ ekstra kalau terdengar *because/and/but/so/then/however* | Discourse management PET, "connecting devices" TOEFL Primary | Rendah | Bonus saja, tidak pernah mengurangi bintang |
 | 4 | **Petunjuk bertingkat** — Dasar/Menengah sejak awal; Lanjut baru terbuka setelah 1x coba | KET "very little prompting", Flyers "minimal assistance" | Rendah | Pola sama `clueButtonsHtml` Listening (gated `attempted`) |
 | 5 | **Jangkar Indonesia makin tipis** — Dasar: kata + arti; Menengah: arti pertanyaan saja; Lanjut: Inggris saja (arti via Petunjuk) | Fase A–B masih pola tetap; Fase D bertukar ide dlm Inggris | Rendah | Instruksi layar tetap Indonesia di semua level (usher YLE pakai bahasa ibu) |
-| 6 | **Kecepatan contoh per level** — samakan dgn Listening (0.75x s.d. Explorer, 1x Adventurer ke atas) | CEFR A1 "very slow" → B1 "clearly articulated" | Rendah | `applyDefaultRate` di `renderActivity` sudah ada, tinggal ikutkan Speaking; pill user tetap menang |
+| 6 | **Kecepatan contoh per level** — samakan dgn Listening (0.75x s.d. Explorer, 1x Adventurer ke atas) — ↩️ **dicabut 2026-09-28**, seragam 0.75x | CEFR A1 "very slow" → B1 "clearly articulated" | Rendah | `applyDefaultRate` di `renderActivity` sudah ada, tinggal ikutkan Speaking; pill user tetap menang |
 | 7 | **Waktu berpikir** — hening sebelum mic berhenti 2 dtk (Dasar), 1,6 dtk (Menengah), 1,3 dtk (Lanjut, sekarang) | Starters band 5 masih "occasional pauses"; anak kecil butuh waktu mulai bicara | Sedang | `SILENCE_GRACE_MS` sekarang global di `speech.ts` → perlu parameter; dipakai juga Vocab/Placement, jangan ubah default global |
 | 8 | **Anak bertanya** (Flyers P2) & **berpasangan** (KET/PET) | Handbook YLE, KET/PET | Tinggi | Ini lapis 1 (format), sudah dicatat sbg rencana di speaking.md §18.6 |
 
@@ -431,7 +433,7 @@ Temuan inti:
 | Explorer | Menengah | 1 kalimat + arti Indonesia | **beda bentuk** (is/are, -s, a/an) | 3 (1 benar) | **1** | reveal setelah 2x salah | contoh + **kata pembeda disorot** |
 | Adventurer | Menengah | 1 kalimat, arti via Petunjuk | beda bentuk | 3 | **2** | reveal setelah 2x salah | contoh + sorot |
 | Achiever | Lanjut | **teks pendek 2–3 kalimat** (jawaban bergantung kalimat lain) | bentuk hampir-benar | 3 | **2** | reveal setelah **3x** salah | contoh + sorot + **aturan 1 baris** |
-| Trailblazer | Lanjut | teks pendek / kutipan | bentuk hampir-benar (sudah ada) | 4 (sudah ada) | n/a (format transformasi) | Petunjuk **🔒 sampai 1x coba**, eliminasi **1** opsi | contoh + aturan 1 baris |
+| Trailblazer | Lanjut | teks pendek / kutipan | bentuk hampir-benar (sudah ada) | 4 (sudah ada) | n/a (format transformasi) | Petunjuk **🔒 sampai 1x coba**, eliminasi **2** opsi (revisi user 2026-09-28, dulu 1) | contoh + aturan 1 baris |
 
 Intinya: **Dasar** = mencocokkan kalimat dgn gambar (Starters Part 1–2); Starter naik sedikit dgn kartu ke-3 yang menuntut SELURUH kalimat didengar. **Menengah** = pengecoh berganti dari "gambar lain" ke "bentuk kata lain" (Movers Part 6) dan kata jebakan mulai muncul. **Lanjut** = jawaban bergantung konteks di luar kalimat itu sendiri (Flyers Part 7, KET/PET cloze), bantuan lebih pelit, aturan boleh disebut 1 baris.
 
@@ -487,7 +489,7 @@ Intinya: **Dasar** = mencocokkan kalimat dgn gambar (Starters Part 1–2); Start
 | 6 | **Starter: kartu ke-3** di Latihan Inti pola — bentuk sama, benda lain (mis. "They're cars." → kartu 🚗🚗 / 🚗 / 🚌🚌) | Starters Part 2 "if any element is false, write no" — anak harus dengar SELURUH kalimat | Sedang | Little Stars tetap 2 kartu. Cek aturan "Soal Tidak Boleh Ditebak": kartu ke-3 tidak boleh bisa dieliminasi tanpa dengar bentuknya |
 | 7 | **Sorotan kata pembeda di Kenalan** (Explorer+) & **aturan 1 baris** (Achiever+, mis. "Pola: dia/Ia → kata kerja + s") | Lichtman 2016; Roehr-Brackin & Tellier 2019; EF GrammarPro mulai usia SD; Kurikulum Merdeka tetap berbasis contoh | Sedang (data: penanda kata di `examples`, 1 kalimat aturan per topik) | Aturan dalam Bahasa Indonesia sehari-hari, TANPA istilah ("simple present", "auxiliary"). Dasar tetap contoh murni |
 | 8 | **Konteks teks pendek di Achiever** — 2–3 soal per topik berupa 2–3 kalimat, rumpang yang jawabannya bergantung kalimat lain (kata ganti, waktu lampau) | Flyers Part 7 "further back or further ahead"; KET/PET cloze; Kurikulum Merdeka "tingkat teks" | Tinggi (konten baru) | Ikut usulan #3; tetap tap (bukan ketik) — app tidak punya input menulis bebas |
-| 9 | **Kecepatan audio** ikut Listening (0.75x s.d. Explorer, 1x Adventurer+) di Latihan Inti/Tantangan Grammar | CEFR; konsistensi dgn Speaking #6 | Rendah | `app.ts` `applyDefaultRate` tinggal tambah cabang `grammar`. Little Stars/Starter tetap 0.75x (audio = soal itu sendiri) |
+| 9 | **Kecepatan audio** ikut Listening (0.75x s.d. Explorer, 1x Adventurer+) di Latihan Inti/Tantangan Grammar — ↩️ **dicabut 2026-09-28**, seragam 0.75x | CEFR; konsistensi dgn Speaking #6 | Rendah | `app.ts` `applyDefaultRate` tinggal tambah cabang `grammar`. Little Stars/Starter tetap 0.75x (audio = soal itu sendiri) |
 
 Urutan pengerjaan: lihat "Rencana Implementasi di App" di bawah (direvisi setelah audit — fondasi data dulu, baru tier).
 
@@ -498,9 +500,10 @@ Urutan pengerjaan: lihat "Rencana Implementasi di App" di bawah (direvisi setela
 | Tahap 0.1 judul 4 topik + cek build | ✅ | `verify-vocab-content.mjs` (Grammar ikut cek judul & emoji) |
 | Tahap 0.2 Trailblazer Tantangan tidak bisa ditebak | ✅ | `GrammarTransformItem.originalOptions` (100 item); tebakan kata isi 98/100 → 11/100 |
 | Tahap 0.3 migrasi format lama → format kalimat | ✅ | `GrammarSentenceTopic` 31 topik × 10 kalimat; `renderKenalanSentence`/`runLatihanIntiSentence`/`runTantanganSentence`; tipe `GrammarTopic` dihapus |
-| Tahap 1 kerangka tier | ✅ | `grammarTier`, `sentenceSettings`, `grammarDefaultRate` (+ `app.ts applyDefaultRate`), `contentLevel` ke 5 fungsi |
+| Tahap 1 kerangka tier | ✅ | `grammarTier`, `sentenceSettings`, `contentLevel` ke 5 fungsi (`grammarDefaultRate` sempat ada, dihapus 2026-09-28 — audio seragam 0.75x) |
 | Tahap 2 kata jebakan, arti, Pilih Bentuk, kartu ke-3 Starter | ✅ (direvisi 2026-09-26) | `wrong` → jebakan (Explorer 1, Adventurer/Achiever 2); `buildContrastCards` — kini 4 kartu (2 benda × 2 bentuk) di Little Stars & Starter (Starter sempat 6 kartu, dikurangi 2026-09-28 atas permintaan user "cukup 4 opsi"), supaya Latihan Inti tidak sama dgn Kenalan Main |
 | Tantangan + tab ke-2 (5 soal) | ✅ 2026-09-28 | grammar.md §27: Susun Kalimat (`susunTier`) Little Stars/Starter (0 jebakan, reveal 2x, Petunjuk 60%) & Trailblazer (3 jebakan, 4x, Petunjuk 🔒); "🕵️ Detektif Kalimat" (`detektifTier`) Explorer (arti tampil, 2x), Adventurer (arti via Petunjuk, 2x), Achiever (Petunjuk 🔒, 3x, + pilih bentuk) |
+| Tantangan "Pilih Bentuk" 4 opsi 2×2 | ✅ 2026-09-28 | permintaan user "4 card supaya tidak ganjil" (dulu 3 opsi, opsi panjang meluber di HP): `wrong` jadi 3 bentuk (343 kalimat+teks), Detektif Achiever tahap pilih bentuk jg 4 opsi. Peluang tebak 33%→25% |
 | Tahap 3 sorotan kata & aturan 1 baris | ✅ | `mark.g-key` (semua), `topic.rule` (Achiever) |
 | Tahap 3 soal teks pendek Achiever (#8) | ✅ 2026-09-25 | `GrammarSentenceTopic.texts` (33 teks), 3 dari 10 soal Tantangan Achiever (keputusan user: menggantikan, total tetap 10), kata kunci disorot sesudah menjawab |
 
@@ -552,9 +555,9 @@ Prinsip: **perbaiki fondasi dulu, baru pasang tier** — tier di atas data 1–2
 | `showMeaning` (arti Indonesia soal) | — | Explorer tampil; Adventurer via Petunjuk | via Petunjuk |
 | `decoys` Susun Kalimat | — | Explorer 1, Adventurer 2 | Achiever 2 |
 | `options` Tantangan | 2 (Starter: 3 kartu) | 3 | Achiever 3, Trailblazer 4 |
-| Kecepatan audio Latihan Inti/Tantangan | 0.75x | Explorer 0.75x, Adventurer 1x | 1x |
+| Kecepatan audio Latihan Inti/Tantangan | 0.75x | 0.75x | 0.75x (seragam sejak 2026-09-28; dulu Adventurer+ 1x) |
 
-- Langsung aktif tanpa data baru: `revealAfter`, `hintGate`/`hintEliminate` Trailblazer, kecepatan audio (`app.ts` `applyDefaultRate` cabang `grammar`).
+- Langsung aktif tanpa data baru: `revealAfter`, `hintGate`/`hintEliminate` Trailblazer. (Kecepatan audio per level sempat ada, dicabut 2026-09-28 — seragam 0.75x.)
 
 **Tahap 2 — Tier yang butuh data (setelah Tahap 0 poin 3)**
 - `decoys` & `showMeaning` di Susun Kalimat; "Pilih Bentuk" 3 opsi; build mengecek: jebakan tidak ada di `target`, tiap soal tepat 1 benar, pengecoh = bentuk lain dari kata yang sama (bukan kata lain).

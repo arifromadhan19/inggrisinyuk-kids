@@ -105,8 +105,10 @@ function stimuliSpeaking(topic) {
  *  - ≥10 kalimat per topik;
  *  - `key` 1 kata, muncul TEPAT 1x sbg kata utuh di `en` (dikosongkan di
  *    Tantangan, disorot di Kenalan);
- *  - `wrong` = 2 kata beda, bukan `key`, & tidak ada di kalimat (jadi kata
- *    jebakan Susun Kalimat — kalau sudah ada di kalimat, bank jadi dobel);
+ *  - `wrong` = TEPAT 3 bentuk beda, bukan `key`, & tidak ada di kalimat.
+ *    2 pertama = 1 kata (dipakai jg sbg kata jebakan Susun Kalimat — kalau
+ *    sudah ada di kalimat, bank jadi dobel); ke-3 boleh >1 kata (cuma jadi
+ *    opsi ke-4 Tantangan "Pilih Bentuk" 2×2, permintaan user "4 card");
  *  - tiap `alt` = kata yang SAMA PERSIS dgn `en` (cuma urutan beda);
  *  - Trailblazer: `originalOptions` 3 kutipan beda, bukan `original`.
  */
@@ -126,13 +128,13 @@ function checkGrammarData(byLevel, errors) {
           if (/\s/.test(s.key)) errors.push(`${where}: key "${s.key}" harus 1 kata.`);
           const hits = tk.filter((w) => w === s.key.toLowerCase()).length;
           if (hits !== 1) errors.push(`${where}: key "${s.key}" muncul ${hits}x (harus tepat 1x sbg kata utuh).`);
-          if (!Array.isArray(s.wrong) || s.wrong.length !== 2) errors.push(`${where}: wrong harus tepat 2 kata.`);
+          if (!Array.isArray(s.wrong) || s.wrong.length !== 3) errors.push(`${where}: wrong harus tepat 3 bentuk.`);
           const wl = (s.wrong ?? []).map((w) => w.toLowerCase());
           if (new Set(wl).size !== wl.length || wl.includes(s.key.toLowerCase())) errors.push(`${where}: wrong dobel / sama dgn key.`);
-          for (const w of wl) {
-            if (/\s/.test(w)) errors.push(`${where}: wrong "${w}" harus 1 kata.`);
-            if (tk.includes(w)) errors.push(`${where}: wrong "${w}" sudah ada di kalimat (kata jebakan jadi dobel).`);
-          }
+          wl.forEach((w, wi) => {
+            if (wi < 2 && /\s/.test(w)) errors.push(`${where}: wrong "${w}" harus 1 kata (2 pertama dipakai sbg kata jebakan).`);
+            if (` ${tk.join(' ')} `.includes(` ${w} `)) errors.push(`${where}: wrong "${w}" sudah ada di kalimat.`);
+          });
           const sorted = [...tk].sort().join(' ');
           for (const alt of s.alt ?? []) {
             if ([...tokens(alt)].sort().join(' ') !== sorted) errors.push(`${where}: alt "${alt}" katanya tidak sama persis dgn kalimat.`);
@@ -151,7 +153,7 @@ function checkGrammarData(byLevel, errors) {
           const before = x.en.slice(0, -1).join(' ');
           const hits = (last.match(wordRe(x.key)) ?? []).length;
           if (hits !== 1) errors.push(`${where}: key "${x.key}" muncul ${hits}x di kalimat terakhir (harus tepat 1x).`);
-          if (!Array.isArray(x.wrong) || x.wrong.length !== 2) errors.push(`${where}: wrong harus tepat 2.`);
+          if (!Array.isArray(x.wrong) || x.wrong.length !== 3) errors.push(`${where}: wrong harus tepat 3.`);
           const opts = [x.key, ...(x.wrong ?? [])].map((o) => o.toLowerCase());
           if (new Set(opts).size !== opts.length) errors.push(`${where}: opsi dobel.`);
           if (!x.cue || !wordRe(x.cue).test(before)) errors.push(`${where}: cue "${x.cue}" tidak ada di kalimat sebelumnya.`);

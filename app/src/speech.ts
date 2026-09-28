@@ -51,6 +51,27 @@ export function setVoiceAccent(a: VoiceAccent): void {
   selectedAccent = a;
   selectedVoice = pickVoice(selectedAccent, selectedGender);
 }
+/** Suara Indonesia (`speakLocalized` 'id-ID') — pilihan gender TERPISAH dari
+ *  suara Inggris (Pengaturan → "Kecepatan & jenis suara"). */
+let selectedIdGender: VoiceGender = 'female';
+/** Kecepatan suara Indonesia — TERPISAH dari `playbackRate` (Inggris), cuma
+ *  bisa diubah di halaman Pengaturan. */
+/** Default 1x (normal) — permintaan user: suara Indonesia = bahasa ibu anak,
+ *  tidak perlu dipelankan spt Inggris (0.75x). HARUS salah satu `SPEEDS`. */
+export const DEFAULT_ID_RATE: (typeof SPEEDS)[number] = 1;
+let idPlaybackRate: number = DEFAULT_ID_RATE;
+export function getIndonesianPlaybackRate(): number {
+  return idPlaybackRate;
+}
+export function setIndonesianPlaybackRate(rate: number): void {
+  idPlaybackRate = rate;
+}
+export function getIndonesianVoiceGender(): VoiceGender {
+  return selectedIdGender;
+}
+export function setIndonesianVoiceGender(g: VoiceGender): void {
+  selectedIdGender = g;
+}
 export function onVoicesChanged(cb: () => void): void {
   onVoicesReady = cb;
 }
@@ -209,7 +230,17 @@ function stripEmojiForSpeech(text: string): string {
  *  dipanggil. Pemanggil tetap perlu fallback timer sendiri: kalau `speak()`
  *  lain membatalkan timer SEBELUM ucapan ini mulai, event-nya tidak pernah
  *  datang. */
-export function speak(text: string, onEnd?: () => void): void {
+export function speak(
+  text: string,
+  onEnd?: () => void,
+  track?: {
+    /** Ucapan benar-benar mulai bersuara. */
+    onStart?: () => void;
+    /** Kata ke-`wordIndex` (urutan token dipisah spasi) mulai diucapkan —
+     *  dari event `boundary`, TIDAK dikirim semua browser/voice. */
+    onWord?: (wordIndex: number) => void;
+  }
+): void {
   if (!ttsSupported || !stripEmojiForSpeech(text)) {
     onEnd?.();
     return;
@@ -217,13 +248,21 @@ export function speak(text: string, onEnd?: () => void): void {
   stopListening(); // lihat komentar di atas `stopListening()` — cegah race condition mic vs TTS
   clearPendingTimers();
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(stripEmojiForSpeech(text));
+  const spoken = stripEmojiForSpeech(text);
+  const u = new SpeechSynthesisUtterance(spoken);
   u.lang = utteranceLang();
   u.rate = playbackRate;
   if (selectedVoice) u.voice = selectedVoice;
   if (onEnd) {
     u.onend = () => onEnd();
     u.onerror = () => onEnd();
+  }
+  if (track?.onStart) u.onstart = () => track.onStart?.();
+  if (track?.onWord) {
+    u.onboundary = (e) => {
+      if (e.name && e.name !== 'word') return;
+      track.onWord?.(spoken.slice(0, e.charIndex).split(/\s+/).filter(Boolean).length);
+    };
   }
   const timerId = setTimeout(() => window.speechSynthesis.speak(u), SPEAK_SAFETY_DELAY_MS);
   pendingTimers.push(timerId);
@@ -245,6 +284,34 @@ export function speak(text: string, onEnd?: () => void): void {
  *  perbaiki lagi tanpa TTS cloud berbayar (di luar scope v1, CLAUDE.md §5). */
 const QUALITY_VOICE_HINTS = ['google', 'enhanced', 'premium', 'neural', 'natural', 'wavenet'];
 
+function bestQuality(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {
+  return voices.find((v) => QUALITY_VOICE_HINTS.some((h) => v.name.toLowerCase().includes(h)));
+}
+
+/** Nama voice Indonesia yang diketahui per gender: macOS/iOS "Damayanti"
+ *  (wanita), Windows/Edge "Gadis" (wanita) & "Ardi" (pria), Chrome "Google
+ *  Bahasa Indonesia" (wanita). Voice tanpa petunjuk gender dianggap wanita
+ *  (mayoritas voice id-ID bawaan memang wanita). */
+const ID_FEMALE_HINTS = ['damayanti', 'gadis', 'google', 'female', 'wanita', 'perempuan'];
+const ID_MALE_HINTS = ['ardi', 'andika', 'male', 'pria', 'laki'];
+
+function idVoiceGender(v: SpeechSynthesisVoice): VoiceGender {
+  const n = v.name.toLowerCase();
+  // "female" mengandung "male" — cek wanita dulu.
+  if (ID_FEMALE_HINTS.some((h) => n.includes(h))) return 'female';
+  if (ID_MALE_HINTS.some((h) => n.includes(h))) return 'male';
+  return 'female';
+}
+
+/** Pilih voice Indonesia sesuai gender. Device tanpa voice pria Indonesia
+ *  (iPhone/Mac, kebanyakan Android) → voice terbaik yang ada + nada
+ *  diturunkan supaya tetap terdengar beda (pola `speakDialogue`). */
+function pickIndonesianVoice(candidates: SpeechSynthesisVoice[], gender: VoiceGender): { voice?: SpeechSynthesisVoice; pitch: number } {
+  const same = candidates.filter((v) => idVoiceGender(v) === gender);
+  if (same.length) return { voice: bestQuality(same) ?? same[0], pitch: 1 };
+  return { voice: bestQuality(candidates) ?? candidates[0], pitch: gender === 'male' ? 0.7 : 1.15 };
+}
+
 /**
  * Ucapkan teks dalam bahasa LAIN dari konten belajar Inggris (mis. soal
  * Vocab arah Indonesia→Inggris di First Placement Test). `selectedVoice`
@@ -263,11 +330,17 @@ export function speakLocalized(text: string, lang: string): void {
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(stripEmojiForSpeech(text));
   u.lang = lang;
-  u.rate = playbackRate;
+  u.rate = lang.toLowerCase().startsWith('id') ? idPlaybackRate : playbackRate;
   const prefix = lang.slice(0, 2).toLowerCase();
   const candidates = allVoicesRaw.filter((v) => v.lang?.toLowerCase().startsWith(prefix));
-  const localizedVoice = candidates.find((v) => QUALITY_VOICE_HINTS.some((h) => v.name.toLowerCase().includes(h))) ?? candidates[0];
-  if (localizedVoice) u.voice = localizedVoice;
+  if (prefix === 'id') {
+    const { voice, pitch } = pickIndonesianVoice(candidates, selectedIdGender);
+    if (voice) u.voice = voice;
+    u.pitch = pitch;
+  } else {
+    const localizedVoice = bestQuality(candidates) ?? candidates[0];
+    if (localizedVoice) u.voice = localizedVoice;
+  }
   const timerId = setTimeout(() => window.speechSynthesis.speak(u), SPEAK_SAFETY_DELAY_MS);
   pendingTimers.push(timerId);
 }

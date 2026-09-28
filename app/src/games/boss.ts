@@ -58,6 +58,7 @@
  * tidak perlu anak pilih manual tiap kali), finish() dipanggil begitu
  * SEMUA skill (bukan cuma yang terakhir dlm urutan lama) sudah tuntas.
  */
+import { readingPicHtml } from '../reading-pic';
 import {
   GRAMMAR_TOPICS_BY_LEVEL,
   LISTENING_TOPICS_BY_LEVEL,
@@ -283,7 +284,7 @@ function toReadingBossItems(topics: AnyReadingTopic[]): ReadingBossItem[] {
           return [{ text: x.lines[q.about ?? 0].en, speakable: true, opts: shuffle(opts) }];
         }
         if (q.kind === 'truefalse') {
-          return [{ text: `${q.picture ?? ''} "${q.q}"`, speakable: false, opts: [{ emoji: '✅', ok: q.answer === 0 }, { emoji: '❌', ok: q.answer === 1 }] }];
+          return [{ text: `${readingPicHtml(q.picture)} "${q.q}"`, speakable: false, opts: [{ emoji: '✅', ok: q.answer === 0 }, { emoji: '❌', ok: q.answer === 1 }] }];
         }
         if (!q.evidence.length) return [];
         const passage = q.evidence.map((e) => x.lines[e].en).join(' ');
@@ -603,7 +604,7 @@ export function runBoss(container: HTMLElement, onWin: (result: BossResult) => v
         <div class="opt-grid ${item.opts[0]?.label ? 'rt-opts' : item.opts.length === 3 ? 'three' : ''}">
           ${/* Sama fix dgn `runListenPhase` di atas — 4 opsi (`ReadingWordTopic`
              target+3 distraktor) WAJIB grid 2×2 default, bukan 3 kolom+1 sisa. */ ''}
-          ${item.opts.map((o, i) => `<button class="opt-btn${o.label ? ' opt-btn-text' : ''}" data-action="pick" data-payload="${i}">${o.label ?? o.emoji}</button>`).join('')}
+          ${item.opts.map((o, i) => `<button class="opt-btn${o.label ? ' opt-btn-text' : ''}" data-action="pick" data-payload="${i}">${o.label ?? readingPicHtml(o.emoji)}</button>`).join('')}
         </div>
         <div class="feedback" id="fb"></div>
       `;

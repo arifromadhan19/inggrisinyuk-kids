@@ -55,11 +55,6 @@ function isFlyersOrAbove(contentLevel: LevelKey): boolean {
   return contentLevel === 'achiever' || contentLevel === 'trailblazer';
 }
 
-/** Default kecepatan suara di Latihan Inti/Tantangan — CEFR: A1 "very slow" →
- *  B1 mendekati tempo alami. Pill kecepatan user tetap menang (`applyDefaultRate`). */
-export function listeningDefaultRate(contentLevel: LevelKey): 0.75 | 1 {
-  return contentLevel === 'adventurer' || isFlyersOrAbove(contentLevel) ? 1 : 0.75;
-}
 
 /** Jarak antar kalimat (ms, start-ke-start) — makin tinggi level makin rapat. */
 function listeningGapMs(contentLevel: LevelKey): number {

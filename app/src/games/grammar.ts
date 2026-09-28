@@ -5,6 +5,7 @@ import type {
   GrammarSentence,
   GrammarSentenceTopic,
   GrammarTransformItem,
+  GrammarTransformKind,
   GrammarTransformTopic,
   LevelKey,
   OnDone,
@@ -15,6 +16,8 @@ import {
   ensureSection,
   getSlot,
   firstUnansweredSlot,
+  isHintUnlocked,
+  markSlotHint,
   hasWordInteraction,
   markSlotAnswered,
   markWordInteraction,
@@ -55,12 +58,6 @@ function grammarTier(contentLevel: LevelKey): GrammarTier {
   return 'lanjut';
 }
 
-/** Kecepatan audio Latihan Inti/Tantangan — sama tangga Listening (0.75x
- *  s.d. Explorer, 1x Adventurer ke atas). Dipanggil `app.ts` lewat
- *  `applyDefaultRate` (pill kecepatan pilihan user tetap menang). */
-export function grammarDefaultRate(contentLevel: LevelKey): 0.75 | 1 {
-  return contentLevel === 'little-stars' || contentLevel === 'starter' || contentLevel === 'explorer' ? 0.75 : 1;
-}
 
 interface SentenceTierSettings {
   /** Jumlah kata jebakan (bentuk salah dari `wrong`) di bank Susun Kalimat. */
@@ -135,8 +132,8 @@ function ensureSentencePlan(topic: GrammarSentenceTopic, section: string): { ite
   return s.plan ?? [];
 }
 
-function hintChipHtml(locked: boolean, used: boolean): string {
-  return `<button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${locked || used ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>`;
+function hintChipHtml(locked: boolean, used: boolean, label = 'Petunjuk'): string {
+  return `<button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${locked || used ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> ${label}</button>`;
 }
 
 export function renderKenalanSentence(container: HTMLElement, topic: GrammarSentenceTopic, _onNext: OnDone, contentLevel: LevelKey): void {
@@ -179,9 +176,11 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
   // Lagi" (non-punitive, pola sama Listening/Reading).
   let revealed = false;
   let attempted = false;
-  // 💡 Petunjuk mode 2 — kalau arti SUDAH tampil (Explorer, topik
-  // `meaningNeeded`), Petunjuk mengisi kata-kata pertama (pola Vocab
-  // `runSusunKalimat`, permintaan user). Dipertahankan lewat "Coba Lagi".
+  // 💡 Petunjuk mengisi kata-kata pertama (pola Vocab `runSusunKalimat`).
+  // Kalau arti SUDAH tampil (Explorer, topik `meaningNeeded`) itu langsung
+  // tap pertama; Adventurer+ (arti tersembunyi) Petunjuk 2 TAHAP (permintaan
+  // user): tap 1 = arti, tap 2 = ±50% kata tersusun. Dipertahankan lewat
+  // "Coba Lagi".
   let wordsHinted = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'latihan', i)?.st ?? 0;
@@ -195,7 +194,8 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
   function draw(): void {
     if (round >= order.length) return onDone();
     revealed = false;
-    attempted = false;
+    // Sekali terbuka (pernah dijawab / Petunjuk pernah diklik) tidak terkunci lagi.
+    attempted = isHintUnlocked('grammar', topic.id, 'latihan', round);
     wordsHinted = false;
     redraw();
   }
@@ -219,7 +219,7 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
     const keyPos = words.indexOf(s.key);
     const hintCount = (): number => {
       if (!wordsHinted) return 0;
-      const base = Math.max(1, Math.round(words.length * (contentLevel === 'explorer' ? 0.6 : 0.4)));
+      const base = Math.max(1, Math.round(words.length * (contentLevel === 'explorer' ? 0.6 : 0.5)));
       return keyPos > 0 ? Math.min(base, keyPos) : base;
     };
     function resetBoard(): void {
@@ -235,12 +235,13 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
 
     function paint(): void {
       const wrongSoFar = getSlot('grammar', topic.id, 'latihan', round)?.w ?? 0;
-      const hintUsed = meaningAlwaysShown ? wordsHinted : revealed;
+      const hintUsed = wordsHinted;
       const hc = hintCount();
+      const hintLabel = !meaningAlwaysShown && revealed ? 'Petunjuk 2' : 'Petunjuk';
       container.innerHTML = `
         <div class="latihan-head no-wrap">
           <span class="stage-badge">🎯 Susun Kalimat</span>
-          ${answered ? '' : hintChipHtml(cfg.hintGate && !attempted, hintUsed)}
+          ${answered ? '' : hintChipHtml(cfg.hintGate && !attempted, hintUsed, hintLabel)}
         </div>
         ${quizNavHtml(round, order.length, slotStatus)}
         ${
@@ -276,7 +277,9 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
       setHandlers({
         petunjuk: () => {
           if (answered || hintUsed || (cfg.hintGate && !attempted)) return;
-          if (meaningAlwaysShown) {
+          markSlotHint('grammar', topic.id, 'latihan', round);
+          attempted = true;
+          if (meaningAlwaysShown || revealed) {
             wordsHinted = true;
             resetBoard();
           } else revealed = true;
@@ -373,7 +376,7 @@ interface ChooseFormQuestion {
   before: string[];
   line: string;
   key: string;
-  wrong: [string, string];
+  wrong: [string, string, string];
   id: string;
   /** Kata kunci di `before` (teks pendek saja). */
   cue?: string;
@@ -459,7 +462,7 @@ function runTantanganSentenceMain(container: HTMLElement, topic: GrammarSentence
     const q = order[round];
     options = shuffle([q.key, ...q.wrong]);
     revealed = false;
-    attempted = false;
+    attempted = isHintUnlocked('grammar', topic.id, SECTION, round);
     eliminated = -1;
     redraw();
   }
@@ -484,8 +487,8 @@ function runTantanganSentenceMain(container: HTMLElement, topic: GrammarSentence
       ${isText ? '<p class="meta g-text-note">Petunjuknya ada di kalimat sebelumnya 👀</p>' : ''}
       <div id="gContext">${contextHtml(q, false)}</div>
       <div class="en-text" id="gSentence">${q.line.replace(keyRe(q.key), '$1<span class="g-blank">___</span>')}</div>
-      ${meaningShown ? `<div class="id-text g-meaning">🇮🇩 ${q.id}</div>` : ''}
-      <div class="opt-grid three">
+      ${meaningShown ? `<div class="g-trans">🇮🇩 ${q.id}</div>` : ''}
+      <div class="opt-grid g-choose${options.some((o) => o.includes(' ') || o.length > 9) ? ' long' : ''}">
         ${options
           .map(
             (o, i) =>
@@ -499,6 +502,7 @@ function runTantanganSentenceMain(container: HTMLElement, topic: GrammarSentence
     setHandlers({
       petunjuk: () => {
         if (revealed || (cfg.hintGate && !attempted)) return;
+        markSlotHint('grammar', topic.id, SECTION, round);
         revealed = true;
         const wrongIdx = options.map((_, i) => i).filter((i) => options[i] !== q.key);
         eliminated = shuffle(wrongIdx)[0];
@@ -621,7 +625,8 @@ function runTantanganSentenceMain(container: HTMLElement, topic: GrammarSentence
  * Konsep Vocab `runSusunKalimat`: kalimat Indonesia jadi soal, anak susun
  * kata Inggris dari bank; 💡 Petunjuk isi sebagian kata pertama; jawaban
  * muncul otomatis setelah N kali salah. Trailblazer: kutipan langsung jadi
- * soal, susun kalimat reported speech-nya.
+ * soal, susun kalimat reported speech-nya. (Dicabut 2026-09-28 — Trailblazer
+ * Tantangan kini 1 aktivitas, lihat `runTantanganTransform`.)
  * Explorer–Achiever SUDAH punya Susun Kalimat di Latihan Inti → tab 2 mereka
  * diganti "🕵️ Detektif Kalimat" (`runDetektifTab`, keputusan user: Susun
  * Kalimat di Tantangan terasa mengulang Latihan Inti).
@@ -692,12 +697,54 @@ function patternSusunQuestions(topic: GrammarPatternTopic): SusunQuestion[] {
   return out;
 }
 
-function transformSusunQuestions(topic: GrammarTransformTopic): SusunQuestion[] {
-  return topic.transforms.map((t) => {
-    const ok = t.reportedOptions.find((o) => o.ok)!.text;
-    const wrongWords = t.reportedOptions.filter((o) => !o.ok).flatMap((o) => sentenceTokens(o.text));
-    return { prompt: `${t.speaker}: “${t.original}”`, instruction: 'Susun jadi reported speech dari kalimat ini', target: ok, decoyPool: shuffle(wrongWords), itemRef: t.original };
-  });
+/** Teks layar per jenis ubahan (`GrammarTransformTopic.kind`) — Trailblazer
+ *  dulu 10/10 reported speech dgn judul hardcode; audit `materi/grammar.md`
+ *  §28 menambah passive/conditional/relative clause/used to. */
+interface TransformUi {
+  kenalan: string;
+  latihan: string;
+  tantangan: string;
+  tantanganAsk: string;
+}
+const TRANSFORM_UI: Record<GrammarTransformKind, TransformUi> = {
+  reported: {
+    kenalan: 'Perhatikan bagaimana ucapan langsung berubah jadi reported speech',
+    latihan: '🔁 Ubah Jadi Reported Speech',
+    tantangan: '🔎 Siapa Bilang Apa?',
+    tantanganAsk: 'Kutipan langsung mana yang aslinya?',
+  },
+  passive: {
+    kenalan: 'Perhatikan bagaimana kalimat aktif berubah jadi kalimat pasif',
+    latihan: '🔁 Ubah Jadi Kalimat Pasif',
+    tantangan: '🔎 Kalimat Aktifnya Apa?',
+    tantanganAsk: 'Kalimat aktif mana yang artinya sama?',
+  },
+  conditional: {
+    kenalan: 'Perhatikan bagaimana 2 ide digabung jadi kalimat "If…"',
+    latihan: '🔁 Gabung Jadi Kalimat "If…"',
+    tantangan: '🔎 Maksudnya Apa?',
+    tantanganAsk: 'Kalimat mana yang artinya sama dengan kalimat "If…" ini?',
+  },
+  relative: {
+    kenalan: 'Perhatikan bagaimana 2 kalimat digabung pakai who / which',
+    latihan: '🔁 Gabung Pakai Who / Which',
+    tantangan: '🔎 Asalnya Kalimat Apa?',
+    tantanganAsk: 'Dua kalimat mana yang artinya sama?',
+  },
+  usedTo: {
+    kenalan: 'Perhatikan bagaimana kebiasaan dulu berubah jadi kalimat "used to"',
+    latihan: '🔁 Ubah Jadi "Used To"',
+    tantangan: '🔎 Maksudnya Apa?',
+    tantanganAsk: 'Kalimat mana yang artinya sama?',
+  },
+};
+function transformUi(topic: GrammarTransformTopic): TransformUi {
+  return TRANSFORM_UI[topic.kind ?? 'reported'];
+}
+/** Kalimat asal tampil: reported speech = "Nama: “kutipan”", materi lain
+ *  (tanpa tokoh) = kalimatnya saja. */
+function sourceText(t: GrammarTransformItem, text = t.original): string {
+  return t.speaker ? `${t.speaker}: “${text}”` : text;
 }
 
 /** Tab "🔤 Susun Kalimat" — konsep Vocab `runSusunKalimat`, setelan dari
@@ -730,7 +777,7 @@ function runSusunTab(container: HTMLElement, topicId: string, all: SusunQuestion
     let bank = buildBank();
     let answer: { w: string; idx: number }[] = [];
     let answered = false;
-    let attempted = false;
+    let attempted = isHintUnlocked('grammar', topicId, SUSUN_SECTION, round);
     let hintUsed = false;
     let hintCount = 0;
 
@@ -776,6 +823,7 @@ function runSusunTab(container: HTMLElement, topicId: string, all: SusunQuestion
       setHandlers({
         hint: () => {
           if (hintUsed || answered || (cfg.hintGate && !attempted)) return;
+          markSlotHint('grammar', topicId, SUSUN_SECTION, round);
           applyHint();
           paint();
         },
@@ -922,7 +970,7 @@ function runDetektifTab(container: HTMLElement, topic: GrammarSentenceTopic, onD
     const fixOptions = shuffle([s.key, ...s.wrong]);
     let found = false; // kata keliru sudah ditemukan (tahap 1 beres)
     let answered = false;
-    let attempted = false;
+    let attempted = isHintUnlocked('grammar', topic.id, DETEKTIF_SECTION, round);
     let revealed = false;
     let tappedWrong: number | null = null;
     const meaningShown = () => cfg.showMeaning || !!topic.meaningNeeded || revealed;
@@ -948,16 +996,16 @@ function runDetektifTab(container: HTMLElement, topic: GrammarSentenceTopic, onD
           // pola sama Susun Kalimat Latihan Inti.
           meaningShown()
             ? `<div class="id-text">Ada 1 kata yang kurang pas — tap kata itu · ${round + 1} dari ${order.length}</div>
-        <div class="en-text" style="color:var(--c-gram)">"${s.id}"</div>`
+        <div class="g-trans">🇮🇩 ${s.id}</div>`
             : `<div class="id-text">Arti kalimatnya ada di 💡 Petunjuk · ${round + 1} dari ${order.length}</div>
-        <div class="en-text" style="color:var(--c-gram)">Temukan 1 kata yang kurang pas</div>`
+        <div class="g-trans">Temukan 1 kata yang kurang pas</div>`
         }
         <div class="bank-row dt-sentence" style="margin-top:10px">${sentenceHtml()}</div>
         ${!found && missSoFar >= cfg.revealAfter ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Kata yang kurang pas: <b>${wrongWord}</b></p>` : ''}
         ${
           found && cfg.fixStep && !answered
             ? `<div class="id-text" style="font-weight:800;margin:10px 0 4px">Ketemu! Sekarang pilih bentuk yang pas:</div>
-        <div class="opt-grid">${fixOptions.map((o, i) => `<button class="opt-btn" type="button" data-action="fix" data-payload="${i}">${o}</button>`).join('')}</div>`
+        <div class="opt-grid g-choose${fixOptions.some((o) => o.includes(' ') || o.length > 9) ? ' long' : ''}">${fixOptions.map((o, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="fix" data-payload="${i}">${o}</button>`).join('')}</div>`
             : ''
         }
         <div class="feedback" id="fb"></div>
@@ -966,6 +1014,7 @@ function runDetektifTab(container: HTMLElement, topic: GrammarSentenceTopic, onD
       setHandlers({
         petunjuk: () => {
           if (revealed || (cfg.hintGate && !attempted)) return;
+          markSlotHint('grammar', topic.id, DETEKTIF_SECTION, round);
           revealed = true;
           paint();
         },
@@ -1092,14 +1141,10 @@ export function runTantanganSentence(container: HTMLElement, topic: GrammarSente
   );
 }
 
+/** Trailblazer: Tantangan = 1 aktivitas saja (permintaan user "hilangkan
+ *  susun kalimat di tantangan") — tanpa tab ke-2 Susun Kalimat. */
 export function runTantanganTransform(container: HTMLElement, topic: GrammarTransformTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
-  runTantanganTabs(
-    container,
-    '🔎 Siapa Bilang Apa?',
-    (stage, done) => runTantanganTransformMain(stage, topic, done, level, contentLevel),
-    (stage, done) => runSusunTab(stage, topic.id, transformSusunQuestions(topic), done, level, contentLevel),
-    onDone
-  );
+  runTantanganTransformMain(container, topic, onDone, level, contentLevel);
 }
 
 function roundActionsHtml(isLast: boolean): string {
@@ -1941,7 +1986,8 @@ function runTantanganPatternMain(container: HTMLElement, topic: GrammarPatternTo
  */
 
 function transformOptionsHtml(options: string[]): string {
-  return `<div class="opt-grid">
+  // Opsi = kalimat utuh → daftar 1 kolom (2×2 bikin kalimat panjang sempit di HP).
+  return `<div class="opt-grid g-transform">
     ${options.map((text, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="pick" data-payload="${i}">${text}</button>`).join('')}
   </div>`;
 }
@@ -1952,10 +1998,10 @@ function transformHintButtonHtml(locked: boolean): string {
   return `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint" ${locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>`;
 }
 
-/** Jumlah opsi salah yang dicoret Petunjuk: 2 (sisa 50/50) di bawah tier
- *  Lanjut, 1 di tier Lanjut. */
-function transformEliminateCount(contentLevel: LevelKey): number {
-  return grammarTier(contentLevel) === 'lanjut' ? 1 : 2;
+/** Jumlah opsi salah yang dicoret Petunjuk: 2 dari 4 (sisa 50/50) —
+ *  permintaan user 2026-09-28 (dulu tier Lanjut cuma 1). */
+function transformEliminateCount(_contentLevel: LevelKey): number {
+  return 2;
 }
 
 /** 💡 Petunjuk — coret `count` opsi salah secara acak (pola `wireHint`
@@ -1993,7 +2039,7 @@ function buildTransformPlan(topic: GrammarTransformTopic): LatihanPlanSlot[] {
 
 export function renderKenalanTransform(container: HTMLElement, topic: GrammarTransformTopic, _onNext: OnDone): void {
   container.innerHTML = `
-    <div class="id-text" style="margin-bottom:10px;">Perhatikan bagaimana ucapan langsung berubah jadi reported speech</div>
+    <div class="id-text" style="margin-bottom:10px;">${transformUi(topic).kenalan}</div>
     <div class="primer-list">
       ${topic.transforms
         .map((t, i) => {
@@ -2002,7 +2048,7 @@ export function renderKenalanTransform(container: HTMLElement, topic: GrammarTra
         <div class="primer-item" style="align-items:flex-start">
           <div class="primer-ic">${t.emoji}</div>
           <div class="txt">
-            <b>${t.speaker}: "${t.original}"</b>
+            <b>${sourceText(t)}</b>
             <span style="display:block;margin-top:4px">→ ${correct.text}</span>
           </div>
           <div class="mini-play" data-action="play" data-payload="${i}">🔊</div>
@@ -2050,7 +2096,7 @@ export function runLatihanIntiTransform(container: HTMLElement, topic: GrammarTr
   function draw(): void {
     if (round >= order.length) return onDone();
     hintUsedThisSlot = false;
-    attempted = false;
+    attempted = isHintUnlocked('grammar', topic.id, 'latihan', round);
     redraw();
   }
 
@@ -2060,13 +2106,13 @@ export function runLatihanIntiTransform(container: HTMLElement, topic: GrammarTr
 
     container.innerHTML = `
       <div class="latihan-head no-wrap">
-        <span class="stage-badge">🔁 Ubah Jadi Reported Speech</span>
+        <span class="stage-badge">${transformUi(topic).latihan}</span>
         ${transformHintButtonHtml(hintGate && !attempted)}
       </div>
       ${quizNavHtml(round, order.length, slotStatus)}
       <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
       <div class="big-emoji" style="font-size:40px">${target.emoji}</div>
-      <div class="en-text">${target.speaker}: "${target.original}"</div>
+      <div class="en-text">${sourceText(target)}</div>
       <div class="speak-row"><button class="speak-btn-ghost" type="button" data-action="replay">🔊 Dengar</button></div>
       ${transformOptionsHtml(options.map((o) => o.text))}
       <div class="feedback" id="fb"></div>
@@ -2075,7 +2121,10 @@ export function runLatihanIntiTransform(container: HTMLElement, topic: GrammarTr
       container,
       options.map((o) => o.ok),
       transformEliminateCount(contentLevel),
-      () => (hintUsedThisSlot = true)
+      () => {
+        hintUsedThisSlot = true;
+        markSlotHint('grammar', topic.id, 'latihan', round);
+      }
     );
     wireQuizNav(goTo);
 
@@ -2174,7 +2223,7 @@ function runTantanganTransformMain(container: HTMLElement, topic: GrammarTransfo
   function draw(): void {
     if (round >= order.length) return onDone();
     hintUsedThisSlot = false;
-    attempted = false;
+    attempted = isHintUnlocked('grammar', topic.id, 'tantangan-transform', round);
     options = buildOriginalOptions(order[round]);
     redraw();
   }
@@ -2185,7 +2234,7 @@ function runTantanganTransformMain(container: HTMLElement, topic: GrammarTransfo
 
     container.innerHTML = `
       <div class="latihan-head no-wrap">
-        <span class="stage-badge">🔎 Siapa Bilang Apa?</span>
+        <span class="stage-badge">${transformUi(topic).tantangan}</span>
         ${transformHintButtonHtml(hintGate && !attempted)}
       </div>
       ${quizNavHtml(round, order.length, slotStatus)}
@@ -2193,15 +2242,18 @@ function runTantanganTransformMain(container: HTMLElement, topic: GrammarTransfo
       <div class="big-emoji" style="font-size:40px">${target.emoji}</div>
       <div class="en-text">${correct.text}</div>
       <div class="speak-row"><button class="speak-btn-ghost" type="button" data-action="replay">🔊 Dengar</button></div>
-      <div class="id-text" style="font-weight:800;margin:6px 0 4px">Kutipan langsung mana yang aslinya?</div>
-      ${transformOptionsHtml(options.map((o) => `${target.speaker}: "${o}"`))}
+      <div class="id-text" style="font-weight:800;margin:6px 0 4px">${transformUi(topic).tantanganAsk}</div>
+      ${transformOptionsHtml(options.map((o) => sourceText(target, o)))}
       <div class="feedback" id="fb"></div>
     `;
     wireTransformHint(
       container,
       options.map((o) => o === target.original),
       transformEliminateCount(contentLevel),
-      () => (hintUsedThisSlot = true)
+      () => {
+        hintUsedThisSlot = true;
+        markSlotHint('grammar', topic.id, 'tantangan-transform', round);
+      }
     );
     wireQuizNav(goTo);
 

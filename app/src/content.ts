@@ -728,7 +728,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
           id: 'Apa hobi Rafi?',
           options: [
             { emoji: '🖍️', text: 'Drawing', ok: true },
-            { emoji: '🎤', text: 'Singing', ok: false },
+            { emoji: '🧑‍🎤', text: 'Singing', ok: false },
             { emoji: '🍳', text: 'Cooking', ok: false },
             { emoji: '📖', text: 'Reading', ok: false },
           ],
@@ -974,13 +974,13 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       {
         en: 'Sing',
         id: 'Bernyanyi',
-        emoji: '🎤',
-        example: { en: 'What do we do now? Now we sing a song.', id: 'Sekarang kita ngapain? Sekarang kita bernyanyi.', emoji: '🎤' },
+        emoji: '🧑‍🎤',
+        example: { en: 'What do we do now? Now we sing a song.', id: 'Sekarang kita ngapain? Sekarang kita bernyanyi.', emoji: '🧑‍🎤' },
         question: {
           en: 'What does the class do now?',
           id: 'Apa yang dilakukan kelas sekarang?',
           options: [
-            { emoji: '🎤', text: 'Sing', ok: true },
+            { emoji: '🧑‍🎤', text: 'Sing', ok: true },
             { emoji: '🖍️', text: 'Draw', ok: false },
             { emoji: '📖', text: 'Read', ok: false },
             { emoji: '✏️', text: 'Write', ok: false },
@@ -1108,7 +1108,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
           id: 'Dokter menyuruh Sari melakukan apa?',
           options: [
             { emoji: '🛏️', text: 'Rest', ok: true },
-            { emoji: '👟', text: 'Run', ok: false },
+            { emoji: '📖', text: 'Read', ok: false },
             { emoji: '🌊', text: 'Swim', ok: false },
             { emoji: '⚽', text: 'Play', ok: false },
           ],
@@ -2532,16 +2532,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     title: 'Tanya Ini dan Itu (Is This? Is That?)',
     desc: 'Is this…? / Is that…? / This is not…',
     sentences: [
-      { en: 'Is this your bag?', id: 'Apakah ini tasmu?', emoji: '🎒', key: 'this', wrong: ['these', 'those'] },
-      { en: 'Is that a clock?', id: 'Apakah itu jam?', emoji: '🕰️', key: 'that', wrong: ['those', 'these'] },
-      { en: 'Is that your pencil?', id: 'Apakah itu pensilmu?', emoji: '✏️', key: 'that', wrong: ['those', 'these'] },
-      { en: 'Is that your umbrella?', id: 'Apakah itu payungmu?', emoji: '☂️', key: 'Is', wrong: ['Are', 'Am'] },
-      { en: 'This is not an egg.', id: 'Ini bukan telur.', emoji: '🥚', key: 'an', wrong: ['a', 'two'] },
-      { en: 'Is this a ruler?', id: 'Apakah ini penggaris?', emoji: '📏', key: 'a', wrong: ['an', 'two'] },
-      { en: 'Is that an orange?', id: 'Apakah itu jeruk?', emoji: '🍊', key: 'an', wrong: ['a', 'two'] },
-      { en: 'This is not my book.', id: 'Ini bukan bukuku.', emoji: '📕', key: 'not', wrong: ['no', "don't"] },
-      { en: 'That is not your cup.', id: 'Itu bukan cangkirmu.', emoji: '☕', key: 'is', wrong: ['are', 'am'] },
-      { en: 'Is this your cap?', id: 'Apakah ini topimu?', emoji: '🧢', key: 'your', wrong: ['you', 'yours'] },
+      { en: 'Is this your bag?', id: 'Apakah ini tasmu?', emoji: '🎒', key: 'this', wrong: ['these', 'those', 'they'] },
+      { en: 'Is that a clock?', id: 'Apakah itu jam?', emoji: '🕰️', key: 'that', wrong: ['those', 'these', 'them'] },
+      { en: 'Is that your pencil?', id: 'Apakah itu pensilmu?', emoji: '✏️', key: 'that', wrong: ['those', 'these', 'them'] },
+      { en: 'Is that your umbrella?', id: 'Apakah itu payungmu?', emoji: '☂️', key: 'Is', wrong: ['Are', 'Am', 'Be'] },
+      { en: 'This is not an egg.', id: 'Ini bukan telur.', emoji: '🥚', key: 'an', wrong: ['a', 'two', 'many'] },
+      { en: 'Is this a ruler?', id: 'Apakah ini penggaris?', emoji: '📏', key: 'a', wrong: ['an', 'two', 'many'] },
+      { en: 'Is that an orange?', id: 'Apakah itu jeruk?', emoji: '🍊', key: 'an', wrong: ['a', 'two', 'many'] },
+      { en: 'This is not my book.', id: 'Ini bukan bukuku.', emoji: '📕', key: 'not', wrong: ['no', "don't", "isn't"] },
+      { en: 'That is not your cup.', id: 'Itu bukan cangkirmu.', emoji: '☕', key: 'is', wrong: ['are', 'am', 'be'] },
+      { en: 'Is this your cap?', id: 'Apakah ini topimu?', emoji: '🧢', key: 'your', wrong: ['you', 'yours', 'yourself'] },
     ],
   },
   {
@@ -2549,16 +2549,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     title: 'Ada Berapa? (There Is / There Are)',
     desc: 'There is + satu, There are + banyak',
     sentences: [
-      { en: 'There is a book on the desk.', id: 'Ada sebuah buku di atas meja.', emoji: '📕', key: 'is', wrong: ['are', 'am'] },
-      { en: 'There are two books on the desk.', id: 'Ada dua buku di atas meja.', emoji: '📚', key: 'are', wrong: ['is', 'am'] },
-      { en: 'There is a clock in the kitchen.', id: 'Ada sebuah jam di dapur.', emoji: '🕰️', key: 'is', wrong: ['are', 'am'] },
-      { en: 'There are three cups on the table.', id: 'Ada tiga cangkir di atas meja.', emoji: '☕', key: 'are', wrong: ['is', 'am'] },
-      { en: 'There is an egg in the fridge.', id: 'Ada sebutir telur di dalam kulkas.', emoji: '🥚', key: 'an', wrong: ['a', 'two'] },
-      { en: 'There are four chairs in the room.', id: 'Ada empat kursi di dalam kamar.', emoji: '🪑', key: 'are', wrong: ['is', 'am'] },
-      { en: 'There is a ball under the bed.', id: 'Ada sebuah bola di bawah tempat tidur.', emoji: '⚽', key: 'is', wrong: ['are', 'am'] },
-      { en: 'There are five pencils in my bag.', id: 'Ada lima pensil di dalam tasku.', emoji: '✏️', key: 'are', wrong: ['is', 'am'] },
-      { en: 'There is a kite in the sky.', id: 'Ada sebuah layang-layang di langit.', emoji: '🪁', key: 'a', wrong: ['an', 'two'] },
-      { en: 'There are six apples in the basket.', id: 'Ada enam apel di dalam keranjang.', emoji: '🍎', key: 'are', wrong: ['is', 'am'] },
+      { en: 'There is a book on the desk.', id: 'Ada sebuah buku di atas meja.', emoji: '📕', key: 'is', wrong: ['are', 'am', 'be'] },
+      { en: 'There are two books on the desk.', id: 'Ada dua buku di atas meja.', emoji: '📚', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There is a clock in the kitchen.', id: 'Ada sebuah jam di dapur.', emoji: '🕰️', key: 'is', wrong: ['are', 'am', 'be'] },
+      { en: 'There are three cups on the table.', id: 'Ada tiga cangkir di atas meja.', emoji: '☕', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There is an egg in the fridge.', id: 'Ada sebutir telur di dalam kulkas.', emoji: '🥚', key: 'an', wrong: ['a', 'two', 'many'] },
+      { en: 'There are four chairs in the room.', id: 'Ada empat kursi di dalam kamar.', emoji: '🪑', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There is a ball under the bed.', id: 'Ada sebuah bola di bawah tempat tidur.', emoji: '⚽', key: 'is', wrong: ['are', 'am', 'be'] },
+      { en: 'There are five pencils in my bag.', id: 'Ada lima pensil di dalam tasku.', emoji: '✏️', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There is a kite in the sky.', id: 'Ada sebuah layang-layang di langit.', emoji: '🪁', key: 'a', wrong: ['an', 'two', 'many'] },
+      { en: 'There are six apples in the basket.', id: 'Ada enam apel di dalam keranjang.', emoji: '🍎', key: 'are', wrong: ['is', 'am', 'be'] },
     ],
   },
   {
@@ -2566,16 +2566,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     title: 'Kata Ganti Orang (I, You, He, She)',
     desc: 'I am, you are, he/she is',
     sentences: [
-      { en: 'I am happy.', id: 'Aku senang.', emoji: '😊', key: 'am', wrong: ['is', 'are'] },
-      { en: 'You are my friend.', id: 'Kamu temanku.', emoji: '👥', key: 'are', wrong: ['am', 'is'] },
-      { en: 'He is tired.', id: 'Dia (laki-laki) lelah.', emoji: '😴', key: 'is', wrong: ['am', 'are'] },
-      { en: 'She is my sister.', id: 'Dia saudara perempuanku.', emoji: '👧', key: 'She', wrong: ['I', 'You'] },
-      { en: 'We are in the park.', id: 'Kami ada di taman.', emoji: '🌳', key: 'We', wrong: ['I', 'He'] },
-      { en: 'They are at school.', id: 'Mereka ada di sekolah.', emoji: '🏫', key: 'They', wrong: ['He', 'I'] },
-      { en: 'It is a big box.', id: 'Itu sebuah kotak besar.', emoji: '📦', key: 'It', wrong: ['They', 'We'] },
-      { en: 'I am seven years old.', id: 'Aku berumur tujuh tahun.', emoji: '🎂', key: 'I', wrong: ['He', 'They'] },
-      { en: 'He is my brother.', id: 'Dia saudara laki-lakiku.', emoji: '👦', key: 'is', wrong: ['am', 'are'] },
-      { en: 'We are hungry.', id: 'Kami lapar.', emoji: '🍽️', key: 'are', wrong: ['is', 'am'] },
+      { en: 'I am happy.', id: 'Aku senang.', emoji: '😊', key: 'am', wrong: ['is', 'are', 'be'] },
+      { en: 'You are my friend.', id: 'Kamu temanku.', emoji: '👥', key: 'are', wrong: ['am', 'is', 'be'] },
+      { en: 'He is tired.', id: 'Dia (laki-laki) lelah.', emoji: '😴', key: 'is', wrong: ['am', 'are', 'be'] },
+      { en: 'She is my sister.', id: 'Dia saudara perempuanku.', emoji: '👧', key: 'She', wrong: ['I', 'You', 'Her'] },
+      { en: 'We are in the park.', id: 'Kami ada di taman.', emoji: '🌳', key: 'We', wrong: ['I', 'He', 'Us'] },
+      { en: 'They are at school.', id: 'Mereka ada di sekolah.', emoji: '🏫', key: 'They', wrong: ['He', 'I', 'Them'] },
+      { en: 'It is a big box.', id: 'Itu sebuah kotak besar.', emoji: '📦', key: 'It', wrong: ['They', 'We', 'Its'] },
+      { en: 'I am seven years old.', id: 'Aku berumur tujuh tahun.', emoji: '🎂', key: 'I', wrong: ['He', 'They', 'Me'] },
+      { en: 'He is my brother.', id: 'Dia saudara laki-lakiku.', emoji: '👦', key: 'is', wrong: ['am', 'are', 'be'] },
+      { en: 'We are hungry.', id: 'Kami lapar.', emoji: '🍽️', key: 'are', wrong: ['is', 'am', 'be'] },
     ],
   },
   {
@@ -2584,16 +2584,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     desc: 'In / On / Under',
     meaningNeeded: true,
     sentences: [
-      { en: 'The spoon is in the bowl.', id: 'Sendok ada di dalam mangkuk.', emoji: '🥄', key: 'in', wrong: ['on', 'under'] },
-      { en: 'The cup is on the table.', id: 'Cangkir ada di atas meja.', emoji: '☕', key: 'on', wrong: ['in', 'under'] },
-      { en: 'The shoes are under the bed.', id: 'Sepatu ada di bawah tempat tidur.', emoji: '👟', key: 'under', wrong: ['in', 'on'] },
-      { en: 'The key is in the drawer.', id: 'Kunci ada di dalam laci.', emoji: '🔑', key: 'in', wrong: ['on', 'under'] },
-      { en: 'The lamp is on the desk.', id: 'Lampu ada di atas meja belajar.', emoji: '💡', key: 'on', wrong: ['in', 'under'] },
-      { en: 'The ball is under the chair.', id: 'Bola ada di bawah kursi.', emoji: '⚽', key: 'under', wrong: ['in', 'on'] },
-      { en: 'The book is in my bag.', id: 'Buku ada di dalam tasku.', emoji: '📕', key: 'in', wrong: ['on', 'under'] },
-      { en: 'The clock is on the wall.', id: 'Jam ada di (menempel pada) dinding.', emoji: '🕰️', key: 'on', wrong: ['in', 'under'] },
-      { en: 'The pencil is under the paper.', id: 'Pensil ada di bawah kertas.', emoji: '✏️', key: 'under', wrong: ['in', 'on'] },
-      { en: 'The milk is in the fridge.', id: 'Susu ada di dalam kulkas.', emoji: '🥛', key: 'in', wrong: ['on', 'under'] },
+      { en: 'The spoon is in the bowl.', id: 'Sendok ada di dalam mangkuk.', emoji: '🥄', key: 'in', wrong: ['on', 'under', 'behind'] },
+      { en: 'The cup is on the table.', id: 'Cangkir ada di atas meja.', emoji: '☕', key: 'on', wrong: ['in', 'under', 'behind'] },
+      { en: 'The shoes are under the bed.', id: 'Sepatu ada di bawah tempat tidur.', emoji: '👟', key: 'under', wrong: ['in', 'on', 'behind'] },
+      { en: 'The key is in the drawer.', id: 'Kunci ada di dalam laci.', emoji: '🔑', key: 'in', wrong: ['on', 'under', 'behind'] },
+      { en: 'The lamp is on the desk.', id: 'Lampu ada di atas meja belajar.', emoji: '💡', key: 'on', wrong: ['in', 'under', 'behind'] },
+      { en: 'The ball is under the chair.', id: 'Bola ada di bawah kursi.', emoji: '⚽', key: 'under', wrong: ['in', 'on', 'behind'] },
+      { en: 'The book is in my bag.', id: 'Buku ada di dalam tasku.', emoji: '📕', key: 'in', wrong: ['on', 'under', 'behind'] },
+      { en: 'The clock is on the wall.', id: 'Jam ada di (menempel pada) dinding.', emoji: '🕰️', key: 'on', wrong: ['in', 'under', 'behind'] },
+      { en: 'The pencil is under the paper.', id: 'Pensil ada di bawah kertas.', emoji: '✏️', key: 'under', wrong: ['in', 'on', 'behind'] },
+      { en: 'The milk is in the fridge.', id: 'Susu ada di dalam kulkas.', emoji: '🥛', key: 'in', wrong: ['on', 'under', 'behind'] },
     ],
   },
   {
@@ -2601,16 +2601,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     title: 'Sedang Terjadi (Present Continuous)',
     desc: 'am/is/are + -ing',
     sentences: [
-      { en: 'She is eating breakfast.', id: 'Dia sedang sarapan.', emoji: '🍳', key: 'eating', wrong: ['eat', 'eats'] },
-      { en: 'He is doing his homework.', id: 'Dia sedang mengerjakan PR-nya.', emoji: '📝', key: 'doing', wrong: ['do', 'does'] },
-      { en: 'They are sleeping.', id: 'Mereka sedang tidur.', emoji: '😴', key: 'sleeping', wrong: ['sleep', 'sleeps'] },
-      { en: 'I am reading a book.', id: 'Aku sedang membaca buku.', emoji: '📖', key: 'reading', wrong: ['read', 'reads'] },
-      { en: 'We are playing football.', id: 'Kami sedang bermain sepak bola.', emoji: '⚽', key: 'playing', wrong: ['play', 'plays'] },
-      { en: 'You are drawing a picture.', id: 'Kamu sedang menggambar.', emoji: '🎨', key: 'drawing', wrong: ['draw', 'draws'] },
-      { en: 'She is drinking milk.', id: 'Dia sedang minum susu.', emoji: '🥛', key: 'is', wrong: ['are', 'am'] },
-      { en: 'They are riding their bikes.', id: 'Mereka sedang naik sepeda.', emoji: '🚲', key: 'are', wrong: ['is', 'am'] },
-      { en: 'He is washing the car.', id: 'Dia sedang mencuci mobil.', emoji: '🚗', key: 'washing', wrong: ['wash', 'washes'] },
-      { en: 'I am brushing my teeth.', id: 'Aku sedang menggosok gigi.', emoji: '🪥', key: 'am', wrong: ['is', 'are'] },
+      { en: 'She is eating breakfast.', id: 'Dia sedang sarapan.', emoji: '🍳', key: 'eating', wrong: ['eat', 'eats', 'ate'] },
+      { en: 'He is doing his homework.', id: 'Dia sedang mengerjakan PR-nya.', emoji: '📝', key: 'doing', wrong: ['do', 'does', 'did'] },
+      { en: 'They are sleeping.', id: 'Mereka sedang tidur.', emoji: '😴', key: 'sleeping', wrong: ['sleep', 'sleeps', 'slept'] },
+      { en: 'I am reading a book.', id: 'Aku sedang membaca buku.', emoji: '📖', key: 'reading', wrong: ['read', 'reads', 'reader'] },
+      { en: 'We are playing football.', id: 'Kami sedang bermain sepak bola.', emoji: '⚽', key: 'playing', wrong: ['play', 'plays', 'played'] },
+      { en: 'You are drawing a picture.', id: 'Kamu sedang menggambar.', emoji: '🎨', key: 'drawing', wrong: ['draw', 'draws', 'drew'] },
+      { en: 'She is drinking milk.', id: 'Dia sedang minum susu.', emoji: '🥛', key: 'is', wrong: ['are', 'am', 'be'] },
+      { en: 'They are riding their bikes.', id: 'Mereka sedang naik sepeda.', emoji: '🚲', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'He is washing the car.', id: 'Dia sedang mencuci mobil.', emoji: '🚗', key: 'washing', wrong: ['wash', 'washes', 'washed'] },
+      { en: 'I am brushing my teeth.', id: 'Aku sedang menggosok gigi.', emoji: '🪥', key: 'am', wrong: ['is', 'are', 'be'] },
     ],
   },
   {
@@ -2619,16 +2619,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     desc: 'Siapa, Di Mana, Apa',
     meaningNeeded: true,
     sentences: [
-      { en: 'Who is that girl?', id: 'Siapa anak perempuan itu?', emoji: '👧', key: 'Who', wrong: ['Where', 'What'] },
-      { en: 'Where is your bag?', id: 'Di mana tasmu?', emoji: '🎒', key: 'Where', wrong: ['Who', 'What'] },
-      { en: 'What is in the box?', id: 'Apa isi kotak itu?', emoji: '📦', key: 'What', wrong: ['Who', 'Where'] },
-      { en: 'Where is my pencil?', id: 'Di mana pensilku?', emoji: '✏️', key: 'Where', wrong: ['Who', 'What'] },
-      { en: 'Who is your teacher?', id: 'Siapa gurumu?', emoji: '🧑‍🏫', key: 'Who', wrong: ['Where', 'What'] },
-      { en: 'What is on the table?', id: 'Apa yang ada di atas meja?', emoji: '🍽️', key: 'What', wrong: ['Who', 'Where'] },
-      { en: 'Where are my shoes?', id: 'Di mana sepatuku?', emoji: '👟', key: 'Where', wrong: ['Who', 'What'] },
-      { en: 'Who is at the door?', id: 'Siapa yang ada di pintu?', emoji: '🚪', key: 'Who', wrong: ['Where', 'What'] },
-      { en: 'What is your favorite color?', id: 'Apa warna kesukaanmu?', emoji: '🎨', key: 'What', wrong: ['Who', 'Where'] },
-      { en: 'Where is the library?', id: 'Di mana perpustakaannya?', emoji: '📚', key: 'Where', wrong: ['Who', 'What'] },
+      { en: 'Who is that girl?', id: 'Siapa anak perempuan itu?', emoji: '👧', key: 'Who', wrong: ['Where', 'What', 'How'] },
+      { en: 'Where is your bag?', id: 'Di mana tasmu?', emoji: '🎒', key: 'Where', wrong: ['Who', 'What', 'How'] },
+      { en: 'What is in the box?', id: 'Apa isi kotak itu?', emoji: '📦', key: 'What', wrong: ['Who', 'Where', 'How'] },
+      { en: 'Where is my pencil?', id: 'Di mana pensilku?', emoji: '✏️', key: 'Where', wrong: ['Who', 'What', 'How'] },
+      { en: 'Who is your teacher?', id: 'Siapa gurumu?', emoji: '🧑‍🏫', key: 'Who', wrong: ['Where', 'What', 'How'] },
+      { en: 'What is on the table?', id: 'Apa yang ada di atas meja?', emoji: '🍽️', key: 'What', wrong: ['Who', 'Where', 'How'] },
+      { en: 'Where are my shoes?', id: 'Di mana sepatuku?', emoji: '👟', key: 'Where', wrong: ['Who', 'What', 'How'] },
+      { en: 'Who is at the door?', id: 'Siapa yang ada di pintu?', emoji: '🚪', key: 'Who', wrong: ['Where', 'What', 'How'] },
+      { en: 'What is your favorite color?', id: 'Apa warna kesukaanmu?', emoji: '🎨', key: 'What', wrong: ['Who', 'Where', 'How'] },
+      { en: 'Where is the library?', id: 'Di mana perpustakaannya?', emoji: '📚', key: 'Where', wrong: ['Who', 'What', 'How'] },
     ],
   },
   {
@@ -2636,16 +2636,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     title: 'Meminta dengan Sopan (Would Like)',
     desc: 'I would like…',
     sentences: [
-      { en: 'I would like an apple, please.', id: 'Aku ingin sebuah apel, ya.', emoji: '🍎', key: 'an', wrong: ['a', 'two'] },
-      { en: 'She would like some bread.', id: 'Dia ingin roti.', emoji: '🍞', key: 'like', wrong: ['likes', 'liking'] },
-      { en: 'Would you like some juice?', id: 'Kamu mau jus?', emoji: '🧃', key: 'like', wrong: ['likes', 'liking'] },
-      { en: 'I would like a sandwich.', id: 'Aku ingin sebuah roti lapis.', emoji: '🥪', key: 'a', wrong: ['an', 'two'] },
-      { en: 'We would like some water.', id: 'Kami ingin air.', emoji: '💧', key: 'like', wrong: ['likes', 'liking'] },
-      { en: 'They would like some ice cream.', id: 'Mereka ingin es krim.', emoji: '🍦', key: 'like', wrong: ['likes', 'liking'] },
-      { en: 'He would like an orange.', id: 'Dia ingin sebuah jeruk.', emoji: '🍊', key: 'an', wrong: ['a', 'two'] },
-      { en: 'Would you like a banana?', id: 'Kamu mau sebuah pisang?', emoji: '🍌', key: 'a', wrong: ['an', 'two'] },
-      { en: 'She would like a cup of tea.', id: 'Dia ingin secangkir teh.', emoji: '🍵', key: 'a', wrong: ['an', 'two'] },
-      { en: 'I would like some rice, please.', id: 'Aku ingin nasi, ya.', emoji: '🍚', key: 'like', wrong: ['likes', 'liking'] },
+      { en: 'I would like an apple, please.', id: 'Aku ingin sebuah apel, ya.', emoji: '🍎', key: 'an', wrong: ['a', 'two', 'many'] },
+      { en: 'She would like some bread.', id: 'Dia ingin roti.', emoji: '🍞', key: 'like', wrong: ['likes', 'liking', 'liked'] },
+      { en: 'Would you like some juice?', id: 'Kamu mau jus?', emoji: '🧃', key: 'like', wrong: ['likes', 'liking', 'liked'] },
+      { en: 'I would like a sandwich.', id: 'Aku ingin sebuah roti lapis.', emoji: '🥪', key: 'a', wrong: ['an', 'two', 'many'] },
+      { en: 'We would like some water.', id: 'Kami ingin air.', emoji: '💧', key: 'like', wrong: ['likes', 'liking', 'liked'] },
+      { en: 'They would like some ice cream.', id: 'Mereka ingin es krim.', emoji: '🍦', key: 'like', wrong: ['likes', 'liking', 'liked'] },
+      { en: 'He would like an orange.', id: 'Dia ingin sebuah jeruk.', emoji: '🍊', key: 'an', wrong: ['a', 'two', 'many'] },
+      { en: 'Would you like a banana?', id: 'Kamu mau sebuah pisang?', emoji: '🍌', key: 'a', wrong: ['an', 'two', 'many'] },
+      { en: 'She would like a cup of tea.', id: 'Dia ingin secangkir teh.', emoji: '🍵', key: 'a', wrong: ['an', 'two', 'many'] },
+      { en: 'I would like some rice, please.', id: 'Aku ingin nasi, ya.', emoji: '🍚', key: 'like', wrong: ['likes', 'liking', 'liked'] },
     ],
   },
   {
@@ -2653,16 +2653,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     title: "Ayo Bersama (Let's...)",
     desc: "Let's + kata kerja dasar",
     sentences: [
-      { en: "Let's sing a song!", id: 'Ayo menyanyikan lagu!', emoji: '🎤', key: 'sing', wrong: ['sings', 'singing'] },
-      { en: "Let's eat the cake!", id: 'Ayo makan kuenya!', emoji: '🎂', key: 'eat', wrong: ['eats', 'eating'] },
-      { en: "Let's play a game!", id: 'Ayo bermain sebuah permainan!', emoji: '🎮', key: 'play', wrong: ['plays', 'playing'] },
-      { en: "Let's read a book!", id: 'Ayo membaca buku!', emoji: '📖', key: 'read', wrong: ['reads', 'reading'] },
-      { en: "Let's draw a picture!", id: 'Ayo menggambar!', emoji: '🎨', key: 'draw', wrong: ['draws', 'drawing'] },
-      { en: "Let's go to the park!", id: 'Ayo pergi ke taman!', emoji: '🌳', key: 'go', wrong: ['goes', 'going'] },
-      { en: "Let's clean the room!", id: 'Ayo membersihkan kamar!', emoji: '🧹', key: 'clean', wrong: ['cleans', 'cleaning'] },
-      { en: "Let's make a kite!", id: 'Ayo membuat layang-layang!', emoji: '🪁', key: 'make', wrong: ['makes', 'making'] },
-      { en: "Let's watch a movie!", id: 'Ayo menonton film!', emoji: '🎬', key: 'watch', wrong: ['watches', 'watching'] },
-      { en: "Let's ride our bikes!", id: 'Ayo naik sepeda kita!', emoji: '🚲', key: 'ride', wrong: ['rides', 'riding'] },
+      { en: "Let's sing a song!", id: 'Ayo menyanyikan lagu!', emoji: '🧑‍🎤', key: 'sing', wrong: ['sings', 'singing', 'sang'] },
+      { en: "Let's eat the cake!", id: 'Ayo makan kuenya!', emoji: '🎂', key: 'eat', wrong: ['eats', 'eating', 'ate'] },
+      { en: "Let's play a game!", id: 'Ayo bermain sebuah permainan!', emoji: '🎮', key: 'play', wrong: ['plays', 'playing', 'played'] },
+      { en: "Let's read a book!", id: 'Ayo membaca buku!', emoji: '📖', key: 'read', wrong: ['reads', 'reading', 'to read'] },
+      { en: "Let's draw a picture!", id: 'Ayo menggambar!', emoji: '🎨', key: 'draw', wrong: ['draws', 'drawing', 'drew'] },
+      { en: "Let's go to the park!", id: 'Ayo pergi ke taman!', emoji: '🌳', key: 'go', wrong: ['goes', 'going', 'went'] },
+      { en: "Let's clean the room!", id: 'Ayo membersihkan kamar!', emoji: '🧹', key: 'clean', wrong: ['cleans', 'cleaning', 'cleaned'] },
+      { en: "Let's make a kite!", id: 'Ayo membuat layang-layang!', emoji: '🪁', key: 'make', wrong: ['makes', 'making', 'made'] },
+      { en: "Let's watch a movie!", id: 'Ayo menonton film!', emoji: '🎬', key: 'watch', wrong: ['watches', 'watching', 'watched'] },
+      { en: "Let's ride our bikes!", id: 'Ayo naik sepeda kita!', emoji: '🚲', key: 'ride', wrong: ['rides', 'riding', 'rode'] },
     ],
   },
   {
@@ -2670,16 +2670,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     title: 'Minta Izin dengan Sopan (Can I…?)',
     desc: 'Can I + kata kerja dasar?',
     sentences: [
-      { en: 'Can I have a balloon, please?', id: 'Boleh aku minta sebuah balon?', emoji: '🎈', key: 'have', wrong: ['has', 'having'] },
-      { en: 'Can I play with the ball?', id: 'Boleh aku bermain dengan bola itu?', emoji: '⚽', key: 'play', wrong: ['plays', 'playing'] },
-      { en: 'Can I open the window?', id: 'Boleh aku membuka jendela?', emoji: '🪟', key: 'open', wrong: ['opens', 'opening'] },
-      { en: 'Can I borrow your pencil?', id: 'Boleh aku pinjam pensilmu?', emoji: '✏️', key: 'borrow', wrong: ['borrows', 'borrowing'] },
-      { en: 'Can I sit here?', id: 'Boleh aku duduk di sini?', emoji: '🪑', key: 'sit', wrong: ['sits', 'sitting'] },
-      { en: 'Can I go outside?', id: 'Boleh aku keluar?', emoji: '🚪', key: 'go', wrong: ['goes', 'going'] },
-      { en: 'Can I use your crayons?', id: 'Boleh aku memakai krayonmu?', emoji: '🖍️', key: 'use', wrong: ['uses', 'using'] },
-      { en: 'Can I drink some water?', id: 'Boleh aku minum air?', emoji: '💧', key: 'drink', wrong: ['drinks', 'drinking'] },
-      { en: 'Can I watch TV now?', id: 'Boleh aku menonton TV sekarang?', emoji: '📺', key: 'watch', wrong: ['watches', 'watching'] },
-      { en: 'Can I help you?', id: 'Boleh aku membantumu?', emoji: '🤝', key: 'help', wrong: ['helps', 'helping'] },
+      { en: 'Can I have a balloon, please?', id: 'Boleh aku minta sebuah balon?', emoji: '🎈', key: 'have', wrong: ['has', 'having', 'had'] },
+      { en: 'Can I play with the ball?', id: 'Boleh aku bermain dengan bola itu?', emoji: '⚽', key: 'play', wrong: ['plays', 'playing', 'played'] },
+      { en: 'Can I open the window?', id: 'Boleh aku membuka jendela?', emoji: '🪟', key: 'open', wrong: ['opens', 'opening', 'opened'] },
+      { en: 'Can I borrow your pencil?', id: 'Boleh aku pinjam pensilmu?', emoji: '✏️', key: 'borrow', wrong: ['borrows', 'borrowing', 'borrowed'] },
+      { en: 'Can I sit here?', id: 'Boleh aku duduk di sini?', emoji: '🪑', key: 'sit', wrong: ['sits', 'sitting', 'sat'] },
+      { en: 'Can I go outside?', id: 'Boleh aku keluar?', emoji: '🚪', key: 'go', wrong: ['goes', 'going', 'went'] },
+      { en: 'Can I use your crayons?', id: 'Boleh aku memakai krayonmu?', emoji: '🖍️', key: 'use', wrong: ['uses', 'using', 'used'] },
+      { en: 'Can I drink some water?', id: 'Boleh aku minum air?', emoji: '💧', key: 'drink', wrong: ['drinks', 'drinking', 'drank'] },
+      { en: 'Can I watch TV now?', id: 'Boleh aku menonton TV sekarang?', emoji: '📺', key: 'watch', wrong: ['watches', 'watching', 'watched'] },
+      { en: 'Can I help you?', id: 'Boleh aku membantumu?', emoji: '🤝', key: 'help', wrong: ['helps', 'helping', 'helped'] },
     ],
   },
   {
@@ -2687,16 +2687,16 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     title: 'Kapan Waktunya? (In, On, At)',
     desc: 'in the morning, on Monday, at night',
     sentences: [
-      { en: 'We go to school in the morning.', id: 'Kami pergi ke sekolah pada pagi hari.', emoji: '🌅', key: 'in', wrong: ['on', 'at'], alt: ['In the morning we go to school'] },
-      { en: 'I do my homework in the evening.', id: 'Aku mengerjakan PR pada sore hari.', emoji: '🌇', key: 'in', wrong: ['on', 'at'], alt: ['In the evening I do my homework'] },
-      { en: 'They go to sleep at night.', id: 'Mereka tidur pada malam hari.', emoji: '🌙', key: 'at', wrong: ['in', 'on'], alt: ['At night they go to sleep'] },
-      { en: 'I play football on Saturday.', id: 'Aku bermain sepak bola pada hari Sabtu.', emoji: '⚽', key: 'on', wrong: ['in', 'at'], alt: ['On Saturday I play football'] },
-      { en: "She eats lunch at twelve o'clock.", id: 'Dia makan siang pada pukul dua belas.', emoji: '🕛', key: 'at', wrong: ['in', 'on'], alt: ["At twelve o'clock she eats lunch"] },
-      { en: 'My birthday is in July.', id: 'Ulang tahunku pada bulan Juli.', emoji: '🎂', key: 'in', wrong: ['on', 'at'] },
-      { en: 'We have art class on Monday.', id: 'Kami ada kelas seni pada hari Senin.', emoji: '🎨', key: 'on', wrong: ['in', 'at'], alt: ['On Monday we have art class'] },
-      { en: "He wakes up at six o'clock.", id: 'Dia bangun pada pukul enam.', emoji: '⏰', key: 'at', wrong: ['in', 'on'], alt: ["At six o'clock he wakes up"] },
-      { en: 'It is hot in the afternoon.', id: 'Udaranya panas pada siang hari.', emoji: '☀️', key: 'in', wrong: ['on', 'at'], alt: ['In the afternoon it is hot'] },
-      { en: 'We go to the market on Sunday.', id: 'Kami pergi ke pasar pada hari Minggu.', emoji: '🛒', key: 'on', wrong: ['in', 'at'], alt: ['On Sunday we go to the market'] },
+      { en: 'We go to school in the morning.', id: 'Kami pergi ke sekolah pada pagi hari.', emoji: '🌅', key: 'in', wrong: ['on', 'at', 'with'], alt: ['In the morning we go to school'] },
+      { en: 'I do my homework in the evening.', id: 'Aku mengerjakan PR pada sore hari.', emoji: '🌇', key: 'in', wrong: ['on', 'at', 'with'], alt: ['In the evening I do my homework'] },
+      { en: 'They go to sleep at night.', id: 'Mereka tidur pada malam hari.', emoji: '🌙', key: 'at', wrong: ['in', 'on', 'with'], alt: ['At night they go to sleep'] },
+      { en: 'I play football on Saturday.', id: 'Aku bermain sepak bola pada hari Sabtu.', emoji: '⚽', key: 'on', wrong: ['in', 'at', 'with'], alt: ['On Saturday I play football'] },
+      { en: "She eats lunch at twelve o'clock.", id: 'Dia makan siang pada pukul dua belas.', emoji: '🕛', key: 'at', wrong: ['in', 'on', 'with'], alt: ["At twelve o'clock she eats lunch"] },
+      { en: 'My birthday is in July.', id: 'Ulang tahunku pada bulan Juli.', emoji: '🎂', key: 'in', wrong: ['on', 'at', 'with'] },
+      { en: 'We have art class on Monday.', id: 'Kami ada kelas seni pada hari Senin.', emoji: '🎨', key: 'on', wrong: ['in', 'at', 'with'], alt: ['On Monday we have art class'] },
+      { en: "He wakes up at six o'clock.", id: 'Dia bangun pada pukul enam.', emoji: '⏰', key: 'at', wrong: ['in', 'on', 'with'], alt: ["At six o'clock he wakes up"] },
+      { en: 'It is hot in the afternoon.', id: 'Udaranya panas pada siang hari.', emoji: '☀️', key: 'in', wrong: ['on', 'at', 'with'], alt: ['In the afternoon it is hot'] },
+      { en: 'We go to the market on Sunday.', id: 'Kami pergi ke pasar pada hari Minggu.', emoji: '🛒', key: 'on', wrong: ['in', 'at', 'with'], alt: ['On Sunday we go to the market'] },
     ],
   },
 ];
@@ -3262,13 +3262,13 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'Singer',
         id: 'Penyanyi',
-        emoji: '🎤',
-        example: { en: 'My sister sings better than me. She wants to be a singer.', id: 'Kakakku menyanyi lebih bagus dariku. Dia mau jadi penyanyi.', emoji: '🎤' },
+        emoji: '🧑‍🎤',
+        example: { en: 'My sister sings better than me. She wants to be a singer.', id: 'Kakakku menyanyi lebih bagus dariku. Dia mau jadi penyanyi.', emoji: '🧑‍🎤' },
         question: {
           en: 'What does the sister want to be?',
           id: 'Kakaknya mau jadi apa?',
           options: [
-            { emoji: '🎤', text: 'Singer', ok: true },
+            { emoji: '🧑‍🎤', text: 'Singer', ok: true },
             { emoji: '🎨', text: 'Painter', ok: false },
             { emoji: '📝', text: 'Writer', ok: false },
             { emoji: '🥖', text: 'Baker', ok: false },
@@ -4778,13 +4778,13 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         en: 'Dog',
         id: 'Anjing',
         emoji: '🐶',
-        example: { en: 'The dog can run fast.', id: 'Anjing itu bisa lari cepat.', emoji: '💨' },
-        practice: { en: 'Wow! My dog can run.', id: 'Wow! Anjingku bisa berlari.' },
+        example: { en: 'The dog can catch a ball.', id: 'Anjing itu bisa menangkap bola.', emoji: '⚽' },
+        practice: { en: 'Look! My dog catches the ball.', id: 'Lihat! Anjingku menangkap bolanya.' },
         question: {
           en: 'What can the dog do?',
           id: 'Anjing itu bisa apa?',
           options: [
-            { emoji: '', text: 'Run', ok: true },
+            { emoji: '', text: 'Catch', ok: true },
             { emoji: '', text: 'Fly', ok: false },
             { emoji: '', text: 'Swim', ok: false },
             { emoji: '', text: 'Sing', ok: false },
@@ -5706,7 +5706,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
         en: 'Sister',
         id: 'Kakak/Adik Perempuan',
         emoji: '👧',
-        example: { en: 'My sister sings a song.', id: 'Kakak perempuanku menyanyikan lagu.', emoji: '🎤' },
+        example: { en: 'My sister sings a song.', id: 'Kakak perempuanku menyanyikan lagu.', emoji: '🧑‍🎤' },
         practice: { en: 'Listen! My sister is singing.', id: 'Dengar! Kakak perempuanku sedang bernyanyi.' },
         question: {
           en: 'Who sings a song?',
@@ -6663,14 +6663,14 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Sing',
         id: 'Bernyanyi',
-        emoji: '🎤',
-        example: { en: 'I like to sing.', id: 'Aku suka bernyanyi.', emoji: '🎤' },
+        emoji: '🧑‍🎤',
+        example: { en: 'I like to sing.', id: 'Aku suka bernyanyi.', emoji: '🧑‍🎤' },
         practice: { en: 'Singing songs is what Ara loves.', id: 'Menyanyikan lagu adalah kesukaan Ara.' },
         question: {
           en: 'What does Ara love to do?',
           id: 'Ara senang melakukan apa?',
           options: [
-            { emoji: '🎤', text: 'Sing', ok: true },
+            { emoji: '🧑‍🎤', text: 'Sing', ok: true },
             { emoji: '🖍️', text: 'Draw', ok: false },
             { emoji: '📖', text: 'Read', ok: false },
             { emoji: '🍳', text: 'Cook', ok: false },
@@ -6918,7 +6918,7 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
     drill: [
       { en: 'Basketball needs a big ball.', id: 'Basket butuh bola yang besar.', emoji: '🏀' },
       { en: 'Badminton is played with a racket.', id: 'Bulu tangkis dimainkan dengan raket.', emoji: '🏸' },
-      { en: 'Running makes me strong and healthy.', id: 'Berlari membuatku kuat dan sehat.', emoji: '👟' },
+      { en: 'Cycling makes me strong and healthy.', id: 'Bersepeda membuatku kuat dan sehat.', emoji: '🚲' },
     ],
     roleplay: [
       { q: { en: 'What sport do you like?', id: 'Olahraga apa yang kamu suka?' }, answer: { en: 'I like badminton, and I play it every Sunday.', id: 'Aku suka bulu tangkis, dan aku memainkannya setiap hari Minggu.', emoji: '🏸' }, emoji: '🏅', choices: [{ en: 'I like football, and I play it every Saturday.', id: 'Aku suka sepak bola, dan aku memainkannya setiap hari Sabtu.', emoji: '⚽' }] },
@@ -7019,16 +7019,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     title: 'Kata Kerja Lampau (Simple Past)',
     desc: 'Cerita kejadian kemarin (-ed)',
     sentences: [
-      { en: 'I played football yesterday.', id: 'Aku bermain sepak bola kemarin.', emoji: '⚽', key: 'played', wrong: ['play', 'playing'], alt: ['Yesterday I played football'] },
-      { en: 'She watched a movie last night.', id: 'Dia menonton film tadi malam.', emoji: '🎬', key: 'watched', wrong: ['watch', 'watching'], alt: ['Last night she watched a movie'] },
-      { en: 'We visited the museum last week.', id: 'Kami mengunjungi museum minggu lalu.', emoji: '🏛️', key: 'visited', wrong: ['visit', 'visiting'], alt: ['Last week we visited the museum'] },
-      { en: 'He cleaned his room yesterday.', id: 'Dia membersihkan kamarnya kemarin.', emoji: '🧹', key: 'cleaned', wrong: ['clean', 'cleaning'], alt: ['Yesterday he cleaned his room'] },
-      { en: 'They cooked dinner last night.', id: 'Mereka memasak makan malam tadi malam.', emoji: '🍲', key: 'cooked', wrong: ['cook', 'cooking'], alt: ['Last night they cooked dinner'] },
-      { en: 'You painted a picture yesterday.', id: 'Kamu melukis sebuah gambar kemarin.', emoji: '🎨', key: 'painted', wrong: ['paint', 'painting'], alt: ['Yesterday you painted a picture'] },
-      { en: 'I washed my hands this morning.', id: 'Aku mencuci tangan tadi pagi.', emoji: '🧼', key: 'washed', wrong: ['wash', 'washing'], alt: ['This morning I washed my hands'] },
-      { en: 'She opened the window an hour ago.', id: 'Dia membuka jendela sejam yang lalu.', emoji: '🪟', key: 'opened', wrong: ['open', 'opening'], alt: ['An hour ago she opened the window'] },
-      { en: 'We walked to school yesterday.', id: 'Kami berjalan kaki ke sekolah kemarin.', emoji: '🏫', key: 'walked', wrong: ['walk', 'walking'], alt: ['Yesterday we walked to school'] },
-      { en: 'My dad fixed my bike yesterday.', id: 'Ayahku memperbaiki sepedaku kemarin.', emoji: '🚲', key: 'fixed', wrong: ['fix', 'fixing'], alt: ['Yesterday my dad fixed my bike'] },
+      { en: 'I played football yesterday.', id: 'Aku bermain sepak bola kemarin.', emoji: '⚽', key: 'played', wrong: ['play', 'playing', 'plays'], alt: ['Yesterday I played football'] },
+      { en: 'She watched a movie last night.', id: 'Dia menonton film tadi malam.', emoji: '🎬', key: 'watched', wrong: ['watch', 'watching', 'watches'], alt: ['Last night she watched a movie'] },
+      { en: 'We visited the museum last week.', id: 'Kami mengunjungi museum minggu lalu.', emoji: '🏛️', key: 'visited', wrong: ['visit', 'visiting', 'visits'], alt: ['Last week we visited the museum'] },
+      { en: 'He cleaned his room yesterday.', id: 'Dia membersihkan kamarnya kemarin.', emoji: '🧹', key: 'cleaned', wrong: ['clean', 'cleaning', 'cleans'], alt: ['Yesterday he cleaned his room'] },
+      { en: 'They cooked dinner last night.', id: 'Mereka memasak makan malam tadi malam.', emoji: '🍲', key: 'cooked', wrong: ['cook', 'cooking', 'cooks'], alt: ['Last night they cooked dinner'] },
+      { en: 'You painted a picture yesterday.', id: 'Kamu melukis sebuah gambar kemarin.', emoji: '🎨', key: 'painted', wrong: ['paint', 'painting', 'paints'], alt: ['Yesterday you painted a picture'] },
+      { en: 'I washed my hands this morning.', id: 'Aku mencuci tangan tadi pagi.', emoji: '🧼', key: 'washed', wrong: ['wash', 'washing', 'washes'], alt: ['This morning I washed my hands'] },
+      { en: 'She opened the window an hour ago.', id: 'Dia membuka jendela sejam yang lalu.', emoji: '🪟', key: 'opened', wrong: ['open', 'opening', 'opens'], alt: ['An hour ago she opened the window'] },
+      { en: 'We walked to school yesterday.', id: 'Kami berjalan kaki ke sekolah kemarin.', emoji: '🏫', key: 'walked', wrong: ['walk', 'walking', 'walks'], alt: ['Yesterday we walked to school'] },
+      { en: 'My dad fixed my bike yesterday.', id: 'Ayahku memperbaiki sepedaku kemarin.', emoji: '🚲', key: 'fixed', wrong: ['fix', 'fixing', 'fixes'], alt: ['Yesterday my dad fixed my bike'] },
     ],
   },
   {
@@ -7036,16 +7036,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     title: 'Lebih dari yang Lain (Comparatives)',
     desc: 'bigger / taller / faster than',
     sentences: [
-      { en: 'The lion is bigger than the monkey.', id: 'Singa lebih besar daripada monyet.', emoji: '🦁', key: 'bigger', wrong: ['big', 'biggest'] },
-      { en: 'My bag is heavier than your bag.', id: 'Tasku lebih berat daripada tasmu.', emoji: '🎒', key: 'heavier', wrong: ['heavy', 'heaviest'] },
-      { en: 'The bus is longer than the car.', id: 'Bus lebih panjang daripada mobil.', emoji: '🚌', key: 'longer', wrong: ['long', 'longest'] },
-      { en: 'The tiger is faster than the bear.', id: 'Harimau lebih cepat daripada beruang.', emoji: '🐯', key: 'faster', wrong: ['fast', 'fastest'] },
-      { en: 'This pencil is shorter than that pencil.', id: 'Pensil ini lebih pendek daripada pensil itu.', emoji: '✏️', key: 'shorter', wrong: ['short', 'shortest'] },
-      { en: 'Today is hotter than yesterday.', id: 'Hari ini lebih panas daripada kemarin.', emoji: '☀️', key: 'hotter', wrong: ['hot', 'hottest'] },
-      { en: 'The mouse is smaller than the cat.', id: 'Tikus lebih kecil daripada kucing.', emoji: '🐭', key: 'smaller', wrong: ['small', 'smallest'] },
-      { en: 'My brother is taller than me.', id: 'Saudara laki-lakiku lebih tinggi daripada aku.', emoji: '📏', key: 'taller', wrong: ['tall', 'tallest'] },
-      { en: 'The river is wider than the road.', id: 'Sungai itu lebih lebar daripada jalan.', emoji: '🏞️', key: 'wider', wrong: ['wide', 'widest'] },
-      { en: 'My new shoes are cleaner than my old shoes.', id: 'Sepatu baruku lebih bersih daripada sepatu lamaku.', emoji: '👟', key: 'cleaner', wrong: ['clean', 'cleanest'] },
+      { en: 'The lion is bigger than the monkey.', id: 'Singa lebih besar daripada monyet.', emoji: '🦁', key: 'bigger', wrong: ['big', 'biggest', 'most big'] },
+      { en: 'My bag is heavier than your bag.', id: 'Tasku lebih berat daripada tasmu.', emoji: '🎒', key: 'heavier', wrong: ['heavy', 'heaviest', 'most heavy'] },
+      { en: 'The bus is longer than the car.', id: 'Bus lebih panjang daripada mobil.', emoji: '🚌', key: 'longer', wrong: ['long', 'longest', 'most long'] },
+      { en: 'The tiger is faster than the bear.', id: 'Harimau lebih cepat daripada beruang.', emoji: '🐯', key: 'faster', wrong: ['fast', 'fastest', 'most fast'] },
+      { en: 'This pencil is shorter than that pencil.', id: 'Pensil ini lebih pendek daripada pensil itu.', emoji: '✏️', key: 'shorter', wrong: ['short', 'shortest', 'most short'] },
+      { en: 'Today is hotter than yesterday.', id: 'Hari ini lebih panas daripada kemarin.', emoji: '☀️', key: 'hotter', wrong: ['hot', 'hottest', 'most hot'] },
+      { en: 'The mouse is smaller than the cat.', id: 'Tikus lebih kecil daripada kucing.', emoji: '🐭', key: 'smaller', wrong: ['small', 'smallest', 'most small'] },
+      { en: 'My brother is taller than me.', id: 'Saudara laki-lakiku lebih tinggi daripada aku.', emoji: '📏', key: 'taller', wrong: ['tall', 'tallest', 'most tall'] },
+      { en: 'The river is wider than the road.', id: 'Sungai itu lebih lebar daripada jalan.', emoji: '🏞️', key: 'wider', wrong: ['wide', 'widest', 'most wide'] },
+      { en: 'My new shoes are cleaner than my old shoes.', id: 'Sepatu baruku lebih bersih daripada sepatu lamaku.', emoji: '👟', key: 'cleaner', wrong: ['clean', 'cleanest', 'most clean'] },
     ],
   },
   {
@@ -7053,16 +7053,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     title: 'Paling dari Semua (Superlatives)',
     desc: 'the biggest / the fastest',
     sentences: [
-      { en: 'Rina is the tallest in our class.', id: 'Rina yang paling tinggi di kelas kami.', emoji: '📏', key: 'tallest', wrong: ['tall', 'taller'] },
-      { en: 'This box is the heaviest of all.', id: 'Kotak ini yang paling berat dari semuanya.', emoji: '📦', key: 'heaviest', wrong: ['heavy', 'heavier'] },
-      { en: 'The blue car is the fastest of all.', id: 'Mobil biru itu yang paling cepat dari semuanya.', emoji: '🚗', key: 'fastest', wrong: ['fast', 'faster'] },
-      { en: 'My pencil is the shortest in my bag.', id: 'Pensilku yang paling pendek di tasku.', emoji: '✏️', key: 'shortest', wrong: ['short', 'shorter'] },
-      { en: 'The whale is the biggest of all sea animals.', id: 'Paus yang paling besar dari semua hewan laut.', key: 'biggest', wrong: ['big', 'bigger'] },
-      { en: 'Budi is the youngest in his family.', id: 'Budi yang paling muda di keluarganya.', key: 'youngest', wrong: ['young', 'younger'] },
-      { en: 'This river is the longest in Indonesia.', id: 'Sungai ini yang paling panjang di Indonesia.', emoji: '🏞️', key: 'longest', wrong: ['long', 'longer'] },
-      { en: 'The mouse is the smallest of all the animals here.', id: 'Tikus yang paling kecil dari semua hewan di sini.', emoji: '🐭', key: 'smallest', wrong: ['small', 'smaller'] },
-      { en: 'That building is the highest in the city.', id: 'Gedung itu yang paling tinggi di kota.', emoji: '🏢', key: 'highest', wrong: ['high', 'higher'] },
-      { en: 'Maya is the oldest of the three children.', id: 'Maya yang paling tua dari tiga anak itu.', key: 'oldest', wrong: ['old', 'older'] },
+      { en: 'Rina is the tallest in our class.', id: 'Rina yang paling tinggi di kelas kami.', emoji: '📏', key: 'tallest', wrong: ['tall', 'taller', 'more tall'] },
+      { en: 'This box is the heaviest of all.', id: 'Kotak ini yang paling berat dari semuanya.', emoji: '📦', key: 'heaviest', wrong: ['heavy', 'heavier', 'more heavy'] },
+      { en: 'The blue car is the fastest of all.', id: 'Mobil biru itu yang paling cepat dari semuanya.', emoji: '🚗', key: 'fastest', wrong: ['fast', 'faster', 'more fast'] },
+      { en: 'My pencil is the shortest in my bag.', id: 'Pensilku yang paling pendek di tasku.', emoji: '✏️', key: 'shortest', wrong: ['short', 'shorter', 'more short'] },
+      { en: 'The whale is the biggest of all sea animals.', id: 'Paus yang paling besar dari semua hewan laut.', key: 'biggest', wrong: ['big', 'bigger', 'more big'] },
+      { en: 'Budi is the youngest in his family.', id: 'Budi yang paling muda di keluarganya.', key: 'youngest', wrong: ['young', 'younger', 'more young'] },
+      { en: 'This river is the longest in Indonesia.', id: 'Sungai ini yang paling panjang di Indonesia.', emoji: '🏞️', key: 'longest', wrong: ['long', 'longer', 'more long'] },
+      { en: 'The mouse is the smallest of all the animals here.', id: 'Tikus yang paling kecil dari semua hewan di sini.', emoji: '🐭', key: 'smallest', wrong: ['small', 'smaller', 'more small'] },
+      { en: 'That building is the highest in the city.', id: 'Gedung itu yang paling tinggi di kota.', emoji: '🏢', key: 'highest', wrong: ['high', 'higher', 'more high'] },
+      { en: 'Maya is the oldest of the three children.', id: 'Maya yang paling tua dari tiga anak itu.', key: 'oldest', wrong: ['old', 'older', 'more old'] },
     ],
   },
   {
@@ -7070,16 +7070,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     title: 'Kata Kerja Lampau Tidak Beraturan (Irregular Past)',
     desc: 'went, ate, saw, wrote…',
     sentences: [
-      { en: 'I went to school yesterday.', id: 'Aku pergi ke sekolah kemarin.', emoji: '🏫', key: 'went', wrong: ['go', 'going'], alt: ['Yesterday I went to school'] },
-      { en: 'She ate breakfast this morning.', id: 'Dia sarapan tadi pagi.', emoji: '🍳', key: 'ate', wrong: ['eat', 'eating'], alt: ['This morning she ate breakfast'] },
-      { en: 'He saw a rainbow yesterday.', id: 'Dia melihat pelangi kemarin.', emoji: '🌈', key: 'saw', wrong: ['see', 'seeing'], alt: ['Yesterday he saw a rainbow'] },
-      { en: 'She wrote a letter last week.', id: 'Dia menulis surat minggu lalu.', emoji: '✉️', key: 'wrote', wrong: ['write', 'writing'], alt: ['Last week she wrote a letter'] },
-      { en: 'They ran to the park yesterday.', id: 'Mereka berlari ke taman kemarin.', emoji: '🌳', key: 'ran', wrong: ['run', 'running'], alt: ['Yesterday they ran to the park'] },
-      { en: 'We made a kite last Sunday.', id: 'Kami membuat layang-layang hari Minggu lalu.', emoji: '🪁', key: 'made', wrong: ['make', 'making'], alt: ['Last Sunday we made a kite'] },
-      { en: 'I drank some milk this morning.', id: 'Aku minum susu tadi pagi.', emoji: '🥛', key: 'drank', wrong: ['drink', 'drinking'], alt: ['This morning I drank some milk'] },
-      { en: 'He took a photo last weekend.', id: 'Dia mengambil foto akhir pekan lalu.', emoji: '📷', key: 'took', wrong: ['take', 'taking'], alt: ['Last weekend he took a photo'] },
-      { en: 'My mom bought a new bag yesterday.', id: 'Ibuku membeli tas baru kemarin.', emoji: '👜', key: 'bought', wrong: ['buy', 'buying'], alt: ['Yesterday my mom bought a new bag'] },
-      { en: 'We sang a song last night.', id: 'Kami menyanyikan lagu tadi malam.', emoji: '🎤', key: 'sang', wrong: ['sing', 'singing'], alt: ['Last night we sang a song'] },
+      { en: 'I went to school yesterday.', id: 'Aku pergi ke sekolah kemarin.', emoji: '🏫', key: 'went', wrong: ['go', 'going', 'goes'], alt: ['Yesterday I went to school'] },
+      { en: 'She ate breakfast this morning.', id: 'Dia sarapan tadi pagi.', emoji: '🍳', key: 'ate', wrong: ['eat', 'eating', 'eats'], alt: ['This morning she ate breakfast'] },
+      { en: 'He saw a rainbow yesterday.', id: 'Dia melihat pelangi kemarin.', emoji: '🌈', key: 'saw', wrong: ['see', 'seeing', 'sees'], alt: ['Yesterday he saw a rainbow'] },
+      { en: 'She wrote a letter last week.', id: 'Dia menulis surat minggu lalu.', emoji: '✉️', key: 'wrote', wrong: ['write', 'writing', 'writes'], alt: ['Last week she wrote a letter'] },
+      { en: 'He gave me a gift yesterday.', id: 'Dia memberiku hadiah kemarin.', emoji: '🎁', key: 'gave', wrong: ['give', 'giving', 'gives'], alt: ['Yesterday he gave me a gift'] },
+      { en: 'We made a kite last Sunday.', id: 'Kami membuat layang-layang hari Minggu lalu.', emoji: '🪁', key: 'made', wrong: ['make', 'making', 'makes'], alt: ['Last Sunday we made a kite'] },
+      { en: 'I drank some milk this morning.', id: 'Aku minum susu tadi pagi.', emoji: '🥛', key: 'drank', wrong: ['drink', 'drinking', 'drinks'], alt: ['This morning I drank some milk'] },
+      { en: 'He took a photo last weekend.', id: 'Dia mengambil foto akhir pekan lalu.', emoji: '📷', key: 'took', wrong: ['take', 'taking', 'takes'], alt: ['Last weekend he took a photo'] },
+      { en: 'My mom bought a new bag yesterday.', id: 'Ibuku membeli tas baru kemarin.', emoji: '👜', key: 'bought', wrong: ['buy', 'buying', 'buys'], alt: ['Yesterday my mom bought a new bag'] },
+      { en: 'We sang a song last night.', id: 'Kami menyanyikan lagu tadi malam.', emoji: '🧑‍🎤', key: 'sang', wrong: ['sing', 'singing', 'sings'], alt: ['Last night we sang a song'] },
     ],
   },
   {
@@ -7087,16 +7087,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     title: 'Dulu Aku Bisa (Could)',
     desc: 'could + kata kerja dasar',
     sentences: [
-      { en: 'I could swim when I was five.', id: 'Aku sudah bisa berenang waktu umur lima tahun.', emoji: '🌊', key: 'could', wrong: ['can', 'will'], alt: ['When I was five I could swim'] },
-      { en: 'She could run fast last year.', id: 'Dia bisa berlari cepat tahun lalu.', emoji: '👟', key: 'run', wrong: ['ran', 'running'], alt: ['Last year she could run fast'] },
-      { en: 'He could catch the ball yesterday.', id: 'Dia bisa menangkap bola kemarin.', emoji: '⚾', key: 'catch', wrong: ['caught', 'catching'], alt: ['Yesterday he could catch the ball'] },
-      { en: 'We could see the stars last night.', id: 'Kami bisa melihat bintang tadi malam.', emoji: '⭐', key: 'see', wrong: ['saw', 'seeing'], alt: ['Last night we could see the stars'] },
-      { en: 'They could jump high last year.', id: 'Mereka bisa melompat tinggi tahun lalu.', key: 'jump', wrong: ['jumped', 'jumping'], alt: ['Last year they could jump high'] },
-      { en: 'My grandpa could climb trees when he was young.', id: 'Kakekku bisa memanjat pohon waktu dia masih muda.', emoji: '🌳', key: 'could', wrong: ['can', 'will'], alt: ['When he was young my grandpa could climb trees'] },
-      { en: "I couldn't open the jar yesterday.", id: 'Aku tidak bisa membuka toples itu kemarin.', emoji: '🫙', key: 'open', wrong: ['opened', 'opening'], alt: ["Yesterday I couldn't open the jar"] },
-      { en: 'She could read when she was four.', id: 'Dia sudah bisa membaca waktu umur empat tahun.', emoji: '📖', key: 'could', wrong: ['can', 'will'], alt: ['When she was four she could read'] },
-      { en: 'We could hear the music last night.', id: 'Kami bisa mendengar musiknya tadi malam.', emoji: '🎵', key: 'hear', wrong: ['heard', 'hearing'], alt: ['Last night we could hear the music'] },
-      { en: "He couldn't find his shoes this morning.", id: 'Dia tidak bisa menemukan sepatunya tadi pagi.', emoji: '👟', key: 'find', wrong: ['found', 'finding'], alt: ["This morning he couldn't find his shoes"] },
+      { en: 'I could swim when I was five.', id: 'Aku sudah bisa berenang waktu umur lima tahun.', emoji: '🌊', key: 'could', wrong: ['can', 'will', 'must'], alt: ['When I was five I could swim'] },
+      { en: 'She could ride a bike last year.', id: 'Dia bisa naik sepeda tahun lalu.', emoji: '🚲', key: 'ride', wrong: ['rode', 'riding', 'rides'], alt: ['Last year she could ride a bike'] },
+      { en: 'He could catch the ball yesterday.', id: 'Dia bisa menangkap bola kemarin.', emoji: '⚾', key: 'catch', wrong: ['caught', 'catching', 'catches'], alt: ['Yesterday he could catch the ball'] },
+      { en: 'We could see the stars last night.', id: 'Kami bisa melihat bintang tadi malam.', emoji: '⭐', key: 'see', wrong: ['saw', 'seeing', 'sees'], alt: ['Last night we could see the stars'] },
+      { en: 'They could play the piano last year.', id: 'Mereka bisa bermain piano tahun lalu.', emoji: '🎹', key: 'play', wrong: ['played', 'playing', 'plays'], alt: ['Last year they could play the piano'] },
+      { en: 'My grandpa could climb trees when he was young.', id: 'Kakekku bisa memanjat pohon waktu dia masih muda.', emoji: '🌳', key: 'could', wrong: ['can', 'will', 'must'], alt: ['When he was young my grandpa could climb trees'] },
+      { en: "I couldn't open the jar yesterday.", id: 'Aku tidak bisa membuka toples itu kemarin.', emoji: '🫙', key: 'open', wrong: ['opened', 'opening', 'opens'], alt: ["Yesterday I couldn't open the jar"] },
+      { en: 'She could read when she was four.', id: 'Dia sudah bisa membaca waktu umur empat tahun.', emoji: '📖', key: 'could', wrong: ['can', 'will', 'must'], alt: ['When she was four she could read'] },
+      { en: 'We could hear the music last night.', id: 'Kami bisa mendengar musiknya tadi malam.', emoji: '🎵', key: 'hear', wrong: ['heard', 'hearing', 'hears'], alt: ['Last night we could hear the music'] },
+      { en: "He couldn't find his shoes this morning.", id: 'Dia tidak bisa menemukan sepatunya tadi pagi.', emoji: '👟', key: 'find', wrong: ['found', 'finding', 'finds'], alt: ["This morning he couldn't find his shoes"] },
     ],
   },
   {
@@ -7104,16 +7104,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     title: "Harus & Tidak Boleh (Must / Mustn't)",
     desc: 'must + kata kerja dasar',
     sentences: [
-      { en: 'You must wear your uniform.', id: 'Kamu harus memakai seragammu.', emoji: '👕', key: 'wear', wrong: ['wears', 'wearing'] },
-      { en: "You mustn't run in the hallway.", id: 'Kamu tidak boleh berlari di lorong.', emoji: '🚫', key: 'run', wrong: ['runs', 'running'] },
-      { en: 'We must bring our books to class.', id: 'Kami harus membawa buku ke kelas.', emoji: '📚', key: 'bring', wrong: ['brings', 'bringing'] },
-      { en: 'You must listen to the teacher.', id: 'Kamu harus mendengarkan guru.', emoji: '👂', key: 'listen', wrong: ['listens', 'listening'] },
-      { en: "You mustn't eat in the library.", id: 'Kamu tidak boleh makan di perpustakaan.', emoji: '📚', key: 'eat', wrong: ['eats', 'eating'] },
-      { en: 'She must finish her homework.', id: 'Dia harus menyelesaikan PR-nya.', emoji: '📝', key: 'finish', wrong: ['finishes', 'finishing'] },
-      { en: "We mustn't shout in class.", id: 'Kami tidak boleh berteriak di kelas.', emoji: '🤫', key: 'shout', wrong: ['shouts', 'shouting'] },
-      { en: 'You must wash your hands before lunch.', id: 'Kamu harus mencuci tangan sebelum makan siang.', emoji: '🧼', key: 'wash', wrong: ['washes', 'washing'] },
-      { en: "He mustn't forget his ruler.", id: 'Dia tidak boleh lupa membawa penggarisnya.', emoji: '📏', key: 'forget', wrong: ['forgets', 'forgetting'] },
-      { en: 'We must keep the classroom clean.', id: 'Kami harus menjaga kelas tetap bersih.', emoji: '🧹', key: 'keep', wrong: ['keeps', 'keeping'] },
+      { en: 'You must wear your uniform.', id: 'Kamu harus memakai seragammu.', emoji: '👕', key: 'wear', wrong: ['wears', 'wearing', 'wore'] },
+      { en: "You mustn't use your phone in class.", id: 'Kamu tidak boleh memakai HP di kelas.', emoji: '📵', key: 'use', wrong: ['uses', 'using', 'used'] },
+      { en: 'We must bring our books to class.', id: 'Kami harus membawa buku ke kelas.', emoji: '📚', key: 'bring', wrong: ['brings', 'bringing', 'brought'] },
+      { en: 'You must listen to the teacher.', id: 'Kamu harus mendengarkan guru.', emoji: '👂', key: 'listen', wrong: ['listens', 'listening', 'listened'] },
+      { en: "You mustn't eat in the library.", id: 'Kamu tidak boleh makan di perpustakaan.', emoji: '📚', key: 'eat', wrong: ['eats', 'eating', 'ate'] },
+      { en: 'She must finish her homework.', id: 'Dia harus menyelesaikan PR-nya.', emoji: '📝', key: 'finish', wrong: ['finishes', 'finishing', 'finished'] },
+      { en: "We mustn't shout in class.", id: 'Kami tidak boleh berteriak di kelas.', emoji: '🤫', key: 'shout', wrong: ['shouts', 'shouting', 'shouted'] },
+      { en: 'You must wash your hands before lunch.', id: 'Kamu harus mencuci tangan sebelum makan siang.', emoji: '🧼', key: 'wash', wrong: ['washes', 'washing', 'washed'] },
+      { en: "He mustn't forget his ruler.", id: 'Dia tidak boleh lupa membawa penggarisnya.', emoji: '📏', key: 'forget', wrong: ['forgets', 'forgetting', 'forgot'] },
+      { en: 'We must keep the classroom clean.', id: 'Kami harus menjaga kelas tetap bersih.', emoji: '🧹', key: 'keep', wrong: ['keeps', 'keeping', 'kept'] },
     ],
   },
   {
@@ -7121,16 +7121,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     title: 'Pergi Beraktivitas (Go + -ing)',
     desc: 'go camping, go fishing',
     sentences: [
-      { en: 'We went camping in the mountains.', id: 'Kami pergi berkemah di pegunungan.', emoji: '⛺', key: 'camping', wrong: ['camp', 'camped'] },
-      { en: 'They went fishing by the river.', id: 'Mereka pergi memancing di tepi sungai.', emoji: '🎣', key: 'fishing', wrong: ['fish', 'fished'] },
-      { en: 'I went hiking in the forest.', id: 'Aku pergi mendaki di hutan.', emoji: '🥾', key: 'hiking', wrong: ['hike', 'hiked'] },
-      { en: 'He went skating at the park.', id: 'Dia pergi bermain sepatu roda di taman.', emoji: '🛼', key: 'skating', wrong: ['skate', 'skated'] },
-      { en: 'She went swimming at the beach.', id: 'Dia pergi berenang di pantai.', emoji: '🌊', key: 'swimming', wrong: ['swim', 'swam'] },
-      { en: 'We go shopping every Saturday.', id: 'Kami pergi berbelanja setiap hari Sabtu.', emoji: '🛍️', key: 'shopping', wrong: ['shop', 'shopped'], alt: ['Every Saturday we go shopping'] },
-      { en: 'My family goes cycling on Sunday.', id: 'Keluargaku pergi bersepeda pada hari Minggu.', emoji: '🚲', key: 'cycling', wrong: ['cycle', 'cycled'], alt: ['On Sunday my family goes cycling'] },
-      { en: 'They went sailing on the lake.', id: 'Mereka pergi berlayar di danau.', emoji: '⛵', key: 'sailing', wrong: ['sail', 'sailed'] },
-      { en: 'Dad goes jogging every morning.', id: 'Ayah pergi joging setiap pagi.', emoji: '👟', key: 'jogging', wrong: ['jog', 'jogged'], alt: ['Every morning Dad goes jogging'] },
-      { en: 'We went bowling last weekend.', id: 'Kami pergi bermain bowling akhir pekan lalu.', emoji: '🎳', key: 'bowling', wrong: ['bowl', 'bowled'], alt: ['Last weekend we went bowling'] },
+      { en: 'We went camping in the mountains.', id: 'Kami pergi berkemah di pegunungan.', emoji: '⛺', key: 'camping', wrong: ['camp', 'camped', 'camps'] },
+      { en: 'They went fishing by the river.', id: 'Mereka pergi memancing di tepi sungai.', emoji: '🎣', key: 'fishing', wrong: ['fish', 'fished', 'fishes'] },
+      { en: 'I went hiking in the forest.', id: 'Aku pergi mendaki di hutan.', emoji: '🥾', key: 'hiking', wrong: ['hike', 'hiked', 'hikes'] },
+      { en: 'He went skating at the park.', id: 'Dia pergi bermain sepatu roda di taman.', emoji: '🛼', key: 'skating', wrong: ['skate', 'skated', 'skates'] },
+      { en: 'She went swimming at the beach.', id: 'Dia pergi berenang di pantai.', emoji: '🌊', key: 'swimming', wrong: ['swim', 'swam', 'swims'] },
+      { en: 'We go shopping every Saturday.', id: 'Kami pergi berbelanja setiap hari Sabtu.', emoji: '🛍️', key: 'shopping', wrong: ['shop', 'shopped', 'shops'], alt: ['Every Saturday we go shopping'] },
+      { en: 'My family goes cycling on Sunday.', id: 'Keluargaku pergi bersepeda pada hari Minggu.', emoji: '🚲', key: 'cycling', wrong: ['cycle', 'cycled', 'cycles'], alt: ['On Sunday my family goes cycling'] },
+      { en: 'They went sailing on the lake.', id: 'Mereka pergi berlayar di danau.', emoji: '⛵', key: 'sailing', wrong: ['sail', 'sailed', 'sails'] },
+      { en: 'Dad goes snorkeling every holiday.', id: 'Ayah pergi snorkeling setiap liburan.', emoji: '🤿', key: 'snorkeling', wrong: ['snorkel', 'snorkeled', 'snorkels'], alt: ['Every holiday Dad goes snorkeling'] },
+      { en: 'We went bowling last weekend.', id: 'Kami pergi bermain bowling akhir pekan lalu.', emoji: '🎳', key: 'bowling', wrong: ['bowl', 'bowled', 'bowls'], alt: ['Last weekend we went bowling'] },
     ],
   },
   {
@@ -7139,16 +7139,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     desc: 'over / under / through / across',
     meaningNeeded: true,
     sentences: [
-      { en: 'The car drove under the bridge.', id: 'Mobil itu melaju di bawah jembatan.', emoji: '🚗', key: 'under', wrong: ['over', 'into'] },
-      { en: 'The plane flew over the mountain.', id: 'Pesawat itu terbang melewati atas gunung.', emoji: '✈️', key: 'over', wrong: ['under', 'through'] },
-      { en: 'The train went through the tunnel.', id: 'Kereta itu melaju melewati bagian dalam terowongan.', emoji: '🚆', key: 'through', wrong: ['over', 'along'] },
-      { en: 'The ball rolled along the street.', id: 'Bola itu menggelinding menyusuri jalan.', emoji: '⚽', key: 'along', wrong: ['through', 'into'] },
-      { en: 'The kite flew across the sky.', id: 'Layang-layang itu terbang melintasi langit.', emoji: '🪁', key: 'across', wrong: ['into', 'under'] },
-      { en: 'The boat sailed across the river.', id: 'Perahu itu berlayar menyeberangi sungai.', emoji: '⛵', key: 'across', wrong: ['into', 'under'] },
-      { en: 'The ball fell into the water.', id: 'Bola itu jatuh masuk ke dalam air.', emoji: '💧', key: 'into', wrong: ['over', 'along'] },
-      { en: 'We walked through the park.', id: 'Kami berjalan melewati tengah taman.', emoji: '🌳', key: 'through', wrong: ['under', 'into'] },
-      { en: 'The bird flew over the house.', id: 'Burung itu terbang melewati atas rumah.', emoji: '🏠', key: 'over', wrong: ['through', 'along'] },
-      { en: 'The boy ran up the hill.', id: 'Anak laki-laki itu berlari naik ke atas bukit.', emoji: '⛰️', key: 'up', wrong: ['down', 'into'] },
+      { en: 'The car drove under the bridge.', id: 'Mobil itu melaju di bawah jembatan.', emoji: '🚗', key: 'under', wrong: ['over', 'into', 'along'] },
+      { en: 'The plane flew over the mountain.', id: 'Pesawat itu terbang melewati atas gunung.', emoji: '✈️', key: 'over', wrong: ['under', 'through', 'into'] },
+      { en: 'The train went through the tunnel.', id: 'Kereta itu melaju melewati bagian dalam terowongan.', emoji: '🚆', key: 'through', wrong: ['over', 'along', 'under'] },
+      { en: 'The ball rolled along the street.', id: 'Bola itu menggelinding menyusuri jalan.', emoji: '⚽', key: 'along', wrong: ['through', 'into', 'over'] },
+      { en: 'The kite flew across the sky.', id: 'Layang-layang itu terbang melintasi langit.', emoji: '🪁', key: 'across', wrong: ['into', 'under', 'behind'] },
+      { en: 'The boat sailed across the river.', id: 'Perahu itu berlayar menyeberangi sungai.', emoji: '⛵', key: 'across', wrong: ['into', 'under', 'behind'] },
+      { en: 'The ball fell into the water.', id: 'Bola itu jatuh masuk ke dalam air.', emoji: '💧', key: 'into', wrong: ['over', 'along', 'behind'] },
+      { en: 'We walked through the park.', id: 'Kami berjalan melewati tengah taman.', emoji: '🏞️', key: 'through', wrong: ['under', 'into', 'behind'] },
+      { en: 'The bird flew over the house.', id: 'Burung itu terbang melewati atas rumah.', emoji: '🏠', key: 'over', wrong: ['through', 'along', 'under'] },
+      { en: 'The boy ran up the hill.', id: 'Anak laki-laki itu berlari naik ke atas bukit.', emoji: '⛰️', key: 'up', wrong: ['down', 'into', 'across'] },
     ],
   },
   {
@@ -7156,16 +7156,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     title: 'Bagaimana Caranya? (Adverbs of Manner)',
     desc: 'happily, carefully, gently',
     sentences: [
-      { en: 'She smiled happily.', id: 'Dia tersenyum dengan gembira.', emoji: '😊', key: 'happily', wrong: ['happy', 'happiness'] },
-      { en: 'He shouted angrily.', id: 'Dia berteriak dengan marah.', emoji: '😠', key: 'angrily', wrong: ['angry', 'anger'] },
-      { en: 'The boy cried sadly.', id: 'Anak laki-laki itu menangis dengan sedih.', emoji: '😢', key: 'sadly', wrong: ['sad', 'sadness'] },
-      { en: 'The girl sang beautifully.', id: 'Anak perempuan itu bernyanyi dengan indah.', emoji: '🎤', key: 'beautifully', wrong: ['beautiful', 'beauty'] },
-      { en: 'Please write carefully.', id: 'Tolong menulis dengan hati-hati.', emoji: '✏️', key: 'carefully', wrong: ['careful', 'care'] },
-      { en: 'The leaves fell gently.', id: 'Daun-daun itu jatuh dengan pelan.', emoji: '🍂', key: 'gently', wrong: ['gentle', 'gentleness'] },
-      { en: 'She solved the puzzle easily.', id: 'Dia menyelesaikan teka-teki itu dengan mudah.', emoji: '🧩', key: 'easily', wrong: ['easy', 'ease'] },
-      { en: 'The children laughed cheerfully.', id: 'Anak-anak itu tertawa dengan riang.', emoji: '😄', key: 'cheerfully', wrong: ['cheerful', 'cheer'] },
-      { en: 'She spoke softly.', id: 'Dia berbicara dengan lembut.', emoji: '🤫', key: 'softly', wrong: ['soft', 'softness'] },
-      { en: 'We waited patiently.', id: 'Kami menunggu dengan sabar.', emoji: '⏳', key: 'patiently', wrong: ['patient', 'patience'] },
+      { en: 'She smiled happily.', id: 'Dia tersenyum dengan gembira.', emoji: '😊', key: 'happily', wrong: ['happy', 'happiness', 'happiest'] },
+      { en: 'He shouted angrily.', id: 'Dia berteriak dengan marah.', emoji: '😠', key: 'angrily', wrong: ['angry', 'anger', 'angriest'] },
+      { en: 'The boy cried sadly.', id: 'Anak laki-laki itu menangis dengan sedih.', emoji: '😢', key: 'sadly', wrong: ['sad', 'sadness', 'saddest'] },
+      { en: 'The girl sang beautifully.', id: 'Anak perempuan itu bernyanyi dengan indah.', emoji: '🧑‍🎤', key: 'beautifully', wrong: ['beautiful', 'beauty', 'most beautiful'] },
+      { en: 'Please write carefully.', id: 'Tolong menulis dengan hati-hati.', emoji: '✏️', key: 'carefully', wrong: ['careful', 'care', 'most careful'] },
+      { en: 'The leaves fell gently.', id: 'Daun-daun itu jatuh dengan pelan.', emoji: '🍂', key: 'gently', wrong: ['gentle', 'gentleness', 'gentlest'] },
+      { en: 'She solved the puzzle easily.', id: 'Dia menyelesaikan teka-teki itu dengan mudah.', emoji: '🧩', key: 'easily', wrong: ['easy', 'ease', 'easiest'] },
+      { en: 'The children laughed cheerfully.', id: 'Anak-anak itu tertawa dengan riang.', emoji: '😄', key: 'cheerfully', wrong: ['cheerful', 'cheer', 'most cheerful'] },
+      { en: 'She spoke softly.', id: 'Dia berbicara dengan lembut.', emoji: '🤫', key: 'softly', wrong: ['soft', 'softness', 'softest'] },
+      { en: 'We waited patiently.', id: 'Kami menunggu dengan sabar.', emoji: '⏳', key: 'patiently', wrong: ['patient', 'patience', 'most patient'] },
     ],
   },
   {
@@ -7174,16 +7174,16 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
     desc: 'Karena cuacanya…',
     meaningNeeded: true,
     sentences: [
-      { en: 'I wear a jacket because it is cold.', id: 'Aku memakai jaket karena udaranya dingin.', emoji: '🧥', key: 'because', wrong: ['so', 'but'], alt: ['Because it is cold I wear a jacket'] },
-      { en: 'We stay inside because it is raining.', id: 'Kami tetap di dalam karena sedang hujan.', emoji: '☔', key: 'because', wrong: ['so', 'but'], alt: ['Because it is raining we stay inside'] },
-      { en: 'She wears sunglasses because it is sunny.', id: 'Dia memakai kacamata hitam karena cuacanya cerah.', emoji: '🕶️', key: 'because', wrong: ['so', 'but'], alt: ['Because it is sunny she wears sunglasses'] },
-      { en: 'He turns on the fan because it is hot.', id: 'Dia menyalakan kipas karena udaranya panas.', emoji: '🌡️', key: 'because', wrong: ['so', 'but'], alt: ['Because it is hot he turns on the fan'] },
-      { en: 'He closes the window because it is windy.', id: 'Dia menutup jendela karena anginnya kencang.', emoji: '🌬️', key: 'because', wrong: ['so', 'but'], alt: ['Because it is windy he closes the window'] },
-      { en: 'I drink water because I am thirsty.', id: 'Aku minum air karena aku haus.', emoji: '💧', key: 'because', wrong: ['so', 'but'], alt: ['Because I am thirsty I drink water'] },
-      { en: 'She is happy because she has a new book.', id: 'Dia senang karena dia punya buku baru.', emoji: '📕', key: 'because', wrong: ['so', 'but'], alt: ['Because she has a new book she is happy'] },
-      { en: 'We take an umbrella because it is cloudy.', id: 'Kami membawa payung karena cuacanya mendung.', emoji: '☁️', key: 'because', wrong: ['so', 'but'], alt: ['Because it is cloudy we take an umbrella'] },
-      { en: 'I go to bed early because I am tired.', id: 'Aku tidur lebih awal karena aku lelah.', emoji: '🛏️', key: 'because', wrong: ['so', 'but'], alt: ['Because I am tired I go to bed early'] },
-      { en: 'He is eating because he is hungry.', id: 'Dia sedang makan karena dia lapar.', emoji: '🍽️', key: 'because', wrong: ['so', 'but'], alt: ['Because he is hungry he is eating'] },
+      { en: 'I wear a jacket because it is cold.', id: 'Aku memakai jaket karena udaranya dingin.', emoji: '🧥', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because it is cold I wear a jacket'] },
+      { en: 'We stay inside because it is raining.', id: 'Kami tetap di dalam karena sedang hujan.', emoji: '☔', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because it is raining we stay inside'] },
+      { en: 'She wears sunglasses because it is sunny.', id: 'Dia memakai kacamata hitam karena cuacanya cerah.', emoji: '🕶️', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because it is sunny she wears sunglasses'] },
+      { en: 'He turns on the fan because it is hot.', id: 'Dia menyalakan kipas karena udaranya panas.', emoji: '🌡️', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because it is hot he turns on the fan'] },
+      { en: 'He closes the window because it is windy.', id: 'Dia menutup jendela karena anginnya kencang.', emoji: '🌬️', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because it is windy he closes the window'] },
+      { en: 'I drink water because I am thirsty.', id: 'Aku minum air karena aku haus.', emoji: '💧', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because I am thirsty I drink water'] },
+      { en: 'She is happy because she has a new book.', id: 'Dia senang karena dia punya buku baru.', emoji: '📕', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because she has a new book she is happy'] },
+      { en: 'We take an umbrella because it is cloudy.', id: 'Kami membawa payung karena cuacanya mendung.', emoji: '☁️', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because it is cloudy we take an umbrella'] },
+      { en: 'I go to bed early because I am tired.', id: 'Aku tidur lebih awal karena aku lelah.', emoji: '🛏️', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because I am tired I go to bed early'] },
+      { en: 'He is eating because he is hungry.', id: 'Dia sedang makan karena dia lapar.', emoji: '🍽️', key: 'because', wrong: ['so', 'but', 'or'], alt: ['Because he is hungry he is eating'] },
     ],
   },
 ];
@@ -12270,7 +12270,7 @@ export const VOCAB_TOPICS_STARTER: VocabTopic[] = [
     desc: '10 kata',
     items: [
       { en: 'Drawing', id: 'Menggambar', emoji: '🎨', example: { en: 'I like drawing.', id: 'Aku suka menggambar.', emoji: '🎨' } },
-      { en: 'Singing', id: 'Bernyanyi', emoji: '🎤', example: { en: 'I like singing.', id: 'Aku suka bernyanyi.', emoji: '🎤' } },
+      { en: 'Singing', id: 'Bernyanyi', emoji: '🧑‍🎤', example: { en: 'I like singing.', id: 'Aku suka bernyanyi.', emoji: '🧑‍🎤' } },
       { en: 'Reading', id: 'Membaca', emoji: '📖', example: { en: 'I like reading.', id: 'Aku suka membaca.', emoji: '📖' } },
       { en: 'Painting', id: 'Melukis', emoji: '🖌️', example: { en: 'I like painting.', id: 'Aku suka melukis.', emoji: '🖌️' } },
       { en: 'Cooking', id: 'Memasak', emoji: '🍳', example: { en: 'I like cooking.', id: 'Aku suka memasak.', emoji: '🍳' } },
@@ -14307,8 +14307,8 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
       {
         en: 'Singing',
         id: 'Bernyanyi',
-        emoji: '🎤',
-        example: { en: 'She likes singing in the choir.', id: 'Dia suka bernyanyi di paduan suara.', emoji: '🎤' },
+        emoji: '🧑‍🎤',
+        example: { en: 'She likes singing in the choir.', id: 'Dia suka bernyanyi di paduan suara.', emoji: '🧑‍🎤' },
         practice: { en: 'She enjoys singing with the choir.', id: 'Dia senang bernyanyi bersama paduan suara.' },
         question: {
           en: 'Where does she like singing?',
@@ -15881,7 +15881,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
           options: [
             { emoji: '🧩', text: 'Solving Puzzles', ok: true },
             { emoji: '⚽', text: 'Playing Sports', ok: false },
-            { emoji: '🎤', text: 'Singing Songs', ok: false },
+            { emoji: '🧑‍🎤', text: 'Singing Songs', ok: false },
             { emoji: '🎨', text: 'Drawing Pictures', ok: false },
           ],
         },
@@ -16112,13 +16112,13 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Music',
         id: 'Musik',
         emoji: '🎵',
-        example: { en: 'We sing songs in music class.', id: 'Kami menyanyikan lagu di kelas musik.', emoji: '🎤' },
+        example: { en: 'We sing songs in music class.', id: 'Kami menyanyikan lagu di kelas musik.', emoji: '🧑‍🎤' },
         practice: { en: 'Music class is when we sing songs.', id: 'Kelas musik adalah saat kami menyanyikan lagu.' },
         question: {
           en: 'What do we do in music class?',
           id: 'Kami melakukan apa di kelas musik?',
           options: [
-            { emoji: '🎤', text: 'Sing Songs', ok: true },
+            { emoji: '🧑‍🎤', text: 'Sing Songs', ok: true },
             { emoji: '🔢', text: 'Solve Math', ok: false },
             { emoji: '🗺️', text: 'Draw Maps', ok: false },
             { emoji: '⚽', text: 'Play Sports', ok: false },
@@ -16146,14 +16146,14 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
         en: 'Physical Education',
         id: 'Olahraga (PJOK)',
         emoji: '⚽',
-        example: { en: 'We run and play sports in Physical Education.', id: 'Kami lari dan berolahraga di kelas PJOK.', emoji: '💨' },
-        practice: { en: 'Physical Education is where we run and play sports.', id: 'PJOK adalah saat kami berlari dan berolahraga.' },
+        example: { en: 'We play football and basketball in Physical Education.', id: 'Kami bermain sepak bola dan basket di kelas PJOK.', emoji: '⚽' },
+        practice: { en: 'Physical Education is where we play football and basketball.', id: 'PJOK adalah saat kami bermain sepak bola dan basket.' },
         question: {
           en: 'What do we do in Physical Education?',
           id: 'Kami melakukan apa di kelas PJOK?',
           options: [
-            { emoji: '💨', text: 'Run and Play Sports', ok: true },
-            { emoji: '🎤', text: 'Sing Songs', ok: false },
+            { emoji: '⚽', text: 'Play Football and Basketball', ok: true },
+            { emoji: '🧑‍🎤', text: 'Sing Songs', ok: false },
             { emoji: '🎨', text: 'Paint Pictures', ok: false },
             { emoji: '🗺️', text: 'Study Maps', ok: false },
           ],
@@ -19439,7 +19439,7 @@ export const SPEAKING_TOPICS_STARTER: SpeakingPhraseTopic[] = [
     talk: { nameQ: { en: 'What hobby is this?', id: 'Ini hobi apa?' }, followQ: { en: 'Do you like it?', id: 'Kamu suka?' } },
     items: [
       { en: 'Drawing', id: 'Menggambar', emoji: '🎨', phrase: { en: 'I love drawing pictures.', id: 'Aku suka menggambar.', emoji: '🎨' } },
-      { en: 'Singing', id: 'Bernyanyi', emoji: '🎤', phrase: { en: 'I enjoy singing songs.', id: 'Aku suka bernyanyi.', emoji: '🎤' } },
+      { en: 'Singing', id: 'Bernyanyi', emoji: '🧑‍🎤', phrase: { en: 'I enjoy singing songs.', id: 'Aku suka bernyanyi.', emoji: '🧑‍🎤' } },
       { en: 'Reading', id: 'Membaca', emoji: '📖', phrase: { en: 'I like reading books.', id: 'Aku suka membaca buku.', emoji: '📖' } },
       { en: 'Painting', id: 'Melukis', emoji: '🖌️', phrase: { en: 'I enjoy painting pictures.', id: 'Aku suka melukis.', emoji: '🖌️' } },
       { en: 'Cooking', id: 'Memasak', emoji: '🍳', phrase: { en: 'I like cooking with mom.', id: 'Aku suka memasak bersama ibu.', emoji: '🍳' } },
@@ -20084,8 +20084,8 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       },
       {
         question: { en: 'Who is your favorite singer or band?', id: 'Siapa penyanyi atau band favoritmu?' },
-        peerAnswer: { en: 'My favorite singer writes songs about friendship and hope. Her songs make me feel brave when I am nervous.', id: 'Penyanyi favoritku menulis lagu tentang persahabatan dan harapan. Lagu-lagunya membuatku merasa berani saat aku gugup.' }, emoji: '🎤',
-        choices: [{ en: 'My favorite singer writes songs about friendship and hope.', id: 'Penyanyi favoritku menulis lagu tentang persahabatan dan harapan.', emoji: '🎤' }, { en: 'My favorite band plays music that makes me want to dance.', id: 'Band favoritku memainkan musik yang membuatku ingin menari.', emoji: '🎶' }, { en: 'My favorite singer has a beautiful voice and sings in English.', id: 'Penyanyi favoritku punya suara indah dan bernyanyi dalam bahasa Inggris.', emoji: '🎙️' }],
+        peerAnswer: { en: 'My favorite singer writes songs about friendship and hope. Her songs make me feel brave when I am nervous.', id: 'Penyanyi favoritku menulis lagu tentang persahabatan dan harapan. Lagu-lagunya membuatku merasa berani saat aku gugup.' }, emoji: '🧑‍🎤',
+        choices: [{ en: 'My favorite singer writes songs about friendship and hope.', id: 'Penyanyi favoritku menulis lagu tentang persahabatan dan harapan.', emoji: '🧑‍🎤' }, { en: 'My favorite band plays music that makes me want to dance.', id: 'Band favoritku memainkan musik yang membuatku ingin menari.', emoji: '🎶' }, { en: 'My favorite singer has a beautiful voice and sings in English.', id: 'Penyanyi favoritku punya suara indah dan bernyanyi dalam bahasa Inggris.', emoji: '🎙️' }],
       },
       {
         question: { en: 'How does music make you feel?', id: 'Bagaimana perasaanmu saat mendengarkan musik?' },
@@ -20478,7 +20478,7 @@ export const GRAMMAR_TOPICS_LITTLE_STARS: GrammarPatternTopic[] = [
     items: [
       { en: 'Ride a Bike', id: 'Naik Sepeda', emoji: '🚲', formA: { en: 'I can ride a bike.', id: 'Aku bisa naik sepeda.' }, formB: { en: "I can't ride a bike.", id: 'Aku tidak bisa naik sepeda.' } },
       { en: 'Swim', id: 'Berenang', emoji: '🌊', formA: { en: 'I can swim.', id: 'Aku bisa berenang.' }, formB: { en: "I can't swim.", id: 'Aku tidak bisa berenang.' } },
-      { en: 'Sing', id: 'Bernyanyi', emoji: '🎤', formA: { en: 'I can sing.', id: 'Aku bisa bernyanyi.' }, formB: { en: "I can't sing.", id: 'Aku tidak bisa bernyanyi.' } },
+      { en: 'Sing', id: 'Bernyanyi', emoji: '🧑‍🎤', formA: { en: 'I can sing.', id: 'Aku bisa bernyanyi.' }, formB: { en: "I can't sing.", id: 'Aku tidak bisa bernyanyi.' } },
       { en: 'Draw', id: 'Menggambar', emoji: '🖍️', formA: { en: 'I can draw.', id: 'Aku bisa menggambar.' }, formB: { en: "I can't draw.", id: 'Aku tidak bisa menggambar.' } },
       { en: 'Read', id: 'Membaca', emoji: '📖', formA: { en: 'I can read.', id: 'Aku bisa membaca.' }, formB: { en: "I can't read.", id: 'Aku tidak bisa membaca.' } },
       { en: 'Count', id: 'Berhitung', emoji: '🔢', formA: { en: 'I can count to ten.', id: 'Aku bisa berhitung sampai sepuluh.' }, formB: { en: "I can't count to ten.", id: 'Aku tidak bisa berhitung sampai sepuluh.' } },
@@ -20733,7 +20733,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
     contrastVisual: 'liking',
     items: [
       { en: 'Drawing', id: 'Menggambar', emoji: '🎨', formA: { en: 'I like drawing.', id: 'Aku suka menggambar.' }, formB: { en: "I don't like drawing.", id: 'Aku tidak suka menggambar.' } },
-      { en: 'Singing', id: 'Bernyanyi', emoji: '🎤', formA: { en: 'I like singing.', id: 'Aku suka bernyanyi.' }, formB: { en: "I don't like singing.", id: 'Aku tidak suka bernyanyi.' } },
+      { en: 'Singing', id: 'Bernyanyi', emoji: '🧑‍🎤', formA: { en: 'I like singing.', id: 'Aku suka bernyanyi.' }, formB: { en: "I don't like singing.", id: 'Aku tidak suka bernyanyi.' } },
       { en: 'Reading', id: 'Membaca', emoji: '📖', formA: { en: 'I like reading.', id: 'Aku suka membaca.' }, formB: { en: "I don't like reading.", id: 'Aku tidak suka membaca.' } },
       { en: 'Painting', id: 'Melukis', emoji: '🖌️', formA: { en: 'I like painting.', id: 'Aku suka melukis.' }, formB: { en: "I don't like painting.", id: 'Aku tidak suka melukis.' } },
       { en: 'Cooking', id: 'Memasak', emoji: '🍳', formA: { en: 'I like cooking.', id: 'Aku suka memasak.' }, formB: { en: "I don't like cooking.", id: 'Aku tidak suka memasak.' } },
@@ -20909,7 +20909,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
       { en: 'Classmate', id: 'Teman Sekelas', emoji: '🧑‍🎓', formA: { en: 'We are classmates.', id: 'Kita teman sekelas.' }, formB: { en: 'They are classmates.', id: 'Mereka teman sekelas.' } },
       { en: 'Boy', id: 'Anak Laki-laki', emoji: '👦', formA: { en: 'We are boys.', id: 'Kita anak laki-laki.' }, formB: { en: 'They are boys.', id: 'Mereka anak laki-laki.' } },
       { en: 'Girl', id: 'Anak Perempuan', emoji: '👧', formA: { en: 'We are girls.', id: 'Kita anak perempuan.' }, formB: { en: 'They are girls.', id: 'Mereka anak perempuan.' } },
-      { en: 'Singer', id: 'Penyanyi', emoji: '🎤', formA: { en: 'We are singers.', id: 'Kita penyanyi.' }, formB: { en: 'They are singers.', id: 'Mereka penyanyi.' } },
+      { en: 'Singer', id: 'Penyanyi', emoji: '🧑‍🎤', formA: { en: 'We are singers.', id: 'Kita penyanyi.' }, formB: { en: 'They are singers.', id: 'Mereka penyanyi.' } },
       { en: 'Painter', id: 'Pelukis', emoji: '🎨', formA: { en: 'We are painters.', id: 'Kita pelukis.' }, formB: { en: 'They are painters.', id: 'Mereka pelukis.' } },
       { en: 'Doctor', id: 'Dokter', emoji: '🧑‍⚕️', formA: { en: 'We are doctors.', id: 'Kita dokter.' }, formB: { en: 'They are doctors.', id: 'Mereka dokter.' } },
       { en: 'Player', id: 'Pemain', emoji: '⚽', formA: { en: 'We are players.', id: 'Kita pemain.' }, formB: { en: 'They are players.', id: 'Mereka pemain.' } },
@@ -21054,21 +21054,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'every day vs right now',
     rule: 'Kebiasaan (every day) → kata kerja biasa (+s untuk he/she/it). Sedang terjadi (now) → am/is/are + -ing.',
     sentences: [
-      { en: 'I climb the tree every day.', id: 'Aku memanjat pohon itu setiap hari.', emoji: '🌳', key: 'climb', wrong: ['climbing', 'climbs'], alt: ['Every day I climb the tree'] },
-      { en: 'I am climbing the tree right now.', id: 'Aku sedang memanjat pohon itu sekarang.', emoji: '🌳', key: 'climbing', wrong: ['climb', 'climbs'], alt: ['Right now I am climbing the tree'] },
-      { en: 'She laughs at jokes every day.', id: 'Dia tertawa mendengar lelucon setiap hari.', emoji: '😂', key: 'laughs', wrong: ['laugh', 'laughing'], alt: ['Every day she laughs at jokes'] },
-      { en: 'She is laughing right now.', id: 'Dia sedang tertawa sekarang.', emoji: '😂', key: 'laughing', wrong: ['laugh', 'laughs'], alt: ['Right now she is laughing'] },
-      { en: 'He reads the newspaper every morning.', id: 'Dia membaca koran setiap pagi.', emoji: '📰', key: 'reads', wrong: ['read', 'reading'], alt: ['Every morning he reads the newspaper'] },
-      { en: 'He is reading a comic now.', id: 'Dia sedang membaca komik sekarang.', emoji: '📖', key: 'reading', wrong: ['read', 'reads'], alt: ['Now he is reading a comic'] },
-      { en: 'We play badminton every Sunday.', id: 'Kami bermain bulu tangkis setiap hari Minggu.', emoji: '🏸', key: 'play', wrong: ['plays', 'playing'], alt: ['Every Sunday we play badminton'] },
-      { en: 'We are playing chess at the moment.', id: 'Kami sedang bermain catur saat ini.', emoji: '♟️', key: 'playing', wrong: ['play', 'plays'], alt: ['At the moment we are playing chess'] },
-      { en: 'My mom cooks dinner every evening.', id: 'Ibuku memasak makan malam setiap sore.', emoji: '🍲', key: 'cooks', wrong: ['cook', 'cooking'], alt: ['Every evening my mom cooks dinner'] },
-      { en: 'Look! It is raining now.', id: 'Lihat! Sekarang sedang hujan.', emoji: '🌧️', key: 'raining', wrong: ['rain', 'rains'] },
+      { en: 'I climb the tree every day.', id: 'Aku memanjat pohon itu setiap hari.', emoji: '🌳', key: 'climb', wrong: ['climbing', 'climbs', 'to climb'], alt: ['Every day I climb the tree'] },
+      { en: 'I am climbing the tree right now.', id: 'Aku sedang memanjat pohon itu sekarang.', emoji: '🌳', key: 'climbing', wrong: ['climb', 'climbs', 'climbed'], alt: ['Right now I am climbing the tree'] },
+      { en: 'She laughs at jokes every day.', id: 'Dia tertawa mendengar lelucon setiap hari.', emoji: '😂', key: 'laughs', wrong: ['laugh', 'laughing', 'to laugh'], alt: ['Every day she laughs at jokes'] },
+      { en: 'She is laughing right now.', id: 'Dia sedang tertawa sekarang.', emoji: '😂', key: 'laughing', wrong: ['laugh', 'laughs', 'laughed'], alt: ['Right now she is laughing'] },
+      { en: 'He reads the newspaper every morning.', id: 'Dia membaca koran setiap pagi.', emoji: '📰', key: 'reads', wrong: ['read', 'reading', 'to read'], alt: ['Every morning he reads the newspaper'] },
+      { en: 'He is reading the newspaper now.', id: 'Dia sedang membaca koran sekarang.', emoji: '📰', key: 'reading', wrong: ['read', 'reads', 'reader'], alt: ['Now he is reading the newspaper'] },
+      { en: 'We play badminton every Sunday.', id: 'Kami bermain bulu tangkis setiap hari Minggu.', emoji: '🏸', key: 'play', wrong: ['plays', 'playing', 'to play'], alt: ['Every Sunday we play badminton'] },
+      { en: 'We are playing badminton at the moment.', id: 'Kami sedang bermain bulu tangkis saat ini.', emoji: '🏸', key: 'playing', wrong: ['play', 'plays', 'played'], alt: ['At the moment we are playing badminton'] },
+      { en: 'My mom cooks dinner every evening.', id: 'Ibuku memasak makan malam setiap sore.', emoji: '🍲', key: 'cooks', wrong: ['cook', 'cooking', 'to cook'], alt: ['Every evening my mom cooks dinner'] },
+      { en: 'My mom is cooking dinner right now.', id: 'Ibuku sedang memasak makan malam sekarang.', emoji: '🍲', key: 'cooking', wrong: ['cook', 'cooks', 'cooked'], alt: ['Right now my mom is cooking dinner'] },
     ],
     texts: [
-      { en: ['Rudi usually plays football on Saturday.', 'Today is different. Look at him!', 'He is swimming in the sea.'], id: 'Rudi biasanya bermain sepak bola hari Sabtu. Hari ini berbeda. Lihat dia! Dia sedang berenang di laut.', key: 'is swimming', wrong: ['swims', 'swam'], cue: 'Look at him' },
-      { en: ['Every morning is the same for my grandma.', 'Before breakfast, she waters her plants.'], id: 'Setiap pagi sama saja bagi nenekku. Sebelum sarapan, dia menyiram tanamannya.', key: 'waters', wrong: ['is watering', 'watered'], cue: 'Every morning' },
-      { en: ['Shh! Please be quiet.', 'Dad is sleeping on the sofa.'], id: 'Ssst! Tolong jangan berisik. Ayah sedang tidur di sofa.', key: 'is sleeping', wrong: ['sleeps', 'slept'], cue: 'Please be quiet' },
+      { en: ['Rudi usually plays football on Saturday.', 'Today is different. Look at him!', 'He is swimming in the sea.'], id: 'Rudi biasanya bermain sepak bola hari Sabtu. Hari ini berbeda. Lihat dia! Dia sedang berenang di laut.', key: 'is swimming', wrong: ['swims', 'swam', 'was swimming'], cue: 'Look at him' },
+      { en: ['Every morning is the same for my grandma.', 'Before breakfast, she waters her plants.'], id: 'Setiap pagi sama saja bagi nenekku. Sebelum sarapan, dia menyiram tanamannya.', key: 'waters', wrong: ['is watering', 'watered', 'was watering'], cue: 'Every morning' },
+      { en: ['Shh! Please be quiet.', 'Dad is sleeping on the sofa.'], id: 'Ssst! Tolong jangan berisik. Ayah sedang tidur di sofa.', key: 'is sleeping', wrong: ['sleeps', 'slept', 'was sleeping'], cue: 'Please be quiet' },
     ],
   },
   {
@@ -21077,21 +21077,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'was/were + -ing',
     rule: 'Sedang berlangsung di masa lalu → was (I/he/she/it) atau were (you/we/they) + -ing.',
     sentences: [
-      { en: 'I was walking to the library when it started to rain.', id: 'Aku sedang berjalan ke perpustakaan ketika hujan mulai turun.', emoji: '🌧️', key: 'was', wrong: ['were', 'am'], alt: ['When it started to rain I was walking to the library'] },
-      { en: 'She was shopping at the supermarket when she saw her teacher.', id: 'Dia sedang berbelanja di supermarket ketika dia melihat gurunya.', emoji: '🛒', key: 'shopping', wrong: ['shop', 'shops'], alt: ['When she saw her teacher she was shopping at the supermarket'] },
-      { en: 'We were watching a movie when the lights went out.', id: 'Kami sedang menonton film ketika lampunya padam.', emoji: '🎬', key: 'were', wrong: ['was', 'are'], alt: ['When the lights went out we were watching a movie'] },
-      { en: "They were playing football at four o'clock yesterday.", id: 'Mereka sedang bermain sepak bola pukul empat kemarin.', emoji: '⚽', key: 'were', wrong: ['was', 'are'], alt: ["At four o'clock yesterday they were playing football"] },
-      { en: 'He was sleeping when the phone rang.', id: 'Dia sedang tidur ketika telepon berdering.', emoji: '📱', key: 'sleeping', wrong: ['sleep', 'sleeps'], alt: ['When the phone rang he was sleeping'] },
-      { en: "My dad was cooking dinner at seven o'clock.", id: 'Ayahku sedang memasak makan malam pukul tujuh.', emoji: '🍲', key: 'was', wrong: ['were', 'is'], alt: ["At seven o'clock my dad was cooking dinner"] },
-      { en: 'You were reading a book when I called you.', id: 'Kamu sedang membaca buku ketika aku meneleponmu.', emoji: '📖', key: 'were', wrong: ['was', 'is'], alt: ['When I called you you were reading a book'] },
-      { en: 'It was raining when we left school.', id: 'Sedang hujan ketika kami pulang sekolah.', emoji: '☔', key: 'raining', wrong: ['rain', 'rains'], alt: ['When we left school it was raining'] },
-      { en: 'The children were singing when the teacher came in.', id: 'Anak-anak sedang bernyanyi ketika guru masuk.', emoji: '🎤', key: 'were', wrong: ['was', 'is'], alt: ['When the teacher came in the children were singing'] },
-      { en: "I was doing my homework at eight o'clock last night.", id: 'Aku sedang mengerjakan PR pukul delapan tadi malam.', emoji: '📝', key: 'doing', wrong: ['do', 'did'], alt: ["At eight o'clock last night I was doing my homework"] },
+      { en: 'I was walking to the library when it started to rain.', id: 'Aku sedang berjalan ke perpustakaan ketika hujan mulai turun.', emoji: '🌧️', key: 'was', wrong: ['were', 'am', 'is'], alt: ['When it started to rain I was walking to the library'] },
+      { en: 'She was shopping at the supermarket when she saw her teacher.', id: 'Dia sedang berbelanja di supermarket ketika dia melihat gurunya.', emoji: '🛒', key: 'shopping', wrong: ['shop', 'shops', 'shopped'], alt: ['When she saw her teacher she was shopping at the supermarket'] },
+      { en: 'We were watching a movie when the lights went out.', id: 'Kami sedang menonton film ketika lampunya padam.', emoji: '🎬', key: 'were', wrong: ['was', 'are', 'is'], alt: ['When the lights went out we were watching a movie'] },
+      { en: "They were playing football at four o'clock yesterday.", id: 'Mereka sedang bermain sepak bola pukul empat kemarin.', emoji: '⚽', key: 'were', wrong: ['was', 'are', 'is'], alt: ["At four o'clock yesterday they were playing football"] },
+      { en: 'He was sleeping when the phone rang.', id: 'Dia sedang tidur ketika telepon berdering.', emoji: '📱', key: 'sleeping', wrong: ['sleep', 'sleeps', 'slept'], alt: ['When the phone rang he was sleeping'] },
+      { en: "My dad was cooking dinner at seven o'clock.", id: 'Ayahku sedang memasak makan malam pukul tujuh.', emoji: '🍲', key: 'was', wrong: ['were', 'is', 'are'], alt: ["At seven o'clock my dad was cooking dinner"] },
+      { en: 'You were reading a book when I called you.', id: 'Kamu sedang membaca buku ketika aku meneleponmu.', emoji: '📖', key: 'were', wrong: ['was', 'is', 'am'], alt: ['When I called you you were reading a book'] },
+      { en: 'It was raining when we left school.', id: 'Sedang hujan ketika kami pulang sekolah.', emoji: '☔', key: 'raining', wrong: ['rain', 'rains', 'rained'], alt: ['When we left school it was raining'] },
+      { en: 'The children were singing when the teacher came in.', id: 'Anak-anak sedang bernyanyi ketika guru masuk.', emoji: '🧑‍🎤', key: 'were', wrong: ['was', 'is', 'am'], alt: ['When the teacher came in the children were singing'] },
+      { en: "I was doing my homework at eight o'clock last night.", id: 'Aku sedang mengerjakan PR pukul delapan tadi malam.', emoji: '📝', key: 'doing', wrong: ['do', 'did', 'done'], alt: ["At eight o'clock last night I was doing my homework"] },
     ],
     texts: [
-      { en: ['Yesterday at seven o\'clock, everyone at home was busy.', 'Mom was cooking dinner.', 'My brothers were doing their homework.'], id: 'Kemarin pukul tujuh, semua orang di rumah sibuk. Ibu sedang memasak makan malam. Saudara-saudara laki-lakiku sedang mengerjakan PR mereka.', key: 'were doing', wrong: ['are doing', 'do'], cue: 'Yesterday at seven o\'clock' },
-      { en: ['Last night the lights suddenly went out.', 'My sister and I were watching a movie.'], id: 'Tadi malam lampu tiba-tiba padam. Aku dan saudara perempuanku sedang menonton film.', key: 'were watching', wrong: ['are watching', 'watch'], cue: 'Last night' },
-      { en: ['It was a rainy afternoon last Sunday.', 'The children were playing board games in the living room.'], id: 'Hari Minggu lalu, sore itu hujan. Anak-anak sedang bermain permainan papan di ruang keluarga.', key: 'were playing', wrong: ['are playing', 'play'], cue: 'last Sunday' },
+      { en: ['Yesterday at seven o\'clock, everyone at home was busy.', 'Mom was cooking dinner.', 'My brothers were doing their homework.'], id: 'Kemarin pukul tujuh, semua orang di rumah sibuk. Ibu sedang memasak makan malam. Saudara-saudara laki-lakiku sedang mengerjakan PR mereka.', key: 'were doing', wrong: ['are doing', 'do', 'was doing'], cue: 'Yesterday at seven o\'clock' },
+      { en: ['Last night the lights suddenly went out.', 'My sister and I were watching a movie.'], id: 'Tadi malam lampu tiba-tiba padam. Aku dan saudara perempuanku sedang menonton film.', key: 'were watching', wrong: ['are watching', 'watch', 'was watching'], cue: 'Last night' },
+      { en: ['It was a rainy afternoon last Sunday.', 'The children were playing board games in the living room.'], id: 'Hari Minggu lalu, sore itu hujan. Anak-anak sedang bermain permainan papan di ruang keluarga.', key: 'were playing', wrong: ['are playing', 'play', 'was playing'], cue: 'last Sunday' },
     ],
   },
   {
@@ -21100,21 +21100,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'have/has + kata kerja bentuk ke-3',
     rule: 'Pengalaman/sudah terjadi → have (I/you/we/they) atau has (he/she/it) + kata kerja bentuk ke-3 (eaten, seen, been).',
     sentences: [
-      { en: 'I have never played chess.', id: 'Aku belum pernah bermain catur.', emoji: '♟️', key: 'have', wrong: ['has', 'am'] },
-      { en: 'She has already watched that movie.', id: 'Dia sudah menonton film itu.', emoji: '🎬', key: 'has', wrong: ['have', 'is'] },
-      { en: 'He has never eaten sushi.', id: 'Dia belum pernah makan sushi.', emoji: '🍣', key: 'eaten', wrong: ['eat', 'ate'] },
-      { en: 'Have you ever ridden a horse?', id: 'Apakah kamu pernah naik kuda?', emoji: '🐴', key: 'ridden', wrong: ['ride', 'rode'] },
-      { en: 'We have seen that play at the theater.', id: 'Kami sudah menonton drama itu di teater.', emoji: '🎭', key: 'seen', wrong: ['see', 'saw'] },
-      { en: 'They have just finished their project.', id: 'Mereka baru saja menyelesaikan proyek mereka.', emoji: '📝', key: 'have', wrong: ['has', 'is'] },
-      { en: 'I have written three stories this year.', id: 'Aku sudah menulis tiga cerita tahun ini.', emoji: '✍️', key: 'written', wrong: ['write', 'wrote'], alt: ['This year I have written three stories'] },
-      { en: 'She has been to Bali twice.', id: 'Dia sudah pernah ke Bali dua kali.', emoji: '🏝️', key: 'been', wrong: ['be', 'was'] },
-      { en: 'My dad has taken many photos.', id: 'Ayahku sudah mengambil banyak foto.', emoji: '📷', key: 'taken', wrong: ['take', 'took'] },
-      { en: 'Have you ever flown in a plane?', id: 'Apakah kamu pernah naik pesawat?', emoji: '✈️', key: 'flown', wrong: ['fly', 'flew'] },
+      { en: 'I have never played chess.', id: 'Aku belum pernah bermain catur.', emoji: '♟️', key: 'have', wrong: ['has', 'am', 'was'] },
+      { en: 'She has already watched that movie.', id: 'Dia sudah menonton film itu.', emoji: '🎬', key: 'has', wrong: ['have', 'is', 'was'] },
+      { en: 'He has never eaten sushi.', id: 'Dia belum pernah makan sushi.', emoji: '🍣', key: 'eaten', wrong: ['eat', 'ate', 'eating'] },
+      { en: 'Have you ever ridden a horse?', id: 'Apakah kamu pernah naik kuda?', emoji: '🐴', key: 'ridden', wrong: ['ride', 'rode', 'riding'] },
+      { en: 'We have seen that play at the theater.', id: 'Kami sudah menonton drama itu di teater.', emoji: '🎭', key: 'seen', wrong: ['see', 'saw', 'seeing'] },
+      { en: 'They have just finished their project.', id: 'Mereka baru saja menyelesaikan proyek mereka.', emoji: '📝', key: 'have', wrong: ['has', 'is', 'was'] },
+      { en: 'I have written three stories this year.', id: 'Aku sudah menulis tiga cerita tahun ini.', emoji: '✍️', key: 'written', wrong: ['write', 'wrote', 'writing'], alt: ['This year I have written three stories'] },
+      { en: 'She has been to Bali twice.', id: 'Dia sudah pernah ke Bali dua kali.', emoji: '🏝️', key: 'been', wrong: ['be', 'was', 'being'] },
+      { en: 'My dad has taken many photos.', id: 'Ayahku sudah mengambil banyak foto.', emoji: '📷', key: 'taken', wrong: ['take', 'took', 'taking'] },
+      { en: 'Have you ever flown in a plane?', id: 'Apakah kamu pernah naik pesawat?', emoji: '✈️', key: 'flown', wrong: ['fly', 'flew', 'flying'] },
     ],
     texts: [
-      { en: ['Rina: Have you ever been to Bali?', 'Budi: Yes, I have been there twice.'], id: 'Rina: Kamu pernah ke Bali? Budi: Ya, aku sudah pernah ke sana dua kali.', key: 'have been', wrong: ['am', 'will be'], cue: 'Have you ever been' },
-      { en: ['Dad: Have you finished your homework?', 'Sari: Yes, I have finished it.'], id: 'Ayah: Kamu sudah menyelesaikan PR-mu? Sari: Ya, aku sudah menyelesaikannya.', key: 'have finished', wrong: ['will finish', 'am finishing'], cue: 'Have you finished' },
-      { en: ['Mom: Has your brother eaten lunch?', 'Tia: Yes, he has eaten it already.'], id: 'Ibu: Saudara laki-lakimu sudah makan siang? Tia: Ya, dia sudah memakannya.', key: 'has eaten', wrong: ['is eating', 'will eat'], cue: 'Has your brother eaten' },
+      { en: ['Rina: Have you ever been to Bali?', 'Budi: Yes, I have been there twice.'], id: 'Rina: Kamu pernah ke Bali? Budi: Ya, aku sudah pernah ke sana dua kali.', key: 'have been', wrong: ['am', 'will be', 'go'], cue: 'Have you ever been' },
+      { en: ['Dad: Have you finished your homework?', 'Sari: Yes, I have finished it.'], id: 'Ayah: Kamu sudah menyelesaikan PR-mu? Sari: Ya, aku sudah menyelesaikannya.', key: 'have finished', wrong: ['will finish', 'am finishing', 'finish'], cue: 'Have you finished' },
+      { en: ['Mom: Has your brother eaten lunch?', 'Tia: Yes, he has eaten it already.'], id: 'Ibu: Saudara laki-lakimu sudah makan siang? Tia: Ya, dia sudah memakannya.', key: 'has eaten', wrong: ['is eating', 'will eat', 'eats'], cue: 'Has your brother eaten' },
     ],
   },
   {
@@ -21123,21 +21123,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'going to + rencana, will + keputusan saat itu',
     rule: 'Sudah direncanakan → am/is/are going to + kata kerja dasar. Baru memutuskan saat itu → will + kata kerja dasar.',
     sentences: [
-      { en: 'I am going to study Math after school.', id: 'Aku akan belajar Matematika sepulang sekolah (sudah direncanakan).', emoji: '🔢', key: 'going', wrong: ['will', 'go'], alt: ['After school I am going to study Math'] },
-      { en: 'The phone is ringing. I will answer it.', id: 'Teleponnya berdering. Aku akan mengangkatnya.', emoji: '📱', key: 'will', wrong: ['am', 'going'] },
-      { en: 'We are going to have an English test tomorrow.', id: 'Kami akan ada ujian Bahasa Inggris besok.', emoji: '📝', key: 'going', wrong: ['will', 'go'], alt: ['Tomorrow we are going to have an English test'] },
-      { en: 'It is very hot. I will open the window.', id: 'Panas sekali. Aku akan membuka jendela.', emoji: '🪟', key: 'will', wrong: ['am', 'going'] },
-      { en: 'She is going to visit her aunt this weekend.', id: 'Dia akan mengunjungi bibinya akhir pekan ini.', emoji: '🚗', key: 'going', wrong: ['will', 'go'], alt: ['This weekend she is going to visit her aunt'] },
-      { en: 'You look tired. I will carry your bag.', id: 'Kamu kelihatan lelah. Aku akan membawakan tasmu.', emoji: '🎒', key: 'will', wrong: ['am', 'going'] },
-      { en: 'They are going to build a sandcastle at the beach.', id: 'Mereka akan membuat istana pasir di pantai.', emoji: '🏖️', key: 'going', wrong: ['will', 'go'] },
-      { en: 'It is starting to rain. I will close the door.', id: 'Mulai hujan. Aku akan menutup pintu.', emoji: '🚪', key: 'will', wrong: ['am', 'going'] },
-      { en: 'He is going to join the art club next month.', id: 'Dia akan bergabung dengan klub seni bulan depan.', emoji: '🎨', key: 'going', wrong: ['will', 'go'], alt: ['Next month he is going to join the art club'] },
-      { en: 'The box looks heavy. I will help you.', id: 'Kotaknya kelihatan berat. Aku akan membantumu.', emoji: '📦', key: 'will', wrong: ['am', 'going'] },
+      { en: 'I am going to study Math after school.', id: 'Aku akan belajar Matematika sepulang sekolah (sudah direncanakan).', emoji: '🔢', key: 'going', wrong: ['will', 'go', 'went'], alt: ['After school I am going to study Math'] },
+      { en: 'The phone is ringing. I will answer it.', id: 'Teleponnya berdering. Aku akan mengangkatnya.', emoji: '📱', key: 'will', wrong: ['am', 'going', 'was'] },
+      { en: 'We are going to have an English test tomorrow.', id: 'Kami akan ada ujian Bahasa Inggris besok.', emoji: '📝', key: 'going', wrong: ['will', 'go', 'went'], alt: ['Tomorrow we are going to have an English test'] },
+      { en: 'It is very hot. I will open the window.', id: 'Panas sekali. Aku akan membuka jendela.', emoji: '🪟', key: 'will', wrong: ['am', 'going', 'was'] },
+      { en: 'She is going to visit her aunt this weekend.', id: 'Dia akan mengunjungi bibinya akhir pekan ini.', emoji: '🚗', key: 'going', wrong: ['will', 'go', 'went'], alt: ['This weekend she is going to visit her aunt'] },
+      { en: 'You look tired. I will carry your bag.', id: 'Kamu kelihatan lelah. Aku akan membawakan tasmu.', emoji: '🎒', key: 'will', wrong: ['am', 'going', 'was'] },
+      { en: 'They are going to build a sandcastle at the beach.', id: 'Mereka akan membuat istana pasir di pantai.', emoji: '🏖️', key: 'going', wrong: ['will', 'go', 'went'] },
+      { en: 'It is starting to rain. I will close the door.', id: 'Mulai hujan. Aku akan menutup pintu.', emoji: '🚪', key: 'will', wrong: ['am', 'going', 'was'] },
+      { en: 'He is going to join the art club next month.', id: 'Dia akan bergabung dengan klub seni bulan depan.', emoji: '🎨', key: 'going', wrong: ['will', 'go', 'went'], alt: ['Next month he is going to join the art club'] },
+      { en: 'The box looks heavy. I will help you.', id: 'Kotaknya kelihatan berat. Aku akan membantumu.', emoji: '📦', key: 'will', wrong: ['am', 'going', 'was'] },
     ],
     texts: [
-      { en: ['Sari bought train tickets for next Saturday.', 'On that day, she is going to visit her grandma.'], id: 'Sari membeli tiket kereta untuk hari Sabtu depan. Hari itu, dia akan mengunjungi neneknya.', key: 'is going to visit', wrong: ['visited', 'was visiting'], cue: 'next Saturday' },
-      { en: ['Next month is our school\'s art festival.', 'Our class is going to make a big painting of our city.'], id: 'Bulan depan ada festival seni di sekolah kami. Kelas kami akan membuat lukisan besar tentang kota kami.', key: 'is going to make', wrong: ['made', 'was making'], cue: 'Next month' },
-      { en: ['My uncle already has a plan for his holiday next year.', 'He is going to climb Mount Bromo with his friends.'], id: 'Pamanku sudah punya rencana untuk liburannya tahun depan. Dia akan mendaki Gunung Bromo bersama teman-temannya.', key: 'is going to climb', wrong: ['climbed', 'was climbing'], cue: 'next year' },
+      { en: ['Sari bought train tickets for next Saturday.', 'On that day, she is going to visit her grandma.'], id: 'Sari membeli tiket kereta untuk hari Sabtu depan. Hari itu, dia akan mengunjungi neneknya.', key: 'is going to visit', wrong: ['visited', 'was visiting', 'has visited'], cue: 'next Saturday' },
+      { en: ['Next month is our school\'s art festival.', 'Our class is going to make a big painting of our city.'], id: 'Bulan depan ada festival seni di sekolah kami. Kelas kami akan membuat lukisan besar tentang kota kami.', key: 'is going to make', wrong: ['made', 'was making', 'has made'], cue: 'Next month' },
+      { en: ['My uncle already has a plan for his holiday next year.', 'He is going to climb Mount Bromo with his friends.'], id: 'Pamanku sudah punya rencana untuk liburannya tahun depan. Dia akan mendaki Gunung Bromo bersama teman-temannya.', key: 'is going to climb', wrong: ['climbed', 'was climbing', 'has climbed'], cue: 'next year' },
     ],
   },
   {
@@ -21146,21 +21146,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'should/could + kata kerja dasar',
     rule: 'should = sebaiknya (saran), could = bisa juga (pilihan). Sesudahnya selalu kata kerja dasar.',
     sentences: [
-      { en: 'You should charge your phone before school.', id: 'Sebaiknya kamu mengisi daya ponselmu sebelum sekolah.', emoji: '📱', key: 'charge', wrong: ['charges', 'charging'] },
-      { en: 'You could try a new password.', id: 'Kamu bisa mencoba kata sandi baru.', emoji: '🔑', key: 'try', wrong: ['tries', 'trying'] },
-      { en: 'You should not look at the screen for too long.', id: 'Sebaiknya kamu tidak melihat layar terlalu lama.', emoji: '🖥️', key: 'look', wrong: ['looks', 'looking'] },
-      { en: 'We could watch a video about volcanoes.', id: 'Kita bisa menonton video tentang gunung berapi.', emoji: '🌋', key: 'watch', wrong: ['watches', 'watching'] },
-      { en: 'He should ask his teacher for help.', id: 'Sebaiknya dia meminta bantuan gurunya.', emoji: '🙋', key: 'ask', wrong: ['asks', 'asking'] },
-      { en: 'You could use a dictionary app.', id: 'Kamu bisa memakai aplikasi kamus.', emoji: '📖', key: 'use', wrong: ['uses', 'using'] },
-      { en: 'She should go to bed early tonight.', id: 'Sebaiknya dia tidur lebih awal malam ini.', emoji: '🛏️', key: 'go', wrong: ['goes', 'going'] },
-      { en: 'We could meet at the library after school.', id: 'Kita bisa bertemu di perpustakaan sepulang sekolah.', emoji: '📚', key: 'meet', wrong: ['meets', 'meeting'], alt: ['After school we could meet at the library'] },
-      { en: 'You should turn off the computer when you finish.', id: 'Sebaiknya kamu mematikan komputer kalau sudah selesai.', emoji: '💻', key: 'turn', wrong: ['turns', 'turning'], alt: ['When you finish you should turn off the computer'] },
-      { en: 'They could send the photo by email.', id: 'Mereka bisa mengirim fotonya lewat email.', emoji: '📧', key: 'send', wrong: ['sends', 'sending'] },
+      { en: 'You should charge your phone before school.', id: 'Sebaiknya kamu mengisi daya ponselmu sebelum sekolah.', emoji: '📱', key: 'charge', wrong: ['charges', 'charging', 'charged'] },
+      { en: 'You could try a new password.', id: 'Kamu bisa mencoba kata sandi baru.', emoji: '🔑', key: 'try', wrong: ['tries', 'trying', 'tried'] },
+      { en: 'You should not look at the screen for too long.', id: 'Sebaiknya kamu tidak melihat layar terlalu lama.', emoji: '🖥️', key: 'look', wrong: ['looks', 'looking', 'looked'] },
+      { en: 'We could watch a video about volcanoes.', id: 'Kita bisa menonton video tentang gunung berapi.', emoji: '🌋', key: 'watch', wrong: ['watches', 'watching', 'watched'] },
+      { en: 'He should ask his teacher for help.', id: 'Sebaiknya dia meminta bantuan gurunya.', emoji: '🙋', key: 'ask', wrong: ['asks', 'asking', 'asked'] },
+      { en: 'You could use a dictionary app.', id: 'Kamu bisa memakai aplikasi kamus.', emoji: '📖', key: 'use', wrong: ['uses', 'using', 'used'] },
+      { en: 'She should go to bed early tonight.', id: 'Sebaiknya dia tidur lebih awal malam ini.', emoji: '🛏️', key: 'go', wrong: ['goes', 'going', 'went'] },
+      { en: 'We could meet at the library after school.', id: 'Kita bisa bertemu di perpustakaan sepulang sekolah.', emoji: '📚', key: 'meet', wrong: ['meets', 'meeting', 'met'], alt: ['After school we could meet at the library'] },
+      { en: 'You should turn off the computer when you finish.', id: 'Sebaiknya kamu mematikan komputer kalau sudah selesai.', emoji: '💻', key: 'turn', wrong: ['turns', 'turning', 'turned'], alt: ['When you finish you should turn off the computer'] },
+      { en: 'They could send the photo by email.', id: 'Mereka bisa mengirim fotonya lewat email.', emoji: '📧', key: 'send', wrong: ['sends', 'sending', 'sent'] },
     ],
     texts: [
-      { en: ['You have a big test tomorrow.', 'You should go to bed early tonight.'], id: 'Besok kamu ada ujian besar. Sebaiknya kamu tidur lebih awal malam ini.', key: 'should', wrong: ['shouldn\'t', 'mustn\'t'], cue: 'a big test tomorrow' },
-      { en: ['Your eyes look red and tired.', 'You shouldn\'t play games on your phone for so long.'], id: 'Matamu kelihatan merah dan lelah. Sebaiknya kamu tidak bermain game di ponsel terlalu lama.', key: 'shouldn\'t', wrong: ['should', 'must'], cue: 'red and tired' },
-      { en: ['The library is closed today, but you need a book for your project.', 'You could borrow one from Rina.'], id: 'Perpustakaan tutup hari ini, padahal kamu butuh buku untuk proyekmu. Kamu bisa meminjam satu dari Rina.', key: 'could', wrong: ['mustn\'t', 'shouldn\'t'], cue: 'library is closed' },
+      { en: ['You have a big test tomorrow.', 'You should go to bed early tonight.'], id: 'Besok kamu ada ujian besar. Sebaiknya kamu tidur lebih awal malam ini.', key: 'should', wrong: ['shouldn\'t', 'mustn\'t', "can't"], cue: 'a big test tomorrow' },
+      { en: ['Your eyes look red and tired.', 'You shouldn\'t play games on your phone for so long.'], id: 'Matamu kelihatan merah dan lelah. Sebaiknya kamu tidak bermain game di ponsel terlalu lama.', key: 'shouldn\'t', wrong: ['should', 'must', 'can'], cue: 'red and tired' },
+      { en: ['The library is closed today, but you need a book for your project.', 'You could borrow one from Rina.'], id: 'Perpustakaan tutup hari ini, padahal kamu butuh buku untuk proyekmu. Kamu bisa meminjam satu dari Rina.', key: 'could', wrong: ['mustn\'t', 'shouldn\'t', "can't"], cue: 'library is closed' },
     ],
   },
   {
@@ -21169,21 +21169,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'might + kata kerja dasar',
     rule: 'Belum pasti → might + kata kerja dasar (might be, might go, might rain).',
     sentences: [
-      { en: 'My keys might be behind the sofa.', id: 'Kunciku mungkin ada di belakang sofa.', emoji: '🛋️', key: 'be', wrong: ['is', 'are'] },
-      { en: 'The bakery might be near the corner.', id: 'Toko roti itu mungkin ada di dekat tikungan.', emoji: '🥐', key: 'be', wrong: ['is', 'are'] },
-      { en: 'She might turn left at the next street.', id: 'Dia mungkin belok kiri di jalan berikutnya.', emoji: '⬅️', key: 'turn', wrong: ['turns', 'turning'] },
-      { en: 'The remote might be under the cushion.', id: 'Remotnya mungkin ada di bawah bantal kursi.', emoji: '📺', key: 'be', wrong: ['is', 'are'] },
-      { en: 'It might rain this afternoon.', id: 'Mungkin hujan siang ini.', emoji: '🌧️', key: 'rain', wrong: ['rains', 'raining'], alt: ['This afternoon it might rain'] },
-      { en: 'We might go to the museum on Saturday.', id: 'Kami mungkin pergi ke museum hari Sabtu.', emoji: '🏛️', key: 'go', wrong: ['goes', 'going'], alt: ['On Saturday we might go to the museum'] },
-      { en: 'He might be late for school.', id: 'Dia mungkin terlambat ke sekolah.', emoji: '⏰', key: 'be', wrong: ['is', 'are'] },
-      { en: 'They might visit us next week.', id: 'Mereka mungkin mengunjungi kami minggu depan.', emoji: '🏠', key: 'visit', wrong: ['visits', 'visiting'], alt: ['Next week they might visit us'] },
-      { en: 'The library might close early today.', id: 'Perpustakaan mungkin tutup lebih awal hari ini.', emoji: '📚', key: 'close', wrong: ['closes', 'closing'], alt: ['Today the library might close early'] },
-      { en: 'I might join the drawing contest.', id: 'Aku mungkin ikut lomba menggambar.', emoji: '🎨', key: 'join', wrong: ['joins', 'joining'] },
+      { en: 'My keys might be behind the sofa.', id: 'Kunciku mungkin ada di belakang sofa.', emoji: '🛋️', key: 'be', wrong: ['is', 'are', 'being'] },
+      { en: 'The bakery might be near the corner.', id: 'Toko roti itu mungkin ada di dekat tikungan.', emoji: '🥐', key: 'be', wrong: ['is', 'are', 'being'] },
+      { en: 'She might turn left at the next street.', id: 'Dia mungkin belok kiri di jalan berikutnya.', emoji: '⬅️', key: 'turn', wrong: ['turns', 'turning', 'turned'] },
+      { en: 'The remote might be under the cushion.', id: 'Remotnya mungkin ada di bawah bantal kursi.', emoji: '📺', key: 'be', wrong: ['is', 'are', 'being'] },
+      { en: 'It might rain this afternoon.', id: 'Mungkin hujan siang ini.', emoji: '🌧️', key: 'rain', wrong: ['rains', 'raining', 'rained'], alt: ['This afternoon it might rain'] },
+      { en: 'We might go to the museum on Saturday.', id: 'Kami mungkin pergi ke museum hari Sabtu.', emoji: '🏛️', key: 'go', wrong: ['goes', 'going', 'went'], alt: ['On Saturday we might go to the museum'] },
+      { en: 'He might be late for school.', id: 'Dia mungkin terlambat ke sekolah.', emoji: '⏰', key: 'be', wrong: ['is', 'are', 'being'] },
+      { en: 'They might visit us next week.', id: 'Mereka mungkin mengunjungi kami minggu depan.', emoji: '🏠', key: 'visit', wrong: ['visits', 'visiting', 'visited'], alt: ['Next week they might visit us'] },
+      { en: 'The library might close early today.', id: 'Perpustakaan mungkin tutup lebih awal hari ini.', emoji: '📚', key: 'close', wrong: ['closes', 'closing', 'closed'], alt: ['Today the library might close early'] },
+      { en: 'I might join the drawing contest.', id: 'Aku mungkin ikut lomba menggambar.', emoji: '🎨', key: 'join', wrong: ['joins', 'joining', 'joined'] },
     ],
     texts: [
-      { en: ['I\'m not sure where my keys are.', 'They might be in my bag.'], id: 'Aku tidak yakin di mana kunciku. Mungkin ada di tasku.', key: 'might be', wrong: ['are', 'were'], cue: 'not sure' },
-      { en: ['The sky is a little grey, but the weather report didn\'t say anything.', 'It might rain later.'], id: 'Langitnya agak kelabu, tapi ramalan cuaca tidak bilang apa-apa. Mungkin nanti hujan.', key: 'might rain', wrong: ['rained', 'rains'], cue: 'a little grey' },
-      { en: ['Budi hasn\'t decided about the weekend yet.', 'He might go to the beach with his cousins.'], id: 'Budi belum memutuskan rencana akhir pekannya. Dia mungkin pergi ke pantai bersama sepupunya.', key: 'might go', wrong: ['went', 'goes'], cue: 'hasn\'t decided' },
+      { en: ['I\'m not sure where my keys are.', 'They might be in my bag.'], id: 'Aku tidak yakin di mana kunciku. Mungkin ada di tasku.', key: 'might be', wrong: ['are', 'were', 'is'], cue: 'not sure' },
+      { en: ['The sky is a little grey, but the weather report didn\'t say anything.', 'It might rain later.'], id: 'Langitnya agak kelabu, tapi ramalan cuaca tidak bilang apa-apa. Mungkin nanti hujan.', key: 'might rain', wrong: ['rained', 'rains', 'rain'], cue: 'a little grey' },
+      { en: ['Budi hasn\'t decided about the weekend yet.', 'He might go to the beach with his cousins.'], id: 'Budi belum memutuskan rencana akhir pekannya. Dia mungkin pergi ke pantai bersama sepupunya.', key: 'might go', wrong: ['went', 'goes', 'go'], cue: 'hasn\'t decided' },
     ],
   },
   {
@@ -21193,21 +21193,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     rule: 'so = jadi/sehingga (menunjukkan akibat). because = karena (menunjukkan sebab).',
     meaningNeeded: true,
     sentences: [
-      { en: 'Dio is very kind, so everyone likes him.', id: 'Dio sangat baik hati, jadi semua orang menyukainya.', emoji: '🤗', key: 'so', wrong: ['because', 'but'] },
-      { en: 'She is very funny, so her friends laugh a lot.', id: 'Dia sangat lucu, jadi teman-temannya banyak tertawa.', emoji: '😂', key: 'so', wrong: ['because', 'but'] },
-      { en: 'He is very honest, so people trust him.', id: 'Dia sangat jujur, jadi orang-orang percaya padanya.', emoji: '🤝', key: 'so', wrong: ['because', 'but'] },
-      { en: 'Andi is very brave, so he helps others.', id: 'Andi sangat berani, jadi dia menolong orang lain.', emoji: '💪', key: 'so', wrong: ['because', 'but'] },
-      { en: 'Maya is very generous, so she shares her toys.', id: 'Maya sangat murah hati, jadi dia berbagi mainannya.', emoji: '🎁', key: 'so', wrong: ['because', 'but'] },
-      { en: 'It was raining, so we stayed at home.', id: 'Hari itu hujan, jadi kami tetap di rumah.', emoji: '☔', key: 'so', wrong: ['because', 'but'] },
-      { en: 'I was tired, so I went to bed early.', id: 'Aku lelah, jadi aku tidur lebih awal.', emoji: '🛏️', key: 'so', wrong: ['because', 'but'] },
-      { en: 'The shop was closed, so we went home.', id: 'Tokonya tutup, jadi kami pulang.', emoji: '🏪', key: 'so', wrong: ['because', 'but'] },
-      { en: 'Rudi practiced every day, so he won the race.', id: 'Rudi berlatih setiap hari, jadi dia memenangkan lomba lari.', emoji: '🏅', key: 'so', wrong: ['because', 'but'] },
-      { en: 'The soup was hot, so I waited a minute.', id: 'Supnya panas, jadi aku menunggu sebentar.', emoji: '🍲', key: 'so', wrong: ['because', 'but'] },
+      { en: 'Dio is very kind, so everyone likes him.', id: 'Dio sangat baik hati, jadi semua orang menyukainya.', emoji: '🤗', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'She is very funny, so her friends laugh a lot.', id: 'Dia sangat lucu, jadi teman-temannya banyak tertawa.', emoji: '😂', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'He is very honest, so people trust him.', id: 'Dia sangat jujur, jadi orang-orang percaya padanya.', emoji: '🤝', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'Andi is very brave, so he helps others.', id: 'Andi sangat berani, jadi dia menolong orang lain.', emoji: '💪', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'Maya is very generous, so she shares her toys.', id: 'Maya sangat murah hati, jadi dia berbagi mainannya.', emoji: '🎁', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'It was raining, so we stayed at home.', id: 'Hari itu hujan, jadi kami tetap di rumah.', emoji: '☔', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'I was tired, so I went to bed early.', id: 'Aku lelah, jadi aku tidur lebih awal.', emoji: '🛏️', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'The shop was closed, so we went home.', id: 'Tokonya tutup, jadi kami pulang.', emoji: '🏪', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'Rudi practiced every day, so he won the race.', id: 'Rudi berlatih setiap hari, jadi dia memenangkan lomba lari.', emoji: '🏅', key: 'so', wrong: ['because', 'but', 'or'] },
+      { en: 'The soup was hot, so I waited a minute.', id: 'Supnya panas, jadi aku menunggu sebentar.', emoji: '🍲', key: 'so', wrong: ['because', 'but', 'or'] },
     ],
     texts: [
-      { en: ['It rained all afternoon.', 'So we played board games inside.'], id: 'Hujan turun sepanjang sore. Jadi, kami bermain permainan papan di dalam.', key: 'So', wrong: ['But', 'Because'], cue: 'rained all afternoon' },
-      { en: ['Rudi practiced very hard for the race.', 'But he didn\'t win this time.'], id: 'Rudi berlatih sangat keras untuk lomba itu. Tapi, kali ini dia tidak menang.', key: 'But', wrong: ['So', 'Because'], cue: 'practiced very hard' },
-      { en: ['Maya\'s little brother was sad because he lost his toy.', 'So Maya gave him one of her toys.'], id: 'Adik laki-laki Maya sedih karena mainannya hilang. Jadi, Maya memberinya salah satu mainannya.', key: 'So', wrong: ['But', 'Because'], cue: 'was sad' },
+      { en: ['It rained all afternoon.', 'So we played board games inside.'], id: 'Hujan turun sepanjang sore. Jadi, kami bermain permainan papan di dalam.', key: 'So', wrong: ['But', 'Because', 'Or'], cue: 'rained all afternoon' },
+      { en: ['Rudi practiced very hard for the race.', 'But he didn\'t win this time.'], id: 'Rudi berlatih sangat keras untuk lomba itu. Tapi, kali ini dia tidak menang.', key: 'But', wrong: ['So', 'Because', 'Or'], cue: 'practiced very hard' },
+      { en: ['Maya\'s little brother was sad because he lost his toy.', 'So Maya gave him one of her toys.'], id: 'Adik laki-laki Maya sedih karena mainannya hilang. Jadi, Maya memberinya salah satu mainannya.', key: 'So', wrong: ['But', 'Because', 'Or'], cue: 'was sad' },
     ],
   },
   {
@@ -21216,21 +21216,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'look like + orang/benda',
     rule: 'Mirip sesuatu → look like + benda/orang. Untuk he/she/it pakai looks like.',
     sentences: [
-      { en: 'My brother looks like our dad.', id: 'Saudara laki-lakiku mirip ayah kami.', key: 'looks', wrong: ['look', 'looking'] },
-      { en: 'She looks like her older sister.', id: 'Dia mirip kakak perempuannya.', emoji: '👧', key: 'looks', wrong: ['look', 'looking'] },
-      { en: 'The puppy looks like a little bear.', id: 'Anak anjing itu mirip beruang kecil.', emoji: '🐻', key: 'like', wrong: ['likes', 'as'] },
-      { en: 'The kitten looks like a small tiger.', id: 'Anak kucing itu mirip harimau kecil.', emoji: '🐯', key: 'like', wrong: ['likes', 'as'] },
-      { en: 'He looks like his grandfather.', id: 'Dia mirip kakeknya.', key: 'looks', wrong: ['look', 'looking'] },
-      { en: 'This cloud looks like a rabbit.', id: 'Awan ini mirip kelinci.', emoji: '☁️', key: 'like', wrong: ['likes', 'as'] },
-      { en: 'You look like your mom.', id: 'Kamu mirip ibumu.', key: 'look', wrong: ['looks', 'looking'] },
-      { en: 'These cookies look like stars.', id: 'Kue-kue ini mirip bintang.', emoji: '⭐', key: 'look', wrong: ['looks', 'looking'] },
-      { en: 'That rock looks like a turtle.', id: 'Batu itu mirip kura-kura.', emoji: '🪨', key: 'like', wrong: ['likes', 'as'] },
-      { en: 'The twins look like each other.', id: 'Anak kembar itu mirip satu sama lain.', emoji: '👥', key: 'look', wrong: ['looks', 'looking'] },
+      { en: 'My brother looks like our dad.', id: 'Saudara laki-lakiku mirip ayah kami.', key: 'looks', wrong: ['look', 'looking', 'to look'] },
+      { en: 'She looks like her older sister.', id: 'Dia mirip kakak perempuannya.', emoji: '👧', key: 'looks', wrong: ['look', 'looking', 'to look'] },
+      { en: 'The puppy looks like a little bear.', id: 'Anak anjing itu mirip beruang kecil.', emoji: '🐻', key: 'like', wrong: ['likes', 'as', 'liked'] },
+      { en: 'The kitten looks like a small tiger.', id: 'Anak kucing itu mirip harimau kecil.', emoji: '🐯', key: 'like', wrong: ['likes', 'as', 'liked'] },
+      { en: 'He looks like his grandfather.', id: 'Dia mirip kakeknya.', key: 'looks', wrong: ['look', 'looking', 'to look'] },
+      { en: 'This cloud looks like a rabbit.', id: 'Awan ini mirip kelinci.', emoji: '☁️', key: 'like', wrong: ['likes', 'as', 'liked'] },
+      { en: 'You look like your mom.', id: 'Kamu mirip ibumu.', key: 'look', wrong: ['looks', 'looking', 'to look'] },
+      { en: 'These cookies look like stars.', id: 'Kue-kue ini mirip bintang.', emoji: '⭐', key: 'look', wrong: ['looks', 'looking', 'to look'] },
+      { en: 'That rock looks like a turtle.', id: 'Batu itu mirip kura-kura.', emoji: '🪨', key: 'like', wrong: ['likes', 'as', 'liked'] },
+      { en: 'The twins look like each other.', id: 'Anak kembar itu mirip satu sama lain.', emoji: '👥', key: 'look', wrong: ['looks', 'looking', 'to look'] },
     ],
     texts: [
-      { en: ['My brother and I have the same smile.', 'Everyone says he looks like me.'], id: 'Aku dan saudara laki-lakiku punya senyum yang sama. Semua orang bilang dia mirip aku.', key: 'me', wrong: ['him', 'her'], cue: 'My brother and I' },
-      { en: ['Rina has curly hair, just like her grandma.', 'Everyone says Rina looks like her.'], id: 'Rambut Rina keriting, sama seperti neneknya. Semua orang bilang Rina mirip neneknya.', key: 'her', wrong: ['him', 'them'], cue: 'her grandma' },
-      { en: ['Dito and his dad both wear glasses and have short hair.', 'People say Dito looks like him.'], id: 'Dito dan ayahnya sama-sama berkacamata dan berambut pendek. Orang-orang bilang Dito mirip ayahnya.', key: 'him', wrong: ['her', 'them'], cue: 'his dad' },
+      { en: ['My brother and I have the same smile.', 'Everyone says he looks like me.'], id: 'Aku dan saudara laki-lakiku punya senyum yang sama. Semua orang bilang dia mirip aku.', key: 'me', wrong: ['him', 'her', 'I'], cue: 'My brother and I' },
+      { en: ['Rina has curly hair, just like her grandma.', 'Everyone says Rina looks like her.'], id: 'Rambut Rina keriting, sama seperti neneknya. Semua orang bilang Rina mirip neneknya.', key: 'her', wrong: ['him', 'them', 'she'], cue: 'her grandma' },
+      { en: ['Dito and his dad both wear glasses and have short hair.', 'People say Dito looks like him.'], id: 'Dito dan ayahnya sama-sama berkacamata dan berambut pendek. Orang-orang bilang Dito mirip ayahnya.', key: 'him', wrong: ['her', 'them', 'he'], cue: 'his dad' },
     ],
   },
   {
@@ -21239,21 +21239,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'is/are made of + bahan',
     rule: 'Bahan pembuat → is (satu) / are (banyak) made of + bahan.',
     sentences: [
-      { en: 'This spoon is made of metal.', id: 'Sendok ini terbuat dari logam.', emoji: '🥄', key: 'made', wrong: ['make', 'making'] },
-      { en: 'My pillow is made of cotton.', id: 'Bantalku terbuat dari kapas.', emoji: '🛏️', key: 'is', wrong: ['are', 'am'] },
-      { en: 'The plate is made of glass.', id: 'Piring itu terbuat dari kaca.', emoji: '🍽️', key: 'made', wrong: ['make', 'making'] },
-      { en: 'These chairs are made of wood.', id: 'Kursi-kursi ini terbuat dari kayu.', emoji: '🪑', key: 'are', wrong: ['is', 'am'] },
-      { en: 'My bag is made of cloth.', id: 'Tasku terbuat dari kain.', emoji: '👜', key: 'made', wrong: ['make', 'making'] },
-      { en: 'The window is made of glass.', id: 'Jendela itu terbuat dari kaca.', emoji: '🪟', key: 'is', wrong: ['are', 'am'] },
-      { en: 'These toys are made of plastic.', id: 'Mainan-mainan ini terbuat dari plastik.', emoji: '🧸', key: 'are', wrong: ['is', 'am'] },
-      { en: 'The house is made of bricks.', id: 'Rumah itu terbuat dari batu bata.', emoji: '🧱', key: 'made', wrong: ['make', 'making'] },
-      { en: 'My socks are made of wool.', id: 'Kaus kakiku terbuat dari wol.', emoji: '🧦', key: 'are', wrong: ['is', 'am'] },
-      { en: 'This ring is made of gold.', id: 'Cincin ini terbuat dari emas.', emoji: '💍', key: 'made', wrong: ['make', 'making'] },
+      { en: 'This spoon is made of metal.', id: 'Sendok ini terbuat dari logam.', emoji: '🥄', key: 'made', wrong: ['make', 'making', 'makes'] },
+      { en: 'My pillow is made of cotton.', id: 'Bantalku terbuat dari kapas.', emoji: '🛏️', key: 'is', wrong: ['are', 'am', 'be'] },
+      { en: 'The plate is made of glass.', id: 'Piring itu terbuat dari kaca.', emoji: '🍽️', key: 'made', wrong: ['make', 'making', 'makes'] },
+      { en: 'These chairs are made of wood.', id: 'Kursi-kursi ini terbuat dari kayu.', emoji: '🪑', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'My bag is made of cloth.', id: 'Tasku terbuat dari kain.', emoji: '👜', key: 'made', wrong: ['make', 'making', 'makes'] },
+      { en: 'The window is made of glass.', id: 'Jendela itu terbuat dari kaca.', emoji: '🪟', key: 'is', wrong: ['are', 'am', 'be'] },
+      { en: 'These toys are made of plastic.', id: 'Mainan-mainan ini terbuat dari plastik.', emoji: '🧸', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'The house is made of bricks.', id: 'Rumah itu terbuat dari batu bata.', emoji: '🧱', key: 'made', wrong: ['make', 'making', 'makes'] },
+      { en: 'My socks are made of wool.', id: 'Kaus kakiku terbuat dari wol.', emoji: '🧦', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'This ring is made of gold.', id: 'Cincin ini terbuat dari emas.', emoji: '💍', key: 'made', wrong: ['make', 'making', 'makes'] },
     ],
     texts: [
-      { en: ['Long ago, people in my village built boats by hand.', 'The boats were made of wood.'], id: 'Dulu sekali, orang-orang di desaku membuat perahu dengan tangan. Perahu-perahu itu terbuat dari kayu.', key: 'were', wrong: ['are', 'will be'], cue: 'Long ago' },
-      { en: ['Last year, our class made a robot for the science fair.', 'It was made of old boxes and bottles.'], id: 'Tahun lalu, kelas kami membuat robot untuk pameran sains. Robot itu terbuat dari kotak dan botol bekas.', key: 'was', wrong: ['is going to be', 'are'], cue: 'Last year' },
-      { en: ['My mom is going to buy a new table next week.', 'It will be made of metal, not wood.'], id: 'Ibuku akan membeli meja baru minggu depan. Meja itu akan terbuat dari logam, bukan kayu.', key: 'will be', wrong: ['was', 'were'], cue: 'next week' },
+      { en: ['Long ago, people in my village built boats by hand.', 'The boats were made of wood.'], id: 'Dulu sekali, orang-orang di desaku membuat perahu dengan tangan. Perahu-perahu itu terbuat dari kayu.', key: 'were', wrong: ['are', 'will be', 'is'], cue: 'Long ago' },
+      { en: ['Last year, our class made a robot for the science fair.', 'It was made of old boxes and bottles.'], id: 'Tahun lalu, kelas kami membuat robot untuk pameran sains. Robot itu terbuat dari kotak dan botol bekas.', key: 'was', wrong: ['is going to be', 'are', 'were'], cue: 'Last year' },
+      { en: ['My mom is going to buy a new table next week.', 'It will be made of metal, not wood.'], id: 'Ibuku akan membeli meja baru minggu depan. Meja itu akan terbuat dari logam, bukan kayu.', key: 'will be', wrong: ['was', 'were', 'be'], cue: 'next week' },
     ],
   },
   {
@@ -21262,21 +21262,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'If + kata kerja sekarang, kata kerja sekarang',
     rule: 'Hal yang selalu terjadi → If + kata kerja sekarang, lalu kata kerja sekarang (+s untuk he/she/it).',
     sentences: [
-      { en: 'If you heat ice, it melts.', id: 'Kalau kamu memanaskan es, es itu mencair.', emoji: '🧊', key: 'melts', wrong: ['melt', 'melting'] },
-      { en: 'If it rains, we stay at home.', id: 'Kalau hujan, kami tetap di rumah.', emoji: '☔', key: 'rains', wrong: ['rain', 'raining'], alt: ['We stay at home if it rains'] },
-      { en: 'If she hears a joke, she laughs.', id: 'Kalau dia mendengar lelucon, dia tertawa.', emoji: '😂', key: 'laughs', wrong: ['laugh', 'laughing'], alt: ['She laughs if she hears a joke'] },
-      { en: 'If I feel tired, I go to bed early.', id: 'Kalau aku merasa lelah, aku tidur lebih awal.', emoji: '🛏️', key: 'feel', wrong: ['feels', 'feeling'], alt: ['I go to bed early if I feel tired'] },
-      { en: 'If you mix red and blue, you get purple.', id: 'Kalau kamu mencampur merah dan biru, kamu mendapat ungu.', emoji: '🎨', key: 'get', wrong: ['gets', 'getting'], alt: ['You get purple if you mix red and blue'] },
-      { en: "If plants don't get water, they dry up.", id: 'Kalau tanaman tidak mendapat air, tanaman itu mengering.', emoji: '🌱', key: 'dry', wrong: ['dries', 'drying'] },
-      { en: 'If he studies hard, he passes the test.', id: 'Kalau dia belajar dengan giat, dia lulus ujian.', emoji: '📝', key: 'studies', wrong: ['study', 'studying'], alt: ['He passes the test if he studies hard'] },
-      { en: 'If you press this button, the light turns on.', id: 'Kalau kamu menekan tombol ini, lampunya menyala.', emoji: '💡', key: 'turns', wrong: ['turn', 'turning'], alt: ['The light turns on if you press this button'] },
-      { en: 'If I eat too much candy, my stomach hurts.', id: 'Kalau aku makan terlalu banyak permen, perutku sakit.', emoji: '🍬', key: 'hurts', wrong: ['hurt', 'hurting'], alt: ['My stomach hurts if I eat too much candy'] },
-      { en: 'If water gets very cold, it becomes ice.', id: 'Kalau air menjadi sangat dingin, air itu berubah jadi es.', emoji: '💧', key: 'becomes', wrong: ['become', 'becoming'] },
+      { en: 'If you heat ice, it melts.', id: 'Kalau kamu memanaskan es, es itu mencair.', emoji: '🧊', key: 'melts', wrong: ['melt', 'melting', 'melted'] },
+      { en: 'If it rains, we stay at home.', id: 'Kalau hujan, kami tetap di rumah.', emoji: '☔', key: 'rains', wrong: ['rain', 'raining', 'rained'], alt: ['We stay at home if it rains'] },
+      { en: 'If she hears a joke, she laughs.', id: 'Kalau dia mendengar lelucon, dia tertawa.', emoji: '😂', key: 'laughs', wrong: ['laugh', 'laughing', 'laughed'], alt: ['She laughs if she hears a joke'] },
+      { en: 'If I feel tired, I go to bed early.', id: 'Kalau aku merasa lelah, aku tidur lebih awal.', emoji: '🛏️', key: 'feel', wrong: ['feels', 'feeling', 'felt'], alt: ['I go to bed early if I feel tired'] },
+      { en: 'If you mix red and blue, you get purple.', id: 'Kalau kamu mencampur merah dan biru, kamu mendapat ungu.', emoji: '🎨', key: 'get', wrong: ['gets', 'getting', 'got'], alt: ['You get purple if you mix red and blue'] },
+      { en: "If plants don't get water, they dry up.", id: 'Kalau tanaman tidak mendapat air, tanaman itu mengering.', emoji: '🌱', key: 'dry', wrong: ['dries', 'drying', 'dried'] },
+      { en: 'If he studies hard, he passes the test.', id: 'Kalau dia belajar dengan giat, dia lulus ujian.', emoji: '📝', key: 'studies', wrong: ['study', 'studying', 'studied'], alt: ['He passes the test if he studies hard'] },
+      { en: 'If you press this button, the light turns on.', id: 'Kalau kamu menekan tombol ini, lampunya menyala.', emoji: '💡', key: 'turns', wrong: ['turn', 'turning', 'turned'], alt: ['The light turns on if you press this button'] },
+      { en: 'If I eat too much candy, my stomach hurts.', id: 'Kalau aku makan terlalu banyak permen, perutku sakit.', emoji: '🍬', key: 'hurts', wrong: ['hurt', 'hurting', 'to hurt'], alt: ['My stomach hurts if I eat too much candy'] },
+      { en: 'If water gets very cold, it becomes ice.', id: 'Kalau air menjadi sangat dingin, air itu berubah jadi es.', emoji: '💧', key: 'becomes', wrong: ['become', 'becoming', 'became'] },
     ],
     texts: [
-      { en: ['Dito is afraid of thunder.', 'If thunder comes, he hides under his blanket.'], id: 'Dito takut petir. Kalau ada petir, dia bersembunyi di bawah selimutnya.', key: 'he', wrong: ['she', 'they'], cue: 'Dito' },
-      { en: ['My mom has a rule for my sister and me.', 'If our homework is finished, we can watch TV.'], id: 'Ibuku punya aturan untukku dan saudara perempuanku. Kalau PR kami sudah selesai, kami boleh menonton TV.', key: 'we', wrong: ['he', 'it'], cue: 'my sister and me' },
-      { en: ['Sari\'s cat loves fish.', 'If Sari opens a can of fish, it runs to the kitchen.'], id: 'Kucing Sari suka ikan. Kalau Sari membuka kaleng ikan, kucing itu berlari ke dapur.', key: 'it', wrong: ['he', 'they'], cue: 'loves fish' },
+      { en: ['Dito is afraid of thunder.', 'If thunder comes, he hides under his blanket.'], id: 'Dito takut petir. Kalau ada petir, dia bersembunyi di bawah selimutnya.', key: 'he', wrong: ['she', 'they', 'him'], cue: 'Dito' },
+      { en: ['My mom has a rule for my sister and me.', 'If our homework is finished, we can watch TV.'], id: 'Ibuku punya aturan untukku dan saudara perempuanku. Kalau PR kami sudah selesai, kami boleh menonton TV.', key: 'we', wrong: ['he', 'it', 'us'], cue: 'my sister and me' },
+      { en: ['Sari\'s cat loves fish.', 'If Sari opens a can of fish, it runs to the kitchen.'], id: 'Kucing Sari suka ikan. Kalau Sari membuka kaleng ikan, kucing itu berlari ke dapur.', key: 'it', wrong: ['he', 'they', 'its'], cue: 'loves fish' },
     ],
   },
   {
@@ -21285,21 +21285,21 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
     desc: 'many + bisa dihitung, much + tidak bisa dihitung',
     rule: 'Bisa dihitung (friends, books) → many. Tidak bisa dihitung (water, milk, time) → much.',
     sentences: [
-      { en: 'I have many friends at school.', id: 'Aku punya banyak teman di sekolah.', emoji: '👥', key: 'many', wrong: ['much', 'a'] },
-      { en: "We don't have much water left.", id: 'Air kami tinggal sedikit.', emoji: '💧', key: 'much', wrong: ['many', 'a'] },
-      { en: 'How many students are in your class?', id: 'Ada berapa murid di kelasmu?', emoji: '🏫', key: 'many', wrong: ['much', 'a'] },
-      { en: 'How much milk do you drink?', id: 'Berapa banyak susu yang kamu minum?', emoji: '🥛', key: 'much', wrong: ['many', 'a'] },
-      { en: 'There are many books on the shelf.', id: 'Ada banyak buku di rak.', emoji: '📚', key: 'many', wrong: ['much', 'a'] },
-      { en: "She doesn't have much time today.", id: 'Dia tidak punya banyak waktu hari ini.', emoji: '⏰', key: 'much', wrong: ['many', 'a'], alt: ["Today she doesn't have much time"] },
-      { en: 'He ate too many cookies.', id: 'Dia makan terlalu banyak kue kering.', emoji: '🍪', key: 'many', wrong: ['much', 'a'] },
-      { en: "Don't put too much sugar in my tea.", id: 'Jangan taruh terlalu banyak gula di tehku.', emoji: '🍵', key: 'much', wrong: ['many', 'a'] },
-      { en: 'How many apples do you need?', id: 'Berapa banyak apel yang kamu perlukan?', emoji: '🍎', key: 'many', wrong: ['much', 'a'] },
-      { en: "We didn't get much rain this month.", id: 'Bulan ini tidak banyak hujan.', emoji: '🌧️', key: 'much', wrong: ['many', 'a'], alt: ["This month we didn't get much rain"] },
+      { en: 'I have many friends at school.', id: 'Aku punya banyak teman di sekolah.', emoji: '👥', key: 'many', wrong: ['much', 'a', 'any'] },
+      { en: "We don't have much water left.", id: 'Air kami tinggal sedikit.', emoji: '💧', key: 'much', wrong: ['many', 'a', 'few'] },
+      { en: 'How many students are in your class?', id: 'Ada berapa murid di kelasmu?', emoji: '🏫', key: 'many', wrong: ['much', 'a', 'any'] },
+      { en: 'How much milk do you drink?', id: 'Berapa banyak susu yang kamu minum?', emoji: '🥛', key: 'much', wrong: ['many', 'a', 'few'] },
+      { en: 'There are many books on the shelf.', id: 'Ada banyak buku di rak.', emoji: '📚', key: 'many', wrong: ['much', 'a', 'any'] },
+      { en: "She doesn't have much time today.", id: 'Dia tidak punya banyak waktu hari ini.', emoji: '⏰', key: 'much', wrong: ['many', 'a', 'few'], alt: ["Today she doesn't have much time"] },
+      { en: 'He ate too many cookies.', id: 'Dia makan terlalu banyak kue kering.', emoji: '🍪', key: 'many', wrong: ['much', 'a', 'any'] },
+      { en: "Don't put too much sugar in my tea.", id: 'Jangan taruh terlalu banyak gula di tehku.', emoji: '🍵', key: 'much', wrong: ['many', 'a', 'few'] },
+      { en: 'How many apples do you need?', id: 'Berapa banyak apel yang kamu perlukan?', emoji: '🍎', key: 'many', wrong: ['much', 'a', 'any'] },
+      { en: "We didn't get much rain this month.", id: 'Bulan ini tidak banyak hujan.', emoji: '🌧️', key: 'much', wrong: ['many', 'a', 'few'], alt: ["This month we didn't get much rain"] },
     ],
     texts: [
-      { en: ['We need some flour for the cake.', 'How much do we have?'], id: 'Kita butuh tepung untuk kuenya. Tepung kita ada berapa banyak?', key: 'much', wrong: ['many', 'a'], cue: 'flour' },
-      { en: ['Rina wants to buy some stickers.', 'How many does she want?'], id: 'Rina ingin membeli stiker. Dia mau berapa banyak?', key: 'many', wrong: ['much', 'a'], cue: 'stickers' },
-      { en: ['Grandpa likes coffee in the morning.', 'He doesn\'t drink much in the evening.'], id: 'Kakek suka minum kopi di pagi hari. Dia tidak minum banyak di malam hari.', key: 'much', wrong: ['many', 'a'], cue: 'coffee' },
+      { en: ['We need some flour for the cake.', 'How much do we have?'], id: 'Kita butuh tepung untuk kuenya. Tepung kita ada berapa banyak?', key: 'much', wrong: ['many', 'a', 'any'], cue: 'flour' },
+      { en: ['Rina wants to buy some stickers.', 'How many does she want?'], id: 'Rina ingin membeli stiker. Dia mau berapa banyak?', key: 'many', wrong: ['much', 'a', 'any'], cue: 'stickers' },
+      { en: ['Grandpa likes coffee in the morning.', 'He doesn\'t drink much in the evening.'], id: 'Kakek suka minum kopi di pagi hari. Dia tidak minum banyak di malam hari.', key: 'much', wrong: ['many', 'a', 'few'], cue: 'coffee' },
     ],
   },
 ];
@@ -21461,473 +21461,777 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
       },
     ],
   },
-  /**
-   * 9 topik lanjutan (riset per-level, `materi/grammar.md` §19) — SEMUA
-   * TETAP sub-pola "reported speech" (bukan pindah ke struktur PET lain
-   * spt passive voice/conditional) krn UI Latihan Inti/Tantangan HARDCODE
-   * teks "🔁 Ubah Jadi Reported Speech"/"🔎 Siapa Bilang Apa?" (`games/
-   * grammar.ts`, tidak dibaca dari field topik) — topik format LAIN akan
-   * salah label kalau bukan genuinely reported speech. Untungnya reported
-   * speech sendiri SECARA RESMI Cambridge B1 Preliminary (PET) py banyak
-   * sub-pola beda aturan (statement/question/command tiap py aturan
-   * transformasi sendiri) — persis yg SUDAH diflag topik pertama sbg scope
-   * masa depan ("bukan campur pertanyaan/perintah yg py aturan beda").
-   * Permintaan user EKSPLISIT: "min 10" utk Grammar Trailblazer — DEVIASI
-   * dari target BAKU level ini (≥5, CLAUDE.md) krn instruksi baru user,
-   * pola sama persis dgn Listening Trailblazer yg jg dibangun ke 10 penuh
-   * atas permintaan eksplisit. 10 karakter (Rani/Dimas/Sari/Budi/Wati/
-   * Andi/Lina/Doni/Maya/Fajar) di-REUSE PERSIS sbg pemeran lintas topik
-   * (SATU per kutipan per topik, bukan karakter baru) — konsisten pola
-   * "Bima" Speaking Trailblazer.
-   */
-  /**
-   * Topik ke-2 — "Reported Continuous" (present continuous → past
-   * continuous, "was/were + -ing" — BEDA morfologi dari shift simple-past
-   * topik pertama). Dari domain Vocab `hiburan-media` (Entertainment &
-   * Media) — aktivitas hiburan natural berbentuk continuous ("sedang
-   * nonton/dengar/main"). Distraktor: (1) lupa geser tense, (2) kata ganti
-   * salah, (3) aspek continuous hilang (jadi simple past polos).
-   */
   {
-    id: 'reported-continuous',
-    title: 'Reported Speech — Sedang Apa? (Continuous)',
-    desc: '10 kutipan',
+    id: 'passive-present',
+    title: 'Kalimat Pasif Sekarang (Present Passive)',
+    desc: '10 kalimat',
+    kind: 'passive',
     transforms: [
       {
-        speaker: 'Dimas',
-        emoji: '🎬',
-        original: 'I am watching a new anime series.',
-        originalId: 'Aku sedang menonton serial anime baru.',
+        emoji: '🧹',
+        original: 'My mother cleans the kitchen every day.',
+        originalId: 'Ibuku membersihkan dapur setiap hari.',
         reportedOptions: [
-          { text: 'Dimas said that he was watching a new anime series.', ok: true },
-          { text: 'Dimas said that he had been watching a new anime series.', ok: false },
-          { text: 'Dimas said that she was watching a new anime series.', ok: false },
-          { text: 'Dimas said that he were watching a new anime series.', ok: false },
+          { text: 'The kitchen is cleaned by my mother every day.', ok: true },
+          { text: 'The kitchen is clean by my mother every day.', ok: false },
+          { text: 'The kitchen are cleaned by my mother every day.', ok: false },
+          { text: 'My mother is cleaned by the kitchen every day.', ok: false },
         ],
-        originalOptions: ['I have been watching a new anime series.', 'I watch a new anime series.', 'I will watch a new anime series.'],
+        originalOptions: ['My mother cleaned the kitchen every day.', 'My mother will clean the kitchen every day.', 'My mother has cleaned the kitchen.'],
       },
       {
-        speaker: 'Sari',
-        emoji: '🎧',
-        original: 'I am listening to a podcast about music.',
-        originalId: 'Aku sedang mendengarkan podcast tentang musik.',
+        emoji: '🍞',
+        original: 'The baker makes fresh bread every morning.',
+        originalId: 'Tukang roti membuat roti segar setiap pagi.',
         reportedOptions: [
-          { text: 'Sari said that she was listening to a podcast about music.', ok: true },
-          { text: 'Sari said that I was listening to a podcast about music.', ok: false },
-          { text: 'Sari said that she was listen to a podcast about music.', ok: false },
-          { text: 'Sari said that she had been listening to a podcast about music.', ok: false },
+          { text: 'Fresh bread is made by the baker every morning.', ok: true },
+          { text: 'Fresh bread is make by the baker every morning.', ok: false },
+          { text: 'Fresh bread are made by the baker every morning.', ok: false },
+          { text: 'The baker is made by fresh bread every morning.', ok: false },
         ],
-        originalOptions: ['I have been listening to a podcast about music.', 'I listen to a podcast about music.', 'I will listen to a podcast about music.'],
+        originalOptions: ['The baker made fresh bread every morning.', 'The baker will make fresh bread every morning.', 'The baker has made fresh bread.'],
       },
       {
-        speaker: 'Andi',
-        emoji: '🎮',
-        original: 'I am playing an online game with my friends.',
-        originalId: 'Aku sedang main gim daring bareng teman-temanku.',
+        emoji: '📰',
+        original: 'Many people read this magazine.',
+        originalId: 'Banyak orang membaca majalah ini.',
         reportedOptions: [
-          { text: 'Andi said that he was playing an online game with his friends.', ok: true },
-          { text: 'Andi said that he were playing an online game with his friends.', ok: false },
-          { text: 'Andi said that I was playing an online game with my friends.', ok: false },
-          { text: 'Andi said that she was playing an online game with her friends.', ok: false },
+          { text: 'This magazine is read by many people.', ok: true },
+          { text: 'This magazine is reads by many people.', ok: false },
+          { text: 'This magazine are read by many people.', ok: false },
+          { text: 'Many people are read by this magazine.', ok: false },
         ],
-        originalOptions: ['I have been playing an online game with my friends.', 'I play an online game with my friends.', 'I will play an online game with my friends.'],
+        originalOptions: ['Many people will read this magazine.', 'Many people have read this magazine.', 'Many people are reading this magazine.'],
       },
       {
-        speaker: 'Rani',
-        emoji: '📺',
-        original: 'I am watching a drama series.',
-        originalId: 'Aku sedang menonton serial drama.',
+        emoji: '🌾',
+        original: 'Farmers grow rice in this village.',
+        originalId: 'Petani menanam padi di desa ini.',
         reportedOptions: [
-          { text: 'Rani said that she was watching a drama series.', ok: true },
-          { text: 'Rani said that she was watch a drama series.', ok: false },
-          { text: 'Rani said that he was watching a drama series.', ok: false },
-          { text: 'Rani said that she had been watching a drama series.', ok: false },
+          { text: 'Rice is grown by farmers in this village.', ok: true },
+          { text: 'Rice is grow by farmers in this village.', ok: false },
+          { text: 'Rice are grown by farmers in this village.', ok: false },
+          { text: 'Farmers are grown by rice in this village.', ok: false },
         ],
-        originalOptions: ['I have been watching a drama series.', 'I watch a drama series.', 'I will watch a drama series.'],
+        originalOptions: ['Farmers grew rice in this village.', 'Farmers will grow rice in this village.', 'Farmers are growing rice in this village.'],
       },
       {
-        speaker: 'Budi',
-        emoji: '🎤',
-        original: 'I am recording a new song.',
-        originalId: 'Aku sedang merekam lagu baru.',
+        emoji: '✉️',
+        original: 'The postman delivers the letters.',
+        originalId: 'Tukang pos mengantar surat-surat itu.',
         reportedOptions: [
-          { text: 'Budi said that he was recording a new song.', ok: true },
-          { text: 'Budi said that I was recording a new song.', ok: false },
-          { text: 'Budi said that he were recording a new song.', ok: false },
-          { text: 'Budi said that he was record a new song.', ok: false },
+          { text: 'The letters are delivered by the postman.', ok: true },
+          { text: 'The letters is delivered by the postman.', ok: false },
+          { text: 'The letters are deliver by the postman.', ok: false },
+          { text: 'The postman is delivered by the letters.', ok: false },
         ],
-        originalOptions: ['I have been recording a new song.', 'I record a new song.', 'I will record a new song.'],
+        originalOptions: ['The postman delivered the letters.', 'The postman will deliver the letters.', 'The postman is delivering the letters.'],
       },
       {
-        speaker: 'Wati',
-        emoji: '🎨',
-        original: 'I am drawing a comic for the school magazine.',
-        originalId: 'Aku sedang menggambar komik untuk majalah sekolah.',
+        emoji: '🍽️',
+        original: 'My father washes the dishes after dinner.',
+        originalId: 'Ayahku mencuci piring setelah makan malam.',
         reportedOptions: [
-          { text: 'Wati said that she was drawing a comic for the school magazine.', ok: true },
-          { text: 'Wati said that she had been drawing a comic for the school magazine.', ok: false },
-          { text: 'Wati said that I was drawing a comic for the school magazine.', ok: false },
-          { text: 'Wati said that he was drawing a comic for the school magazine.', ok: false },
+          { text: 'The dishes are washed by my father after dinner.', ok: true },
+          { text: 'The dishes is washed by my father after dinner.', ok: false },
+          { text: 'The dishes are wash by my father after dinner.', ok: false },
+          { text: 'My father is washed by the dishes after dinner.', ok: false },
         ],
-        originalOptions: ['I have been drawing a comic for the school magazine.', 'I draw a comic for the school magazine.', 'I will draw a comic for the school magazine.'],
+        originalOptions: ['My father washed the dishes after dinner.', 'My father will wash the dishes after dinner.', 'My father is washing the dishes now.'],
       },
       {
-        speaker: 'Lina',
-        emoji: '🎥',
-        original: 'I am editing a video for my vlog.',
-        originalId: 'Aku sedang mengedit video untuk vlogku.',
-        reportedOptions: [
-          { text: 'Lina said that she was editing a video for her vlog.', ok: true },
-          { text: 'Lina said that she were editing a video for her vlog.', ok: false },
-          { text: 'Lina said that she was edit a video for her vlog.', ok: false },
-          { text: 'Lina said that I was editing a video for my vlog.', ok: false },
-        ],
-        originalOptions: ['I have been editing a video for my vlog.', 'I edit a video for my vlog.', 'I will edit a video for my vlog.'],
-      },
-      {
-        speaker: 'Doni',
-        emoji: '📖',
-        original: 'I am reading a comic book.',
-        originalId: 'Aku sedang membaca buku komik.',
-        reportedOptions: [
-          { text: 'Doni said that he was reading a comic book.', ok: true },
-          { text: 'Doni said that he had been reading a comic book.', ok: false },
-          { text: 'Doni said that she was reading a comic book.', ok: false },
-          { text: 'Doni said that he was read a comic book.', ok: false },
-        ],
-        originalOptions: ['I have been reading a comic book.', 'I read a comic book.', 'I will read a comic book.'],
-      },
-      {
-        speaker: 'Maya',
-        emoji: '🎶',
-        original: 'I am singing karaoke with my cousins.',
-        originalId: 'Aku sedang bernyanyi karaoke bareng sepupu-sepupuku.',
-        reportedOptions: [
-          { text: 'Maya said that she was singing karaoke with her cousins.', ok: true },
-          { text: 'Maya said that she were singing karaoke with her cousins.', ok: false },
-          { text: 'Maya said that I was singing karaoke with my cousins.', ok: false },
-          { text: 'Maya said that she had been singing karaoke with her cousins.', ok: false },
-        ],
-        originalOptions: ['I have been singing karaoke with my cousins.', 'I sing karaoke with my cousins.', 'I will sing karaoke with my cousins.'],
-      },
-      {
-        speaker: 'Fajar',
-        emoji: '🎵',
-        original: 'I am dancing to my favorite song.',
-        originalId: 'Aku sedang menari mengikuti lagu favoritku.',
-        reportedOptions: [
-          { text: 'Fajar said that he was dancing to his favorite song.', ok: true },
-          { text: 'Fajar said that she was dancing to her favorite song.', ok: false },
-          { text: 'Fajar said that he was dance to his favorite song.', ok: false },
-          { text: 'Fajar said that he were dancing to his favorite song.', ok: false },
-        ],
-        originalOptions: ['I have been dancing to my favorite song.', 'I dance to my favorite song.', 'I will dance to my favorite song.'],
-      },
-    ],
-  },
-  /**
-   * Topik ke-3 — "Reported Past Perfect" (past simple → past perfect,
-   * "had + V3" — pola shift RESMI PET utk kalimat yg sumbernya SUDAH past
-   * simple, dikonfirmasi flo-joe PET practice set). Dari domain Vocab
-   * `perjalanan-wisata` (Travel & Tourism) — register bercerita
-   * pengalaman jalan-jalan paling natural utk struktur ini. Distraktor:
-   * (1) lupa geser (tetap simple past), (2) kata ganti salah, (3) tipe
-   * tense salah (continuous, bukan perfect).
-   */
-  {
-    id: 'reported-past-perfect',
-    title: 'Reported Speech — Sudah Terjadi (Past Perfect)',
-    desc: '10 kutipan',
-    transforms: [
-      {
-        speaker: 'Wati',
-        emoji: '🏝️',
-        original: 'I visited Lombok with my family.',
-        originalId: 'Aku mengunjungi Lombok bersama keluargaku.',
-        reportedOptions: [
-          { text: 'Wati said that she had visited Lombok with her family.', ok: true },
-          { text: 'Wati said that she had visit Lombok with her family.', ok: false },
-          { text: 'Wati said that I had visited Lombok with my family.', ok: false },
-          { text: 'Wati said that she would visit Lombok with her family.', ok: false },
-        ],
-        originalOptions: ['I visit Lombok with my family.', 'I will visit Lombok with my family.', 'I am visiting Lombok with my family.'],
-      },
-      {
-        speaker: 'Fajar',
-        emoji: '🎒',
-        original: 'I packed my bag before the trip.',
-        originalId: 'Aku mengemas tasku sebelum perjalanan.',
-        reportedOptions: [
-          { text: 'Fajar said that he had packed his bag before the trip.', ok: true },
-          { text: 'Fajar said that she had packed her bag before the trip.', ok: false },
-          { text: 'Fajar said that he had pack his bag before the trip.', ok: false },
-          { text: 'Fajar said that he was packing his bag before the trip.', ok: false },
-        ],
-        originalOptions: ['I pack my bag before the trip.', 'I will pack my bag before the trip.', 'I am packing my bag before the trip.'],
-      },
-      {
-        speaker: 'Maya',
-        emoji: '📸',
-        original: 'I took many photos at the waterfall.',
-        originalId: 'Aku mengambil banyak foto di air terjun itu.',
-        reportedOptions: [
-          { text: 'Maya said that she had taken many photos at the waterfall.', ok: true },
-          { text: 'Maya said that I had taken many photos at the waterfall.', ok: false },
-          { text: 'Maya said that she would take many photos at the waterfall.', ok: false },
-          { text: 'Maya said that she had took many photos at the waterfall.', ok: false },
-        ],
-        originalOptions: ['I take many photos at the waterfall.', 'I will take many photos at the waterfall.', 'I am taking many photos at the waterfall.'],
-      },
-      {
-        speaker: 'Dimas',
-        emoji: '🏔️',
-        original: 'I climbed a small hill near the village.',
-        originalId: 'Aku mendaki bukit kecil dekat desa itu.',
-        reportedOptions: [
-          { text: 'Dimas said that he had climbed a small hill near the village.', ok: true },
-          { text: 'Dimas said that he had climb a small hill near the village.', ok: false },
-          { text: 'Dimas said that she had climbed a small hill near the village.', ok: false },
-          { text: 'Dimas said that he would climb a small hill near the village.', ok: false },
-        ],
-        originalOptions: ['I climb a small hill near the village.', 'I will climb a small hill near the village.', 'I am climbing a small hill near the village.'],
-      },
-      {
-        speaker: 'Sari',
-        emoji: '🚆',
-        original: 'I traveled by train to Yogyakarta.',
-        originalId: 'Aku bepergian naik kereta ke Yogyakarta.',
-        reportedOptions: [
-          { text: 'Sari said that she had traveled by train to Yogyakarta.', ok: true },
-          { text: 'Sari said that she was traveling by train to Yogyakarta.', ok: false },
-          { text: 'Sari said that I had traveled by train to Yogyakarta.', ok: false },
-          { text: 'Sari said that she had travel by train to Yogyakarta.', ok: false },
-        ],
-        originalOptions: ['I travel by train to Yogyakarta.', 'I will travel by train to Yogyakarta.', 'I am traveling by train to Yogyakarta.'],
-      },
-      {
-        speaker: 'Budi',
-        emoji: '🏨',
-        original: 'I booked a room at a small hotel.',
-        originalId: 'Aku memesan kamar di hotel kecil.',
-        reportedOptions: [
-          { text: 'Budi said that he had booked a room at a small hotel.', ok: true },
-          { text: 'Budi said that he would book a room at a small hotel.', ok: false },
-          { text: 'Budi said that she had booked a room at a small hotel.', ok: false },
-          { text: 'Budi said that he had book a room at a small hotel.', ok: false },
-        ],
-        originalOptions: ['I book a room at a small hotel.', 'I will book a room at a small hotel.', 'I am booking a room at a small hotel.'],
-      },
-      {
-        speaker: 'Rani',
-        emoji: '🗺️',
-        original: 'I explored the old town on foot.',
-        originalId: 'Aku menjelajahi kota tua itu dengan berjalan kaki.',
-        reportedOptions: [
-          { text: 'Rani said that she had explored the old town on foot.', ok: true },
-          { text: 'Rani said that I had explored the old town on foot.', ok: false },
-          { text: 'Rani said that she was exploring the old town on foot.', ok: false },
-          { text: 'Rani said that she had explore the old town on foot.', ok: false },
-        ],
-        originalOptions: ['I explore the old town on foot.', 'I will explore the old town on foot.', 'I am exploring the old town on foot.'],
-      },
-      {
-        speaker: 'Andi',
-        emoji: '⛵',
-        original: 'I sailed to a small island with my uncle.',
-        originalId: 'Aku berlayar ke pulau kecil bersama pamanku.',
-        reportedOptions: [
-          { text: 'Andi said that he had sailed to a small island with his uncle.', ok: true },
-          { text: 'Andi said that he had sail to a small island with his uncle.', ok: false },
-          { text: 'Andi said that she had sailed to a small island with her uncle.', ok: false },
-          { text: 'Andi said that he would sail to a small island with his uncle.', ok: false },
-        ],
-        originalOptions: ['I sail to a small island with my uncle.', 'I will sail to a small island with my uncle.', 'I am sailing to a small island with my uncle.'],
-      },
-      {
-        speaker: 'Lina',
-        emoji: '🍜',
-        original: 'I tried the local food at the market.',
-        originalId: 'Aku mencoba makanan khas di pasar itu.',
-        reportedOptions: [
-          { text: 'Lina said that she had tried the local food at the market.', ok: true },
-          { text: 'Lina said that she would try the local food at the market.', ok: false },
-          { text: 'Lina said that I had tried the local food at the market.', ok: false },
-          { text: 'Lina said that she had try the local food at the market.', ok: false },
-        ],
-        originalOptions: ['I try the local food at the market.', 'I will try the local food at the market.', 'I am trying the local food at the market.'],
-      },
-      {
-        speaker: 'Doni',
-        emoji: '🏕️',
-        original: 'I camped near the lake for two nights.',
-        originalId: 'Aku berkemah dekat danau selama dua malam.',
-        reportedOptions: [
-          { text: 'Doni said that he had camped near the lake for two nights.', ok: true },
-          { text: 'Doni said that he was camping near the lake for two nights.', ok: false },
-          { text: 'Doni said that she had camped near the lake for two nights.', ok: false },
-          { text: 'Doni said that he had camp near the lake for two nights.', ok: false },
-        ],
-        originalOptions: ['I camp near the lake for two nights.', 'I will camp near the lake for two nights.', 'I am camping near the lake for two nights.'],
-      },
-    ],
-  },
-  /**
-   * Topik ke-4 — "Reported Modals" (can→could, will→would, must→had to,
-   * may→might — pergeseran MODAL, bukan kata kerja utama, tabel terpisah
-   * di Cambridge). Dari domain Vocab `pendapat-pengalaman` (Opinions &
-   * Experience) — pernyataan kemampuan/rencana/kewajiban natural di
-   * register ini. Distraktor: (1) modal tidak digeser, (2) kata ganti
-   * salah, (3) modal salah (ditukar ke modal lain).
-   */
-  {
-    id: 'reported-modals',
-    title: 'Reported Speech — Bisa, Akan, Harus (Modals)',
-    desc: '10 kutipan',
-    transforms: [
-      {
-        speaker: 'Doni',
-        emoji: '🎸',
-        original: 'I can play the guitar.',
-        originalId: 'Aku bisa main gitar.',
-        reportedOptions: [
-          { text: 'Doni said that he could play the guitar.', ok: true },
-          { text: 'Doni said that he would play the guitar.', ok: false },
-          { text: 'Doni said that she could play the guitar.', ok: false },
-          { text: 'Doni said that he could to play the guitar.', ok: false },
-        ],
-        originalOptions: ['I will play the guitar.', 'I must play the guitar.', 'I may play the guitar.'],
-      },
-      {
-        speaker: 'Wati',
-        emoji: '🙋',
-        original: 'I will join the debate club.',
-        originalId: 'Aku akan ikut klub debat.',
-        reportedOptions: [
-          { text: 'Wati said that she would join the debate club.', ok: true },
-          { text: 'Wati said that I would join the debate club.', ok: false },
-          { text: 'Wati said that she could join the debate club.', ok: false },
-          { text: 'Wati said that she would joined the debate club.', ok: false },
-        ],
-        originalOptions: ['I can join the debate club.', 'I must join the debate club.', 'I may join the debate club.'],
-      },
-      {
-        speaker: 'Andi',
         emoji: '📝',
-        original: 'I must submit my project by Monday.',
-        originalId: 'Aku harus mengumpulkan proyekku sebelum hari Senin.',
+        original: 'Our teacher checks our homework every week.',
+        originalId: 'Guru kami memeriksa PR kami setiap minggu.',
         reportedOptions: [
-          { text: 'Andi said that he had to submit his project by Monday.', ok: true },
-          { text: 'Andi said that he had must submit his project by Monday.', ok: false },
-          { text: 'Andi said that he might submit his project by Monday.', ok: false },
-          { text: 'Andi said that I had to submit my project by Monday.', ok: false },
+          { text: 'Our homework is checked by our teacher every week.', ok: true },
+          { text: 'Our homework is check by our teacher every week.', ok: false },
+          { text: 'Our homework are checked by our teacher every week.', ok: false },
+          { text: 'Our teacher is checked by our homework every week.', ok: false },
         ],
-        originalOptions: ['I can submit my project by Monday.', 'I will submit my project by Monday.', 'I may submit my project by Monday.'],
+        originalOptions: ['Our teacher checked our homework every week.', 'Our teacher will check our homework every week.', 'Our teacher has checked our homework.'],
       },
       {
-        speaker: 'Lina',
-        emoji: '🌊',
-        original: 'I can swim across the pool.',
-        originalId: 'Aku bisa berenang menyeberangi kolam itu.',
+        emoji: '🍫',
+        original: 'Children love this chocolate.',
+        originalId: 'Anak-anak suka cokelat ini.',
         reportedOptions: [
-          { text: 'Lina said that she could swim across the pool.', ok: true },
-          { text: 'Lina said that he could swim across the pool.', ok: false },
-          { text: 'Lina said that she would swim across the pool.', ok: false },
-          { text: 'Lina said that she could swam across the pool.', ok: false },
+          { text: 'This chocolate is loved by children.', ok: true },
+          { text: 'This chocolate is love by children.', ok: false },
+          { text: 'This chocolate are loved by children.', ok: false },
+          { text: 'Children are loved by this chocolate.', ok: false },
         ],
-        originalOptions: ['I will swim across the pool.', 'I must swim across the pool.', 'I may swim across the pool.'],
+        originalOptions: ['Children loved this chocolate.', 'Children will love this chocolate.', 'Children have loved this chocolate.'],
       },
       {
-        speaker: 'Fajar',
-        emoji: '🎭',
-        original: 'I will perform in the school play.',
-        originalId: 'Aku akan tampil di drama sekolah.',
+        emoji: '🌍',
+        original: 'People speak English in many countries.',
+        originalId: 'Orang berbicara bahasa Inggris di banyak negara.',
         reportedOptions: [
-          { text: 'Fajar said that he would perform in the school play.', ok: true },
-          { text: 'Fajar said that he would performed in the school play.', ok: false },
-          { text: 'Fajar said that she would perform in the school play.', ok: false },
-          { text: 'Fajar said that he could perform in the school play.', ok: false },
+          { text: 'English is spoken in many countries.', ok: true },
+          { text: 'English is speak in many countries.', ok: false },
+          { text: 'English are spoken in many countries.', ok: false },
+          { text: 'English speaks in many countries.', ok: false },
         ],
-        originalOptions: ['I can perform in the school play.', 'I must perform in the school play.', 'I may perform in the school play.'],
+        originalOptions: ['People spoke English in many countries.', 'People will speak English in many countries.', 'People are speaking English in many countries.'],
       },
       {
-        speaker: 'Maya',
-        emoji: '📐',
-        original: 'I must finish my homework before dinner.',
-        originalId: 'Aku harus menyelesaikan PR-ku sebelum makan malam.',
+        emoji: '👕',
+        original: 'My grandmother makes these batik shirts.',
+        originalId: 'Nenekku membuat kemeja-kemeja batik ini.',
         reportedOptions: [
-          { text: 'Maya said that she had to finish her homework before dinner.', ok: true },
-          { text: 'Maya said that she had to finished her homework before dinner.', ok: false },
-          { text: 'Maya said that I had to finish my homework before dinner.', ok: false },
-          { text: 'Maya said that she might finish her homework before dinner.', ok: false },
+          { text: 'These batik shirts are made by my grandmother.', ok: true },
+          { text: 'These batik shirts is made by my grandmother.', ok: false },
+          { text: 'These batik shirts are make by my grandmother.', ok: false },
+          { text: 'My grandmother is made by these batik shirts.', ok: false },
         ],
-        originalOptions: ['I can finish my homework before dinner.', 'I will finish my homework before dinner.', 'I may finish my homework before dinner.'],
-      },
-      {
-        speaker: 'Rani',
-        emoji: '🎨',
-        original: 'I can paint very well.',
-        originalId: 'Aku bisa melukis dengan sangat baik.',
-        reportedOptions: [
-          { text: 'Rani said that she could paint very well.', ok: true },
-          { text: 'Rani said that she would paint very well.', ok: false },
-          { text: 'Rani said that I could paint very well.', ok: false },
-          { text: 'Rani said that she could painted very well.', ok: false },
-        ],
-        originalOptions: ['I will paint very well.', 'I must paint very well.', 'I may paint very well.'],
-      },
-      {
-        speaker: 'Budi',
-        emoji: '🎤',
-        original: 'I will sing at the concert.',
-        originalId: 'Aku akan bernyanyi di konser itu.',
-        reportedOptions: [
-          { text: 'Budi said that he would sing at the concert.', ok: true },
-          { text: 'Budi said that she would sing at the concert.', ok: false },
-          { text: 'Budi said that he could sing at the concert.', ok: false },
-          { text: 'Budi said that he would to sing at the concert.', ok: false },
-        ],
-        originalOptions: ['I can sing at the concert.', 'I must sing at the concert.', 'I may sing at the concert.'],
-      },
-      {
-        speaker: 'Sari',
-        emoji: '📚',
-        original: 'I must return the library book.',
-        originalId: 'Aku harus mengembalikan buku perpustakaan itu.',
-        reportedOptions: [
-          { text: 'Sari said that she had to return the library book.', ok: true },
-          { text: 'Sari said that she had must return the library book.', ok: false },
-          { text: 'Sari said that he had to return the library book.', ok: false },
-          { text: 'Sari said that she might return the library book.', ok: false },
-        ],
-        originalOptions: ['I can return the library book.', 'I will return the library book.', 'I may return the library book.'],
-      },
-      {
-        speaker: 'Dimas',
-        emoji: '💨',
-        original: 'I may join the running club.',
-        originalId: 'Aku mungkin akan ikut klub lari.',
-        reportedOptions: [
-          { text: 'Dimas said that he might join the running club.', ok: true },
-          { text: 'Dimas said that he would join the running club.', ok: false },
-          { text: 'Dimas said that I might join the running club.', ok: false },
-          { text: 'Dimas said that he might joined the running club.', ok: false },
-        ],
-        originalOptions: ['I can join the running club.', 'I will join the running club.', 'I must join the running club.'],
+        originalOptions: ['My grandmother made these batik shirts.', 'My grandmother will make these batik shirts.', 'My grandmother is making these batik shirts.'],
       },
     ],
   },
-  /**
-   * Topik ke-5 — "Reported Yes/No Questions" ("asked if/whether" — konversi
-   * urutan kata pertanyaan→pernyataan + sisip "if", BUKAN cuma soal tense).
-   * Dari domain Vocab `pendidikan-kehidupan-akademik` (Education & Academic
-   * Life) — dialog guru↔murid paling natural. Penerima ditulis LANGSUNG di
-   * teks `reportedOptions` (tanpa field baru di skema). Distraktor: (1)
-   * inversi tanya tidak dibuang ("if did..."), (2) kata ganti salah, (3)
-   * tense tidak digeser.
-   */
   {
-    id: 'reported-yesno-questions',
-    title: 'Reported Speech — Tanya Ya/Tidak (Asked If)',
+    id: 'passive-past',
+    title: 'Kalimat Pasif Lampau (Past Passive)',
+    desc: '10 kalimat',
+    kind: 'passive',
+    transforms: [
+      {
+        emoji: '🏠',
+        original: 'My grandfather built this house in 1990.',
+        originalId: 'Kakekku membangun rumah ini tahun 1990.',
+        reportedOptions: [
+          { text: 'This house was built by my grandfather in 1990.', ok: true },
+          { text: 'This house is built by my grandfather in 1990.', ok: false },
+          { text: 'This house was build by my grandfather in 1990.', ok: false },
+          { text: 'This house were built by my grandfather in 1990.', ok: false },
+        ],
+        originalOptions: ['My grandfather builds houses.', 'My grandfather will build this house.', 'My grandfather is building this house.'],
+      },
+      {
+        emoji: '🖼️',
+        original: 'Rani painted this picture last week.',
+        originalId: 'Rani melukis gambar ini minggu lalu.',
+        reportedOptions: [
+          { text: 'This picture was painted by Rani last week.', ok: true },
+          { text: 'This picture is painted by Rani last week.', ok: false },
+          { text: 'This picture was paint by Rani last week.', ok: false },
+          { text: 'This picture were painted by Rani last week.', ok: false },
+        ],
+        originalOptions: ['Rani will paint this picture.', 'Rani is painting this picture.', 'Rani paints pictures every week.'],
+      },
+      {
+        emoji: '📱',
+        original: 'My uncle fixed my phone yesterday.',
+        originalId: 'Pamanku memperbaiki ponselku kemarin.',
+        reportedOptions: [
+          { text: 'My phone was fixed by my uncle yesterday.', ok: true },
+          { text: 'My phone is fixed by my uncle yesterday.', ok: false },
+          { text: 'My phone was fix by my uncle yesterday.', ok: false },
+          { text: 'My phone were fixed by my uncle yesterday.', ok: false },
+        ],
+        originalOptions: ['My uncle will fix my phone.', 'My uncle is fixing my phone.', 'My uncle fixes phones every day.'],
+      },
+      {
+        emoji: '🍰',
+        original: 'Dimas ate the last piece of cake last night.',
+        originalId: 'Dimas memakan potongan kue terakhir tadi malam.',
+        reportedOptions: [
+          { text: 'The last piece of cake was eaten by Dimas last night.', ok: true },
+          { text: 'The last piece of cake is eaten by Dimas last night.', ok: false },
+          { text: 'The last piece of cake was eat by Dimas last night.', ok: false },
+          { text: 'The last piece of cake were eaten by Dimas last night.', ok: false },
+        ],
+        originalOptions: ['Dimas will eat the last piece of cake.', 'Dimas is eating the last piece of cake.', 'Dimas eats cake every night.'],
+      },
+      {
+        emoji: '⚽',
+        original: 'Our team won the football match on Saturday.',
+        originalId: 'Tim kami memenangkan pertandingan sepak bola hari Sabtu.',
+        reportedOptions: [
+          { text: 'The football match was won by our team on Saturday.', ok: true },
+          { text: 'The football match is won by our team on Saturday.', ok: false },
+          { text: 'The football match was win by our team on Saturday.', ok: false },
+          { text: 'The football match were won by our team on Saturday.', ok: false },
+        ],
+        originalOptions: ['Our team will win the football match.', 'Our team is winning the football match.', 'Our team wins every football match.'],
+      },
+      {
+        emoji: '📚',
+        original: 'Mrs. Sari wrote these stories last year.',
+        originalId: 'Bu Sari menulis cerita-cerita ini tahun lalu.',
+        reportedOptions: [
+          { text: 'These stories were written by Mrs. Sari last year.', ok: true },
+          { text: 'These stories are written by Mrs. Sari last year.', ok: false },
+          { text: 'These stories were write by Mrs. Sari last year.', ok: false },
+          { text: 'These stories was written by Mrs. Sari last year.', ok: false },
+        ],
+        originalOptions: ['Mrs. Sari will write these stories.', 'Mrs. Sari is writing these stories.', 'Mrs. Sari writes stories every year.'],
+      },
+      {
+        emoji: '🔑',
+        original: 'Somebody found my keys this morning.',
+        originalId: 'Seseorang menemukan kunciku tadi pagi.',
+        reportedOptions: [
+          { text: 'My keys were found this morning.', ok: true },
+          { text: 'My keys are found this morning.', ok: false },
+          { text: 'My keys were find this morning.', ok: false },
+          { text: 'My keys was found this morning.', ok: false },
+        ],
+        originalOptions: ['Somebody will find my keys.', 'Somebody is looking for my keys.', 'Somebody always finds my keys.'],
+      },
+      {
+        emoji: '⌚',
+        original: 'My aunt gave me this watch last month.',
+        originalId: 'Bibiku memberiku jam tangan ini bulan lalu.',
+        reportedOptions: [
+          { text: 'This watch was given to me by my aunt last month.', ok: true },
+          { text: 'This watch is given to me by my aunt last month.', ok: false },
+          { text: 'This watch was give to me by my aunt last month.', ok: false },
+          { text: 'This watch were given to me by my aunt last month.', ok: false },
+        ],
+        originalOptions: ['My aunt will give me this watch.', 'My aunt is giving me this watch.', 'My aunt gives me a watch every year.'],
+      },
+      {
+        emoji: '🌳',
+        original: 'The students planted these trees in 2020.',
+        originalId: 'Para siswa menanam pohon-pohon ini tahun 2020.',
+        reportedOptions: [
+          { text: 'These trees were planted by the students in 2020.', ok: true },
+          { text: 'These trees are planted by the students in 2020.', ok: false },
+          { text: 'These trees were plant by the students in 2020.', ok: false },
+          { text: 'These trees was planted by the students in 2020.', ok: false },
+        ],
+        originalOptions: ['The students will plant these trees.', 'The students are planting these trees.', 'The students plant trees every year.'],
+      },
+      {
+        emoji: '🎉',
+        original: 'The students cleaned the classroom after the party yesterday.',
+        originalId: 'Para siswa membersihkan kelas setelah pesta kemarin.',
+        reportedOptions: [
+          { text: 'The classroom was cleaned by the students after the party yesterday.', ok: true },
+          { text: 'The classroom is cleaned by the students after the party yesterday.', ok: false },
+          { text: 'The classroom was clean by the students after the party yesterday.', ok: false },
+          { text: 'The classroom were cleaned by the students after the party yesterday.', ok: false },
+        ],
+        originalOptions: ['The students will clean the classroom after the party.', 'The students are cleaning the classroom now.', 'The students clean the classroom after every party.'],
+      },
+    ],
+  },
+  {
+    id: 'used-to',
+    title: 'Kebiasaan Dulu (Used To)',
+    desc: '10 kalimat',
+    kind: 'usedTo',
+    transforms: [
+      {
+        emoji: '📺',
+        original: 'I watched cartoons every morning when I was small, but I don\'t now.',
+        originalId: 'Waktu kecil aku menonton kartun setiap pagi, tapi sekarang tidak lagi.',
+        reportedOptions: [
+          { text: 'I used to watch cartoons every morning when I was small.', ok: true },
+          { text: 'I use to watch cartoons every morning when I was small.', ok: false },
+          { text: 'I used to watched cartoons every morning when I was small.', ok: false },
+          { text: 'I was used to watch cartoons every morning when I was small.', ok: false },
+        ],
+        originalOptions: ['I watch cartoons every morning now.', 'I will watch cartoons every morning.', 'I have never watched cartoons in the morning.'],
+      },
+      {
+        emoji: '🧸',
+        original: 'I slept with a teddy bear when I was little, but I don\'t now.',
+        originalId: 'Waktu kecil aku tidur dengan boneka beruang, tapi sekarang tidak lagi.',
+        reportedOptions: [
+          { text: 'I used to sleep with a teddy bear when I was little.', ok: true },
+          { text: 'I use to sleep with a teddy bear when I was little.', ok: false },
+          { text: 'I used to slept with a teddy bear when I was little.', ok: false },
+          { text: 'I was used to sleep with a teddy bear when I was little.', ok: false },
+        ],
+        originalOptions: ['I sleep with a teddy bear every night now.', 'I will sleep with a teddy bear tonight.', 'I have never slept with a teddy bear.'],
+      },
+      {
+        emoji: '🏡',
+        original: 'My family lived in Bandung, but we don\'t live there now.',
+        originalId: 'Keluargaku dulu tinggal di Bandung, tapi sekarang tidak lagi.',
+        reportedOptions: [
+          { text: 'My family used to live in Bandung.', ok: true },
+          { text: 'My family use to live in Bandung.', ok: false },
+          { text: 'My family used to lived in Bandung.', ok: false },
+          { text: 'My family was used to live in Bandung.', ok: false },
+        ],
+        originalOptions: ['My family lives in Bandung now.', 'My family will live in Bandung.', 'My family has never lived in Bandung.'],
+      },
+      {
+        emoji: '✂️',
+        original: 'My sister had long hair, but she has short hair now.',
+        originalId: 'Kakakku dulu berambut panjang, tapi sekarang rambutnya pendek.',
+        reportedOptions: [
+          { text: 'My sister used to have long hair.', ok: true },
+          { text: 'My sister use to have long hair.', ok: false },
+          { text: 'My sister used to had long hair.', ok: false },
+          { text: 'My sister was used to have long hair.', ok: false },
+        ],
+        originalOptions: ['My sister has long hair now.', 'My sister will have long hair.', 'My sister has never had long hair.'],
+      },
+      {
+        emoji: '🚲',
+        original: 'I rode my bike to school every day, but now I take the bus.',
+        originalId: 'Dulu aku bersepeda ke sekolah setiap hari, tapi sekarang aku naik bus.',
+        reportedOptions: [
+          { text: 'I used to ride my bike to school every day.', ok: true },
+          { text: 'I use to ride my bike to school every day.', ok: false },
+          { text: 'I used to rode my bike to school every day.', ok: false },
+          { text: 'I was used to ride my bike to school every day.', ok: false },
+        ],
+        originalOptions: ['I ride my bike to school every day now.', 'I will ride my bike to school every day.', 'I have never ridden my bike to school.'],
+      },
+      {
+        emoji: '🎮',
+        original: 'Andi played video games all night, but he doesn\'t now.',
+        originalId: 'Andi dulu main game semalaman, tapi sekarang tidak lagi.',
+        reportedOptions: [
+          { text: 'Andi used to play video games all night.', ok: true },
+          { text: 'Andi use to play video games all night.', ok: false },
+          { text: 'Andi used to played video games all night.', ok: false },
+          { text: 'Andi was used to play video games all night.', ok: false },
+        ],
+        originalOptions: ['Andi plays video games all night now.', 'Andi will play video games all night.', 'Andi has never played video games at night.'],
+      },
+      {
+        emoji: '🌙',
+        original: 'I was afraid of the dark, but I am not now.',
+        originalId: 'Dulu aku takut gelap, tapi sekarang tidak lagi.',
+        reportedOptions: [
+          { text: 'I used to be afraid of the dark.', ok: true },
+          { text: 'I use to be afraid of the dark.', ok: false },
+          { text: 'I used to was afraid of the dark.', ok: false },
+          { text: 'I was used to be afraid of the dark.', ok: false },
+        ],
+        originalOptions: ['I am afraid of the dark now.', 'I will be afraid of the dark.', 'I have never been afraid of the dark.'],
+      },
+      {
+        emoji: '🌳',
+        original: 'There was a big tree in front of our school, but it is gone now.',
+        originalId: 'Dulu ada pohon besar di depan sekolah kami, tapi sekarang sudah tidak ada.',
+        reportedOptions: [
+          { text: 'There used to be a big tree in front of our school.', ok: true },
+          { text: 'There use to be a big tree in front of our school.', ok: false },
+          { text: 'There used to was a big tree in front of our school.', ok: false },
+          { text: 'There was used to be a big tree in front of our school.', ok: false },
+        ],
+        originalOptions: ['There is a big tree in front of our school now.', 'There will be a big tree in front of our school.', 'There has never been a big tree in front of our school.'],
+      },
+      {
+        emoji: '✉️',
+        original: 'People wrote letters to each other, but now they send messages.',
+        originalId: 'Dulu orang saling menulis surat, tapi sekarang mereka mengirim pesan.',
+        reportedOptions: [
+          { text: 'People used to write letters to each other.', ok: true },
+          { text: 'People use to write letters to each other.', ok: false },
+          { text: 'People used to wrote letters to each other.', ok: false },
+          { text: 'People were used to write letters to each other.', ok: false },
+        ],
+        originalOptions: ['People write letters to each other now.', 'People will write letters to each other.', 'People have never written letters to each other.'],
+      },
+      {
+        emoji: '🍬',
+        original: 'Sari ate a lot of candy, but she doesn\'t now.',
+        originalId: 'Sari dulu makan banyak permen, tapi sekarang tidak lagi.',
+        reportedOptions: [
+          { text: 'Sari used to eat a lot of candy.', ok: true },
+          { text: 'Sari use to eat a lot of candy.', ok: false },
+          { text: 'Sari used to ate a lot of candy.', ok: false },
+          { text: 'Sari was used to eat a lot of candy.', ok: false },
+        ],
+        originalOptions: ['Sari eats a lot of candy now.', 'Sari will eat a lot of candy.', 'Sari has never eaten a lot of candy.'],
+      },
+    ],
+  },
+  {
+    id: 'first-conditional',
+    title: 'Kalau Nanti Terjadi (First Conditional)',
+    desc: '10 kalimat',
+    kind: 'conditional',
+    transforms: [
+      {
+        emoji: '🌧️',
+        original: 'It might rain later. Then we will stay at home.',
+        originalId: 'Mungkin nanti hujan. Kalau begitu, kita akan tetap di rumah.',
+        reportedOptions: [
+          { text: 'If it rains later, we will stay at home.', ok: true },
+          { text: 'If it will rain later, we will stay at home.', ok: false },
+          { text: 'If it rained later, we will stay at home.', ok: false },
+          { text: 'If it rains later, we will staying at home.', ok: false },
+        ],
+        originalOptions: ['It rained yesterday, so we stayed at home.', 'It rains every day, so we always stay at home.', 'It didn\'t rain yesterday, so we didn\'t stay at home.'],
+      },
+      {
+        emoji: '📖',
+        original: 'You might study hard. Then you will pass the test.',
+        originalId: 'Mungkin kamu belajar dengan giat. Kalau begitu, kamu akan lulus ujian.',
+        reportedOptions: [
+          { text: 'If you study hard, you will pass the test.', ok: true },
+          { text: 'If you will study hard, you will pass the test.', ok: false },
+          { text: 'If you studied hard, you will pass the test.', ok: false },
+          { text: 'If you study hard, you will passing the test.', ok: false },
+        ],
+        originalOptions: ['You studied hard, so you passed the test.', 'You always study hard, so you always pass tests.', 'You didn\'t study hard, so you didn\'t pass the test.'],
+      },
+      {
+        emoji: '🚌',
+        original: 'You might miss the bus. Then you will be late for school.',
+        originalId: 'Mungkin kamu ketinggalan bus. Kalau begitu, kamu akan terlambat ke sekolah.',
+        reportedOptions: [
+          { text: 'If you miss the bus, you will be late for school.', ok: true },
+          { text: 'If you will miss the bus, you will be late for school.', ok: false },
+          { text: 'If you missed the bus, you will be late for school.', ok: false },
+          { text: 'If you miss the bus, you will being late for school.', ok: false },
+        ],
+        originalOptions: ['You missed the bus, so you were late for school.', 'You always miss the bus, so you are always late for school.', 'You didn\'t miss the bus, so you weren\'t late for school.'],
+      },
+      {
+        emoji: '🎂',
+        original: 'Dad might buy a cake. Then we will have a party.',
+        originalId: 'Mungkin Ayah membeli kue. Kalau begitu, kita akan mengadakan pesta.',
+        reportedOptions: [
+          { text: 'If Dad buys a cake, we will have a party.', ok: true },
+          { text: 'If Dad will buy a cake, we will have a party.', ok: false },
+          { text: 'If Dad bought a cake, we will have a party.', ok: false },
+          { text: 'If Dad buy a cake, we will have a party.', ok: false },
+        ],
+        originalOptions: ['Dad bought a cake, so we had a party.', 'Dad always buys a cake, so we always have a party.', 'Dad didn\'t buy a cake, so we didn\'t have a party.'],
+      },
+      {
+        emoji: '☀️',
+        original: 'It might be sunny tomorrow. Then we will go to the beach.',
+        originalId: 'Mungkin besok cerah. Kalau begitu, kita akan pergi ke pantai.',
+        reportedOptions: [
+          { text: 'If it is sunny tomorrow, we will go to the beach.', ok: true },
+          { text: 'If it will be sunny tomorrow, we will go to the beach.', ok: false },
+          { text: 'If it was sunny tomorrow, we will go to the beach.', ok: false },
+          { text: 'If it is sunny tomorrow, we will going to the beach.', ok: false },
+        ],
+        originalOptions: ['It was sunny yesterday, so we went to the beach.', 'It is sunny every day, so we go to the beach every day.', 'It wasn\'t sunny yesterday, so we didn\'t go to the beach.'],
+      },
+      {
+        emoji: '🧥',
+        original: 'You might forget your jacket. Then you will feel cold.',
+        originalId: 'Mungkin kamu lupa membawa jaket. Kalau begitu, kamu akan kedinginan.',
+        reportedOptions: [
+          { text: 'If you forget your jacket, you will feel cold.', ok: true },
+          { text: 'If you will forget your jacket, you will feel cold.', ok: false },
+          { text: 'If you forgot your jacket, you will feel cold.', ok: false },
+          { text: 'If you forget your jacket, you will feels cold.', ok: false },
+        ],
+        originalOptions: ['You forgot your jacket, so you felt cold.', 'You always forget your jacket, so you always feel cold.', 'You didn\'t forget your jacket, so you didn\'t feel cold.'],
+      },
+      {
+        emoji: '📞',
+        original: 'Rani might call me tonight. Then I will tell her the news.',
+        originalId: 'Mungkin Rani meneleponku nanti malam. Kalau begitu, aku akan memberitahunya kabar itu.',
+        reportedOptions: [
+          { text: 'If Rani calls me tonight, I will tell her the news.', ok: true },
+          { text: 'If Rani will call me tonight, I will tell her the news.', ok: false },
+          { text: 'If Rani called me tonight, I will tell her the news.', ok: false },
+          { text: 'If Rani call me tonight, I will tell her the news.', ok: false },
+        ],
+        originalOptions: ['Rani called me last night, so I told her the news.', 'Rani calls me every night, so I tell her the news every night.', 'Rani didn\'t call me last night, so I didn\'t tell her the news.'],
+      },
+      {
+        emoji: '🍬',
+        original: 'You might eat too much candy. Then you will get a toothache.',
+        originalId: 'Mungkin kamu makan terlalu banyak permen. Kalau begitu, kamu akan sakit gigi.',
+        reportedOptions: [
+          { text: 'If you eat too much candy, you will get a toothache.', ok: true },
+          { text: 'If you will eat too much candy, you will get a toothache.', ok: false },
+          { text: 'If you ate too much candy, you will get a toothache.', ok: false },
+          { text: 'If you eat too much candy, you will gets a toothache.', ok: false },
+        ],
+        originalOptions: ['You ate too much candy, so you got a toothache.', 'You always eat too much candy, so you always get a toothache.', 'You didn\'t eat too much candy, so you didn\'t get a toothache.'],
+      },
+      {
+        emoji: '⚽',
+        original: 'Our team might practice every day. Then we will win the match.',
+        originalId: 'Mungkin tim kami berlatih setiap hari. Kalau begitu, kami akan memenangkan pertandingan.',
+        reportedOptions: [
+          { text: 'If our team practices every day, we will win the match.', ok: true },
+          { text: 'If our team will practice every day, we will win the match.', ok: false },
+          { text: 'If our team practiced every day, we will win the match.', ok: false },
+          { text: 'If our team practices every day, we will winning the match.', ok: false },
+        ],
+        originalOptions: ['Our team practiced every day, so we won the match.', 'Our team practices every day, so we always win.', 'Our team didn\'t practice, so we didn\'t win the match.'],
+      },
+      {
+        emoji: '🔋',
+        original: 'The battery might run out. Then I will use your charger.',
+        originalId: 'Mungkin baterainya habis. Kalau begitu, aku akan memakai pengisi dayamu.',
+        reportedOptions: [
+          { text: 'If the battery runs out, I will use your charger.', ok: true },
+          { text: 'If the battery will run out, I will use your charger.', ok: false },
+          { text: 'If the battery ran out, I will use your charger.', ok: false },
+          { text: 'If the battery run out, I will use your charger.', ok: false },
+        ],
+        originalOptions: ['The battery ran out, so I used your charger.', 'The battery always runs out, so I always use your charger.', 'The battery didn\'t run out, so I didn\'t use your charger.'],
+      },
+    ],
+  },
+  {
+    id: 'second-conditional',
+    title: 'Seandainya Saja (Second Conditional)',
+    desc: '10 kalimat',
+    kind: 'conditional',
+    transforms: [
+      {
+        emoji: '🚲',
+        original: 'I don\'t have a bike, so I don\'t ride to school.',
+        originalId: 'Aku tidak punya sepeda, jadi aku tidak bersepeda ke sekolah.',
+        reportedOptions: [
+          { text: 'If I had a bike, I would ride to school.', ok: true },
+          { text: 'If I have a bike, I would ride to school.', ok: false },
+          { text: 'If I had a bike, I will ride to school.', ok: false },
+          { text: 'If I would have a bike, I would ride to school.', ok: false },
+        ],
+        originalOptions: ['I have a bike, so I ride to school.', 'I had a bike, so I rode to school.', 'I will buy a bike, so I will ride to school.'],
+      },
+      {
+        emoji: '💰',
+        original: 'I don\'t have much money, so I can\'t buy a new phone.',
+        originalId: 'Uangku tidak banyak, jadi aku tidak bisa membeli ponsel baru.',
+        reportedOptions: [
+          { text: 'If I had more money, I could buy a new phone.', ok: true },
+          { text: 'If I have more money, I could buy a new phone.', ok: false },
+          { text: 'If I had more money, I can buy a new phone.', ok: false },
+          { text: 'If I would have more money, I could buy a new phone.', ok: false },
+        ],
+        originalOptions: ['I have a lot of money, so I can buy a new phone.', 'I had some money, so I bought a new phone.', 'I will save money, so I will buy a new phone.'],
+      },
+      {
+        emoji: '🌊',
+        original: 'I don\'t know how to swim, so I don\'t swim in the sea.',
+        originalId: 'Aku tidak bisa berenang, jadi aku tidak berenang di laut.',
+        reportedOptions: [
+          { text: 'If I knew how to swim, I would swim in the sea.', ok: true },
+          { text: 'If I know how to swim, I would swim in the sea.', ok: false },
+          { text: 'If I knew how to swim, I will swim in the sea.', ok: false },
+          { text: 'If I would know how to swim, I would swim in the sea.', ok: false },
+        ],
+        originalOptions: ['I know how to swim, so I swim in the sea.', 'I knew how to swim, so I swam in the sea.', 'I will learn to swim, so I will swim in the sea.'],
+      },
+      {
+        emoji: '🏖️',
+        original: 'We don\'t live near the beach, so we don\'t go there often.',
+        originalId: 'Kami tidak tinggal dekat pantai, jadi kami jarang ke sana.',
+        reportedOptions: [
+          { text: 'If we lived near the beach, we would go there often.', ok: true },
+          { text: 'If we live near the beach, we would go there often.', ok: false },
+          { text: 'If we lived near the beach, we will go there often.', ok: false },
+          { text: 'If we would live near the beach, we would go there often.', ok: false },
+        ],
+        originalOptions: ['We live near the beach, so we go there often.', 'We lived near the beach, so we went there often.', 'We will move near the beach, so we will go there often.'],
+      },
+      {
+        emoji: '⏰',
+        original: 'I don\'t have time, so I can\'t help you.',
+        originalId: 'Aku tidak punya waktu, jadi aku tidak bisa membantumu.',
+        reportedOptions: [
+          { text: 'If I had time, I would help you.', ok: true },
+          { text: 'If I have time, I would help you.', ok: false },
+          { text: 'If I had time, I will help you.', ok: false },
+          { text: 'If I would have time, I would help you.', ok: false },
+        ],
+        originalOptions: ['I have time, so I can help you.', 'I had time, so I helped you.', 'I will have time, so I will help you.'],
+      },
+      {
+        emoji: '🎹',
+        original: 'My sister can\'t play the piano, so she doesn\'t join the band.',
+        originalId: 'Kakakku tidak bisa bermain piano, jadi dia tidak ikut band.',
+        reportedOptions: [
+          { text: 'If my sister could play the piano, she would join the band.', ok: true },
+          { text: 'If my sister can play the piano, she would join the band.', ok: false },
+          { text: 'If my sister could play the piano, she will join the band.', ok: false },
+          { text: 'If my sister could play the piano, she would joins the band.', ok: false },
+        ],
+        originalOptions: ['My sister can play the piano, so she joins the band.', 'My sister could play the piano, so she joined the band.', 'My sister will learn the piano, so she will join the band.'],
+      },
+      {
+        emoji: '☔',
+        original: 'It isn\'t sunny today, so we can\'t play outside.',
+        originalId: 'Hari ini tidak cerah, jadi kita tidak bisa bermain di luar.',
+        reportedOptions: [
+          { text: 'If it were sunny today, we could play outside.', ok: true },
+          { text: 'If it is sunny today, we could play outside.', ok: false },
+          { text: 'If it were sunny today, we can play outside.', ok: false },
+          { text: 'If it would be sunny today, we could play outside.', ok: false },
+        ],
+        originalOptions: ['It is sunny today, so we can play outside.', 'It was sunny yesterday, so we played outside.', 'It will be sunny tomorrow, so we will play outside.'],
+      },
+      {
+        emoji: '📱',
+        original: 'I don\'t have your phone number, so I can\'t call you.',
+        originalId: 'Aku tidak punya nomor teleponmu, jadi aku tidak bisa meneleponmu.',
+        reportedOptions: [
+          { text: 'If I had your phone number, I would call you.', ok: true },
+          { text: 'If I have your phone number, I would call you.', ok: false },
+          { text: 'If I had your phone number, I will call you.', ok: false },
+          { text: 'If I would have your phone number, I would call you.', ok: false },
+        ],
+        originalOptions: ['I have your phone number, so I can call you.', 'I had your phone number, so I called you.', 'I will get your phone number, so I will call you.'],
+      },
+      {
+        emoji: '📺',
+        original: 'I don\'t speak Japanese, so I don\'t understand this cartoon.',
+        originalId: 'Aku tidak bisa berbahasa Jepang, jadi aku tidak mengerti kartun ini.',
+        reportedOptions: [
+          { text: 'If I spoke Japanese, I would understand this cartoon.', ok: true },
+          { text: 'If I speak Japanese, I would understand this cartoon.', ok: false },
+          { text: 'If I spoke Japanese, I will understand this cartoon.', ok: false },
+          { text: 'If I would speak Japanese, I would understand this cartoon.', ok: false },
+        ],
+        originalOptions: ['I speak Japanese, so I understand this cartoon.', 'I spoke Japanese, so I understood this cartoon.', 'I will learn Japanese, so I will understand this cartoon.'],
+      },
+      {
+        emoji: '📚',
+        original: 'I am not tall enough, so I can\'t reach the top shelf.',
+        originalId: 'Aku tidak cukup tinggi, jadi aku tidak bisa meraih rak paling atas.',
+        reportedOptions: [
+          { text: 'If I were taller, I could reach the top shelf.', ok: true },
+          { text: 'If I am taller, I could reach the top shelf.', ok: false },
+          { text: 'If I were taller, I can reach the top shelf.', ok: false },
+          { text: 'If I would be taller, I could reach the top shelf.', ok: false },
+        ],
+        originalOptions: ['I am tall, so I can reach the top shelf.', 'I stood on a chair, so I reached the top shelf.', 'I will grow taller, so I will reach the top shelf.'],
+      },
+    ],
+  },
+  {
+    id: 'relative-clauses',
+    title: 'Kalimat Penjelas Who & Which (Relative Clauses)',
+    desc: '10 kalimat',
+    kind: 'relative',
+    transforms: [
+      {
+        emoji: '🗣️',
+        original: 'I have a friend. She speaks three languages.',
+        originalId: 'Aku punya teman. Dia berbicara tiga bahasa.',
+        reportedOptions: [
+          { text: 'I have a friend who speaks three languages.', ok: true },
+          { text: 'I have a friend which speaks three languages.', ok: false },
+          { text: 'I have a friend who she speaks three languages.', ok: false },
+          { text: 'I have a friend who speak three languages.', ok: false },
+        ],
+        originalOptions: ['I have a friend. I speak three languages.', 'I have three friends. They speak one language.', 'I had a friend. She spoke three languages.'],
+      },
+      {
+        emoji: '🎒',
+        original: 'This is the bag. I bought it yesterday.',
+        originalId: 'Ini tasnya. Aku membelinya kemarin.',
+        reportedOptions: [
+          { text: 'This is the bag which I bought yesterday.', ok: true },
+          { text: 'This is the bag who I bought yesterday.', ok: false },
+          { text: 'This is the bag which I bought it yesterday.', ok: false },
+          { text: 'This is the bag which I buy yesterday.', ok: false },
+        ],
+        originalOptions: ['This is the bag. My mom bought it yesterday.', 'This is the bag. I will buy it tomorrow.', 'This is my bag. I didn\'t buy it.'],
+      },
+      {
+        emoji: '🏫',
+        original: 'Mrs. Rina is the teacher. She teaches us English.',
+        originalId: 'Bu Rina adalah gurunya. Dia mengajari kami bahasa Inggris.',
+        reportedOptions: [
+          { text: 'Mrs. Rina is the teacher who teaches us English.', ok: true },
+          { text: 'Mrs. Rina is the teacher which teaches us English.', ok: false },
+          { text: 'Mrs. Rina is the teacher who she teaches us English.', ok: false },
+          { text: 'Mrs. Rina is the teacher who teach us English.', ok: false },
+        ],
+        originalOptions: ['Mrs. Rina is the teacher. We teach her English.', 'Mrs. Rina was the teacher. She taught us English.', 'Mrs. Rina is a student. She learns English with us.'],
+      },
+      {
+        emoji: '🎬',
+        original: 'I watched a movie. It made me cry.',
+        originalId: 'Aku menonton film. Film itu membuatku menangis.',
+        reportedOptions: [
+          { text: 'I watched a movie which made me cry.', ok: true },
+          { text: 'I watched a movie who made me cry.', ok: false },
+          { text: 'I watched a movie which it made me cry.', ok: false },
+          { text: 'I watched a movie which make me cry.', ok: false },
+        ],
+        originalOptions: ['I watched a movie. It made me laugh.', 'I will watch a movie. It will make me cry.', 'I made a movie. It made my friends cry.'],
+      },
+      {
+        emoji: '🍜',
+        original: 'That is the restaurant. It sells the best noodles.',
+        originalId: 'Itu restorannya. Restoran itu menjual mi paling enak.',
+        reportedOptions: [
+          { text: 'That is the restaurant which sells the best noodles.', ok: true },
+          { text: 'That is the restaurant who sells the best noodles.', ok: false },
+          { text: 'That is the restaurant which it sells the best noodles.', ok: false },
+          { text: 'That is the restaurant which sell the best noodles.', ok: false },
+        ],
+        originalOptions: ['That is the restaurant. I sell the best noodles there.', 'That was the restaurant. It sold the best noodles.', 'That is the restaurant. It doesn\'t sell noodles.'],
+      },
+      {
+        emoji: '🥅',
+        original: 'Budi is the boy. He scored the winning goal.',
+        originalId: 'Budi adalah anak laki-laki itu. Dia mencetak gol kemenangan.',
+        reportedOptions: [
+          { text: 'Budi is the boy who scored the winning goal.', ok: true },
+          { text: 'Budi is the boy which scored the winning goal.', ok: false },
+          { text: 'Budi is the boy who he scored the winning goal.', ok: false },
+          { text: 'Budi is the boy who score the winning goal.', ok: false },
+        ],
+        originalOptions: ['Budi is the boy. He missed the winning goal.', 'Budi is the goalkeeper. He stopped the winning goal.', 'Budi is the boy. He will score a goal tomorrow.'],
+      },
+      {
+        emoji: '📖',
+        original: 'I borrowed a book. It has beautiful pictures.',
+        originalId: 'Aku meminjam buku. Buku itu punya gambar-gambar yang indah.',
+        reportedOptions: [
+          { text: 'I borrowed a book which has beautiful pictures.', ok: true },
+          { text: 'I borrowed a book who has beautiful pictures.', ok: false },
+          { text: 'I borrowed a book which it has beautiful pictures.', ok: false },
+          { text: 'I borrowed a book which have beautiful pictures.', ok: false },
+        ],
+        originalOptions: ['I bought a book. It has beautiful pictures.', 'I borrowed a book. It has no pictures.', 'I will borrow a book. It will have beautiful pictures.'],
+      },
+      {
+        emoji: '🏥',
+        original: 'Doctors are people. They help sick people.',
+        originalId: 'Dokter adalah orang. Mereka menolong orang sakit.',
+        reportedOptions: [
+          { text: 'Doctors are people who help sick people.', ok: true },
+          { text: 'Doctors are people which help sick people.', ok: false },
+          { text: 'Doctors are people who they help sick people.', ok: false },
+          { text: 'Doctors are people who helps sick people.', ok: false },
+        ],
+        originalOptions: ['Doctors are people. Sick people help them.', 'Doctors were people. They helped sick people.', 'Doctors are busy people. They don\'t get sick.'],
+      },
+      {
+        emoji: '📱',
+        original: 'This is the phone. My uncle gave it to me.',
+        originalId: 'Ini ponselnya. Pamanku memberikannya kepadaku.',
+        reportedOptions: [
+          { text: 'This is the phone which my uncle gave to me.', ok: true },
+          { text: 'This is the phone who my uncle gave to me.', ok: false },
+          { text: 'This is the phone which my uncle gave it to me.', ok: false },
+          { text: 'This is the phone which my uncle give to me.', ok: false },
+        ],
+        originalOptions: ['This is the phone. I gave it to my uncle.', 'This is the phone. My uncle will give it to me.', 'This is my uncle\'s phone. He didn\'t give it to me.'],
+      },
+      {
+        emoji: '🎤',
+        original: 'The girl is my cousin. She is singing on the stage.',
+        originalId: 'Anak perempuan itu sepupuku. Dia sedang bernyanyi di panggung.',
+        reportedOptions: [
+          { text: 'The girl who is singing on the stage is my cousin.', ok: true },
+          { text: 'The girl which is singing on the stage is my cousin.', ok: false },
+          { text: 'The girl who she is singing on the stage is my cousin.', ok: false },
+          { text: 'The girl who singing on the stage is my cousin.', ok: false },
+        ],
+        originalOptions: ['The girl is my cousin. I am singing on the stage.', 'The girl was my cousin. She sang on the stage.', 'The girl is not my cousin. She is singing on the stage.'],
+      },
+    ],
+  },
+  {
+    id: 'reported-questions',
+    title: 'Tanya Ya/Tidak & Tanya Detail (Reported Questions)',
     desc: '10 kutipan',
     transforms: [
       {
@@ -21957,32 +22261,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['Have you liked solving math problems?', 'Would you like solving math problems?', 'Will you like solving math problems?'],
       },
       {
-        speaker: 'Andi',
-        emoji: '🪪',
-        original: 'Do you have your ID card with you?',
-        originalId: 'Apakah kamu bawa kartu pelajarmu?',
-        reportedOptions: [
-          { text: 'Andi asked Wati if she had her ID card with her.', ok: true },
-          { text: 'Andi asked Wati if you had your ID card with you.', ok: false },
-          { text: 'Andi asked Wati that she had her ID card with her.', ok: false },
-          { text: 'Andi asked Wati if did she have her ID card with her.', ok: false },
-        ],
-        originalOptions: ['Would you have your ID card with you?', 'Will you have your ID card with you?', 'Can you have your ID card with you?'],
-      },
-      {
-        speaker: 'Maya',
-        emoji: '📝',
-        original: 'Do you finish your homework every day?',
-        originalId: 'Apakah kamu menyelesaikan PR-mu setiap hari?',
-        reportedOptions: [
-          { text: 'Maya asked Fajar if he finished his homework every day.', ok: true },
-          { text: 'Maya asked Fajar he finished his homework every day.', ok: false },
-          { text: 'Maya asked Fajar if she finished her homework every day.', ok: false },
-          { text: 'Maya asked Fajar if did he finish his homework every day.', ok: false },
-        ],
-        originalOptions: ['Would you finish your homework every day?', 'Will you finish your homework every day?', 'Can you finish your homework every day?'],
-      },
-      {
         speaker: 'Rani',
         emoji: '🔬',
         original: 'Do you enjoy science class?',
@@ -21994,19 +22272,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Rani asked Dimas if you enjoyed science class.', ok: false },
         ],
         originalOptions: ['Have you enjoyed science class?', 'Will you enjoy science class?', 'Are you enjoying science class?'],
-      },
-      {
-        speaker: 'Wati',
-        emoji: '📏',
-        original: 'Do you have a ruler?',
-        originalId: 'Apakah kamu punya penggaris?',
-        reportedOptions: [
-          { text: 'Wati asked Andi if he had a ruler.', ok: true },
-          { text: 'Wati asked Andi if she had a ruler.', ok: false },
-          { text: 'Wati asked Andi if did he have a ruler.', ok: false },
-          { text: 'Wati asked Andi if he had had a ruler.', ok: false },
-        ],
-        originalOptions: ['Would you have a ruler?', 'Will you have a ruler?', 'Can you have a ruler?'],
       },
       {
         speaker: 'Doni',
@@ -22022,19 +22287,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['Have you brought your own lunch to school?', 'Will you bring your own lunch to school?', 'Can you bring your own lunch to school?'],
       },
       {
-        speaker: 'Sari',
-        emoji: '📖',
-        original: 'Are you reading the new novel for class?',
-        originalId: 'Apakah kamu sedang membaca novel baru untuk kelas?',
-        reportedOptions: [
-          { text: 'Sari asked Budi if he was reading the new novel for class.', ok: true },
-          { text: 'Sari asked Budi if was he reading the new novel for class.', ok: false },
-          { text: 'Sari asked Budi if she was reading the new novel for class.', ok: false },
-          { text: 'Sari asked Budi if he had been reading the new novel for class.', ok: false },
-        ],
-        originalOptions: ['Do you read the new novel for class?', 'Did you read the new novel for class?', 'Will you read the new novel for class?'],
-      },
-      {
         speaker: 'Fajar',
         emoji: '🖊️',
         original: 'Do you write in your journal every night?',
@@ -22048,34 +22300,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['Would you write in your journal every night?', 'Will you write in your journal every night?', 'Can you write in your journal every night?'],
       },
       {
-        speaker: 'Andi',
-        emoji: '🎨',
-        original: 'Do you like art class?',
-        originalId: 'Apakah kamu suka pelajaran seni?',
-        reportedOptions: [
-          { text: 'Andi asked Rani if she liked art class.', ok: true },
-          { text: 'Andi asked Rani if did she like art class.', ok: false },
-          { text: 'Andi asked Rani if you liked art class.', ok: false },
-          { text: 'Andi asked Rani if she had liked art class.', ok: false },
-        ],
-        originalOptions: ['Have you liked art class?', 'Would you like art class?', 'Will you like art class?'],
-      },
-    ],
-  },
-  /**
-   * Topik ke-6 — "Reported Wh-Questions" (asked what/where/why/when/how —
-   * kata tanya TETAP dipakai sbg konektor, TIDAK disisip "if" spt topik
-   * sebelumnya — kesalahan paling umum anak tertukar antar 2 pola ini).
-   * Dari domain Vocab `pendapat-pengalaman`, gaya wawancara pengalaman.
-   * Distraktor: (1) inversi tanya tidak dibuang, (2) kata ganti salah, (3)
-   * tense tidak digeser.
-   */
-  {
-    id: 'reported-wh-questions',
-    title: 'Reported Speech — Tanya Detail (Asked Wh-)',
-    desc: '10 kutipan',
-    transforms: [
-      {
         speaker: 'Maya',
         emoji: '🏀',
         original: 'Where do you practice basketball?',
@@ -22087,19 +22311,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Maya asked Fajar where she practiced basketball.', ok: false },
         ],
         originalOptions: ['Where have you practiced basketball?', 'Where will you practice basketball?', 'Where are you practicing basketball?'],
-      },
-      {
-        speaker: 'Doni',
-        emoji: '✈️',
-        original: 'Why do you like traveling so much?',
-        originalId: 'Kenapa kamu suka sekali bepergian?',
-        reportedOptions: [
-          { text: 'Doni asked Rani why she liked traveling so much.', ok: true },
-          { text: 'Doni asked Rani why did she like traveling so much.', ok: false },
-          { text: 'Doni asked Rani why she had liked traveling so much.', ok: false },
-          { text: 'Doni asked Rani why you liked traveling so much.', ok: false },
-        ],
-        originalOptions: ['Why would you like traveling so much?', 'Why have you liked traveling so much?', 'Why are you traveling so much?'],
       },
       {
         speaker: 'Sari',
@@ -22141,19 +22352,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['When have you studied for exams?', 'When will you study for exams?', 'When can you study for exams?'],
       },
       {
-        speaker: 'Fajar',
-        emoji: '🎨',
-        original: 'What do you usually paint?',
-        originalId: 'Apa yang biasanya kamu lukis?',
-        reportedOptions: [
-          { text: 'Fajar asked Maya what she usually painted.', ok: true },
-          { text: 'Fajar asked Maya what did she usually paint.', ok: false },
-          { text: 'Fajar asked Maya what he usually painted.', ok: false },
-          { text: 'Fajar asked Maya what you usually painted.', ok: false },
-        ],
-        originalOptions: ['What have you painted?', 'What will you paint?', 'What are you painting?'],
-      },
-      {
         speaker: 'Rani',
         emoji: '⚽',
         original: 'How often do you practice football?',
@@ -22166,60 +22364,11 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         ],
         originalOptions: ['How often have you practiced football?', 'How often will you practice football?', 'How often can you practice football?'],
       },
-      {
-        speaker: 'Budi',
-        emoji: '🎬',
-        original: 'What is your favorite movie genre?',
-        originalId: 'Apa genre film favoritmu?',
-        reportedOptions: [
-          { text: 'Budi asked Sari what her favorite movie genre was.', ok: true },
-          { text: 'Budi asked Sari what was her favorite movie genre.', ok: false },
-          { text: 'Budi asked Sari what his favorite movie genre was.', ok: false },
-          { text: 'Budi asked Sari what your favorite movie genre was.', ok: false },
-        ],
-        originalOptions: ['What would your favorite movie genre be?', 'What will your favorite movie genre be?', 'What has been your favorite movie genre?'],
-      },
-      {
-        speaker: 'Andi',
-        emoji: '🍲',
-        original: 'What do you usually cook on weekends?',
-        originalId: 'Apa yang biasanya kamu masak di akhir pekan?',
-        reportedOptions: [
-          { text: 'Andi asked Wati what she usually cooked on weekends.', ok: true },
-          { text: 'Andi asked Wati what did she usually cook on weekends.', ok: false },
-          { text: 'Andi asked Wati what you usually cooked on weekends.', ok: false },
-          { text: 'Andi asked Wati what he usually cooked on weekends.', ok: false },
-        ],
-        originalOptions: ['What have you cooked on weekends?', 'What will you cook on weekends?', 'What are you cooking on weekends?'],
-      },
-      {
-        speaker: 'Maya',
-        emoji: '🎓',
-        original: 'Why did you join the school choir?',
-        originalId: 'Kenapa kamu ikut paduan suara sekolah?',
-        reportedOptions: [
-          { text: 'Maya asked Fajar why he had joined the school choir.', ok: true },
-          { text: 'Maya asked Fajar why did he join the school choir.', ok: false },
-          { text: 'Maya asked Fajar why she had joined the school choir.', ok: false },
-          { text: 'Maya asked Fajar why you had joined the school choir.', ok: false },
-        ],
-        originalOptions: ['Why do you join the school choir?', 'Why will you join the school choir?', 'Why are you joining the school choir?'],
-      },
     ],
   },
-  /**
-   * Topik ke-7 — "Reported Requests" (permintaan sopan "Could/Can you...?"/
-   * "Please..." → "asked someone TO..." — SECARA BENTUK mirip pertanyaan
-   * tapi FUNGSInya permintaan, jadi konversi ke infinitive spt perintah,
-   * BUKAN "asked if" spt topik yes/no — pembeda paling penting antar
-   * topik ini & topik 5/6). Dari domain Vocab `hiburan-media` (minta
-   * tolong ke teman di acara hiburan). Distraktor: (1) salah dibaca sbg
-   * pertanyaan info ("asked if...could"), (2) kata ganti/objek salah, (3)
-   * "to" hilang.
-   */
   {
-    id: 'reported-requests',
-    title: 'Reported Speech — Minta Tolong (Asked To)',
+    id: 'reported-requests-commands',
+    title: 'Minta Tolong & Perintah (Reported Requests & Commands)',
     desc: '10 kutipan',
     transforms: [
       {
@@ -22249,71 +22398,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['Please don\'t hold my seat for a minute.', 'Did you hold my seat for a minute?', 'I held your seat for a minute.'],
       },
       {
-        speaker: 'Wati',
-        emoji: '🎬',
-        original: 'Please turn off your phone during the movie.',
-        originalId: 'Tolong matikan ponselmu selama film diputar.',
-        reportedOptions: [
-          { text: 'Wati asked Andi to turn off his phone during the movie.', ok: true },
-          { text: 'Wati asked Andi to turn off her phone during the movie.', ok: false },
-          { text: 'Wati asked Andi turning off his phone during the movie.', ok: false },
-          { text: 'Wati asked Andi that turn off his phone during the movie.', ok: false },
-        ],
-        originalOptions: ['Please don\'t turn off your phone during the movie.', 'Did you turn off your phone during the movie?', 'I turned off my phone during the movie.'],
-      },
-      {
-        speaker: 'Rani',
-        emoji: '🎤',
-        original: 'Could you turn down your volume, please?',
-        originalId: 'Bisakah kamu mengecilkan volumemu?',
-        reportedOptions: [
-          { text: 'Rani asked Fajar to turn down his volume.', ok: true },
-          { text: 'Rani asked Fajar turn down his volume.', ok: false },
-          { text: 'Rani said Fajar to turn down his volume.', ok: false },
-          { text: 'Rani asked Fajar to turn down her volume.', ok: false },
-        ],
-        originalOptions: ['Please don\'t turn down your volume.', 'Did you turn down your volume?', 'I turned down my volume.'],
-      },
-      {
-        speaker: 'Dimas',
-        emoji: '🍿',
-        original: 'Can you buy some popcorn for us?',
-        originalId: 'Bisakah kamu membelikan kami popcorn?',
-        reportedOptions: [
-          { text: 'Dimas asked Maya to buy some popcorn for them.', ok: true },
-          { text: 'Dimas asked Maya buying some popcorn for them.', ok: false },
-          { text: 'Dimas asked Maya that buy some popcorn for them.', ok: false },
-          { text: 'Dimas asked Maya buy some popcorn for them.', ok: false },
-        ],
-        originalOptions: ['Please don\'t buy any popcorn for us.', 'Did you buy some popcorn for us?', 'I bought some popcorn for us.'],
-      },
-      {
-        speaker: 'Doni',
-        emoji: '🎟️',
-        original: 'Could you save two tickets for your friends?',
-        originalId: 'Bisakah kamu menyimpan dua tiket untuk teman-temanmu?',
-        reportedOptions: [
-          { text: 'Doni asked Sari to save two tickets for her friends.', ok: true },
-          { text: 'Doni asked Sari to save two tickets for his friends.', ok: false },
-          { text: 'Doni said Sari to save two tickets for her friends.', ok: false },
-          { text: 'Doni asked Sari save two tickets for her friends.', ok: false },
-        ],
-        originalOptions: ['Please don\'t save two tickets for your friends.', 'Did you save two tickets for your friends?', 'I saved two tickets for my friends.'],
-      },
-      {
-        speaker: 'Lina',
-        emoji: '📺',
-        original: 'Please lend me your remote control.',
-        originalId: 'Tolong pinjamkan aku remote TV-mu.',
-        reportedOptions: [
-          { text: 'Lina asked Budi to lend her his remote control.', ok: true },
-          { text: 'Lina asked Budi to lend him his remote control.', ok: false },
-          { text: 'Lina asked Budi lending her his remote control.', ok: false },
-          { text: 'Lina asked Budi that lend her his remote control.', ok: false },
-        ],
-        originalOptions: ['Please don\'t lend me your remote control.', 'Did you lend me your remote control?', 'I lent you my remote control.'],
-      },
-      {
         speaker: 'Andi',
         emoji: '🎧',
         original: 'Can you share your earphones with me?',
@@ -22340,60 +22424,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['Please don\'t help me choose a costume.', 'Did you help me choose a costume?', 'I helped you choose a costume.'],
       },
       {
-        speaker: 'Fajar',
-        emoji: '📸',
-        original: 'Please send me the photos from the concert.',
-        originalId: 'Tolong kirimkan aku foto-foto dari konser itu.',
-        reportedOptions: [
-          { text: 'Fajar asked Dimas to send him the photos from the concert.', ok: true },
-          { text: 'Fajar asked Dimas to send her the photos from the concert.', ok: false },
-          { text: 'Fajar asked Dimas sending him the photos from the concert.', ok: false },
-          { text: 'Fajar said Dimas to send him the photos from the concert.', ok: false },
-        ],
-        originalOptions: ['Please don\'t send me the photos from the concert.', 'Did you send me the photos from the concert?', 'I sent you the photos from the concert.'],
-      },
-    ],
-  },
-  /**
-   * Topik ke-8 — "Reported Commands" (perintah imperatif polos → "told
-   * someone TO..." — konversi MOOD, bukan cuma tense, dimensi transformasi
-   * beda total dari semua topik sebelumnya). Dari domain Vocab
-   * `pendidikan-kehidupan-akademik` (konteks guru memberi instruksi).
-   * Distraktor: (1) tetap klausa finite ("told...that..."), (2) kata
-   * ganti salah, (3) "to" hilang.
-   */
-  {
-    id: 'reported-commands',
-    title: 'Reported Speech — Perintah (Told To)',
-    desc: '10 kutipan',
-    transforms: [
-      {
-        speaker: 'Wati',
-        emoji: '📚',
-        original: 'Close your books, please.',
-        originalId: 'Tolong tutup buku kalian.',
-        reportedOptions: [
-          { text: 'Wati told the students to close their books.', ok: true },
-          { text: 'Wati told the students that close their books.', ok: false },
-          { text: 'Wati told the students closing their books.', ok: false },
-          { text: 'Wati told the students to close her books.', ok: false },
-        ],
-        originalOptions: ['Don\'t close your books, please.', 'Did you close your books?', 'I closed my book.'],
-      },
-      {
-        speaker: 'Andi',
-        emoji: '⚽',
-        original: 'Pass the ball to your teammate!',
-        originalId: 'Oper bolanya ke rekan setimmu!',
-        reportedOptions: [
-          { text: 'Andi told Doni to pass the ball to his teammate.', ok: true },
-          { text: 'Andi said Doni to pass the ball to his teammate.', ok: false },
-          { text: 'Andi told Doni pass the ball to his teammate.', ok: false },
-          { text: 'Andi told Doni to pass the ball to her teammate.', ok: false },
-        ],
-        originalOptions: ['Don\'t pass the ball to your teammate!', 'Did you pass the ball to your teammate?', 'I passed the ball to my teammate.'],
-      },
-      {
         speaker: 'Lina',
         emoji: '📖',
         original: 'Return your book by Friday.',
@@ -22405,32 +22435,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
           { text: 'Lina said Fajar to return his book by Friday.', ok: false },
         ],
         originalOptions: ['Don\'t return your book by Friday.', 'Did you return your book by Friday?', 'I returned my book by Friday.'],
-      },
-      {
-        speaker: 'Budi',
-        emoji: '🖊️',
-        original: 'Write your name at the top of the page.',
-        originalId: 'Tulis namamu di bagian atas halaman.',
-        reportedOptions: [
-          { text: 'Budi told the students to write their names at the top of the page.', ok: true },
-          { text: 'Budi told the students write their names at the top of the page.', ok: false },
-          { text: 'Budi said the students to write their names at the top of the page.', ok: false },
-          { text: 'Budi told the students to write his name at the top of the page.', ok: false },
-        ],
-        originalOptions: ['Don\'t write your name at the top of the page.', 'Did you write your name at the top of the page?', 'I wrote my name at the top of the page.'],
-      },
-      {
-        speaker: 'Sari',
-        emoji: '🎒',
-        original: 'Bring your art supplies to class.',
-        originalId: 'Bawa perlengkapan senimu ke kelas.',
-        reportedOptions: [
-          { text: 'Sari told Rani to bring her art supplies to class.', ok: true },
-          { text: 'Sari told Rani bringing her art supplies to class.', ok: false },
-          { text: 'Sari told Rani to bring his art supplies to class.', ok: false },
-          { text: 'Sari told Rani that bring her art supplies to class.', ok: false },
-        ],
-        originalOptions: ['Don\'t bring your art supplies to class.', 'Did you bring your art supplies to class?', 'I brought my art supplies to class.'],
       },
       {
         speaker: 'Maya',
@@ -22459,90 +22463,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['Don\'t practice your song before the concert.', 'Did you practice your song before the concert?', 'I practiced my song before the concert.'],
       },
       {
-        speaker: 'Fajar',
-        emoji: '🧹',
-        original: 'Clean your desks after class.',
-        originalId: 'Bersihkan meja kalian setelah kelas selesai.',
-        reportedOptions: [
-          { text: 'Fajar told the students to clean their desks after class.', ok: true },
-          { text: 'Fajar said the students to clean their desks after class.', ok: false },
-          { text: 'Fajar told the students clean their desks after class.', ok: false },
-          { text: 'Fajar told the students cleaning their desks after class.', ok: false },
-        ],
-        originalOptions: ['Don\'t clean your desks after class.', 'Did you clean your desks after class?', 'I cleaned my desk after class.'],
-      },
-      {
-        speaker: 'Andi',
-        emoji: '🎤',
-        original: 'Raise your hand to answer.',
-        originalId: 'Angkat tanganmu untuk menjawab.',
-        reportedOptions: [
-          { text: 'Andi told Lina to raise her hand to answer.', ok: true },
-          { text: 'Andi told Lina to raise his hand to answer.', ok: false },
-          { text: 'Andi told Lina that raise her hand to answer.', ok: false },
-          { text: 'Andi said Lina to raise her hand to answer.', ok: false },
-        ],
-        originalOptions: ['Don\'t raise your hand to answer.', 'Did you raise your hand to answer?', 'I raised my hand to answer.'],
-      },
-      {
-        speaker: 'Rani',
-        emoji: '📐',
-        original: 'Use your ruler to draw the line.',
-        originalId: 'Gunakan penggarismu untuk menggambar garis itu.',
-        reportedOptions: [
-          { text: 'Rani told Budi to use his ruler to draw the line.', ok: true },
-          { text: 'Rani told Budi use his ruler to draw the line.', ok: false },
-          { text: 'Rani told Budi using his ruler to draw the line.', ok: false },
-          { text: 'Rani told Budi to use her ruler to draw the line.', ok: false },
-        ],
-        originalOptions: ['Don\'t use your ruler to draw the line.', 'Did you use your ruler to draw the line?', 'I used my ruler to draw the line.'],
-      },
-    ],
-  },
-  /**
-   * Topik ke-9 — "Reported Negative Commands" ("Don't..." → "told someone
-   * NOT TO..." — konversi mood SAMA spt topik perintah, tapi nambah
-   * penempatan "not" — kesalahan khas: "not" hilang (membalik makna) atau
-   * salah urutan "to not"). Dari domain Vocab `perjalanan-wisata` (aturan/
-   * larangan pemandu wisata, register paling natural utk larangan).
-   * Distraktor: (1) "not" hilang, (2) objek/kata ganti salah, (3) urutan
-   * salah ("to not" bukan "not to").
-   */
-  {
-    id: 'reported-negative-commands',
-    title: 'Reported Speech — Larangan (Told Not To)',
-    desc: '10 kutipan',
-    transforms: [
-      {
-        speaker: 'Rani',
-        emoji: '🐵',
-        original: "Don't feed the monkeys!",
-        originalId: 'Jangan kasih makan monyet-monyetnya!',
-        reportedOptions: [
-          { text: 'Rani told the tourists not to feed the monkeys.', ok: true },
-          { text: 'Rani told the tourists to feed the monkeys.', ok: false },
-          { text: 'Rani told the tourists don\'t feed the monkeys.', ok: false },
-          { text: 'Rani told the tourists not feed the monkeys.', ok: false },
-        ],
-        originalOptions: ['Feed the monkeys!', 'Did you feed the monkeys?', 'We don\'t feed the monkeys.'],
-      },
-      {
-        speaker: 'Budi',
-        emoji: '🏞️',
-        original: "Don't leave any trash on the trail.",
-        originalId: 'Jangan tinggalkan sampah di jalur pendakian.',
-        reportedOptions: [
-          { text: 'Budi told the hikers not to leave any trash on the trail.', ok: true },
-          { text: 'Budi told the hikers to leave trash on the trail.', ok: false },
-          { text: 'Budi said the hikers not to leave any trash on the trail.', ok: false },
-          { text: 'Budi told the hikers to don\'t leave any trash on the trail.', ok: false },
-        ],
-        originalOptions: ['Leave your trash on the trail.', 'Did you leave any trash on the trail?', 'We don\'t leave any trash on the trail.'],
-      },
-      {
         speaker: 'Sari',
         emoji: '🤿',
-        original: "Don't touch the coral reef.",
+        original: 'Don\'t touch the coral reef.',
         originalId: 'Jangan sentuh terumbu karangnya.',
         reportedOptions: [
           { text: 'Sari told the divers not to touch the coral reef.', ok: true },
@@ -22553,35 +22476,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['Touch the coral reef.', 'Did you touch the coral reef?', 'We don\'t touch the coral reef.'],
       },
       {
-        speaker: 'Wati',
-        emoji: '🏨',
-        original: "Don't make noise in the hallway.",
-        originalId: 'Jangan berisik di lorong.',
-        reportedOptions: [
-          { text: 'Wati told the guests not to make noise in the hallway.', ok: true },
-          { text: 'Wati told the guests don\'t make noise in the hallway.', ok: false },
-          { text: 'Wati told the guests to don\'t make noise in the hallway.', ok: false },
-          { text: 'Wati told the guests to make noise in the hallway.', ok: false },
-        ],
-        originalOptions: ['Make some noise in the hallway.', 'Did you make noise in the hallway?', 'We don\'t make noise in the hallway.'],
-      },
-      {
-        speaker: 'Andi',
-        emoji: '⛺',
-        original: "Don't light a fire near the tent.",
-        originalId: 'Jangan nyalakan api dekat tenda.',
-        reportedOptions: [
-          { text: 'Andi told the campers not to light a fire near the tent.', ok: true },
-          { text: 'Andi said the campers not to light a fire near the tent.', ok: false },
-          { text: 'Andi told the campers not light a fire near the tent.', ok: false },
-          { text: 'Andi told the campers to light a fire near the tent.', ok: false },
-        ],
-        originalOptions: ['Light a fire near the tent.', 'Did you light a fire near the tent?', 'We don\'t light a fire near the tent.'],
-      },
-      {
         speaker: 'Doni',
         emoji: '🏛️',
-        original: "Don't take photos inside the museum.",
+        original: 'Don\'t take photos inside the museum.',
         originalId: 'Jangan foto-foto di dalam museum.',
         reportedOptions: [
           { text: 'Doni told the visitors not to take photos inside the museum.', ok: true },
@@ -22592,48 +22489,9 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
         originalOptions: ['Take photos inside the museum.', 'Did you take photos inside the museum?', 'We don\'t take photos inside the museum.'],
       },
       {
-        speaker: 'Lina',
-        emoji: '🚌',
-        original: "Don't stand on the bus.",
-        originalId: 'Jangan berdiri di dalam bus.',
-        reportedOptions: [
-          { text: 'Lina told the passengers not to stand on the bus.', ok: true },
-          { text: 'Lina told the passengers not stand on the bus.', ok: false },
-          { text: 'Lina said the passengers not to stand on the bus.', ok: false },
-          { text: 'Lina told the passengers to stand on the bus.', ok: false },
-        ],
-        originalOptions: ['Stand on the bus.', 'Did you stand on the bus?', 'We don\'t stand on the bus.'],
-      },
-      {
-        speaker: 'Maya',
-        emoji: '🐶',
-        original: "Don't chase the puppies in the garden.",
-        originalId: 'Jangan kejar anak-anak anjing di taman itu.',
-        reportedOptions: [
-          { text: 'Maya told the tourists not to chase the puppies in the garden.', ok: true },
-          { text: 'Maya told the tourists to chase the puppies in the garden.', ok: false },
-          { text: 'Maya told the tourists to don\'t chase the puppies in the garden.', ok: false },
-          { text: 'Maya told the tourists don\'t chase the puppies in the garden.', ok: false },
-        ],
-        originalOptions: ['Chase the puppies in the garden.', 'Did you chase the puppies in the garden?', 'We don\'t chase the puppies in the garden.'],
-      },
-      {
-        speaker: 'Fajar',
-        emoji: '🥾',
-        original: "Don't walk off the marked path.",
-        originalId: 'Jangan berjalan keluar dari jalur yang ditandai.',
-        reportedOptions: [
-          { text: 'Fajar told the group not to walk off the marked path.', ok: true },
-          { text: 'Fajar said the group not to walk off the marked path.', ok: false },
-          { text: 'Fajar told the group not walk off the marked path.', ok: false },
-          { text: 'Fajar told the group to walk off the marked path.', ok: false },
-        ],
-        originalOptions: ['Walk off the marked path.', 'Did you walk off the marked path?', 'We don\'t walk off the marked path.'],
-      },
-      {
         speaker: 'Rani',
         emoji: '🌊',
-        original: "Don't swim too far from the shore.",
+        original: 'Don\'t swim too far from the shore.',
         originalId: 'Jangan berenang terlalu jauh dari pantai.',
         reportedOptions: [
           { text: 'Rani told the swimmers not to swim too far from the shore.', ok: true },
@@ -22645,20 +22503,6 @@ export const GRAMMAR_TOPICS_TRAILBLAZER: GrammarTransformTopic[] = [
       },
     ],
   },
-  /**
-   * Topik ke-10 — "Reported Time & Place Shift" (here→there, now→then,
-   * tomorrow→the next day, yesterday→the day before, this→that — dimensi
-   * KOSAKATA deiktik, bukan morfologi verba — CAPSTONE yg SENGAJA
-   * merekombinasi aturan tense topik 3 di beberapa item). Dari domain
-   * Vocab `bahasa-komunikasi` (REUSE dari topik pertama — konteks telepon/
-   * pesan paling natural utk kata "di sini/sekarang/besok"). Ini
-   * SATU-SATUNYA topik yg memakai kata deiktik — 8 topik sebelumnya SENGAJA
-   * menghindarinya spy tiap topik menguji SATU aturan transformasi murni
-   * (sama prinsip "kalimat tidak boleh bocor sinyal kedua" §8/§13).
-   * Distraktor: (1) kata deiktik TIDAK digeser (tense digeser), (2) kata
-   * ganti salah, (3) kata deiktik digeser TAPI tense TIDAK (atau
-   * sebaliknya).
-   */
   {
     id: 'reported-time-place',
     title: 'Reported Speech — Waktu & Tempat Berubah (Time & Place Shift)',
@@ -23661,8 +23505,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "milk"
           },
           {
-            "emoji": "🌸",
-            "label": "flower"
+            "emoji": "🍅",
+            "label": "tomato"
           }
         ],
         "lines": [
@@ -23687,8 +23531,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "pic": 3
           },
           {
-            "en": "The flower is pink.",
-            "id": "Bunganya merah muda.",
+            "en": "The tomato is red.",
+            "id": "Tomatnya merah.",
             "pic": 4
           }
         ],
@@ -23717,7 +23561,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🍇",
               "🥕",
-              "🌸"
+              "🍅"
             ],
             "answer": 0,
             "evidence": [
@@ -23748,7 +23592,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🥛",
-              "🌸",
+              "🍅",
               "🍇"
             ],
             "answer": 0,
@@ -23763,7 +23607,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🌸",
+              "🍅",
               "🌽",
               "🥕"
             ],
@@ -23771,7 +23615,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "evidence": [
               4
             ],
-            "evidenceWord": "flower"
+            "evidenceWord": "tomato"
           }
         ]
       },
@@ -23792,12 +23636,12 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "tree"
           },
           {
-            "emoji": "🌃",
-            "label": "night"
+            "emoji": "🎩",
+            "label": "hat"
           },
           {
-            "emoji": "🛥️",
-            "label": "boat"
+            "emoji": "🚑",
+            "label": "ambulance"
           }
         ],
         "lines": [
@@ -23817,13 +23661,13 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "pic": 2
           },
           {
-            "en": "The night is black.",
-            "id": "Malamnya hitam.",
+            "en": "The hat is black.",
+            "id": "Topinya hitam.",
             "pic": 3
           },
           {
-            "en": "The boat is white.",
-            "id": "Perahunya putih.",
+            "en": "The ambulance is white.",
+            "id": "Ambulansnya putih.",
             "pic": 4
           }
         ],
@@ -23836,7 +23680,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🚕",
               "🚗",
-              "🌃"
+              "🎩"
             ],
             "answer": 0,
             "evidence": [
@@ -23852,7 +23696,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🚗",
               "🌳",
-              "🛥️"
+              "🚑"
             ],
             "answer": 0,
             "evidence": [
@@ -23867,7 +23711,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🌳",
-              "🌃",
+              "🎩",
               "🚕"
             ],
             "answer": 0,
@@ -23882,15 +23726,15 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🌃",
-              "🛥️",
+              "🎩",
+              "🚑",
               "🚗"
             ],
             "answer": 0,
             "evidence": [
               3
             ],
-            "evidenceWord": "night"
+            "evidenceWord": "hat"
           },
           {
             "kind": "picture",
@@ -23898,7 +23742,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🛥️",
+              "🚑",
               "🚕",
               "🌳"
             ],
@@ -23906,7 +23750,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "evidence": [
               4
             ],
-            "evidenceWord": "boat"
+            "evidenceWord": "ambulance"
           }
         ]
       }
@@ -25724,8 +25568,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "nose"
           },
           {
-            "emoji": "🫣",
-            "label": "eyes"
+            "emoji": "😮",
+            "label": "mouth"
           }
         ],
         "lines": [
@@ -25750,8 +25594,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "pic": 3
           },
           {
-            "en": "I close my eyes.",
-            "id": "Aku menutup mataku.",
+            "en": "I open my mouth.",
+            "id": "Aku buka mulutku.",
             "pic": 4
           }
         ],
@@ -25780,7 +25624,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "👋",
               "🦶",
-              "🫣"
+              "😮"
             ],
             "answer": 0,
             "evidence": [
@@ -25811,7 +25655,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "👃",
-              "🫣",
+              "😮",
               "👋"
             ],
             "answer": 0,
@@ -25826,7 +25670,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🫣",
+              "😮",
               "👏",
               "🦶"
             ],
@@ -25834,7 +25678,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "evidence": [
               4
             ],
-            "evidenceWord": "eyes"
+            "evidenceWord": "mouth"
           }
         ]
       }
@@ -25853,8 +25697,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "hands"
           },
           {
-            "emoji": "🪮",
-            "label": "hair"
+            "emoji": "🥛",
+            "label": "milk"
           },
           {
             "emoji": "🍎",
@@ -25877,8 +25721,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "pic": 1
           },
           {
-            "en": "I comb my hair.",
-            "id": "Aku menyisir rambut.",
+            "en": "I drink my milk.",
+            "id": "Aku minum susuku.",
             "pic": 2
           },
           {
@@ -25916,7 +25760,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🧼",
-              "🪮",
+              "🥛",
               "🛏️"
             ],
             "answer": 0,
@@ -25931,7 +25775,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🪮",
+              "🥛",
               "🍎",
               "🪥"
             ],
@@ -25939,7 +25783,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "evidence": [
               2
             ],
-            "evidenceWord": "hair"
+            "evidenceWord": "milk"
           },
           {
             "kind": "picture",
@@ -25965,7 +25809,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🛏️",
               "🪥",
-              "🪮"
+              "🥛"
             ],
             "answer": 0,
             "evidence": [
@@ -26266,8 +26110,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "pear"
           },
           {
-            "emoji": "🍈",
-            "label": "melon"
+            "emoji": "🍉",
+            "label": "watermelon"
           },
           {
             "emoji": "🍍",
@@ -26290,8 +26134,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "pic": 1
           },
           {
-            "en": "I see a melon.",
-            "id": "Aku lihat melon.",
+            "en": "I see a watermelon.",
+            "id": "Aku lihat semangka.",
             "pic": 2
           },
           {
@@ -26329,7 +26173,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🍐",
-              "🍈",
+              "🍉",
               "🥝"
             ],
             "answer": 0,
@@ -26344,7 +26188,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🍈",
+              "🍉",
               "🍍",
               "🍋"
             ],
@@ -26352,7 +26196,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "evidence": [
               2
             ],
-            "evidenceWord": "melon"
+            "evidenceWord": "watermelon"
           },
           {
             "kind": "picture",
@@ -26378,7 +26222,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🥝",
               "🍋",
-              "🍈"
+              "🍉"
             ],
             "answer": 0,
             "evidence": [
@@ -26411,8 +26255,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "apple"
           },
           {
-            "emoji": "🍈",
-            "label": "melon"
+            "emoji": "🍉",
+            "label": "watermelon"
           }
         ],
         "lines": [
@@ -26437,8 +26281,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "pic": 3
           },
           {
-            "en": "I drink melon juice.",
-            "id": "Aku minum jus melon.",
+            "en": "I drink watermelon juice.",
+            "id": "Aku minum jus semangka.",
             "pic": 4
           }
         ],
@@ -26467,7 +26311,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🥭",
               "🍇",
-              "🍈"
+              "🍉"
             ],
             "answer": 0,
             "evidence": [
@@ -26498,7 +26342,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🍎",
-              "🍈",
+              "🍉",
               "🥭"
             ],
             "answer": 0,
@@ -26513,7 +26357,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🍈",
+              "🍉",
               "🍊",
               "🍇"
             ],
@@ -26521,7 +26365,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "evidence": [
               4
             ],
-            "evidenceWord": "melon"
+            "evidenceWord": "watermelon"
           }
         ]
       },
@@ -26816,8 +26660,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "ball"
           },
           {
-            "emoji": "🧱",
-            "label": "blocks"
+            "emoji": "🥁",
+            "label": "drum"
           },
           {
             "emoji": "🚗",
@@ -26840,8 +26684,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "pic": 1
           },
           {
-            "en": "I build with blocks.",
-            "id": "Aku membangun dengan balok.",
+            "en": "I play my drum.",
+            "id": "Aku main drumku.",
             "pic": 2
           },
           {
@@ -26879,7 +26723,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🏀",
-              "🧱",
+              "🥁",
               "🧸"
             ],
             "answer": 0,
@@ -26894,7 +26738,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🧱",
+              "🥁",
               "🚗",
               "🎲"
             ],
@@ -26902,7 +26746,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "evidence": [
               2
             ],
-            "evidenceWord": "blocks"
+            "evidenceWord": "drum"
           },
           {
             "kind": "picture",
@@ -26928,7 +26772,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🧸",
               "🎲",
-              "🧱"
+              "🥁"
             ],
             "answer": 0,
             "evidence": [
@@ -27096,8 +26940,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "cards"
           },
           {
-            "emoji": "🧱",
-            "label": "tower"
+            "emoji": "♟️",
+            "label": "chess"
           }
         ],
         "lines": [
@@ -27122,8 +26966,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "pic": 3
           },
           {
-            "en": "I make a tower.",
-            "id": "Aku membuat menara.",
+            "en": "I play chess.",
+            "id": "Aku main catur.",
             "pic": 4
           }
         ],
@@ -27152,7 +26996,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "📖",
               "🖍️",
-              "🧱"
+              "♟️"
             ],
             "answer": 0,
             "evidence": [
@@ -27183,7 +27027,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🃏",
-              "🧱",
+              "♟️",
               "📖"
             ],
             "answer": 0,
@@ -27198,7 +27042,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🧱",
+              "♟️",
               "🧩",
               "🖍️"
             ],
@@ -27206,7 +27050,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "evidence": [
               4
             ],
-            "evidenceWord": "tower"
+            "evidenceWord": "chess"
           }
         ]
       }
@@ -28897,8 +28741,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "hospital"
           },
           {
-            "emoji": "📚",
-            "label": "library"
+            "emoji": "🏟️",
+            "label": "stadium"
           }
         ],
         "lines": [
@@ -28923,8 +28767,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 3
           },
           {
-            "en": "We read at the library.",
-            "id": "Kami membaca di perpustakaan.",
+            "en": "We go to the stadium.",
+            "id": "Kami pergi ke stadion.",
             "pic": 4
           }
         ],
@@ -28991,7 +28835,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "📚",
+              "🏟️",
               "🏫",
               "🛝"
             ],
@@ -28999,7 +28843,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "evidence": [
               4
             ],
-            "evidenceWord": "library"
+            "evidenceWord": "stadium"
           }
         ]
       },
@@ -29012,11 +28856,11 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "stop"
           },
           {
-            "emoji": "🥐",
+            "emoji": "🍞🥖",
             "label": "bakery"
           },
           {
-            "emoji": "🦁",
+            "emoji": "img:/img/zoo.jpeg",
             "label": "zoo"
           },
           {
@@ -29024,8 +28868,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "beach"
           },
           {
-            "emoji": "🧺",
-            "label": "market"
+            "emoji": "🚉",
+            "label": "station"
           }
         ],
         "lines": [
@@ -29050,8 +28894,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 3
           },
           {
-            "en": "The market is busy.",
-            "id": "Pasarnya ramai.",
+            "en": "We go to the train station.",
+            "id": "Kami pergi ke stasiun kereta.",
             "pic": 4
           }
         ],
@@ -29062,9 +28906,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🥐",
-              "🦁",
-              "🧺"
+              "🍞🥖",
+              "img:/img/zoo.jpeg",
+              "🚉"
             ],
             "answer": 0,
             "evidence": [
@@ -29091,8 +28935,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🏖️",
-              "🧺",
-              "🥐"
+              "🚉",
+              "🍞🥖"
             ],
             "answer": 0,
             "evidence": [
@@ -29102,9 +28946,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🌧️",
-            "q": "The beach is sunny.",
-            "qId": "Pantainya cerah.",
+            "picture": "🍞🥖",
+            "q": "We wait at the bus stop.",
+            "qId": "Kami menunggu di halte bus.",
             "options": [
               "Benar",
               "Salah"
@@ -29118,15 +28962,15 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🧺",
+              "🚉",
               "🚏",
-              "🦁"
+              "img:/img/zoo.jpeg"
             ],
             "answer": 0,
             "evidence": [
               4
             ],
-            "evidenceWord": "market"
+            "evidenceWord": "station"
           }
         ]
       }
@@ -29134,27 +28978,27 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
     "newTexts": [
       {
         "genre": "book",
-        "heading": "🏛️ A Trip to the Museum",
+        "heading": "🗺️ A Walk in Town",
         "pictures": [
           {
             "emoji": "🏛️",
             "label": "museum"
           },
           {
-            "emoji": "🚌",
-            "label": "bus"
+            "emoji": "⛲",
+            "label": "fountain"
           },
           {
-            "emoji": "⛵",
-            "label": "boats"
+            "emoji": "🅿️",
+            "label": "car park"
           },
           {
-            "emoji": "🕰️",
-            "label": "clock"
+            "emoji": "🛒",
+            "label": "supermarket"
           },
           {
-            "emoji": "🏠",
-            "label": "home"
+            "emoji": "🏢",
+            "label": "office"
           }
         ],
         "lines": [
@@ -29164,23 +29008,23 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 0
           },
           {
-            "en": "We ride the bus there.",
-            "id": "Kami naik bus ke sana.",
+            "en": "We see a big fountain.",
+            "id": "Kami melihat air mancur besar.",
             "pic": 1
           },
           {
-            "en": "I see old boats.",
-            "id": "Aku lihat perahu kuno.",
+            "en": "We park at the car park.",
+            "id": "Kami parkir di tempat parkir.",
             "pic": 2
           },
           {
-            "en": "I see a big clock.",
-            "id": "Aku lihat jam besar.",
+            "en": "We buy food at the supermarket.",
+            "id": "Kami beli makanan di supermarket.",
             "pic": 3
           },
           {
-            "en": "Then we go home.",
-            "id": "Lalu kami pulang.",
+            "en": "Dad works in an office.",
+            "id": "Ayah bekerja di kantor.",
             "pic": 4
           }
         ],
@@ -29192,8 +29036,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🏛️",
-              "🚌",
-              "🕰️"
+              "🛒",
+              "🅿️"
             ],
             "answer": 0,
             "evidence": [
@@ -29203,9 +29047,37 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🚌🚌",
-            "q": "We ride one bus.",
-            "qId": "Kami naik satu bus.",
+            "picture": "🏢",
+            "q": "Dad works in an office.",
+            "qId": "Ayah bekerja di kantor.",
+            "options": [
+              "Benar",
+              "Salah"
+            ],
+            "answer": 0,
+            "evidence": []
+          },
+          {
+            "kind": "picture",
+            "about": 1,
+            "q": "Which picture?",
+            "qId": "Tunjuk gambarnya!",
+            "options": [
+              "⛲",
+              "🏛️",
+              "🏢"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ],
+            "evidenceWord": "fountain"
+          },
+          {
+            "kind": "truefalse",
+            "picture": "🅿️",
+            "q": "We buy food at the supermarket.",
+            "qId": "Kami beli makanan di supermarket.",
             "options": [
               "Benar",
               "Salah"
@@ -29215,99 +29087,71 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "picture",
-            "about": 2,
+            "about": 3,
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "⛵",
-              "🕰️",
-              "🏛️"
+              "🛒",
+              "⛲",
+              "🅿️"
             ],
             "answer": 0,
             "evidence": [
-              2
+              3
             ],
-            "evidenceWord": "boats"
-          },
-          {
-            "kind": "truefalse",
-            "picture": "🕰️",
-            "q": "I see a big clock.",
-            "qId": "Aku lihat jam besar.",
-            "options": [
-              "Benar",
-              "Salah"
-            ],
-            "answer": 0,
-            "evidence": []
-          },
-          {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🏠",
-              "🏛️",
-              "⛵"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ],
-            "evidenceWord": "home"
+            "evidenceWord": "supermarket"
           }
         ]
       },
       {
         "genre": "book",
-        "heading": "🏥 At the Clinic",
+        "heading": "🧳 A Big Trip",
         "pictures": [
           {
-            "emoji": "🏥",
-            "label": "clinic"
+            "emoji": "⛽",
+            "label": "gas station"
           },
           {
-            "emoji": "🩺",
-            "label": "doctor"
+            "emoji": "🛫",
+            "label": "airport"
           },
           {
-            "emoji": "🪑",
-            "label": "chair"
+            "emoji": "🏨",
+            "label": "hotel"
           },
           {
-            "emoji": "💧",
-            "label": "water"
+            "emoji": "🗼",
+            "label": "tower"
           },
           {
-            "emoji": "😊",
-            "label": "better"
+            "emoji": "🎡",
+            "label": "fair"
           }
         ],
         "lines": [
           {
-            "en": "I am at the clinic.",
-            "id": "Aku di klinik.",
+            "en": "Dad stops at the gas station.",
+            "id": "Ayah berhenti di pom bensin.",
             "pic": 0
           },
           {
-            "en": "The doctor is kind.",
-            "id": "Dokternya baik.",
+            "en": "We go to the airport.",
+            "id": "Kami pergi ke bandara.",
             "pic": 1
           },
           {
-            "en": "I sit on a chair.",
-            "id": "Aku duduk di kursi.",
+            "en": "We stay at a hotel.",
+            "id": "Kami menginap di hotel.",
             "pic": 2
           },
           {
-            "en": "The nurse gives me water.",
-            "id": "Perawat memberiku air.",
+            "en": "We see a tall tower.",
+            "id": "Kami melihat menara tinggi.",
             "pic": 3
           },
           {
-            "en": "Now I feel better!",
-            "id": "Sekarang aku merasa lebih baik!",
+            "en": "We go to the fun fair.",
+            "id": "Kami pergi ke pasar malam.",
             "pic": 4
           }
         ],
@@ -29318,21 +29162,21 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🩺",
-              "🪑",
-              "😊"
+              "🛫",
+              "🏨",
+              "⛽"
             ],
             "answer": 0,
             "evidence": [
               1
             ],
-            "evidenceWord": "doctor"
+            "evidenceWord": "airport"
           },
           {
             "kind": "truefalse",
-            "picture": "💧",
-            "q": "The nurse gives me water.",
-            "qId": "Perawat memberiku air.",
+            "picture": "🗼",
+            "q": "We see a tall tower.",
+            "qId": "Kami melihat menara tinggi.",
             "options": [
               "Benar",
               "Salah"
@@ -29346,21 +29190,21 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🪑",
-              "💧",
-              "🏥"
+              "🏨",
+              "🗼",
+              "🎡"
             ],
             "answer": 0,
             "evidence": [
               2
             ],
-            "evidenceWord": "chair"
+            "evidenceWord": "hotel"
           },
           {
             "kind": "truefalse",
-            "picture": "🍞",
-            "q": "The nurse gives me water.",
-            "qId": "Perawat memberiku air.",
+            "picture": "⛽",
+            "q": "We go to the airport.",
+            "qId": "Kami pergi ke bandara.",
             "options": [
               "Benar",
               "Salah"
@@ -29374,15 +29218,15 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "😊",
-              "🏥",
-              "🪑"
+              "🎡",
+              "🛫",
+              "🗼"
             ],
             "answer": 0,
             "evidence": [
               4
             ],
-            "evidenceWord": "better"
+            "evidenceWord": "fair"
           }
         ]
       }
@@ -30052,7 +29896,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "Grandma"
           },
           {
-            "emoji": "🍝",
+            "emoji": "🍜",
             "label": "noodles"
           },
           {
@@ -30110,7 +29954,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🍝",
+            "picture": "🍜",
             "q": "We eat noodles for lunch.",
             "qId": "Kami makan mi untuk makan siang.",
             "options": [
@@ -30127,7 +29971,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "👵",
-              "🍝",
+              "🍜",
               "❤️"
             ],
             "answer": 0,
@@ -30138,7 +29982,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🍝",
+            "picture": "🍜",
             "q": "We eat rice for lunch.",
             "qId": "Kami makan nasi untuk makan siang.",
             "options": [
@@ -31221,12 +31065,12 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "soup"
           },
           {
-            "emoji": "🥤",
-            "label": "tea"
+            "emoji": "🥛",
+            "label": "milk"
           },
           {
-            "emoji": "♨️",
-            "label": "hot"
+            "emoji": "😋",
+            "label": "yummy"
           }
         ],
         "lines": [
@@ -31246,13 +31090,13 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 2
           },
           {
-            "en": "We drink iced tea.",
-            "id": "Kami minum es teh.",
+            "en": "We drink milk.",
+            "id": "Kami minum susu.",
             "pic": 3
           },
           {
-            "en": "The food is hot!",
-            "id": "Makanannya panas!",
+            "en": "It is so yummy!",
+            "id": "Enak sekali!",
             "pic": 4
           }
         ],
@@ -31265,7 +31109,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "options": [
               "🍜",
               "🍢",
-              "🥤"
+              "🥛"
             ],
             "answer": 0,
             "evidence": [
@@ -31293,7 +31137,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "options": [
               "🍢",
               "🥣",
-              "♨️"
+              "😋"
             ],
             "answer": 0,
             "evidence": [
@@ -31320,7 +31164,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🥣",
-              "🥤",
+              "🥛",
               "🍜"
             ],
             "answer": 0,
@@ -31759,8 +31603,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 1
           },
           {
-            "en": "The bowl is empty.",
-            "id": "Mangkuknya kosong.",
+            "en": "The bowl is big.",
+            "id": "Mangkuknya besar.",
             "pic": 2
           },
           {
@@ -31994,7 +31838,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "emoji": "🪑",
-            "label": "desk"
+            "label": "chair"
           },
           {
             "emoji": "📓",
@@ -32016,8 +31860,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 0
           },
           {
-            "en": "I sit at my desk.",
-            "id": "Aku duduk di mejaku.",
+            "en": "I sit on my chair.",
+            "id": "Aku duduk di kursiku.",
             "pic": 1
           },
           {
@@ -32084,8 +31928,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "kind": "truefalse",
             "picture": "🎵",
-            "q": "I sit at my desk.",
-            "qId": "Aku duduk di mejaku.",
+            "q": "I sit on my chair.",
+            "qId": "Aku duduk di kursiku.",
             "options": [
               "Benar",
               "Salah"
@@ -32507,7 +32351,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         "heading": "🧑‍⚕️ Helpers",
         "pictures": [
           {
-            "emoji": "🩺",
+            "emoji": "🧑‍⚕️",
             "label": "doctor"
           },
           {
@@ -32515,7 +32359,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "police"
           },
           {
-            "emoji": "🌾",
+            "emoji": "🧑‍🌾",
             "label": "farmer"
           },
           {
@@ -32561,7 +32405,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🩺",
+              "🧑‍⚕️",
               "👮",
               "🧑‍🍳"
             ],
@@ -32589,9 +32433,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🌾",
+              "🧑‍🌾",
               "🧑‍🍳",
-              "🩺"
+              "🧑‍⚕️"
             ],
             "answer": 0,
             "evidence": [
@@ -32601,7 +32445,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🌾",
+            "picture": "🧑‍🌾",
             "q": "The doctor helps sick people.",
             "qId": "Dokter menolong orang sakit.",
             "options": [
@@ -32618,8 +32462,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🚌",
-              "🩺",
-              "🌾"
+              "🧑‍⚕️",
+              "🧑‍🌾"
             ],
             "answer": 0,
             "evidence": [
@@ -32763,7 +32607,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         "heading": "🩹 At the Clinic",
         "pictures": [
           {
-            "emoji": "🩹",
+            "emoji": "🧑‍⚕️",
             "label": "nurse"
           },
           {
@@ -32775,8 +32619,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "sticker"
           },
           {
-            "emoji": "🤝",
-            "label": "hand"
+            "emoji": "📖",
+            "label": "book"
           },
           {
             "emoji": "💪",
@@ -32800,8 +32644,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 2
           },
           {
-            "en": "Mom holds my hand.",
-            "id": "Ibu memegang tanganku.",
+            "en": "Mom reads me a book.",
+            "id": "Ibu membacakanku buku.",
             "pic": 3
           },
           {
@@ -32817,9 +32661,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🩹",
+              "🧑‍⚕️",
               "🩺",
-              "🤝"
+              "📖"
             ],
             "answer": 0,
             "evidence": [
@@ -32846,8 +32690,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "⭐",
-              "🤝",
-              "🩹"
+              "📖",
+              "🧑‍⚕️"
             ],
             "answer": 0,
             "evidence": [
@@ -32874,7 +32718,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "💪",
-              "🩹",
+              "🧑‍⚕️",
               "⭐"
             ],
             "answer": 0,
@@ -33156,8 +33000,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "mountain"
           },
           {
-            "emoji": "🏞️",
-            "label": "river"
+            "emoji": "🌋",
+            "label": "volcano"
           },
           {
             "emoji": "☁️",
@@ -33179,8 +33023,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 0
           },
           {
-            "en": "I see a long river.",
-            "id": "Aku lihat sungai panjang.",
+            "en": "I see a volcano.",
+            "id": "Aku lihat gunung berapi.",
             "pic": 1
           },
           {
@@ -33207,7 +33051,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "⛰️",
-              "🏞️",
+              "🌋",
               "🌈"
             ],
             "answer": 0,
@@ -33234,7 +33078,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🏞️",
+              "🌋",
               "☁️",
               "⭐"
             ],
@@ -33242,7 +33086,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "evidence": [
               1
             ],
-            "evidenceWord": "river"
+            "evidenceWord": "volcano"
           },
           {
             "kind": "truefalse",
@@ -33264,7 +33108,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "options": [
               "🌈",
               "⭐",
-              "🏞️"
+              "🌋"
             ],
             "answer": 0,
             "evidence": [
@@ -39572,8 +39416,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Her baby is very small.",
-            "id": "Bayinya sangat kecil.",
-            "pic": 3
+            "id": "Bayinya sangat kecil."
           },
           {
             "en": "Please be quiet near her.",
@@ -39659,10 +39502,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "🎋",
             "label": "day"
-          },
-          {
-            "emoji": "🍼",
-            "label": "small"
           }
         ]
       }
@@ -39877,13 +39716,12 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "My dad is tall.",
-            "id": "Ayahku tinggi.",
-            "pic": 1
+            "id": "Ayahku tinggi."
           },
           {
             "en": "My mom has long hair.",
             "id": "Ibuku berambut panjang.",
-            "pic": 2
+            "pic": 1
           },
           {
             "en": "My big sister is ten.",
@@ -39892,12 +39730,12 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "en": "My baby brother is one.",
             "id": "Adik laki-lakiku satu tahun.",
-            "pic": 3
+            "pic": 2
           },
           {
             "en": "We are at the beach.",
             "id": "Kami di pantai.",
-            "pic": 4
+            "pic": 3
           }
         ],
         "questions": [
@@ -39969,10 +39807,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "📷",
             "label": "photo"
-          },
-          {
-            "emoji": "👨",
-            "label": "tall"
           },
           {
             "emoji": "👩",
@@ -40342,8 +40176,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Here is fifty thousand rupiah.",
-            "id": "Ini uang lima puluh ribu rupiah.",
-            "pic": 4
+            "id": "Ini uang lima puluh ribu rupiah."
           },
           {
             "en": "Thanks! Mom",
@@ -40433,10 +40266,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "🥛",
             "label": "milk"
-          },
-          {
-            "emoji": "💵",
-            "label": "rupiah"
           }
         ]
       },
@@ -41792,8 +41621,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Cook: That's fifteen thousand.",
-            "id": "Juru masak: Semuanya lima belas ribu.",
-            "pic": 2
+            "id": "Juru masak: Semuanya lima belas ribu."
           },
           {
             "en": "Rudi: Here is twenty thousand.",
@@ -41801,8 +41629,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Cook: Thanks! Here is five thousand.",
-            "id": "Juru masak: Makasih! Ini kembaliannya lima ribu.",
-            "pic": 3
+            "id": "Juru masak: Makasih! Ini kembaliannya lima ribu."
           }
         ],
         "questions": [
@@ -41880,14 +41707,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "🍊",
             "label": "please"
-          },
-          {
-            "emoji": "💵",
-            "label": "thousand"
-          },
-          {
-            "emoji": "🪙",
-            "label": "thousand"
           }
         ]
       }
@@ -42238,8 +42057,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Kids' pool: eight to eleven.",
-            "id": "Kolam anak: jam delapan sampai sebelas.",
-            "pic": 2
+            "id": "Kolam anak: jam delapan sampai sebelas."
           },
           {
             "en": "Big pool: one to five.",
@@ -42248,7 +42066,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "en": "Swimming lessons: Saturday at nine.",
             "id": "Les renang: hari Sabtu jam sembilan.",
-            "pic": 3
+            "pic": 2
           }
         ],
         "questions": [
@@ -42324,10 +42142,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "🚫",
             "label": "monday"
-          },
-          {
-            "emoji": "🌊",
-            "label": "eleven"
           },
           {
             "emoji": "🥽",
@@ -42660,7 +42474,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
       },
       {
         "genre": "note",
-        "heading": "🇦🇺 A Postcard from Australia",
+        "heading": "☀️ A Postcard from Australia",
         "lines": [
           {
             "en": "Hello Dimas!",
@@ -42669,13 +42483,12 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "I am in Sydney, Australia.",
-            "id": "Aku di Sydney, Australia.",
-            "pic": 1
+            "id": "Aku di Sydney, Australia."
           },
           {
             "en": "It is summer here in December.",
             "id": "Di sini musim panas di bulan Desember.",
-            "pic": 2
+            "pic": 1
           },
           {
             "en": "I saw a kangaroo in the park!",
@@ -42684,7 +42497,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "en": "I speak English at school.",
             "id": "Aku berbahasa Inggris di sekolah.",
-            "pic": 3
+            "pic": 2
           },
           {
             "en": "Your friend, Tom",
@@ -42764,10 +42577,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
             "label": "dimas"
           },
           {
-            "emoji": "🇦🇺",
-            "label": "australia"
-          },
-          {
             "emoji": "☀️",
             "label": "december"
           },
@@ -42781,7 +42590,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
     "newTexts": [
       {
         "genre": "note",
-        "heading": "🇬🇧 A Postcard from England",
+        "heading": "☔ A Postcard from England",
         "lines": [
           {
             "en": "Dear Lia,",
@@ -42978,22 +42787,21 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
   {
     "id": "cek-pesta",
     "title": "Lomba 17 Agustus (Independence Day Games)",
-    "scene": "🇮🇩",
+    "scene": "🏆",
     "desc": "Poster & pesan lomba",
     "texts": [
       {
         "genre": "sign",
-        "heading": "🇮🇩 Independence Day Games!",
+        "heading": "🎈 Independence Day Games!",
         "lines": [
           {
             "en": "Come to our games on August 17!",
-            "id": "Ayo ikut lomba kami tanggal 17 Agustus!",
-            "pic": 0
+            "id": "Ayo ikut lomba kami tanggal 17 Agustus!"
           },
           {
             "en": "Games start at eight in the morning.",
             "id": "Lomba mulai jam delapan pagi.",
-            "pic": 1
+            "pic": 0
           },
           {
             "en": "Try the sack race!",
@@ -43001,18 +42809,17 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "The cracker-eating game is at nine.",
-            "id": "Lomba makan kerupuk jam sembilan.",
-            "pic": 2
+            "id": "Lomba makan kerupuk jam sembilan."
           },
           {
             "en": "Winners get a prize.",
             "id": "Pemenang dapat hadiah.",
-            "pic": 3
+            "pic": 1
           },
           {
             "en": "Wear red and white!",
             "id": "Pakai baju merah putih!",
-            "pic": 4
+            "pic": 2
           }
         ],
         "questions": [
@@ -43082,16 +42889,8 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
         ],
         "pictures": [
           {
-            "emoji": "🇮🇩",
-            "label": "17"
-          },
-          {
             "emoji": "⏰",
             "label": "morning"
-          },
-          {
-            "emoji": "🍘",
-            "label": "nine"
           },
           {
             "emoji": "🏆",
@@ -43118,18 +42917,17 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Sinta won the cracker game.",
-            "id": "Sinta menang lomba kerupuk.",
-            "pic": 1
+            "id": "Sinta menang lomba kerupuk."
           },
           {
             "en": "Our class got two prizes.",
             "id": "Kelas kita dapat dua hadiah.",
-            "pic": 2
+            "pic": 1
           },
           {
             "en": "Thank you for cheering!",
             "id": "Terima kasih sudah menyemangati!",
-            "pic": 3
+            "pic": 2
           },
           {
             "en": "Miss Dewi",
@@ -43207,10 +43005,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "🏅",
             "label": "race"
-          },
-          {
-            "emoji": "🍘",
-            "label": "game"
           },
           {
             "emoji": "🏆",
@@ -43454,8 +43248,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Pour it into a glass. Yum!",
-            "id": "Tuang ke gelas. Enak!",
-            "pic": 4
+            "id": "Tuang ke gelas. Enak!"
           }
         ],
         "questions": [
@@ -43539,10 +43332,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "⏱️",
             "label": "minute"
-          },
-          {
-            "emoji": "🥤",
-            "label": "yum"
           }
         ]
       },

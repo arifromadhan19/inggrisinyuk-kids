@@ -5,6 +5,8 @@ import {
   ensureSection,
   firstUnansweredSlot,
   getSlot,
+  isHintUnlocked,
+  markSlotHint,
   hasWordInteraction,
   markSlotAnswered,
   markWordInteraction,
@@ -64,10 +66,6 @@ function tierOf(level: LevelKey): SpeakTier {
   return 'lanjut';
 }
 
-/** #6 — kecepatan default contoh suara (pill kecepatan user tetap menang). */
-export function speakingDefaultRate(level: LevelKey): 0.75 | 1 {
-  return level === 'little-stars' || level === 'starter' || level === 'explorer' ? 0.75 : 1;
-}
 
 /** #1 — ambang ⭐⭐⭐ / ⭐⭐. Dasar lebih longgar (ASR suara anak kecil paling
  *  meleset & Starters cuma minta 1 kata). Lanjut SENGAJA tidak diperketat:
@@ -863,7 +861,8 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
     const prompt = flow.prompts[plan[round].item] ?? flow.prompts[0];
     let turnIdx = 0;
     let revealed = false;
-    let attempted = false;
+    // Sekali terbuka (pernah dijawab / Petunjuk pernah diklik) tidak terkunci lagi.
+    let attempted = isHintUnlocked('speaking', topic.id, SECTION_TANTANGAN, round);
     let scoreSum = 0;
     let storyPlayed = false;
     // "Pilih & Ucapkan": urutan kartu diacak per giliran; pilihan anak tetap
@@ -971,6 +970,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
         playStory: () => playStory(),
         petunjuk: () => {
           if (revealed || (tier === 'lanjut' && !attempted)) return;
+          markSlotHint('speaking', topic.id, SECTION_TANTANGAN, round);
           revealed = true;
           // Pilih & Ucapkan: Petunjuk = arti pertanyaan + contoh cara membaca
           // kalimat yang sudah dipilih (kartunya sendiri sudah jadi jawaban).
@@ -1346,7 +1346,7 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
   function draw(): void {
     const p = prompts[plan[nav.round].item] ?? prompts[0];
     let revealed = false;
-    let attempted = false;
+    let attempted = isHintUnlocked('speaking', topic.id, SECTION_BERTANYA, nav.round);
 
     function paint(): void {
       const locked = tier === 'lanjut' && !attempted;
@@ -1375,6 +1375,7 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
       setHandlers({
         petunjuk: () => {
           if (revealed || (tier === 'lanjut' && !attempted)) return;
+          markSlotHint('speaking', topic.id, SECTION_BERTANYA, nav.round);
           revealed = true;
           speak(p.question.en);
           paint();
