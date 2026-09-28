@@ -135,15 +135,14 @@ function ensureSentencePlan(topic: GrammarSentenceTopic, section: string): { ite
   return s.plan ?? [];
 }
 
-function meaningHtml(s: GrammarSentence): string {
-  return `<div class="id-text g-meaning">🇮🇩 ${s.id}</div>`;
-}
-
 function hintChipHtml(locked: boolean, used: boolean): string {
   return `<button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${locked || used ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>`;
 }
 
 export function renderKenalanSentence(container: HTMLElement, topic: GrammarSentenceTopic, _onNext: OnDone, contentLevel: LevelKey): void {
+  // Kolom ikon dijaga sejajar: kalau SEBAGIAN kalimat py ikon, kalimat tanpa
+  // ikon tetap dapat kotak kosong (permintaan user "buat UI yang rapih").
+  const anyIcon = topic.sentences.some((s) => !!s.emoji);
   const showRule = grammarTier(contentLevel) === 'lanjut' && !!topic.rule;
   container.innerHTML = `
     <div class="id-text" style="margin-bottom:10px;">Perhatikan kata yang disorot di tiap kalimat</div>
@@ -153,7 +152,7 @@ export function renderKenalanSentence(container: HTMLElement, topic: GrammarSent
         .map(
           (s, i) => `
         <div class="primer-item">
-          ${s.emoji ? `<div class="primer-ic">${s.emoji}</div>` : ''}
+          ${s.emoji ? `<div class="primer-ic">${s.emoji}</div>` : anyIcon ? '<div class="primer-ic" aria-hidden="true"></div>' : ''}
           <div class="txt"><b>${highlightedSentence(s)}</b><span class="g-id">${s.id}</span></div>
           <div class="mini-play" data-action="play" data-payload="${i}">🔊</div>
         </div>`
@@ -180,6 +179,10 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
   // Lagi" (non-punitive, pola sama Listening/Reading).
   let revealed = false;
   let attempted = false;
+  // 💡 Petunjuk mode 2 — kalau arti SUDAH tampil (Explorer, topik
+  // `meaningNeeded`), Petunjuk mengisi kata-kata pertama (pola Vocab
+  // `runSusunKalimat`, permintaan user). Dipertahankan lewat "Coba Lagi".
+  let wordsHinted = false;
 
   const slotStatus = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, 'latihan', i)?.st ?? 0;
 
@@ -193,6 +196,7 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
     if (round >= order.length) return onDone();
     revealed = false;
     attempted = false;
+    wordsHinted = false;
     redraw();
   }
 
@@ -207,21 +211,52 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
     let answer: { w: string; idx: number }[] = [];
     let answered = false;
     const meaningShown = () => cfg.showMeaning || !!topic.meaningNeeded || revealed;
+    const meaningAlwaysShown = cfg.showMeaning || !!topic.meaningNeeded;
+    // idx 0..words.length-1 di `freshBank` = kata ke-i kalimat target.
+    // Berhenti SEBELUM kata pola (`key`) supaya Petunjuk tidak menjawab
+    // bagian yang diuji ("Is that your pencil?" → cuma "Is"); kalau `key`
+    // kata pertama, isi seperti biasa (tidak ada kata lain di depannya).
+    const keyPos = words.indexOf(s.key);
+    const hintCount = (): number => {
+      if (!wordsHinted) return 0;
+      const base = Math.max(1, Math.round(words.length * (contentLevel === 'explorer' ? 0.6 : 0.4)));
+      return keyPos > 0 ? Math.min(base, keyPos) : base;
+    };
+    function resetBoard(): void {
+      bank = freshBank();
+      answer = [];
+      for (let i = 0; i < hintCount(); i++) {
+        const tile = bank.find((b) => b.idx === i)!;
+        tile.used = true;
+        answer.push(tile);
+      }
+    }
+    resetBoard();
 
     function paint(): void {
       const wrongSoFar = getSlot('grammar', topic.id, 'latihan', round)?.w ?? 0;
-      const showHint = !cfg.showMeaning && !topic.meaningNeeded;
+      const hintUsed = meaningAlwaysShown ? wordsHinted : revealed;
+      const hc = hintCount();
       container.innerHTML = `
         <div class="latihan-head no-wrap">
           <span class="stage-badge">🎯 Susun Kalimat</span>
-          ${showHint && !answered ? hintChipHtml(cfg.hintGate && !attempted, revealed) : ''}
+          ${answered ? '' : hintChipHtml(cfg.hintGate && !attempted, hintUsed)}
         </div>
         ${quizNavHtml(round, order.length, slotStatus)}
-        <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
-        ${meaningShown() ? meaningHtml(s) : ''}
+        ${
+          // Soal dibuat dominan (permintaan user "seperti susun kalimat di
+          // vocab"): arti Indonesia = teks besar berwarna; kalau arti
+          // disembunyikan tier ini (Adventurer+ sebelum 💡 Petunjuk), yang
+          // besar instruksinya.
+          meaningShown()
+            ? `<div class="id-text">Susun jadi Bahasa Inggris dari kalimat ini · ${round + 1} dari ${order.length}</div>
+        <div class="en-text" style="color:var(--c-gram)">"${s.id}"</div>`
+            : `<div class="id-text">Arti kalimatnya ada di 💡 Petunjuk · ${round + 1} dari ${order.length}</div>
+        <div class="en-text" style="color:var(--c-gram)">Susun jadi kalimat yang benar</div>`
+        }
         ${decoys.length ? `<p class="meta g-decoy-note">Ada ${decoys.length} kata jebakan — tidak dipakai</p>` : ''}
-        <div class="answer-row ${answer.length ? '' : 'empty'}">
-          ${answer.map((a, ai) => `<span class="chip placed" data-action="unpick" data-payload="${ai}">${a.w}</span>`).join('')}
+        <div class="answer-row ${answer.length ? '' : 'empty'}" style="margin-top:10px">
+          ${answer.map((a, ai) => `<span class="chip placed${ai < hc ? ' hint' : ''}" data-action="unpick" data-payload="${ai}">${a.w}</span>`).join('')}
         </div>
         ${wrongSoFar >= cfg.revealAfter ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Jawabannya: <b>${words.join(' ')}</b></p>` : ''}
         <div class="bank-row">
@@ -232,7 +267,7 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
           answered
             ? ''
             : `<div class="letter-actions">
-          <button class="ghost-btn slim" type="button" data-action="removeLastWord" ${answer.length === 0 ? 'disabled' : ''}>⌫ Hapus Kata</button>
+          <button class="ghost-btn slim" type="button" data-action="removeLastWord" ${answer.length <= hc ? 'disabled' : ''}>⌫ Hapus Kata</button>
           <button class="ghost-btn slim" type="button" data-action="clear">🔄 Bersihkan</button>
         </div>`
         }
@@ -240,18 +275,20 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
       wireQuizNav(goTo);
       setHandlers({
         petunjuk: () => {
-          if (revealed || (cfg.hintGate && !attempted)) return;
-          revealed = true;
+          if (answered || hintUsed || (cfg.hintGate && !attempted)) return;
+          if (meaningAlwaysShown) {
+            wordsHinted = true;
+            resetBoard();
+          } else revealed = true;
           paint();
         },
         clear: () => {
           if (answered) return;
-          answer = [];
-          bank = freshBank();
+          resetBoard();
           paint();
         },
         removeLastWord: () => {
-          if (answered || answer.length === 0) return;
+          if (answered || answer.length <= hc) return;
           const last = answer[answer.length - 1];
           answer = answer.slice(0, -1);
           bank.find((b) => b.idx === last.idx)!.used = false;
@@ -269,6 +306,7 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
         unpick: (payload) => {
           if (answered) return;
           const ai = Number(payload);
+          if (ai < hc) return; // kata dari Petunjuk tidak bisa dilepas
           const item = answer[ai];
           answer.splice(ai, 1);
           bank.find((b) => b.idx === item.idx)!.used = false;
@@ -299,14 +337,13 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';
       }
-      markSlotAnswered('grammar', topic.id, 'latihan', round, correct, { hint: revealed, itemRef: s.en });
-      recordEvent({ kind: 'answer', skill: 'grammar', topicId: topic.id, section: 'latihan', slot: round, itemRef: s.en, activity: 'scramble', correct, hintUsed: revealed });
+      markSlotAnswered('grammar', topic.id, 'latihan', round, correct, { hint: revealed || wordsHinted, itemRef: s.en });
+      recordEvent({ kind: 'answer', skill: 'grammar', topicId: topic.id, section: 'latihan', slot: round, itemRef: s.en, activity: 'scramble', correct, hintUsed: revealed || wordsHinted });
       fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, slotStatus)));
       setHandlers({
         tryAgainRound: () => {
           answered = false;
-          answer = [];
-          bank = freshBank();
+          resetBoard();
           paint();
         },
         nextRound: () => {
@@ -906,9 +943,16 @@ function runDetektifTab(container: HTMLElement, topic: GrammarSentenceTopic, onD
       container.innerHTML = `
         ${showHint ? `<div class="latihan-head no-wrap" style="justify-content:flex-end">${hintChipHtml(cfg.hintGate && !attempted, revealed)}</div>` : ''}
         ${quizNavHtml(round, order.length, status)}
-        <div class="id-text">Ada 1 kata yang kurang pas — tap kata itu · ${round + 1} dari ${order.length}</div>
-        ${meaningShown() ? meaningHtml(s) : ''}
-        <div class="bank-row dt-sentence">${sentenceHtml()}</div>
+        ${
+          // Terjemahan dibuat dominan (permintaan user: "user kurang aware"),
+          // pola sama Susun Kalimat Latihan Inti.
+          meaningShown()
+            ? `<div class="id-text">Ada 1 kata yang kurang pas — tap kata itu · ${round + 1} dari ${order.length}</div>
+        <div class="en-text" style="color:var(--c-gram)">"${s.id}"</div>`
+            : `<div class="id-text">Arti kalimatnya ada di 💡 Petunjuk · ${round + 1} dari ${order.length}</div>
+        <div class="en-text" style="color:var(--c-gram)">Temukan 1 kata yang kurang pas</div>`
+        }
+        <div class="bank-row dt-sentence" style="margin-top:10px">${sentenceHtml()}</div>
         ${!found && missSoFar >= cfg.revealAfter ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Kata yang kurang pas: <b>${wrongWord}</b></p>` : ''}
         ${
           found && cfg.fixStep && !answered

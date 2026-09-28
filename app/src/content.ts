@@ -2525,16 +2525,18 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
   {
     // 🔒 Audit materi/grammar.md §25: dulu "This is a ball…" — sama persis
     // Little Stars `ini-itu`. Sekarang naik ke bentuk TANYA & BUKAN
-    // (Fase B, My Next Words kelas 2–3: "Is this your…?", "What is that?").
+    // (Fase B, My Next Words kelas 2–3: "Is this your…?", "Is that…?").
+    // 🔒 Revisi user: "What is this?"/"What is that?" terlihat kembar & tanpa
+    // ikon → diganti kalimat berikon (semua 10 kalimat py ikon).
     id: 'this-is',
-    title: 'Tanya Ini dan Itu (Is This? What Is That?)',
-    desc: 'Is this…? / What is that? / This is not…',
+    title: 'Tanya Ini dan Itu (Is This? Is That?)',
+    desc: 'Is this…? / Is that…? / This is not…',
     sentences: [
       { en: 'Is this your bag?', id: 'Apakah ini tasmu?', emoji: '🎒', key: 'this', wrong: ['these', 'those'] },
-      { en: 'What is that?', id: 'Itu apa?', key: 'is', wrong: ['are', 'am'] },
+      { en: 'Is that a clock?', id: 'Apakah itu jam?', emoji: '🕰️', key: 'that', wrong: ['those', 'these'] },
       { en: 'Is that your pencil?', id: 'Apakah itu pensilmu?', emoji: '✏️', key: 'that', wrong: ['those', 'these'] },
-      { en: 'What is this?', id: 'Ini apa?', key: 'this', wrong: ['these', 'those'] },
-      { en: 'It is an eraser.', id: 'Itu penghapus.', key: 'an', wrong: ['a', 'two'] },
+      { en: 'Is that your umbrella?', id: 'Apakah itu payungmu?', emoji: '☂️', key: 'Is', wrong: ['Are', 'Am'] },
+      { en: 'This is not an egg.', id: 'Ini bukan telur.', emoji: '🥚', key: 'an', wrong: ['a', 'two'] },
       { en: 'Is this a ruler?', id: 'Apakah ini penggaris?', emoji: '📏', key: 'a', wrong: ['an', 'two'] },
       { en: 'Is that an orange?', id: 'Apakah itu jeruk?', emoji: '🍊', key: 'an', wrong: ['a', 'two'] },
       { en: 'This is not my book.', id: 'Ini bukan bukuku.', emoji: '📕', key: 'not', wrong: ['no', "don't"] },

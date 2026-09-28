@@ -366,7 +366,7 @@ Speaking sekarang py 4 format sekaligus, prinsip pembeda SAMA PERSIS dgn Listeni
 |---|---|---|---|
 | Kata jebakan Susun Kalimat | — | Explorer 1, Adventurer 2 | Achiever 2 |
 | Arti Indonesia | — | Explorer tampil; Adventurer via 💡 Petunjuk | via 💡 Petunjuk |
-| 💡 Petunjuk | langsung | langsung (arti + coret 1 opsi) | 🔒 sampai 1x coba; Trailblazer coret 1 dari 4 |
+| 💡 Petunjuk | langsung | langsung (arti + coret 1 opsi); Susun Kalimat Explorer: isi kata pertama s.d. sebelum kata pola | 🔒 sampai 1x coba; Trailblazer coret 1 dari 4 |
 | "💡 Jawabannya" otomatis | — | setelah 2x salah | Achiever setelah 3x salah |
 | Kartu Latihan Inti kontras | **4** (2 benda × 2 bentuk) di Little Stars & Starter — dulu Starter 6, dikurangi atas permintaan user "cukup 4 opsi" | — | — |
 | Kecepatan audio Latihan Inti/Tantangan | 0.75x | Explorer 0.75x, Adventurer 1x | 1x |
