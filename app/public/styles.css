@@ -2081,6 +2081,12 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .opt-btn .cv-badge, .cv-badge{ line-height:1.1; margin-top:4px; }
 /* Label konsep di kartu kontras Grammar (Latihan Inti/Tantangan) — cuma utk lencana yang tidak langsung terbaca (LABELED_VISUALS, games/grammar.ts). */
 .pattern-card-label{ display:block; margin-top:6px; font-family:var(--font-head); font-weight:800; font-size:0.9375rem; line-height:1.2; color:var(--ink); }
+/* Grammar Tantangan "🕵️ Detektif Kalimat" — kata kalimat bisa di-tap. */
+.dt-sentence{ gap:8px; }
+.chip.dt-word{ cursor:pointer; }
+.chip.dt-found{ background:var(--ok-bg); border-color:var(--ok); color:var(--ok); }
+.chip.dt-found s{ opacity:.6; }
+.chip.dt-miss.is-wrong{ background:var(--try-bg); border-color:var(--try); color:var(--try); animation:shake .3s ease; }
 .pattern-card-label.big{ font-size:1.125rem; margin-top:8px; }
 
 /* Grammar Tantangan — ikon 🔊 pilihan A/B "bersuara" selama TTS diputar:

@@ -926,7 +926,7 @@ function topicProgressPercent(key: SkillKey, topicId: string, level: LevelKey): 
     }
     if (grammarTopic && 'sentences' in grammarTopic) {
       const n = grammarTopic.sentences.length;
-      return stepsVisited ? 100 : grammarTopicPercent(topicId, n, n, 'tantangan-bentuk');
+      return stepsVisited ? 100 : grammarTopicPercent(topicId, n, n, 'tantangan-bentuk', 'tantangan-detektif');
     }
   }
   if (key === 'speaking') {
@@ -2213,7 +2213,7 @@ function runStage(key: SkillKey, stage: HTMLElement): void {
       if ('items' in topic) {
         if (state.step === 0) grammarGame.renderKenalanPattern(stage, topic, nextStep, praiseLevel);
         else if (state.step === 1) grammarGame.runLatihanIntiPattern(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
-        else grammarGame.runTantanganPattern(stage, topic, nextStepWithSync, praiseLevel);
+        else grammarGame.runTantanganPattern(stage, topic, nextStepWithSync, praiseLevel, contentLevel);
       } else if ('transforms' in topic) {
         if (state.step === 0) grammarGame.renderKenalanTransform(stage, topic, nextStep);
         else if (state.step === 1) grammarGame.runLatihanIntiTransform(stage, topic, nextStepWithSync, praiseLevel, contentLevel);

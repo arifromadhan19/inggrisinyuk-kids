@@ -20,6 +20,7 @@ import {
   markWordInteraction,
   recordAttempt,
   recordEvent,
+  requestSync,
   resetSectionPlan,
   setSectionCursor,
 } from '../progress';
@@ -397,7 +398,7 @@ function cueRe(cue: string): RegExp {
  * jawabannya bergantung kalimat sebelumnya (Cambridge Flyers Part 7);
  * sesudah dijawab, kata kuncinya disorot ("🔑 Kuncinya").
  */
-export function runTantanganSentence(container: HTMLElement, topic: GrammarSentenceTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+function runTantanganSentenceMain(container: HTMLElement, topic: GrammarSentenceTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
   const cfg = sentenceSettings(contentLevel);
   const SECTION = 'tantangan-bentuk';
   const plan = ensureTantanganPlan(topic, SECTION);
@@ -572,6 +573,491 @@ export function runTantanganSentence(container: HTMLElement, topic: GrammarSente
  * ================================================================
  */
 
+/**
+ * ================================================================
+ * TANTANGAN = 2 TAB (permintaan user "pada tantangan grammar tambahkan susun
+ * kalimat 5 soal saja, konsep sama seperti susun kalimat di tantangan
+ * vocabulary, sesuaikan dengan levelnya") — tab 1 = soal Tantangan format
+ * masing² (10 soal), tab 2 = "🔤 Susun Kalimat" (5 soal, section
+ * `tantangan-susun`). Pola SAMA Vocab `runTantangan`: tab bisa dipindah
+ * manual, tuntas tab 1 otomatis lanjut ke tab 2, `onDone` cuma sesudah tab 2.
+ * Konsep Vocab `runSusunKalimat`: kalimat Indonesia jadi soal, anak susun
+ * kata Inggris dari bank; 💡 Petunjuk isi sebagian kata pertama; jawaban
+ * muncul otomatis setelah N kali salah. Trailblazer: kutipan langsung jadi
+ * soal, susun kalimat reported speech-nya.
+ * Explorer–Achiever SUDAH punya Susun Kalimat di Latihan Inti → tab 2 mereka
+ * diganti "🕵️ Detektif Kalimat" (`runDetektifTab`, keputusan user: Susun
+ * Kalimat di Tantangan terasa mengulang Latihan Inti).
+ * ================================================================
+ */
+const SUSUN_SECTION = 'tantangan-susun';
+const SUSUN_COUNT = 5;
+
+interface SusunTier {
+  /** Kata jebakan tambahan di bank. */
+  decoys: number;
+  /** "💡 Jawabannya" otomatis setelah N kali salah. */
+  revealAfter: number;
+  /** 💡 Petunjuk terkunci 🔒 sampai anak mencoba 1x. */
+  hintGate: boolean;
+  /** Porsi kata pertama yang diisi 💡 Petunjuk. */
+  hintRatio: number;
+}
+
+/** Dipakai Little Stars/Starter (Dasar) & Trailblazer — Explorer–Achiever
+ *  tidak punya tab Susun Kalimat (lihat `runDetektifTab`). */
+function susunTier(contentLevel: LevelKey): SusunTier {
+  if (grammarTier(contentLevel) === 'dasar') return { decoys: 0, revealAfter: 2, hintGate: false, hintRatio: 0.6 };
+  return { decoys: 3, revealAfter: 4, hintGate: true, hintRatio: 0.4 };
+}
+
+interface SusunQuestion {
+  /** Kalimat soal, sudah berbentuk teks tampil (Indonesia dlm tanda kutip;
+   *  Trailblazer = "Nama: “kutipan”"). */
+  prompt: string;
+  /** Keterangan kecil di atas soal. */
+  instruction: string;
+  target: string;
+  alt?: string[];
+  /** Kandidat kata jebakan, urut prioritas (bentuk salah dulu). */
+  decoyPool: string[];
+  itemRef: string;
+}
+
+/** Plan 5 soal (indeks kandidat) dipersist per topik — sama pola
+ *  `ensureSentencePlan`, basi kalau panjang/indeks tidak cocok lagi. */
+function ensureSusunPlan(topicId: string, candidates: number): number[] {
+  return ensureSusunPlanFor(topicId, SUSUN_SECTION, candidates);
+}
+
+function ensureSusunPlanFor(topicId: string, section: string, candidates: number): number[] {
+  const count = Math.min(SUSUN_COUNT, candidates);
+  const build = (): LatihanPlanSlot[] => shuffle(Array.from({ length: candidates }, (_, i) => i)).slice(0, count).map((item) => ({ kind: SENTENCE_KIND, item }));
+  let sec = ensureSection('grammar', topicId, section, build);
+  const plan = sec.plan ?? [];
+  const stale = plan.length !== count || plan.some((p) => p.kind !== SENTENCE_KIND || p.item >= candidates);
+  if (stale) {
+    resetSectionPlan('grammar', topicId, section, build());
+    sec = ensureSection('grammar', topicId, section);
+  }
+  return (sec.plan ?? []).map((p) => p.item);
+}
+
+/** Little Stars/Starter — 1 kalimat per kata (formA/formB diacak), hanya
+ *  kalimat ≥3 kata (mis. "Jump!" tidak bisa disusun). Tanpa kata jebakan. */
+function patternSusunQuestions(topic: GrammarPatternTopic): SusunQuestion[] {
+  const out: SusunQuestion[] = [];
+  topic.items.forEach((it) => {
+    const forms = shuffle([it.formA, it.formB]).filter((f) => sentenceTokens(f.en).length >= 3);
+    if (!forms.length) return;
+    out.push({ prompt: `"${forms[0].id}"`, instruction: 'Susun jadi Bahasa Inggris dari kalimat ini', target: forms[0].en, decoyPool: [], itemRef: forms[0].en });
+  });
+  return out;
+}
+
+function transformSusunQuestions(topic: GrammarTransformTopic): SusunQuestion[] {
+  return topic.transforms.map((t) => {
+    const ok = t.reportedOptions.find((o) => o.ok)!.text;
+    const wrongWords = t.reportedOptions.filter((o) => !o.ok).flatMap((o) => sentenceTokens(o.text));
+    return { prompt: `${t.speaker}: “${t.original}”`, instruction: 'Susun jadi reported speech dari kalimat ini', target: ok, decoyPool: shuffle(wrongWords), itemRef: t.original };
+  });
+}
+
+/** Tab "🔤 Susun Kalimat" — konsep Vocab `runSusunKalimat`, setelan dari
+ *  `susunTier`. Evaluasi otomatis begitu jumlah kata = panjang kalimat. */
+function runSusunTab(container: HTMLElement, topicId: string, all: SusunQuestion[], onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+  const cfg = susunTier(contentLevel);
+  const order = ensureSusunPlan(topicId, all.length).map((i) => all[i] ?? all[0]);
+  let round = firstUnansweredSlot('grammar', topicId, SUSUN_SECTION, order.length);
+  const status = (i: number): 0 | 1 | 2 => getSlot('grammar', topicId, SUSUN_SECTION, i)?.st ?? 0;
+
+  function goTo(i: number): void {
+    round = Math.min(Math.max(i, 0), order.length - 1);
+    setSectionCursor('grammar', topicId, SUSUN_SECTION, round);
+    draw();
+  }
+
+  function draw(): void {
+    if (round >= order.length) return onDone();
+    const q = order[round];
+    const words = sentenceTokens(q.target);
+    const targetLower = new Set(words.map((w) => w.toLowerCase()));
+    const decoys: string[] = [];
+    for (const w of q.decoyPool) {
+      if (decoys.length >= cfg.decoys) break;
+      const lw = w.toLowerCase();
+      if (!targetLower.has(lw) && !decoys.some((d) => d.toLowerCase() === lw)) decoys.push(w);
+    }
+    const accepted = [words, ...(q.alt ?? []).map(sentenceTokens)].map(normTokens);
+    const buildBank = () => shuffle([...words, ...decoys].map((w, idx) => ({ w, used: false, idx })));
+    let bank = buildBank();
+    let answer: { w: string; idx: number }[] = [];
+    let answered = false;
+    let attempted = false;
+    let hintUsed = false;
+    let hintCount = 0;
+
+    function applyHint(): void {
+      hintUsed = true;
+      hintCount = Math.max(1, Math.round(words.length * cfg.hintRatio));
+      bank = buildBank();
+      answer = [];
+      for (let i = 0; i < hintCount; i++) {
+        const tile = bank.find((b) => b.idx === i)!;
+        tile.used = true;
+        answer.push(tile);
+      }
+    }
+
+    function paint(): void {
+      const wrongSoFar = getSlot('grammar', topicId, SUSUN_SECTION, round)?.w ?? 0;
+      const locked = cfg.hintGate && !attempted;
+      container.innerHTML = `
+        ${quizNavHtml(round, order.length, status)}
+        <div class="id-text">${q.instruction} · ${round + 1} dari ${order.length}</div>
+        <div class="en-text" style="color:var(--c-gram)">${q.prompt}</div>
+        ${decoys.length ? `<p class="meta g-decoy-note">Ada ${decoys.length} kata jebakan — tidak dipakai</p>` : ''}
+        ${wrongSoFar >= cfg.revealAfter ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Jawabannya: <b>${words.join(' ')}</b></p>` : ''}
+        <div class="answer-row ${answer.length ? '' : 'empty'}" style="margin-top:10px">
+          ${answer.map((a, ai) => `<span class="chip placed${ai < hintCount ? ' hint' : ''}" data-action="unpick" data-payload="${ai}">${a.w}</span>`).join('')}
+        </div>
+        <div class="bank-row">
+          ${bank.map((b, bi) => `<span class="chip ${b.used ? 'hidden' : ''}" data-action="pick" data-payload="${bi}">${b.w}</span>`).join('')}
+        </div>
+        <div class="feedback" id="fb"></div>
+        ${
+          answered
+            ? ''
+            : `<div class="letter-actions">
+          <button class="ghost-btn slim" type="button" data-action="hint" ${hintUsed || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>
+          <button class="ghost-btn slim" type="button" data-action="removeLastWord" ${answer.length <= hintCount ? 'disabled' : ''}>⌫ Hapus Kata</button>
+          <button class="ghost-btn slim" type="button" data-action="clear">🔄 Bersihkan</button>
+        </div>`
+        }
+      `;
+      wireQuizNav(goTo);
+      setHandlers({
+        hint: () => {
+          if (hintUsed || answered || (cfg.hintGate && !attempted)) return;
+          applyHint();
+          paint();
+        },
+        clear: () => {
+          if (answered) return;
+          answer = answer.slice(0, hintCount);
+          bank.forEach((b) => {
+            b.used = answer.some((a) => a.idx === b.idx);
+          });
+          paint();
+        },
+        removeLastWord: () => {
+          if (answered || answer.length <= hintCount) return;
+          const last = answer[answer.length - 1];
+          answer = answer.slice(0, -1);
+          bank.find((b) => b.idx === last.idx)!.used = false;
+          paint();
+        },
+        pick: (payload) => {
+          if (answered) return;
+          const bi = Number(payload);
+          if (bank[bi].used) return;
+          bank[bi].used = true;
+          answer.push(bank[bi]);
+          paint();
+          if (answer.length === words.length) checkAnswer();
+        },
+        unpick: (payload) => {
+          if (answered) return;
+          const ai = Number(payload);
+          if (ai < hintCount) return;
+          const item = answer[ai];
+          answer.splice(ai, 1);
+          bank.find((b) => b.idx === item.idx)!.used = false;
+          paint();
+        },
+      });
+    }
+
+    function checkAnswer(): void {
+      if (answered || !answer.length) return;
+      answered = true;
+      attempted = true;
+      container.querySelector('.letter-actions')?.remove();
+      const fb = container.querySelector<HTMLElement>('#fb')!;
+      const correct = accepted.includes(normTokens(answer.map((a) => a.w)));
+      if (correct) {
+        recordAttempt(true);
+        playCorrectTone();
+        fireConfetti();
+        fb.textContent = pickPraise(level);
+        fb.className = 'feedback good';
+        speak(q.target);
+      } else {
+        recordAttempt(false);
+        container.querySelector('.answer-row')?.classList.add('is-wrong');
+        playWrongTone();
+        vibrateDevice(160);
+        fb.textContent = pickEncourage(level);
+        fb.className = 'feedback bad';
+      }
+      markSlotAnswered('grammar', topicId, SUSUN_SECTION, round, correct, { hint: hintUsed, itemRef: q.itemRef });
+      recordEvent({ kind: 'answer', skill: 'grammar', topicId, section: SUSUN_SECTION, slot: round, itemRef: q.itemRef, activity: 'susun', correct, hintUsed });
+      fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, status)));
+      setHandlers({
+        tryAgainRound: () => {
+          // Bagian Petunjuk TETAP dipertahankan (non-punitive, pola Vocab).
+          answered = false;
+          answer = answer.slice(0, hintCount);
+          bank.forEach((b) => {
+            b.used = answer.some((a) => a.idx === b.idx);
+          });
+          paint();
+        },
+        nextRound: () => {
+          round = nextUnfinishedRound(round, order.length, status);
+          setSectionCursor('grammar', topicId, SUSUN_SECTION, Math.min(round, order.length - 1));
+          draw();
+        },
+      });
+    }
+
+    paint();
+  }
+
+  draw();
+}
+
+/**
+ * ================================================================
+ * Tab "🕵️ Detektif Kalimat" — Explorer, Adventurer, Achiever (5 soal,
+ * section `tantangan-detektif`). Permintaan user: Susun Kalimat di Tantangan
+ * mengulang Latihan Inti level ini → diganti tugas BARU: 1 kalimat yang SATU
+ * katanya diganti bentuk keliru (`wrong`, dijamin tidak gramatikal), anak tap
+ * kata yang keliru itu. Latihan Inti = menyusun, tab 1 = memilih bentuk, tab
+ * ini = menemukan kesalahan (error recognition, akrab di sekolah Indonesia).
+ * Teks ke anak TIDAK memakai "salah" — "keliru"/"kurang pas".
+ * Tier: Explorer arti tampil; Adventurer arti lewat 💡 Petunjuk; Achiever
+ * arti lewat Petunjuk 🔒 + sesudah menemukan kata, pilih juga bentuk yang
+ * benar. Topik `meaningNeeded` (bentuk keliru gramatikal tapi beda arti):
+ * arti SELALU tampil.
+ * ================================================================
+ */
+const DETEKTIF_SECTION = 'tantangan-detektif';
+
+interface DetektifTier {
+  showMeaning: boolean;
+  hintGate: boolean;
+  /** Sesudah menemukan kata keliru, pilih juga bentuk yang benar. */
+  fixStep: boolean;
+  /** Kata keliru otomatis ditunjukkan setelah N kali meleset. */
+  revealAfter: number;
+}
+
+function detektifTier(contentLevel: LevelKey): DetektifTier {
+  if (contentLevel === 'explorer') return { showMeaning: true, hintGate: false, fixStep: false, revealAfter: 2 };
+  if (contentLevel === 'adventurer') return { showMeaning: false, hintGate: false, fixStep: false, revealAfter: 2 };
+  return { showMeaning: false, hintGate: true, fixStep: true, revealAfter: 3 };
+}
+
+function runDetektifTab(container: HTMLElement, topic: GrammarSentenceTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+  const cfg = detektifTier(contentLevel);
+  const plan = ensureSusunPlanFor(topic.id, DETEKTIF_SECTION, topic.sentences.length);
+  const order = plan.map((i) => topic.sentences[i] ?? topic.sentences[0]);
+  let round = firstUnansweredSlot('grammar', topic.id, DETEKTIF_SECTION, order.length);
+  const status = (i: number): 0 | 1 | 2 => getSlot('grammar', topic.id, DETEKTIF_SECTION, i)?.st ?? 0;
+
+  function goTo(i: number): void {
+    round = Math.min(Math.max(i, 0), order.length - 1);
+    setSectionCursor('grammar', topic.id, DETEKTIF_SECTION, round);
+    draw();
+  }
+
+  function draw(): void {
+    if (round >= order.length) return onDone();
+    const s = order[round];
+    const tokens = s.en.split(/\s+/);
+    const keyIdx = tokens.findIndex((t) => t.replace(/[.,!?]/g, '') === s.key);
+    // Bentuk keliru dipilih tetap per soal (bukan acak tiap redraw) —
+    // bergantian wrong[0]/wrong[1] mengikuti nomor soal.
+    const rawWrong = s.wrong[round % 2];
+    const wrongWord = keyIdx === 0 ? rawWrong[0].toUpperCase() + rawWrong.slice(1) : rawWrong;
+    const shown = tokens.map((t, i) => (i === keyIdx ? t.replace(s.key, wrongWord) : t));
+    const fixOptions = shuffle([s.key, ...s.wrong]);
+    let found = false; // kata keliru sudah ditemukan (tahap 1 beres)
+    let answered = false;
+    let attempted = false;
+    let revealed = false;
+    let tappedWrong: number | null = null;
+    const meaningShown = () => cfg.showMeaning || !!topic.meaningNeeded || revealed;
+
+    function sentenceHtml(): string {
+      return shown
+        .map((t, i) => {
+          const cls = found && i === keyIdx ? ' dt-found' : tappedWrong === i ? ' dt-miss' : '';
+          const txt = answered && found && i === keyIdx ? t.replace(wrongWord, `<s>${wrongWord}</s> ${s.key}`) : t;
+          return `<span class="chip dt-word${cls}" data-action="tapWord" data-payload="${i}">${txt}</span>`;
+        })
+        .join('');
+    }
+
+    function paint(): void {
+      const missSoFar = getSlot('grammar', topic.id, DETEKTIF_SECTION, round)?.w ?? 0;
+      const showHint = !cfg.showMeaning && !topic.meaningNeeded && !answered;
+      container.innerHTML = `
+        ${showHint ? `<div class="latihan-head no-wrap" style="justify-content:flex-end">${hintChipHtml(cfg.hintGate && !attempted, revealed)}</div>` : ''}
+        ${quizNavHtml(round, order.length, status)}
+        <div class="id-text">Ada 1 kata yang kurang pas — tap kata itu · ${round + 1} dari ${order.length}</div>
+        ${meaningShown() ? meaningHtml(s) : ''}
+        <div class="bank-row dt-sentence">${sentenceHtml()}</div>
+        ${!found && missSoFar >= cfg.revealAfter ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Kata yang kurang pas: <b>${wrongWord}</b></p>` : ''}
+        ${
+          found && cfg.fixStep && !answered
+            ? `<div class="id-text" style="font-weight:800;margin:10px 0 4px">Ketemu! Sekarang pilih bentuk yang pas:</div>
+        <div class="opt-grid">${fixOptions.map((o, i) => `<button class="opt-btn" type="button" data-action="fix" data-payload="${i}">${o}</button>`).join('')}</div>`
+            : ''
+        }
+        <div class="feedback" id="fb"></div>
+      `;
+      wireQuizNav(goTo);
+      setHandlers({
+        petunjuk: () => {
+          if (revealed || (cfg.hintGate && !attempted)) return;
+          revealed = true;
+          paint();
+        },
+        tapWord: (payload) => {
+          if (answered || found) return;
+          const i = Number(payload);
+          attempted = true;
+          if (i === keyIdx) {
+            found = true;
+            tappedWrong = null;
+            if (cfg.fixStep) {
+              playCorrectTone();
+              paint();
+            } else finish(true);
+          } else {
+            tappedWrong = i;
+            finish(false);
+          }
+        },
+        fix: (payload) => {
+          if (answered) return;
+          const chosen = fixOptions[Number(payload)];
+          const ok = chosen === s.key;
+          container.querySelectorAll<HTMLButtonElement>('.opt-btn').forEach((b, bi) => {
+            b.disabled = true;
+            if (fixOptions[bi] === s.key && ok) b.classList.add('correct');
+            if (bi === Number(payload) && !ok) b.classList.add('wrong');
+          });
+          finish(ok);
+        },
+      });
+    }
+
+    function finish(correct: boolean): void {
+      answered = true;
+      paint();
+      const fb = container.querySelector<HTMLElement>('#fb')!;
+      if (correct) {
+        recordAttempt(true);
+        playCorrectTone();
+        fireConfetti();
+        fb.innerHTML = `${pickPraise(level)}<div class="id-text" style="margin-top:6px">✅ ${s.en}</div>`;
+        fb.className = 'feedback good';
+        speak(s.en);
+      } else {
+        recordAttempt(false);
+        container.querySelector('.dt-miss')?.classList.add('is-wrong');
+        playWrongTone();
+        vibrateDevice(160);
+        fb.textContent = pickEncourage(level);
+        fb.className = 'feedback bad';
+      }
+      markSlotAnswered('grammar', topic.id, DETEKTIF_SECTION, round, correct, { hint: revealed, itemRef: s.en });
+      recordEvent({ kind: 'answer', skill: 'grammar', topicId: topic.id, section: DETEKTIF_SECTION, slot: round, itemRef: s.en, activity: 'detektif', correct, hintUsed: revealed });
+      fb.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(order.length, status)));
+      setHandlers({
+        tryAgainRound: () => {
+          // Kata yang sudah ditemukan TETAP ditemukan (non-punitive) —
+          // Achiever yang keliru di tahap 2 cukup mengulang pilih bentuk.
+          answered = false;
+          tappedWrong = null;
+          paint();
+        },
+        nextRound: () => {
+          round = nextUnfinishedRound(round, order.length, status);
+          setSectionCursor('grammar', topic.id, DETEKTIF_SECTION, Math.min(round, order.length - 1));
+          draw();
+        },
+      });
+    }
+
+    paint();
+  }
+
+  draw();
+}
+
+/** Pembungkus 2 tab (pola Vocab `runTantangan`). Tab 2 = Susun Kalimat,
+ *  KECUALI Explorer–Achiever = "🕵️ Detektif Kalimat" (`secondLabel`). */
+function runTantanganTabs(container: HTMLElement, mainLabel: string, runMain: (stage: HTMLElement, done: OnDone) => void, runSusun: (stage: HTMLElement, done: OnDone) => void, onDone: OnDone, secondLabel = '🔤 Susun Kalimat'): void {
+  function shellHtml(active: 'main' | 'susun'): string {
+    return `
+      <div class="tantangan-tabs">
+        <button class="tantangan-tab ${active === 'main' ? 'active' : ''}" type="button" data-action="tabMain">${mainLabel}</button>
+        <button class="tantangan-tab ${active === 'susun' ? 'active' : ''}" type="button" data-action="tabSusun">${secondLabel}</button>
+      </div>
+      <div id="tantanganStage"></div>
+    `;
+  }
+  function openMain(): void {
+    container.innerHTML = shellHtml('main');
+    setHandlers({ tabMain: openMain, tabSusun: openSusun });
+    runMain(container.querySelector<HTMLElement>('#tantanganStage')!, () => {
+      requestSync();
+      openSusun();
+    });
+  }
+  function openSusun(): void {
+    container.innerHTML = shellHtml('susun');
+    setHandlers({ tabMain: openMain, tabSusun: openSusun });
+    runSusun(container.querySelector<HTMLElement>('#tantanganStage')!, onDone);
+  }
+  openMain();
+}
+
+export function runTantanganPattern(container: HTMLElement, topic: GrammarPatternTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+  runTantanganTabs(
+    container,
+    '🔎 Pilih yang Pas',
+    (stage, done) => runTantanganPatternMain(stage, topic, done, level),
+    (stage, done) => runSusunTab(stage, topic.id, patternSusunQuestions(topic), done, level, contentLevel),
+    onDone
+  );
+}
+
+export function runTantanganSentence(container: HTMLElement, topic: GrammarSentenceTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+  runTantanganTabs(
+    container,
+    '🔎 Pilih Bentuk',
+    (stage, done) => runTantanganSentenceMain(stage, topic, done, level, contentLevel),
+    (stage, done) => runDetektifTab(stage, topic, done, level, contentLevel),
+    onDone,
+    '🕵️ Detektif Kalimat'
+  );
+}
+
+export function runTantanganTransform(container: HTMLElement, topic: GrammarTransformTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+  runTantanganTabs(
+    container,
+    '🔎 Siapa Bilang Apa?',
+    (stage, done) => runTantanganTransformMain(stage, topic, done, level, contentLevel),
+    (stage, done) => runSusunTab(stage, topic.id, transformSusunQuestions(topic), done, level, contentLevel),
+    onDone
+  );
+}
+
 function roundActionsHtml(isLast: boolean): string {
   return `
     <div class="round-actions">
@@ -737,12 +1223,12 @@ function contrastVisualInner(emoji: string, isFormB: boolean, visual: GrammarCon
  *  - liking 😖 bisa terbaca sakit/sedih, bukan "tidak suka";
  *  - proximity 🔍/🔭 (kaca pembesar/teleskop) asing utk anak 3–7 th;
  *  - possessor 🙋/🫵 & inclusion 🙋/👉 (aku/kamu, kita/mereka) abstrak;
- *  - quantity & size — permintaan user: samakan teks "Satu"/"Banyak" &
- *    "Besar"/"Kecil" dgn 🎮 Main.
- *  TANPA label: character (👦/👧 jelas laki-laki/
- *  perempuan). Label = terjemahan konsep (Indonesia), bukan teks kalimat
+ *  - quantity, size & character — permintaan user: samakan teks dgn 🎮 Main
+ *    ("Satu"/"Banyak", "Besar"/"Kecil", "Meja kakak laki-laki"/"… kakak
+ *    perempuan"). Sekarang SEMUA varian berlabel.
+ *  Label = terjemahan konsep (Indonesia), bukan teks kalimat
  *  Inggris → anak tetap harus paham kata Inggris yang didengar. */
-const LABELED_VISUALS: ReadonlySet<GrammarContrastVisual> = new Set(['quantity', 'size', 'polarity', 'liking', 'proximity', 'possessor', 'inclusion']);
+const LABELED_VISUALS: ReadonlySet<GrammarContrastVisual> = new Set(['quantity', 'size', 'character', 'polarity', 'liking', 'proximity', 'possessor', 'inclusion']);
 
 /** Label kartu kontras — `topic.choice.a/b`, `{x}` diganti nama benda item
  *  itu (mis. "Senang atau Tidak?": "Sedih"/"Tidak sedih" utk item sad). */
@@ -760,14 +1246,14 @@ interface ContrastCard {
 
 /** Kartu jawaban kontras Latihan Inti — 🔒 WAJIB beda dari Kenalan "🎮 Main"
  *  (permintaan user: di "Satu atau Banyak" keduanya sempat 100% sama). Main =
- *  2 kartu 1 benda + label konsep ("Satu"/"Banyak"); Latihan Inti = kartu
- *  TANPA label berisi beberapa benda × 2 bentuk (Little Stars 2 benda = 4
- *  kartu, Starter 3 benda = 6 kartu — pembeda level), mis. 🚗 / 🚗🚗 / 🚌 /
+ *  2 kartu 1 benda + label konsep ("Satu"/"Banyak"); Latihan Inti = 4 kartu
+ *  berisi 2 benda × 2 bentuk di SEMUA level (permintaan user "cukup 4 opsi
+ *  saja" — dulu Starter 3 benda = 6 kartu), mis. 🚗 / 🚗🚗 / 🚌 /
  *  🚌🚌 — anak harus menangkap BENDA dan BENTUK grammar-nya sekaligus (pola
  *  Cambridge Starters "seluruh kalimat harus cocok"). Posisi kartu diacak;
  *  benda lain dipilih bergilir per soal supaya pasangannya berganti. */
-function buildContrastCards(topic: GrammarPatternTopic, target: GrammarPatternItem, wantFormB: boolean, round: number, contentLevel: LevelKey): ContrastCard[] {
-  const nObjects = contentLevel === 'starter' ? 3 : 2;
+function buildContrastCards(topic: GrammarPatternTopic, target: GrammarPatternItem, wantFormB: boolean, round: number): ContrastCard[] {
+  const nObjects = 2;
   // Benda pembanding TIDAK diambil dari tetangga dekat target di daftar topik
   // (kata mirip biasanya berdampingan, mis. 🎨 drawing & 🖌️ painting) —
   // supaya yang diuji bentuk grammar-nya, bukan membedakan 2 gambar mirip.
@@ -1095,7 +1581,7 @@ function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, 
  * bentuk kalimat (auto-play + "🔊 Dengar" replay manual), tunjuk kartu
  * kontras yang cocok — audio→gambar, comprehension murni.
  */
-export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatternTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatternTopic, onDone: OnDone, level: LevelKey, _contentLevel: LevelKey): void {
   const buildPlan = () => buildPatternPlan(topic, LATIHAN_ROUND_SIZE);
   let section = ensureSection('grammar', topic.id, 'latihan', buildPlan);
   const expectedCoverage = Math.min(topic.items.length, LATIHAN_ROUND_SIZE);
@@ -1128,7 +1614,7 @@ export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatt
   function draw(): void {
     if (round >= order.length) return onDone();
     revealed = false;
-    cards = buildContrastCards(topic, order[round].item, order[round].wantFormB, round, contentLevel);
+    cards = buildContrastCards(topic, order[round].item, order[round].wantFormB, round);
     redraw();
   }
 
@@ -1218,7 +1704,7 @@ export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatt
  * yang cocok — gambar→audio, kebalikan comprehension Latihan Inti (tangga
  * 2-arah, sama prinsip Reading Little Stars).
  */
-export function runTantanganPattern(container: HTMLElement, topic: GrammarPatternTopic, onDone: OnDone, level: LevelKey): void {
+function runTantanganPatternMain(container: HTMLElement, topic: GrammarPatternTopic, onDone: OnDone, level: LevelKey): void {
   const visual: GrammarContrastVisual = topic.contrastVisual ?? 'quantity';
   const buildPlan = () => buildPatternPlan(topic, TANTANGAN_ROUND_SIZE);
   let section = ensureSection('grammar', topic.id, 'tantangan-pola', buildPlan);
@@ -1618,7 +2104,7 @@ function buildOriginalOptions(target: GrammarTransformItem): string[] {
  * aslinya dari 4 opsi — reported→original, kebalikan comprehension Latihan
  * Inti (tangga 2-arah, sama prinsip format kedua Little Stars/Starter).
  */
-export function runTantanganTransform(container: HTMLElement, topic: GrammarTransformTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
+function runTantanganTransformMain(container: HTMLElement, topic: GrammarTransformTopic, onDone: OnDone, level: LevelKey, contentLevel: LevelKey): void {
   const hintGate = grammarTier(contentLevel) === 'lanjut';
   const buildPlan = () => buildTransformPlan(topic);
   let section = ensureSection('grammar', topic.id, 'tantangan-transform', buildPlan);

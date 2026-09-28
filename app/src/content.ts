@@ -20793,7 +20793,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'miliknya-siapa',
     title: 'Miliknya Siapa? (His or Hers?)',
-    choice: { question: 'Apakah {x} ini milik laki-laki atau perempuan?', a: 'Laki-laki', b: 'Perempuan' },
+    choice: { question: 'Apakah {x} ini milik kakak laki-laki atau kakak perempuan?', a: '{x} kakak laki-laki', b: '{x} kakak perempuan' },
     desc: '10 kata',
     contrastVisual: 'character',
     items: [
@@ -20827,7 +20827,7 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
   {
     id: 'dia-siapa',
     title: 'Dia Laki-laki atau Perempuan? (He or She?)',
-    choice: { question: 'Siapa yang melihat {x}, laki-laki atau perempuan?', a: 'Laki-laki', b: 'Perempuan' },
+    choice: { question: 'Siapa yang melakukannya, kakak laki-laki atau kakak perempuan?', a: 'Kakak laki-laki', b: 'Kakak perempuan' },
     desc: '10 kata',
     contrastVisual: 'character',
     items: [
@@ -20907,12 +20907,12 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
       { en: 'Classmate', id: 'Teman Sekelas', emoji: '🧑‍🎓', formA: { en: 'We are classmates.', id: 'Kita teman sekelas.' }, formB: { en: 'They are classmates.', id: 'Mereka teman sekelas.' } },
       { en: 'Boy', id: 'Anak Laki-laki', emoji: '👦', formA: { en: 'We are boys.', id: 'Kita anak laki-laki.' }, formB: { en: 'They are boys.', id: 'Mereka anak laki-laki.' } },
       { en: 'Girl', id: 'Anak Perempuan', emoji: '👧', formA: { en: 'We are girls.', id: 'Kita anak perempuan.' }, formB: { en: 'They are girls.', id: 'Mereka anak perempuan.' } },
-      { en: 'Cousin', id: 'Sepupu', emoji: '🧑', formA: { en: 'We are cousins.', id: 'Kita sepupu.' }, formB: { en: 'They are cousins.', id: 'Mereka sepupu.' } },
-      { en: 'Sibling', id: 'Saudara Kandung', emoji: '🧒', formA: { en: 'We are siblings.', id: 'Kita bersaudara.' }, formB: { en: 'They are siblings.', id: 'Mereka bersaudara.' } },
-      { en: 'Student', id: 'Murid', emoji: '📚', formA: { en: 'We are students.', id: 'Kita murid.' }, formB: { en: 'They are students.', id: 'Mereka murid.' } },
+      { en: 'Singer', id: 'Penyanyi', emoji: '🎤', formA: { en: 'We are singers.', id: 'Kita penyanyi.' }, formB: { en: 'They are singers.', id: 'Mereka penyanyi.' } },
+      { en: 'Painter', id: 'Pelukis', emoji: '🎨', formA: { en: 'We are painters.', id: 'Kita pelukis.' }, formB: { en: 'They are painters.', id: 'Mereka pelukis.' } },
+      { en: 'Doctor', id: 'Dokter', emoji: '🧑‍⚕️', formA: { en: 'We are doctors.', id: 'Kita dokter.' }, formB: { en: 'They are doctors.', id: 'Mereka dokter.' } },
       { en: 'Player', id: 'Pemain', emoji: '⚽', formA: { en: 'We are players.', id: 'Kita pemain.' }, formB: { en: 'They are players.', id: 'Mereka pemain.' } },
       { en: 'Best Friend', id: 'Sahabat', emoji: '🤝', formA: { en: 'We are best friends.', id: 'Kita sahabat.' }, formB: { en: 'They are best friends.', id: 'Mereka sahabat.' } },
-      { en: 'Twin', id: 'Anak Kembar', emoji: '👥', formA: { en: 'We are twins.', id: 'Kita anak kembar.' }, formB: { en: 'They are twins.', id: 'Mereka anak kembar.' } },
+      { en: 'Cook', id: 'Koki', emoji: '🍳', formA: { en: 'We are cooks.', id: 'Kita koki.' }, formB: { en: 'They are cooks.', id: 'Mereka koki.' } },
     ],
   },
   /**
@@ -20937,14 +20937,14 @@ export const GRAMMAR_TOPICS_STARTER: GrammarPatternTopic[] = [
     contrastVisual: 'polarity',
     items: [
       { en: 'Jump', id: 'Lompat', emoji: '🐸', formA: { en: 'Jump!', id: 'Lompat!' }, formB: { en: "Don't jump!", id: 'Jangan lompat!' } },
-      { en: 'Run', id: 'Lari', emoji: '💨', formA: { en: 'Run!', id: 'Lari!' }, formB: { en: "Don't run!", id: 'Jangan lari!' } },
+      { en: 'Park Here', id: 'Parkir di Sini', emoji: '🅿️', formA: { en: 'Park here!', id: 'Parkir di sini!' }, formB: { en: "Don't park here!", id: 'Jangan parkir di sini!' } },
       { en: 'Sit Down', id: 'Duduk', emoji: '🪑', formA: { en: 'Sit down!', id: 'Duduk!' }, formB: { en: "Don't sit down!", id: 'Jangan duduk!' } },
       { en: 'Stand Up', id: 'Berdiri', emoji: '⬆️', formA: { en: 'Stand up!', id: 'Berdiri!' }, formB: { en: "Don't stand up!", id: 'Jangan berdiri!' } },
       { en: 'Clap', id: 'Tepuk Tangan', emoji: '👏', formA: { en: 'Clap your hands!', id: 'Tepuk tanganmu!' }, formB: { en: "Don't clap your hands!", id: 'Jangan tepuk tanganmu!' } },
       { en: 'Open the Door', id: 'Buka Pintu', emoji: '🚪', formA: { en: 'Open the door!', id: 'Buka pintunya!' }, formB: { en: "Don't open the door!", id: 'Jangan buka pintunya!' } },
       { en: 'Close the Window', id: 'Tutup Jendela', emoji: '🪟', formA: { en: 'Close the window!', id: 'Tutup jendelanya!' }, formB: { en: "Don't close the window!", id: 'Jangan tutup jendelanya!' } },
-      { en: 'Shout', id: 'Berteriak', emoji: '📣', formA: { en: 'Shout!', id: 'Berteriak!' }, formB: { en: "Don't shout!", id: 'Jangan berteriak!' } },
-      { en: 'Touch It', id: 'Sentuh Itu', emoji: '🤚', formA: { en: 'Touch it!', id: 'Sentuh itu!' }, formB: { en: "Don't touch it!", id: 'Jangan sentuh itu!' } },
+      { en: 'Stop', id: 'Berhenti', emoji: '🛑', formA: { en: 'Stop!', id: 'Berhenti!' }, formB: { en: "Don't stop!", id: 'Jangan berhenti!' } },
+      { en: 'Take a Photo', id: 'Ambil Foto', emoji: '📷', formA: { en: 'Take a photo!', id: 'Ambil foto!' }, formB: { en: "Don't take a photo!", id: 'Jangan ambil foto!' } },
       { en: 'Look', id: 'Lihat', emoji: '👀', formA: { en: 'Look!', id: 'Lihat!' }, formB: { en: "Don't look!", id: 'Jangan lihat!' } },
     ],
   },

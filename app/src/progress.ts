@@ -771,7 +771,7 @@ export function readingTopicPercent(
  * & format KETIGA (`GrammarTransformTopic`, `'tantangan-transform'`) memakai
  * fungsi yang sama lewat `tantanganSection`.
  */
-export function grammarTopicPercent(topicId: string, itemCount: number, tantanganTotal: number, tantanganSection: SectionName = 'tantangan-pola'): number {
+export function grammarTopicPercent(topicId: string, itemCount: number, tantanganTotal: number, tantanganSection: SectionName = 'tantangan-pola', secondTab: SectionName = 'tantangan-susun'): number {
   if (itemCount <= 0) return 0;
   const skill: SkillKey = 'grammar';
 
@@ -790,7 +790,13 @@ export function grammarTopicPercent(topicId: string, itemCount: number, tantanga
     getSection(skill, topicId, section)?.plan?.length ?? fallback;
 
   const latihanPct = stepPct('latihan', sectionTotal('latihan', itemCount));
-  const tantanganPct = stepPct(tantanganSection, sectionTotal(tantanganSection, tantanganTotal));
+  // Tantangan = 2 tab (`games/grammar.ts` `runTantanganTabs`): soal utama
+  // format itu + tab ke-2 5 soal (`tantangan-susun` "🔤 Susun Kalimat", atau
+  // `tantangan-detektif` "🕵️ Detektif Kalimat" utk Explorer–Achiever) —
+  // dirata-rata spt 3 tab Tantangan Vocab.
+  const mainPct = stepPct(tantanganSection, sectionTotal(tantanganSection, tantanganTotal));
+  const susunPct = stepPct(secondTab, sectionTotal(secondTab, 5));
+  const tantanganPct = (mainPct + susunPct) / 2;
 
   return Math.round(((latihanPct + tantanganPct) / 2) * 100);
 }
