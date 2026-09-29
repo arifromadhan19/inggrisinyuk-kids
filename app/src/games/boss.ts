@@ -77,6 +77,7 @@ import {
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
+  playRecording,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -815,8 +816,8 @@ export function runBoss(container: HTMLElement, onWin: (result: BossResult) => v
               const fb = container.querySelector<HTMLElement>('#fb')!;
               fb.textContent = perfect ? pickPraise(level) : pickEncourage(level);
               fb.className = 'feedback good';
-              setHandlers({ playMine: () => { if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {}); } });
-              setTimeout(() => runSpeakPhase(round + 1), 1400);
+              setHandlers({ playMine: () => { if (recordedAudioUrl) playRecording(recordedAudioUrl); } });
+              setTimeout(() => container.isConnected && runSpeakPhase(round + 1), 1400);
             },
             (kind) => {
               btn.classList.remove('listening');

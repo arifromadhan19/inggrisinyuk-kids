@@ -39,7 +39,7 @@ import { readingPicHtml as picHtml } from '../reading-pic';
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
-import { speak, speakLocalized, playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
+import { speak, speakLocalized, speakLater, playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
@@ -357,7 +357,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
         hint: () => {
           revealed = true;
           play();
-          setTimeout(() => speakLocalized(lvl.instructionId, 'id-ID'), 1500);
+          speakLater(() => speakLocalized(lvl.instructionId, 'id-ID'), 1500);
           paint();
         },
         pick: (payload) => onPick(Number(payload)),

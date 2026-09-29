@@ -297,6 +297,12 @@ export interface ReadingTextLine {
   pic?: number;
   /** Awal paragraf baru (teks panjang Adventurer+). */
   br?: boolean;
+  /** Pengecoh "hampir sama" (Tantangan buku mini): kalimat yang sama tapi
+   *  beda 1 detail YANG TERLIHAT di gambar (jumlah/warna/bentuk/kegiatan) —
+   *  anak harus membaca seluruh kalimat, bukan cuma cocokkan 1 kata benda
+   *  (Starters P1/P2 "if any element of the sentence is false…"). */
+  near?: string;
+  nearId?: string;
 }
 
 export interface ReadingTextQuestion {

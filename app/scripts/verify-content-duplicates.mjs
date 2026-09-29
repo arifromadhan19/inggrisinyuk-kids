@@ -197,6 +197,10 @@ function checkReadingTextData(byLevel, errors) {
         texts.forEach((x, ti) => {
           x.lines.forEach((l, li) => {
             if (!l.id) errors.push(`${where} ${group}[${ti}] baris ${li}: arti Indonesia kosong.`);
+            if (l.near !== undefined) {
+              if (!l.nearId) errors.push(`${where} ${group}[${ti}] baris ${li}: near tanpa nearId.`);
+              if (norm(l.near) === norm(l.en) || x.lines.some((o) => norm(o.en) === norm(l.near))) errors.push(`${where} ${group}[${ti}] baris ${li}: near "${l.near}" sama dgn kalimat di buku — wajib pengecoh BARU yg beda 1 detail.`);
+            }
             if (l.pic !== undefined && !(x.pictures ?? [])[l.pic]) errors.push(`${where} ${group}[${ti}] baris ${li}: pic ${l.pic} tidak ada di pictures.`);
           });
           x.questions.forEach((q, qi) => {

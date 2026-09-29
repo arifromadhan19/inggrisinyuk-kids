@@ -22957,27 +22957,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "I see a lion.",
             "id": "Aku lihat singa.",
-            "pic": 0
+            "pic": 0,
+            "near": "I see two lions.",
+            "nearId": "Aku lihat dua singa."
           },
           {
             "en": "I see a tiger.",
             "id": "Aku lihat harimau.",
-            "pic": 1
+            "pic": 1,
+            "near": "I see two tigers.",
+            "nearId": "Aku lihat dua harimau."
           },
           {
             "en": "I see a monkey.",
             "id": "Aku lihat monyet.",
-            "pic": 2
+            "pic": 2,
+            "near": "I see two monkeys.",
+            "nearId": "Aku lihat dua monyet."
           },
           {
             "en": "I see a panda.",
             "id": "Aku lihat panda.",
-            "pic": 3
+            "pic": 3,
+            "near": "I see two pandas.",
+            "nearId": "Aku lihat dua panda."
           },
           {
             "en": "I see a bear.",
             "id": "Aku lihat beruang.",
-            "pic": 4
+            "pic": 4,
+            "near": "I see two bears.",
+            "nearId": "Aku lihat dua beruang."
           }
         ],
         "questions": [
@@ -23092,27 +23102,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "The cow says moo.",
             "id": "Sapi bilang moo.",
-            "pic": 0
+            "pic": 0,
+            "near": "Two cows say moo.",
+            "nearId": "Dua sapi bilang moo."
           },
           {
             "en": "The dog says woof.",
             "id": "Anjing bilang guk.",
-            "pic": 1
+            "pic": 1,
+            "near": "Two dogs say woof.",
+            "nearId": "Dua anjing bilang guk."
           },
           {
             "en": "The cat says meow.",
             "id": "Kucing bilang meong.",
-            "pic": 2
+            "pic": 2,
+            "near": "Two cats say meow.",
+            "nearId": "Dua kucing bilang meong."
           },
           {
             "en": "The frog says ribbit.",
             "id": "Katak bilang kwak.",
-            "pic": 3
+            "pic": 3,
+            "near": "Two frogs say ribbit.",
+            "nearId": "Dua katak bilang kwek."
           },
           {
             "en": "The lion says roar.",
             "id": "Singa bilang auum.",
-            "pic": 4
+            "pic": 4,
+            "near": "Two lions say roar.",
+            "nearId": "Dua singa mengaum."
           }
         ],
         "questions": [
@@ -23507,27 +23527,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "The corn is yellow.",
             "id": "Jagungnya kuning.",
-            "pic": 0
+            "pic": 0,
+            "near": "The corn is red.",
+            "nearId": "Jagungnya merah."
           },
           {
             "en": "The grapes are purple.",
             "id": "Anggurnya ungu.",
-            "pic": 1
+            "pic": 1,
+            "near": "The grapes are green.",
+            "nearId": "Anggurnya hijau."
           },
           {
             "en": "The carrot is orange.",
             "id": "Wortelnya oranye.",
-            "pic": 2
+            "pic": 2,
+            "near": "The carrot is blue.",
+            "nearId": "Wortelnya biru."
           },
           {
             "en": "The milk is white.",
             "id": "Susunya putih.",
-            "pic": 3
+            "pic": 3,
+            "near": "The milk is pink.",
+            "nearId": "Susunya merah muda."
           },
           {
             "en": "The tomato is red.",
             "id": "Tomatnya merah.",
-            "pic": 4
+            "pic": 4,
+            "near": "The tomato is yellow.",
+            "nearId": "Tomatnya kuning."
           }
         ],
         "questions": [
@@ -23642,27 +23672,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "The taxi is yellow.",
             "id": "Taksinya kuning.",
-            "pic": 0
+            "pic": 0,
+            "near": "The taxi is red.",
+            "nearId": "Taksinya merah."
           },
           {
             "en": "The car is red.",
             "id": "Mobilnya merah.",
-            "pic": 1
+            "pic": 1,
+            "near": "The car is blue.",
+            "nearId": "Mobilnya biru."
           },
           {
             "en": "The tree is green.",
             "id": "Pohonnya hijau.",
-            "pic": 2
+            "pic": 2,
+            "near": "The tree is pink.",
+            "nearId": "Pohonnya merah muda."
           },
           {
             "en": "The hat is black.",
             "id": "Topinya hitam.",
-            "pic": 3
+            "pic": 3,
+            "near": "The hat is white.",
+            "nearId": "Topinya putih."
           },
           {
             "en": "The ambulance is white.",
             "id": "Ambulansnya putih.",
-            "pic": 4
+            "pic": 4,
+            "near": "The ambulance is black.",
+            "nearId": "Ambulansnya hitam."
           }
         ],
         "questions": [
@@ -24057,27 +24097,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "I see one cake.",
             "id": "Aku lihat satu kue.",
-            "pic": 0
+            "pic": 0,
+            "near": "I see two cakes.",
+            "nearId": "Aku lihat dua kue."
           },
           {
             "en": "I see two gifts.",
             "id": "Aku lihat dua hadiah.",
-            "pic": 1
+            "pic": 1,
+            "near": "I see one gift.",
+            "nearId": "Aku lihat satu kado."
           },
           {
             "en": "I see three balloons.",
             "id": "Aku lihat tiga balon.",
-            "pic": 2
+            "pic": 2,
+            "near": "I see four balloons.",
+            "nearId": "Aku lihat empat balon."
           },
           {
             "en": "I see four candles.",
             "id": "Aku lihat empat lilin.",
-            "pic": 3
+            "pic": 3,
+            "near": "I see five candles.",
+            "nearId": "Aku lihat lima lilin."
           },
           {
             "en": "I see five cookies.",
             "id": "Aku lihat lima kue kering.",
-            "pic": 4
+            "pic": 4,
+            "near": "I see three cookies.",
+            "nearId": "Aku lihat tiga kue kering."
           }
         ],
         "questions": [
@@ -24192,27 +24242,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "I see one bus.",
             "id": "Aku lihat satu bus.",
-            "pic": 0
+            "pic": 0,
+            "near": "I see two buses.",
+            "nearId": "Aku lihat dua bus."
           },
           {
             "en": "I see two bikes.",
             "id": "Aku lihat dua sepeda.",
-            "pic": 1
+            "pic": 1,
+            "near": "I see three bikes.",
+            "nearId": "Aku lihat tiga sepeda."
           },
           {
             "en": "I see three trucks.",
             "id": "Aku lihat tiga truk.",
-            "pic": 2
+            "pic": 2,
+            "near": "I see two trucks.",
+            "nearId": "Aku lihat dua truk."
           },
           {
             "en": "I see four taxis.",
             "id": "Aku lihat empat taksi.",
-            "pic": 3
+            "pic": 3,
+            "near": "I see five taxis.",
+            "nearId": "Aku lihat lima taksi."
           },
           {
             "en": "I see five boats.",
             "id": "Aku lihat lima perahu.",
-            "pic": 4
+            "pic": 4,
+            "near": "I see four boats.",
+            "nearId": "Aku lihat empat perahu."
           }
         ],
         "questions": [
@@ -24607,27 +24667,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "A rectangle door.",
             "id": "Pintu persegi panjang.",
-            "pic": 0
+            "pic": 0,
+            "near": "A round door.",
+            "nearId": "Pintu bundar."
           },
           {
             "en": "The window is square.",
             "id": "Jendelanya persegi.",
-            "pic": 1
+            "pic": 1,
+            "near": "The window is round.",
+            "nearId": "Jendelanya bundar."
           },
           {
             "en": "The plate is round.",
             "id": "Piringnya bundar.",
-            "pic": 2
+            "pic": 2,
+            "near": "The plate is square.",
+            "nearId": "Piringnya persegi."
           },
           {
             "en": "A rectangle book.",
             "id": "Buku persegi panjang.",
-            "pic": 3
+            "pic": 3,
+            "near": "A triangle book.",
+            "nearId": "Buku segitiga."
           },
           {
             "en": "The clock is round.",
             "id": "Jamnya bundar.",
-            "pic": 4
+            "pic": 4,
+            "near": "The clock is square.",
+            "nearId": "Jamnya persegi."
           }
         ],
         "questions": [
@@ -24742,27 +24812,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "The balloon is round.",
             "id": "Balonnya bundar.",
-            "pic": 0
+            "pic": 0,
+            "near": "The balloon is square.",
+            "nearId": "Balonnya persegi."
           },
           {
             "en": "The gift is square.",
             "id": "Kadonya persegi.",
-            "pic": 1
+            "pic": 1,
+            "near": "The gift is round.",
+            "nearId": "Kadonya bundar."
           },
           {
             "en": "A triangle flag.",
             "id": "Bendera segitiga.",
-            "pic": 2
+            "pic": 2,
+            "near": "A round flag.",
+            "nearId": "Bendera bundar."
           },
           {
             "en": "A heart card.",
             "id": "Kartu berbentuk hati.",
-            "pic": 3
+            "pic": 3,
+            "near": "A star card.",
+            "nearId": "Kartu berbentuk bintang."
           },
           {
             "en": "The cake is round.",
             "id": "Kuenya bundar.",
-            "pic": 4
+            "pic": 4,
+            "near": "The cake is square.",
+            "nearId": "Kuenya persegi."
           }
         ],
         "questions": [
@@ -25162,22 +25242,30 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "Dad washes the car.",
             "id": "Ayah mencuci mobil.",
-            "pic": 1
+            "pic": 1,
+            "near": "Dad washes two cars.",
+            "nearId": "Ayah mencuci dua mobil."
           },
           {
             "en": "My sister sings.",
             "id": "Saudara perempuanku bernyanyi.",
-            "pic": 2
+            "pic": 2,
+            "near": "My sister draws.",
+            "nearId": "Kakakku menggambar."
           },
           {
             "en": "My brother draws.",
             "id": "Saudara laki-lakiku menggambar.",
-            "pic": 3
+            "pic": 3,
+            "near": "My brother sings.",
+            "nearId": "Kakakku bernyanyi."
           },
           {
             "en": "We eat together.",
             "id": "Kami makan bersama.",
-            "pic": 4
+            "pic": 4,
+            "near": "We sleep together.",
+            "nearId": "Kami tidur bersama."
           }
         ],
         "questions": [
@@ -25297,7 +25385,9 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "We fly a kite.",
             "id": "Kami menerbangkan layangan.",
-            "pic": 1
+            "pic": 1,
+            "near": "We fly two kites.",
+            "nearId": "Kami menerbangkan dua layangan."
           },
           {
             "en": "We eat ice cream.",
@@ -25717,12 +25807,16 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "I wash my feet.",
             "id": "Aku mencuci kakiku.",
-            "pic": 2
+            "pic": 2,
+            "near": "I wash one foot.",
+            "nearId": "Aku mencuci satu kaki."
           },
           {
             "en": "I clean my ears.",
             "id": "Aku membersihkan telingaku.",
-            "pic": 3
+            "pic": 3,
+            "near": "I clean one ear.",
+            "nearId": "Aku membersihkan satu telinga."
           },
           {
             "en": "I sleep in bed.",
@@ -26392,27 +26486,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "The strawberry is red.",
             "id": "Stroberinya merah.",
-            "pic": 0
+            "pic": 0,
+            "near": "The strawberry is blue.",
+            "nearId": "Stroberinya biru."
           },
           {
             "en": "The banana is yellow.",
             "id": "Pisangnya kuning.",
-            "pic": 1
+            "pic": 1,
+            "near": "The banana is red.",
+            "nearId": "Pisangnya merah."
           },
           {
             "en": "The kiwi is green.",
             "id": "Kiwinya hijau.",
-            "pic": 2
+            "pic": 2,
+            "near": "The kiwi is pink.",
+            "nearId": "Kiwinya merah muda."
           },
           {
             "en": "The grapes are purple.",
             "id": "Anggurnya ungu.",
-            "pic": 3
+            "pic": 3,
+            "near": "The grapes are yellow.",
+            "nearId": "Anggurnya kuning."
           },
           {
             "en": "The coconut is brown.",
             "id": "Kelapanya cokelat.",
-            "pic": 4
+            "pic": 4,
+            "near": "The coconut is green.",
+            "nearId": "Kelapanya hijau."
           }
         ],
         "questions": [
@@ -26807,27 +26911,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "I get a balloon.",
             "id": "Aku dapat balon.",
-            "pic": 0
+            "pic": 0,
+            "near": "I get two balloons.",
+            "nearId": "Aku dapat dua balon."
           },
           {
             "en": "I get a gift.",
             "id": "Aku dapat hadiah.",
-            "pic": 1
+            "pic": 1,
+            "near": "I get two gifts.",
+            "nearId": "Aku dapat dua kado."
           },
           {
             "en": "I get a yo-yo.",
             "id": "Aku dapat yoyo.",
-            "pic": 2
+            "pic": 2,
+            "near": "I get two yo-yos.",
+            "nearId": "Aku dapat dua yoyo."
           },
           {
             "en": "I get a drum.",
             "id": "Aku dapat drum.",
-            "pic": 3
+            "pic": 3,
+            "near": "I get two drums.",
+            "nearId": "Aku dapat dua drum."
           },
           {
             "en": "I get a robot.",
             "id": "Aku dapat robot.",
-            "pic": 4
+            "pic": 4,
+            "near": "I get two robots.",
+            "nearId": "Aku dapat dua robot."
           }
         ],
         "questions": [
@@ -26942,12 +27056,16 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "I do a puzzle.",
             "id": "Aku main puzzle.",
-            "pic": 0
+            "pic": 0,
+            "near": "I do two puzzles.",
+            "nearId": "Aku main dua puzzle."
           },
           {
             "en": "I hug my doll.",
             "id": "Aku memeluk bonekaku.",
-            "pic": 1
+            "pic": 1,
+            "near": "I hug two dolls.",
+            "nearId": "Aku memeluk dua boneka."
           },
           {
             "en": "I color a picture.",
@@ -27907,27 +28025,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "I see a helicopter.",
             "id": "Aku lihat helikopter.",
-            "pic": 0
+            "pic": 0,
+            "near": "I see two helicopters.",
+            "nearId": "Aku lihat dua helikopter."
           },
           {
             "en": "I see a rocket.",
             "id": "Aku lihat roket.",
-            "pic": 1
+            "pic": 1,
+            "near": "I see two rockets.",
+            "nearId": "Aku lihat dua roket."
           },
           {
             "en": "I see a jet.",
             "id": "Aku lihat jet.",
-            "pic": 2
+            "pic": 2,
+            "near": "I see two jets.",
+            "nearId": "Aku lihat dua jet."
           },
           {
             "en": "I see a spaceship.",
             "id": "Aku lihat pesawat luar angkasa.",
-            "pic": 3
+            "pic": 3,
+            "near": "I see two spaceships.",
+            "nearId": "Aku lihat dua pesawat luar angkasa."
           },
           {
             "en": "I see a satellite.",
             "id": "Aku lihat satelit.",
-            "pic": 4
+            "pic": 4,
+            "near": "I see two satellites.",
+            "nearId": "Aku lihat dua satelit."
           }
         ],
         "questions": [
@@ -28042,27 +28170,37 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
           {
             "en": "I see a ship.",
             "id": "Aku lihat kapal.",
-            "pic": 0
+            "pic": 0,
+            "near": "I see two ships.",
+            "nearId": "Aku lihat dua kapal."
           },
           {
             "en": "I see a canoe.",
             "id": "Aku lihat kano.",
-            "pic": 1
+            "pic": 1,
+            "near": "I see two canoes.",
+            "nearId": "Aku lihat dua kano."
           },
           {
             "en": "I see a speedboat.",
             "id": "Aku lihat perahu motor.",
-            "pic": 2
+            "pic": 2,
+            "near": "I see two speedboats.",
+            "nearId": "Aku lihat dua speedboat."
           },
           {
             "en": "I see a sailboat.",
             "id": "Aku lihat perahu layar.",
-            "pic": 3
+            "pic": 3,
+            "near": "I see two sailboats.",
+            "nearId": "Aku lihat dua perahu layar."
           },
           {
             "en": "I see a ferry.",
             "id": "Aku lihat kapal feri.",
-            "pic": 4
+            "pic": 4,
+            "near": "I see two ferries.",
+            "nearId": "Aku lihat dua feri."
           }
         ],
         "questions": [
@@ -28474,22 +28612,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🏛️",
-              "🛒",
-              "🅿️"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "museum"
-          },
-          {
             "kind": "truefalse",
             "picture": "🏢",
             "q": "Dad works in an office.",
@@ -28544,6 +28666,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               3
             ],
             "evidenceWord": "supermarket"
+          },
+          {
+            "q": "Where does Dad work?",
+            "qId": "Ayah bekerja di mana?",
+            "options": [
+              "In an office",
+              "At the museum",
+              "At the supermarket"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
           }
         ]
       },
@@ -28591,7 +28726,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "We see a tall tower.",
             "id": "Kami melihat menara tinggi.",
-            "pic": 3
+            "pic": 3,
+            "near": "We see two tall towers.",
+            "nearId": "Kami melihat dua menara tinggi."
           },
           {
             "en": "We visit the fair.",
@@ -28600,22 +28737,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           }
         ],
         "questions": [
-          {
-            "kind": "picture",
-            "about": 1,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🛫",
-              "🏨",
-              "⛽"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ],
-            "evidenceWord": "airport"
-          },
           {
             "kind": "truefalse",
             "picture": "🗼",
@@ -28671,6 +28792,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "fair"
+          },
+          {
+            "q": "Where do we stay?",
+            "qId": "Kami menginap di mana?",
+            "options": [
+              "At a hotel",
+              "At the airport",
+              "At the fair"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
           }
         ]
       }
@@ -28967,27 +29101,37 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "I buy seventeen eggs.",
             "id": "Aku beli tujuh belas telur.",
-            "pic": 0
+            "pic": 0,
+            "near": "I buy seven eggs.",
+            "nearId": "Aku beli tujuh telur."
           },
           {
             "en": "I buy eighteen apples.",
             "id": "Aku beli delapan belas apel.",
-            "pic": 1
+            "pic": 1,
+            "near": "I buy eight apples.",
+            "nearId": "Aku beli delapan apel."
           },
           {
             "en": "Mom buys sixteen bananas.",
             "id": "Ibu beli enam belas pisang.",
-            "pic": 2
+            "pic": 2,
+            "near": "Mom buys six bananas.",
+            "nearId": "Ibu beli enam pisang."
           },
           {
             "en": "Dad buys twelve juice boxes.",
             "id": "Ayah beli dua belas kotak jus.",
-            "pic": 3
+            "pic": 3,
+            "near": "Dad buys two juice boxes.",
+            "nearId": "Ayah beli dua kotak jus."
           },
           {
             "en": "We have nineteen bags.",
             "id": "Kami punya sembilan belas tas.",
-            "pic": 4
+            "pic": 4,
+            "near": "We have nine bags.",
+            "nearId": "Kami punya sembilan tas."
           }
         ],
         "questions": [
@@ -29037,9 +29181,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🧃 20",
-            "q": "Dad buys twelve juice boxes.",
-            "qId": "Ayah beli dua belas kotak jus.",
+            "picture": "🥚 17",
+            "q": "I buy seven eggs.",
+            "qId": "Aku beli tujuh telur.",
             "options": [
               "Benar",
               "Salah"
@@ -29048,20 +29192,17 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "evidence": []
           },
           {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
+            "q": "How many eggs do I buy?",
+            "qId": "Berapa telur yang kubeli?",
             "options": [
-              "🛍️ 19",
-              "🛍️ 11",
-              "🛍️ 90"
+              "Seventeen",
+              "Eighteen",
+              "Sixteen"
             ],
             "answer": 0,
             "evidence": [
-              4
-            ],
-            "evidenceWord": "nineteen"
+              0
+            ]
           }
         ]
       },
@@ -29094,27 +29235,37 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "Eleven children play football.",
             "id": "Sebelas anak main sepak bola.",
-            "pic": 0
+            "pic": 0,
+            "near": "Seven children play football.",
+            "nearId": "Tujuh anak main sepak bola."
           },
           {
             "en": "Fourteen children wear new shoes.",
             "id": "Empat belas anak pakai sepatu baru.",
-            "pic": 1
+            "pic": 1,
+            "near": "Four children wear new shoes.",
+            "nearId": "Empat anak memakai sepatu baru."
           },
           {
             "en": "Our team gets twenty points.",
             "id": "Tim kami dapat dua puluh poin.",
-            "pic": 2
+            "pic": 2,
+            "near": "Our team gets two points.",
+            "nearId": "Tim kami dapat dua poin."
           },
           {
             "en": "We have sixteen balls.",
             "id": "Kami punya enam belas bola.",
-            "pic": 3
+            "pic": 3,
+            "near": "We have six balls.",
+            "nearId": "Kami punya enam bola."
           },
           {
             "en": "We win eighteen medals.",
             "id": "Kami menang delapan belas medali.",
-            "pic": 4
+            "pic": 4,
+            "near": "We win eight medals.",
+            "nearId": "Kami menang delapan medali."
           }
         ],
         "questions": [
@@ -29164,9 +29315,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🏅 13",
-            "q": "We win eighteen medals.",
-            "qId": "Kami menang delapan belas medali.",
+            "picture": "⚽ 11",
+            "q": "Seven children play football.",
+            "qId": "Tujuh anak main sepak bola.",
             "options": [
               "Benar",
               "Salah"
@@ -29175,20 +29326,17 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "evidence": []
           },
           {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
+            "q": "How many medals do we win?",
+            "qId": "Berapa medali yang kami menangkan?",
             "options": [
-              "🏅 18",
-              "🏅 13",
-              "🏅 8"
+              "Eighteen",
+              "Sixteen",
+              "Twenty"
             ],
             "answer": 0,
             "evidence": [
               4
-            ],
-            "evidenceWord": "eighteen"
+            ]
           }
         ]
       }
@@ -29485,27 +29633,37 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "On Monday, I draw.",
             "id": "Hari Senin, aku menggambar.",
-            "pic": 0
+            "pic": 0,
+            "near": "On Monday, I sing.",
+            "nearId": "Hari Senin, aku bernyanyi."
           },
           {
             "en": "Wednesday is bike day.",
             "id": "Rabu hari bersepeda.",
-            "pic": 1
+            "pic": 1,
+            "near": "Wednesday is kite day.",
+            "nearId": "Rabu hari layang-layang."
           },
           {
             "en": "On Friday, I eat pizza.",
             "id": "Hari Jumat, aku makan pizza.",
-            "pic": 2
+            "pic": 2,
+            "near": "On Friday, I eat rice.",
+            "nearId": "Hari Jumat, aku makan nasi."
           },
           {
             "en": "Saturday is kite day.",
             "id": "Sabtu hari layang-layang.",
-            "pic": 3
+            "pic": 3,
+            "near": "Saturday is bike day.",
+            "nearId": "Sabtu hari bersepeda."
           },
           {
             "en": "On Sunday, I rest.",
             "id": "Hari Minggu, aku istirahat.",
-            "pic": 4
+            "pic": 4,
+            "near": "On Sunday, I swim.",
+            "nearId": "Hari Minggu, aku berenang."
           }
         ],
         "questions": [
@@ -29555,9 +29713,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🪁",
-            "q": "Saturday is bike day.",
-            "qId": "Sabtu hari bersepeda.",
+            "picture": "🖍️",
+            "q": "On Monday, I sing.",
+            "qId": "Hari Senin, aku bernyanyi.",
             "options": [
               "Benar",
               "Salah"
@@ -29566,20 +29724,17 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "evidence": []
           },
           {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
+            "q": "When do I eat pizza?",
+            "qId": "Kapan aku makan piza?",
             "options": [
-              "😴",
-              "🖍️",
-              "🍕"
+              "On Friday",
+              "On Monday",
+              "On Sunday"
             ],
             "answer": 0,
             "evidence": [
-              4
-            ],
-            "evidenceWord": "rest"
+              2
+            ]
           }
         ]
       },
@@ -29612,27 +29767,37 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "Today I have music.",
             "id": "Hari ini ada pelajaran musik.",
-            "pic": 0
+            "pic": 0,
+            "near": "Today I have art.",
+            "nearId": "Hari ini aku ada pelajaran seni."
           },
           {
             "en": "Tomorrow I have art.",
             "id": "Besok ada pelajaran seni.",
-            "pic": 1
+            "pic": 1,
+            "near": "Tomorrow I have music.",
+            "nearId": "Besok aku ada pelajaran musik."
           },
           {
             "en": "Yesterday I had sports.",
             "id": "Kemarin ada pelajaran olahraga.",
-            "pic": 2
+            "pic": 2,
+            "near": "Yesterday I had music.",
+            "nearId": "Kemarin aku ada pelajaran musik."
           },
           {
             "en": "Today I bring my drum.",
             "id": "Hari ini aku bawa drumku.",
-            "pic": 3
+            "pic": 3,
+            "near": "Today I bring my brush.",
+            "nearId": "Hari ini aku bawa kuasku."
           },
           {
             "en": "Tomorrow I bring my brush.",
             "id": "Besok aku bawa kuasku.",
-            "pic": 4
+            "pic": 4,
+            "near": "Tomorrow I bring my drum.",
+            "nearId": "Besok aku bawa drumku."
           }
         ],
         "questions": [
@@ -29682,9 +29847,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🎨",
-            "q": "Today I have music.",
-            "qId": "Hari ini ada pelajaran musik.",
+            "picture": "🎵",
+            "q": "Today I have art.",
+            "qId": "Hari ini aku ada pelajaran seni.",
             "options": [
               "Benar",
               "Salah"
@@ -29693,20 +29858,17 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "evidence": []
           },
           {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
+            "q": "What do I bring today?",
+            "qId": "Apa yang kubawa hari ini?",
             "options": [
-              "🖌️",
-              "🎵",
-              "⚽"
+              "My drum",
+              "My brush",
+              "My ball"
             ],
             "answer": 0,
             "evidence": [
-              4
-            ],
-            "evidenceWord": "brush"
+              3
+            ]
           }
         ]
       }
@@ -30003,12 +30165,16 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "Grandpa uses an axe.",
             "id": "Kakek memakai kapak.",
-            "pic": 0
+            "pic": 0,
+            "near": "Grandpa uses two axes.",
+            "nearId": "Kakek memakai dua kapak."
           },
           {
             "en": "I use a magnet.",
             "id": "Aku memakai magnet.",
-            "pic": 1
+            "pic": 1,
+            "near": "I use two magnets.",
+            "nearId": "Aku memakai dua magnet."
           },
           {
             "en": "I cut paper with scissors.",
@@ -30056,26 +30222,10 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "evidence": []
           },
           {
-            "kind": "picture",
-            "about": 2,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "✂️",
-              "📏",
-              "🪓"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ],
-            "evidenceWord": "scissors"
-          },
-          {
             "kind": "truefalse",
-            "picture": "🧲",
-            "q": "I cut paper with scissors.",
-            "qId": "Aku memotong kertas dengan gunting.",
+            "picture": "🪓",
+            "q": "Grandpa uses two axes.",
+            "qId": "Kakek memakai dua kapak.",
             "options": [
               "Benar",
               "Salah"
@@ -30098,6 +30248,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "rope"
+          },
+          {
+            "q": "What do I cut paper with?",
+            "qId": "Aku memotong kertas dengan apa?",
+            "options": [
+              "Scissors",
+              "A ruler",
+              "A magnet"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
           }
         ]
       },
@@ -30145,7 +30308,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "We carry a bucket.",
             "id": "Kami membawa ember.",
-            "pic": 3
+            "pic": 3,
+            "near": "We carry two buckets.",
+            "nearId": "Kami membawa dua ember."
           },
           {
             "en": "Grandma sweeps with a broom.",
@@ -30154,22 +30319,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           }
         ],
         "questions": [
-          {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "⛏️",
-              "🔦",
-              "🧹"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "pickaxe"
-          },
           {
             "kind": "truefalse",
             "picture": "🖌️",
@@ -30201,8 +30350,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "kind": "truefalse",
             "picture": "🪣",
-            "q": "Grandma sweeps with a broom.",
-            "qId": "Nenek menyapu dengan sapu.",
+            "q": "We carry two buckets.",
+            "qId": "Kami membawa dua ember.",
             "options": [
               "Benar",
               "Salah"
@@ -30225,6 +30374,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "broom"
+          },
+          {
+            "q": "Who sweeps with a broom?",
+            "qId": "Siapa yang menyapu dengan sapu?",
+            "options": [
+              "Grandma",
+              "Mom",
+              "Dad"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
           }
         ]
       }
@@ -30546,22 +30708,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🍜",
-              "🍢",
-              "🥛"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "noodles"
-          },
-          {
             "kind": "truefalse",
             "picture": "🍢",
             "q": "Mom wants satay.",
@@ -30616,6 +30762,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               2
             ],
             "evidenceWord": "soup"
+          },
+          {
+            "q": "What does Dad want?",
+            "qId": "Ayah mau apa?",
+            "options": [
+              "Soup",
+              "Satay",
+              "Noodles"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
           }
         ]
       },
@@ -30648,12 +30807,16 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "I eat a cookie.",
             "id": "Aku makan kue kering.",
-            "pic": 0
+            "pic": 0,
+            "near": "I eat two cookies.",
+            "nearId": "Aku makan dua kue kering."
           },
           {
             "en": "My sister eats a cupcake.",
             "id": "Kakakku makan kue mangkuk.",
-            "pic": 1
+            "pic": 1,
+            "near": "My sister eats two cupcakes.",
+            "nearId": "Kakakku makan dua kue mangkuk."
           },
           {
             "en": "We share some popcorn.",
@@ -30663,7 +30826,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "Grandpa eats a pancake.",
             "id": "Kakek makan panekuk.",
-            "pic": 3
+            "pic": 3,
+            "near": "Grandpa eats two pancakes.",
+            "nearId": "Kakek makan dua panekuk."
           },
           {
             "en": "We drink fruit juice.",
@@ -30701,26 +30866,10 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "evidence": []
           },
           {
-            "kind": "picture",
-            "about": 2,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🍿",
-              "🥞",
-              "🍪"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ],
-            "evidenceWord": "popcorn"
-          },
-          {
             "kind": "truefalse",
-            "picture": "🍪🍪🍪",
-            "q": "I eat a cookie.",
-            "qId": "Aku makan sebuah kue kering.",
+            "picture": "🍪",
+            "q": "I eat two cookies.",
+            "qId": "Aku makan dua kue kering.",
             "options": [
               "Benar",
               "Salah"
@@ -30743,6 +30892,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               3
             ],
             "evidenceWord": "pancake"
+          },
+          {
+            "q": "Who eats a pancake?",
+            "qId": "Siapa yang makan panekuk?",
+            "options": [
+              "Grandpa",
+              "My sister",
+              "Mom"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
           }
         ]
       }
@@ -31044,7 +31206,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "The cup is full.",
             "id": "Cangkirnya penuh.",
-            "pic": 1
+            "pic": 1,
+            "near": "The cup is empty.",
+            "nearId": "Cangkirnya kosong."
           },
           {
             "en": "The bowl is big.",
@@ -31054,7 +31218,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "The pot is hot.",
             "id": "Pancinya panas.",
-            "pic": 3
+            "pic": 3,
+            "near": "The pot is cold.",
+            "nearId": "Pancinya dingin."
           },
           {
             "en": "The fork is clean.",
@@ -31063,22 +31229,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           }
         ],
         "questions": [
-          {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🥄",
-              "☕",
-              "🍲"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "spoon"
-          },
           {
             "kind": "truefalse",
             "picture": "☕",
@@ -31109,9 +31259,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🥣",
-            "q": "The pot is hot.",
-            "qId": "Pancinya panas.",
+            "picture": "🍲",
+            "q": "The pot is cold.",
+            "qId": "Pancinya dingin.",
             "options": [
               "Benar",
               "Salah"
@@ -31134,6 +31284,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "fork"
+          },
+          {
+            "q": "Which one is hot?",
+            "qId": "Mana yang panas?",
+            "options": [
+              "The pot",
+              "The cup",
+              "The fork"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
           }
         ]
       },
@@ -31191,22 +31354,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🧼",
-              "🪥",
-              "🧴"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "soap"
-          },
-          {
             "kind": "truefalse",
             "picture": "🛁",
             "q": "I sit in the bathtub.",
@@ -31261,6 +31408,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "shower"
+          },
+          {
+            "q": "Where do I sit?",
+            "qId": "Aku duduk di mana?",
+            "options": [
+              "In the bathtub",
+              "In the shower",
+              "In the kitchen"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
           }
         ]
       }
@@ -31582,22 +31742,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🔔",
-              "🛝",
-              "⚽"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "bell"
-          },
-          {
             "kind": "truefalse",
             "picture": "🔔",
             "q": "The bell rings.",
@@ -31652,6 +31796,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               3
             ],
             "evidenceWord": "ball"
+          },
+          {
+            "q": "Where do we go?",
+            "qId": "Kami pergi ke mana?",
+            "options": [
+              "To the playground",
+              "To the library",
+              "To the canteen"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
           }
         ]
       },
@@ -31694,7 +31851,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "My friend paints a tree.",
             "id": "Temanku melukis pohon.",
-            "pic": 2
+            "pic": 2,
+            "near": "My friend paints two trees.",
+            "nearId": "Temanku melukis dua pohon."
           },
           {
             "en": "We cut paper.",
@@ -31708,22 +31867,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           }
         ],
         "questions": [
-          {
-            "kind": "picture",
-            "about": 1,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "☀️",
-              "🌳",
-              "❤️"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ],
-            "evidenceWord": "sun"
-          },
           {
             "kind": "truefalse",
             "picture": "☀️",
@@ -31754,9 +31897,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🌳🌳",
-            "q": "My friend paints a tree.",
-            "qId": "Temanku melukis sebatang pohon.",
+            "picture": "🌳",
+            "q": "My friend paints two trees.",
+            "qId": "Temanku melukis dua pohon.",
             "options": [
               "Benar",
               "Salah"
@@ -31779,6 +31922,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               3
             ],
             "evidenceWord": "cut"
+          },
+          {
+            "q": "What does my friend paint?",
+            "qId": "Temanku melukis apa?",
+            "options": [
+              "A tree",
+              "A sun",
+              "A house"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
           }
         ]
       }
@@ -32100,22 +32256,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🧑‍🚒",
-              "🧑‍✈️",
-              "🧑‍🏫"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "firefighter"
-          },
-          {
             "kind": "truefalse",
             "picture": "🧑‍🔧",
             "q": "The mechanic fixes my bike.",
@@ -32170,6 +32310,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "teacher"
+          },
+          {
+            "q": "Who flies the plane?",
+            "qId": "Siapa yang menerbangkan pesawat?",
+            "options": [
+              "The pilot",
+              "The builder",
+              "The mechanic"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
           }
         ]
       },
@@ -32227,22 +32380,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 1,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🧑‍🔬",
-              "🧑‍🎨",
-              "🕵️"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ],
-            "evidenceWord": "scientist"
-          },
-          {
             "kind": "truefalse",
             "picture": "🧑‍🎨",
             "q": "The artist paints a picture.",
@@ -32297,6 +32434,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "detective"
+          },
+          {
+            "q": "Who reads a book?",
+            "qId": "Siapa yang membaca buku?",
+            "options": [
+              "The student",
+              "The artist",
+              "The detective"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
           }
         ]
       }
@@ -32618,22 +32768,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "☀️",
-              "🌧️",
-              "☁️"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "sunny"
-          },
-          {
             "kind": "truefalse",
             "picture": "🌧️",
             "q": "It is rainy today.",
@@ -32688,6 +32822,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               3
             ],
             "evidenceWord": "cloudy"
+          },
+          {
+            "q": "What is pretty?",
+            "qId": "Apa yang indah?",
+            "options": [
+              "The rainbow",
+              "The sun",
+              "The rain"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
           }
         ]
       },
@@ -32730,7 +32877,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "The moon is round.",
             "id": "Bulannya bundar.",
-            "pic": 2
+            "pic": 2,
+            "near": "The moon is square.",
+            "nearId": "Bulannya persegi."
           },
           {
             "en": "The shell is small.",
@@ -32744,22 +32893,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           }
         ],
         "questions": [
-          {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🌊🌊",
-              "🏖️",
-              "🐚"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "waves"
-          },
           {
             "kind": "truefalse",
             "picture": "🌕",
@@ -32815,6 +32948,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "stars"
+          },
+          {
+            "q": "What is soft?",
+            "qId": "Apa yang lembut?",
+            "options": [
+              "The sand",
+              "The moon",
+              "The shell"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
           }
         ]
       }
@@ -33136,22 +33282,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🎸",
-              "🎹",
-              "🎻"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "guitar"
-          },
-          {
             "kind": "truefalse",
             "picture": "🥁",
             "q": "My brother plays the drum.",
@@ -33206,6 +33336,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               3
             ],
             "evidenceWord": "violin"
+          },
+          {
+            "q": "Who plays the violin?",
+            "qId": "Siapa yang bermain biola?",
+            "options": [
+              "My sister",
+              "My brother",
+              "My dad"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
           }
         ]
       },
@@ -33238,7 +33381,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "Grandma grows flowers.",
             "id": "Nenek menanam bunga.",
-            "pic": 0
+            "pic": 0,
+            "near": "Grandma grows one flower.",
+            "nearId": "Nenek menanam satu bunga."
           },
           {
             "en": "Dad takes photos.",
@@ -33248,36 +33393,26 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "Mom makes cakes.",
             "id": "Ibu membuat kue.",
-            "pic": 2
+            "pic": 2,
+            "near": "Mom makes one cake.",
+            "nearId": "Ibu membuat satu kue."
           },
           {
             "en": "I collect stickers.",
             "id": "Aku mengoleksi stiker.",
-            "pic": 3
+            "pic": 3,
+            "near": "I collect one sticker.",
+            "nearId": "Aku mengumpulkan satu stiker."
           },
           {
             "en": "We do puzzles.",
             "id": "Kami main puzzle.",
-            "pic": 4
+            "pic": 4,
+            "near": "We do one puzzle.",
+            "nearId": "Kami main satu puzzle."
           }
         ],
         "questions": [
-          {
-            "kind": "picture",
-            "about": 1,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "📷",
-              "🍰🍰",
-              "🧩🧩"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ],
-            "evidenceWord": "photos"
-          },
           {
             "kind": "truefalse",
             "picture": "📷",
@@ -33308,9 +33443,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🍰🍰",
-            "q": "Grandma grows flowers.",
-            "qId": "Nenek menanam bunga.",
+            "picture": "🌷🌷🌷",
+            "q": "Grandma grows one flower.",
+            "qId": "Nenek menanam satu bunga.",
             "options": [
               "Benar",
               "Salah"
@@ -33333,6 +33468,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "puzzles"
+          },
+          {
+            "q": "Who takes photos?",
+            "qId": "Siapa yang memotret?",
+            "options": [
+              "Dad",
+              "Mom",
+              "Grandma"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
           }
         ]
       }
@@ -33650,22 +33798,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "⛱️",
-              "🧴",
-              "🥥"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "umbrella"
-          },
-          {
             "kind": "truefalse",
             "picture": "🕶️",
             "q": "I wear my sunglasses.",
@@ -33720,6 +33852,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "coconut"
+          },
+          {
+            "q": "Who puts on sunscreen?",
+            "qId": "Siapa yang memakai tabir surya?",
+            "options": [
+              "Mom",
+              "Dad",
+              "My sister"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
           }
         ]
       },
@@ -33757,7 +33902,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "I find two shells.",
             "id": "Aku menemukan dua kerang.",
-            "pic": 1
+            "pic": 1,
+            "near": "I find three shells.",
+            "nearId": "Aku menemukan tiga kerang."
           },
           {
             "en": "I fill my bucket.",
@@ -33767,7 +33914,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "en": "I see an island.",
             "id": "Aku melihat sebuah pulau.",
-            "pic": 3
+            "pic": 3,
+            "near": "I see two islands.",
+            "nearId": "Aku melihat dua pulau."
           },
           {
             "en": "We watch the sunset.",
@@ -33776,22 +33925,6 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           }
         ],
         "questions": [
-          {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🌊🌊",
-              "🪣",
-              "🌅"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "waves"
-          },
           {
             "kind": "truefalse",
             "picture": "🐚🐚",
@@ -33822,9 +33955,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🌅",
-            "q": "I see an island.",
-            "qId": "Aku melihat sebuah pulau.",
+            "picture": "🏝️",
+            "q": "I see two islands.",
+            "qId": "Aku melihat dua pulau.",
             "options": [
               "Benar",
               "Salah"
@@ -33847,6 +33980,19 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
               4
             ],
             "evidenceWord": "sunset"
+          },
+          {
+            "q": "What do I fill?",
+            "qId": "Apa yang kuisi?",
+            "options": [
+              "My bucket",
+              "My bag",
+              "My shoe"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
           }
         ]
       }

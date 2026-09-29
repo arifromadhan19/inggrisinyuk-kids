@@ -43,6 +43,7 @@ import {
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
+  playRecording,
 } from '../speech';
 import type { VoiceGender } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
@@ -755,7 +756,7 @@ export function renderKenalanSentence(
       },
       micPopPlayMine: () => {
         const url = overlay.dataset.audioUrl;
-        if (url) new Audio(url).play().catch(() => {});
+        if (url) playRecording(url);
       },
     });
   }

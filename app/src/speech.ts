@@ -406,7 +406,53 @@ export function speakDialogue(allLines: DialogueLine[], gapMs = 1600): void {
  */
 export function stopSpeaking(): void {
   clearPendingTimers();
+  deferredTimers.forEach((t) => clearTimeout(t));
+  deferredTimers = [];
+  stopHooks.forEach((fn) => fn());
+  if (currentRecording) {
+    currentRecording.pause();
+    currentRecording = null;
+  }
   if (ttsSupported) window.speechSynthesis.cancel();
+}
+
+/**
+ * Audio yang DIJADWALKAN pemanggil (mis. jawaban dibacakan 1,5 dtk sesudah
+ * pujian, baris cerita berikutnya) wajib lewat sini, BUKAN `setTimeout`
+ * polos — timer polos tidak ikut dibatalkan `stopSpeaking()`, jadi begitu
+ * anak back/keluar di tengah jeda, suaranya tetap muncul di layar lain
+ * (permintaan user: audio yang diinterupsi back/keluar WAJIB berhenti).
+ * Beda dari `pendingTimers`: tidak dibatalkan oleh `speak()` berikutnya
+ * (pujian yang baru diucapkan tidak boleh membatalkan jawaban yang
+ * dijadwalkan sesudahnya), cuma oleh `stopSpeaking()`.
+ */
+let deferredTimers: number[] = [];
+export function speakLater(fn: () => void, ms: number): number {
+  const id = window.setTimeout(() => {
+    deferredTimers = deferredTimers.filter((t) => t !== id);
+    fn();
+  }, ms);
+  deferredTimers.push(id);
+  return id;
+}
+
+/** Pembacaan berantai milik pemanggil (mis. karaoke Reading yang lanjut ke
+ *  baris berikutnya dari `onEnd`) daftar di sini supaya ikut berhenti —
+ *  `cancel()` memicu `onEnd` ucapan lama, jadi tanpa hook ini rantainya
+ *  justru lanjut ke baris berikutnya setelah back. */
+const stopHooks: (() => void)[] = [];
+export function onStopSpeaking(fn: () => void): void {
+  stopHooks.push(fn);
+}
+
+/** Putar rekaman suara anak ("▶️ Play Suaramu") — lewat sini supaya
+ *  `stopSpeaking()` (back/keluar) ikut menghentikannya. */
+let currentRecording: HTMLAudioElement | null = null;
+export function playRecording(url: string): void {
+  currentRecording?.pause();
+  const a = new Audio(url);
+  currentRecording = a;
+  a.play().catch(() => {});
 }
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;

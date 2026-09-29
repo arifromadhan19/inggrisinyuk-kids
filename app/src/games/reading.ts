@@ -32,6 +32,8 @@ import {
   speak,
   speakLocalized,
   vibrateDevice,
+  speakLater,
+  onStopSpeaking,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -143,6 +145,8 @@ interface TextTier {
   /** Soal teks: Petunjuk 2 tahap (1 = arti soal, 2 = + arti teks) & cuma
    *  2 opsi (1 benar + 1 pengecoh acak) — permintaan user utk Explorer. */
   textTwoStep?: boolean;
+  /** Tantangan buku mini: 2 opsi saja (2 kartu sebaris), maks 10 soal. */
+  tantanganTwo?: boolean;
 }
 
 /** Tier mekanik "Baca Teks" per level KONTEN (bukan badge anak) —
@@ -151,9 +155,9 @@ interface TextTier {
 function textTier(level: LevelKey): TextTier {
   switch (level) {
     case 'little-stars':
-      return { latihanAudio: 'auto', tantanganAudio: 'button', hint: 'translate', hintGate: false };
+      return { latihanAudio: 'auto', tantanganAudio: 'button', hint: 'translate', hintGate: false, tantanganTwo: true };
     case 'starter':
-      return { latihanAudio: 'button', tantanganAudio: 'button', hint: 'translate', hintGate: false };
+      return { latihanAudio: 'button', tantanganAudio: 'button', hint: 'translate', hintGate: false, tantanganTwo: true };
     case 'explorer':
       return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'question', hintGate: false, textTwoStep: true };
     case 'adventurer':
@@ -195,6 +199,10 @@ function stopKaraoke(): void {
   karaokeTimers = [];
   document.querySelectorAll('.rt-word.lit').forEach((w) => w.classList.remove('lit'));
 }
+// Back/keluar (`render()` → `stopSpeaking()`) wajib memutus rantai karaoke —
+// tanpa ini `cancel()` memicu `onEnd` baris lama lalu baris berikutnya
+// tetap dibacakan di layar lain.
+onStopSpeaking(stopKaraoke);
 /** Perkiraan durasi per huruf pada kecepatan 1x (±14 huruf/detik — tempo
  *  voice Web Speech rata-rata). Dibagi `getPlaybackRate()` supaya sorot kata
  *  ikut pill kecepatan (0.5x → 2x lebih lambat, 1.5x → lebih cepat). */
@@ -283,6 +291,12 @@ function lineHtml(text: ReadingText, l: { en: string; id: string; br?: boolean }
     if (k > 0) body = `<b class="rt-speaker">${fmt(l.en.slice(0, k) + ':')}</b> ${fmt(l.en.slice(k + 2))}`;
   }
   return `<div class="${cls}" data-action="rtLine" data-payload="${i}"><span class="rt-en">${body}</span>${o.showId ? `<span class="rt-id">${l.id}</span>` : ''}</div>`;
+}
+
+/** 2 pilihan jawaban = 2 kartu sebaris ber-lencana A/B (Explorer & Tantangan
+ *  buku mini) — gaya `.opt-grid.rt-two` di styles.css. */
+function twoCardsHtml(labels: string[]): string {
+  return `<div class="opt-grid rt-opts rt-two">${labels.map((t, i) => `<button class="opt-btn opt-btn-text rt-two-card" type="button" data-action="rtPick" data-payload="${i}"><span class="rt-two-badge" aria-hidden="true">${'AB'[i]}</span><span class="rt-two-text">${t}</span></button>`).join('')}</div>`;
 }
 
 function textCardHtml(text: ReadingText, o: { showId?: boolean; selected?: number | null; tappable?: boolean; hinted?: number[]; words?: boolean } = {}): string {
@@ -589,12 +603,18 @@ function runTextQuizSet(
   let revOpts: string[] = [];
   const isRev = (q: ReadingTextQuestion): boolean => reverse && q.kind === 'picture';
   const answerIdx = (q: ReadingTextQuestion): number => (isRev(q) ? 0 : q.answer);
-  const isTwoStepText = (q: ReadingTextQuestion): boolean => !!tier.textTwoStep && (q.kind ?? 'text') === 'text';
-  const hintSteps = (q: ReadingTextQuestion): number => (isRev(q) || isTwoStepText(q) ? 2 : 1);
+  // Petunjuk 2 tahap soal teks: Explorer (Latihan Inti & Tantangan) + cerita
+  // pendek di Tantangan buku mini Little Stars/Starter (permintaan user).
+  const isTwoStepText = (q: ReadingTextQuestion): boolean => (!!tier.textTwoStep || (reverse && !!tier.tantanganTwo)) && (q.kind ?? 'text') === 'text';
+  /** Cerita pendek di Tantangan buku mini: dibacakan otomatis + kata disorot
+   *  (seperti Kenalan Explorer) — Little Stars/Starter masih pemula. */
+  const storyAudio = (q: ReadingTextQuestion): boolean => reverse && !!tier.tantanganTwo && (q.kind ?? 'text') === 'text';
+  const twoOpts = (q: ReadingTextQuestion): boolean => reverse && !!tier.tantanganTwo && q.kind !== 'truefalse';
+  const hintSteps = (q: ReadingTextQuestion): number => ((isRev(q) && !twoOpts(q)) || isTwoStepText(q) ? 2 : 1);
   /** Tantangan Explorer "🔍 Cari di Teks": soal ber-bukti dijawab dgn TAP
    *  kalimat di teks (tanpa kartu pilihan) — beda bentuk dari Latihan Inti
    *  yang memilih 1 dari 2 kartu. Soal topik (tanpa bukti) tetap 2 kartu. */
-  const isFind = (q: ReadingTextQuestion): boolean => reverse && isTwoStepText(q) && q.evidence.length > 0;
+  const isFind = (q: ReadingTextQuestion): boolean => reverse && !!tier.textTwoStep && (q.kind ?? 'text') === 'text' && q.evidence.length > 0;
   const hintLabel = (q: ReadingTextQuestion): string => (hintSteps(q) === 2 && hintStep === 1 ? 'Petunjuk 2' : 'Petunjuk');
 
   /** Pengecoh = kalimat buku yang gambarnya jadi pengecoh di data; kalau
@@ -602,12 +622,20 @@ function runTextQuizSet(
    *  lain di buku yang sama. */
   function reverseOptions(text: ReadingText, q: ReadingTextQuestion): string[] {
     const right = text.lines[q.about ?? 0].en;
+    // Ada pengecoh "hampir sama" → [benar, hampir sama, 1 kalimat halaman lain]:
+    // yang dekat memaksa baca detail, yang jauh tetap ada supaya tidak cuma 2.
+    const near = text.lines[q.about ?? 0].near;
+    if (near) {
+      if (tier.tantanganTwo) return [right, near];
+      const other = shuffle(text.lines.map((l) => l.en).filter((en) => en !== right && en !== near))[0];
+      return other ? [right, near, other] : [right, near];
+    }
     const fromPics = q.options
       .filter((_, i) => i !== q.answer)
       .map((e) => text.lines.find((l) => l.pic !== undefined && text.pictures?.[l.pic]?.emoji === e)?.en)
       .filter((en): en is string => !!en && en !== right);
     const others = shuffle(text.lines.map((l) => l.en).filter((en) => en !== right && !fromPics.includes(en)));
-    const wrong = [...new Set([...fromPics, ...others])].slice(0, Math.max(2, q.options.length - 1));
+    const wrong = [...new Set([...fromPics, ...others])].slice(0, tier.tantanganTwo ? 1 : Math.max(2, q.options.length - 1));
     return [right, ...wrong];
   }
 
@@ -629,10 +657,16 @@ function runTextQuizSet(
     revOpts = isRev(q) ? reverseOptions(text, q) : [];
     order = q.kind === 'truefalse' ? [0, 1] : shuffle((isRev(q) ? revOpts : q.options).map((_, i) => i));
     // Explorer: 2 opsi saja — jawaban benar + 1 pengecoh acak dari data.
-    if (isTwoStepText(q)) order = shuffle([q.answer, shuffle(q.options.map((_, i) => i).filter((i) => i !== q.answer))[0]]);
+    if (isTwoStepText(q) || (twoOpts(q) && !isRev(q))) order = shuffle([q.answer, shuffle(q.options.map((_, i) => i).filter((i) => i !== q.answer))[0]]);
     redraw();
     const scope = container.querySelector<HTMLElement>('.rt-book-text');
     if (audio === 'auto' && scope) readAlong(scope, sentenceOf(items[round]));
+    if (storyAudio(items[round].q)) readStory();
+  }
+
+  function readStory(): void {
+    const card = container.querySelector<HTMLElement>('.rt-card');
+    if (card) readLinesAlong(card, items[round].text.lines.map((l) => l.en));
   }
 
   function sentenceOf(it: { text: ReadingText; q: ReadingTextQuestion }): string {
@@ -670,7 +704,9 @@ function runTextQuizSet(
       stimulus = `
         <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
         <div class="rt-book-page rt-quiz-sentence rt-rev-pic"><div class="rt-book-pic" aria-hidden="true">${readingPicHtml(q.options[q.answer])}</div>${hintStep >= 1 ? `<div class="rt-book-id">${hintText(it)}</div>` : ''}</div>`;
-      optionsHtml = `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${revOpts[oi]}</button>`).join('')}</div>`;
+      optionsHtml = twoOpts(q)
+        ? twoCardsHtml(order.map((oi) => revOpts[oi]))
+        : `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${revOpts[oi]}</button>`).join('')}</div>`;
     } else if (kind === 'picture') {
       const instr = 'Baca kalimatnya, lalu tunjuk gambarnya.';
       stimulus = `
@@ -696,13 +732,14 @@ function runTextQuizSet(
       const firstOfText = round === 0 || items[round - 1].text !== text;
       stimulus = `
         ${firstOfText && status(round) !== 2 ? `<div class="id-text" style="margin-bottom:8px">Baca dulu teksnya sampai habis, baru jawab ya.</div>` : ''}
-        ${textCardHtml(text, { hinted: hintedLines, showId: isTwoStepText(q) && hintStep >= 2, tappable: isFind(q) })}
+        ${textCardHtml(text, { hinted: hintedLines, showId: isTwoStepText(q) && hintStep >= 2, tappable: isFind(q), words: storyAudio(q) })}
+        ${storyAudio(q) ? `<div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="rtStory">🔊 Dengar Cerita</button></div>` : ''}
         <p class="reading-question">${q.q}${isTwoStepText(q) && showHintText ? `<span class="rt-id">${q.qId}</span>` : ''}</p>
         ${isFind(q) ? `<div class="rt-find-ask">👆 Tap kalimat di teks yang menjawab pertanyaan ini.</div>` : ''}`;
       optionsHtml = isFind(q)
         ? ''
-        : isTwoStepText(q)
-        ? `<div class="opt-grid rt-opts rt-two">${order.map((oi, i) => `<button class="opt-btn opt-btn-text rt-two-card" type="button" data-action="rtPick" data-payload="${i}"><span class="rt-two-badge" aria-hidden="true">${'AB'[i]}</span><span class="rt-two-text">${q.options[oi]}</span></button>`).join('')}</div>`
+        : isTwoStepText(q) || twoOpts(q)
+        ? twoCardsHtml(order.map((oi) => q.options[oi]))
         : `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${q.options[oi]}</button>`).join('')}</div>`;
     }
     container.innerHTML = `
@@ -746,6 +783,7 @@ function runTextQuizSet(
         if (scope) readAlong(scope, sentenceOf(it));
       },
       rtPick: (payload) => onAnswer(Number(payload)),
+      rtStory: () => readStory(),
       rtLine: (payload) => {
         if (isFind(q) && !container.querySelector('.round-actions')) onFind(Number(payload));
       },
@@ -837,7 +875,7 @@ function runTextQuizSet(
       // suara pujian), jadi anak mendengar kalimat yang baru ia baca sendiri.
       if (reverse && (q.kind === 'picture' || q.kind === 'truefalse')) {
         window.clearTimeout(sayTimer);
-        sayTimer = window.setTimeout(() => speak(sentenceOf(it)), 1500);
+        sayTimer = speakLater(() => speak(sentenceOf(it)), 1500);
       }
       else if ((q.kind ?? 'text') === 'text' && q.evidence.length && !tier.textTwoStep) askEvidence(it);
     } else {
@@ -874,7 +912,7 @@ function runTextQuizSet(
     if (!box || !scope || !target) return;
     scope.classList.add('asking');
     box.innerHTML = `<div class="rt-evidence-ask rt-ask-word"><span>👆 Mana tulisan <b>${it.q.evidenceWord}</b>?</span> <button class="rt-say" type="button" data-action="rtSayWord" aria-label="Dengarkan kata">🔊</button></div>`;
-    window.setTimeout(() => speak(it.q.evidenceWord ?? ''), 900);
+    speakLater(() => speak(it.q.evidenceWord ?? ''), 900);
     let found = false;
     setHandlers({
       rtSayWord: () => speak(it.q.evidenceWord ?? ''),

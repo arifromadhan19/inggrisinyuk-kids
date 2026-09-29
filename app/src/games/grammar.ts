@@ -38,6 +38,7 @@ import {
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
+  playRecording,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -1491,7 +1492,7 @@ export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatte
       },
       micPopPlayMine: () => {
         const url = overlay.dataset.audioUrl;
-        if (url) new Audio(url).play().catch(() => {});
+        if (url) playRecording(url);
       },
     });
   }

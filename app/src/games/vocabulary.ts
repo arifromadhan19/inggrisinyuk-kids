@@ -27,6 +27,7 @@ import {
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
+  playRecording,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { shuffle } from '../util';
@@ -352,7 +353,7 @@ export function renderKenalan(container: HTMLElement, topic: VocabTopic, level: 
       },
       micPopPlayMine: () => {
         const url = overlay.dataset.audioUrl;
-        if (url) new Audio(url).play().catch(() => {});
+        if (url) playRecording(url);
       },
     });
   }
@@ -860,7 +861,7 @@ function drawListenSpeakQuestion(
       replay: () => speak(item.en),
       skip: onDone,
       playMine: () => {
-        if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
+        if (recordedAudioUrl) playRecording(recordedAudioUrl);
       },
       mic: () => {
         const btn = container.querySelector<HTMLElement>('#micBtn')!;
@@ -2136,7 +2137,7 @@ function runUcapan(container: HTMLElement, topicId: string, allItems: VocabItem[
       replay: () => speak(ex.en),
       skip: advance,
       playMine: () => {
-        if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
+        if (recordedAudioUrl) playRecording(recordedAudioUrl);
       },
       mic: () => {
         const btn = container.querySelector<HTMLElement>('#micBtn')!;

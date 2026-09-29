@@ -30,6 +30,7 @@ import {
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
+  playRecording,
 } from '../speech';
 import { PLACEMENT_OPENMIC_ITEMS, PLACEMENT_QUESTIONS, type PlacementQuestion } from '../placement-test-data';
 import { BOSS_NAME, LEVELS } from '../content';
@@ -462,7 +463,7 @@ export function runPlacementQuestions(container: HTMLElement, onDone: (outcome: 
       ptMicSkip: () => void finish(),
       ptMicNext: () => drawOpenMic(index + 1),
       ptPlayMine: () => {
-        if (recordedAudioUrl) new Audio(recordedAudioUrl).play().catch(() => {});
+        if (recordedAudioUrl) playRecording(recordedAudioUrl);
       },
       ptMic: () => {
         if (answered) return;

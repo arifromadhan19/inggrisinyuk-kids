@@ -25,6 +25,7 @@ import {
   speakSequence,
   sttSupported,
   wordMatchDetail,
+  playRecording,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -490,7 +491,7 @@ function openResultPopup(o: {
   setHandlers({
     playMine: () => {
       const u = o.audioUrl();
-      if (u) new Audio(u).play().catch(() => {});
+      if (u) playRecording(u);
     },
     tryAgainRound: () => {
       overlay.remove();
@@ -620,7 +621,7 @@ export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, _
       },
       micPopPlayMine: () => {
         const url = overlay.dataset.audioUrl;
-        if (url) new Audio(url).play().catch(() => {});
+        if (url) playRecording(url);
       },
     });
   }

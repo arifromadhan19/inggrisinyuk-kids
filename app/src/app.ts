@@ -100,7 +100,7 @@ import {
 import type { AppState, LevelKey, LevelMeta, NavKey, RajaKey, Screen, SkillKey, SkillMeta } from './types';
 import { escapeHtml, qs } from './util';
 import { renderVoicePanel } from './voice-panel';
-import { applyDefaultRate, DEFAULT_RATE, stopSpeaking } from './speech';
+import { applyDefaultRate, DEFAULT_RATE, stopListening, stopSpeaking } from './speech';
 
 const STEP_LABELS = ['Kenalan', 'Latihan Inti', 'Tantangan'];
 
@@ -709,6 +709,8 @@ function render(): void {
   // ke soal DALAM 1 stage (games/*.ts `draw()`/`paint()` lokal) TIDAK lewat
   // `render()`, jadi pujian TTS di jawaban benar tetap aman tidak keputus.
   stopSpeaking();
+  // Mic yang masih merekam juga dimatikan — keluar layar = semua audio berhenti.
+  stopListening();
   clearHandlers();
   setHandlers({
     navigate: (payload) => {
@@ -3575,6 +3577,7 @@ function renderGamePlay(): void {
       // lihat `getGameMapReturn` `interaction.ts`. Game tanpa Map → `/game`.
       const exit = () => {
         stopSpeaking();
+        stopListening();
         const backToMap = getGameMapReturn();
         if (backToMap) backToMap();
         else go('game');
