@@ -1,3 +1,4 @@
+import { readingPicHtml as picHtml } from '../reading-pic';
 import type {
   GrammarContrastVisual,
   GrammarPatternItem,
@@ -149,7 +150,7 @@ export function renderKenalanSentence(container: HTMLElement, topic: GrammarSent
         .map(
           (s, i) => `
         <div class="primer-item">
-          ${s.emoji ? `<div class="primer-ic">${s.emoji}</div>` : anyIcon ? '<div class="primer-ic" aria-hidden="true"></div>' : ''}
+          ${s.emoji ? `<div class="primer-ic">${picHtml(s.emoji)}</div>` : anyIcon ? '<div class="primer-ic" aria-hidden="true"></div>' : ''}
           <div class="txt"><b>${highlightedSentence(s)}</b><span class="g-id">${s.id}</span></div>
           <div class="mini-play" data-action="play" data-payload="${i}">🔊</div>
         </div>`
@@ -2046,7 +2047,7 @@ export function renderKenalanTransform(container: HTMLElement, topic: GrammarTra
           const correct = t.reportedOptions.find((o) => o.ok)!;
           return `
         <div class="primer-item" style="align-items:flex-start">
-          <div class="primer-ic">${t.emoji}</div>
+          <div class="primer-ic">${picHtml(t.emoji)}</div>
           <div class="txt">
             <b>${sourceText(t)}</b>
             <span style="display:block;margin-top:4px">→ ${correct.text}</span>
@@ -2111,7 +2112,7 @@ export function runLatihanIntiTransform(container: HTMLElement, topic: GrammarTr
       </div>
       ${quizNavHtml(round, order.length, slotStatus)}
       <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
-      <div class="big-emoji" style="font-size:40px">${target.emoji}</div>
+      <div class="big-emoji" style="font-size:40px">${picHtml(target.emoji)}</div>
       <div class="en-text">${sourceText(target)}</div>
       <div class="speak-row"><button class="speak-btn-ghost" type="button" data-action="replay">🔊 Dengar</button></div>
       ${transformOptionsHtml(options.map((o) => o.text))}
@@ -2239,7 +2240,7 @@ function runTantanganTransformMain(container: HTMLElement, topic: GrammarTransfo
       </div>
       ${quizNavHtml(round, order.length, slotStatus)}
       <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
-      <div class="big-emoji" style="font-size:40px">${target.emoji}</div>
+      <div class="big-emoji" style="font-size:40px">${picHtml(target.emoji)}</div>
       <div class="en-text">${correct.text}</div>
       <div class="speak-row"><button class="speak-btn-ghost" type="button" data-action="replay">🔊 Dengar</button></div>
       <div class="id-text" style="font-weight:800;margin:6px 0 4px">${transformUi(topic).tantanganAsk}</div>

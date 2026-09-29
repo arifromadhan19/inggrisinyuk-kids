@@ -1,3 +1,4 @@
+import { readingPicHtml as picHtml } from '../reading-pic';
 import type {
   LevelKey,
   ListeningDialogueLine,
@@ -294,7 +295,7 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
         ${opts
           .map(
             (o, i) =>
-              `<button class="opt-btn ${eliminated.includes(i) ? 'eliminated' : ''}" type="button" data-action="pick" data-payload="${i}" ${eliminated.includes(i) ? 'disabled' : ''}>${o.emoji}</button>`
+              `<button class="opt-btn ${eliminated.includes(i) ? 'eliminated' : ''}" type="button" data-action="pick" data-payload="${i}" ${eliminated.includes(i) ? 'disabled' : ''}>${picHtml(o.emoji)}</button>`
           )
           .join('')}
       </div>
@@ -537,7 +538,7 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
       .map(
         (o, i) => `
       <button class="opt-btn answer-card" type="button" data-action="${action}" data-payload="${i}">
-        ${o.emoji ? `<span class="answer-card-emoji" aria-hidden="true">${o.emoji}</span>` : ''}
+        ${o.emoji ? `<span class="answer-card-emoji" aria-hidden="true">${picHtml(o.emoji)}</span>` : ''}
         <span class="answer-card-bottom">
           <span class="answer-card-label">${o.label}</span>
         </span>
@@ -637,7 +638,7 @@ export function renderKenalanSentence(
           .map(
             (it, i) => `
           <div class="primer-item">
-            <div class="primer-ic">${it.emoji}</div>
+            <div class="primer-ic">${picHtml(it.emoji)}</div>
             <div class="txt"><b>${it.example.en}</b><span>${it.example.id}</span></div>
             <div class="mini-play${doneCls(i, 'listen')}" data-action="playSentence" data-payload="${i}">🔊</div>
             ${sttSupported ? `<div class="mini-play${doneCls(i, 'mic')}" id="micMini${i}" data-action="micSentence" data-payload="${i}">🎤</div>` : ''}
@@ -726,7 +727,7 @@ export function renderKenalanSentence(
 
     overlay.innerHTML = `
       <div class="mic-pop-card">
-        <div style="font-size:38px" aria-hidden="true">${it.emoji}</div>
+        <div style="font-size:38px" aria-hidden="true">${picHtml(it.emoji)}</div>
         <div class="en-text" style="margin:2px 0 10px">${it.example.en}</div>
         ${
           said !== null

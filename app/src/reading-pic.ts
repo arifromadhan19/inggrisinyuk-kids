@@ -24,7 +24,7 @@ export function readingPicHtml(pic: string | undefined): string {
   if (!pic.startsWith(IMG_PREFIX)) {
     const parts = splitEmoji(pic);
     if (parts.length <= 1) return pic;
-    return `<span class="rt-pic-multi" data-n="${Math.min(parts.length, 6)}" style="font-size:${multiScale(parts.length)}em">${parts.map((e) => `<span>${e}</span>`).join('')}</span>`;
+    return `<span class="rt-pic-multi" data-n="${Math.min(parts.length, 10)}" style="font-size:${multiScale(parts.length)}em">${parts.map((e) => `<span>${e}</span>`).join('')}</span>`;
   }
   const src = pic.slice(IMG_PREFIX.length).replace(/"/g, '&quot;');
   return `<img class="rt-pic-img" src="${src}" alt="" draggable="false" />`;

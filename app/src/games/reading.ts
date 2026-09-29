@@ -660,6 +660,10 @@ function runTextQuizSet(
   const status = (i: number): 0 | 1 | 2 => getSlot('reading', topic.id, section, i)?.st ?? 0;
   let round = firstUnansweredSlot('reading', topic.id, section, total);
   let revealed = false;
+  /** Tahap Petunjuk yang sudah dibuka. Soal "gambar → pilih kalimat"
+   *  (Tantangan buku mini) py 2 tahap: 1 = arti kalimat, 2 = coret 1 opsi. */
+  let hintStep = 0;
+  let sayTimer: number | undefined;
   let attempted = false;
   let eliminated = -1;
   let order: number[] = [];
@@ -668,6 +672,8 @@ function runTextQuizSet(
   let revOpts: string[] = [];
   const isRev = (q: ReadingTextQuestion): boolean => reverse && q.kind === 'picture';
   const answerIdx = (q: ReadingTextQuestion): number => (isRev(q) ? 0 : q.answer);
+  const hintSteps = (q: ReadingTextQuestion): number => (isRev(q) ? 2 : 1);
+  const hintLabel = (q: ReadingTextQuestion): string => (isRev(q) && hintStep === 1 ? 'Petunjuk 2' : 'Petunjuk');
 
   /** Pengecoh = kalimat buku yang gambarnya jadi pengecoh di data; kalau
    *  gambar pengecoh tidak punya kalimat (mis. topik angka), ambil kalimat
@@ -690,7 +696,9 @@ function runTextQuizSet(
 
   function draw(): void {
     stopKaraoke();
+    window.clearTimeout(sayTimer);
     revealed = false;
+    hintStep = 0;
     // 🔒 Petunjuk yang sudah terbuka (pernah dijawab / pernah diklik) TETAP
     // terbuka saat soal ini dibuka lagi (bullet progress/reload).
     attempted = isHintUnlocked('reading', topic.id, section, round);
@@ -714,6 +722,7 @@ function runTextQuizSet(
 
   function redraw(): void {
     stopKaraoke();
+    window.clearTimeout(sayTimer);
     setSectionCursor('reading', topic.id, section, round);
     const it = items[round];
     const { text, q } = it;
@@ -722,7 +731,7 @@ function runTextQuizSet(
     const hintedLines = revealed && tier.hint === 'evidence' ? q.evidence : [];
     const hintMode = isRev(q) ? 'eliminate' : tier.hint;
     const showHintText = revealed && hintMode !== 'eliminate' && (tier.hint === 'translate' || tier.hint === 'question' || (tier.hint === 'evidence' && !q.evidence.length));
-    const hintBtn = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="rtHint" ${revealed || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>`;
+    const hintBtn = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="rtHint" ${hintStep >= hintSteps(q) || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> ${hintLabel(q)}</button>`;
     const listenBtn = audio !== 'none' ? `<div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="rtListenQ">🔊 Dengar</button></div>` : '';
     // Soal kalimat buku (Little Stars/Starter): terjemahan tampil DI DALAM
     // kartu, tepat di bawah kalimat Inggrisnya (bukan di bawah tombol Dengar).
@@ -736,7 +745,7 @@ function runTextQuizSet(
       const instr = 'Lihat gambarnya, lalu pilih kalimat yang cocok.';
       stimulus = `
         <div class="id-text rt-instr">${instr} ${sayHtml(instr)}</div>
-        <div class="rt-book-page rt-quiz-sentence rt-rev-pic"><div class="rt-book-pic" aria-hidden="true">${readingPicHtml(q.options[q.answer])}</div></div>`;
+        <div class="rt-book-page rt-quiz-sentence rt-rev-pic"><div class="rt-book-pic" aria-hidden="true">${readingPicHtml(q.options[q.answer])}</div>${hintStep >= 1 ? `<div class="rt-book-id">${hintText(it)}</div>` : ''}</div>`;
       optionsHtml = `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${revOpts[oi]}</button>`).join('')}</div>`;
     } else if (kind === 'picture') {
       const instr = 'Baca kalimatnya, lalu tunjuk gambarnya.';
@@ -790,10 +799,12 @@ function runTextQuizSet(
     }
     setHandlers({
       rtHint: () => {
-        if (revealed || (tier.hintGate && !attempted)) return;
+        if (hintStep >= hintSteps(q) || (tier.hintGate && !attempted)) return;
         markSlotHint('reading', topic.id, section, round);
         revealed = true;
-        if (hintMode === 'eliminate') {
+        hintStep += 1;
+        // 2 tahap (gambar → kalimat): tap 1 cuma arti, tap 2 baru coret 1 opsi.
+        if (hintMode === 'eliminate' && (!isRev(q) || hintStep === 2)) {
           const n = isRev(q) ? revOpts.length : q.options.length;
           const wrong = Array.from({ length: n }, (_, i) => i).filter((i) => i !== answerIdx(q));
           eliminated = shuffle(wrong)[0] ?? -1;
@@ -839,6 +850,12 @@ function runTextQuizSet(
         fb.className = 'feedback good';
       }
       if (followWord) askWord(it);
+      // Tantangan buku mini: jawaban benar → kalimatnya dibacakan (sesudah
+      // suara pujian), jadi anak mendengar kalimat yang baru ia baca sendiri.
+      if (reverse && (q.kind === 'picture' || q.kind === 'truefalse')) {
+        window.clearTimeout(sayTimer);
+        sayTimer = window.setTimeout(() => speak(sentenceOf(it)), 1500);
+      }
       else if ((q.kind ?? 'text') === 'text' && q.evidence.length) askEvidence(it);
     } else {
       attempted = true;
@@ -848,15 +865,16 @@ function runTextQuizSet(
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
       const hb = container.querySelector<HTMLButtonElement>('#hintBtn');
-      if (hb && !revealed) {
+      if (hb && hintStep < hintSteps(q)) {
         hb.disabled = false;
-        hb.innerHTML = '<span class="hint-bulb">💡</span> Petunjuk';
+        hb.innerHTML = `<span class="hint-bulb">💡</span> ${hintLabel(q)}`;
       }
     }
     container.querySelector('#rtEvidence')!.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(total, status)));
     setHandlers({
       tryAgainRound: () => redraw(),
       nextRound: () => {
+        window.clearTimeout(sayTimer);
         const next = nextUnfinishedRound(round, total, status);
         if (next < total) goTo(next);
         else onDone();

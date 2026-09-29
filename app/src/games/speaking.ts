@@ -1,3 +1,4 @@
+import { readingPicHtml as picHtml } from '../reading-pic';
 import type { AnySpeakingTopic, LevelKey, OnDone, SpeakingLine, SpeakingPhraseItem, SpeakingPhraseTopic, SpeakingStoryItem } from '../types';
 import { setHandlers } from '../interaction';
 import type { LatihanPlanSlot } from '../progress';
@@ -503,7 +504,7 @@ function openResultPopup(o: {
 }
 
 function emojiHtml(emoji: string): string {
-  return emoji ? `<div class="big-emoji">${emoji}</div>` : '';
+  return emoji ? `<div class="big-emoji">${picHtml(emoji)}</div>` : '';
 }
 
 /** Plan slot tersimpan per section; dibangun ulang kalau bentuknya tidak cocok. */
@@ -534,7 +535,7 @@ export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, _
           .map(
             (r, i) => `
           <div class="primer-item">
-            ${r.emoji ? `<div class="primer-ic">${r.emoji}</div>` : ''}
+            ${r.emoji ? `<div class="primer-ic">${picHtml(r.emoji)}</div>` : ''}
             <div class="txt">
               ${r.context ? r.context.map((c) => `<span class="sp-ctx">${c.en}</span>`).join('') : ''}
               ${r.prompt ? `<span class="sp-q">💬 ${r.prompt.en}</span>` : ''}
@@ -601,7 +602,7 @@ export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, _
     }
     overlay.innerHTML = `
       <div class="mic-pop-card">
-        ${r.emoji ? `<div style="font-size:38px" aria-hidden="true">${r.emoji}</div>` : ''}
+        ${r.emoji ? `<div style="font-size:38px" aria-hidden="true">${picHtml(r.emoji)}</div>` : ''}
         <div class="en-text" style="margin:2px 0 10px">${r.line.en}</div>
         ${bodyHtml}
         <div class="round-actions">
@@ -912,7 +913,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
              ${order
                .map(
                  (o, i) => `<button class="choice-card${i === chosen ? ' selected' : ''}" type="button" data-action="pickChoice" data-payload="${i}">
-                   ${o.emoji ? `<span class="choice-emoji" aria-hidden="true">${o.emoji}</span>` : ''}
+                   ${o.emoji ? `<span class="choice-emoji" aria-hidden="true">${picHtml(o.emoji)}</span>` : ''}
                    <span class="choice-text">${frame ? frame.slots[i] : o.en}</span>
                  </button>`
                )

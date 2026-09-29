@@ -527,7 +527,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       {
         en: 'Five Thousand',
         id: 'Lima Ribu',
-        emoji: '💵',
+        emoji: '🧃',
         example: { en: 'How much is the juice? It is five thousand rupiah.', id: 'Jusnya berapa? Lima ribu rupiah.', emoji: '🧃' },
         question: {
           en: 'What is the price of the juice?',
@@ -543,7 +543,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       {
         en: 'Three',
         id: 'Tiga',
-        emoji: '3️⃣',
+        emoji: '🍊🍊🍊',
         example: { en: 'How many oranges do you want, Bayu? I want three oranges.', id: 'Kamu mau berapa jeruk, Bayu? Aku mau tiga jeruk.', emoji: '🍊' },
         question: {
           en: 'How many oranges does Bayu want?',
@@ -591,7 +591,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       {
         en: 'Eggs',
         id: 'Telur',
-        emoji: '🥚',
+        emoji: '🥚🥚🥚🥚🥚🥚',
         example: { en: 'What is in your basket, Bayu? I have six eggs.', id: 'Apa isi keranjangmu, Bayu? Aku punya enam telur.', emoji: '🥚' },
         question: {
           en: 'What is in Bayu’s basket?',
@@ -910,7 +910,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       {
         en: 'Four',
         id: 'Empat',
-        emoji: '4️⃣',
+        emoji: '📕📕📕📕',
         example: { en: 'How many books do you have, Dimas? I have four books.', id: 'Kamu punya berapa buku, Dimas? Aku punya empat buku.', emoji: '📚' },
         question: {
           en: 'How many books does Dimas have?',
@@ -1227,13 +1227,13 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       {
         en: 'Bananas',
         id: 'Pisang',
-        emoji: '🍌',
+        emoji: '🍌🍌',
         example: { en: 'What does the monkey eat? It eats bananas.', id: 'Monyet makan apa? Dia makan pisang.', emoji: '🐵' },
         question: {
           en: 'What food does the monkey like?',
           id: 'Makanan apa yang disukai monyet?',
           options: [
-            { emoji: '🍌', text: 'Bananas', ok: true },
+            { emoji: '🍌🍌', text: 'Bananas', ok: true },
             { emoji: '🥕', text: 'Carrots', ok: false },
             { emoji: '🌿', text: 'Grass', ok: false },
             { emoji: '🍖', text: 'Meat', ok: false },
@@ -2194,13 +2194,13 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
       {
         en: 'Plates',
         id: 'Piring',
-        emoji: '🍽️',
+        emoji: '🍽️🍽️',
         example: { en: 'Can I help you, Dad? Yes, please get the plates, Lia.', id: 'Boleh aku bantu, Yah? Boleh, tolong ambil piringnya, Lia.', emoji: '🍽️' },
         question: {
           en: 'What must Lia get for Dad?',
           id: 'Apa yang harus Lia ambilkan untuk Ayah?',
           options: [
-            { emoji: '🍽️', text: 'Plates', ok: true },
+            { emoji: '🍽️🍽️', text: 'Plates', ok: true },
             { emoji: '☕', text: 'Cups', ok: false },
             { emoji: '🥣', text: 'Bowls', ok: false },
             { emoji: '🧺', text: 'Baskets', ok: false },
@@ -2257,7 +2257,7 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
     ],
     drill: [
       { en: 'I want an apple, please.', id: 'Aku mau apel, ya.', emoji: '🍎' },
-      { en: 'Can I have two bananas?', id: 'Boleh aku minta dua pisang?', emoji: '🍌' },
+      { en: 'Can I have two bananas?', id: 'Boleh aku minta dua pisang?', emoji: '🍌🍌' },
       { en: 'Here is my money.', id: 'Ini uangku.', emoji: '💵' },
     ],
     roleplay: [
@@ -2353,13 +2353,13 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'Here is your receipt.', id: 'Ini struknya.', emoji: '🧾' },
     ],
     drill: [
-      { en: 'I have five coins.', id: 'Aku punya lima koin.', emoji: '🪙' },
+      { en: 'I have five coins.', id: 'Aku punya lima koin.', emoji: '🪙🪙🪙🪙🪙' },
       { en: 'This is expensive.', id: 'Ini mahal.', emoji: '💰' },
       { en: 'I keep my money in my wallet.', id: 'Aku menyimpan uangku di dompet.', emoji: '👛' },
     ],
     roleplay: [
-      { q: { en: 'How much money do you have?', id: 'Kamu punya uang berapa?' }, answer: { en: 'I have ten coins.', id: 'Aku punya sepuluh koin.', emoji: '🪙' }, emoji: '💵', choices: [{ en: 'I have twenty coins.', id: 'Aku punya dua puluh koin.', emoji: '💰' }] },
-      { q: { en: 'Can I pay with a coin?', id: 'Boleh aku bayar pakai koin?' }, answer: { en: 'Yes, you can pay with a coin.', id: 'Iya, kamu boleh bayar pakai koin.', emoji: '✅' }, emoji: '🪙', choices: [{ en: 'No, please pay with paper money.', id: 'Tidak, tolong bayar pakai uang kertas.', emoji: '💵' }] },
+      { q: { en: 'How much money do you have?', id: 'Kamu punya uang berapa?' }, answer: { en: 'I have ten coins.', id: 'Aku punya sepuluh koin.', emoji: '🪙🪙🪙🪙🪙🪙🪙🪙🪙🪙' }, emoji: '🪙', choices: [{ en: 'I have twenty coins.', id: 'Aku punya dua puluh koin.', emoji: '💰' }] },
+      { q: { en: 'Can I pay with a coin?', id: 'Boleh aku bayar pakai koin?' }, answer: { en: 'Yes, you can pay with a coin.', id: 'Iya, kamu boleh bayar pakai koin.', emoji: '✅' }, emoji: '🪙', choices: [{ en: 'No, please pay with paper money.', id: 'Tidak, tolong bayar pakai uang kertas.', emoji: '🪙' }] },
       { q: { en: 'Do you want a receipt?', id: 'Kamu mau struknya?' }, answer: { en: 'Yes, I want the receipt.', id: 'Iya, aku mau struknya.', emoji: '🧾' }, emoji: '🧾', choices: [{ en: 'No, thank you. I don\'t need it.', id: 'Tidak, terima kasih. Aku tidak perlu.', emoji: '🙅' }] },
     ],
   },
@@ -2550,15 +2550,15 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     desc: 'There is + satu, There are + banyak',
     sentences: [
       { en: 'There is a book on the desk.', id: 'Ada sebuah buku di atas meja.', emoji: '📕', key: 'is', wrong: ['are', 'am', 'be'] },
-      { en: 'There are two books on the desk.', id: 'Ada dua buku di atas meja.', emoji: '📚', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There are two books on the desk.', id: 'Ada dua buku di atas meja.', emoji: '📕📕', key: 'are', wrong: ['is', 'am', 'be'] },
       { en: 'There is a clock in the kitchen.', id: 'Ada sebuah jam di dapur.', emoji: '🕰️', key: 'is', wrong: ['are', 'am', 'be'] },
-      { en: 'There are three cups on the table.', id: 'Ada tiga cangkir di atas meja.', emoji: '☕', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There are three cups on the table.', id: 'Ada tiga cangkir di atas meja.', emoji: '☕☕☕', key: 'are', wrong: ['is', 'am', 'be'] },
       { en: 'There is an egg in the fridge.', id: 'Ada sebutir telur di dalam kulkas.', emoji: '🥚', key: 'an', wrong: ['a', 'two', 'many'] },
-      { en: 'There are four chairs in the room.', id: 'Ada empat kursi di dalam kamar.', emoji: '🪑', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There are four chairs in the room.', id: 'Ada empat kursi di dalam kamar.', emoji: '🪑🪑🪑🪑', key: 'are', wrong: ['is', 'am', 'be'] },
       { en: 'There is a ball under the bed.', id: 'Ada sebuah bola di bawah tempat tidur.', emoji: '⚽', key: 'is', wrong: ['are', 'am', 'be'] },
-      { en: 'There are five pencils in my bag.', id: 'Ada lima pensil di dalam tasku.', emoji: '✏️', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There are five pencils in my bag.', id: 'Ada lima pensil di dalam tasku.', emoji: '✏️✏️✏️✏️✏️', key: 'are', wrong: ['is', 'am', 'be'] },
       { en: 'There is a kite in the sky.', id: 'Ada sebuah layang-layang di langit.', emoji: '🪁', key: 'a', wrong: ['an', 'two', 'many'] },
-      { en: 'There are six apples in the basket.', id: 'Ada enam apel di dalam keranjang.', emoji: '🍎', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'There are six apples in the basket.', id: 'Ada enam apel di dalam keranjang.', emoji: '🍎🍎🍎🍎🍎🍎', key: 'are', wrong: ['is', 'am', 'be'] },
     ],
   },
   {
@@ -2586,7 +2586,7 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
     sentences: [
       { en: 'The spoon is in the bowl.', id: 'Sendok ada di dalam mangkuk.', emoji: '🥄', key: 'in', wrong: ['on', 'under', 'behind'] },
       { en: 'The cup is on the table.', id: 'Cangkir ada di atas meja.', emoji: '☕', key: 'on', wrong: ['in', 'under', 'behind'] },
-      { en: 'The shoes are under the bed.', id: 'Sepatu ada di bawah tempat tidur.', emoji: '👟', key: 'under', wrong: ['in', 'on', 'behind'] },
+      { en: 'The shoes are under the bed.', id: 'Sepatu ada di bawah tempat tidur.', emoji: '👟👟', key: 'under', wrong: ['in', 'on', 'behind'] },
       { en: 'The key is in the drawer.', id: 'Kunci ada di dalam laci.', emoji: '🔑', key: 'in', wrong: ['on', 'under', 'behind'] },
       { en: 'The lamp is on the desk.', id: 'Lampu ada di atas meja belajar.', emoji: '💡', key: 'on', wrong: ['in', 'under', 'behind'] },
       { en: 'The ball is under the chair.', id: 'Bola ada di bawah kursi.', emoji: '⚽', key: 'under', wrong: ['in', 'on', 'behind'] },
@@ -2608,7 +2608,7 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
       { en: 'We are playing football.', id: 'Kami sedang bermain sepak bola.', emoji: '⚽', key: 'playing', wrong: ['play', 'plays', 'played'] },
       { en: 'You are drawing a picture.', id: 'Kamu sedang menggambar.', emoji: '🎨', key: 'drawing', wrong: ['draw', 'draws', 'drew'] },
       { en: 'She is drinking milk.', id: 'Dia sedang minum susu.', emoji: '🥛', key: 'is', wrong: ['are', 'am', 'be'] },
-      { en: 'They are riding their bikes.', id: 'Mereka sedang naik sepeda.', emoji: '🚲', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'They are riding their bikes.', id: 'Mereka sedang naik sepeda.', emoji: '🚲🚲', key: 'are', wrong: ['is', 'am', 'be'] },
       { en: 'He is washing the car.', id: 'Dia sedang mencuci mobil.', emoji: '🚗', key: 'washing', wrong: ['wash', 'washes', 'washed'] },
       { en: 'I am brushing my teeth.', id: 'Aku sedang menggosok gigi.', emoji: '🪥', key: 'am', wrong: ['is', 'are', 'be'] },
     ],
@@ -2662,7 +2662,7 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
       { en: "Let's clean the room!", id: 'Ayo membersihkan kamar!', emoji: '🧹', key: 'clean', wrong: ['cleans', 'cleaning', 'cleaned'] },
       { en: "Let's make a kite!", id: 'Ayo membuat layang-layang!', emoji: '🪁', key: 'make', wrong: ['makes', 'making', 'made'] },
       { en: "Let's watch a movie!", id: 'Ayo menonton film!', emoji: '🎬', key: 'watch', wrong: ['watches', 'watching', 'watched'] },
-      { en: "Let's ride our bikes!", id: 'Ayo naik sepeda kita!', emoji: '🚲', key: 'ride', wrong: ['rides', 'riding', 'rode'] },
+      { en: "Let's ride our bikes!", id: 'Ayo naik sepeda kita!', emoji: '🚲🚲', key: 'ride', wrong: ['rides', 'riding', 'rode'] },
     ],
   },
   {
@@ -2676,7 +2676,7 @@ export const GRAMMAR_TOPICS: GrammarSentenceTopic[] = [
       { en: 'Can I borrow your pencil?', id: 'Boleh aku pinjam pensilmu?', emoji: '✏️', key: 'borrow', wrong: ['borrows', 'borrowing', 'borrowed'] },
       { en: 'Can I sit here?', id: 'Boleh aku duduk di sini?', emoji: '🪑', key: 'sit', wrong: ['sits', 'sitting', 'sat'] },
       { en: 'Can I go outside?', id: 'Boleh aku keluar?', emoji: '🚪', key: 'go', wrong: ['goes', 'going', 'went'] },
-      { en: 'Can I use your crayons?', id: 'Boleh aku memakai krayonmu?', emoji: '🖍️', key: 'use', wrong: ['uses', 'using', 'used'] },
+      { en: 'Can I use your crayons?', id: 'Boleh aku memakai krayonmu?', emoji: '🖍️🖍️🖍️', key: 'use', wrong: ['uses', 'using', 'used'] },
       { en: 'Can I drink some water?', id: 'Boleh aku minum air?', emoji: '💧', key: 'drink', wrong: ['drinks', 'drinking', 'drank'] },
       { en: 'Can I watch TV now?', id: 'Boleh aku menonton TV sekarang?', emoji: '📺', key: 'watch', wrong: ['watches', 'watching', 'watched'] },
       { en: 'Can I help you?', id: 'Boleh aku membantumu?', emoji: '🤝', key: 'help', wrong: ['helps', 'helping', 'helped'] },
@@ -2908,7 +2908,7 @@ export const VOCAB_TOPICS_ADVENTURER: VocabTopic[] = [
       { en: 'Paper', id: 'Kertas', emoji: '📄', example: { en: 'I write on paper.', id: 'Aku menulis di kertas.', emoji: '📄' } },
       { en: 'Cotton', id: 'Katun', emoji: '👕', example: { en: 'My shirt is made of cotton.', id: 'Bajuku terbuat dari katun.', emoji: '👕' } },
       { en: 'Wool', id: 'Wol', emoji: '🧶', example: { en: 'The sweater is made of wool.', id: 'Sweternya terbuat dari wol.', emoji: '🧶' } },
-      { en: 'Leather', id: 'Kulit', emoji: '👞', example: { en: 'The shoes are made of leather.', id: 'Sepatunya terbuat dari kulit.', emoji: '👞' } },
+      { en: 'Leather', id: 'Kulit', emoji: '👞', example: { en: 'The shoes are made of leather.', id: 'Sepatunya terbuat dari kulit.', emoji: '👞👞' } },
       { en: 'Rubber', id: 'Karet', emoji: '🎈', example: { en: 'The balloon is made of rubber.', id: 'Balonnya terbuat dari karet.', emoji: '🎈' } },
       { en: 'Silk', id: 'Sutra', emoji: '👘', example: { en: 'The kimono is made of silk.', id: 'Kimononya terbuat dari sutra.', emoji: '👘' } },
     ],
@@ -3294,7 +3294,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'Brushes and Paint',
         id: 'Kuas dan Cat',
-        emoji: '🖌️',
+        emoji: '🖌️🎨',
         example: { en: 'What do artists use? They use brushes and paint.', id: 'Seniman memakai apa? Mereka memakai kuas dan cat.', emoji: '🧑‍🎨' },
         question: {
           en: 'What do artists work with?',
@@ -3635,7 +3635,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'They Make Us Strong',
         id: 'Membuat Kita Kuat',
-        emoji: '🥦',
+        emoji: '🥦🥕',
         example: { en: 'Why must we eat vegetables? Because they make us strong.', id: 'Kenapa kita harus makan sayur? Karena sayur membuat kita kuat.', emoji: '🥦' },
         question: {
           en: 'Why are vegetables good for us?',
@@ -3842,7 +3842,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'Five',
         id: 'Lima',
-        emoji: '⭕',
+        emoji: '⭕⭕⭕⭕⭕',
         example: { en: 'How many circles did you draw, Beni? I drew five circles.', id: 'Kamu menggambar berapa lingkaran, Beni? Aku menggambar lima lingkaran.', emoji: '⭕' },
         question: {
           en: 'How many circles are on Beni’s paper?',
@@ -3984,7 +3984,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'Raincoat and Boots',
         id: 'Jas Hujan dan Sepatu Bot',
-        emoji: '🧥',
+        emoji: '🧥👢',
         example: { en: 'What should I wear today? Wear your raincoat and boots, Lia.', id: 'Hari ini aku pakai apa? Pakai jas hujan dan sepatu botmu, Lia.', emoji: '🧥' },
         question: {
           en: 'What should Lia wear today?',
@@ -4110,7 +4110,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'Brown',
         id: 'Cokelat',
-        emoji: '👁️',
+        emoji: '👀',
         example: { en: 'What color are your eyes, Dodi? My eyes are brown.', id: 'Matamu warnanya apa, Dodi? Mataku cokelat.', emoji: '👁️' },
         question: {
           en: 'Which eye color does Dodi have?',
@@ -4126,7 +4126,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'Buttons',
         id: 'Kancing',
-        emoji: '🔘',
+        emoji: '🔘🔘',
         example: { en: 'Can you help me with my buttons? Sure, let me help you, Lia.', id: 'Bisa bantu kancingkan bajuku? Bisa, sini aku bantu, Lia.', emoji: '🔘' },
         question: {
           en: 'What does Lia need help with?',
@@ -4190,7 +4190,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'To Hear Well',
         id: 'Supaya Mendengar dengan Baik',
-        emoji: '👂',
+        emoji: '👂👂',
         example: { en: 'Why do you clean your ears, Dodi? Because I want to hear well.', id: 'Kenapa kamu membersihkan telinga, Dodi? Karena aku mau mendengar dengan baik.', emoji: '👂' },
         question: {
           en: 'Why does Dodi clean his ears?',
@@ -4351,7 +4351,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
       {
         en: 'Conductor',
         id: 'Kondektur',
-        emoji: '🎫',
+        emoji: '🎫🎫',
         example: { en: 'Who checks our tickets? The conductor checks them.', id: 'Siapa yang memeriksa tiket kita? Kondektur yang memeriksanya.', emoji: '🎫' },
         question: {
           en: 'Who looks at the tickets on the train?',
@@ -5873,8 +5873,8 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           id: 'Apa yang dia angkat?',
           options: [
             { emoji: '🤷', text: 'Shoulders', ok: true },
-            { emoji: '🦵', text: 'Knees', ok: false },
-            { emoji: '👂', text: 'Ears', ok: false },
+            { emoji: '🦵🦵', text: 'Knees', ok: false },
+            { emoji: '👂👂', text: 'Ears', ok: false },
             { emoji: '👄', text: 'Mouth', ok: false },
           ],
         },
@@ -5882,15 +5882,15 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Knees',
         id: 'Lutut',
-        emoji: '🦵',
+        emoji: '🦵🦵',
         example: { en: 'She bends her knees.', id: 'Dia menekuk lututnya.', emoji: '🦵' },
         practice: { en: 'She sits down, so her knees bend.', id: 'Dia duduk, jadi lututnya menekuk.' },
         question: {
           en: 'What does she bend?',
           id: 'Apa yang dia tekuk?',
           options: [
-            { emoji: '🦵', text: 'Knees', ok: true },
-            { emoji: '🦶', text: 'Toes', ok: false },
+            { emoji: '🦵🦵', text: 'Knees', ok: true },
+            { emoji: '🦶🦶', text: 'Toes', ok: false },
             { emoji: '🙂', text: 'Head', ok: false },
             { emoji: '🙌', text: 'Hands', ok: false },
           ],
@@ -5899,17 +5899,17 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Toes',
         id: 'Jari Kaki',
-        emoji: '🦶',
+        emoji: '🦶🦶',
         example: { en: 'She wiggles her toes.', id: 'Dia menggoyangkan jari kakinya.', emoji: '🦶' },
         practice: { en: 'In the sand, her little toes wiggle.', id: 'Di pasir, jari-jari kakinya yang kecil bergoyang.' },
         question: {
           en: 'What does she wiggle?',
           id: 'Apa yang dia goyangkan?',
           options: [
-            { emoji: '🦶', text: 'Toes', ok: true },
+            { emoji: '🦶🦶', text: 'Toes', ok: true },
             { emoji: '👣', text: 'Feet', ok: false },
             { emoji: '👀', text: 'Eyes', ok: false },
-            { emoji: '👂', text: 'Ears', ok: false },
+            { emoji: '👂👂', text: 'Ears', ok: false },
           ],
         },
       },
@@ -5926,21 +5926,21 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
             { emoji: '🫣', text: 'Eyes', ok: true },
             { emoji: '👄', text: 'Mouth', ok: false },
             { emoji: '🙌', text: 'Hands', ok: false },
-            { emoji: '🦵', text: 'Knees', ok: false },
+            { emoji: '🦵🦵', text: 'Knees', ok: false },
           ],
         },
       },
       {
         en: 'Ears',
         id: 'Telinga',
-        emoji: '👂',
+        emoji: '👂👂',
         example: { en: 'She covers her ears.', id: 'Dia menutup telinganya.', emoji: '👂' },
         practice: { en: 'It is too loud! Her hands cover her ears.', id: 'Terlalu berisik! Tangannya menutup telinganya.' },
         question: {
           en: 'What does she cover?',
           id: 'Apa yang dia tutup?',
           options: [
-            { emoji: '👂', text: 'Ears', ok: true },
+            { emoji: '👂👂', text: 'Ears', ok: true },
             { emoji: '👀', text: 'Eyes', ok: false },
             { emoji: '👃', text: 'Nose', ok: false },
             { emoji: '👣', text: 'Feet', ok: false },
@@ -5975,8 +5975,8 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           id: 'Apa yang dia sentuh?',
           options: [
             { emoji: '👃', text: 'Nose', ok: true },
-            { emoji: '👂', text: 'Ears', ok: false },
-            { emoji: '🦶', text: 'Toes', ok: false },
+            { emoji: '👂👂', text: 'Ears', ok: false },
+            { emoji: '🦶🦶', text: 'Toes', ok: false },
             { emoji: '🙂', text: 'Head', ok: false },
           ],
         },
@@ -5993,7 +5993,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           options: [
             { emoji: '🙌', text: 'Hands', ok: true },
             { emoji: '👣', text: 'Feet', ok: false },
-            { emoji: '🦵', text: 'Knees', ok: false },
+            { emoji: '🦵🦵', text: 'Knees', ok: false },
             { emoji: '🤷', text: 'Shoulders', ok: false },
           ],
         },
@@ -6076,14 +6076,14 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Shoes',
         id: 'Sepatu',
-        emoji: '👟',
+        emoji: '👟👟',
         example: { en: 'She puts on her shoes.', id: 'Dia memakai sepatunya.', emoji: '👟' },
         practice: { en: 'Her shoes go on her feet.', id: 'Sepatunya dipakai di kakinya.' },
         question: {
           en: 'What does she put on?',
           id: 'Dia memakai apa?',
           options: [
-            { emoji: '👟', text: 'Shoes', ok: true },
+            { emoji: '👟👟', text: 'Shoes', ok: true },
             { emoji: '🧦', text: 'Socks', ok: false },
             { emoji: '🧤', text: 'Gloves', ok: false },
             { emoji: '🧢', text: 'Hat', ok: false },
@@ -6101,7 +6101,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
           id: 'Pakaian hangat apa yang dia pakai?',
           options: [
             { emoji: '🧦', text: 'Socks', ok: true },
-            { emoji: '👟', text: 'Shoes', ok: false },
+            { emoji: '👟👟', text: 'Shoes', ok: false },
             { emoji: '🧤', text: 'Gloves', ok: false },
             { emoji: '🧣', text: 'Scarf', ok: false },
           ],
@@ -6629,7 +6629,7 @@ export const LISTENING_TOPICS_LITTLE_STARS: ListeningSentenceTopic[] = [
       {
         en: 'Apple',
         id: 'Apel',
-        emoji: '🍎',
+        emoji: '🍎🍎',
         example: { en: 'I eat apples.', id: 'Aku makan apel.', emoji: '🍎' },
         practice: { en: 'An apple is the snack Ara picks.', id: 'Apel adalah camilan pilihan Ara.' },
         question: {
@@ -6809,7 +6809,7 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
     roleplay: [
       { q: { en: 'What does a giraffe look like?', id: 'Seperti apa rupa jerapah?' }, answer: { en: 'A giraffe is tall and has brown spots.', id: 'Jerapah tinggi dan punya bintik cokelat.' }, choices: [{ en: 'A giraffe has a very long neck and long legs.', id: 'Jerapah punya leher yang sangat panjang dan kaki panjang.' }] },
       { q: { en: 'Which is bigger, an elephant or a mouse?', id: 'Mana yang lebih besar, gajah atau tikus?' }, answer: { en: 'An elephant is much bigger than a mouse.', id: 'Gajah jauh lebih besar dari tikus.', emoji: '🐭' }, emoji: '🐭' },
-      { q: { en: 'Why do you like your favorite animal?', id: 'Kenapa kamu suka hewan favoritmu?' }, answer: { en: 'I like cats because they are soft and cute.', id: 'Aku suka kucing karena mereka lembut dan lucu.', emoji: '🐱' }, emoji: '🐱', choices: [{ en: 'I like dogs because they are loyal and friendly.', id: 'Aku suka anjing karena setia dan ramah.', emoji: '🐶' }] },
+      { q: { en: 'Why do you like your favorite animal?', id: 'Kenapa kamu suka hewan favoritmu?' }, answer: { en: 'I like cats because they are soft and cute.', id: 'Aku suka kucing karena mereka lembut dan lucu.', emoji: '🐱🐱' }, emoji: '🐱', choices: [{ en: 'I like dogs because they are loyal and friendly.', id: 'Aku suka anjing karena setia dan ramah.', emoji: '🐶🐶' }] },
     ],
   },
   {
@@ -6875,16 +6875,16 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
     desc: '3 latihan bicara',
     model: [
       { en: 'I use my eyes to see.', id: 'Aku memakai mataku untuk melihat.', emoji: '👀' },
-      { en: 'I use my legs to run fast.', id: 'Aku memakai kakiku untuk berlari cepat.', emoji: '🦵' },
+      { en: 'I use my legs to run fast.', id: 'Aku memakai kakiku untuk berlari cepat.', emoji: '🦵🦵' },
     ],
     drill: [
-      { en: 'I use my ears to hear music.', id: 'Aku memakai telingaku untuk mendengar musik.', emoji: '👂' },
+      { en: 'I use my ears to hear music.', id: 'Aku memakai telingaku untuk mendengar musik.', emoji: '👂👂' },
       { en: 'I use my hands to write.', id: 'Aku memakai tanganku untuk menulis.', emoji: '✍️' },
       { en: 'I use my nose to smell flowers.', id: 'Aku memakai hidungku untuk mencium bunga.', emoji: '👃' },
     ],
     roleplay: [
       { q: { en: 'What do you use your eyes for?', id: 'Untuk apa kamu memakai matamu?' }, answer: { en: 'I use my eyes to read books and watch TV.', id: 'Aku memakai mataku untuk membaca buku dan menonton TV.', emoji: '👀' }, emoji: '👀', choices: [{ en: 'I use my eyes to see colors and pictures.', id: 'Aku memakai mataku untuk melihat warna dan gambar.', emoji: '🎨' }] },
-      { q: { en: 'Why are your legs important?', id: 'Kenapa kakimu penting?' }, answer: { en: 'My legs are important because I walk and run with them.', id: 'Kakiku penting karena aku berjalan dan berlari dengannya.', emoji: '🦵' }, emoji: '🦵', choices: [{ en: 'My legs are important because I play football with them.', id: 'Kakiku penting karena aku main sepak bola dengannya.', emoji: '⚽' }] },
+      { q: { en: 'Why are your legs important?', id: 'Kenapa kakimu penting?' }, answer: { en: 'My legs are important because I walk and run with them.', id: 'Kakiku penting karena aku berjalan dan berlari dengannya.', emoji: '🦵🦵' }, emoji: '🦵', choices: [{ en: 'My legs are important because I play football with them.', id: 'Kakiku penting karena aku main sepak bola dengannya.', emoji: '⚽' }] },
       { q: { en: 'Which body part do you use the most?', id: 'Bagian tubuh mana yang paling sering kamu pakai?' }, answer: { en: 'I use my hands the most because I write every day.', id: 'Aku paling sering memakai tanganku karena aku menulis setiap hari.', emoji: '✍️' }, emoji: '🙌', choices: [{ en: 'I use my eyes the most because I read every day.', id: 'Aku paling sering memakai mataku karena aku membaca setiap hari.', emoji: '👀' }] },
     ],
   },
@@ -6937,11 +6937,11 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
     drill: [
       { en: 'The living room has a big sofa.', id: 'Ruang tamu punya sofa besar.', emoji: '🛋️' },
       { en: 'The bathroom is clean and bright.', id: 'Kamar mandinya bersih dan terang.', emoji: '🛁' },
-      { en: 'The garden has many flowers.', id: 'Kebunnya punya banyak bunga.', emoji: '🌷' },
+      { en: 'The garden has many flowers.', id: 'Kebunnya punya banyak bunga.', emoji: '🌷🌷🌷' },
     ],
     roleplay: [
       { q: { en: 'What is your favorite room?', id: 'Ruangan apa favoritmu?' }, answer: { en: 'My favorite room is my bedroom upstairs.', id: 'Ruangan favoritku kamar tidurku di lantai atas.', emoji: '🛏️' }, emoji: '🏠', choices: [{ en: 'My favorite room is the kitchen downstairs.', id: 'Ruangan favoritku dapur di lantai bawah.', emoji: '🍳' }] },
-      { q: { en: 'Why do you like it?', id: 'Kenapa kamu suka ruangan itu?' }, answer: { en: 'I like it because it is quiet and has many toys.', id: 'Aku suka karena tenang dan banyak mainan.', emoji: '🧸' }, emoji: '🧸', choices: [{ en: 'I like it because it is bright and has a big window.', id: 'Aku suka karena terang dan punya jendela besar.', emoji: '🪟' }] },
+      { q: { en: 'Why do you like it?', id: 'Kenapa kamu suka ruangan itu?' }, answer: { en: 'I like it because it is quiet and has many toys.', id: 'Aku suka karena tenang dan banyak mainan.', emoji: '🧸🧸🧸' }, emoji: '🧸', choices: [{ en: 'I like it because it is bright and has a big window.', id: 'Aku suka karena terang dan punya jendela besar.', emoji: '🪟' }] },
       { q: { en: 'What do you do in the living room?', id: 'Apa yang kamu lakukan di ruang tamu?' }, answer: { en: 'I watch TV with my family in the living room.', id: 'Aku menonton TV bersama keluargaku di ruang tamu.', emoji: '📺' }, emoji: '📺', choices: [{ en: 'I play board games with my family in the living room.', id: 'Aku main permainan papan bersama keluargaku di ruang tamu.', emoji: '🎲' }] },
     ],
   },
@@ -7045,7 +7045,7 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
       { en: 'The mouse is smaller than the cat.', id: 'Tikus lebih kecil daripada kucing.', emoji: '🐭', key: 'smaller', wrong: ['small', 'smallest', 'most small'] },
       { en: 'My brother is taller than me.', id: 'Saudara laki-lakiku lebih tinggi daripada aku.', emoji: '📏', key: 'taller', wrong: ['tall', 'tallest', 'most tall'] },
       { en: 'The river is wider than the road.', id: 'Sungai itu lebih lebar daripada jalan.', emoji: '🏞️', key: 'wider', wrong: ['wide', 'widest', 'most wide'] },
-      { en: 'My new shoes are cleaner than my old shoes.', id: 'Sepatu baruku lebih bersih daripada sepatu lamaku.', emoji: '👟', key: 'cleaner', wrong: ['clean', 'cleanest', 'most clean'] },
+      { en: 'My new shoes are cleaner than my old shoes.', id: 'Sepatu baruku lebih bersih daripada sepatu lamaku.', emoji: '👟👟', key: 'cleaner', wrong: ['clean', 'cleanest', 'most clean'] },
     ],
   },
   {
@@ -7090,7 +7090,7 @@ export const GRAMMAR_TOPICS_ADVENTURER: GrammarSentenceTopic[] = [
       { en: 'I could swim when I was five.', id: 'Aku sudah bisa berenang waktu umur lima tahun.', emoji: '🌊', key: 'could', wrong: ['can', 'will', 'must'], alt: ['When I was five I could swim'] },
       { en: 'She could ride a bike last year.', id: 'Dia bisa naik sepeda tahun lalu.', emoji: '🚲', key: 'ride', wrong: ['rode', 'riding', 'rides'], alt: ['Last year she could ride a bike'] },
       { en: 'He could catch the ball yesterday.', id: 'Dia bisa menangkap bola kemarin.', emoji: '⚾', key: 'catch', wrong: ['caught', 'catching', 'catches'], alt: ['Yesterday he could catch the ball'] },
-      { en: 'We could see the stars last night.', id: 'Kami bisa melihat bintang tadi malam.', emoji: '⭐', key: 'see', wrong: ['saw', 'seeing', 'sees'], alt: ['Last night we could see the stars'] },
+      { en: 'We could see the stars last night.', id: 'Kami bisa melihat bintang tadi malam.', emoji: '⭐⭐⭐', key: 'see', wrong: ['saw', 'seeing', 'sees'], alt: ['Last night we could see the stars'] },
       { en: 'They could play the piano last year.', id: 'Mereka bisa bermain piano tahun lalu.', emoji: '🎹', key: 'play', wrong: ['played', 'playing', 'plays'], alt: ['Last year they could play the piano'] },
       { en: 'My grandpa could climb trees when he was young.', id: 'Kakekku bisa memanjat pohon waktu dia masih muda.', emoji: '🌳', key: 'could', wrong: ['can', 'will', 'must'], alt: ['When he was young my grandpa could climb trees'] },
       { en: "I couldn't open the jar yesterday.", id: 'Aku tidak bisa membuka toples itu kemarin.', emoji: '🫙', key: 'open', wrong: ['opened', 'opening', 'opens'], alt: ["Yesterday I couldn't open the jar"] },
@@ -11878,12 +11878,12 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
       { en: 'Two', id: 'Dua', emoji: '2️⃣', example: { en: 'I see two dogs.', id: 'Aku lihat dua anjing.', emoji: '🐶' } },
       { en: 'Three', id: 'Tiga', emoji: '3️⃣', example: { en: 'I have three apples.', id: 'Aku punya tiga apel.', emoji: '🍎' } },
       { en: 'Four', id: 'Empat', emoji: '4️⃣', example: { en: 'I see four balloons.', id: 'Aku lihat empat balon.', emoji: '🎈' } },
-      { en: 'Five', id: 'Lima', emoji: '5️⃣', example: { en: 'I have five fingers.', id: 'Aku punya lima jari.', emoji: '✋' } },
+      { en: 'Five', id: 'Lima', emoji: '5️⃣', example: { en: 'I see five cars.', id: 'Aku lihat lima mobil.', emoji: '🚗' } },
       { en: 'Six', id: 'Enam', emoji: '6️⃣', example: { en: 'I see six eggs.', id: 'Aku lihat enam telur.', emoji: '🥚' } },
       { en: 'Seven', id: 'Tujuh', emoji: '7️⃣', example: { en: 'I have seven crayons.', id: 'Aku punya tujuh krayon.', emoji: '🖍️' } },
       { en: 'Eight', id: 'Delapan', emoji: '8️⃣', example: { en: 'I see eight stars.', id: 'Aku lihat delapan bintang.', emoji: '⭐' } },
-      { en: 'Nine', id: 'Sembilan', emoji: '9️⃣', example: { en: 'I have nine grapes.', id: 'Aku punya sembilan anggur.', emoji: '🍇' } },
-      { en: 'Ten', id: 'Sepuluh', emoji: '🔟', example: { en: 'I see ten toes.', id: 'Aku lihat sepuluh jari kaki.', emoji: '🦶' } },
+      { en: 'Nine', id: 'Sembilan', emoji: '9️⃣', example: { en: 'I have nine pencils.', id: 'Aku punya sembilan pensil.', emoji: '✏️' } },
+      { en: 'Ten', id: 'Sepuluh', emoji: '🔟', example: { en: 'I have ten books.', id: 'Aku punya sepuluh buku.', emoji: '📕' } },
     ],
   },
   {
@@ -11947,10 +11947,10 @@ export const VOCAB_TOPICS_LITTLE_STARS: VocabTopic[] = [
     items: [
       { en: 'Head', id: 'Kepala', emoji: '🙂', example: { en: 'Touch your head.', id: 'Sentuh kepalamu.', emoji: '🙂' } },
       { en: 'Fingers', id: 'Jari Tangan', emoji: '🖐️', example: { en: 'Touch your fingers.', id: 'Sentuh jari tanganmu.', emoji: '🖐️' } },
-      { en: 'Knees', id: 'Lutut', emoji: '🦵', example: { en: 'Touch your knees.', id: 'Sentuh lututmu.', emoji: '🦵' } },
-      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶', example: { en: 'Touch your toes.', id: 'Sentuh jari kakimu.', emoji: '🦶' } },
+      { en: 'Knees', id: 'Lutut', emoji: '🦵', example: { en: 'Touch your knees.', id: 'Sentuh lututmu.', emoji: '🦵🦵' } },
+      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶', example: { en: 'Touch your toes.', id: 'Sentuh jari kakimu.', emoji: '🦶🦶' } },
       { en: 'Eyes', id: 'Mata', emoji: '👀', example: { en: 'I open my eyes.', id: 'Aku membuka mataku.', emoji: '👀' } },
-      { en: 'Ears', id: 'Telinga', emoji: '👂', example: { en: 'I clean my ears.', id: 'Aku membersihkan telingaku.', emoji: '👂' } },
+      { en: 'Ears', id: 'Telinga', emoji: '👂', example: { en: 'I clean my ears.', id: 'Aku membersihkan telingaku.', emoji: '👂👂' } },
       { en: 'Nose', id: 'Hidung', emoji: '👃', example: { en: 'I touch my nose.', id: 'Aku menyentuh hidungku.', emoji: '👃' } },
       { en: 'Mouth', id: 'Mulut', emoji: '👄', example: { en: 'Open your mouth.', id: 'Buka mulutmu.', emoji: '👄' } },
       { en: 'Hands', id: 'Tangan', emoji: '🙌', example: { en: 'I clap my hands.', id: 'Aku bertepuk tangan.', emoji: '🙌' } },
@@ -13068,7 +13068,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
       {
         en: 'Zoo',
         id: 'Kebun Binatang',
-        emoji: '🦁',
+        emoji: '🦁🦁',
         example: { en: 'We see lions at the zoo.', id: 'Kami lihat singa di kebun binatang.', emoji: '🦁' },
         practice: { en: 'At the zoo, we look at big lions.', id: 'Di kebun binatang, kami melihat singa besar.' },
         question: {
@@ -14266,7 +14266,7 @@ export const LISTENING_TOPICS_STARTER: ListeningSentenceTopic[] = [
       {
         en: 'Stars',
         id: 'Bintang-bintang',
-        emoji: '⭐',
+        emoji: '⭐⭐⭐',
         example: { en: 'She counts the stars in the sky.', id: 'Dia menghitung bintang di langit.', emoji: '⭐' },
         practice: { en: 'At night, the stars come out and she counts them.', id: 'Di malam hari, bintang-bintang muncul dan dia menghitungnya.' },
         question: {
@@ -16529,7 +16529,7 @@ export const LISTENING_TOPICS_ACHIEVER: ListeningNoteTopic[] = [
       {
         en: 'Sharp',
         id: 'Tajam',
-        emoji: '🔪',
+        emoji: '✂️',
         example: { en: 'Be careful, the scissors are sharp.', id: 'Hati-hati, guntingnya tajam.', emoji: '✂️' },
         practice: { en: 'Watch out! The scissors are very sharp.', id: 'Awas! Guntingnya sangat tajam.' },
         question: {
@@ -19116,10 +19116,10 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
     items: [
       { en: 'Head', id: 'Kepala', emoji: '🙂', phrase: { en: 'Touch your head!', id: 'Sentuh kepalamu!', emoji: '🙂' } },
       { en: 'Shoulders', id: 'Bahu', emoji: '🤷', phrase: { en: 'Touch your shoulders!', id: 'Sentuh bahumu!', emoji: '🤷' } },
-      { en: 'Knees', id: 'Lutut', emoji: '🦵', phrase: { en: 'Touch your knees!', id: 'Sentuh lututmu!', emoji: '🦵' } },
-      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶', phrase: { en: 'Touch your toes!', id: 'Sentuh jari kakimu!', emoji: '🦶' } },
+      { en: 'Knees', id: 'Lutut', emoji: '🦵🦵', phrase: { en: 'Touch your knees!', id: 'Sentuh lututmu!', emoji: '🦵🦵' } },
+      { en: 'Toes', id: 'Jari Kaki', emoji: '🦶🦶', phrase: { en: 'Touch your toes!', id: 'Sentuh jari kakimu!', emoji: '🦶🦶' } },
       { en: 'Eyes', id: 'Mata', emoji: '👀', phrase: { en: 'Blink your eyes!', id: 'Kedipkan matamu!', emoji: '👀' } },
-      { en: 'Ears', id: 'Telinga', emoji: '👂', phrase: { en: 'Wiggle your ears!', id: 'Gerakkan telingamu!', emoji: '👂' } },
+      { en: 'Ears', id: 'Telinga', emoji: '👂👂', phrase: { en: 'Wiggle your ears!', id: 'Gerakkan telingamu!', emoji: '👂👂' } },
       { en: 'Nose', id: 'Hidung', emoji: '👃', phrase: { en: 'Touch your nose!', id: 'Sentuh hidungmu!', emoji: '👃' } },
       { en: 'Mouth', id: 'Mulut', emoji: '👄', phrase: { en: 'Open your mouth!', id: 'Buka mulutmu!', emoji: '👄' } },
       { en: 'Hands', id: 'Tangan', emoji: '🙌', phrase: { en: 'Clap your hands!', id: 'Tepuk tanganmu!', emoji: '🙌' } },
@@ -19150,15 +19150,15 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
     desc: '10 ucapan',
     talk: { nameQ: { en: 'What number is it?', id: 'Angka berapa ini?' }, followQ: { en: 'Tell me about it.', id: 'Ceritakan tentang itu.' } },
     items: [
-      { en: 'One', id: 'Satu', emoji: '1️⃣', phrase: { en: 'I see one star.', id: 'Aku lihat satu bintang.', emoji: '1️⃣' } },
-      { en: 'Two', id: 'Dua', emoji: '2️⃣', phrase: { en: 'I have two hands.', id: 'Aku punya dua tangan.', emoji: '2️⃣' } },
-      { en: 'Three', id: 'Tiga', emoji: '3️⃣', phrase: { en: 'I see three balls.', id: 'Aku lihat tiga bola.', emoji: '3️⃣' } },
-      { en: 'Four', id: 'Empat', emoji: '4️⃣', phrase: { en: 'I have four crayons.', id: 'Aku punya empat krayon.', emoji: '4️⃣' } },
-      { en: 'Five', id: 'Lima', emoji: '5️⃣', phrase: { en: 'High five!', id: 'Tos lima jari!', emoji: '5️⃣' } },
-      { en: 'Six', id: 'Enam', emoji: '6️⃣', phrase: { en: 'I see six balloons.', id: 'Aku lihat enam balon.', emoji: '6️⃣' } },
-      { en: 'Seven', id: 'Tujuh', emoji: '7️⃣', phrase: { en: 'I have seven candies.', id: 'Aku punya tujuh permen.', emoji: '7️⃣' } },
-      { en: 'Eight', id: 'Delapan', emoji: '8️⃣', phrase: { en: 'I see eight cars.', id: 'Aku lihat delapan mobil.', emoji: '8️⃣' } },
-      { en: 'Nine', id: 'Sembilan', emoji: '9️⃣', phrase: { en: 'I have nine blocks.', id: 'Aku punya sembilan balok.', emoji: '9️⃣' } },
+      { en: 'One', id: 'Satu', emoji: '⭐', phrase: { en: 'I see one star.', id: 'Aku lihat satu bintang.', emoji: '⭐' } },
+      { en: 'Two', id: 'Dua', emoji: '🙌', phrase: { en: 'I have two hands.', id: 'Aku punya dua tangan.', emoji: '🙌' } },
+      { en: 'Three', id: 'Tiga', emoji: '⚽⚽⚽', phrase: { en: 'I see three balls.', id: 'Aku lihat tiga bola.', emoji: '⚽⚽⚽' } },
+      { en: 'Four', id: 'Empat', emoji: '🖍️🖍️🖍️🖍️', phrase: { en: 'I have four crayons.', id: 'Aku punya empat krayon.', emoji: '🖍️🖍️🖍️🖍️' } },
+      { en: 'Five', id: 'Lima', emoji: '🖐️', phrase: { en: 'High five!', id: 'Tos lima jari!', emoji: '🖐️' } },
+      { en: 'Six', id: 'Enam', emoji: '🎈🎈🎈🎈🎈🎈', phrase: { en: 'I see six balloons.', id: 'Aku lihat enam balon.', emoji: '🎈🎈🎈🎈🎈🎈' } },
+      { en: 'Seven', id: 'Tujuh', emoji: '🍬🍬🍬🍬🍬🍬🍬', phrase: { en: 'I have seven candies.', id: 'Aku punya tujuh permen.', emoji: '🍬🍬🍬🍬🍬🍬🍬' } },
+      { en: 'Eight', id: 'Delapan', emoji: '🚗🚗🚗🚗🚗🚗🚗🚗', phrase: { en: 'I see eight cars.', id: 'Aku lihat delapan mobil.', emoji: '🚗🚗🚗🚗🚗🚗🚗🚗' } },
+      { en: 'Nine', id: 'Sembilan', emoji: '✏️✏️✏️✏️✏️✏️✏️✏️✏️', phrase: { en: 'I have nine pencils.', id: 'Aku punya sembilan pensil.', emoji: '✏️✏️✏️✏️✏️✏️✏️✏️✏️' } },
       { en: 'Ten', id: 'Sepuluh', emoji: '🔟', phrase: { en: 'Let’s count to ten!', id: 'Ayo hitung sampai sepuluh!', emoji: '🔟' } },
     ],
   },
@@ -19187,15 +19187,15 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
     talk: { nameQ: { en: 'What fruit is this?', id: 'Ini buah apa?' }, followQ: { en: 'Do you like it?', id: 'Kamu suka?' } },
     items: [
       { en: 'Apple', id: 'Apel', emoji: '🍎', phrase: { en: 'I want an apple.', id: 'Aku mau apel.', emoji: '🍎' } },
-      { en: 'Banana', id: 'Pisang', emoji: '🍌', phrase: { en: 'I like bananas.', id: 'Aku suka pisang.', emoji: '🍌' } },
+      { en: 'Banana', id: 'Pisang', emoji: '🍌🍌', phrase: { en: 'I like bananas.', id: 'Aku suka pisang.', emoji: '🍌🍌' } },
       { en: 'Orange', id: 'Jeruk', emoji: '🍊', phrase: { en: 'I eat an orange.', id: 'Aku makan jeruk.', emoji: '🍊' } },
       { en: 'Grape', id: 'Anggur', emoji: '🍇', phrase: { en: 'I like grapes.', id: 'Aku suka anggur.', emoji: '🍇' } },
       { en: 'Watermelon', id: 'Semangka', emoji: '🍉', phrase: { en: 'I want watermelon.', id: 'Aku mau semangka.', emoji: '🍉' } },
-      { en: 'Strawberry', id: 'Stroberi', emoji: '🍓', phrase: { en: 'I love strawberries!', id: 'Aku suka stroberi!', emoji: '🍓' } },
-      { en: 'Mango', id: 'Mangga', emoji: '🥭', phrase: { en: 'I like mangoes.', id: 'Aku suka mangga.', emoji: '🥭' } },
+      { en: 'Strawberry', id: 'Stroberi', emoji: '🍓🍓', phrase: { en: 'I love strawberries!', id: 'Aku suka stroberi!', emoji: '🍓🍓' } },
+      { en: 'Mango', id: 'Mangga', emoji: '🥭🥭', phrase: { en: 'I like mangoes.', id: 'Aku suka mangga.', emoji: '🥭🥭' } },
       { en: 'Pineapple', id: 'Nanas', emoji: '🍍', phrase: { en: 'I want pineapple.', id: 'Aku mau nanas.', emoji: '🍍' } },
       { en: 'Pear', id: 'Pir', emoji: '🍐', phrase: { en: 'I eat a pear.', id: 'Aku makan pir.', emoji: '🍐' } },
-      { en: 'Peach', id: 'Persik', emoji: '🍑', phrase: { en: 'I like peaches.', id: 'Aku suka persik.', emoji: '🍑' } },
+      { en: 'Peach', id: 'Persik', emoji: '🍑🍑', phrase: { en: 'I like peaches.', id: 'Aku suka persik.', emoji: '🍑🍑' } },
     ],
   },
   {
@@ -19226,7 +19226,7 @@ export const SPEAKING_TOPICS_LITTLE_STARS: SpeakingPhraseTopic[] = [
       { en: 'Doll', id: 'Boneka', emoji: '🪆', phrase: { en: 'I like my doll.', id: 'Aku suka bonekaku.', emoji: '🪆' } },
       { en: 'Kite', id: 'Layangan', emoji: '🪁', phrase: { en: 'I fly a kite.', id: 'Aku menerbangkan layangan.', emoji: '🪁' } },
       { en: 'Balloon', id: 'Balon', emoji: '🎈', phrase: { en: 'I hold a balloon.', id: 'Aku memegang balon.', emoji: '🎈' } },
-      { en: 'Puzzle', id: 'Puzzle', emoji: '🧩', phrase: { en: 'I like puzzles.', id: 'Aku suka puzzle.', emoji: '🧩' } },
+      { en: 'Puzzle', id: 'Puzzle', emoji: '🧩🧩', phrase: { en: 'I like puzzles.', id: 'Aku suka puzzle.', emoji: '🧩🧩' } },
       { en: 'Robot', id: 'Robot', emoji: '🤖', phrase: { en: 'My robot can walk.', id: 'Robotku bisa berjalan.', emoji: '🤖' } },
       { en: 'Drum', id: 'Drum', emoji: '🥁', phrase: { en: 'I play the drum.', id: 'Aku main drum.', emoji: '🥁' } },
       { en: 'Blocks', id: 'Balok', emoji: '🧱', phrase: { en: 'I build with blocks.', id: 'Aku membangun dengan balok.', emoji: '🧱' } },
@@ -19526,7 +19526,7 @@ export const SPEAKING_TOPICS_ACHIEVER: AnySpeakingTopic[] = [
     roleplay: [
       { q: { en: 'What is your favorite place in town?', id: 'Apa tempat favoritmu di kota?' }, answer: { en: 'My favorite place is the library. I think it is calm and full of good books.', id: 'Tempat favoritku perpustakaan. Menurutku tempatnya tenang dan penuh buku bagus.', emoji: '📚' }, emoji: '🏙️', choices: [{ en: 'My favorite place is the park. I think it is quiet and full of trees.', id: 'Tempat favoritku taman. Menurutku tempatnya tenang dan penuh pohon.', emoji: '🌳' }] },
       { q: { en: 'Which do you prefer, the park or the mall?', id: 'Kamu lebih suka mana, taman atau mal?' }, answer: { en: 'I prefer the park because the air is fresh and it is free.', id: 'Aku lebih suka taman karena udaranya segar dan gratis.', emoji: '🌳' }, emoji: '🌳', choices: [{ en: 'I prefer the mall because it is cool and there are many shops.', id: 'Aku lebih suka mal karena sejuk dan banyak toko.', emoji: '🏬' }] },
-      { q: { en: 'What do you think about visiting a museum?', id: 'Bagaimana pendapatmu tentang berkunjung ke museum?' }, answer: { en: 'I think visiting a museum is fun because we can learn about history.', id: 'Menurutku ke museum itu seru karena kita bisa belajar sejarah.', emoji: '🏛️' }, emoji: '🏛️', choices: [{ en: 'I think visiting a museum is boring, but the pictures are interesting.', id: 'Menurutku ke museum membosankan, tapi gambarnya menarik.', emoji: '🖼️' }] },
+      { q: { en: 'What do you think about visiting a museum?', id: 'Bagaimana pendapatmu tentang berkunjung ke museum?' }, answer: { en: 'I think visiting a museum is fun because we can learn about history.', id: 'Menurutku ke museum itu seru karena kita bisa belajar sejarah.', emoji: '🏛️' }, emoji: '🏛️', choices: [{ en: 'I think visiting a museum is boring, but the pictures are interesting.', id: 'Menurutku ke museum membosankan, tapi gambarnya menarik.', emoji: '🖼️🖼️' }] },
     ],
   },
   {
@@ -19931,7 +19931,7 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'What do you and your friends usually do together?', id: 'Apa yang biasa kamu dan temanmu lakukan bersama?' },
         peerAnswer: { en: 'We usually play games and study together. Sometimes we also ride our bikes to the park.', id: 'Kami biasanya main game dan belajar bersama. Kadang kami juga bersepeda ke taman.' }, emoji: '🎲',
-        choices: [{ en: 'We usually play games and study together.', id: 'Kami biasanya main game dan belajar bersama.', emoji: '🎲' }, { en: 'We usually ride our bikes around the neighborhood.', id: 'Kami biasanya bersepeda keliling lingkungan.', emoji: '🚲' }, { en: 'We usually draw comics and share them with each other.', id: 'Kami biasanya menggambar komik dan saling berbagi.', emoji: '✏️' }],
+        choices: [{ en: 'We usually play games and study together.', id: 'Kami biasanya main game dan belajar bersama.', emoji: '🎲' }, { en: 'We usually ride our bikes around the neighborhood.', id: 'Kami biasanya bersepeda keliling lingkungan.', emoji: '🚲🚲' }, { en: 'We usually draw comics and share them with each other.', id: 'Kami biasanya menggambar komik dan saling berbagi.', emoji: '✏️' }],
       },
       {
         question: { en: 'Is it important to have many friends or a few close ones?', id: 'Apakah penting punya banyak teman atau sedikit tapi dekat?' },
@@ -20004,7 +20004,7 @@ export const SPEAKING_TOPICS_TRAILBLAZER: AnySpeakingTopic[] = [
       {
         question: { en: 'How has your neighborhood changed over the years?', id: 'Bagaimana lingkunganmu berubah selama bertahun-tahun?' },
         peerAnswer: { en: 'There are more shops and buildings now than before. However, there are fewer trees than before.', id: 'Sekarang ada lebih banyak toko dan bangunan dibanding dulu. Tapi, pohonnya lebih sedikit daripada dulu.' }, emoji: '🏗️',
-        choices: [{ en: 'There are more shops and buildings now than before.', id: 'Sekarang ada lebih banyak toko dan bangunan dibanding dulu.', emoji: '🏗️' }, { en: 'There are more cars now, so the streets are busier.', id: 'Sekarang ada lebih banyak mobil, jadi jalanan lebih ramai.', emoji: '🚗' }, { en: 'There is a new park now, and it is very popular.', id: 'Sekarang ada taman baru, dan tempatnya sangat ramai dikunjungi.', emoji: '🌳' }],
+        choices: [{ en: 'There are more shops and buildings now than before.', id: 'Sekarang ada lebih banyak toko dan bangunan dibanding dulu.', emoji: '🏗️' }, { en: 'There are more cars now, so the streets are busier.', id: 'Sekarang ada lebih banyak mobil, jadi jalanan lebih ramai.', emoji: '🚗🚗🚗' }, { en: 'There is a new park now, and it is very popular.', id: 'Sekarang ada taman baru, dan tempatnya sangat ramai dikunjungi.', emoji: '🌳' }],
       },
     ],
   },
@@ -21223,7 +21223,7 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
       { en: 'He looks like his grandfather.', id: 'Dia mirip kakeknya.', key: 'looks', wrong: ['look', 'looking', 'to look'] },
       { en: 'This cloud looks like a rabbit.', id: 'Awan ini mirip kelinci.', emoji: '☁️', key: 'like', wrong: ['likes', 'as', 'liked'] },
       { en: 'You look like your mom.', id: 'Kamu mirip ibumu.', key: 'look', wrong: ['looks', 'looking', 'to look'] },
-      { en: 'These cookies look like stars.', id: 'Kue-kue ini mirip bintang.', emoji: '⭐', key: 'look', wrong: ['looks', 'looking', 'to look'] },
+      { en: 'These cookies look like stars.', id: 'Kue-kue ini mirip bintang.', emoji: '⭐⭐', key: 'look', wrong: ['looks', 'looking', 'to look'] },
       { en: 'That rock looks like a turtle.', id: 'Batu itu mirip kura-kura.', emoji: '🪨', key: 'like', wrong: ['likes', 'as', 'liked'] },
       { en: 'The twins look like each other.', id: 'Anak kembar itu mirip satu sama lain.', emoji: '👥', key: 'look', wrong: ['looks', 'looking', 'to look'] },
     ],
@@ -21242,10 +21242,10 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
       { en: 'This spoon is made of metal.', id: 'Sendok ini terbuat dari logam.', emoji: '🥄', key: 'made', wrong: ['make', 'making', 'makes'] },
       { en: 'My pillow is made of cotton.', id: 'Bantalku terbuat dari kapas.', emoji: '🛏️', key: 'is', wrong: ['are', 'am', 'be'] },
       { en: 'The plate is made of glass.', id: 'Piring itu terbuat dari kaca.', emoji: '🍽️', key: 'made', wrong: ['make', 'making', 'makes'] },
-      { en: 'These chairs are made of wood.', id: 'Kursi-kursi ini terbuat dari kayu.', emoji: '🪑', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'These chairs are made of wood.', id: 'Kursi-kursi ini terbuat dari kayu.', emoji: '🪑🪑', key: 'are', wrong: ['is', 'am', 'be'] },
       { en: 'My bag is made of cloth.', id: 'Tasku terbuat dari kain.', emoji: '👜', key: 'made', wrong: ['make', 'making', 'makes'] },
       { en: 'The window is made of glass.', id: 'Jendela itu terbuat dari kaca.', emoji: '🪟', key: 'is', wrong: ['are', 'am', 'be'] },
-      { en: 'These toys are made of plastic.', id: 'Mainan-mainan ini terbuat dari plastik.', emoji: '🧸', key: 'are', wrong: ['is', 'am', 'be'] },
+      { en: 'These toys are made of plastic.', id: 'Mainan-mainan ini terbuat dari plastik.', emoji: '🧸🧸', key: 'are', wrong: ['is', 'am', 'be'] },
       { en: 'The house is made of bricks.', id: 'Rumah itu terbuat dari batu bata.', emoji: '🧱', key: 'made', wrong: ['make', 'making', 'makes'] },
       { en: 'My socks are made of wool.', id: 'Kaus kakiku terbuat dari wol.', emoji: '🧦', key: 'are', wrong: ['is', 'am', 'be'] },
       { en: 'This ring is made of gold.', id: 'Cincin ini terbuat dari emas.', emoji: '💍', key: 'made', wrong: ['make', 'making', 'makes'] },
@@ -21291,9 +21291,9 @@ export const GRAMMAR_TOPICS_ACHIEVER: GrammarSentenceTopic[] = [
       { en: 'How much milk do you drink?', id: 'Berapa banyak susu yang kamu minum?', emoji: '🥛', key: 'much', wrong: ['many', 'a', 'few'] },
       { en: 'There are many books on the shelf.', id: 'Ada banyak buku di rak.', emoji: '📚', key: 'many', wrong: ['much', 'a', 'any'] },
       { en: "She doesn't have much time today.", id: 'Dia tidak punya banyak waktu hari ini.', emoji: '⏰', key: 'much', wrong: ['many', 'a', 'few'], alt: ["Today she doesn't have much time"] },
-      { en: 'He ate too many cookies.', id: 'Dia makan terlalu banyak kue kering.', emoji: '🍪', key: 'many', wrong: ['much', 'a', 'any'] },
+      { en: 'He ate too many cookies.', id: 'Dia makan terlalu banyak kue kering.', emoji: '🍪🍪🍪', key: 'many', wrong: ['much', 'a', 'any'] },
       { en: "Don't put too much sugar in my tea.", id: 'Jangan taruh terlalu banyak gula di tehku.', emoji: '🍵', key: 'much', wrong: ['many', 'a', 'few'] },
-      { en: 'How many apples do you need?', id: 'Berapa banyak apel yang kamu perlukan?', emoji: '🍎', key: 'many', wrong: ['much', 'a', 'any'] },
+      { en: 'How many apples do you need?', id: 'Berapa banyak apel yang kamu perlukan?', emoji: '🍎🍎🍎', key: 'many', wrong: ['much', 'a', 'any'] },
       { en: "We didn't get much rain this month.", id: 'Bulan ini tidak banyak hujan.', emoji: '🌧️', key: 'much', wrong: ['many', 'a', 'few'], alt: ["This month we didn't get much rain"] },
     ],
     texts: [
@@ -22658,7 +22658,7 @@ export const GRAMMAR_TOPICS_BY_LEVEL: Partial<Record<LevelKey, AnyGrammarTopic[]
 export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   {
     "id": "kata-hewan",
-    "title": "Buku Mini: Hewan (Mini Book: Animals)",
+    "title": "Hewan (Animals)",
     "scene": "🐮",
     "desc": "Buku gambar mini",
     "texts": [
@@ -23208,7 +23208,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-warna",
-    "title": "Buku Mini: Warna (Mini Book: Colors)",
+    "title": "Warna (Colors)",
     "scene": "🌈",
     "desc": "Buku gambar mini",
     "texts": [
@@ -23758,7 +23758,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-angka",
-    "title": "Buku Mini: Angka (Mini Book: Numbers)",
+    "title": "Angka (Numbers)",
     "scene": "🔢",
     "desc": "Buku gambar mini",
     "texts": [
@@ -24308,7 +24308,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-bentuk",
-    "title": "Buku Mini: Bentuk (Mini Book: Shapes)",
+    "title": "Bentuk (Shapes)",
     "scene": "🔺",
     "desc": "Buku gambar mini",
     "texts": [
@@ -24858,7 +24858,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-keluarga",
-    "title": "Buku Mini: Keluargaku (Mini Book: My Family)",
+    "title": "Keluargaku (My Family)",
     "scene": "🏡",
     "desc": "Buku gambar mini",
     "texts": [
@@ -25274,7 +25274,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
         "heading": "🌳 Family Day Out",
         "pictures": [
           {
-            "emoji": "🌳",
+            "emoji": "🏞️",
             "label": "park"
           },
           {
@@ -25328,7 +25328,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🌳",
+              "🏞️",
               "🪁",
               "⚽"
             ],
@@ -25362,7 +25362,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🍦",
               "⚽",
-              "🌳"
+              "🏞️"
             ],
             "answer": 0,
             "evidence": [
@@ -25393,7 +25393,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🏠",
-              "🌳",
+              "🏞️",
               "🍦"
             ],
             "answer": 0,
@@ -25408,7 +25408,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-tubuh",
-    "title": "Buku Mini: Tubuhku (Mini Book: My Body)",
+    "title": "Tubuhku (My Body)",
     "scene": "🙂",
     "desc": "Buku gambar mini",
     "texts": [
@@ -25958,7 +25958,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-buah",
-    "title": "Buku Mini: Buah (Mini Book: Fruit)",
+    "title": "Buah (Fruit)",
     "scene": "🍎",
     "desc": "Buku gambar mini",
     "texts": [
@@ -25967,11 +25967,11 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
         "heading": "🍎 I Like Fruit",
         "pictures": [
           {
-            "emoji": "🍎",
+            "emoji": "🍎🍎",
             "label": "apples"
           },
           {
-            "emoji": "🍌",
+            "emoji": "🍌🍌",
             "label": "bananas"
           },
           {
@@ -25979,11 +25979,11 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "grapes"
           },
           {
-            "emoji": "🍊",
+            "emoji": "🍊🍊",
             "label": "oranges"
           },
           {
-            "emoji": "🥭",
+            "emoji": "🥭🥭",
             "label": "mangoes"
           }
         ],
@@ -26021,9 +26021,9 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🍎",
-              "🍌",
-              "🍊"
+              "🍎🍎",
+              "🍌🍌",
+              "🍊🍊"
             ],
             "answer": 0,
             "evidence": [
@@ -26037,9 +26037,9 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🍌",
+              "🍌🍌",
               "🍇",
-              "🥭"
+              "🥭🥭"
             ],
             "answer": 0,
             "evidence": [
@@ -26054,8 +26054,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🍇",
-              "🍊",
-              "🍎"
+              "🍊🍊",
+              "🍎🍎"
             ],
             "answer": 0,
             "evidence": [
@@ -26069,9 +26069,9 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🍊",
-              "🥭",
-              "🍌"
+              "🍊🍊",
+              "🥭🥭",
+              "🍌🍌"
             ],
             "answer": 0,
             "evidence": [
@@ -26085,8 +26085,8 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🥭",
-              "🍎",
+              "🥭🥭",
+              "🍎🍎",
               "🍇"
             ],
             "answer": 0,
@@ -26508,7 +26508,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-mainan",
-    "title": "Buku Mini: Mainan (Mini Book: Toys)",
+    "title": "Mainan (Toys)",
     "scene": "🧸",
     "desc": "Buku gambar mini",
     "texts": [
@@ -26936,7 +26936,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "label": "color"
           },
           {
-            "emoji": "🃏",
+            "emoji": "🃏🃏",
             "label": "cards"
           },
           {
@@ -26980,7 +26980,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "options": [
               "🧩",
               "📖",
-              "🃏"
+              "🃏🃏"
             ],
             "answer": 0,
             "evidence": [
@@ -27011,7 +27011,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🖍️",
-              "🃏",
+              "🃏🃏",
               "🧩"
             ],
             "answer": 0,
@@ -27026,7 +27026,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🃏",
+              "🃏🃏",
               "♟️",
               "📖"
             ],
@@ -27058,7 +27058,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-pakaian",
-    "title": "Buku Mini: Pakaianku (Mini Book: My Clothes)",
+    "title": "Pakaianku (My Clothes)",
     "scene": "👕",
     "desc": "Buku gambar mini",
     "texts": [
@@ -27608,7 +27608,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
   },
   {
     "id": "kata-kendaraan",
-    "title": "Buku Mini: Kendaraan (Mini Book: Vehicles)",
+    "title": "Kendaraan (Vehicles)",
     "scene": "🚗",
     "desc": "Buku gambar mini",
     "texts": [
@@ -28155,556 +28155,6 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
         ]
       }
     ]
-  },
-  {
-    "id": "buku-di-taman",
-    "title": "Buku Mini: Di Taman (Mini Book: At the Park)",
-    "scene": "🛝",
-    "desc": "Buku gambar mini",
-    "texts": [
-      {
-        "genre": "book",
-        "heading": "📗 At the Park",
-        "pictures": [
-          {
-            "emoji": "⚽",
-            "label": "ball"
-          },
-          {
-            "emoji": "🪁",
-            "label": "kite"
-          },
-          {
-            "emoji": "🛝",
-            "label": "slide"
-          },
-          {
-            "emoji": "🌳",
-            "label": "tree"
-          },
-          {
-            "emoji": "🧒",
-            "label": "friend"
-          }
-        ],
-        "lines": [
-          {
-            "en": "I see a ball.",
-            "id": "Aku lihat bola.",
-            "pic": 0
-          },
-          {
-            "en": "I see a kite.",
-            "id": "Aku lihat layangan.",
-            "pic": 1
-          },
-          {
-            "en": "I see a slide.",
-            "id": "Aku lihat perosotan.",
-            "pic": 2
-          },
-          {
-            "en": "I see a tree.",
-            "id": "Aku lihat pohon.",
-            "pic": 3
-          },
-          {
-            "en": "I see my friend!",
-            "id": "Aku lihat temanku!",
-            "pic": 4
-          }
-        ],
-        "questions": [
-          {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "⚽",
-              "🪁",
-              "🌳"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "ball"
-          },
-          {
-            "kind": "picture",
-            "about": 1,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🪁",
-              "🛝",
-              "🧒"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ],
-            "evidenceWord": "kite"
-          },
-          {
-            "kind": "picture",
-            "about": 2,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🛝",
-              "🌳",
-              "⚽"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ],
-            "evidenceWord": "slide"
-          },
-          {
-            "kind": "picture",
-            "about": 3,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🌳",
-              "🧒",
-              "🪁"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ],
-            "evidenceWord": "tree"
-          },
-          {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🧒",
-              "⚽",
-              "🛝"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ],
-            "evidenceWord": "friend"
-          }
-        ]
-      },
-      {
-        "genre": "book",
-        "heading": "📘 My Toys",
-        "pictures": [
-          {
-            "emoji": "🚗",
-            "label": "car"
-          },
-          {
-            "emoji": "🧸",
-            "label": "teddy"
-          },
-          {
-            "emoji": "🥁",
-            "label": "drum"
-          },
-          {
-            "emoji": "🤖",
-            "label": "robot"
-          },
-          {
-            "emoji": "❤️",
-            "label": "toys"
-          }
-        ],
-        "lines": [
-          {
-            "en": "I have a car.",
-            "id": "Aku punya mobil.",
-            "pic": 0
-          },
-          {
-            "en": "I have a teddy.",
-            "id": "Aku punya boneka beruang.",
-            "pic": 1
-          },
-          {
-            "en": "I have a drum.",
-            "id": "Aku punya drum.",
-            "pic": 2
-          },
-          {
-            "en": "I have a robot.",
-            "id": "Aku punya robot.",
-            "pic": 3
-          },
-          {
-            "en": "I love my toys!",
-            "id": "Aku sayang mainanku!",
-            "pic": 4
-          }
-        ],
-        "questions": [
-          {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🚗",
-              "🧸",
-              "🤖"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "car"
-          },
-          {
-            "kind": "picture",
-            "about": 1,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🧸",
-              "🥁",
-              "❤️"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ],
-            "evidenceWord": "teddy"
-          },
-          {
-            "kind": "picture",
-            "about": 2,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🥁",
-              "🤖",
-              "🚗"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ],
-            "evidenceWord": "drum"
-          },
-          {
-            "kind": "picture",
-            "about": 3,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🤖",
-              "❤️",
-              "🧸"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ],
-            "evidenceWord": "robot"
-          },
-          {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "❤️",
-              "🚗",
-              "🥁"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ],
-            "evidenceWord": "toys"
-          }
-        ]
-      }
-    ],
-    "newTexts": [
-      {
-        "genre": "book",
-        "heading": "🚌 On the Road",
-        "pictures": [
-          {
-            "emoji": "🚌",
-            "label": "bus"
-          },
-          {
-            "emoji": "🚲",
-            "label": "bike"
-          },
-          {
-            "emoji": "🚚",
-            "label": "truck"
-          },
-          {
-            "emoji": "🚆",
-            "label": "train"
-          },
-          {
-            "emoji": "🏫",
-            "label": "school"
-          }
-        ],
-        "lines": [
-          {
-            "en": "I see a bus.",
-            "id": "Aku lihat bus.",
-            "pic": 0
-          },
-          {
-            "en": "I see a bike.",
-            "id": "Aku lihat sepeda.",
-            "pic": 1
-          },
-          {
-            "en": "I see a truck.",
-            "id": "Aku lihat truk.",
-            "pic": 2
-          },
-          {
-            "en": "I see a train.",
-            "id": "Aku lihat kereta.",
-            "pic": 3
-          },
-          {
-            "en": "I see my school!",
-            "id": "Aku lihat sekolahku!",
-            "pic": 4
-          }
-        ],
-        "questions": [
-          {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🚌",
-              "🚲",
-              "🚆"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "bus"
-          },
-          {
-            "kind": "picture",
-            "about": 1,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🚲",
-              "🚚",
-              "🏫"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ],
-            "evidenceWord": "bike"
-          },
-          {
-            "kind": "picture",
-            "about": 2,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🚚",
-              "🚆",
-              "🚌"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ],
-            "evidenceWord": "truck"
-          },
-          {
-            "kind": "picture",
-            "about": 3,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🚆",
-              "🏫",
-              "🚲"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ],
-            "evidenceWord": "train"
-          },
-          {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🏫",
-              "🚌",
-              "🚚"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ],
-            "evidenceWord": "school"
-          }
-        ]
-      },
-      {
-        "genre": "book",
-        "heading": "🎒 My Bag",
-        "pictures": [
-          {
-            "emoji": "📕",
-            "label": "book"
-          },
-          {
-            "emoji": "✏️",
-            "label": "pencil"
-          },
-          {
-            "emoji": "🧢",
-            "label": "cap"
-          },
-          {
-            "emoji": "🍎",
-            "label": "apple"
-          },
-          {
-            "emoji": "🎒",
-            "label": "bag"
-          }
-        ],
-        "lines": [
-          {
-            "en": "I have a book.",
-            "id": "Aku punya buku.",
-            "pic": 0
-          },
-          {
-            "en": "I have a pencil.",
-            "id": "Aku punya pensil.",
-            "pic": 1
-          },
-          {
-            "en": "I have a cap.",
-            "id": "Aku punya topi.",
-            "pic": 2
-          },
-          {
-            "en": "I have an apple.",
-            "id": "Aku punya apel.",
-            "pic": 3
-          },
-          {
-            "en": "I have my bag!",
-            "id": "Aku bawa tasku!",
-            "pic": 4
-          }
-        ],
-        "questions": [
-          {
-            "kind": "picture",
-            "about": 0,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "📕",
-              "✏️",
-              "🍎"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ],
-            "evidenceWord": "book"
-          },
-          {
-            "kind": "picture",
-            "about": 1,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "✏️",
-              "🧢",
-              "🎒"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ],
-            "evidenceWord": "pencil"
-          },
-          {
-            "kind": "picture",
-            "about": 2,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🧢",
-              "🍎",
-              "📕"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ],
-            "evidenceWord": "cap"
-          },
-          {
-            "kind": "picture",
-            "about": 3,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🍎",
-              "🎒",
-              "✏️"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ],
-            "evidenceWord": "apple"
-          },
-          {
-            "kind": "picture",
-            "about": 4,
-            "q": "Which picture?",
-            "qId": "Tunjuk gambarnya!",
-            "options": [
-              "🎒",
-              "📕",
-              "🧢"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ],
-            "evidenceWord": "bag"
-          }
-        ]
-      }
-    ]
   }
 ];
 
@@ -28716,7 +28166,7 @@ export const READING_TOPICS_LITTLE_STARS: ReadingTextTopic[] = [
 export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   {
     "id": "baca-tempat",
-    "title": "Buku Mini: Tempat di Kotaku (Mini Book: Places in My Town)",
+    "title": "Tempat di Kotaku (Places in My Town)",
     "scene": "🏙️",
     "desc": "Buku gambar mini",
     "texts": [
@@ -28747,13 +28197,13 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         ],
         "lines": [
           {
-            "en": "The school is big.",
-            "id": "Sekolahnya besar.",
+            "en": "I study at school.",
+            "id": "Aku belajar di sekolah.",
             "pic": 0
           },
           {
-            "en": "The shop is small.",
-            "id": "Tokonya kecil.",
+            "en": "Mom buys milk at the shop.",
+            "id": "Ibu beli susu di toko.",
             "pic": 1
           },
           {
@@ -28820,8 +28270,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           {
             "kind": "truefalse",
             "picture": "🏪",
-            "q": "I see a small shop.",
-            "qId": "Aku lihat toko kecil.",
+            "q": "I see one shop.",
+            "qId": "Aku lihat satu toko.",
             "options": [
               "Benar",
               "Salah"
@@ -29008,8 +28458,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 0
           },
           {
-            "en": "We see a big fountain.",
-            "id": "Kami melihat air mancur besar.",
+            "en": "We sit near the fountain.",
+            "id": "Kami duduk di dekat air mancur.",
             "pic": 1
           },
           {
@@ -29234,7 +28684,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-angka",
-    "title": "Buku Mini: Angka 11–20 (Mini Book: Numbers 11–20)",
+    "title": "Angka 11–20 (Numbers 11–20)",
     "scene": "🔢",
     "desc": "Buku gambar mini",
     "texts": [
@@ -29752,7 +29202,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-hari",
-    "title": "Buku Mini: Hari-hariku (Mini Book: My Week)",
+    "title": "Hari-hariku (My Week)",
     "scene": "📅",
     "desc": "Buku gambar mini",
     "texts": [
@@ -30270,7 +29720,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-perkakas",
-    "title": "Buku Mini: Alat Tukang (Mini Book: Tools)",
+    "title": "Alat Tukang (Tools)",
     "scene": "🧰",
     "desc": "Buku gambar mini",
     "texts": [
@@ -30788,7 +30238,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-makanan",
-    "title": "Buku Mini: Makananku (Mini Book: My Food)",
+    "title": "Makananku (My Food)",
     "scene": "🍱",
     "desc": "Buku gambar mini",
     "texts": [
@@ -30928,7 +30378,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "chicken"
           },
           {
-            "emoji": "🥕",
+            "emoji": "🥕🥕🥕",
             "label": "carrots"
           },
           {
@@ -30936,8 +30386,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "banana"
           },
           {
-            "emoji": "💧",
-            "label": "water"
+            "emoji": "🍇",
+            "label": "grapes"
           },
           {
             "emoji": "😋",
@@ -30961,8 +30411,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "pic": 2
           },
           {
-            "en": "I have a bottle of water.",
-            "id": "Aku bawa sebotol air.",
+            "en": "I have some grapes.",
+            "id": "Aku bawa anggur.",
             "pic": 3
           },
           {
@@ -30978,7 +30428,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🥕",
+              "🥕🥕🥕",
               "🍌",
               "😋"
             ],
@@ -30990,7 +30440,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🥕🥕",
+            "picture": "🥕🥕🥕",
             "q": "I have some carrots.",
             "qId": "Aku bawa wortel.",
             "options": [
@@ -31007,7 +30457,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🍌",
-              "💧",
+              "🍇",
               "🍗"
             ],
             "answer": 0,
@@ -31034,15 +30484,15 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "💧",
+              "🍇",
               "😋",
-              "🥕"
+              "🥕🥕🥕"
             ],
             "answer": 0,
             "evidence": [
               3
             ],
-            "evidenceWord": "water"
+            "evidenceWord": "grapes"
           }
         ]
       }
@@ -31061,7 +30511,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "satay"
           },
           {
-            "emoji": "🥣",
+            "emoji": "🍲",
             "label": "soup"
           },
           {
@@ -31136,7 +30586,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🍢",
-              "🥣",
+              "🍲",
               "😋"
             ],
             "answer": 0,
@@ -31163,7 +30613,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🥣",
+              "🍲",
               "🥛",
               "🍜"
             ],
@@ -31306,7 +30756,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-barang",
-    "title": "Buku Mini: Barang di Rumah (Mini Book: Things at Home)",
+    "title": "Barang di Rumah (Things at Home)",
     "scene": "🏠",
     "desc": "Buku gambar mini",
     "texts": [
@@ -31824,7 +31274,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-sekolah",
-    "title": "Buku Mini: Di Sekolah (Mini Book: At School)",
+    "title": "Di Sekolah (At School)",
     "scene": "🏫",
     "desc": "Buku gambar mini",
     "texts": [
@@ -31976,7 +31426,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "scissors"
           },
           {
-            "emoji": "🖍️",
+            "emoji": "🖍️🖍️🖍️",
             "label": "crayons"
           }
         ],
@@ -32016,7 +31466,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "options": [
               "🖊️",
               "📏",
-              "🖍️"
+              "🖍️🖍️🖍️"
             ],
             "answer": 0,
             "evidence": [
@@ -32070,7 +31520,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🖍️",
+              "🖍️🖍️🖍️",
               "✏️",
               "📏"
             ],
@@ -32342,7 +31792,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-orang",
-    "title": "Buku Mini: Orang di Sekitarku (Mini Book: People Around Me)",
+    "title": "Orang di Sekitarku (People Around Me)",
     "scene": "🧑‍🍳",
     "desc": "Buku gambar mini",
     "texts": [
@@ -32742,11 +32192,11 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "bread"
           },
           {
-            "emoji": "🥣",
+            "emoji": "🍲",
             "label": "soup"
           },
           {
-            "emoji": "👟",
+            "emoji": "👟👟",
             "label": "shoes"
           },
           {
@@ -32790,7 +32240,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "options": [
               "🍉",
               "🥖",
-              "👟"
+              "👟👟"
             ],
             "answer": 0,
             "evidence": [
@@ -32817,7 +32267,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🥖",
-              "🥣",
+              "🍲",
               "💐"
             ],
             "answer": 0,
@@ -32846,7 +32296,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "options": [
               "💐",
               "🍉",
-              "🥣"
+              "🍲"
             ],
             "answer": 0,
             "evidence": [
@@ -32860,7 +32310,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-alam",
-    "title": "Buku Mini: Alam (Mini Book: Nature)",
+    "title": "Alam (Nature)",
     "scene": "🌳",
     "desc": "Buku gambar mini",
     "texts": [
@@ -33004,7 +32454,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "volcano"
           },
           {
-            "emoji": "☁️",
+            "emoji": "☁️☁️",
             "label": "clouds"
           },
           {
@@ -33079,7 +32529,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "🌋",
-              "☁️",
+              "☁️☁️",
               "⭐"
             ],
             "answer": 0,
@@ -33378,7 +32828,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "baca-hobi",
-    "title": "Buku Mini: Hobiku (Mini Book: My Hobbies)",
+    "title": "Hobiku (My Hobbies)",
     "scene": "🎨",
     "desc": "Buku gambar mini",
     "texts": [
@@ -33770,7 +33220,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
         "heading": "📷 Weekend Hobbies",
         "pictures": [
           {
-            "emoji": "🌷",
+            "emoji": "🌷🌷🌷",
             "label": "flowers"
           },
           {
@@ -33778,15 +33228,15 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "label": "photos"
           },
           {
-            "emoji": "🍰",
+            "emoji": "🍰🍰",
             "label": "cakes"
           },
           {
-            "emoji": "🌟",
+            "emoji": "🌟🌟🌟",
             "label": "stickers"
           },
           {
-            "emoji": "🧩",
+            "emoji": "🧩🧩",
             "label": "puzzles"
           }
         ],
@@ -33825,8 +33275,8 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "qId": "Tunjuk gambarnya!",
             "options": [
               "📷",
-              "🍰",
-              "🧩"
+              "🍰🍰",
+              "🧩🧩"
             ],
             "answer": 0,
             "evidence": [
@@ -33852,9 +33302,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🍰",
-              "🌟",
-              "🌷"
+              "🍰🍰",
+              "🌟🌟🌟",
+              "🌷🌷🌷"
             ],
             "answer": 0,
             "evidence": [
@@ -33864,7 +33314,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
           },
           {
             "kind": "truefalse",
-            "picture": "🍰",
+            "picture": "🍰🍰",
             "q": "Grandma grows flowers.",
             "qId": "Nenek menanam bunga.",
             "options": [
@@ -33880,9 +33330,9 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
             "q": "Which picture?",
             "qId": "Tunjuk gambarnya!",
             "options": [
-              "🧩",
-              "🌷",
-              "🍰"
+              "🧩🧩",
+              "🌷🌷🌷",
+              "🍰🍰"
             ],
             "answer": 0,
             "evidence": [
@@ -33896,7 +33346,7 @@ export const READING_TOPICS_STARTER: ReadingTextTopic[] = [
   },
   {
     "id": "buku-di-pantai",
-    "title": "Buku Mini: Di Pantai (Mini Book: At the Beach)",
+    "title": "Di Pantai (At the Beach)",
     "scene": "🏖️",
     "desc": "Buku gambar mini",
     "texts": [
@@ -40156,23 +39606,21 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Two bags of rice.",
-            "id": "Dua karung beras.",
-            "pic": 0
+            "id": "Dua karung beras."
           },
           {
             "en": "Six eggs.",
             "id": "Enam butir telur.",
-            "pic": 1
+            "pic": 0
           },
           {
             "en": "Three big tomatoes.",
             "id": "Tiga tomat besar.",
-            "pic": 2
+            "pic": 1
           },
           {
             "en": "One bottle of milk.",
-            "id": "Satu botol susu.",
-            "pic": 3
+            "id": "Satu botol susu."
           },
           {
             "en": "Here is fifty thousand rupiah.",
@@ -40252,20 +39700,12 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
         ],
         "pictures": [
           {
-            "emoji": "🍚",
-            "label": "rice"
-          },
-          {
-            "emoji": "🥚",
+            "emoji": "🥚🥚🥚🥚🥚🥚",
             "label": "eggs"
           },
           {
-            "emoji": "🍅",
+            "emoji": "🍅🍅🍅",
             "label": "tomatoes"
-          },
-          {
-            "emoji": "🥛",
-            "label": "milk"
           }
         ]
       },
@@ -40294,13 +39734,12 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Buy ten apples, get one free!",
-            "id": "Beli sepuluh apel, gratis satu!",
-            "pic": 3
+            "id": "Beli sepuluh apel, gratis satu!"
           },
           {
             "en": "We are open from seven to nine.",
             "id": "Kami buka jam tujuh sampai sembilan.",
-            "pic": 4
+            "pic": 3
           }
         ],
         "questions": [
@@ -40380,10 +39819,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "🍊",
             "label": "thousand"
-          },
-          {
-            "emoji": "🍎",
-            "label": "free"
           },
           {
             "emoji": "🕖",
@@ -40708,7 +40143,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
             "label": "garden"
           },
           {
-            "emoji": "✏️",
+            "emoji": "🖍️✏️",
             "label": "pencils"
           },
           {
@@ -40823,7 +40258,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
             "label": "blue"
           },
           {
-            "emoji": "🌸",
+            "emoji": "🌸🌼",
             "label": "yellow"
           },
           {
@@ -41171,23 +40606,22 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Drink eight glasses of water.",
-            "id": "Minum delapan gelas air.",
-            "pic": 1
+            "id": "Minum delapan gelas air."
           },
           {
             "en": "Sleep early every night.",
             "id": "Tidur lebih awal setiap malam.",
-            "pic": 2
+            "pic": 1
           },
           {
             "en": "Eat fruit and vegetables.",
             "id": "Makan buah dan sayur.",
-            "pic": 3
+            "pic": 2
           },
           {
             "en": "Play outside every day.",
             "id": "Bermain di luar setiap hari.",
-            "pic": 4
+            "pic": 3
           }
         ],
         "questions": [
@@ -41261,15 +40695,11 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
             "label": "eat"
           },
           {
-            "emoji": "💧",
-            "label": "water"
-          },
-          {
             "emoji": "🛏️",
             "label": "night"
           },
           {
-            "emoji": "🥦",
+            "emoji": "🍎🥦",
             "label": "vegetables"
           },
           {
@@ -41505,8 +40935,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           },
           {
             "en": "Water is free!",
-            "id": "Air putih gratis!",
-            "pic": 4
+            "id": "Air putih gratis!"
           },
           {
             "en": "Open from nine to one.",
@@ -41594,10 +41023,6 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
           {
             "emoji": "🍊",
             "label": "thousand"
-          },
-          {
-            "emoji": "💧",
-            "label": "free"
           }
         ]
       },
@@ -43007,7 +42432,7 @@ export const READING_TOPICS_EXPLORER: ReadingTextTopic[] = [
             "label": "race"
           },
           {
-            "emoji": "🏆",
+            "emoji": "🏆🏆",
             "label": "prizes"
           },
           {

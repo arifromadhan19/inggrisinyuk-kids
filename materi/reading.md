@@ -603,7 +603,7 @@ Setelah pilot Explorer (§20) disetujui konsepnya, user minta **1 pilot di tiap 
 
 ### 21.4 Status implementasi & verifikasi (2026-09-24)
 
-**Semua 5 pilot SUDAH dibangun** — topik ke-11 di Reading tiap level (index 10): Little Stars `buku-di-taman`, Starter `buku-di-pantai`, Adventurer `hari-kemah`, Achiever `buku-harian-liburan`, Trailblazer `memilih-klub-sekolah` (+ Explorer `undangan-ulang-tahun` §20). Masing-masing 2 teks Kenalan/Latihan Inti (10 soal) + 2 teks BARU Tantangan (10 soal).
+**Semua 5 pilot SUDAH dibangun** — topik ke-11 di Reading tiap level (index 10): Little Stars `buku-di-taman` (DIHAPUS 2026-09-28 atas permintaan user — Little Stars kini 10 topik), Starter `buku-di-pantai`, Adventurer `hari-kemah`, Achiever `buku-harian-liburan`, Trailblazer `memilih-klub-sekolah` (+ Explorer `undangan-ulang-tahun` §20). Masing-masing 2 teks Kenalan/Latihan Inti (10 soal) + 2 teks BARU Tantangan (10 soal).
 - `textTier(contentLevel)` (`games/reading.ts`) memasang pembeda per level: audio soal (LS Latihan otomatis + sorot kata, LS Tantangan & Starter tombol 🔊, Explorer+ tanpa audio), Petunjuk (LS/Starter arti kalimat, Explorer arti pertanyaan, Adventurer sorot kalimat bukti, Achiever sorot bukti 🔒 setelah 1x coba, Trailblazer eliminasi 1 opsi 🔒), jumlah opsi dari data (gambar 3, teks 3, Trailblazer 4).
 - Kenalan mode buku (1 halaman/layar, gambar besar, kata disorot saat dibacakan, tap kata = dengar kata), instruksi punya 🔈 (dibacakan Indonesia); 🎮 "Urutkan Halaman" (buku) / "Urutkan Cerita" (teks) via `runTextOrderGame`; Explorer tetap 🎮 "Tunjuk di Gambar".
 - Soal `picture` → setelah benar "👆 Mana tulisan X?" (tap kata); soal `truefalse` → ✅ Cocok / ❌ Tidak Cocok; soal `text` → 🔎 tunjuk kalimat bukti.

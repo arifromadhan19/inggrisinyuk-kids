@@ -1,3 +1,4 @@
+import { readingPicHtml as picHtml } from '../reading-pic';
 import type { LevelKey, OnDone, VocabItem, VocabTopic } from '../types';
 import { setHandlers } from '../interaction';
 import { fireConfetti } from '../confetti';
@@ -111,6 +112,24 @@ function roundActionsHtml(isLast: boolean): string {
       <button class="ghost-btn" type="button" data-action="tryAgainRound">🔁 Coba Lagi</button>
       <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Lanjut ➡️'}</button>
     </div>`;
+}
+
+/**
+ * Jawaban BENAR → jawabannya dibacakan ±1,5 dtk SESUDAH suara pujian
+ * (`pickPraise`), supaya anak mendengar lagi kata yang baru ia pilih/susun
+ * (permintaan user, pola sama Tantangan buku mini Reading). Dibatalkan diam-
+ * diam kalau layar soal sudah berganti (Coba Lagi/Lanjut/pindah dot) —
+ * `anchor` (elemen di layar soal itu) sudah tidak ada di DOM.
+ */
+const ANSWER_SAY_DELAY_MS = 1500;
+let answerSayTimer: number | undefined;
+function sayAnswerAfterPraise(anchor: HTMLElement, text: string, lang?: string): void {
+  window.clearTimeout(answerSayTimer);
+  answerSayTimer = window.setTimeout(() => {
+    if (!anchor.isConnected) return;
+    if (lang) speakLocalized(text, lang);
+    else speak(text);
+  }, ANSWER_SAY_DELAY_MS);
 }
 
 function lockOptionButtons(container: HTMLElement): void {
@@ -552,8 +571,16 @@ function overrideIconHtml(topicId: string, en: string): string | null {
 function itemGlyph(topicId: string, it: VocabItem): string {
   return overrideIconHtml(topicId, it.en) ?? it.emoji;
 }
-function exampleGlyph(topicId: string, it: VocabItem): string {
-  return overrideIconHtml(topicId, it.en) ?? it.example.emoji;
+
+/** Ikon kalimat contoh di "🗣️ Penggunaan": topik angka (semua kata = kata
+ *  angka, `isNumberTopic`) → emoji diulang SESUAI nilai kata ("two dogs" →
+ *  🐶🐶), sama dgn `drawSentence` — jumlah ikon harus cocok dgn kalimat. */
+function countedExampleGlyph(topicId: string, items: VocabItem[], it: VocabItem): string {
+  const override = overrideIconHtml(topicId, it.en);
+  if (override) return override;
+  const allNumbers = items.every((x) => numberWordValue(x.en) !== null);
+  const n = allNumbers ? numberWordValue(it.en) ?? 1 : 1;
+  return picHtml(n > 1 ? it.example.emoji.repeat(n) : it.example.emoji);
 }
 
 function primerIconHtml(topic: VocabTopic, it: VocabItem): string {
@@ -1143,6 +1170,7 @@ function runWordMiniGame(container: HTMLElement, topic: VocabTopic, startIndex: 
       fireConfetti();
       fb.textContent = pickPraise(level);
       fb.className = 'feedback good';
+      sayAnswerAfterPraise(btn, item.en);
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
@@ -1414,6 +1442,11 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
       fireConfetti();
       fb.textContent = pickPraise(level);
       fb.className = 'feedback good';
+      // Yang dibacakan = teks jawaban benar di kartu: Inggris ('hear'/'toEn'),
+      // Indonesia ('toId'), kalimat utuh yang sudah terisi ('sentence').
+      if (q.kind === 'toId') sayAnswerAfterPraise(btn, q.target.id, 'id-ID');
+      else if (q.kind === 'sentence') sayAnswerAfterPraise(btn, q.target.example.en);
+      else sayAnswerAfterPraise(btn, q.target.en);
     } else {
       recordAttempt(false);
       btn.classList.add('wrong');
@@ -1600,7 +1633,7 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
       scene = `<div class="big-emoji" aria-hidden="true">${q.target.example.emoji}</div>`;
     } else if (numberTopic) {
       const count = numberWordValue(q.target.en) ?? 1;
-      scene = `<div class="big-emoji" style="letter-spacing:8px;font-size:clamp(30px,8vw,48px)" aria-hidden="true">${q.target.example.emoji.repeat(count)}</div>`;
+      scene = `<div class="big-emoji" style="font-size:clamp(48px,14vw,72px)" aria-hidden="true">${picHtml(q.target.example.emoji.repeat(count))}</div>`;
     } else if (shapeTopic) {
       scene = `<div class="big-emoji" aria-hidden="true">${q.target.example.emoji}</div>`;
     }
@@ -2002,6 +2035,7 @@ export function runEjaKata(
             fireConfetti();
             fb.textContent = pickPraise(level);
             fb.className = 'feedback good';
+            sayAnswerAfterPraise(fb, it.en);
           } else {
             recordAttempt(false);
             container.querySelector('.answer-row')?.classList.add('is-wrong');
@@ -2083,7 +2117,7 @@ function runUcapan(container: HTMLElement, topicId: string, allItems: VocabItem[
     container.innerHTML = `
       ${quizNavHtml(round, items.length, ucapStatus)}
       <div class="id-text">Kata "${it.en}" · ${round + 1} dari ${items.length}</div>
-      <div class="big-emoji" style="font-size:40px;">${exampleGlyph(topicId, it)}</div>
+      <div class="big-emoji" style="font-size:40px;">${countedExampleGlyph(topicId, allItems, it)}</div>
       <div class="en-text">${ex.en}</div>
       <div class="id-text">${ex.id}</div>
       <div class="speak-row">
@@ -2398,7 +2432,8 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
         fireConfetti();
         fb.textContent = pickPraise(level);
         fb.className = 'feedback good';
-        speak(ex.en);
+        // Dulu `speak(ex.en)` langsung — memotong suara pujian.
+        sayAnswerAfterPraise(fb, ex.en);
       } else {
         recordAttempt(false);
         container.querySelector('.answer-row')?.classList.add('is-wrong');
