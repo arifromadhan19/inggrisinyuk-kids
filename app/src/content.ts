@@ -7449,38 +7449,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "How many tickets does Tika buy?",
-            "qId": "Tika membeli berapa tiket?",
+            "kind": "reply",
+            "hide": 3,
+            "q": "What does Staff say?",
+            "qId": "Apa yang dikatakan petugas?",
             "options": [
-              "Two",
-              "One",
-              "Four"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ]
-          },
-          {
-            "q": "How much are the tickets?",
-            "qId": "Berapa harga tiketnya?",
-            "options": [
-              "Forty thousand rupiah",
-              "Fourteen thousand rupiah",
-              "Four thousand rupiah"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
-            "q": "Where should Tika turn left?",
-            "qId": "Di mana Tika harus belok kiri?",
-            "options": [
-              "At the café",
-              "At the gate",
-              "At the bird show"
+              "Go straight, then turn left at the café.",
+              "That's forty thousand rupiah, please."
             ],
             "answer": 0,
             "evidence": [
@@ -7488,12 +7463,39 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Tika asks, 'Is there a show today?' What does the staff answer?",
-            "qId": "Tika bertanya 'Hari ini ada pertunjukan?'. Petugas menjawab apa?",
+            "kind": "gap",
+            "q": "Tika wants to see the ___.",
+            "qId": "Tika ingin melihat ___.",
+            "word": "giraffes",
+            "options": [
+              "giraffes"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Near the ___, Tika should go left.",
+            "qId": "Di dekat ___, Tika harus belok kiri.",
+            "word": "café",
+            "options": [
+              "café"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "kind": "reply",
+            "hide": 5,
+            "q": "What does Staff say?",
+            "qId": "Apa yang dikatakan petugas?",
             "options": [
               "Yes, the bird show starts at eleven.",
-              "Go straight, then turn left.",
-              "That's forty thousand rupiah."
+              "Go straight, then turn left at the café."
             ],
             "answer": 0,
             "evidence": [
@@ -7501,16 +7503,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Which animals does Tika want to find?",
-            "qId": "Hewan apa yang ingin Tika cari?",
+            "kind": "gap",
+            "q": "The bird show begins at ___.",
+            "qId": "Pertunjukan burung mulai jam ___.",
+            "word": "eleven",
             "options": [
-              "The giraffes",
-              "The birds",
-              "The lions"
+              "eleven"
             ],
             "answer": 0,
             "evidence": [
-              2
+              5
             ]
           }
         ]
@@ -7552,12 +7554,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What was the surprise?",
-            "qId": "Apa kejutannya?",
+            "kind": "gap",
+            "q": "The baby elephant came into the world on ___.",
+            "qId": "Bayi gajah itu lahir hari ___.",
+            "word": "Monday",
             "options": [
-              "A baby elephant was born.",
-              "A new lion came.",
-              "The zoo got bigger."
+              "Monday"
             ],
             "answer": 0,
             "evidence": [
@@ -7565,16 +7567,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "When was the baby born?",
-            "qId": "Kapan bayinya lahir?",
+            "kind": "gap",
+            "q": "The baby is little but ___.",
+            "qId": "Bayi itu kecil tapi ___.",
+            "word": "strong",
             "options": [
-              "On Monday",
-              "On Friday",
-              "On Sunday"
+              "strong"
             ],
             "answer": 0,
             "evidence": [
-              1
+              2
             ]
           },
           {
@@ -7591,16 +7593,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What can children do?",
-            "qId": "Apa yang boleh dilakukan anak-anak?",
+            "kind": "gap",
+            "q": "The keeper picks the best name on ___.",
+            "qId": "Penjaga memilih nama terbaik hari ___.",
+            "word": "Friday",
             "options": [
-              "Vote for her name",
-              "Feed the baby",
-              "Ride the elephant"
+              "Friday"
             ],
             "answer": 0,
             "evidence": [
-              4
+              6
             ]
           },
           {
@@ -7868,12 +7870,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where is Adi going?",
-            "qId": "Adi akan pergi ke mana?",
+            "kind": "reply",
+            "hide": 1,
+            "q": "What does Adi say?",
+            "qId": "Apa yang dikatakan Adi?",
             "options": [
-              "To Bandung",
-              "To Bali",
-              "To Rina's house"
+              "We're going to visit my grandma in Bandung.",
+              "Great! Send me a photo of your holiday."
             ],
             "answer": 0,
             "evidence": [
@@ -7881,12 +7884,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Who will Adi visit?",
-            "qId": "Siapa yang akan Adi kunjungi?",
+            "kind": "gap",
+            "q": "Adi's grandma lives in ___.",
+            "qId": "Nenek Adi tinggal di ___.",
+            "word": "Bandung",
             "options": [
-              "His grandma",
-              "His cousin",
-              "Rina"
+              "Bandung"
             ],
             "answer": 0,
             "evidence": [
@@ -7894,12 +7897,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What must Adi bring?",
-            "qId": "Apa yang harus Adi bawa?",
+            "kind": "gap",
+            "q": "Adi's mom wants him to take a ___.",
+            "qId": "Ibu Adi ingin dia membawa ___.",
+            "word": "jacket",
             "options": [
-              "A jacket",
-              "A photo",
-              "An umbrella"
+              "jacket"
             ],
             "answer": 0,
             "evidence": [
@@ -7907,29 +7910,30 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Rina says, 'I'm staying home.' Who is coming to her house?",
-            "qId": "Rina bilang dia di rumah saja. Siapa yang datang ke rumahnya?",
+            "kind": "reply",
+            "hide": 3,
+            "q": "What does Adi say?",
+            "qId": "Apa yang dikatakan Adi?",
             "options": [
-              "Her cousin",
-              "Adi's grandma",
-              "Adi"
+              "Yes. My mom says I must bring a jacket.",
+              "We're going to visit my grandma in Bandung."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Rina's ___ is visiting her.",
+            "qId": "___ Rina datang berkunjung.",
+            "word": "cousin",
+            "options": [
+              "cousin"
             ],
             "answer": 0,
             "evidence": [
               4
-            ]
-          },
-          {
-            "q": "What does Adi ask Rina to send?",
-            "qId": "Adi minta Rina mengirim apa?",
-            "options": [
-              "A photo",
-              "A jacket",
-              "A letter"
-            ],
-            "answer": 0,
-            "evidence": [
-              5
             ]
           }
         ]
@@ -7971,12 +7975,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "When did they go camping?",
-            "qId": "Kapan mereka berkemah?",
+            "kind": "gap",
+            "q": "The family's trip was in ___.",
+            "qId": "Perjalanan keluarga itu pada bulan ___.",
+            "word": "July",
             "options": [
-              "In July",
-              "In June",
-              "In December"
+              "July"
             ],
             "answer": 0,
             "evidence": [
@@ -7984,29 +7988,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How long did they walk?",
-            "qId": "Berapa lama mereka berjalan?",
+            "kind": "gap",
+            "q": "The walk to the top took three ___.",
+            "qId": "Perjalanan ke puncak butuh tiga ___.",
+            "word": "hours",
             "options": [
-              "Three hours",
-              "Three days",
-              "Thirty minutes"
+              "hours"
             ],
             "answer": 0,
             "evidence": [
               2
-            ]
-          },
-          {
-            "q": "What did they see at the top?",
-            "qId": "Apa yang mereka lihat di puncak?",
-            "options": [
-              "Clouds below them",
-              "A big lake",
-              "A hotel"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
             ]
           },
           {
@@ -8020,6 +8011,19 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               5
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "From the top, they looked down at the ___.",
+            "qId": "Dari puncak, mereka melihat ___ di bawah.",
+            "word": "clouds",
+            "options": [
+              "clouds"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
             ]
           },
           {
@@ -8287,25 +8291,26 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What did Mia lose?",
-            "qId": "Apa yang hilang dari Mia?",
+            "kind": "reply",
+            "hide": 3,
+            "q": "What does Tono say?",
+            "qId": "Apa yang dikatakan Tono?",
             "options": [
-              "Her pencil case",
-              "Her book",
-              "Her bag"
+              "I saw it on Mr. Budi's desk.",
+              "Is it blue with stars on it?"
             ],
             "answer": 0,
             "evidence": [
-              0
+              3
             ]
           },
           {
-            "q": "What does the pencil case look like?",
-            "qId": "Kotak pensilnya seperti apa?",
+            "kind": "gap",
+            "q": "Mia's pencil case has ___ on it.",
+            "qId": "Kotak pensil Mia bergambar ___.",
+            "word": "stars",
             "options": [
-              "Blue with stars",
-              "Red with stars",
-              "Blue with flowers"
+              "stars"
             ],
             "answer": 0,
             "evidence": [
@@ -8313,12 +8318,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Where did Tono see it?",
-            "qId": "Di mana Tono melihatnya?",
+            "kind": "gap",
+            "q": "It was on the teacher's ___.",
+            "qId": "Kotak pensil itu ada di ___ guru.",
+            "word": "desk",
             "options": [
-              "On Mr. Budi's desk",
-              "In Mia's bag",
-              "In the library"
+              "desk"
             ],
             "answer": 0,
             "evidence": [
@@ -8326,29 +8331,30 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "When did Mia leave it there?",
-            "qId": "Kapan Mia meninggalkannya di sana?",
+            "kind": "reply",
+            "hide": 1,
+            "q": "What does Tono say?",
+            "qId": "Apa yang dikatakan Tono?",
             "options": [
-              "After Maths",
-              "Before school",
-              "At lunch"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
-          },
-          {
-            "q": "Mia asks, 'Where is it?' What does Tono answer?",
-            "qId": "Mia bertanya 'Di mana?'. Tono menjawab apa?",
-            "options": [
-              "I saw it on Mr. Budi's desk.",
               "Is it blue with stars on it?",
               "Let's go and get it now."
             ],
             "answer": 0,
             "evidence": [
-              3
+              1
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Mia forgot it there after ___.",
+            "qId": "Mia lupa membawanya setelah pelajaran ___.",
+            "word": "Maths",
+            "options": [
+              "Maths"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
             ]
           }
         ]
@@ -8390,16 +8396,29 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where is the garden?",
-            "qId": "Kebunnya di mana?",
+            "kind": "gap",
+            "q": "The garden is ___ the school.",
+            "qId": "Kebunnya ada di ___ sekolah.",
+            "word": "behind",
             "options": [
-              "Behind the school",
-              "In front of the school",
-              "At the teacher's house"
+              "behind"
             ],
             "answer": 0,
             "evidence": [
               0
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "The children planted beans and ___.",
+            "qId": "Anak-anak menanam kacang dan ___.",
+            "word": "tomatoes",
+            "options": [
+              "tomatoes"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
             ]
           },
           {
@@ -8416,29 +8435,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What did they plant?",
-            "qId": "Mereka menanam apa?",
+            "kind": "gap",
+            "q": "Next week the class will make a ___.",
+            "qId": "Minggu depan kelas akan membuat ___.",
+            "word": "salad",
             "options": [
-              "Tomatoes and beans",
-              "Flowers and trees",
-              "Carrots and corn"
+              "salad"
             ],
             "answer": 0,
             "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "When did the leaves come out?",
-            "qId": "Kapan daunnya muncul?",
-            "options": [
-              "After two weeks",
-              "After one day",
-              "After two months"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
+              6
             ]
           },
           {
@@ -8702,12 +8708,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What day is the party?",
-            "qId": "Pestanya hari apa?",
+            "kind": "reply",
+            "hide": 2,
+            "q": "What does Sari say?",
+            "qId": "Apa yang dikatakan Sari?",
             "options": [
-              "Sunday",
-              "Saturday",
-              "Friday"
+              "It's on Sunday at four o'clock.",
+              "Oh! Can you come after that?"
             ],
             "answer": 0,
             "evidence": [
@@ -8715,12 +8722,25 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why can't Budi come at four?",
-            "qId": "Kenapa Budi tidak bisa datang jam empat?",
+            "kind": "gap",
+            "q": "Sari's party is on ___.",
+            "qId": "Pesta Sari hari ___.",
+            "word": "Sunday",
             "options": [
-              "He has a swimming lesson.",
-              "He is sick.",
-              "He is at school."
+              "Sunday"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Budi has a ___ lesson at four.",
+            "qId": "Budi ada les ___ jam empat.",
+            "word": "swimming",
+            "options": [
+              "swimming"
             ],
             "answer": 0,
             "evidence": [
@@ -8728,12 +8748,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What time can Budi come?",
-            "qId": "Jam berapa Budi bisa datang?",
+            "kind": "reply",
+            "hide": 5,
+            "q": "What does Budi say?",
+            "qId": "Apa yang dikatakan Budi?",
             "options": [
-              "At five",
-              "At four",
-              "At six"
+              "Yes! I can come at five.",
+              "When is it?"
             ],
             "answer": 0,
             "evidence": [
@@ -8741,29 +8762,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Budi asks, 'When is it?' What does Sari answer?",
-            "qId": "Budi bertanya 'Kapan?'. Sari menjawab apa?",
+            "kind": "gap",
+            "q": "Budi will arrive at ___.",
+            "qId": "Budi akan datang jam ___.",
+            "word": "five",
             "options": [
-              "It's on Sunday at four o'clock.",
-              "Can you come after that?",
-              "Can you come to my party?"
+              "five"
             ],
             "answer": 0,
             "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "Who is having a party?",
-            "qId": "Siapa yang mengadakan pesta?",
-            "options": [
-              "Sari",
-              "Budi",
-              "Budi's swimming teacher"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
+              5
             ]
           }
         ]
@@ -8805,16 +8813,29 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What did Ali buy for Tom?",
-            "qId": "Ali membeli apa untuk Tom?",
+            "kind": "gap",
+            "q": "Ali got Tom a ___ kite.",
+            "qId": "Ali memberi Tom layangan ___.",
+            "word": "blue",
             "options": [
-              "A blue kite",
-              "A red ball",
-              "A toy car"
+              "blue"
             ],
             "answer": 0,
             "evidence": [
               0
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "The paper on the gift had ___.",
+            "qId": "Kertas kadonya bergambar ___.",
+            "word": "stars",
+            "options": [
+              "stars"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
             ]
           },
           {
@@ -8831,29 +8852,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How did Ali feel at first?",
-            "qId": "Bagaimana perasaan Ali awalnya?",
+            "kind": "gap",
+            "q": "At first, Ali was a little ___.",
+            "qId": "Awalnya, Ali sedikit ___.",
+            "word": "sad",
             "options": [
-              "A little sad",
-              "Very angry",
-              "Very sleepy"
+              "sad"
             ],
             "answer": 0,
             "evidence": [
               4
-            ]
-          },
-          {
-            "q": "What did the boys do after the party?",
-            "qId": "Apa yang mereka lakukan setelah pesta?",
-            "options": [
-              "They flew kites in the park.",
-              "They went to school.",
-              "They bought more gifts."
-            ],
-            "answer": 0,
-            "evidence": [
-              6
             ]
           },
           {
@@ -9117,25 +9125,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What does Dina want to buy?",
-            "qId": "Dina ingin membeli apa?",
+            "kind": "reply",
+            "hide": 2,
+            "q": "What does Seller say?",
+            "qId": "Apa yang dikatakan penjual?",
             "options": [
-              "Oranges",
-              "Mangoes",
-              "Bananas"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
-            "q": "How much is one kilo?",
-            "qId": "Berapa harga sekilo?",
-            "options": [
-              "Twelve thousand",
-              "Twenty-four thousand",
-              "Two thousand"
+              "Twelve thousand for one kilo.",
+              "Good morning! What would you like?"
             ],
             "answer": 0,
             "evidence": [
@@ -9143,12 +9139,25 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How many kilos does Dina buy?",
-            "qId": "Dina membeli berapa kilo?",
+            "kind": "gap",
+            "q": "Dina wants to buy ___.",
+            "qId": "Dina ingin membeli ___.",
+            "word": "oranges",
             "options": [
-              "Two",
-              "One",
-              "Twelve"
+              "oranges"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Dina asks for ___ kilos.",
+            "qId": "Dina minta ___ kilo.",
+            "word": "two",
+            "options": [
+              "two"
             ],
             "answer": 0,
             "evidence": [
@@ -9156,12 +9165,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Dina asks for two kilos. What does the seller say?",
-            "qId": "Dina minta dua kilo. Penjual bilang apa?",
+            "kind": "reply",
+            "hide": 4,
+            "q": "What does Seller say?",
+            "qId": "Apa yang dikatakan penjual?",
             "options": [
               "Sure. That's twenty-four thousand.",
-              "Twelve thousand for one kilo.",
-              "What would you like?"
+              "Good morning! What would you like?"
             ],
             "answer": 0,
             "evidence": [
@@ -9169,16 +9179,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Who says 'Good morning'?",
-            "qId": "Siapa yang bilang 'Selamat pagi'?",
+            "kind": "gap",
+            "q": "Dina pays ___ thousand.",
+            "qId": "Dina membayar ___ ribu.",
+            "word": "twenty-four",
             "options": [
-              "The seller",
-              "Dina",
-              "Dina's mom"
+              "twenty-four"
             ],
             "answer": 0,
             "evidence": [
-              0
+              4
             ]
           }
         ]
@@ -9220,12 +9230,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What did Dad buy?",
-            "qId": "Ayah membeli apa?",
+            "kind": "gap",
+            "q": "Dad bought eggs, rice and ___.",
+            "qId": "Ayah membeli telur, beras, dan ___.",
+            "word": "onions",
             "options": [
-              "Rice, eggs and onions",
-              "Fish and bread",
-              "Fruit and milk"
+              "onions"
             ],
             "answer": 0,
             "evidence": [
@@ -9233,29 +9243,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What was the problem?",
-            "qId": "Apa masalahnya?",
+            "kind": "gap",
+            "q": "Dad could not find his ___.",
+            "qId": "Ayah tidak bisa menemukan ___ miliknya.",
+            "word": "wallet",
             "options": [
-              "Dad's wallet was gone.",
-              "The market was closed.",
-              "Budi was lost."
+              "wallet"
             ],
             "answer": 0,
             "evidence": [
               2
-            ]
-          },
-          {
-            "q": "Where did Dad leave his wallet?",
-            "qId": "Di mana Ayah meninggalkan dompetnya?",
-            "options": [
-              "On the egg seller's table",
-              "At home",
-              "In the car"
-            ],
-            "answer": 0,
-            "evidence": [
-              5
             ]
           },
           {
@@ -9269,6 +9266,19 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "A ___ seller kept the wallet safe.",
+            "qId": "Penjual yang ___ menjaga dompet itu.",
+            "word": "kind",
+            "options": [
+              "kind"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
             ]
           },
           {
@@ -9533,12 +9543,26 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What did Adi forget?",
-            "qId": "Apa yang Adi lupa bawa?",
+            "kind": "reply",
+            "hide": 3,
+            "q": "What does Lia say?",
+            "qId": "Apa yang dikatakan Lia?",
             "options": [
-              "His umbrella",
-              "His book",
-              "His raincoat"
+              "Let's wait in the library first.",
+              "You can share mine."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Adi did not bring his ___.",
+            "qId": "Adi tidak membawa ___ miliknya.",
+            "word": "umbrella",
+            "options": [
+              "umbrella"
             ],
             "answer": 0,
             "evidence": [
@@ -9546,55 +9570,43 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does Lia offer?",
-            "qId": "Apa yang Lia tawarkan?",
+            "kind": "gap",
+            "q": "Lia's umbrella is very ___.",
+            "qId": "Payung Lia sangat ___.",
+            "word": "small",
             "options": [
-              "To share her umbrella",
-              "To call his mom",
-              "To give him a raincoat"
+              "small"
             ],
             "answer": 0,
             "evidence": [
-              1
+              2
             ]
           },
           {
-            "q": "Where do they decide to wait?",
-            "qId": "Mereka memutuskan menunggu di mana?",
+            "kind": "reply",
+            "hide": 5,
+            "q": "What does Lia say?",
+            "qId": "Apa yang dikatakan Lia?",
             "options": [
-              "In the library",
-              "At the gate",
-              "In the canteen"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ]
-          },
-          {
-            "q": "Adi says, 'Thanks! But it's very small.' What does Lia say next?",
-            "qId": "Adi bilang 'Makasih! Tapi kecil sekali.' Lia bilang apa?",
-            "options": [
-              "Let's wait in the library first.",
-              "You can share mine.",
-              "Look, it's stopping now!"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ]
-          },
-          {
-            "q": "What happens at the end?",
-            "qId": "Apa yang terjadi di akhir?",
-            "options": [
-              "The rain is stopping.",
-              "It rains harder.",
-              "Adi goes home wet."
+              "Look, it's stopping now!",
+              "You can share mine."
             ],
             "answer": 0,
             "evidence": [
               5
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "They wait inside the ___.",
+            "qId": "Mereka menunggu di dalam ___.",
+            "word": "library",
+            "options": [
+              "library"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
             ]
           }
         ]
@@ -9636,25 +9648,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "When did Tono hear the sound?",
-            "qId": "Kapan Tono mendengar suara itu?",
+            "kind": "gap",
+            "q": "The sound came from the ___.",
+            "qId": "Suaranya berasal dari ___.",
+            "word": "pond",
             "options": [
-              "After the rain",
-              "Before breakfast",
-              "At school"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ]
-          },
-          {
-            "q": "Where did the sound come from?",
-            "qId": "Suara itu dari mana?",
-            "options": [
-              "The pond behind his house",
-              "His bedroom",
-              "The kitchen"
+              "pond"
             ],
             "answer": 0,
             "evidence": [
@@ -9662,16 +9661,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What was making the sound?",
-            "qId": "Apa yang membuat suara itu?",
+            "kind": "gap",
+            "q": "Tono took a ___ with him.",
+            "qId": "Tono membawa ___.",
+            "word": "torch",
             "options": [
-              "Ten little frogs",
-              "His little sister",
-              "The rain on the roof"
+              "torch"
             ],
             "answer": 0,
             "evidence": [
-              3
+              2
             ]
           },
           {
@@ -9685,6 +9684,19 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               4
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "There were ___ frogs.",
+            "qId": "Ada ___ katak.",
+            "word": "Ten",
+            "options": [
+              "Ten"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
             ]
           },
           {
@@ -9948,25 +9960,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "How does Bima feel?",
-            "qId": "Bagaimana perasaan Bima?",
+            "kind": "reply",
+            "hide": 2,
+            "q": "What does Coach say?",
+            "qId": "Apa yang dikatakan pelatih?",
             "options": [
-              "A bit nervous",
-              "Very angry",
-              "Very sleepy"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
-            "q": "What does the coach tell Bima to do?",
-            "qId": "Pelatih menyuruh Bima melakukan apa?",
-            "options": [
-              "Run his best",
-              "Win the race",
-              "Go home"
+              "That's okay. Just run your best.",
+              "Then get up and keep running!"
             ],
             "answer": 0,
             "evidence": [
@@ -9974,12 +9974,25 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What is Bima worried about?",
-            "qId": "Bima khawatir tentang apa?",
+            "kind": "gap",
+            "q": "Bima feels a bit ___.",
+            "qId": "Bima merasa agak ___.",
+            "word": "nervous",
             "options": [
-              "Falling down",
-              "Losing his shoes",
-              "Being late"
+              "nervous"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Bima is afraid he will ___.",
+            "qId": "Bima takut dia akan ___.",
+            "word": "fall",
+            "options": [
+              "fall"
             ],
             "answer": 0,
             "evidence": [
@@ -9987,11 +10000,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Bima asks, 'What if I fall?' What does the coach answer?",
-            "qId": "Bima bertanya 'Kalau aku jatuh?'. Pelatih menjawab apa?",
+            "kind": "reply",
+            "hide": 4,
+            "q": "What does Coach say?",
+            "qId": "Apa yang dikatakan pelatih?",
             "options": [
               "Then get up and keep running!",
-              "Just run your best.",
               "Are you ready, Bima?"
             ],
             "answer": 0,
@@ -10000,16 +10014,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Who is Bima talking to?",
-            "qId": "Bima berbicara dengan siapa?",
+            "kind": "gap",
+            "q": "At the end, Bima says he will ___.",
+            "qId": "Akhirnya, Bima bilang dia akan ___.",
+            "word": "try",
             "options": [
-              "His coach",
-              "His mom",
-              "His friend"
+              "try"
             ],
             "answer": 0,
             "evidence": [
-              0
+              5
             ]
           }
         ]
@@ -10051,42 +10065,29 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Who scored first?",
-            "qId": "Siapa yang mencetak gol duluan?",
+            "kind": "gap",
+            "q": "The Tigers played on ___.",
+            "qId": "Tim Tigers bertanding hari ___.",
+            "word": "Saturday",
             "options": [
-              "The Eagles",
-              "The Tigers",
-              "Dewi"
+              "Saturday"
             ],
             "answer": 0,
             "evidence": [
-              1
+              0
             ]
           },
           {
-            "q": "Who passed the ball to Dewi?",
-            "qId": "Siapa yang mengoper bola ke Dewi?",
+            "kind": "gap",
+            "q": "Dewi kicked the ball very ___.",
+            "qId": "Dewi menendang bola dengan sangat ___.",
+            "word": "hard",
             "options": [
-              "Rafi",
-              "The coach",
-              "An Eagles player"
+              "hard"
             ],
             "answer": 0,
             "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "What was the score after Dewi's goal?",
-            "qId": "Berapa skornya setelah gol Dewi?",
-            "options": [
-              "One to one",
-              "Two to one",
-              "One to zero"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
+              3
             ]
           },
           {
@@ -10100,6 +10101,19 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Rafi's second goal came in the final ___.",
+            "qId": "Gol kedua Rafi terjadi di ___ terakhir.",
+            "word": "minute",
+            "options": [
+              "minute"
+            ],
+            "answer": 0,
+            "evidence": [
+              5
             ]
           },
           {
@@ -10361,50 +10375,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What are they making?",
-            "qId": "Mereka membuat apa?",
-            "options": [
-              "Cookies",
-              "Pancakes",
-              "Bread"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ]
-          },
-          {
-            "q": "What is missing?",
-            "qId": "Apa yang tidak ada?",
-            "options": [
-              "Chocolate",
-              "Butter",
-              "Sugar"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ]
-          },
-          {
-            "q": "What will they use instead?",
-            "qId": "Mereka memakai apa sebagai gantinya?",
-            "options": [
-              "Raisins",
-              "Nuts",
-              "Honey"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
-          },
-          {
-            "q": "Rudi asks, 'What do we need?' What does Grandma answer?",
-            "qId": "Rudi bertanya 'Kita butuh apa?'. Nenek menjawab apa?",
+            "kind": "reply",
+            "hide": 2,
+            "q": "What does Grandma say?",
+            "qId": "Apa yang dikatakan Nenek?",
             "options": [
               "Butter, sugar, flour and chocolate.",
-              "Let's make cookies today!",
               "Then let's use raisins instead."
             ],
             "answer": 0,
@@ -10413,16 +10389,56 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does Rudi think of raisin cookies?",
-            "qId": "Apa pendapat Rudi soal kue kering kismis?",
+            "kind": "gap",
+            "q": "Grandma and Rudi want to bake ___.",
+            "qId": "Nenek dan Rudi ingin membuat ___.",
+            "word": "cookies",
             "options": [
-              "They sound yummy.",
-              "He does not want them.",
-              "They are too sweet."
+              "cookies"
             ],
             "answer": 0,
             "evidence": [
-              5
+              0
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "They have no ___.",
+            "qId": "Mereka tidak punya ___.",
+            "word": "chocolate",
+            "options": [
+              "chocolate"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "kind": "reply",
+            "hide": 4,
+            "q": "What does Grandma say?",
+            "qId": "Apa yang dikatakan Nenek?",
+            "options": [
+              "Then let's use raisins instead.",
+              "Let's make cookies today!"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "They use ___ instead.",
+            "qId": "Mereka memakai ___ sebagai gantinya.",
+            "word": "raisins",
+            "options": [
+              "raisins"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
             ]
           }
         ]
@@ -10464,16 +10480,29 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Who was the soup for?",
-            "qId": "Sup itu untuk siapa?",
+            "kind": "gap",
+            "q": "Lina's mom was ___.",
+            "qId": "Ibu Lina sedang ___.",
+            "word": "sick",
             "options": [
-              "Lina's sick mom",
-              "Lina's dad",
-              "Lina"
+              "sick"
             ],
             "answer": 0,
             "evidence": [
               0
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Lina put in too much ___.",
+            "qId": "Lina memasukkan terlalu banyak ___.",
+            "word": "salt",
+            "options": [
+              "salt"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
             ]
           },
           {
@@ -10490,26 +10519,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What was wrong with the soup?",
-            "qId": "Apa yang salah dengan supnya?",
+            "kind": "gap",
+            "q": "Dad added more water and ___.",
+            "qId": "Ayah menambahkan air dan ___.",
+            "word": "potatoes",
             "options": [
-              "It was too salty.",
-              "It was too cold.",
-              "It was too sweet."
-            ],
-            "answer": 0,
-            "evidence": [
-              3,
-              4
-            ]
-          },
-          {
-            "q": "How did they fix the soup?",
-            "qId": "Bagaimana mereka memperbaiki supnya?",
-            "options": [
-              "They added water and potatoes.",
-              "They added more salt.",
-              "They cooked a new soup."
+              "potatoes"
             ],
             "answer": 0,
             "evidence": [
@@ -10777,12 +10792,26 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What does Bayu want?",
-            "qId": "Bayu ingin apa?",
+            "kind": "reply",
+            "hide": 1,
+            "q": "What does Sita say?",
+            "qId": "Apa yang dikatakan Sita?",
             "options": [
-              "A turn on the swing",
-              "A turn on the slide",
-              "A drink"
+              "I just got on. Can you wait a bit?",
+              "Yes, please! Higher!"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Bayu wants a turn on the ___.",
+            "qId": "Bayu ingin giliran main ___.",
+            "word": "swing",
+            "options": [
+              "swing"
             ],
             "answer": 0,
             "evidence": [
@@ -10790,12 +10819,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How long must Bayu wait?",
-            "qId": "Berapa lama Bayu harus menunggu?",
+            "kind": "gap",
+            "q": "Bayu must wait five ___.",
+            "qId": "Bayu harus menunggu lima ___.",
+            "word": "minutes",
             "options": [
-              "Five minutes",
-              "Ten minutes",
-              "One minute"
+              "minutes"
             ],
             "answer": 0,
             "evidence": [
@@ -10803,24 +10832,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does Bayu offer to do?",
-            "qId": "Bayu menawarkan apa?",
-            "options": [
-              "Push Sita",
-              "Go home",
-              "Play on the slide"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
-          },
-          {
-            "q": "Bayu asks, 'How long?' What does Sita answer?",
-            "qId": "Bayu bertanya 'Berapa lama?'. Sita menjawab apa?",
+            "kind": "reply",
+            "hide": 3,
+            "q": "What does Sita say?",
+            "qId": "Apa yang dikatakan Sita?",
             "options": [
               "Five more minutes, then it's your turn.",
-              "Can you wait a bit?",
               "Yes, please! Higher!"
             ],
             "answer": 0,
@@ -10829,16 +10846,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How does Sita feel when Bayu pushes her?",
-            "qId": "Bagaimana perasaan Sita saat didorong Bayu?",
+            "kind": "gap",
+            "q": "While waiting, Bayu wants to ___ Sita.",
+            "qId": "Sambil menunggu, Bayu ingin ___ Sita.",
+            "word": "push",
             "options": [
-              "Happy",
-              "Angry",
-              "Scared"
+              "push"
             ],
             "answer": 0,
             "evidence": [
-              5
+              4
             ]
           }
         ]
@@ -10880,16 +10897,29 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where was the cat?",
-            "qId": "Di mana kucing itu?",
+            "kind": "gap",
+            "q": "The cat was up in a ___.",
+            "qId": "Kucing itu ada di atas ___.",
+            "word": "tree",
             "options": [
-              "High up in a tree",
-              "On the slide",
-              "In a box"
+              "tree"
             ],
             "answer": 0,
             "evidence": [
               1
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "The keeper came with a long ___.",
+            "qId": "Penjaga datang membawa ___ panjang.",
+            "word": "ladder",
+            "options": [
+              "ladder"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
             ]
           },
           {
@@ -10907,25 +10937,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What did the keeper bring?",
-            "qId": "Apa yang dibawa penjaga?",
+            "kind": "gap",
+            "q": "The cat rubbed against Nia's ___.",
+            "qId": "Kucing itu menggesekkan badan ke ___ Nia.",
+            "word": "legs",
             "options": [
-              "A long ladder",
-              "A big box",
-              "Some food"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
-          },
-          {
-            "q": "How did the cat feel at the end?",
-            "qId": "Bagaimana perasaan kucing itu di akhir?",
-            "options": [
-              "Happy",
-              "Scared",
-              "Angry"
+              "legs"
             ],
             "answer": 0,
             "evidence": [
@@ -11191,25 +11208,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Who asks for the tickets?",
-            "qId": "Siapa yang meminta tiket?",
+            "kind": "reply",
+            "hide": 2,
+            "q": "What does Conductor say?",
+            "qId": "Apa yang dikatakan kondektur?",
             "options": [
-              "The conductor",
-              "Mom",
-              "Riko"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ]
-          },
-          {
-            "q": "Which seats are theirs?",
-            "qId": "Kursi mereka nomor berapa?",
-            "options": [
-              "12 and 13",
-              "2 and 3",
-              "13 and 14"
+              "Thank you. You are in seats 12 and 13.",
+              "In about two hours."
             ],
             "answer": 0,
             "evidence": [
@@ -11217,12 +11222,25 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Where are they going?",
-            "qId": "Mereka pergi ke mana?",
+            "kind": "gap",
+            "q": "Mom gives the conductor two ___.",
+            "qId": "Ibu memberi kondektur dua ___.",
+            "word": "tickets",
             "options": [
-              "To Bandung",
-              "To Yogyakarta",
-              "To Jakarta"
+              "tickets"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "They are going to ___.",
+            "qId": "Mereka pergi ke ___.",
+            "word": "Bandung",
+            "options": [
+              "Bandung"
             ],
             "answer": 0,
             "evidence": [
@@ -11230,12 +11248,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Riko asks when they arrive. What does the conductor answer?",
-            "qId": "Riko bertanya kapan sampai. Kondektur menjawab apa?",
+            "kind": "reply",
+            "hide": 4,
+            "q": "What does Conductor say?",
+            "qId": "Apa yang dikatakan kondektur?",
             "options": [
               "In about two hours.",
-              "Tickets, please!",
-              "You are in seats 12 and 13."
+              "Tickets, please!"
             ],
             "answer": 0,
             "evidence": [
@@ -11243,12 +11262,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What will Riko do on the train?",
-            "qId": "Apa yang akan Riko lakukan di kereta?",
+            "kind": "gap",
+            "q": "On the train, Riko will read his ___.",
+            "qId": "Di kereta, Riko akan membaca ___ miliknya.",
+            "word": "comic",
             "options": [
-              "Read his comic",
-              "Sleep",
-              "Eat lunch"
+              "comic"
             ],
             "answer": 0,
             "evidence": [
@@ -11294,12 +11313,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where did they get off the train?",
-            "qId": "Di mana mereka turun dari kereta?",
+            "kind": "gap",
+            "q": "They left the train in ___.",
+            "qId": "Mereka turun dari kereta di ___.",
+            "word": "Malang",
             "options": [
-              "In Malang",
-              "In Bandung",
-              "In Jakarta"
+              "Malang"
             ],
             "answer": 0,
             "evidence": [
@@ -11307,16 +11326,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What did Sinta forget?",
-            "qId": "Apa yang Sinta lupakan?",
+            "kind": "gap",
+            "q": "Sinta's bag was ___.",
+            "qId": "Tas Sinta berwarna ___.",
+            "word": "pink",
             "options": [
-              "Her bag",
-              "Her ticket",
-              "Her book"
+              "pink"
             ],
             "answer": 0,
             "evidence": [
-              2
+              4
             ]
           },
           {
@@ -11333,16 +11352,16 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What color was the bag?",
-            "qId": "Tasnya warna apa?",
+            "kind": "gap",
+            "q": "The guard asked his question with a ___.",
+            "qId": "Penjaga bertanya sambil ___.",
+            "word": "smile",
             "options": [
-              "Pink",
-              "Blue",
-              "Red"
+              "smile"
             ],
             "answer": 0,
             "evidence": [
-              4
+              5
             ]
           },
           {
@@ -11614,12 +11633,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Why does Dad choose this place?",
-            "qId": "Kenapa Ayah memilih tempat ini?",
+            "kind": "reply",
+            "hide": 2,
+            "q": "What does Dad say?",
+            "qId": "Apa yang dikatakan Ayah?",
             "options": [
-              "It is dry.",
-              "It is near the river.",
-              "It has big trees."
+              "The ground there is wet. This place is dry.",
+              "Sure, and I'll push in the pegs."
             ],
             "answer": 0,
             "evidence": [
@@ -11627,12 +11647,25 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does Raka hold?",
-            "qId": "Apa yang dipegang Raka?",
+            "kind": "gap",
+            "q": "The ground near the river is ___.",
+            "qId": "Tanah di dekat sungai ___.",
+            "word": "wet",
             "options": [
-              "The poles",
-              "The pegs",
-              "The bags"
+              "wet"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Raka holds the ___.",
+            "qId": "Raka memegang ___.",
+            "word": "poles",
+            "options": [
+              "poles"
             ],
             "answer": 0,
             "evidence": [
@@ -11640,12 +11673,13 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Raka asks, 'Can I hold the poles?' What does Dad say?",
-            "qId": "Raka bertanya, 'Boleh aku pegang tiangnya?' Apa jawaban Ayah?",
+            "kind": "reply",
+            "hide": 4,
+            "q": "What does Dad say?",
+            "qId": "Apa yang dikatakan Ayah?",
             "options": [
-              "Sure.",
-              "Not now.",
-              "I don't know."
+              "Sure, and I'll push in the pegs.",
+              "Let's put up our tent here, Raka."
             ],
             "answer": 0,
             "evidence": [
@@ -11653,28 +11687,17 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does Dad do with the pegs?",
-            "qId": "Apa yang Ayah lakukan dengan pasaknya?",
+            "kind": "gap",
+            "q": "Dad puts the ___ into the ground.",
+            "qId": "Ayah menancapkan ___ ke tanah.",
+            "word": "pegs",
             "options": [
-              "He pushes them in.",
-              "He loses them.",
-              "He gives them to Raka."
+              "pegs"
             ],
             "answer": 0,
             "evidence": [
               4
             ]
-          },
-          {
-            "q": "What is the best title?",
-            "qId": "Judul yang paling cocok?",
-            "options": [
-              "Our Tent Is Ready",
-              "A Day at the River",
-              "The Lost Pegs"
-            ],
-            "answer": 0,
-            "evidence": []
           }
         ]
       },
@@ -11716,12 +11739,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What did everyone carry?",
-            "qId": "Apa yang dibawa semua anak?",
+            "kind": "gap",
+            "q": "Everyone had a ___ on the walk.",
+            "qId": "Semua membawa ___ saat berjalan.",
+            "word": "torch",
             "options": [
-              "A torch",
-              "A kite",
-              "A map"
+              "torch"
             ],
             "answer": 0,
             "evidence": [
@@ -11729,25 +11752,12 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What did Nia see in the trees?",
-            "qId": "Apa yang Nia lihat di pepohonan?",
+            "kind": "gap",
+            "q": "The green lights were ___.",
+            "qId": "Cahaya hijau itu adalah ___.",
+            "word": "fireflies",
             "options": [
-              "Tiny green lights",
-              "A big owl",
-              "Red flowers"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "What were the lights?",
-            "qId": "Cahaya itu apa?",
-            "options": [
-              "Fireflies",
-              "Stars",
-              "Torches"
+              "fireflies"
             ],
             "answer": 0,
             "evidence": [
@@ -11765,6 +11775,19 @@ export const READING_TOPICS_ADVENTURER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               5
+            ]
+          },
+          {
+            "kind": "gap",
+            "q": "Nia drew them in her ___.",
+            "qId": "Nia menggambarnya di ___ miliknya.",
+            "word": "notebook",
+            "options": [
+              "notebook"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
             ]
           },
           {
@@ -34278,16 +34301,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where is the next picnic?",
-            "qId": "Di mana piknik berikutnya?",
+            "kind": "tfn",
+            "q": "Children must bring their own lunch.",
+            "qId": "Anak-anak harus membawa bekal makan siang sendiri.",
             "options": [
-              "At Ragunan Zoo",
-              "At school",
-              "At Taman Suropati"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              1
+              5
             ]
           },
           {
@@ -34305,17 +34329,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What don't children need to bring?",
-            "qId": "Apa yang tidak perlu dibawa anak-anak?",
+            "kind": "ref",
+            "q": "Who does 'your' refer to in 'your child'?",
+            "qId": "Siapa yang dimaksud 'your' pada 'your child'?",
+            "word": "parents",
             "options": [
-              "Lunch",
-              "A hat",
-              "Water"
+              "parents"
             ],
             "answer": 0,
             "evidence": [
-              5
+              0
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "The bus trip takes one hour.",
+            "qId": "Perjalanan busnya satu jam.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "What will happen if it rains?",
@@ -34328,19 +34364,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
-            ]
-          },
-          {
-            "q": "Who is the email for?",
-            "qId": "Email ini untuk siapa?",
-            "options": [
-              "Parents",
-              "Children",
-              "Teachers"
-            ],
-            "answer": 0,
-            "evidence": [
-              0
             ]
           }
         ]
@@ -34386,6 +34409,20 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
+            "kind": "tfn",
+            "q": "The orangutan was very noisy.",
+            "qId": "Orang utan itu sangat berisik.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 1,
+            "evidence": [
+              3
+            ]
+          },
+          {
             "q": "How long did they walk around the zoo?",
             "qId": "Berapa lama mereka berkeliling kebun binatang?",
             "options": [
@@ -34399,30 +34436,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What did the orangutan do?",
-            "qId": "Apa yang dilakukan orang utan?",
-            "options": [
-              "It waved its hand.",
-              "It ate a banana.",
-              "It slept."
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ]
-          },
-          {
+            "kind": "ref",
             "q": "Who does 'him' refer to in 'waving at him'?",
-            "qId": "Siapa yang dimaksud 'him' dalam 'waving at him'?",
+            "qId": "Siapa yang dimaksud 'him' pada 'waving at him'?",
+            "word": "Andi",
             "options": [
-              "Andi",
-              "Budi",
-              "The zookeeper"
+              "Andi"
             ],
             "answer": 0,
             "evidence": [
               4
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Andi fell asleep on the bus home.",
+            "qId": "Andi tertidur di bus saat pulang.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "Why did Andi say the animals liked him?",
@@ -34438,19 +34474,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
               4,
               5,
               6
-            ]
-          },
-          {
-            "q": "How did Budi feel at the end of the day?",
-            "qId": "Bagaimana perasaan Budi di akhir hari?",
-            "options": [
-              "Very tired",
-              "Very angry",
-              "Very hungry"
-            ],
-            "answer": 0,
-            "evidence": [
-              7
             ]
           }
         ]
@@ -34736,29 +34759,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where is Kenji from?",
-            "qId": "Kenji berasal dari mana?",
+            "kind": "tfn",
+            "q": "Kenji and Yumi both love football.",
+            "qId": "Kenji dan Yumi sama-sama suka sepak bola.",
             "options": [
-              "Osaka, Japan",
-              "Tokyo, Japan",
-              "Indonesia"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              1
-            ]
-          },
-          {
-            "q": "Who is Yumi?",
-            "qId": "Siapa Yumi?",
-            "options": [
-              "Kenji's twin sister",
-              "Kenji's teacher",
-              "Arif's sister"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
+              4
             ]
           },
           {
@@ -34776,17 +34787,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why is Kenji very happy?",
-            "qId": "Kenapa Kenji sangat senang?",
+            "kind": "ref",
+            "q": "Who does 'I' refer to in 'I have never been to Indonesia'?",
+            "qId": "Siapa yang dimaksud 'I' pada 'I have never been to Indonesia'?",
+            "word": "Kenji",
             "options": [
-              "His team won a big match.",
-              "He visited Indonesia.",
-              "He got a new sister."
+              "Kenji"
             ],
             "answer": 0,
             "evidence": [
-              5
+              1
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Arif lives in Jakarta.",
+            "qId": "Arif tinggal di Jakarta.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "What does Kenji want to know?",
@@ -34840,29 +34863,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What is a pen pal?",
-            "qId": "Apa itu sahabat pena?",
+            "kind": "tfn",
+            "q": "All pen pals visit each other one day.",
+            "qId": "Semua sahabat pena akhirnya saling berkunjung.",
             "options": [
-              "A friend you write to",
-              "A teacher who helps you write",
-              "A special kind of pen"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              0
-            ]
-          },
-          {
-            "q": "How can a pen pal help your English?",
-            "qId": "Bagaimana sahabat pena membantu bahasa Inggrismu?",
-            "options": [
-              "You practise by writing.",
-              "You get free books.",
-              "You watch English films."
-            ],
-            "answer": 0,
-            "evidence": [
-              1
+              4
             ]
           },
           {
@@ -34879,6 +34890,31 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "ref",
+            "q": "What does 'them' refer to in 'A few of them'?",
+            "qId": "Apa yang dimaksud 'them' pada 'A few of them'?",
+            "word": "pals",
+            "options": [
+              "pals"
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Pen pals must write every week.",
+            "qId": "Sahabat pena harus menulis surat setiap minggu.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
+          },
+          {
             "q": "Who should help you first?",
             "qId": "Siapa yang harus membantumu dulu?",
             "options": [
@@ -34890,17 +34926,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "evidence": [
               6
             ]
-          },
-          {
-            "q": "What is the writer's purpose?",
-            "qId": "Apa tujuan penulis?",
-            "options": [
-              "To explain pen pals and give safety advice",
-              "To sell pens",
-              "To tell a holiday story"
-            ],
-            "answer": 0,
-            "evidence": []
           }
         ]
       }
@@ -35171,27 +35196,15 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where does Aunt Mira want to go?",
-            "qId": "Tante Mira ingin pergi ke mana?",
+            "kind": "tfn",
+            "q": "Lala and Aunt Mira will meet at the museum.",
+            "qId": "Lala dan Tante Mira akan bertemu di museum.",
             "options": [
-              "The Asian-African Museum",
-              "The Geology Museum",
-              "The big mosque"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
-            "q": "Where will they meet?",
-            "qId": "Mereka bertemu di mana?",
-            "options": [
-              "At the bus stop",
-              "At the museum",
-              "At the mosque"
-            ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
               3
             ]
@@ -35210,18 +35223,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "ref",
             "q": "What does 'it' refer to in 'it isn't spicy this time'?",
-            "qId": "'It' dalam 'it isn't spicy this time' merujuk ke apa?",
+            "qId": "Apa yang dimaksud 'it' pada 'it isn't spicy this time'?",
+            "word": "batagor",
             "options": [
-              "The batagor",
-              "The museum",
-              "The bus"
+              "batagor"
             ],
             "answer": 0,
             "evidence": [
-              5,
-              6
+              5
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "The museum is free to enter.",
+            "qId": "Masuk museumnya gratis.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "Why does Aunt Mira say 'Don't worry'?",
@@ -35275,14 +35299,15 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Why is the air cooler in Bandung?",
-            "qId": "Kenapa udara di Bandung lebih sejuk?",
+            "kind": "tfn",
+            "q": "The air in Bandung is warmer than in Jakarta.",
+            "qId": "Udara di Bandung lebih hangat daripada di Jakarta.",
             "options": [
-              "It is higher than Jakarta.",
-              "It is near the sea.",
-              "It rains every day."
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
               1
             ]
@@ -35301,18 +35326,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why can the roads be very busy?",
-            "qId": "Kenapa jalanan bisa sangat macet?",
+            "kind": "ref",
+            "q": "What does 'It' refer to in 'It is higher than Jakarta'?",
+            "qId": "Apa yang dimaksud 'It' pada 'It is higher than Jakarta'?",
+            "word": "Bandung",
             "options": [
-              "Many families visit every weekend.",
-              "The roads are very small.",
-              "Everyone drives to school."
+              "Bandung"
             ],
             "answer": 0,
             "evidence": [
-              4,
-              5
+              0
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Bandung has the biggest garden in Indonesia.",
+            "qId": "Bandung punya taman terbesar di Indonesia.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "Why do visitors come on Friday night?",
@@ -35326,17 +35362,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "evidence": [
               6
             ]
-          },
-          {
-            "q": "What is the text mainly about?",
-            "qId": "Teks ini terutama tentang apa?",
-            "options": [
-              "Facts about Bandung",
-              "How to cook batagor",
-              "A trip to Jakarta"
-            ],
-            "answer": 0,
-            "evidence": []
           }
         ]
       }
@@ -35608,16 +35633,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where does Rani want to go?",
-            "qId": "Rani ingin pergi ke mana?",
+            "kind": "tfn",
+            "q": "The library is next to the bank.",
+            "qId": "Perpustakaannya ada di sebelah bank.",
             "options": [
-              "The library",
-              "The bank",
-              "The café"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              0
+              4
             ]
           },
           {
@@ -35634,30 +35660,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Where exactly is the library?",
-            "qId": "Tepatnya perpustakaan di mana?",
+            "kind": "ref",
+            "q": "What does 'it' refer to in 'it's opposite the bank'?",
+            "qId": "Apa yang dimaksud 'it' pada 'it's opposite the bank'?",
+            "word": "library",
             "options": [
-              "Opposite the bank, next to the café",
-              "Next to the bank",
-              "Behind the café"
+              "library"
             ],
             "answer": 0,
             "evidence": [
-              4
+              3
             ]
           },
           {
-            "q": "Rani asks, 'Is it far from here?' What does the man answer?",
-            "qId": "Rani bertanya 'Jauh dari sini?'. Pria itu menjawab apa?",
+            "kind": "tfn",
+            "q": "The man works at the library.",
+            "qId": "Bapak itu bekerja di perpustakaan.",
             "options": [
-              "Not really. It takes about five minutes on foot.",
-              "Go straight until you see a big bank.",
-              "No, it's opposite the bank."
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
-            "evidence": [
-              6
-            ]
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "How will Rani probably get there?",
@@ -35715,40 +35740,15 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Why couldn't the postman deliver the parcel?",
-            "qId": "Kenapa tukang pos tidak bisa mengantar paket?",
+            "kind": "tfn",
+            "q": "Mr. Hadi can collect the parcel today.",
+            "qId": "Pak Hadi bisa mengambil paketnya hari ini.",
             "options": [
-              "Nobody was at home.",
-              "The address was wrong.",
-              "The parcel was too big."
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "Where is the parcel now?",
-            "qId": "Paketnya sekarang di mana?",
-            "options": [
-              "At the post office",
-              "At the neighbour's house",
-              "In the postman's car"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ]
-          },
-          {
-            "q": "When can Mr. Hadi collect it?",
-            "qId": "Kapan Pak Hadi bisa mengambilnya?",
-            "options": [
-              "From tomorrow, 8 a.m. to 3 p.m.",
-              "Today at 10 a.m.",
-              "Only on Thursday"
-            ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
               4
             ]
@@ -35765,6 +35765,31 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "evidence": [
               5
             ]
+          },
+          {
+            "kind": "ref",
+            "q": "What does 'it' refer to in 'I could not leave it'?",
+            "qId": "Apa yang dimaksud 'it' pada 'I could not leave it'?",
+            "word": "parcel",
+            "options": [
+              "parcel"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
+            ]
+          },
+          {
+            "kind": "tfn",
+            "q": "The parcel is a present from Mr. Hadi's sister.",
+            "qId": "Paket itu hadiah dari kakak Pak Hadi.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "What other choice does Mr. Hadi have?",
@@ -36047,6 +36072,20 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
+            "kind": "tfn",
+            "q": "Kevin has not got any boxes yet.",
+            "qId": "Kevin belum punya kardus sama sekali.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 1,
+            "evidence": [
+              3
+            ]
+          },
+          {
             "q": "Why is Kevin staying home?",
             "qId": "Kenapa Kevin di rumah saja?",
             "options": [
@@ -36060,12 +36099,12 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What is Kevin planning to build?",
-            "qId": "Apa yang ingin Kevin buat?",
+            "kind": "ref",
+            "q": "What does 'it' refer to in 'help me paint it'?",
+            "qId": "Apa yang dimaksud 'it' pada 'help me paint it'?",
+            "word": "castle",
             "options": [
-              "A cardboard castle",
-              "A wooden house",
-              "A pizza oven"
+              "castle"
             ],
             "answer": 0,
             "evidence": [
@@ -36073,30 +36112,16 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Where did he get the boxes?",
-            "qId": "Dari mana dia mendapat kardusnya?",
+            "kind": "tfn",
+            "q": "Tara is good at painting.",
+            "qId": "Tara pandai mengecat.",
             "options": [
-              "From the shop",
-              "From school",
-              "From Tara"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
-            "evidence": [
-              3
-            ]
-          },
-          {
-            "q": "What does Kevin need help with?",
-            "qId": "Kevin butuh bantuan apa?",
-            "options": [
-              "Painting the castle",
-              "Buying boxes",
-              "Making pizza"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "Who will make pizza?",
@@ -36150,40 +36175,15 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What is a 'screen-free weekend'?",
-            "qId": "Apa itu 'akhir pekan tanpa layar'?",
+            "kind": "tfn",
+            "q": "Most children stay bored for the whole weekend.",
+            "qId": "Kebanyakan anak tetap bosan sepanjang akhir pekan.",
             "options": [
-              "Two days without phones, tablets or TV",
-              "A weekend of watching films",
-              "A weekend at the cinema"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
-            "q": "What do many children think at first?",
-            "qId": "Apa pikiran banyak anak awalnya?",
-            "options": [
-              "It will be boring.",
-              "It will be easy.",
-              "It will be scary."
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "What happens to most children?",
-            "qId": "Apa yang terjadi pada kebanyakan anak?",
-            "options": [
-              "They find new hobbies.",
-              "They feel sad all weekend.",
-              "They sleep all day."
-            ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
               3
             ]
@@ -36200,6 +36200,31 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "evidence": [
               5
             ]
+          },
+          {
+            "kind": "ref",
+            "q": "What does 'This' refer to in 'This means no phones'?",
+            "qId": "Apa yang dimaksud 'This' pada 'This means no phones'?",
+            "word": "weekend",
+            "options": [
+              "weekend"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Schools tell families to try screen-free weekends.",
+            "qId": "Sekolah menyuruh keluarga mencoba akhir pekan tanpa layar.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "What does the writer want readers to do?",
@@ -36487,30 +36512,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Who was the seeker?",
-            "qId": "Siapa penjaganya?",
+            "kind": "tfn",
+            "q": "Bayu found all the players quickly.",
+            "qId": "Bayu cepat menemukan semua pemain.",
             "options": [
-              "Bayu",
-              "Sari",
-              "Nobody"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              0
-            ]
-          },
-          {
-            "q": "How long did the players wait before coming out?",
-            "qId": "Berapa lama pemain menunggu sebelum keluar?",
-            "options": [
-              "More than ten minutes",
-              "Five minutes",
-              "One minute"
-            ],
-            "answer": 0,
-            "evidence": [
-              3,
-              4
+              2
             ]
           },
           {
@@ -36527,6 +36539,31 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "ref",
+            "q": "Who does 'he' refer to in 'he said with a smile'?",
+            "qId": "Siapa yang dimaksud 'he' pada 'he said with a smile'?",
+            "word": "Bayu",
+            "options": [
+              "Bayu"
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Bayu's favourite cartoon is about animals.",
+            "qId": "Kartun kesukaan Bayu tentang hewan.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
+          },
+          {
             "q": "Why didn't Bayu look for his friends?",
             "qId": "Kenapa Bayu tidak mencari teman-temannya?",
             "options": [
@@ -36537,20 +36574,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
-            ]
-          },
-          {
-            "q": "Why did they call him 'Bayu the Forgetful'?",
-            "qId": "Kenapa mereka memanggilnya 'Bayu si Pelupa'?",
-            "options": [
-              "He forgot about the game.",
-              "He forgot his shoes.",
-              "He was always late."
-            ],
-            "answer": 0,
-            "evidence": [
-              6,
-              7
             ]
           }
         ]
@@ -36592,16 +36615,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What is hide and seek called in Indonesia?",
-            "qId": "Apa nama petak umpet di Indonesia?",
+            "kind": "tfn",
+            "q": "You need special toys to play hide and seek.",
+            "qId": "Main petak umpet butuh mainan khusus.",
             "options": [
-              "Petak umpet",
-              "Home tree",
-              "Seeker"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              1
+              6
             ]
           },
           {
@@ -36618,17 +36642,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How can hidden players be safe in some countries?",
-            "qId": "Bagaimana pemain bisa aman di beberapa negara?",
+            "kind": "ref",
+            "q": "What does 'It' refer to in 'It helps them think'?",
+            "qId": "Apa yang dimaksud 'It' pada 'It helps them think'?",
+            "word": "game",
             "options": [
-              "By running 'home'",
-              "By hiding in trees",
-              "By counting to twenty"
+              "game"
             ],
             "answer": 0,
             "evidence": [
-              3
+              4
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Hide and seek was first played in Indonesia.",
+            "qId": "Petak umpet pertama kali dimainkan di Indonesia.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "According to scientists, how does the game help children?",
@@ -36641,19 +36677,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               5
-            ]
-          },
-          {
-            "q": "Why is the game easy to play anywhere?",
-            "qId": "Kenapa permainan ini mudah dimainkan di mana saja?",
-            "options": [
-              "It is free and needs no special toys.",
-              "It is played only in parks.",
-              "It needs only two players."
-            ],
-            "answer": 0,
-            "evidence": [
-              6
             ]
           }
         ]
@@ -36915,29 +36938,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "When is the project due?",
-            "qId": "Kapan proyeknya dikumpulkan?",
+            "kind": "tfn",
+            "q": "Students should put the video on social media.",
+            "qId": "Murid harus mengunggah videonya ke media sosial.",
             "options": [
-              "Next Monday",
-              "Today",
-              "Next Friday"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              1
-            ]
-          },
-          {
-            "q": "What should the video be about?",
-            "qId": "Video itu tentang apa?",
-            "options": [
-              "A plant in your home",
-              "Your family",
-              "A school trip"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
+              4
             ]
           },
           {
@@ -36954,17 +36965,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Where should students upload the video?",
-            "qId": "Di mana siswa mengunggah videonya?",
+            "kind": "ref",
+            "q": "What does 'it' refer to in 'Upload it'?",
+            "qId": "Apa yang dimaksud 'it' pada 'Upload it'?",
+            "word": "video",
             "options": [
-              "To the class folder",
-              "To social media",
-              "To Mr. Rudi's phone"
+              "video"
             ],
             "answer": 0,
             "evidence": [
-              4
+              3
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "The best video will win a prize.",
+            "qId": "Video terbaik akan mendapat hadiah.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "What can students without a phone do?",
@@ -37018,42 +37041,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What is one good point of online homework?",
-            "qId": "Apa satu kelebihan PR online?",
+            "kind": "tfn",
+            "q": "Every family has a good internet connection.",
+            "qId": "Semua keluarga punya koneksi internet yang bagus.",
             "options": [
-              "Students can learn at their own speed.",
-              "It is always free.",
-              "It is always shorter."
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "What problem do some families have?",
-            "qId": "Masalah apa yang dialami sebagian keluarga?",
-            "options": [
-              "A bad internet connection",
-              "Too many books",
-              "No teachers"
-            ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
               3
-            ]
-          },
-          {
-            "q": "Why do some students find it hard at home?",
-            "qId": "Kenapa sebagian siswa kesulitan di rumah?",
-            "options": [
-              "They find it hard to focus.",
-              "They have no desk.",
-              "They have no homework."
-            ],
-            "answer": 0,
-            "evidence": [
-              4
             ]
           },
           {
@@ -37068,6 +37066,31 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "evidence": [
               5
             ]
+          },
+          {
+            "kind": "ref",
+            "q": "What does 'This' refer to in 'This has some good points'?",
+            "qId": "Apa yang dimaksud 'This' pada 'This has some good points'?",
+            "word": "homework",
+            "options": [
+              "homework"
+            ],
+            "answer": 0,
+            "evidence": [
+              0
+            ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Online homework is shorter than paper homework.",
+            "qId": "PR online lebih pendek daripada PR kertas.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "Why is that way best?",
@@ -37351,6 +37374,20 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
+            "kind": "tfn",
+            "q": "Aisha's old school was bigger.",
+            "qId": "Sekolah lama Aisha lebih besar.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 1,
+            "evidence": [
+              2
+            ]
+          },
+          {
             "q": "Why is Aisha writing?",
             "qId": "Kenapa Aisha menulis pesan ini?",
             "options": [
@@ -37364,25 +37401,12 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How was her old school different?",
-            "qId": "Apa bedanya sekolah lamanya?",
+            "kind": "ref",
+            "q": "'Now I know the way.' The way to where?",
+            "qId": "'Now I know the way.' Jalan ke mana?",
+            "word": "library",
             "options": [
-              "It was much smaller.",
-              "It was much bigger.",
-              "It had no library."
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "Why did Aisha get lost?",
-            "qId": "Kenapa Aisha tersesat?",
-            "options": [
-              "She was looking for the library.",
-              "She took the wrong bus.",
-              "She went to the wrong class."
+              "library"
             ],
             "answer": 0,
             "evidence": [
@@ -37390,18 +37414,16 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does 'the way' mean in 'now I know the way'?",
-            "qId": "Apa maksud 'the way' dalam 'now I know the way'?",
+            "kind": "tfn",
+            "q": "Putri is Aisha's cousin.",
+            "qId": "Putri adalah sepupu Aisha.",
             "options": [
-              "How to get to the library",
-              "How to get to Makassar",
-              "How to use the computer"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
-            "evidence": [
-              3,
-              4
-            ]
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "What does Aisha want to borrow?",
@@ -37455,6 +37477,20 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
+            "kind": "tfn",
+            "q": "You should arrive just on time on your first day.",
+            "qId": "Di hari pertama sebaiknya datang pas waktunya saja.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 1,
+            "evidence": [
+              2
+            ]
+          },
+          {
             "q": "Why should you arrive early?",
             "qId": "Kenapa kamu harus datang lebih awal?",
             "options": [
@@ -37468,17 +37504,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What should you do with people near you?",
-            "qId": "Apa yang harus kamu lakukan pada orang di dekatmu?",
+            "kind": "ref",
+            "q": "What does 'It' refer to in 'It's the fastest way'?",
+            "qId": "Apa yang dimaksud 'It' pada 'It's the fastest way'?",
+            "word": "club",
             "options": [
-              "Smile and say hello",
-              "Ask for their snacks",
-              "Sit away from them"
+              "club"
             ],
             "answer": 0,
             "evidence": [
-              3
+              5
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "New students must wear a special badge.",
+            "qId": "Murid baru wajib memakai lencana khusus.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "According to the writer, what are most students like?",
@@ -37492,31 +37540,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "evidence": [
               4
             ]
-          },
-          {
-            "q": "Why should you join a club?",
-            "qId": "Kenapa kamu sebaiknya ikut klub?",
-            "options": [
-              "To make friends quickly",
-              "To finish homework",
-              "To get a prize"
-            ],
-            "answer": 0,
-            "evidence": [
-              5,
-              6
-            ]
-          },
-          {
-            "q": "Who is this article for?",
-            "qId": "Artikel ini untuk siapa?",
-            "options": [
-              "Students starting a new school",
-              "Teachers",
-              "Parents looking for a school"
-            ],
-            "answer": 0,
-            "evidence": []
           }
         ]
       }
@@ -37777,29 +37800,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "How many pots did they use?",
-            "qId": "Berapa pot yang mereka pakai?",
+            "kind": "tfn",
+            "q": "The lamp beans grew taller than the window beans.",
+            "qId": "Kacang di bawah lampu tumbuh lebih tinggi daripada kacang di jendela.",
             "options": [
-              "Three",
-              "Six",
-              "Two"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              0
-            ]
-          },
-          {
-            "q": "Where was the second pot?",
-            "qId": "Di mana pot kedua?",
-            "options": [
-              "In a dark cupboard",
-              "By the window",
-              "Under a lamp"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
+              5
             ]
           },
           {
@@ -37816,17 +37827,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What were the cupboard beans like?",
-            "qId": "Kacang di lemari seperti apa?",
+            "kind": "ref",
+            "q": "What does 'The third' refer to in 'The third is under a lamp'?",
+            "qId": "Apa yang dimaksud 'The third' pada 'The third is under a lamp'?",
+            "word": "pot",
             "options": [
-              "Thin and yellow",
-              "Tall and green",
-              "Short and green"
+              "pot"
             ],
             "answer": 0,
             "evidence": [
-              4
+              1
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Farah planted the beans with her dad.",
+            "qId": "Farah menanam kacangnya bersama ayahnya.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "What did they learn?",
@@ -37884,16 +37907,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Which prize did they win?",
-            "qId": "Hadiah apa yang mereka menangkan?",
+            "kind": "tfn",
+            "q": "Leo wants to keep the prize for himself.",
+            "qId": "Leo ingin menyimpan hadiahnya sendiri.",
             "options": [
-              "Best teamwork",
-              "Most creative idea",
-              "Biggest plants"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              1
+              5
             ]
           },
           {
@@ -37910,30 +37934,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What did Mr. Adi like?",
-            "qId": "Apa yang disukai Pak Adi?",
+            "kind": "ref",
+            "q": "What does 'it' refer to in 'we should share it'?",
+            "qId": "Apa yang dimaksud 'it' pada 'we should share it'?",
+            "word": "telescope",
             "options": [
-              "The weekly photos",
-              "The volcano",
-              "The lamp"
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ]
-          },
-          {
-            "q": "What is the prize?",
-            "qId": "Apa hadiahnya?",
-            "options": [
-              "A small telescope",
-              "A notebook",
-              "A plant pot"
+              "telescope"
             ],
             "answer": 0,
             "evidence": [
               4
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "The telescope is very expensive.",
+            "qId": "Teleskopnya sangat mahal.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "How does Leo want to share the prize?",
@@ -38218,6 +38241,20 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
+            "kind": "tfn",
+            "q": "All the new books are about science.",
+            "qId": "Semua buku barunya tentang sains.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 1,
+            "evidence": [
+              3
+            ]
+          },
+          {
             "q": "How many new books does the library have?",
             "qId": "Berapa buku baru di perpustakaan?",
             "options": [
@@ -38231,31 +38268,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What kinds of books are they?",
-            "qId": "Buku apa saja itu?",
+            "kind": "ref",
+            "q": "What does 'It' refer to in 'It says...'?",
+            "qId": "Apa yang dimaksud 'It' pada 'It says...'?",
+            "word": "sign",
             "options": [
-              "Science and adventure stories",
-              "Cookbooks and maps",
-              "Comics only"
+              "sign"
             ],
             "answer": 0,
             "evidence": [
-              3
+              4
             ]
           },
           {
-            "q": "What does 'It' refer to in 'It says...'?",
-            "qId": "'It' dalam 'It says...' merujuk ke apa?",
+            "kind": "tfn",
+            "q": "Class 6B raised the money with a bake sale.",
+            "qId": "Kelas 6B mengumpulkan uang dengan jualan kue.",
             "options": [
-              "The sign",
-              "The library",
-              "The email"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
-            "evidence": [
-              4,
-              5
-            ]
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "Who is borrowing the books?",
@@ -38268,19 +38303,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
-            ]
-          },
-          {
-            "q": "How does Mrs. Lestari feel?",
-            "qId": "Bagaimana perasaan Bu Lestari?",
-            "options": [
-              "Proud",
-              "Worried",
-              "Bored"
-            ],
-            "answer": 0,
-            "evidence": [
-              7
             ]
           }
         ]
@@ -38322,16 +38344,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What is a fundraiser?",
-            "qId": "Apa itu penggalangan dana?",
+            "kind": "tfn",
+            "q": "Children should keep the money safe by themselves.",
+            "qId": "Anak-anak sebaiknya menjaga uangnya sendiri.",
             "options": [
-              "An event to collect money for a good cause",
-              "A party for teachers",
-              "A sale only for books"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              0
+              4
             ]
           },
           {
@@ -38348,6 +38371,31 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "ref",
+            "q": "Whose money is 'their money' in 'their money helped'?",
+            "qId": "Uang siapa 'their money' pada 'their money helped'?",
+            "word": "People",
+            "options": [
+              "People"
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
+            "kind": "tfn",
+            "q": "A fun run always collects the most money.",
+            "qId": "Lomba lari selalu mengumpulkan uang paling banyak.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
+          },
+          {
             "q": "Why should you make posters?",
             "qId": "Kenapa kamu harus membuat poster?",
             "options": [
@@ -38358,33 +38406,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               3
-            ]
-          },
-          {
-            "q": "Who should help keep the money safe?",
-            "qId": "Siapa yang membantu menjaga uangnya?",
-            "options": [
-              "An adult",
-              "A friend",
-              "The buyers"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
-          },
-          {
-            "q": "Why should you tell everyone how much you collected?",
-            "qId": "Kenapa kamu harus memberi tahu hasilnya?",
-            "options": [
-              "People like to know their money helped.",
-              "It makes the event longer.",
-              "Teachers ask for it."
-            ],
-            "answer": 0,
-            "evidence": [
-              5,
-              6
             ]
           }
         ]
@@ -38668,6 +38689,20 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
+            "kind": "tfn",
+            "q": "Sinta found the most rubbish.",
+            "qId": "Sinta menemukan sampah paling banyak.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 1,
+            "evidence": [
+              4
+            ]
+          },
+          {
             "q": "Where did the group meet?",
             "qId": "Regu itu berkumpul di mana?",
             "options": [
@@ -38681,44 +38716,29 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Who gave out the gloves?",
-            "qId": "Siapa yang membagikan sarung tangan?",
+            "kind": "ref",
+            "q": "What does 'It' refer to in 'It was a book about sea turtles'?",
+            "qId": "Apa yang dimaksud 'It' pada 'It was a book about sea turtles'?",
+            "word": "prize",
             "options": [
-              "Mrs. Ratna",
-              "Beni",
-              "Sinta's mom"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "What was Beni's prize?",
-            "qId": "Apa hadiah Beni?",
-            "options": [
-              "A book about sea turtles",
-              "A big bag",
-              "A pair of gloves"
-            ],
-            "answer": 0,
-            "evidence": [
-              4,
-              5
-            ]
-          },
-          {
-            "q": "Why did Beni get a prize?",
-            "qId": "Kenapa Beni dapat hadiah?",
-            "options": [
-              "He found the most rubbish.",
-              "He came first.",
-              "He found a shoe."
+              "prize"
             ],
             "answer": 0,
             "evidence": [
               4
             ]
+          },
+          {
+            "kind": "tfn",
+            "q": "The scout group cleans the beach every Saturday.",
+            "qId": "Kelompok pramuka membersihkan pantai setiap Sabtu.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
           },
           {
             "q": "How did Sinta probably feel about the day?",
@@ -38778,30 +38798,17 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Where is Lake Toba?",
-            "qId": "Danau Toba ada di mana?",
+            "kind": "tfn",
+            "q": "People made Lake Toba.",
+            "qId": "Danau Toba dibuat oleh manusia.",
             "options": [
-              "In North Sumatra",
-              "In West Java",
-              "In Bali"
+              "True",
+              "False",
+              "Doesn't say"
             ],
-            "answer": 0,
+            "answer": 1,
             "evidence": [
-              0
-            ]
-          },
-          {
-            "q": "What does 'there' mean in 'Many visitors stay there'?",
-            "qId": "Apa arti 'there' dalam 'Many visitors stay there'?",
-            "options": [
-              "On Samosir island",
-              "In a big city",
-              "On the volcano"
-            ],
-            "answer": 0,
-            "evidence": [
-              2,
-              3
+              1
             ]
           },
           {
@@ -38818,6 +38825,31 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "ref",
+            "q": "Where is 'there' in 'Many visitors stay there'?",
+            "qId": "Di mana 'there' pada 'Many visitors stay there'?",
+            "word": "Samosir",
+            "options": [
+              "Samosir"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
+            "kind": "tfn",
+            "q": "Samosir island has a big airport.",
+            "qId": "Pulau Samosir punya bandara besar.",
+            "options": [
+              "True",
+              "False",
+              "Doesn't say"
+            ],
+            "answer": 2,
+            "evidence": []
+          },
+          {
             "q": "Why is it a good idea to bring a jacket?",
             "qId": "Kenapa sebaiknya membawa jaket?",
             "options": [
@@ -38829,17 +38861,6 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "evidence": [
               7
             ]
-          },
-          {
-            "q": "What is the text mainly about?",
-            "qId": "Teks ini terutama tentang apa?",
-            "options": [
-              "A famous lake and the people around it",
-              "How volcanoes work",
-              "A hotel in Bali"
-            ],
-            "answer": 0,
-            "evidence": []
           }
         ]
       }
@@ -43951,13 +43972,15 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Which food is the second most popular?",
-            "qId": "Makanan apa yang paling laris kedua?",
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Fried rice",
-              "Chicken noodles",
-              "Salad",
-              "Soup"
+              "Chicken noodles, although fried rice is a close second.",
+              "I have worked in three different schools.",
+              "Yes, the students asked me to change it.",
+              "Because I don't enjoy cooking vegetables."
             ],
             "answer": 0,
             "evidence": [
@@ -43979,18 +44002,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does 'it' refer to in 'Is it popular?'",
-            "qId": "'It' dalam 'Is it popular?' merujuk ke apa?",
+            "kind": "missing",
+            "hide": 7,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "The salad bar",
-              "The canteen",
-              "The radio show",
-              "The chicken noodles"
+              "More than I expected. Even the teachers love it!",
+              "No, I have never changed the menu.",
+              "Ten years, and I still enjoy it.",
+              "The canteen opens at seven every morning."
             ],
             "answer": 0,
             "evidence": [
-              5,
-              6
+              7
             ]
           },
           {
@@ -44064,17 +44088,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How has the radio helped shy students?",
-            "qId": "Bagaimana radio membantu siswa pemalu?",
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "They have become more confident.",
-              "They have become quieter.",
-              "They no longer come to school.",
-              "They now write for newspapers."
+              "However, the results have been very positive.",
+              "Because of this, the station was closed.",
+              "They were right, and students stopped studying.",
+              "The station is on the second floor."
             ],
             "answer": 0,
             "evidence": [
-              3
+              2
             ]
           },
           {
@@ -44092,17 +44118,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What is the writer's opinion?",
-            "qId": "Apa pendapat penulis?",
+            "kind": "missing",
+            "hide": 7,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Every school should have a radio station.",
-              "Radio stations are a waste of time.",
-              "Only shy students should use radio.",
-              "Teachers should run the station."
+              "It gives students a real reason to communicate well.",
+              "However, it is a waste of time for most students.",
+              "That is why the teachers want to close it.",
+              "Our station started twenty years ago."
             ],
             "answer": 0,
             "evidence": [
-              6
+              7
             ]
           },
           {
@@ -44419,17 +44447,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does Aunt Sari suggest instead?",
-            "qId": "Apa usul Tante Sari sebagai gantinya?",
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Rina's family could visit Malang.",
-              "They could meet in Batu next year.",
-              "Rina could visit alone.",
-              "They could talk on the phone."
+              "Uncle Bima has to work on an important project.",
+              "We are very excited to see you in Jakarta next week.",
+              "Our house in Malang is very small.",
+              "You should visit the apple farms alone."
             ],
             "answer": 0,
             "evidence": [
-              3
+              2
             ]
           },
           {
@@ -44447,6 +44477,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "missing",
+            "hide": 6,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Although it's a long drive, I think you'd enjoy it.",
+              "However, the apple farms are closed all year.",
+              "Uncle Bima will visit you in Jakarta instead.",
+              "Because it rains every day, you should stay home."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
+            ]
+          },
+          {
             "q": "What does Aunt Sari admit is a problem?",
             "qId": "Apa yang diakui Tante Sari sebagai kekurangannya?",
             "options": [
@@ -44458,20 +44504,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
-            ]
-          },
-          {
-            "q": "What does Aunt Sari want Rina to do?",
-            "qId": "Tante Sari ingin Rina melakukan apa?",
-            "options": [
-              "Ask her parents",
-              "Book a flight",
-              "Call Uncle Bima",
-              "Visit next month"
-            ],
-            "answer": 0,
-            "evidence": [
-              7
             ]
           }
         ]
@@ -44531,6 +44563,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Although Fajar was cold too, he stayed calm.",
+              "Fajar was so scared that he cried the loudest.",
+              "Luckily, the weather was warm and dry that night.",
+              "Fajar decided to walk home by himself."
+            ],
+            "answer": 0,
+            "evidence": [
+              3
+            ]
+          },
+          {
             "q": "How did some younger scouts react?",
             "qId": "Bagaimana reaksi beberapa adik pramuka?",
             "options": [
@@ -44545,32 +44593,18 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What does the text suggest about Fajar?",
-            "qId": "Apa yang tersirat tentang Fajar?",
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "He was calm and helpful.",
-              "He was afraid and silent.",
-              "He wanted to go home.",
-              "He was angry with the leader."
+              "There, the group played word games and shared snacks until morning.",
+              "Then the group went back to sleep in the wet tents.",
+              "There, Fajar got lost in the dark forest.",
+              "However, the village hall was locked all night."
             ],
             "answer": 0,
             "evidence": [
-              3,
-              4
-            ]
-          },
-          {
-            "q": "Where did the group spend the night?",
-            "qId": "Di mana regu itu bermalam?",
-            "options": [
-              "In the village hall",
-              "In their tents",
-              "On a bus",
-              "At the leader's house"
-            ],
-            "answer": 0,
-            "evidence": [
-              4,
               5
             ]
           },
@@ -44879,31 +44913,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What did Dimas and his friends do?",
-            "qId": "Apa yang dilakukan Dimas dan teman-temannya?",
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "They collected three bags of rubbish.",
-              "They built new bins.",
-              "They planted trees.",
-              "They wrote to their teacher."
+              "Sadly, there are no rubbish bins there, so people leave litter on the grass.",
+              "It is the cleanest park in the city.",
+              "There are many bins, and the grass is always clean.",
+              "Sadly, the park will close next month."
             ],
             "answer": 0,
             "evidence": [
-              4
-            ]
-          },
-          {
-            "q": "What happened after two days?",
-            "qId": "Apa yang terjadi setelah dua hari?",
-            "options": [
-              "The park was dirty again.",
-              "Bins were added.",
-              "The park closed.",
-              "The grass grew back."
-            ],
-            "answer": 0,
-            "evidence": [
-              5
+              3
             ]
           },
           {
@@ -44918,6 +44940,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "However, the park was dirty again after only two days.",
+              "Since then, the park has stayed clean.",
+              "So we don't need any bins now.",
+              "However, my friends didn't want to help."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
             ]
           },
           {
@@ -44989,33 +45027,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why did Lia keep the torches away?",
-            "qId": "Kenapa Lia menjauhkan senter?",
+            "kind": "missing",
+            "hide": 1,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Bright lights confuse the baby turtles.",
-              "The tourists were noisy.",
-              "The rangers wanted to sleep.",
-              "The torches were broken."
+              "Her job was to protect turtle eggs buried in the sand.",
+              "Her job was to sell tickets to tourists.",
+              "She stayed at home and watched TV every night.",
+              "Her job was to catch fish for a restaurant."
             ],
             "answer": 0,
             "evidence": [
-              5
-            ]
-          },
-          {
-            "q": "What does 'them' refer to in 'bright lights confuse them'?",
-            "qId": "'Them' dalam 'bright lights confuse them' merujuk ke apa?",
-            "options": [
-              "The baby turtles",
-              "The tourists",
-              "The rangers",
-              "The torches"
-            ],
-            "answer": 0,
-            "evidence": [
-              3,
-              4,
-              5
+              1
             ]
           },
           {
@@ -45030,6 +45054,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Lia had to keep the tourists' torches away, because bright lights confuse them.",
+              "Then all the turtles walked back into their nests.",
+              "Sadly, none of the eggs ever opened.",
+              "The tourists took the baby turtles home as pets."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
             ]
           },
           {
@@ -45325,48 +45365,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "How does Coach Arya feel about the team?",
-            "qId": "Bagaimana perasaan Pelatih Arya terhadap tim?",
-            "options": [
-              "Very proud",
-              "Disappointed",
-              "Angry",
-              "Worried"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
-            "q": "What did the team do differently from many others?",
-            "qId": "Apa yang dilakukan tim itu berbeda dari tim lain?",
-            "options": [
-              "They stayed focused.",
-              "They panicked.",
-              "They left early.",
-              "They built two robots."
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "What will they do next time?",
-            "qId": "Apa yang akan mereka lakukan lain kali?",
-            "options": [
-              "Check every wire twice",
-              "Build a bigger robot",
-              "Practise only on weekends",
-              "Change the team"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
-          },
-          {
             "q": "When will the team use the lab?",
             "qId": "Kapan tim memakai lab?",
             "options": [
@@ -45381,6 +45379,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Many teams panic when something breaks, but you stayed focused.",
+              "You all panicked, and we lost every round.",
+              "Nothing went wrong at all yesterday.",
+              "I'm sorry I couldn't come to the contest."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
             "q": "What does the coach believe?",
             "qId": "Apa keyakinan pelatih?",
             "options": [
@@ -45392,6 +45406,36 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 4,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Next time, we'll check every wire twice before each round.",
+              "So we will never enter a contest again.",
+              "Next time, we won't check anything.",
+              "It was all the other teams' fault."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
+            ]
+          },
+          {
+            "q": "How does Coach Arya feel about the team?",
+            "qId": "Bagaimana perasaan Pelatih Arya terhadap tim?",
+            "options": [
+              "Very proud",
+              "Disappointed",
+              "Angry",
+              "Worried"
+            ],
+            "answer": 0,
+            "evidence": [
+              1
             ]
           }
         ]
@@ -45438,20 +45482,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What do teams do in a robot contest?",
-            "qId": "Apa yang dilakukan tim dalam lomba robot?",
-            "options": [
-              "Build and program a small robot",
-              "Buy a robot from a shop",
-              "Watch robots race each other",
-              "Write a report about robots"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
             "q": "What do students learn when their robot does not work?",
             "qId": "Apa yang dipelajari siswa saat robotnya tidak berfungsi?",
             "options": [
@@ -45466,17 +45496,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How do some schools deal with expensive parts?",
-            "qId": "Bagaimana beberapa sekolah mengatasi komponen yang mahal?",
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "They borrow kits from each other.",
-              "They stop joining contests.",
-              "They ask students to pay more.",
-              "They only use new parts."
+              "However, winning is not the only reason to join.",
+              "The only reason to join is to win a prize.",
+              "Because of this, most students hate these contests.",
+              "Robots are too difficult for school students."
             ],
             "answer": 0,
             "evidence": [
-              5
+              2
             ]
           },
           {
@@ -45491,6 +45523,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               7
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 6,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Some teams even build robots from old toys and recycled materials.",
+              "Because of this, only rich schools can join.",
+              "The parts are cheap, so nobody needs to borrow them.",
+              "Every team must buy a new kit each year."
+            ],
+            "answer": 0,
+            "evidence": [
+              6
             ]
           },
           {
@@ -45797,46 +45845,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How many food boxes did they pack?",
-            "qId": "Berapa kotak makanan yang mereka kemas?",
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "More than 500",
-              "Exactly 50",
-              "About 5",
-              "Fewer than 100"
+              "Many families received them on Monday morning.",
+              "Sadly, nobody wanted the food boxes.",
+              "The boxes were too heavy, so we threw them away.",
+              "Next year, we will build a new school."
             ],
             "answer": 0,
             "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "What does 'them' refer to in 'received them'?",
-            "qId": "'Them' dalam 'received them' merujuk ke apa?",
-            "options": [
-              "The food boxes",
-              "The volunteers",
-              "The children",
-              "The clothes"
-            ],
-            "answer": 0,
-            "evidence": [
-              2,
               3
-            ]
-          },
-          {
-            "q": "What does Mrs. Rahma say about the volunteers' attitude?",
-            "qId": "Apa kata Bu Rahma tentang sikap para relawan?",
-            "options": [
-              "They never complained.",
-              "They complained a lot.",
-              "They left early.",
-              "They were late."
-            ],
-            "answer": 0,
-            "evidence": [
-              5
             ]
           },
           {
@@ -45851,6 +45872,36 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Although the work was tiring, you never complained.",
+              "Because the work was easy, you finished in ten minutes.",
+              "However, many of you complained all day.",
+              "The flood happened ten years ago."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What does Mrs. Rahma say about the volunteers' attitude?",
+            "qId": "Apa kata Bu Rahma tentang sikap para relawan?",
+            "options": [
+              "They never complained.",
+              "They complained a lot.",
+              "They left early.",
+              "They were late."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
             ]
           }
         ]
@@ -45892,20 +45943,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Why do some teens volunteer?",
-            "qId": "Kenapa sebagian remaja menjadi relawan?",
-            "options": [
-              "To help others or gain experience",
-              "Because it is required",
-              "To earn money",
-              "To skip school"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
             "q": "What can volunteering do for young people?",
             "qId": "Apa manfaat kegiatan relawan bagi anak muda?",
             "options": [
@@ -45917,6 +45954,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               2
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 1,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Some do it to help others, while others want experience for the future.",
+              "Fewer teenagers volunteer every year.",
+              "However, volunteering is only for adults.",
+              "Most teenagers don't know what volunteering means."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
             ]
           },
           {
@@ -45934,17 +45987,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What do experts warn about?",
-            "qId": "Apa peringatan para ahli?",
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Taking on too much",
-              "Volunteering alone",
-              "Working at night",
-              "Meeting new people"
+              "School work and rest are important too.",
+              "So teens should volunteer every day after school.",
+              "Experts say rest is a waste of time.",
+              "That is why schools should stop giving homework."
             ],
             "answer": 0,
             "evidence": [
-              4
+              5
             ]
           },
           {
@@ -46234,21 +46289,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Why is Kevin writing?",
-            "qId": "Kenapa Kevin menulis?",
-            "options": [
-              "He cannot come on Tuesday.",
-              "He wants to leave the team.",
-              "He lost his form.",
-              "He wants to be the coach."
-            ],
-            "answer": 0,
-            "evidence": [
-              1,
-              2
-            ]
-          },
-          {
             "q": "What does Kevin ask for?",
             "qId": "Apa yang diminta Kevin?",
             "options": [
@@ -46260,6 +46300,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               3
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Unfortunately, I have a dentist appointment at 4 p.m. that day.",
+              "I will definitely be there on Tuesday.",
+              "I don't really want to join the team.",
+              "Thursday is the only day I'm busy."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
             ]
           },
           {
@@ -46277,6 +46333,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Although I've never played for a team, I really want to learn.",
+              "I stopped practising after one day.",
+              "Basketball is boring, so I might not come.",
+              "Please cancel the tryouts for everyone."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
             "q": "What can we infer about Kevin?",
             "qId": "Apa yang bisa disimpulkan tentang Kevin?",
             "options": [
@@ -46289,20 +46361,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "evidence": [
               4,
               5
-            ]
-          },
-          {
-            "q": "Which class is Kevin in?",
-            "qId": "Kevin di kelas berapa?",
-            "options": [
-              "8B",
-              "7B",
-              "9A",
-              "8A"
-            ],
-            "answer": 0,
-            "evidence": [
-              6
             ]
           }
         ]
@@ -46344,20 +46402,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "According to the article, what do good teams depend on?",
-            "qId": "Menurut artikel, tim yang bagus bergantung pada apa?",
-            "options": [
-              "More than their best shooter",
-              "Only their best shooter",
-              "Tall players",
-              "Expensive shoes"
-            ],
-            "answer": 0,
-            "evidence": [
-              1
-            ]
-          },
-          {
             "q": "What must players do constantly?",
             "qId": "Apa yang harus terus dilakukan pemain?",
             "options": [
@@ -46369,6 +46413,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               2
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 1,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "However, good teams depend on more than their best shooter.",
+              "They are right, because only the best shooter matters.",
+              "So players should never pass the ball.",
+              "That is why teams only need one good player."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
             ]
           },
           {
@@ -46386,17 +46446,18 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why do coaches often choose team players?",
-            "qId": "Kenapa pelatih sering memilih pemain yang kompak?",
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Working together can beat talent.",
-              "They are taller.",
-              "They are cheaper.",
-              "They score more alone."
+              "This is why coaches often choose team players over talented individuals.",
+              "This is why coaches only choose the best shooters.",
+              "However, stars always win every game.",
+              "Average players should stop playing basketball."
             ],
             "answer": 0,
             "evidence": [
-              4,
               5
             ]
           },
@@ -46700,13 +46761,15 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How did Rina's opinion change as she looked?",
-            "qId": "Bagaimana pendapat Rina berubah saat melihatnya?",
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "She noticed the details and liked it more.",
-              "She liked it less.",
-              "She got bored.",
-              "She thought it was a photo."
+              "At first I thought it was just two hands, but then I saw the details.",
+              "Honestly, I didn't look at your painting at all.",
+              "At first I loved it, but then I found it boring.",
+              "The exhibition was closed when I arrived."
             ],
             "answer": 0,
             "evidence": [
@@ -46728,13 +46791,15 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Who else voted for Nita?",
-            "qId": "Siapa lagi yang memilih Nita?",
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Rina's brother",
-              "Nita's teacher",
-              "Rina's mother",
-              "Nita's grandmother"
+              "I voted for you, and so did my brother.",
+              "I voted for another painting because it was better.",
+              "You won first prize yesterday, as you know.",
+              "I didn't vote because I forgot."
             ],
             "answer": 0,
             "evidence": [
@@ -46794,20 +46859,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "What do some people believe?",
-            "qId": "Apa anggapan sebagian orang?",
-            "options": [
-              "Art is less important than maths or science.",
-              "Art is the most important subject.",
-              "Maths is boring.",
-              "Science should be cut."
-            ],
-            "answer": 0,
-            "evidence": [
-              0
-            ]
-          },
-          {
             "q": "What does art teach students to notice?",
             "qId": "Seni mengajarkan siswa memperhatikan apa?",
             "options": [
@@ -46819,6 +46870,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               2
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 1,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "However, art teaches skills that other subjects often miss.",
+              "They are right, so schools should stop art lessons.",
+              "Maths and science are the only useful subjects.",
+              "Because of this, students never paint at school."
+            ],
+            "answer": 0,
+            "evidence": [
+              1
             ]
           },
           {
@@ -46836,13 +46903,15 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What is the writer's opinion about cutting art lessons?",
-            "qId": "Apa pendapat penulis tentang menghapus pelajaran seni?",
+            "kind": "missing",
+            "hide": 6,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "It would be a serious mistake.",
-              "It would be a good idea.",
-              "It does not matter.",
-              "It would help maths."
+              "Cutting them would be a serious mistake.",
+              "However, schools should cut them next year.",
+              "Art lessons are less important than maths.",
+              "Students should stop drawing in other lessons."
             ],
             "answer": 0,
             "evidence": [
@@ -47150,13 +47219,15 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How does the chef describe the dish?",
-            "qId": "Bagaimana chef menggambarkan masakan itu?",
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "It takes longer but isn't difficult.",
-              "It is very difficult.",
-              "It is quick and easy.",
-              "It is very spicy."
+              "Although it takes longer than fried snacks, it isn't difficult.",
+              "However, we will not cook anything next week.",
+              "Soto is a sweet cake from Japan.",
+              "Please don't come to class next week."
             ],
             "answer": 0,
             "evidence": [
@@ -47178,17 +47249,18 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why should students with peanut allergies tell the chef?",
-            "qId": "Kenapa siswa alergi kacang harus memberi tahu chef?",
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "He can make a separate pot for them.",
-              "They must stay home.",
-              "They must bring their own food.",
-              "They will cook the sauce."
+              "Some versions use peanut sauce, but I can make a separate pot.",
+              "Peanuts are in every pot, so you can't eat any.",
+              "Allergies are not important in cooking.",
+              "Please bring peanuts for everyone to share."
             ],
             "answer": 0,
             "evidence": [
-              4,
               5
             ]
           },
@@ -47259,6 +47331,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "However, cooking is a valuable life skill.",
+              "This is the best way to eat healthily.",
+              "Because of this, children don't need to cook.",
+              "Instant noodles are full of vegetables."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
+            ]
+          },
+          {
             "q": "What do many young people rely on?",
             "qId": "Apa yang diandalkan banyak anak muda?",
             "options": [
@@ -47273,27 +47361,15 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How does cooking help with maths?",
-            "qId": "Bagaimana memasak membantu matematika?",
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Through measuring and timing",
-              "Through reading recipes aloud",
-              "Through tasting food",
-              "Through shopping"
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
-          },
-          {
-            "q": "What does the writer think is most important?",
-            "qId": "Apa yang menurut penulis paling penting?",
-            "options": [
-              "Cooking builds confidence and independence.",
-              "Cooking saves money.",
-              "Cooking is fun.",
-              "Cooking is fast."
+              "Perhaps most importantly, it builds confidence and independence.",
+              "However, cooking makes children lazy.",
+              "That is why children should never use the kitchen.",
+              "Most importantly, delivery apps are cheaper."
             ],
             "answer": 0,
             "evidence": [
@@ -47593,20 +47669,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Did Lulu suspect the surprise?",
-            "qId": "Apakah Lulu curiga soal kejutan itu?",
-            "options": [
-              "No, not at all.",
-              "Yes, from the start.",
-              "Only a little.",
-              "Budi told her."
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
             "q": "How did the photo wall make Lulu feel?",
             "qId": "Bagaimana perasaan Lulu melihat dinding foto?",
             "options": [
@@ -47618,6 +47680,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               3
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "When you said your mom needed help, I didn't suspect anything.",
+              "I knew about the party a week before, of course.",
+              "I'm sorry I couldn't come to the party.",
+              "Your mom told me everything about the surprise."
+            ],
+            "answer": 0,
+            "evidence": [
+              2
             ]
           },
           {
@@ -47635,17 +47713,18 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why does Lulu especially thank Budi?",
-            "qId": "Kenapa Lulu terutama berterima kasih pada Budi?",
+            "kind": "missing",
+            "hide": 6,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "He kept her busy at the bookshop for hours.",
-              "He made the cake.",
-              "He decorated the garage.",
-              "He took the photos."
+              "He kept me at the bookshop for two hours, which must have been boring for him.",
+              "He forgot to come, so I was a bit sad.",
+              "He told me about the surprise on the way.",
+              "He doesn't like parties, so he stayed home."
             ],
             "answer": 0,
             "evidence": [
-              5,
               6
             ]
           },
@@ -47714,32 +47793,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why should few people know?",
-            "qId": "Kenapa sebaiknya sedikit orang yang tahu?",
+            "kind": "missing",
+            "hide": 2,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Someone is more likely to slip if many know.",
-              "It is cheaper.",
-              "Parties must be small.",
-              "People forget quickly."
+              "The more people know, the more likely someone will slip.",
+              "So you should tell everyone in your school.",
+              "The more people know, the easier it is to keep.",
+              "Surprise parties are always on Saturdays."
             ],
             "answer": 0,
             "evidence": [
               2
-            ]
-          },
-          {
-            "q": "What is a 'cover story'?",
-            "qId": "Apa itu 'cerita samaran'?",
-            "options": [
-              "A normal reason that hides the surprise",
-              "A book cover",
-              "A story told at the party",
-              "A secret password"
-            ],
-            "answer": 0,
-            "evidence": [
-              3,
-              4
             ]
           },
           {
@@ -47754,6 +47820,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               5
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 4,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "For example, invite them to a normal activity at the same time.",
+              "For example, tell them the date of the party.",
+              "For example, send them a photo of the cake.",
+              "Then ask them to plan their own party."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
             ]
           },
           {
@@ -48060,45 +48142,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "How long did saving take?",
-            "qId": "Berapa lama menabungnya?",
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Four months",
-              "Four weeks",
-              "Seven months",
-              "One year"
+              "Saving took four months, which felt like forever.",
+              "Grandpa, thank you for buying it for me.",
+              "Saving was very quick and easy.",
+              "The shop didn't have any green bikes."
             ],
             "answer": 0,
             "evidence": [
               3
-            ]
-          },
-          {
-            "q": "What lesson did Arga learn?",
-            "qId": "Pelajaran apa yang Arga dapat?",
-            "options": [
-              "Small amounts really add up.",
-              "Saving is impossible.",
-              "Bikes are cheap.",
-              "Grandpa should pay."
-            ],
-            "answer": 0,
-            "evidence": [
-              4
-            ]
-          },
-          {
-            "q": "What is Arga saving for now?",
-            "qId": "Sekarang Arga menabung untuk apa?",
-            "options": [
-              "A helmet with lights",
-              "Another bike",
-              "A trip to Grandpa's",
-              "A new bell"
-            ],
-            "answer": 0,
-            "evidence": [
-              5
             ]
           },
           {
@@ -48113,6 +48169,36 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "I've even started saving again, this time for a helmet with lights.",
+              "So I've decided never to save money again.",
+              "I've already sold the bike to my friend.",
+              "Now I've spent all my money on sweets."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "What lesson did Arga learn?",
+            "qId": "Pelajaran apa yang Arga dapat?",
+            "options": [
+              "Small amounts really add up.",
+              "Saving is impossible.",
+              "Bikes are cheap.",
+              "Grandpa should pay."
+            ],
+            "answer": 0,
+            "evidence": [
+              4
             ]
           }
         ]
@@ -48154,20 +48240,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Why is setting a goal helpful?",
-            "qId": "Kenapa menentukan target membantu?",
-            "options": [
-              "It makes saying no to small purchases easier.",
-              "It makes things cheaper.",
-              "It helps you earn more.",
-              "It means parents pay."
-            ],
-            "answer": 0,
-            "evidence": [
-              3
-            ]
-          },
-          {
             "q": "What does the writer suggest instead of waiting for a large amount?",
             "qId": "Apa saran penulis daripada menunggu jumlah besar?",
             "options": [
@@ -48182,17 +48254,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Why should you track your progress?",
-            "qId": "Kenapa kamu harus memantau kemajuan?",
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Seeing your total grow is motivating.",
-              "Banks require it.",
-              "It is fun to count coins.",
-              "Parents ask for it."
+              "A goal makes it easier to say no to small, unplanned purchases.",
+              "A goal makes you buy more sweets every day.",
+              "Goals are not useful for teenagers.",
+              "Second, spend all your money at once."
             ],
             "answer": 0,
             "evidence": [
-              5
+              3
             ]
           },
           {
@@ -48207,6 +48281,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               6
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Finally, track your progress, because seeing your total grow is motivating.",
+              "Finally, forget how much you have saved.",
+              "First, borrow money from your friends.",
+              "Finally, buy something new every day."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
             ]
           },
           {
@@ -48507,20 +48597,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "Which club is best for someone who wants to cook?",
-            "qId": "Klub mana yang paling cocok untuk yang ingin memasak?",
-            "options": [
-              "Cooking Club",
-              "Photo Club",
-              "Drama Club",
-              "None of them"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
             "q": "Dina has no camera. What can she do?",
             "qId": "Dina tidak punya kamera. Apa yang bisa dia lakukan?",
             "options": [
@@ -48535,27 +48611,15 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "Budi is busy every Saturday and Sunday. Which club can he join?",
-            "qId": "Budi sibuk setiap Sabtu dan Minggu. Klub mana yang bisa dia ikuti?",
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Cooking Club",
-              "Photo Club",
-              "Drama Club",
-              "All of them"
-            ],
-            "answer": 0,
-            "evidence": [
-              2
-            ]
-          },
-          {
-            "q": "Why does Cooking Club ask about allergies?",
-            "qId": "Kenapa Cooking Club menanyakan alergi?",
-            "options": [
-              "To keep students safe when they eat",
-              "To choose the best cooks",
-              "To make a shopping list",
-              "To plan the show"
+              "Please tell us about any food allergies.",
+              "Please bring your camera and a spare battery.",
+              "Practise your lines before you come.",
+              "Beginners must bring their own chess set."
             ],
             "answer": 0,
             "evidence": [
@@ -48574,6 +48638,36 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "answer": 0,
             "evidence": [
               4
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "Sundays, 10 a.m.–12 p.m. Beginners welcome!",
+              "Saturdays, 7–9 a.m. Bring your camera!",
+              "Fridays, 3–5 p.m. Bring an apron!",
+              "No acting here, you can only watch."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
+            ]
+          },
+          {
+            "q": "Budi is busy every Saturday and Sunday. Which club can he join?",
+            "qId": "Budi sibuk setiap Sabtu dan Minggu. Klub mana yang bisa dia ikuti?",
+            "options": [
+              "Cooking Club",
+              "Photo Club",
+              "Drama Club",
+              "All of them"
+            ],
+            "answer": 0,
+            "evidence": [
+              2
             ]
           }
         ]
@@ -48619,21 +48713,6 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
         ],
         "questions": [
           {
-            "q": "How did the writer feel about chess at first?",
-            "qId": "Bagaimana perasaan penulis tentang catur awalnya?",
-            "options": [
-              "Unhappy, because it seemed boring",
-              "Excited to start",
-              "Afraid of the coach",
-              "Proud of winning"
-            ],
-            "answer": 0,
-            "evidence": [
-              0,
-              1
-            ]
-          },
-          {
             "q": "What was Mr. Hadi like?",
             "qId": "Pak Hadi orangnya seperti apa?",
             "options": [
@@ -48648,17 +48727,19 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             ]
           },
           {
-            "q": "What did the writer learn from Mr. Hadi?",
-            "qId": "Apa yang penulis pelajari dari Pak Hadi?",
+            "kind": "missing",
+            "hide": 3,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
             "options": [
-              "Mistakes can teach you something.",
-              "Winning is everything.",
-              "Chess is too slow.",
-              "Practice is not important."
+              "Although I felt embarrassed, our coach, Mr. Hadi, was patient.",
+              "Because I won every game, Mr. Hadi gave me a medal.",
+              "So I left the club and never came back.",
+              "Our coach, Mr. Hadi, shouted at me every day."
             ],
             "answer": 0,
             "evidence": [
-              4
+              3
             ]
           },
           {
@@ -48674,6 +48755,22 @@ export const READING_TOPICS_TRAILBLAZER: ReadingTextTopic[] = [
             "evidence": [
               6,
               7
+            ]
+          },
+          {
+            "kind": "missing",
+            "hide": 5,
+            "q": "Which sentence fits the gap?",
+            "qId": "Kalimat mana yang pas untuk bagian yang kosong?",
+            "options": [
+              "By the third week, I won my first game against an older student.",
+              "By the third week, I had stopped playing chess.",
+              "So I still think chess is slow and boring.",
+              "In the first week, I won every game."
+            ],
+            "answer": 0,
+            "evidence": [
+              5
             ]
           },
           {

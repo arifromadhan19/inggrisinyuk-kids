@@ -310,7 +310,18 @@ export interface ReadingTextQuestion {
    *  `lines[about]` → pilih 1 gambar (`options` = emoji; PAUD/Starter).
    *  `truefalse` = gambar `picture` + pernyataan `q` → ✅/❌, SELURUH
    *  kalimat harus cocok (Starters P1/P2; `options` = ['Benar','Salah']). */
-  kind?: 'text' | 'picture' | 'truefalse';
+  /** `gap` (Tantangan Adventurer "🧩 Lengkapi Cerita", Movers P5) = `q` kalimat
+   *  ringkasan ber-`___`, dijawab TAP kata `word` di teks. `reply` ("🗨️ Pilih
+   *  Jawaban Dialog", Movers P3) = baris dialog `hide` disembunyikan, pilih
+   *  dari `options` (options[answer] = isi baris itu tanpa nama penutur). */
+  /** Achiever/Trailblazer (Tantangan): `tfn` = Benar/Salah/Tidak Disebut
+   *  (`q` = pernyataan, options ['True','False',"Doesn't say"], evidence kosong
+   *  kalau Tidak Disebut); `ref` = tunjuk rujukan (tap `word` di teks, spt
+   *  `gap`); `missing` = kalimat yang hilang (`hide` disembunyikan, 4 opsi,
+   *  options[answer] = baris itu). */
+  kind?: 'text' | 'picture' | 'truefalse' | 'gap' | 'reply' | 'tfn' | 'ref' | 'missing';
+  word?: string;
+  hide?: number;
   about?: number;
   picture?: string;
   /** `picture`: kata di `lines[about]` yang ditap di langkah "👆 Mana

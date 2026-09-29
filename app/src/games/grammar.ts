@@ -740,12 +740,12 @@ const TRANSFORM_UI: Record<GrammarTransformKind, TransformUi> = {
     tantanganAsk: 'Kalimat mana yang artinya sama?',
   },
 };
-function transformUi(topic: GrammarTransformTopic): TransformUi {
+export function transformUi(topic: GrammarTransformTopic): TransformUi {
   return TRANSFORM_UI[topic.kind ?? 'reported'];
 }
 /** Kalimat asal tampil: reported speech = "Nama: “kutipan”", materi lain
  *  (tanpa tokoh) = kalimatnya saja. */
-function sourceText(t: GrammarTransformItem, text = t.original): string {
+export function sourceText(t: GrammarTransformItem, text = t.original): string {
   return t.speaker ? `${t.speaker}: “${text}”` : text;
 }
 
@@ -1287,7 +1287,7 @@ function scorePatternMic(said: string, target: string): MicScore {
  *  dobel info & disembunyikan (permintaan user: "ketika sudah ada text remove
  *  saja icon di atas text biar tidak redundan"). Beda ukuran gambar
  *  (proximity/size) & jumlah gambar (quantity) tetap. */
-function contrastVisualInner(emoji: string, isFormB: boolean, visual: GrammarContrastVisual, scale = 1, badges = true): string {
+export function contrastVisualInner(emoji: string, isFormB: boolean, visual: GrammarContrastVisual, scale = 1, badges = true): string {
   // Ukuran dasar dikali `scale` — kartu Latihan Inti 1.3, gambar Kenalan Main
   // & stimulus Tantangan lebih besar lagi (permintaan user: "gambar/icon
   // sedikit besar supaya jelas"). Lencana (✅/😊/🔍/👦 …) ikut membesar,
@@ -1319,11 +1319,11 @@ function contrastVisualInner(emoji: string, isFormB: boolean, visual: GrammarCon
  *    perempuan"). Sekarang SEMUA varian berlabel.
  *  Label = terjemahan konsep (Indonesia), bukan teks kalimat
  *  Inggris → anak tetap harus paham kata Inggris yang didengar. */
-const LABELED_VISUALS: ReadonlySet<GrammarContrastVisual> = new Set(['quantity', 'size', 'character', 'polarity', 'liking', 'proximity', 'possessor', 'inclusion']);
+export const LABELED_VISUALS: ReadonlySet<GrammarContrastVisual> = new Set(['quantity', 'size', 'character', 'polarity', 'liking', 'proximity', 'possessor', 'inclusion']);
 
 /** Label kartu kontras — `topic.choice.a/b`, `{x}` diganti nama benda item
  *  itu (mis. "Senang atau Tidak?": "Sedih"/"Tidak sedih" utk item sad). */
-function choiceLabel(topic: GrammarPatternTopic, item: GrammarPatternItem, isFormB: boolean): string {
+export function choiceLabel(topic: GrammarPatternTopic, item: GrammarPatternItem, isFormB: boolean): string {
   const raw = (isFormB ? topic.choice.b : topic.choice.a).replace(/\{x\}/g, choiceNoun(item.id));
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }

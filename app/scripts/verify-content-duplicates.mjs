@@ -220,6 +220,50 @@ function checkReadingTextData(byLevel, errors) {
               if (pics && q.options[q.answer] !== pics) errors.push(`${w}: jawaban gambar tidak sama dgn gambar halaman "${line.en}".`);
             }
             if (q.kind === 'truefalse' && (q.options.length !== 2 || !q.picture)) errors.push(`${w}: truefalse wajib 2 opsi & picture.`);
+            if (q.kind === 'gap') {
+              // Lengkapi Cerita: jawaban = 1 kata utuh di baris bukti, tidak bocor di kalimat soal.
+              const nw = (t) => t.toLowerCase().replace(/[^a-z0-9']/g, '').replace(/^'+|'+$/g, '');
+              const line = x.lines[q.evidence[0]];
+              if (!q.word || q.evidence.length !== 1 || !line) errors.push(`${w}: gap wajib word & tepat 1 evidence.`);
+              else {
+                if (!line.en.split(' ').map(nw).includes(nw(q.word))) errors.push(`${w}: kata "${q.word}" tidak ada sbg kata utuh di "${line.en}".`);
+                if (!q.q.includes('___') || !q.qId.includes('___')) errors.push(`${w}: kalimat gap & qId wajib memuat ___.`);
+                if (q.q.split(' ').map(nw).includes(nw(q.word))) errors.push(`${w}: kata jawaban "${q.word}" bocor di kalimat soal.`);
+              }
+            }
+            if (q.kind === 'reply') {
+              // Pilih Jawaban Dialog: opsi benar = isi baris yang disembunyikan (tanpa nama penutur).
+              const line = x.lines[q.hide];
+              const body = (s) => s.slice(s.indexOf(': ') + 2);
+              if (!line) errors.push(`${w}: hide menunjuk baris yang tidak ada.`);
+              else if (norm(q.options[q.answer]) !== norm(body(line.en))) errors.push(`${w}: jawaban reply tidak sama dgn baris yang disembunyikan.`);
+              if (q.options.length !== 2) errors.push(`${w}: reply wajib 2 opsi.`);
+            }
+            if (q.kind === 'ref') {
+              // Tunjuk Rujukan: jawaban = 1 kata utuh di baris bukti, tidak bocor di soal.
+              const nw = (t) => t.toLowerCase().replace(/[^a-z0-9']/g, '').replace(/^'+|'+$/g, '');
+              const line = x.lines[q.evidence[0]];
+              if (!q.word || q.evidence.length !== 1 || !line) errors.push(`${w}: ref wajib word & tepat 1 evidence.`);
+              else {
+                if (!line.en.split(' ').map(nw).includes(nw(q.word))) errors.push(`${w}: kata "${q.word}" tidak ada di "${line.en}".`);
+                if (q.q.split(' ').map(nw).includes(nw(q.word))) errors.push(`${w}: kata jawaban "${q.word}" bocor di soal.`);
+              }
+            }
+            if (q.kind === 'tfn') {
+              // Benar/Salah/Tidak Disebut: Tidak Disebut tanpa bukti, Benar/Salah wajib 1 bukti.
+              if (q.options.length !== 3) errors.push(`${w}: tfn wajib 3 opsi.`);
+              if (q.answer === 2 ? q.evidence.length !== 0 : q.evidence.length < 1) errors.push(`${w}: tfn bukti tidak sesuai jawaban.`);
+              if (x.lines.some((l) => norm(l.en) === norm(q.q))) errors.push(`${w}: pernyataan tfn sama persis dgn kalimat teks.`);
+            }
+            if (q.kind === 'missing') {
+              // Kalimat yang Hilang: 4 opsi, jawaban = baris yang disembunyikan, pengecoh bukan kalimat teks.
+              const line = x.lines[q.hide];
+              const body = (s) => (x.genre === 'dialog' && s.indexOf(': ') > 0 ? s.slice(s.indexOf(': ') + 2) : s);
+              if (!line) errors.push(`${w}: hide menunjuk baris yang tidak ada.`);
+              else if (norm(q.options[q.answer]) !== norm(body(line.en))) errors.push(`${w}: jawaban missing tidak sama dgn baris yang disembunyikan.`);
+              if (q.options.length !== 4) errors.push(`${w}: missing wajib 4 opsi.`);
+              q.options.forEach((o, oi) => { if (oi !== q.answer && x.lines.some((l) => norm(body(l.en)) === norm(o))) errors.push(`${w}: pengecoh "${o}" ada di teks.`); });
+            }
           });
           if (x.sequence && x.sequence.some((e) => !(e >= 0 && e < x.lines.length))) errors.push(`${where} ${group}[${ti}]: sequence menunjuk baris yang tidak ada.`);
         });

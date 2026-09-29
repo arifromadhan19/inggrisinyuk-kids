@@ -32,124 +32,47 @@
  * `runMemoryMatchRound()` — riwayat desain lengkap (kenapa grid, kenapa
  * persentase, kenapa halo, kenapa "Cara Main"/footer standar): lihat
  * komentar `games/wordmatch.ts`, TIDAK diulang detail di sini.
+ *
+ * 🔒 **Revisi 2026-09-29 (permintaan user "samakan konsepnya dgn Word
+ * Quest/Balloon Hunt/Sentence Puzzle — beberapa soal per markas")**: 1 markas
+ * = `BOARD_COUNT` (5) papan, bullet progress = papan (bukan pasangan), kata
+ * diambil dari antrian tanpa ulang. Bank & jumlah pasangan pindah ke
+ * `memorymatch-data.ts` (dicek build), bank lama diganti krn melanggar
+ * aturan wajib (emoji badan utuh 🐟🐦🐘🐧🦘🦋🦖🐙🦎, 🎃, kognat "Bus"↔"Bus",
+ * Teleskop↔Telescope dst).
+ *
+ * 🔒 **Pembeda markas (permintaan user "kerjakan sehingga statusnya selesai
+ * semua")**: tiap markas = 1 ATURAN PASANGAN baru (gambar+suara → gambar →
+ * kata ID↔EN → bunyi↔tulisan → lawan kata → kalimat rumpang↔kata), 💡
+ * bantuan 1x/papan (Intip → Intip Tulisan → Arti). Tabel lengkap di komentar
+ * puncak `memorymatch-data.ts`; riset: `materi/pembeda_level_game.md`
+ * § Memory Hunt.
  */
 import { readingPicHtml as picHtml } from '../reading-pic';
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
-import { playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
+import { playCorrectTone, playWrongTone, speak, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
 import { shuffle } from '../util';
 import type { LevelKey, OnDone, WordMatchDifficulty } from '../types';
+import { BOARD_COUNT, GAP_BANK, OPPOSITE_BANK, PICTURE_BANK, SOUND_BANK, TIER_CONFIG, TRANSLATE_BANK, type HintKind } from './memorymatch-data';
 
 /** `RajaKey` game ini — dikirim ke `recordAttempt()`, lihat komentar
  *  `GAME_KEY` `games/wordmatch.ts`. */
 const GAME_KEY = 'ingatan';
 
-interface MemoryWord {
-  id: string;
-  en: string;
-  emoji: string;
-}
-
-/** 5 bank kata per tingkat (permintaan user "seperti konsepnya Raja Kata"
- *  — dulu 1 bank tunggal `BANK`, SUDAH DIPECAH), pola SAMA PERSIS
- *  `games/wordmatch.ts` (kata makin panjang/jarang tiap tingkat, TIDAK ada
- *  kata yang tumpang tindih antar-bank biar kurva kesulitan genuine naik).
- *  Emoji SELALU unik per kata (kartu sisi ID emoji+teks tidak pernah
- *  ambigu). */
-/** Tingkat PEMANASAN (BARU, permintaan user "tambahkan 1 sehingga ada 6...
- *  levelnya ada pemanasan, mudah, sedang, sulit, jago, legendaris") — kata
- *  sesederhana BANK_MUDAH, tapi `pairCount`-nya paling kecil (2, lihat
- *  DIFFICULTY_META). TIDAK ada kata yang tumpang tindih dgn bank lain. */
-const BANK_PEMANASAN: MemoryWord[] = [
-  { id: 'Topi', en: 'Hat', emoji: '🎩' },
-  { id: 'Cangkir', en: 'Cup', emoji: '☕' },
-  { id: 'Kotak', en: 'Box', emoji: '📦' },
-  { id: 'Sapi', en: 'Cow', emoji: '🐮' },
-  { id: 'Babi', en: 'Pig', emoji: '🐷' },
-  { id: 'Ayam Betina', en: 'Hen', emoji: '🐔' },
-  { id: 'Bus', en: 'Bus', emoji: '🚌' },
-  { id: 'Pena', en: 'Pen', emoji: '🖊️' },
-];
-
-const BANK_MUDAH: MemoryWord[] = [
-  { id: 'Kucing', en: 'Cat', emoji: '🐱' },
-  { id: 'Anjing', en: 'Dog', emoji: '🐶' },
-  { id: 'Ikan', en: 'Fish', emoji: '🐟' },
-  { id: 'Bola', en: 'Ball', emoji: '⚽' },
-  { id: 'Matahari', en: 'Sun', emoji: '☀️' },
-];
-
-const BANK_SEDANG: MemoryWord[] = [
-  { id: 'Kelinci', en: 'Rabbit', emoji: '🐰' },
-  { id: 'Burung', en: 'Bird', emoji: '🐦' },
-  { id: 'Pisang', en: 'Banana', emoji: '🍌' },
-  { id: 'Bunga', en: 'Flower', emoji: '🌸' },
-  { id: 'Payung', en: 'Umbrella', emoji: '☂️' },
-  { id: 'Bulan', en: 'Moon', emoji: '🌙' },
-];
-
-const BANK_SULIT: MemoryWord[] = [
-  { id: 'Kupu-kupu', en: 'Butterfly', emoji: '🦋' },
-  { id: 'Gajah', en: 'Elephant', emoji: '🐘' },
-  { id: 'Pelangi', en: 'Rainbow', emoji: '🌈' },
-  { id: 'Gitar', en: 'Guitar', emoji: '🎸' },
-  { id: 'Pinguin', en: 'Penguin', emoji: '🐧' },
-  { id: 'Labu', en: 'Pumpkin', emoji: '🎃' },
-  { id: 'Kanguru', en: 'Kangaroo', emoji: '🦘' },
-];
-
-const BANK_JAGO: MemoryWord[] = [
-  { id: 'Dinosaurus', en: 'Dinosaur', emoji: '🦖' },
-  { id: 'Gurita', en: 'Octopus', emoji: '🐙' },
-  { id: 'Astronot', en: 'Astronaut', emoji: '🧑‍🚀' },
-  { id: 'Kompas', en: 'Compass', emoji: '🧭' },
-  { id: 'Ransel', en: 'Backpack', emoji: '🎒' },
-  { id: 'Bunglon', en: 'Chameleon', emoji: '🦎' },
-];
-
-const BANK_LEGENDARIS: MemoryWord[] = [
-  { id: 'Teleskop', en: 'Telescope', emoji: '🔭' },
-  { id: 'Komet', en: 'Comet', emoji: '☄️' },
-  { id: 'Satelit', en: 'Satellite', emoji: '🛰️' },
-  { id: 'Mikroskop', en: 'Microscope', emoji: '🔬' },
-  { id: 'Kembang Api', en: 'Firework', emoji: '🎆' },
-  { id: 'Terompet', en: 'Trumpet', emoji: '🎺' },
-  { id: 'Akordeon', en: 'Accordion', emoji: '🪗' },
-];
-
-export interface DifficultyMeta {
-  label: string;
-  sub: string;
-  pairCount: number;
-}
-
-/** Pasangan makin banyak tiap tingkat (3→7), pola SAMA persis
- *  `WordMatchDifficulty.pairCount` `games/wordmatch.ts`. */
-export const DIFFICULTY_META: Record<WordMatchDifficulty, DifficultyMeta> = {
-  pemanasan: { label: 'Pemanasan', sub: '2 pasang kartu', pairCount: 2 },
-  mudah: { label: 'Mudah', sub: '3 pasang kartu', pairCount: 3 },
-  sedang: { label: 'Sedang', sub: '4 pasang kartu', pairCount: 4 },
-  sulit: { label: 'Sulit', sub: '5 pasang kartu', pairCount: 5 },
-  jago: { label: 'Jago', sub: '6 pasang kartu', pairCount: 6 },
-  legendaris: { label: 'Legendaris', sub: '7 pasang kartu', pairCount: 7 },
-};
-
-const BANK_BY_DIFFICULTY: Record<WordMatchDifficulty, MemoryWord[]> = {
-  pemanasan: BANK_PEMANASAN,
-  mudah: BANK_MUDAH,
-  sedang: BANK_SEDANG,
-  sulit: BANK_SULIT,
-  jago: BANK_JAGO,
-  legendaris: BANK_LEGENDARIS,
-};
+/** Label + sub-teks kartu markas di Map — dihitung dari `TIER_CONFIG`
+ *  (`memorymatch-data.ts`, satu-satunya tempat mengubah pasangan/bank). */
+export const DIFFICULTY_META: Record<WordMatchDifficulty, { label: string; sub: string; pairCount: number }> = Object.fromEntries(
+  Object.entries(TIER_CONFIG).map(([k, t]) => [k, { label: t.label, sub: `${t.pairCount} pasang kartu`, pairCount: t.pairCount }])
+) as Record<WordMatchDifficulty, { label: string; sub: string; pairCount: number }>;
 
 interface MemoryCard {
   pairId: number;
-  face: 'id' | 'en';
+  side: 0 | 1;
   matched: boolean;
 }
 
@@ -196,76 +119,217 @@ interface RoundJourneyCtx {
   headerHtml: string;
 }
 
-/** Mesin 1 markas/1 tingkat kesulitan — dulu bernama `runMemoryMatch` &
- *  jadi entry point tunggal (SUDAH DIHAPUS, lihat komentar puncak file).
- *  Sekarang dipakai `runMemoryMatch()` orkestrator di bawah (dipanggil 1×
- *  tiap markas ditap). */
+/** 1 sisi kartu. `label` = aria-label saat terbuka (kartu bunyi TIDAK boleh
+ *  membocorkan katanya lewat aria-label sebelum cocok). */
+interface Face {
+  text: string;
+  emoji?: string;
+  /** Arti Indonesia — tampil kalau 💡 Arti dipakai (Jago/Legendaris). */
+  meaning?: string;
+  /** Dibacakan TTS saat kartu dibuka. */
+  speak?: string;
+  /** Kartu bunyi (Sulit): terbuka = 🔊 saja, tulisan baru muncul setelah cocok. */
+  sound?: boolean;
+  /** Kartu kalimat (Legendaris) — lebih lebar, teks rata kiri. */
+  long?: boolean;
+  label: string;
+}
+
+interface BoardPair {
+  key: string;
+  faces: [Face, Face];
+}
+
+/** Bank per markas → daftar pasangan kartu siap pakai (lihat tabel tier
+ *  `memorymatch-data.ts`). */
+function pairBank(difficulty: WordMatchDifficulty): BoardPair[] {
+  const cfg = TIER_CONFIG[difficulty];
+  switch (cfg.mode) {
+    case 'picture':
+      return PICTURE_BANK[difficulty as 'pemanasan' | 'mudah'].map((w) => ({
+        key: w.en,
+        faces: [
+          { text: '', emoji: w.emoji, label: w.id },
+          { text: w.en, label: w.en, speak: cfg.speakOnOpen ? w.en : undefined },
+        ],
+      }));
+    case 'translate':
+      return TRANSLATE_BANK.map((w) => ({ key: w.en, faces: [{ text: w.id, label: w.id }, { text: w.en, label: w.en }] }));
+    case 'sound':
+      return SOUND_BANK.map((w) => ({
+        key: w.en,
+        faces: [
+          { text: w.en, sound: true, speak: w.en, label: 'Kartu suara' },
+          { text: w.en, label: w.en },
+        ],
+      }));
+    case 'opposite':
+      return OPPOSITE_BANK.map((p) => ({
+        key: p.a,
+        faces: [
+          { text: p.a, meaning: p.aId, label: p.a },
+          { text: p.b, meaning: p.bId, label: p.b },
+        ],
+      }));
+    case 'gap':
+      return GAP_BANK.map((g) => ({
+        key: g.answer,
+        faces: [
+          { text: g.sentence, meaning: g.sentenceId, long: true, label: g.sentence },
+          { text: g.answer, label: g.answer },
+        ],
+      }));
+  }
+}
+
+const HINT_LABEL: Record<HintKind, string> = {
+  peek: 'Intip',
+  'peek-written': 'Intip Tulisan',
+  meaning: 'Arti',
+};
+
+/** Lama "Intip" (ms) — cukup untuk melihat sekilas, bukan untuk menghafal. */
+const PEEK_MS = 2000;
+
+/** Mesin 1 markas — `BOARD_COUNT` papan (dipanggil `runMemoryMatch()`
+ *  orkestrator di bawah tiap markas ditap). Aturan pasangan & bantuan
+ *  diambil dari `TIER_CONFIG` (`memorymatch-data.ts`). */
 function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDifficulty, onDone: OnDone, level: LevelKey, journey?: RoundJourneyCtx): void {
-  const bank = BANK_BY_DIFFICULTY[difficulty];
-  const pairCount = DIFFICULTY_META[difficulty].pairCount;
-  let words: MemoryWord[] = shuffle(bank).slice(0, Math.min(pairCount, bank.length));
-  let cards: MemoryCard[] = buildCards(words);
+  const cfg = TIER_CONFIG[difficulty];
+  const bank = pairBank(difficulty);
+  const pairCount = Math.min(cfg.pairCount, bank.length);
+  // 🔒 1 markas = BOARD_COUNT papan (pola Word Quest). Antrian diacak supaya
+  // semua pasangan keluar dulu sebelum ada yang berulang & tidak ada yang
+  // kembar dalam 1 papan.
+  let boardIndex = 0;
+  let queue: BoardPair[] = [];
+  function nextPairs(): BoardPair[] {
+    const picked: BoardPair[] = [];
+    while (picked.length < pairCount) {
+      if (queue.length === 0) queue = shuffle(bank);
+      const p = queue.shift()!;
+      if (picked.some((x) => x.key === p.key)) {
+        queue.push(p);
+        continue;
+      }
+      picked.push(p);
+    }
+    return picked;
+  }
+  let pairs: BoardPair[] = nextPairs();
+  let cards: MemoryCard[] = buildCards(pairs);
   let opened: number[] = [];
   let score = 0;
+  let boardStartScore = 0;
   let busy = false;
   // 🔒 Indeks 2 kartu yang lagi di-flash MERAH (CLAUDE.md "🔒 Aturan Wajib:
   // Notifikasi Jawaban Salah") — kosong lagi begitu ditutup.
   let wrongPair: number[] = [];
+  // 💡 Bantuan 1x per papan. "Coba Lagi" (papan sama) TIDAK mereset —
+  // bantuan yang sudah diambil tetap (non-punitive); papan baru mereset.
+  let hintUsed = false;
+  let peeking = false;
+  let showMeaning = false;
 
-  function buildCards(w: MemoryWord[]): MemoryCard[] {
+  function buildCards(p: BoardPair[]): MemoryCard[] {
     return shuffle(
-      w.flatMap((_, i) => [
-        { pairId: i, face: 'id' as const, matched: false },
-        { pairId: i, face: 'en' as const, matched: false },
+      p.flatMap((_, i) => [
+        { pairId: i, side: 0 as const, matched: false },
+        { pairId: i, side: 1 as const, matched: false },
       ])
     );
   }
 
-  function cardLabel(c: MemoryCard): { emoji: string; text: string } {
-    const w = words[c.pairId];
-    return c.face === 'id' ? { emoji: w.emoji, text: w.id } : { emoji: '', text: w.en };
+  function faceOf(c: MemoryCard): Face {
+    return pairs[c.pairId].faces[c.side];
+  }
+
+  function isPeekOpen(c: MemoryCard): boolean {
+    if (!peeking) return false;
+    return cfg.hint === 'peek' || (cfg.hint === 'peek-written' && !faceOf(c).sound);
+  }
+
+  function faceHtml(c: MemoryCard): string {
+    const f = faceOf(c);
+    const check = c.matched ? '<span class="mm-check" aria-hidden="true">✅</span>' : '';
+    if (f.sound) {
+      return `${check}<span class="mm-emoji" aria-hidden="true">🔊</span>${c.matched ? `<span class="mm-text">${f.text}</span>` : ''}`;
+    }
+    const emoji = f.emoji ? `<span class="mm-emoji">${picHtml(f.emoji)}</span>` : '';
+    const text = f.text ? `<span class="mm-text">${f.text}</span>` : '';
+    const meaning = showMeaning && f.meaning ? `<span class="mm-meaning">${f.meaning}</span>` : '';
+    return `${check}${emoji}${text}${meaning}`;
   }
 
   function paint(): void {
     const matchedPairs = cards.filter((c) => c.matched).length / 2;
+    const boardDone = matchedPairs >= pairs.length;
+    const hintBtn = !hintUsed && !boardDone
+      ? `<button class="speak-btn-ghost" type="button" data-action="hint"><span class="hint-bulb">💡</span> ${HINT_LABEL[cfg.hint]}</button>`
+      : '';
+    const gridCls = [`mm-grid`, `mm-c${cards.length}`, cfg.mode === 'gap' ? 'is-gap' : '', cfg.mode !== 'picture' ? 'is-text' : ''].filter(Boolean).join(' ');
     container.innerHTML = `
       ${journey?.headerHtml ?? ''}
+      ${progressDotsHtml(BOARD_COUNT, (i) => i < boardIndex || (i === boardIndex && boardDone), boardIndex)}
       <div class="mm-head">
         <span class="mm-score">SKOR: <b>${score}</b></span>
+        <span class="mm-score">Pasangan: <b>${matchedPairs}/${pairs.length}</b></span>
       </div>
-      ${progressDotsHtml(words.length, (i) => i < matchedPairs, matchedPairs)}
-      <div class="mm-grid">
+      <div class="wm-head"><p class="wm-task">${cfg.task}</p>${hintBtn}</div>
+      <div class="${gridCls}">
         ${cards
           .map((c, i) => {
-            const isOpen = c.matched || opened.includes(i);
-            const label = cardLabel(c);
+            const isOpen = c.matched || opened.includes(i) || isPeekOpen(c);
+            const f = faceOf(c);
+            const label = c.matched ? f.text : f.label;
             return `
-            <button class="mm-card ${isOpen ? 'is-open' : ''} ${c.matched ? 'is-matched' : ''} ${wrongPair.includes(i) ? 'is-wrong' : ''}" type="button"
-              data-action="flip" data-payload="${i}" ${isOpen ? 'disabled' : ''} aria-label="${isOpen ? label.text : 'Kartu tertutup'}">
-              ${
-                isOpen
-                  ? `${c.matched ? '<span class="mm-check" aria-hidden="true">✅</span>' : ''}${label.emoji ? `<span class="mm-emoji">${picHtml(label.emoji)}</span>` : ''}<span class="mm-text">${label.text}</span>`
-                  : `<span class="mm-mark" aria-hidden="true">❓</span>`
-              }
+            <button class="mm-card ${isOpen ? 'is-open' : ''} ${c.matched ? 'is-matched' : ''} ${f.long ? 'is-long' : ''} ${f.sound ? 'is-sound' : ''} ${wrongPair.includes(i) ? 'is-wrong' : ''}" type="button"
+              data-action="flip" data-payload="${i}" ${isOpen || peeking ? 'disabled' : ''} aria-label="${isOpen ? label : 'Kartu tertutup'}">
+              ${isOpen ? faceHtml(c) : `<span class="mm-mark" aria-hidden="true">❓</span>`}
             </button>`;
           })
           .join('')}
       </div>
       <div class="feedback" id="fb"></div>
     `;
-    setHandlers({ flip: (payload) => flip(Number(payload)) });
+    setHandlers({ flip: (payload) => flip(Number(payload)), hint: useHint });
+  }
+
+  function useHint(): void {
+    if (hintUsed || busy) return;
+    hintUsed = true;
+    if (cfg.hint === 'meaning') {
+      showMeaning = true;
+      paint();
+      return;
+    }
+    // Intip: tutup dulu kartu yang sedang terbuka (belum cocok), buka semua
+    // sebentar, lalu tutup lagi.
+    opened = [];
+    peeking = true;
+    busy = true;
+    paint();
+    setTimeout(() => {
+      if (!container.isConnected) return;
+      peeking = false;
+      busy = false;
+      paint();
+    }, PEEK_MS);
   }
 
   function flip(i: number): void {
     if (busy || cards[i].matched || opened.includes(i) || opened.length >= 2) return;
     opened.push(i);
+    const f = faceOf(cards[i]);
+    if (f.speak) speak(f.speak);
     paint();
     if (opened.length < 2) return;
 
     busy = true;
     const [a, b] = opened;
-    const isMatch = cards[a].pairId === cards[b].pairId && cards[a].face !== cards[b].face;
+    const isMatch = cards[a].pairId === cards[b].pairId && cards[a].side !== cards[b].side;
     setTimeout(() => {
+      if (!container.isConnected) return;
       const fb = container.querySelector<HTMLElement>('#fb');
       if (isMatch) {
         cards[a].matched = true;
@@ -290,30 +354,53 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
         // (CLAUDE.md "🔒 Aturan Wajib: Notifikasi Jawaban Salah").
         wrongPair = [a, b];
         paint();
+        const keepFb = { text: fb?.textContent ?? '', cls: fb?.className ?? '' };
         setTimeout(() => {
+          if (!container.isConnected) return;
           wrongPair = [];
           opened = [];
           busy = false;
           paint();
+          const fb2 = container.querySelector<HTMLElement>('#fb');
+          if (fb2) {
+            fb2.textContent = keepFb.text;
+            fb2.className = keepFb.cls;
+          }
         }, 380);
         return;
       }
       opened = [];
       busy = false;
+      const praise = { text: fb?.textContent ?? '', cls: fb?.className ?? '' };
       paint();
+      const fbNow = container.querySelector<HTMLElement>('#fb');
+      if (fbNow) {
+        fbNow.textContent = praise.text;
+        fbNow.className = praise.cls;
+      }
 
       if (cards.every((c) => c.matched)) {
-        const doneFb = container.querySelector<HTMLElement>('#fb');
-        if (doneFb) doneFb.insertAdjacentHTML('afterend', roundActionsHtml(journey?.isLast ?? true));
+        const lastBoard = boardIndex === BOARD_COUNT - 1;
+        fbNow?.insertAdjacentHTML('afterend', roundActionsHtml(lastBoard && (journey?.isLast ?? true)));
         setHandlers({
+          // Coba Lagi = papan yang SAMA (pasangan sama, posisi diacak ulang).
           tryAgainRound: () => {
-            words = shuffle(bank).slice(0, Math.min(pairCount, bank.length));
-            cards = buildCards(words);
+            cards = buildCards(pairs);
             opened = [];
-            score = 0;
+            score = boardStartScore;
             paint();
           },
-          nextRound: () => onDone(),
+          nextRound: () => {
+            if (lastBoard) return onDone();
+            boardIndex += 1;
+            boardStartScore = score;
+            pairs = nextPairs();
+            cards = buildCards(pairs);
+            opened = [];
+            hintUsed = false;
+            showMeaning = false;
+            paint();
+          },
         });
       }
     }, 700);
@@ -410,8 +497,8 @@ export function runMemoryMatch(container: HTMLElement, onDone: OnDone, level: Le
         ${gameHowToHtml([
           'Tap 1 kartu, lalu tap 1 kartu lain',
           'Ingat posisi kartu yang sudah dibuka',
-          'Cocok kalau kata & artinya sepasang',
-          'Taklukkan markas satu per satu sampai tuntas!',
+          'Tiap markas punya aturan pasangan sendiri — baca petunjuk di atas kartu',
+          `Tiap markas ada ${BOARD_COUNT} papan — tuntaskan semuanya!`,
         ])}
       </div>`;
     setHandlers({ enterNode: (payload) => playStage(Number(payload)) });

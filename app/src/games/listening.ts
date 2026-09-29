@@ -59,7 +59,7 @@ function isFlyersOrAbove(contentLevel: LevelKey): boolean {
 
 
 /** Jarak antar kalimat (ms, start-ke-start) — makin tinggi level makin rapat. */
-function listeningGapMs(contentLevel: LevelKey): number {
+export function listeningGapMs(contentLevel: LevelKey): number {
   return isFlyersOrAbove(contentLevel) ? 1200 : 2000;
 }
 
@@ -74,7 +74,7 @@ function hintEliminatesOptions(contentLevel: LevelKey): boolean {
 // sama gender otomatis dipaksa beda (penutur harus terdengar berbeda).
 const MALE_SPEAKERS = new Set(['Dimas', 'Leo', 'Pak Joko', 'Kak Rian', 'Fajar', 'Yoga', 'Bima', 'Andi', 'Rio', 'Doni', 'Dito', 'Pak Budi', 'Bimo', 'Vino']);
 
-function dialogueGenders(lines: ListeningDialogueLine[]): Map<string, VoiceGender> {
+export function dialogueGenders(lines: ListeningDialogueLine[]): Map<string, VoiceGender> {
   const genders = new Map<string, VoiceGender>();
   for (const l of lines) {
     if (!genders.has(l.speaker)) genders.set(l.speaker, MALE_SPEAKERS.has(l.speaker) ? 'male' : 'female');
@@ -124,7 +124,7 @@ function isDecoyHeard(label: string, existing: string[], audioText: string): boo
   return words.filter((w) => heard.has(w)).length > words.length / 2;
 }
 
-function pickDecoy<T>(candidates: T[], label: (c: T) => string, existing: string[], audioText: string): T | null {
+export function pickDecoy<T>(candidates: T[], label: (c: T) => string, existing: string[], audioText: string): T | null {
   const have = new Set(existing.map((e) => e.toLowerCase()));
   const usable = candidates.filter((c) => {
     const l = label(c);
@@ -1041,7 +1041,7 @@ function editDistance(a: string, b: string): number {
  * genuinely menggoda (anak yang tidak dengar teliti bisa salah pilih),
  * bukan cuma kata acak yang jelas beda.
  */
-function pickDecoyWords(pool: ListeningSentenceItem[], current: ListeningSentenceItem, excludeWords: string[], count: number): string[] {
+export function pickDecoyWords(pool: ListeningSentenceItem[], current: ListeningSentenceItem, excludeWords: string[], count: number): string[] {
   const excludeLower = new Set(excludeWords.map((w) => w.toLowerCase()));
   const candidates = pool
     .filter((it) => it !== current)

@@ -349,6 +349,71 @@ async function main() {
     }
   }
 
+  // Memory Hunt (`src/games/memorymatch-data.ts`) — denylist emoji makhluk
+  // hidup, TANPA kognat ID≈EN (kartu "Bus" ↔ "Bus" bisa dicocokkan dari ejaan
+  // saja), kata & emoji tidak kembar di seluruh bank, bank cukup untuk
+  // BOARD_COUNT papan tanpa kata yang sama terus.
+  const mmOut = path.join(__dirname, '.verify-memorymatch-bundle.mjs');
+  await build({ entryPoints: [path.join(__dirname, '../src/games/memorymatch-data.ts')], bundle: true, format: 'esm', platform: 'node', outfile: mmOut, logLevel: 'silent' });
+  let mm;
+  try {
+    mm = await import(`${mmOut}?t=${Date.now()}`);
+  } finally {
+    await unlink(mmOut).catch(() => {});
+  }
+  const lev = (a, b) => {
+    const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++)
+      for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    return d[a.length][b.length];
+  };
+  const mmWords = new Map();
+  const mmEmoji = new Map();
+  const mmSeen = (key, tier, tag) => {
+    if (mmWords.has(key)) errors.push(`${tag} kembar dgn markas ${mmWords.get(key)}.`);
+    else mmWords.set(key, tier);
+  };
+  const mmBankSize = (tier, n) => {
+    const pairs = mm.TIER_CONFIG[tier].pairCount;
+    if (n < pairs * 2) errors.push(`Memory Hunt (${tier}) bank cuma ${n} pasangan — minimal ${pairs * 2} (2 papan tanpa ulang).`);
+  };
+  // Gambar ↔ kata (Pemanasan/Mudah), kata ID ↔ EN (Sedang), bunyi ↔ tulisan
+  // (Sulit): denylist emoji, TANPA kognat, kata & emoji tidak kembar.
+  const wordBanks = [...Object.entries(mm.PICTURE_BANK), ['sedang', mm.TRANSLATE_BANK], ['sulit', mm.SOUND_BANK]];
+  for (const [tier, bank] of wordBanks) {
+    mmBankSize(tier, bank.length);
+    for (const e of bank) {
+      const key = e.en.trim().toLowerCase();
+      const tag = `Memory Hunt (${tier}) "${e.en}"`;
+      if (PROBLEMATIC_EMOJI.has(e.emoji) && !ALLOWED_EMOJI_WORD_EXCEPTIONS.has(`${e.emoji}::${key}`)) errors.push(`${tag} (emoji="${e.emoji}"): ${PROBLEMATIC_EMOJI.get(e.emoji)}.`);
+      const idKey = e.id.trim().toLowerCase();
+      const sim = 1 - lev(idKey, key) / Math.max(idKey.length, key.length);
+      if (sim >= 0.6) errors.push(`${tag} kognat dgn "${e.id}" (kemiripan ${sim.toFixed(2)}) — bisa dicocokkan dari ejaan saja.`);
+      mmSeen(key, tier, tag);
+      if (mmEmoji.has(e.emoji)) errors.push(`${tag} emoji ${e.emoji} sudah dipakai "${mmEmoji.get(e.emoji)}".`);
+      else mmEmoji.set(e.emoji, e.en);
+    }
+  }
+  // Lawan kata (Jago): tiap kata cuma di 1 pasangan, arti wajib.
+  mmBankSize('jago', mm.OPPOSITE_BANK.length);
+  for (const p of mm.OPPOSITE_BANK) {
+    const tag = `Memory Hunt (jago) "${p.a}/${p.b}"`;
+    if (!p.aId || !p.bId) errors.push(`${tag} belum py arti Indonesia.`);
+    for (const w of [p.a, p.b]) mmSeen(w.trim().toLowerCase(), 'jago', tag);
+  }
+  // Kalimat rumpang (Legendaris): `___` tepat 1x (EN & ID), tidak memuat
+  // jawabannya, tanpa "a/an ___" (kata sandang bocorkan jawaban).
+  mmBankSize('legendaris', mm.GAP_BANK.length);
+  for (const g of mm.GAP_BANK) {
+    const tag = `Memory Hunt (legendaris) "${g.sentence}"`;
+    if ((g.sentence.match(/___/g) ?? []).length !== 1) errors.push(`${tag} wajib py tepat 1 "___".`);
+    if ((g.sentenceId.match(/___/g) ?? []).length !== 1) errors.push(`${tag} arti Indonesia wajib py tepat 1 "___" (jangan bocorkan jawaban lewat 💡 Arti).`);
+    if (g.sentence.toLowerCase().includes(g.answer.toLowerCase())) errors.push(`${tag} memuat jawabannya "${g.answer}".`);
+    if (/\ban? ___/i.test(g.sentence)) errors.push(`${tag} "a/an ___" membocorkan jawaban lewat kata sandang — pakai "my/the".`);
+    mmSeen(g.answer.trim().toLowerCase(), 'legendaris', tag);
+  }
+
   if (errors.length > 0) {
     console.error(`\n❌ Verifikasi konten Vocab GAGAL (${errors.length} masalah):\n`);
     for (const e of errors) console.error(`  - ${e}`);

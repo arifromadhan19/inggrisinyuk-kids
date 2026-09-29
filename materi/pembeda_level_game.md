@@ -394,3 +394,112 @@ _(Sudah dijawab dengan rekomendasi di "Implementasi"; tetap dicatat kalau mau di
 - [Duolingo — approach to writing skills](https://blog.duolingo.com/covering-all-the-bases-duolingos-approach-to-writing-skills/) · [Duolingo — approach to listening skills](https://blog.duolingo.com/covering-all-the-bases-duolingos-approach-to-listening-skills/) · [Duolingo exercise types (Fandom)](https://duolingo.fandom.com/wiki/Exercise)
 - [Ludewig dkk. (2023), Distractor Plausibility in Synonym-Based Vocabulary Tests](https://journals.sagepub.com/doi/10.1177/07342829231167892)
 - [Efficiency and accuracy of visual search develop at different rates from early childhood through early adulthood (PMC)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7300101/) · [Target-distractor similarity has a larger impact on visual search in school-age children than spacing](https://www.academia.edu/128600413/Target_distractor_similarity_has_a_larger_impact_on_visual_search_in_school_age_children_than_spacing)
+
+---
+
+# Memory Hunt (Raja Ingatan)
+
+Status: **sudah diimplementasi** (2026-09-29). Kode: `app/src/games/memorymatch.ts` (mesin & Map), `app/src/games/memorymatch-data.ts` (tabel tier + bank, satu-satunya tempat mengubah pembeda/kata). Di roster namanya "Memory Hunt" (`key: 'ingatan'`, `/game/raja-ingatan`). 6 markas: Beranda Ingatan → Ruang Kenangan → Lorong Ingatan → Perpustakaan Pikiran → Menara Konsentrasi → Puncak Ingatan.
+
+## Ringkasan (High-Level)
+
+**Sebelum**: keenam markas punya tugas identik (buka 2 kartu tertutup, cocokkan gambar + kata Indonesia dengan kata Inggris), 1 papan per markas. Pembedanya cuma **jumlah kartu** (4 → 14, beban ingatan letak, bukan bahasa Inggris) dan **kata makin jarang**, yang di markas atas malah penuh kognat (Teleskop↔Telescope).
+
+**Sekarang**: kartu tertutup & aturan main tetap sama di semua markas (identitas game ini = mengingat letak). Yang naik tiap markas = **aturan pasangan**, SATU jenis baru per markas. Papan maksimal 4 pasang, **5 papan per markas**, bullet progress per papan, sama konsepnya dengan game lain:
+
+| Game | Isi 1 markas | Bullet progress |
+|---|---|---|
+| Word Quest | 10 papan | per papan |
+| Balloon Hunt | 10 kata | per kata |
+| Sentence Puzzle | 5 kalimat | per kalimat |
+| **Memory Hunt** | **5 papan** | **per papan** |
+
+5 papan, bukan 10: 1 papan memori jauh lebih lama dari 1 papan Word Quest (kartu tertutup, satu pasang butuh beberapa giliran).
+
+## Kondisi Sebelum Dirombak [F]
+
+- **1 markas = 1 papan saja**; bullet progress menghitung pasangan di papan itu, bukan soal.
+- Pasang per markas 2/3/4/5/6/7 → 4/6/8/10/12/14 kartu di grid **3 kolom tetap**. 4, 8, 10 & 14 kartu menyisakan kartu ganjil di baris terakhir.
+- **Bank kekecilan**: Jago 6 kata untuk 6 pasang, Legendaris 7 kata untuk 7 pasang → isi papan selalu sama persis, cuma posisinya diacak.
+- **Kognat (kemiripan ejaan ID↔EN ≥ 0,6)**: Bus↔Bus (**persis sama**), Pena↔Pen, Gitar↔Guitar, Pinguin↔Penguin, Kanguru↔Kangaroo, Dinosaurus↔Dinosaur, Astronot↔Astronaut, Kompas↔Compass, Teleskop↔Telescope, Komet↔Comet, Satelit↔Satellite, Mikroskop↔Microscope, Terompet↔Trumpet, Akordeon↔Accordion — **14 dari 39 kata**, Legendaris **7 dari 7**. Pasangannya bisa ditemukan dari ejaan saja (CLAUDE.md "Soal Tidak Boleh Bisa Ditebak" pola #2).
+- **Emoji melanggar "Kepala SAJA"**: 🐟 🐦 🐘 🐧 🦘 (sudah di denylist build) + 🦋 🦖 🐙 🦎 🧑‍🚀 🐔; plus 🎃 (Halloween). Tidak ketahuan build karena bank game ini tidak dicek skrip mana pun.
+- Tanpa audio, tanpa bantuan. Kartu Indonesia selalu bergambar, jadi yang dicocokkan sebenarnya gambar ↔ kata Inggris.
+- Tumpang tindih dengan Word Quest (keduanya "kata Inggris ↔ gambar"); tidak ramah non-pembaca.
+
+## Tangga Tier (Terimplementasi) [F]
+
+| Markas | Kartu A ↔ Kartu B | Pasang (kartu) | 💡 Bantuan (1x/papan) | Tantangan baru |
+|---|---|---|---|---|
+| Pemanasan (Beranda Ingatan) | gambar ↔ kata Inggris, **kartu kata dibacakan 🔊 saat dibuka** | 2 (4) | 👀 Intip semua kartu 2 dtk | kenal aturan main; bisa dimainkan non-pembaca |
+| Mudah (Ruang Kenangan) | gambar ↔ kata Inggris (tanpa suara) | 3 (6) | 👀 Intip semua kartu | baca kata sendiri sambil mengingat letak |
+| Sedang (Lorong Ingatan) | **kata Indonesia ↔ kata Inggris**, tanpa gambar | 3 (6) | 👀 Intip semua kartu | terjemahkan tanpa bantuan gambar (teks lebih sulit diingat → pasang tidak dinaikkan) |
+| Sulit (Perpustakaan Pikiran) | **🔊 bunyi ↔ tulisan kata Inggris** (kartu bunyi tanpa tulisan) | 4 (8) | 👀 Intip kartu tulisan saja | cocokkan bunyi ↔ ejaan sambil mengingat letak suara |
+| Jago (Menara Konsentrasi) | **kata ↔ lawan katanya** (Big ↔ Small) | 4 (8) | 💡 Arti Indonesia di kartu | relasi makna, bukan terjemahan |
+| Legendaris (Puncak Ingatan) | **kalimat rumpang ↔ kata** ("I borrow books from the ___." ↔ Library) | 4 (8) | 💡 Arti Indonesia kalimat (tetap berlubang) | pilih kata dari konteks kalimat (Flyers R&W) |
+
+Berlaku di semua markas:
+- **5 papan per markas** (`BOARD_COUNT`), bullet 1–5. Papan tuntas → "🔁 Coba Lagi" (papan sama, posisi diacak ulang, skor balik ke awal papan, bantuan yang sudah dipakai tidak kembali) / "Lanjut ➡️" (papan berikutnya, bantuan tersedia lagi). Papan ke-5 → balik ke Map; di markas terakhir tombolnya "Selesai ✅".
+- Pasangan diambil dari antrian yang diacak: semua keluar dulu sebelum ada yang berulang, tidak ada yang kembar dalam 1 papan.
+- 1 baris instruksi di atas papan berubah per aturan (`TIER_CONFIG.task`), tombol 💡 di sebelahnya.
+- Grid selalu penuh: 4 kartu → 2×2, 6 → 3×2, 8 → 4×2; kartu kalimat Legendaris 2 kolom di HP / 4 di desktop, tinggi ikut isi.
+- Pasangan salah → merah + getar + tetot, kedua kartu ditutup lagi (tidak berubah).
+
+## Implementasi [F]
+
+- `TIER_CONFIG` (`memorymatch-data.ts`): per markas `pairCount`, `mode` (`picture`/`translate`/`sound`/`opposite`/`gap`), `speakOnOpen`, `hint` (`peek`/`peek-written`/`meaning`), `task`.
+- Bank: `PICTURE_BANK` (Pemanasan & Mudah, 12 kata masing-masing), `TRANSLATE_BANK` (Sedang, 12), `SOUND_BANK` (Sulit, 12), `OPPOSITE_BANK` (Jago, 13 pasang), `GAP_BANK` (Legendaris, 12 kalimat + arti berlubang).
+- Mesin (`runMemoryMatchRound`): tiap bank diubah jadi pasangan 2 sisi kartu (`pairBank()`); kartu bunyi terbuka = 🔊 saja (tulisan baru muncul setelah cocok, `aria-label` "Kartu suara" supaya tidak bocor); 👀 Intip menutup kartu yang sedang terbuka, membuka semua (atau cuma kartu tulisan) 2 dtk, lalu menutup lagi — selama itu kartu tidak bisa ditap.
+- **Build** (`verify-vocab-content.mjs`): denylist emoji makhluk hidup; larangan kognat (kemiripan Levenshtein ID↔EN ≥ 0,6) di bank gambar/terjemahan/bunyi; kata tidak kembar di seluruh bank; emoji tidak kembar; lawan kata wajib berarti; kalimat rumpang wajib tepat 1 `___` (EN & ID), tidak memuat jawabannya, tanpa "a/an ___"; bank ≥ 2× jumlah pasang.
+- CSS `.mm-*` (`public/styles.css`): `.mm-c4/-c8/-c12` (kolom), `.is-text`, `.is-gap`, `.mm-card.is-sound`, `.mm-meaning`.
+- **Diverifikasi live** (Playwright, 390px & 1280px): keenam markas × 5 papan dituntaskan dalam 1 sesi sampai "Semua Ingatan Terkumpul!"; papan ke-5 markas lain = "Lanjut ➡️", markas terakhir = "Selesai ✅"; 👀 Intip membuka semua kartu (Sulit: cuma 4 kartu tulisan) lalu menutup lagi; 💡 Arti menampilkan arti Indonesia (kalimat tetap berlubang); kartu bunyi ber-`aria-label` "Kartu suara"; tombol 💡 muncul lagi di papan baru; tanpa scroll horizontal; 0 pageerror. Sempat ketemu 2 masalah tampilan & sudah diperbaiki: grid 8 kartu meluap di HP (`minmax(0,1fr)`), kalimat Legendaris terpotong & tertimpa ✅ (lebar teks 100% + padding atas).
+
+## Bukti Riset per Sumbu
+
+| Sumbu | Temuan | Konsekuensi untuk Memory Hunt |
+|---|---|---|
+| **Kemampuan memori anak** | Anak 5–9 th bisa menyamai (bahkan mengungguli) orang dewasa di Concentration pada ukuran tertentu (Baker-Ward & Ornstein 1988); anak 5–10 th relatif setara satu sama lain, orang dewasa lebih baik (Schumann-Hengsteler 1996); anak 8 th setara orang dewasa, anak 6 th belum (Consciousness & Cognition 2019). | Ingatan posisi **bukan** keterampilan yang diajarkan app ini dan berkembang sendiri sesuai usia. Jumlah kartu boleh naik sedikit sebagai bumbu, jangan jadi sumbu utama. |
+| **Kapasitas memori kerja** | Kapasitas "chunk" naik dari ±2 (usia 5) ke ±4 (usia 14), ±0,5 per tahun (Cowan 2009, 2016). | 12 kartu (6 pasang) cukup sebagai batas atas; 14+ kartu membebani anak kecil yang juga bisa masuk markas Legendaris. |
+| **Identitas vs lokasi** | Pemain Concentration jauh lebih akurat mengingat **isi** kartu daripada **letaknya** (Eskritt, Lee & Donald 2001). | Yang sulit bagi anak adalah letak, bukan isi. Ruang tantangan bahasa ada di **aturan pasangan** (apa yang dianggap sepasang), bukan di jumlah kartu. |
+| **Gambar vs teks** | *Picture superiority effect*: gambar lebih mudah diingat dari kata tertulis (Paivio, dual coding). | Kartu teks-teks (tanpa gambar) otomatis lebih sulit → jumlah pasangnya harus lebih kecil dari markas bergambar, bukan sama. |
+| **Kognat** | Kognat/kata serapan menggelembungkan skor kosakata (Laufer & McLean 2016, lihat Taman Balon). | Dilarang di semua markas (dicek build). |
+| **Pasangan relasional** | Duolingo "tap the pairs" memakai pasangan kata↔arti dan audio↔kata; Cambridge Movers/Flyers menguji kata berlawanan & kata dalam kalimat rumpang. | Tangga pasangan: gambar → arti Indonesia → bunyi → lawan kata → kalimat rumpang. |
+| **Fading bantuan** | Bantuan dikurangi bertahap (lihat Word Quest). | "💡 Intip" (buka semua kartu sebentar) di markas awal; hilang di markas atas. |
+
+## Yang SENGAJA Tidak Dibedakan
+
+- **Tanpa timer, nyawa, batas giliran, skor kecepatan.** Skor tetap +10 per pasangan, tanpa pengurangan saat meleset. Intip 2 dtk bukan timer (tidak ada yang hilang kalau tidak sempat dilihat).
+- **Salah = merah + getar + tetot**, lalu kedua kartu ditutup lagi (non-punitive).
+- **Unlock markas "cukup pernah dicoba"**, progres markas tidak disimpan, tidak ditautkan ke `LevelKey` anak (konsisten game lain).
+
+## Gotcha
+
+- Menambah kata gambar/terjemahan/bunyi: emoji tidak boleh dipakai kata lain di bank mana pun dan bukan kognat (build menolak kemiripan ≥ 0,6; kata serapan yang lolos tetap cek manual — "Tenda" ↔ "Tent" jangan).
+- Bank bunyi: jangan homofon (see/sea) — dari suara saja keduanya benar.
+- Lawan kata: tiap kata cuma di 1 pasangan, dan jangan taruh 2 pasangan yang bisa "silang". Tall/Short + Big/Small (Small↔Tall terasa berlawanan) dan Hard/Soft + Loud/Quiet (Loud↔Soft lawan kata yang sah) SENGAJA dibuang. Hindari juga kata yang punya 2 lawan (Old: New/Young — cuma boleh salah satunya ada di bank).
+- Kalimat rumpang: harus cuma cocok ke 1 kata di bank, dan kata sandang jangan membocorkan ("an ___" cuma cocok kata berawalan vokal; "with ___" tanpa sandang cuma cocok kata jamak) — pakai "my/the". Arti Indonesia tetap berlubang supaya 💡 Arti tidak membocorkan jawaban.
+- Mengubah jumlah pasang: jaga jumlah kartu 4/6/8/12, jangan 10 atau 14 (atau tambah kelas kolom baru).
+- Pemanasan & Sulit memakai `speak()`; berhenti otomatis saat keluar (aturan audio).
+
+## Keputusan yang Diambil (dulu Pertanyaan Terbuka)
+
+1. Tangga aturan pasangan **diimplementasikan** (permintaan user "kerjakan sehingga statusnya selesai semua").
+2. Legendaris = **kalimat rumpang ↔ kata**, bukan kata ↔ kategori (kategori sudah dipakai Word Quest Sulit).
+3. **5 papan per markas**, tidak disamakan ke 10.
+4. Bank ±12 per markas → dengan 4 pasang × 5 papan tiap kata muncul ±1,7x per markas. Boleh diperbesar kalau terasa berulang.
+
+## Batasan Riset (Jujur)
+
+- Studi Concentration memakai gambar, bukan pasangan kata dua bahasa; efek "teks lebih sulit diingat" disimpulkan dari picture superiority, belum diukur di game ini.
+- Keanggotaan wordlist Cambridge YLE untuk bank baru **belum dicek dengan skrip** seperti Taman Balon.
+- Tangga belum diuji ke anak; lama Intip (2 dtk) & jumlah pasang perlu dicoba langsung.
+
+## Sumber
+
+- Kode: `app/src/games/memorymatch.ts`, `app/src/games/memorymatch-data.ts`, `app/scripts/verify-vocab-content.mjs`, `app/public/styles.css` (`.mm-*`)
+- [Baker-Ward & Ornstein (1988), Age differences in visual-spatial memory performance: Do children really out-perform adults when playing Concentration?](https://link.springer.com/article/10.3758/BF03337672)
+- [Schumann-Hengsteler (1996), Children's and Adults' Visuospatial Memory: The Game Concentration](https://www.tandfonline.com/doi/abs/10.1080/00221325.1996.9914847)
+- [Eight-year-olds, but not six-year-olds, perform just as well as adults when playing Concentration (Consciousness and Cognition 2019)](https://pubmed.ncbi.nlm.nih.gov/30731396/)
+- [Eskritt, Lee & Donald (2001), The influence of symbolic literacy on memory: Testing Plato's hypothesis](https://pubmed.ncbi.nlm.nih.gov/11301727/)
+- [Cowan dkk. (2009), Investigating the childhood development of working memory using sentences](https://pubmed.ncbi.nlm.nih.gov/19539305/) · [Cowan (2016), Working memory maturation](https://memory.psych.missouri.edu/assets/doc/articles/2016/cowan-pps-2016-working-memory-maturation.pdf)
+- [Laufer & McLean (2016), Loanwords and vocabulary size test scores](https://www.researchgate.net/publication/307091093_Laufer_B_McLean_S_2016_Loanwords_and_vocabulary_size_test_scores_A_case_of_different_estimates_for_different_L1_learners_Language_Assessment_Quarterly_133_202-217)
+- [Duolingo Wiki — Exercise](https://duolingo.fandom.com/wiki/Exercise) · [Cambridge A2 Flyers Reading & Writing Part 1](https://www.cambridgeenglish.org/Images/584855--online-teaching-a2-flyers-reading-and-writing-part-1.pdf)

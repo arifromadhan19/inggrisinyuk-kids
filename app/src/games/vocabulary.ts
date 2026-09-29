@@ -46,7 +46,7 @@ import { LEVELS } from '../content';
  * `praiseLevel` — 2 hal beda, CLAUDE.md sudah catat bug serupa pernah
  * kejadian krn ketuker (`renderKenalan`), jangan diulang di sini.
  */
-function isAboveStarter(contentLevel: LevelKey): boolean {
+export function isAboveStarter(contentLevel: LevelKey): boolean {
   const starterIdx = LEVELS.findIndex((l) => l.key === 'starter');
   const idx = LEVELS.findIndex((l) => l.key === contentLevel);
   return idx > starterIdx;
@@ -65,7 +65,7 @@ function isAboveStarter(contentLevel: LevelKey): boolean {
  * Trailblazer≈KET/PET dapat treatment "berat" — SATU tier lagi di ATAS
  * `isAboveStarter`, bukan gantiin.
  */
-function isFlyersOrAbove(contentLevel: LevelKey): boolean {
+export function isFlyersOrAbove(contentLevel: LevelKey): boolean {
   return contentLevel === 'achiever' || contentLevel === 'trailblazer';
 }
 
@@ -395,7 +395,7 @@ export function renderKenalan(container: HTMLElement, topic: VocabTopic, level: 
  *  word) — dasar soal "Lengkapi Kalimat" di bawah. Semua `example.en` di
  *  content.ts sudah sengaja memuat kata targetnya persis (mis. "I have one
  *  apple." utk item "One"), jadi replace ini selalu ketemu. */
-function blankSentence(sentence: string, word: string): string {
+export function blankSentence(sentence: string, word: string): string {
   const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
   return sentence.replace(re, '___');
 }
@@ -431,7 +431,7 @@ function numberWordValue(en: string): number | null {
   return idx >= 0 ? idx + 1 : null;
 }
 
-function isNumberTopic(topic: VocabTopic): boolean {
+export function isNumberTopic(topic: VocabTopic): boolean {
   return topic.items.every((it) => numberWordValue(it.en) !== null);
 }
 
@@ -445,7 +445,7 @@ function isNumberTopic(topic: VocabTopic): boolean {
  *  ketimbang swatch polos supaya lebih hidup & kid-friendly (permintaan
  *  user, laporan topik "Kenal Warna"). */
 const COLOR_WORDS = ['red', 'blue', 'yellow', 'green', 'orange', 'purple', 'pink', 'black', 'white', 'brown', 'gray', 'grey'];
-function isColorTopic(topic: VocabTopic): boolean {
+export function isColorTopic(topic: VocabTopic): boolean {
   return topic.items.every((it) => COLOR_WORDS.includes(it.en.trim().toLowerCase()));
 }
 
@@ -464,7 +464,7 @@ function isColorTopic(topic: VocabTopic): boolean {
  *  gambar bentuk yang lagi dideskripsikan kalimatnya, aman & perlu utk
  *  konteks visual "This is a ___.". */
 const SHAPE_WORDS = ['circle', 'square', 'triangle', 'star', 'heart', 'diamond', 'oval', 'cross', 'arrow', 'crescent'];
-function isShapeTopic(topic: VocabTopic): boolean {
+export function isShapeTopic(topic: VocabTopic): boolean {
   return topic.items.every((it) => SHAPE_WORDS.includes(it.en.trim().toLowerCase()));
 }
 
@@ -490,7 +490,7 @@ const DAY_WORDS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'satu
 function isDayItems(items: VocabItem[]): boolean {
   return items.every((it) => DAY_WORDS.includes(it.en.trim().toLowerCase()));
 }
-function isDayTopic(topic: VocabTopic): boolean {
+export function isDayTopic(topic: VocabTopic): boolean {
   return isDayItems(topic.items);
 }
 
@@ -569,7 +569,7 @@ function overrideIconHtml(topicId: string, en: string): string | null {
   const path = KENALAN_ICON_IMAGE_OVERRIDES[topicId]?.[en];
   return path ? `<img src="${path}" alt="" style="width:1em;height:1em;object-fit:cover;border-radius:20%;vertical-align:-0.2em" />` : null;
 }
-function itemGlyph(topicId: string, it: VocabItem): string {
+export function itemGlyph(topicId: string, it: VocabItem): string {
   return overrideIconHtml(topicId, it.en) ?? picHtml(it.emoji);
 }
 

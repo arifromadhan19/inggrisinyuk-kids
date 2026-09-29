@@ -147,6 +147,14 @@ interface TextTier {
   textTwoStep?: boolean;
   /** Tantangan buku mini: 2 opsi saja (2 kartu sebaris), maks 10 soal. */
   tantanganTwo?: boolean;
+  /** Latihan Inti soal teks format Explorer (2 opsi + Petunjuk 2 tahap, tanpa
+   *  bonus 🔎) — Adventurer (permintaan user). */
+  latihanTwoStep?: boolean;
+  /** Trailblazer: Latihan Inti format Explorer tapi 4 kartu (2×2), bukan 2. */
+  latihanFour?: boolean;
+  /** Tantangan format Movers (Adventurer): 🧩 Lengkapi Cerita + 🗨️ Pilih
+   *  Jawaban Dialog + judul/detail 2 kartu, tanpa bonus 🔎. */
+  tantanganMovers?: boolean;
 }
 
 /** Tier mekanik "Baca Teks" per level KONTEN (bukan badge anak) —
@@ -161,15 +169,15 @@ function textTier(level: LevelKey): TextTier {
     case 'explorer':
       return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'question', hintGate: false, textTwoStep: true };
     case 'adventurer':
-      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'evidence', hintGate: false };
+      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'evidence', hintGate: false, latihanTwoStep: true, tantanganMovers: true };
     case 'achiever':
-      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'evidence', hintGate: true };
+      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'evidence', hintGate: true, latihanTwoStep: true };
     default:
-      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'eliminate', hintGate: true };
+      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'eliminate', hintGate: true, latihanTwoStep: true, latihanFour: true };
   }
 }
 
-const normWord = (w: string): string => w.toLowerCase().replace(/[^a-z0-9']/g, '');
+const normWord = (w: string): string => w.toLowerCase().replace(/[^a-z0-9']/g, '').replace(/^'+|'+$/g, '');
 
 /** Kalimat dipecah per kata (span `.rt-word`) — dipakai sorot karaoke &
  *  "👆 Mana tulisannya?". */
@@ -280,8 +288,19 @@ function readLinesAlong(card: HTMLElement, lines: string[]): void {
   play(0);
 }
 
-function lineHtml(text: ReadingText, l: { en: string; id: string; br?: boolean }, i: number, o: { showId?: boolean; selected?: number | null; hinted?: number[]; words?: boolean }): string {
+function lineHtml(text: ReadingText, l: { en: string; id: string; br?: boolean }, i: number, o: { showId?: boolean; selected?: number | null; hinted?: number[]; words?: boolean; tapWords?: boolean; hide?: number; reveal?: boolean }): string {
   const cls = ['rt-line', l.br ? 'rt-br' : '', o.selected === i ? 'selected' : '', o.hinted?.includes(i) ? 'hinted' : ''].filter(Boolean).join(' ');
+  // 🗨️ Pilih Jawaban Dialog: baris yang ditanya disembunyikan (nama penutur tetap).
+  if (o.hide === i && !o.reveal) {
+    const k = text.genre === 'dialog' ? l.en.indexOf(': ') : -1;
+    return `<div class="${cls} rt-hidden-line"><b class="rt-speaker">${k > 0 ? l.en.slice(0, k + 1) : ''}</b> <span class="rt-gap-chip">?</span></div>`;
+  }
+  // 🧩 Lengkapi Cerita: tiap kata bisa ditap (payload "baris:kata").
+  if (o.tapWords) {
+    const toks = l.en.split(' ');
+    const body = toks.map((w, wi) => (wi === 0 && text.genre === 'dialog' && w.endsWith(':') ? `<b class="rt-speaker">${w}</b>` : `<span class="rt-word gap-tap" data-action="rtGap" data-payload="${i}:${wi}">${w}</span>`)).join(' ');
+    return `<div class="${cls}"><span class="rt-en">${body}</span>${o.showId ? `<span class="rt-id">${l.id}</span>` : ''}</div>`;
+  }
   // `words`: tiap kata jadi span `.rt-word` (TANPA data-action — tap tetap
   // ke baris) supaya bisa disorot karaoke di Kenalan.
   const fmt = (t: string): string => (o.words ? wordsHtml(t, false) : t);
@@ -296,10 +315,10 @@ function lineHtml(text: ReadingText, l: { en: string; id: string; br?: boolean }
 /** 2 pilihan jawaban = 2 kartu sebaris ber-lencana A/B (Explorer & Tantangan
  *  buku mini) — gaya `.opt-grid.rt-two` di styles.css. */
 function twoCardsHtml(labels: string[]): string {
-  return `<div class="opt-grid rt-opts rt-two">${labels.map((t, i) => `<button class="opt-btn opt-btn-text rt-two-card" type="button" data-action="rtPick" data-payload="${i}"><span class="rt-two-badge" aria-hidden="true">${'AB'[i]}</span><span class="rt-two-text">${t}</span></button>`).join('')}</div>`;
+  return `<div class="opt-grid rt-opts rt-two${labels.length > 2 ? ' rt-four' : ''}">${labels.map((t, i) => `<button class="opt-btn opt-btn-text rt-two-card" type="button" data-action="rtPick" data-payload="${i}"><span class="rt-two-badge" aria-hidden="true">${'ABCD'[i]}</span><span class="rt-two-text">${t}</span></button>`).join('')}</div>`;
 }
 
-function textCardHtml(text: ReadingText, o: { showId?: boolean; selected?: number | null; tappable?: boolean; hinted?: number[]; words?: boolean } = {}): string {
+export function textCardHtml(text: ReadingText, o: { showId?: boolean; selected?: number | null; tappable?: boolean; hinted?: number[]; words?: boolean; tapWords?: boolean; hide?: number; reveal?: boolean } = {}): string {
   return `
     <div class="rt-card rt-${text.genre}${o.tappable ? ' tappable' : ''}">
       <div class="rt-heading">${text.heading}</div>
@@ -605,16 +624,27 @@ function runTextQuizSet(
   const answerIdx = (q: ReadingTextQuestion): number => (isRev(q) ? 0 : q.answer);
   // Petunjuk 2 tahap soal teks: Explorer (Latihan Inti & Tantangan) + cerita
   // pendek di Tantangan buku mini Little Stars/Starter (permintaan user).
-  const isTwoStepText = (q: ReadingTextQuestion): boolean => (!!tier.textTwoStep || (reverse && !!tier.tantanganTwo)) && (q.kind ?? 'text') === 'text';
+  // Latihan Inti ber-format Explorer (Adventurer/Achiever): Petunjuk langsung, tanpa gembok.
+  const hintGate = tier.hintGate && !(!reverse && tier.latihanTwoStep);
+  const isTwoStepText = (q: ReadingTextQuestion): boolean => (!!tier.textTwoStep || (reverse && !!tier.tantanganTwo) || (!reverse && !!tier.latihanTwoStep)) && (q.kind ?? 'text') === 'text';
   /** Cerita pendek di Tantangan buku mini: dibacakan otomatis + kata disorot
    *  (seperti Kenalan Explorer) — Little Stars/Starter masih pemula. */
   const storyAudio = (q: ReadingTextQuestion): boolean => reverse && !!tier.tantanganTwo && (q.kind ?? 'text') === 'text';
   const twoOpts = (q: ReadingTextQuestion): boolean => reverse && !!tier.tantanganTwo && q.kind !== 'truefalse';
-  const hintSteps = (q: ReadingTextQuestion): number => ((isRev(q) && !twoOpts(q)) || isTwoStepText(q) ? 2 : 1);
+  const isMovers = (_q: ReadingTextQuestion): boolean => reverse && !!tier.tantanganMovers;
+  /** Soal khas Tantangan Achiever/Trailblazer & Adventurer: Petunjuk 2 tahap sendiri. */
+  const isSpecial = (q: ReadingTextQuestion): boolean => ['gap', 'reply', 'tfn', 'ref', 'missing'].includes(q.kind ?? 'text');
+  const hintSteps = (q: ReadingTextQuestion): number => ((isRev(q) && !twoOpts(q)) || isTwoStepText(q) || isSpecial(q) ? 2 : 1);
   /** Tantangan Explorer "🔍 Cari di Teks": soal ber-bukti dijawab dgn TAP
    *  kalimat di teks (tanpa kartu pilihan) — beda bentuk dari Latihan Inti
    *  yang memilih 1 dari 2 kartu. Soal topik (tanpa bukti) tetap 2 kartu. */
   const isFind = (q: ReadingTextQuestion): boolean => reverse && !!tier.textTwoStep && (q.kind ?? 'text') === 'text' && q.evidence.length > 0;
+  /** Achiever/Trailblazer: jawaban belum tepat → ajakan pakai Petunjuk
+   *  (baris kedua, cuma kalau Petunjuk masih bisa dibuka). */
+  const hintNudge = (fb: HTMLElement, q: ReadingTextQuestion): void => {
+    if (!tier.hintGate || hintStep >= hintSteps(q)) return;
+    fb.insertAdjacentHTML('beforeend', '<span class="fb-hint-nudge">Masih bingung? Buka 💡 Petunjuk dulu, yuk!</span>');
+  };
   const hintLabel = (q: ReadingTextQuestion): string => (hintSteps(q) === 2 && hintStep === 1 ? 'Petunjuk 2' : 'Petunjuk');
 
   /** Pengecoh = kalimat buku yang gambarnya jadi pengecoh di data; kalau
@@ -655,9 +685,9 @@ function runTextQuizSet(
     eliminated = -1;
     const { text, q } = items[round];
     revOpts = isRev(q) ? reverseOptions(text, q) : [];
-    order = q.kind === 'truefalse' ? [0, 1] : shuffle((isRev(q) ? revOpts : q.options).map((_, i) => i));
+    order = q.kind === 'truefalse' ? [0, 1] : q.kind === 'tfn' ? [0, 1, 2] : shuffle((isRev(q) ? revOpts : q.options).map((_, i) => i));
     // Explorer: 2 opsi saja — jawaban benar + 1 pengecoh acak dari data.
-    if (isTwoStepText(q) || (twoOpts(q) && !isRev(q))) order = shuffle([q.answer, shuffle(q.options.map((_, i) => i).filter((i) => i !== q.answer))[0]]);
+    if ((isTwoStepText(q) && !(!reverse && tier.latihanFour)) || (twoOpts(q) && !isRev(q)) || (isMovers(q) && ((q.kind ?? 'text') === 'text' || q.kind === 'reply'))) order = shuffle([q.answer, shuffle(q.options.map((_, i) => i).filter((i) => i !== q.answer))[0]]);
     redraw();
     const scope = container.querySelector<HTMLElement>('.rt-book-text');
     if (audio === 'auto' && scope) readAlong(scope, sentenceOf(items[round]));
@@ -685,9 +715,10 @@ function runTextQuizSet(
     const it = items[round];
     const { text, q } = it;
     const kind = q.kind ?? 'text';
-    const locked = tier.hintGate && !attempted;
-    const hintedLines = revealed && tier.hint === 'evidence' ? q.evidence : [];
-    const hintMode = isRev(q) ? 'eliminate' : tier.hint;
+    const locked = hintGate && !attempted;
+    // Format Explorer (2 tahap arti) tidak menyorot kalimat bukti.
+    const hintedLines = revealed && tier.hint === 'evidence' && !isTwoStepText(q) ? q.evidence : [];
+    const hintMode = isRev(q) ? 'eliminate' : isTwoStepText(q) || isSpecial(q) ? 'question' : tier.hint;
     const showHintText = revealed && hintMode !== 'eliminate' && (tier.hint === 'translate' || tier.hint === 'question' || (tier.hint === 'evidence' && !q.evidence.length));
     const hintBtn = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="rtHint" ${hintStep >= hintSteps(q) || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> ${hintLabel(q)}</button>`;
     const listenBtn = audio !== 'none' ? `<div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="rtListenQ">🔊 Dengar</button></div>` : '';
@@ -728,28 +759,65 @@ function runTextQuizSet(
         <button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="0">✅ Cocok</button>
         <button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="1">❌ Tidak Cocok</button>
       </div>`;
+    } else if (kind === 'gap') {
+      // 🧩 Lengkapi Cerita: kalimat ringkasan ber-rumpang, tap KATA di teks.
+      const qHtml = q.q.replace('___', '<span class="rt-gap-chip">?</span>');
+      stimulus = `
+        ${textCardHtml(text, { tapWords: true, hinted: hintStep >= 2 ? q.evidence : [] })}
+        <p class="reading-question rt-gap-q">${qHtml}${hintStep >= 1 ? `<span class="rt-id">${q.qId}</span>` : ''}</p>
+        <div class="rt-find-ask">👆 Tap kata di teks yang cocok untuk titik-titik.</div>`;
+      optionsHtml = '';
+    } else if (kind === 'ref') {
+      // 🔗 Tunjuk Rujukan: tap KATA di teks yang dimaksud kata ganti.
+      stimulus = `
+        ${textCardHtml(text, { tapWords: true, hinted: hintStep >= 2 ? q.evidence : [] })}
+        <p class="reading-question rt-gap-q">${q.q}${hintStep >= 1 ? `<span class="rt-id">${q.qId}</span>` : ''}</p>
+        <div class="rt-find-ask">👆 Tap kata di teks yang dimaksud.</div>`;
+      optionsHtml = '';
+    } else if (kind === 'tfn') {
+      // ✅❓ Benar, Salah, atau Tidak Disebut? (pernyataan tentang teks).
+      stimulus = `
+        ${textCardHtml(text, { showId: hintStep >= 2 })}
+        <div class="rt-statement"><span class="rt-statement-label">Pernyataan</span>${q.q}${hintStep >= 1 ? `<span class="rt-id">${q.qId}</span>` : ''}</div>`;
+      optionsHtml = `<div class="opt-grid rt-tfn">
+        <button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="0">✅ Benar</button>
+        <button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="1">❌ Salah</button>
+        <button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="2">🤷 Tidak Disebut</button>
+      </div>`;
+    } else if (kind === 'missing') {
+      // 🧩 Kalimat yang Hilang (PET Part 4): pilih kalimat yang pas di rumpang.
+      stimulus = `
+        ${textCardHtml(text, { hide: q.hide, showId: hintStep >= 1 })}
+        <p class="reading-question">${q.q}${hintStep >= 1 ? `<span class="rt-id">${q.qId}</span>` : ''}</p>`;
+      optionsHtml = twoCardsHtml(order.map((oi) => q.options[oi]));
+    } else if (kind === 'reply') {
+      // 🗨️ Pilih Jawaban Dialog: 1 baris disembunyikan, pilih isinya.
+      stimulus = `
+        ${textCardHtml(text, { hide: q.hide, showId: hintStep >= 2 })}
+        <p class="reading-question">${q.q}${hintStep >= 1 ? `<span class="rt-id">${q.qId}</span>` : ''}</p>`;
+      optionsHtml = twoCardsHtml(order.map((oi) => q.options[oi]));
     } else {
       const firstOfText = round === 0 || items[round - 1].text !== text;
       stimulus = `
         ${firstOfText && status(round) !== 2 ? `<div class="id-text" style="margin-bottom:8px">Baca dulu teksnya sampai habis, baru jawab ya.</div>` : ''}
         ${textCardHtml(text, { hinted: hintedLines, showId: isTwoStepText(q) && hintStep >= 2, tappable: isFind(q), words: storyAudio(q) })}
         ${storyAudio(q) ? `<div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="rtStory">🔊 Dengar Cerita</button></div>` : ''}
-        <p class="reading-question">${q.q}${isTwoStepText(q) && showHintText ? `<span class="rt-id">${q.qId}</span>` : ''}</p>
+        <p class="reading-question">${q.q}${isTwoStepText(q) && hintStep >= 1 ? `<span class="rt-id">${q.qId}</span>` : ''}</p>
         ${isFind(q) ? `<div class="rt-find-ask">👆 Tap kalimat di teks yang menjawab pertanyaan ini.</div>` : ''}`;
       optionsHtml = isFind(q)
         ? ''
-        : isTwoStepText(q) || twoOpts(q)
+        : isTwoStepText(q) || twoOpts(q) || isMovers(q) || !!tier.latihanFour
         ? twoCardsHtml(order.map((oi) => q.options[oi]))
         : `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${q.options[oi]}</button>`).join('')}</div>`;
     }
     container.innerHTML = `
       <div class="latihan-head">
-        <span class="stage-badge">${isFind(q) ? '🔍 Cari di Teks' : badge}</span>
+        <span class="stage-badge">${isFind(q) ? '🔍 Cari di Teks' : q.kind === 'gap' ? '🧩 Lengkapi Cerita' : q.kind === 'reply' ? '🗨️ Pilih Jawaban Dialog' : q.kind === 'ref' ? '🔗 Tunjuk Rujukan' : q.kind === 'tfn' ? '✅ Cek Pernyataan' : q.kind === 'missing' ? '🧩 Kalimat yang Hilang' : badge}</span>
         ${hintBtn}
       </div>
       ${quizNavHtml(round, total, status)}
       ${stimulus}
-      ${showHintText && !hintInCard && !isTwoStepText(q) ? `<div class="id-text rt-hint-text">💡 ${hintText(it)}</div>` : ''}
+      ${showHintText && !hintInCard && !isTwoStepText(q) && !isSpecial(q) ? `<div class="id-text rt-hint-text">💡 ${hintText(it)}</div>` : ''}
       ${optionsHtml}
       <div class="feedback" id="fb"></div>
       <div class="rt-evidence" id="rtEvidence"></div>
@@ -766,7 +834,7 @@ function runTextQuizSet(
     }
     setHandlers({
       rtHint: () => {
-        if (hintStep >= hintSteps(q) || (tier.hintGate && !attempted)) return;
+        if (hintStep >= hintSteps(q) || (hintGate && !attempted)) return;
         markSlotHint('reading', topic.id, section, round);
         revealed = true;
         hintStep += 1;
@@ -776,6 +844,8 @@ function runTextQuizSet(
           const wrong = Array.from({ length: n }, (_, i) => i).filter((i) => i !== answerIdx(q));
           eliminated = shuffle(wrong)[0] ?? -1;
         }
+        // Kalimat yang Hilang: tap 1 arti teks, tap 2 coret 1 kalimat yang tidak pas.
+        if (q.kind === 'missing' && hintStep === 2) eliminated = shuffle(q.options.map((_, i) => i).filter((i) => i !== q.answer))[0] ?? -1;
         redraw();
       },
       rtListenQ: () => {
@@ -784,6 +854,11 @@ function runTextQuizSet(
       },
       rtPick: (payload) => onAnswer(Number(payload)),
       rtStory: () => readStory(),
+      rtGap: (payload) => {
+        if ((q.kind !== 'gap' && q.kind !== 'ref') || container.querySelector('.round-actions')) return;
+        const [li, wi] = String(payload).split(':').map(Number);
+        onGap(li, wi);
+      },
       rtLine: (payload) => {
         if (isFind(q) && !container.querySelector('.round-actions')) onFind(Number(payload));
       },
@@ -798,6 +873,55 @@ function runTextQuizSet(
   /** 🔍 Cari di Teks: tap 1 kalimat. Benar = salah satu kalimat bukti
    *  (semua bukti disorot hijau) + tone + confetti + pujian; belum tepat =
    *  merah + getar + tetot (Aturan Wajib Notifikasi Jawaban Salah). */
+  /** 🧩 Lengkapi Cerita: tap 1 kata. Benar = kata `q.word` (kata disorot hijau
+   *  & rumpang terisi) + tone + confetti + pujian; belum tepat = merah + getar
+   *  + tetot (Aturan Wajib Notifikasi Jawaban Salah). */
+  function onGap(li: number, wi: number): void {
+    const it = items[round];
+    const { q } = it;
+    const tok = it.text.lines[li]?.en.split(' ')[wi] ?? '';
+    const correct = normWord(tok) === normWord(q.word ?? '');
+    const el = container.querySelector<HTMLElement>(`[data-action="rtGap"][data-payload="${li}:${wi}"]`);
+    const fb = container.querySelector<HTMLElement>('#fb')!;
+    container.querySelectorAll('.gap-tap').forEach((w) => w.classList.add('gap-done'));
+    container.querySelector('.rt-find-ask')?.remove();
+    const hb = container.querySelector<HTMLButtonElement>('#hintBtn');
+    if (hb) hb.disabled = true;
+    markSlotAnswered('reading', topic.id, section, round, correct, { hint: revealed, itemRef: q.q });
+    recordAttempt(correct);
+    recordEvent({ kind: 'answer', skill: 'reading', topicId: topic.id, section, slot: round, itemRef: q.q, activity: `text-${q.kind}`, correct });
+    if (correct) {
+      el?.classList.add('is-evidence', 'win-burst');
+      const chip = container.querySelector<HTMLElement>('.rt-gap-q .rt-gap-chip');
+      if (chip && q.kind === 'gap') { chip.textContent = q.word ?? tok; chip.classList.add('filled'); }
+      playCorrectTone();
+      fireConfetti();
+      fb.textContent = `${q.kind === 'ref' ? '🔗 Tepat!' : '🧩 Pas!'} ${pickPraise(level)}`;
+      fb.className = 'feedback good';
+    } else {
+      attempted = true;
+      el?.classList.add('is-wrong');
+      playWrongTone();
+      vibrateDevice(160);
+      fb.textContent = `${pickEncourage(level)} Coba cari kata lain, ya.`;
+      fb.className = 'feedback bad';
+      hintNudge(fb, q);
+      if (hb && hintStep < hintSteps(q)) {
+        hb.disabled = false;
+        hb.innerHTML = `<span class="hint-bulb">💡</span> ${hintLabel(q)}`;
+      }
+    }
+    container.querySelector('#rtEvidence')!.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(total, status)));
+    setHandlers({
+      tryAgainRound: () => redraw(),
+      nextRound: () => {
+        const next = nextUnfinishedRound(round, total, status);
+        if (next < total) goTo(next);
+        else onDone();
+      },
+    });
+  }
+
   function onFind(li: number): void {
     const it = items[round];
     const { q } = it;
@@ -826,6 +950,7 @@ function runTextQuizSet(
       vibrateDevice(160);
       fb.textContent = `${pickEncourage(level)} Coba baca lagi, ya.`;
       fb.className = 'feedback bad';
+      hintNudge(fb, q);
       if (hb && hintStep < hintSteps(q)) {
         hb.disabled = false;
         hb.innerHTML = `<span class="hint-bulb">💡</span> ${hintLabel(q)}`;
@@ -877,7 +1002,16 @@ function runTextQuizSet(
         window.clearTimeout(sayTimer);
         sayTimer = speakLater(() => speak(sentenceOf(it)), 1500);
       }
-      else if ((q.kind ?? 'text') === 'text' && q.evidence.length && !tier.textTwoStep) askEvidence(it);
+      // Tanpa bonus 🔎 HANYA di Explorer & Latihan Inti Adventurer (Starter tetap).
+      else if ((q.kind ?? 'text') === 'text' && q.evidence.length && !tier.textTwoStep && !(!reverse && tier.latihanTwoStep) && !isMovers(q)) askEvidence(it);
+      if (q.kind === 'tfn') {
+        const lines = container.querySelectorAll<HTMLElement>('.rt-card .rt-line');
+        q.evidence.forEach((e) => lines[e]?.classList.add('is-evidence'));
+      }
+      if ((q.kind === 'reply' || q.kind === 'missing') && q.hide !== undefined) {
+        const hidden = container.querySelector<HTMLElement>('.rt-hidden-line');
+        if (hidden) { hidden.classList.remove('rt-hidden-line'); hidden.classList.add('is-evidence'); const en = it.text.lines[q.hide].en; const k = it.text.genre === 'dialog' ? en.indexOf(': ') : -1; hidden.innerHTML = `<span class="rt-en">${k > 0 ? `<b class="rt-speaker">${en.slice(0, k + 1)}</b> ${en.slice(k + 2)}` : en}</span>`; }
+      }
     } else {
       attempted = true;
       btn.classList.add('wrong');
@@ -885,6 +1019,7 @@ function runTextQuizSet(
       vibrateDevice(160);
       fb.textContent = pickEncourage(level);
       fb.className = 'feedback bad';
+      hintNudge(fb, q);
       const hb = container.querySelector<HTMLButtonElement>('#hintBtn');
       if (hb && hintStep < hintSteps(q)) {
         hb.disabled = false;
