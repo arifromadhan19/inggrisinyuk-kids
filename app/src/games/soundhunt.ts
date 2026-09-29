@@ -6,8 +6,7 @@
  * Hutan Ajaib" (Forest Map dgn 6 markas berurutan, tiap markas = 1 level)
  * supaya terasa game, bukan kuis — pola SAMA PERSIS raja lain
  * (`games/wordmatch.ts`/`games/balloonpop.ts`/`games/memorymatch.ts`): 1
- * file berdiri sendiri, bank soal DATA-DRIVEN sendiri (`SOUND_HUNT_LEVELS`
- * di bawah, tambah level baru = tambah 1 entri array, TANPA sentuh logic),
+ * file berdiri sendiri, bank soal DATA-DRIVEN sendiri (`soundhunt-data.ts`),
  * TIDAK terikat topik/level Vocab manapun (generik lintas level app).
  *
  * 🔒 **Revisi (permintaan user "tambahkan 1 sehingga ada 6... levelnya ada
@@ -31,6 +30,17 @@
  * progress.ts/localStorage lintas sesi (di luar scope MVP, `onDone()`
  * tetap menambah XP via app.ts sama seperti raja lain).
  *
+ * 🔒 **Revisi 2026-09-29 (permintaan user "sesuai level ada pembeda & ada
+ * beberapa soal di dalamnya", pola Word Quest/Memory Hunt)**: 1 markas =
+ * `ROUND_COUNT` (10) soal, dibuat dari bank per tier (`soundhunt-data.ts`,
+ * dicek build). Tiap markas menambah 1 hal baru di instruksi yang DIDENGAR:
+ * 1 kata (pengecoh beda kelompok) → 1 kata (pengecoh sekelompok) → warna +
+ * benda → angka + benda → 2 perintah berurutan → tebak dari deskripsi.
+ * Kartu jawaban gambar SAJA (dulu berlabel → bisa dijawab dgn membaca).
+ * Dulu 1 soal per markas & Legendaris ("Find the rabbit") lebih mudah dari
+ * Sulit; tint/size hack (bintang kuning di lingkaran biru) dihapus. Tabel
+ * lengkap: komentar puncak `soundhunt-data.ts`.
+ *
  * Non-punitive (CLAUDE.md): tap "Lanjut" SELALU membuka markas berikutnya
  * apa pun hasil jawabannya — Sound Crystal 💎 cuma didapat kalau BENAR,
  * tapi jawaban salah TIDAK PERNAH mengunci/menahan anak di 1 markas.
@@ -43,145 +53,121 @@ import { speak, speakLocalized, speakLater, playCorrectTone, playWrongTone, vibr
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
+import { shuffle } from '../util';
 import type { LevelKey, OnDone, WordMatchDifficulty } from '../types';
+import { COLOR_BANK, COLOR_ID, COUNT_BANK, GROUP_BANK, NUMBER_WORDS, RIDDLE_BANK, ROUND_COUNT, TIER_CONFIG, WARMUP_BANK, type Thing } from './soundhunt-data';
 
 /** `RajaKey` game ini — dikirim ke `recordAttempt()`, lihat komentar
  *  `GAME_KEY` `games/wordmatch.ts`. */
 const GAME_KEY = 'soundhunt';
 
-/** Label tag kesulitan (`.tag.diff-*`, `public/styles.css`) — duplikat
- *  lokal ringan (cuma label, bukan bank/pairCount penuh spt
- *  `DIFFICULTY_META` game lain, krn Sound Hunt kontennya per-markas
- *  data-driven sendiri, bukan digenerate dari 1 bank+meta). */
-const DIFFICULTY_LABEL: Record<WordMatchDifficulty, string> = {
-  pemanasan: 'Pemanasan',
-  mudah: 'Mudah',
-  sedang: 'Sedang',
-  sulit: 'Sulit',
-  jago: 'Jago',
-  legendaris: 'Legendaris',
-};
-
-export interface SoundHuntOption {
-  id: string;
-  emoji: string;
-  label: string;
-  correct: boolean;
-  /** Swatch warna opsional di belakang emoji — mis. bedakan "blue star" vs
-   *  "yellow star" (emoji bintang sama persis, warna jadi satu-satunya
-   *  pembeda visual, pola sama filter kid-friendly "iconAmbiguous"). */
-  tint?: string;
-  /** Skala ukuran opsional — level "small cat vs big cat", ukuran ITU
-   *  SENDIRI bagian dari soal, bukan sekadar dekorasi. */
-  size?: 'sm' | 'lg';
-}
-
-export interface SoundHuntLevel {
+/** 6 markas Hutan Ajaib — nama tempat & kalimat pemandu. ISI soal tiap
+ *  markas dibuat dari bank per tier (`soundhunt-data.ts`), bukan lagi 1
+ *  soal tulisan tangan per markas. */
+export interface SoundHuntNode {
   node: string;
   nodeEmoji: string;
-  /** Tag kesulitan markas ini (BARU, lihat komentar puncak file) — SATU-
-   *  SATUNYA pemakaian union `WordMatchDifficulty` di luar game bank+meta,
-   *  murni label tampilan (`DIFFICULTY_LABEL`), tidak mengatur bank/skala
-   *  apa pun spt di game lain krn tiap markas di sini SUDAH ditulis manual
-   *  1-1 (bukan digenerate). */
   difficulty: WordMatchDifficulty;
-  /** Kalimat instruksi Inggris — diputar via TTS, TIDAK PERNAH ditampilkan
-   *  sbg teks kecuali anak tap 💡 Petunjuk (audio jadi sumber utama). */
-  instruction: string;
-  instructionId: string;
   guideLine: string;
-  options: SoundHuntOption[];
 }
 
-/** 6 markas Hutan Ajaib (MVP, CEFR A1 — markas ke-0 `pemanasan` BARU,
- *  permintaan user "tambahkan 1 sehingga ada 6"). Data-driven: tambah
- *  level baru = tambah 1 entri di sini. */
-export const SOUND_HUNT_LEVELS: SoundHuntLevel[] = [
-  {
-    node: 'Village Edge',
-    nodeEmoji: '🏡',
-    difficulty: 'pemanasan',
-    instruction: 'Find the dog.',
-    instructionId: 'Temukan anjingnya.',
-    guideLine: 'Yuk pemanasan dulu di tepi desa sebelum masuk hutan!',
-    options: [
-      { id: 'dog', emoji: '🐶', label: 'Dog', correct: true },
-      { id: 'cat', emoji: '🐱', label: 'Cat', correct: false },
-      { id: 'bird', emoji: '🐦', label: 'Bird', correct: false },
-      { id: 'fish', emoji: '🐟', label: 'Fish', correct: false },
-    ],
-  },
-  {
-    node: 'Forest Entrance',
-    nodeEmoji: '🌲',
-    difficulty: 'mudah',
-    instruction: 'Find the elephant.',
-    instructionId: 'Temukan gajahnya.',
-    guideLine: 'Selamat datang di gerbang hutan! Dengarkan baik-baik, ya.',
-    options: [
-      { id: 'elephant', emoji: '🐘', label: 'Elephant', correct: true },
-      { id: 'lion', emoji: '🦁', label: 'Lion', correct: false },
-      { id: 'monkey', emoji: '🐵', label: 'Monkey', correct: false },
-      { id: 'tiger', emoji: '🐯', label: 'Tiger', correct: false },
-    ],
-  },
-  {
-    node: 'Whispering Woods',
-    nodeEmoji: '🌳',
-    difficulty: 'sedang',
-    instruction: 'Find the red apple.',
-    instructionId: 'Temukan apel merahnya.',
-    guideLine: 'Pohon-pohon di sini suka berbisik... coba dengar apa katanya!',
-    options: [
-      { id: 'red-apple', emoji: '🍎', label: 'Red Apple', correct: true },
-      { id: 'green-apple', emoji: '🍏', label: 'Green Apple', correct: false },
-      { id: 'banana', emoji: '🍌', label: 'Banana', correct: false },
-      { id: 'orange', emoji: '🍊', label: 'Orange', correct: false },
-    ],
-  },
-  {
-    node: 'Mushroom Garden',
-    nodeEmoji: '🍄',
-    difficulty: 'sulit',
-    instruction: 'Touch the blue star.',
-    instructionId: 'Sentuh bintang birunya.',
-    guideLine: 'Taman jamur ini penuh warna-warni ajaib, lho!',
-    options: [
-      { id: 'blue-star', emoji: '⭐', label: 'Blue Star', correct: true, tint: '#4DABF7' },
-      { id: 'yellow-star', emoji: '⭐', label: 'Yellow Star', correct: false, tint: '#FFD43B' },
-      { id: 'red-heart', emoji: '❤️', label: 'Red Heart', correct: false },
-      { id: 'moon', emoji: '🌙', label: 'Moon', correct: false },
-    ],
-  },
-  {
-    node: 'Crystal Cave',
-    nodeEmoji: '💎',
-    difficulty: 'jago',
-    instruction: 'Find the small cat.',
-    instructionId: 'Temukan kucing kecilnya.',
-    guideLine: 'Gua ini gelap berkilau... awas, banyak hewan lucu bersembunyi!',
-    options: [
-      { id: 'small-cat', emoji: '🐱', label: 'Small Cat', correct: true, size: 'sm' },
-      { id: 'big-cat', emoji: '🐱', label: 'Big Cat', correct: false, size: 'lg' },
-      { id: 'small-dog', emoji: '🐶', label: 'Small Dog', correct: false, size: 'sm' },
-      { id: 'big-elephant', emoji: '🐘', label: 'Big Elephant', correct: false, size: 'lg' },
-    ],
-  },
-  {
-    node: 'Castle Gate',
-    nodeEmoji: '🏰',
-    difficulty: 'legendaris',
-    instruction: 'Find the rabbit.',
-    instructionId: 'Temukan kelincinya.',
-    guideLine: 'Hampir sampai gerbang istana Raja! Satu Sound Crystal lagi...',
-    options: [
-      { id: 'rabbit', emoji: '🐰', label: 'Rabbit', correct: true },
-      { id: 'dog', emoji: '🐶', label: 'Dog', correct: false },
-      { id: 'cat', emoji: '🐱', label: 'Cat', correct: false },
-      { id: 'mouse', emoji: '🐭', label: 'Mouse', correct: false },
-    ],
-  },
+export const SOUND_HUNT_NODES: SoundHuntNode[] = [
+  { node: 'Village Edge', nodeEmoji: '🏡', difficulty: 'pemanasan', guideLine: 'Yuk pemanasan dulu di tepi desa sebelum masuk hutan!' },
+  { node: 'Forest Entrance', nodeEmoji: '🌲', difficulty: 'mudah', guideLine: 'Selamat datang di gerbang hutan! Gambarnya mirip-mirip, dengarkan baik-baik, ya.' },
+  { node: 'Whispering Woods', nodeEmoji: '🌳', difficulty: 'sedang', guideLine: 'Pohon-pohon di sini suka berbisik warna... dengar warnanya juga!' },
+  { node: 'Mushroom Garden', nodeEmoji: '🍄', difficulty: 'sulit', guideLine: 'Taman jamur ini penuh benda ajaib. Dengar berapa jumlahnya!' },
+  { node: 'Crystal Cave', nodeEmoji: '💎', difficulty: 'jago', guideLine: 'Di gua ini ada 2 perintah sekaligus. Ingat urutannya, ya!' },
+  { node: 'Castle Gate', nodeEmoji: '🏰', difficulty: 'legendaris', guideLine: 'Penjaga istana memberi teka-teki. Tebak bendanya dari ciri-cirinya!' },
 ];
+
+/** 1 soal siap tampil. `answer` = indeks opsi yang benar, urut (mode
+ *  `sequence` = 2 indeks, harus ditap berurutan). */
+interface Question {
+  instruction: string;
+  instructionId: string;
+  options: { emoji: string; label: string }[];
+  answer: number[];
+}
+
+/** Antrian acak tanpa ulang (semua keluar dulu sebelum ada yang berulang). */
+function makeQueue<T>(items: T[]): () => T {
+  let q: T[] = [];
+  return () => {
+    if (q.length === 0) q = shuffle(items);
+    return q.shift()!;
+  };
+}
+
+function pickOthers<T>(pool: T[], exclude: T[], n: number): T[] {
+  return shuffle(pool.filter((x) => !exclude.includes(x))).slice(0, n);
+}
+
+/** Susun opsi (acak posisinya) + indeks jawabannya. */
+function assemble(instruction: string, instructionId: string, correct: { emoji: string; label: string }[], others: { emoji: string; label: string }[]): Question {
+  const options = shuffle([...correct, ...others]);
+  return { instruction, instructionId, options, answer: correct.map((c) => options.indexOf(c)) };
+}
+
+const thingOpt = (t: Thing) => ({ emoji: t.emoji, label: t.en });
+
+/** `ROUND_COUNT` soal untuk 1 markas, sesuai mode tier-nya. */
+function buildQuestions(difficulty: WordMatchDifficulty): Question[] {
+  const mode = TIER_CONFIG[difficulty].mode;
+  const out: Question[] = [];
+  if (mode === 'find' && difficulty === 'pemanasan') {
+    const next = makeQueue(WARMUP_BANK);
+    for (let i = 0; i < ROUND_COUNT; i++) {
+      const t = next();
+      out.push(assemble(`Find the ${t.en}.`, `Temukan ${t.id}.`, [thingOpt(t)], pickOthers(WARMUP_BANK, [t], 3).map(thingOpt)));
+    }
+  } else if (mode === 'find') {
+    const nextGroup = makeQueue(GROUP_BANK);
+    const perGroup = new Map(GROUP_BANK.map((g) => [g, makeQueue(g.items)]));
+    for (let i = 0; i < ROUND_COUNT; i++) {
+      const g = nextGroup();
+      const t = perGroup.get(g)!();
+      out.push(assemble(`Find the ${t.en}.`, `Temukan ${t.id}.`, [thingOpt(t)], pickOthers(g.items, [t], 3).map(thingOpt)));
+    }
+  } else if (mode === 'color') {
+    const combos = COLOR_BANK.flatMap((n) => Object.keys(n.colors).map((c) => ({ n, c })));
+    const next = makeQueue(combos);
+    for (let i = 0; i < ROUND_COUNT; i++) {
+      const { n, c } = next();
+      const opt = (noun: typeof n, color: string) => ({ emoji: noun.colors[color], label: `${color} ${noun.en}` });
+      const otherColor = shuffle(Object.keys(n.colors).filter((x) => x !== c))[0];
+      // Benda lain yang juga punya warna target + 1 warna lain.
+      const y = shuffle(COLOR_BANK.filter((m) => m !== n && m.colors[c] && Object.keys(m.colors).length > 1))[0];
+      const yOther = Object.keys(y.colors).includes(otherColor) && otherColor !== c ? otherColor : shuffle(Object.keys(y.colors).filter((x) => x !== c))[0];
+      out.push(
+        assemble(`Find the ${c} ${n.en}.`, `Temukan ${n.id} ${COLOR_ID[c]}.`, [opt(n, c)], [opt(n, otherColor), opt(y, c), opt(y, yOther)])
+      );
+    }
+  } else if (mode === 'count') {
+    const combos = COUNT_BANK.flatMap((t) => NUMBER_WORDS.map((w) => ({ t, w })));
+    const next = makeQueue(combos);
+    for (let i = 0; i < ROUND_COUNT; i++) {
+      const { t, w } = next();
+      const near = NUMBER_WORDS.filter((x) => Math.abs(x.n - w.n) === 1);
+      const nw = shuffle(near)[0];
+      const y = shuffle(COUNT_BANK.filter((x) => x !== t))[0];
+      const opt = (thing: typeof t, num: typeof w) => ({ emoji: thing.emoji.repeat(num.n), label: `${num.en} ${thing.plural}` });
+      out.push(assemble(`Find ${w.en} ${t.plural}.`, `Temukan ${w.id} ${t.id}.`, [opt(t, w)], [opt(t, nw), opt(y, w), opt(y, nw)]));
+    }
+  } else if (mode === 'sequence') {
+    const pool = [...WARMUP_BANK, ...GROUP_BANK.flatMap((g) => g.items)];
+    for (let i = 0; i < ROUND_COUNT; i++) {
+      const [a, b, ...rest] = shuffle(pool).slice(0, 4);
+      out.push(assemble(`Tap the ${a.en}, then tap the ${b.en}.`, `Tap ${a.id}, lalu tap ${b.id}.`, [thingOpt(a), thingOpt(b)], rest.map(thingOpt)));
+    }
+  } else {
+    const next = makeQueue(RIDDLE_BANK);
+    for (let i = 0; i < ROUND_COUNT; i++) {
+      const r = next();
+      out.push(assemble(r.text, r.textId, [thingOpt(r.options[0])], r.options.slice(1).map(thingOpt)));
+    }
+  }
+  return out;
+}
 
 /** Duplikat lokal `roundActionsHtml` (konvensi app ini: helper generik
  *  diduplikasi per file game — lihat games/wordmatch.ts dst). */
@@ -225,28 +211,20 @@ function lockOptionButtons(container: HTMLElement): void {
 
 const ANSWER_LETTERS = ['A', 'B', 'C', 'D'];
 
-/** Kartu jawaban gambar+teks (`.opt-btn.answer-card`, sama komponen dgn
- *  Listening/Reading dst) — `tint`/`size` opsional per opsi jadi satu-
- *  satunya pembeda visual utk soal warna/ukuran (lihat komentar interface
- *  di atas), lewat inline style supaya tidak perlu CSS baru. */
-function optionCardsHtml(options: SoundHuntOption[]): string {
+/** Kartu jawaban GAMBAR SAJA (`.opt-btn.answer-card`) — tanpa tulisan,
+ *  supaya tugasnya mendengar, bukan membaca (dulu kartu berlabel "Blue Star"
+ *  membocorkan jawaban lewat teks). Label cuma utk `aria-label`. `order` =
+ *  nomor urutan yang sudah ditap benar (mode 2 perintah). */
+function optionCardsHtml(options: { emoji: string; label: string }[], order: number[]): string {
   return `<div class="opt-grid">
     ${options
       .map((o, i) => {
-        const style = [
-          o.tint ? `background:${o.tint};border-radius:50%;width:38px;height:38px;display:grid;place-items:center;` : '',
-          o.size === 'sm' ? 'font-size:20px;' : '',
-          o.size === 'lg' ? 'font-size:40px;' : '',
-        ]
-          .filter(Boolean)
-          .join('');
+        const pos = order.indexOf(i);
         return `
-      <button class="opt-btn answer-card" type="button" data-action="pick" data-payload="${i}">
-        <span class="answer-card-emoji" ${style ? `style="${style}"` : ''} aria-hidden="true">${picHtml(o.emoji)}</span>
-        <span class="answer-card-bottom">
-          <span class="answer-card-label">${o.label}</span>
-          <span class="answer-card-badge" aria-hidden="true">${ANSWER_LETTERS[i] ?? i + 1}</span>
-        </span>
+      <button class="opt-btn answer-card sh-card${pos >= 0 ? ' sh-picked' : ''}" type="button" data-action="pick" data-payload="${i}" aria-label="${o.label}">
+        ${pos >= 0 ? `<span class="sh-order" aria-hidden="true">${pos + 1}</span>` : ''}
+        <span class="answer-card-emoji" aria-hidden="true">${picHtml(o.emoji)}</span>
+        <span class="answer-card-bottom"><span class="answer-card-badge" aria-hidden="true">${ANSWER_LETTERS[i] ?? i + 1}</span></span>
       </button>`;
       })
       .join('')}
@@ -254,60 +232,42 @@ function optionCardsHtml(options: SoundHuntOption[]): string {
 }
 
 export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: LevelKey): void {
-  const total = SOUND_HUNT_LEVELS.length;
+  const total = SOUND_HUNT_NODES.length;
   const visited = new Set<number>();
-  const crystals = new Set<number>();
+  // 💎 1 Sound Crystal per soal yang terjawab benar (boleh lewat "Coba
+  // Lagi" — non-punitive), dihitung sekali per soal.
+  const crystals = new Set<string>();
+  const crystalTotal = total * ROUND_COUNT;
 
   /** Forest Map — grid `.raja-grid`/`.raja-card`, SAMA PERSIS roster `/game`
-   *  (permintaan user "jadikan 1 card an seperti di halaman game dimana 1
-   *  row jadi 2 card" — riwayat desain lengkap: komentar `renderMap()`
-   *  `games/wordmatch.ts`). 🔒 SEKARANG layar PERTAMA yang tampil (Welcome
-   *  screen "🚀 Mulai Petualangan", `renderWelcome()`, SUDAH DIHAPUS TOTAL —
-   *  permintaan user "hilangkan halaman mulai petualang... langsung sub
-   *  list game per level", pola SAMA `games/wordmatch.ts` yang jg TANPA
-   *  Welcome screen terpisah). Markas ke-i cuma bisa dijelajah kalau markas
-   *  ke-(i-1) sudah PERNAH dikunjungi (bukan harus benar — non-punitive),
-   *  markas yang belum terjangkau tampil terkunci (`disabled`+redup). Beda
-   *  dari Kata/Balon: badge di sini pakai `cleared` (crystal DIDAPAT), BUKAN
-   *  `wasVisited` (pernah dikunjungi TANPA dapat crystal-nya — jawaban salah
-   *  tetap boleh lanjut, non-punitive) — markas yang pernah dikunjungi tapi
-   *  belum dapat crystal TETAP dianggap "is-open" (dapat halo, boleh
-   *  diulang), bukan "is-cleared". 🔒 Kartu jg dapat `map-card` ("lebih kids
-   *  friendly seperti sebelumnya", analisis giggleacademy.com/learning-course
-   *  — rona warna Raja lembut GANTI putih polos, lihat komentar `.map-card`
-   *  `public/styles.css`); 🔒 SEKARANG jg py tag kesulitan (`diff-${lvl.
-   *  difficulty}`, permintaan user "levelnya ada pemanasan, mudah, sedang,
-   *  sulit, jago, legendaris" — dulu Sound Hunt SATU-SATUNYA raja
-   *  bertingkat tanpa tag ini, lihat komentar puncak file). */
+   *  (riwayat desain: komentar `renderMap()` `games/wordmatch.ts`). Markas
+   *  ke-i terbuka kalau markas ke-(i-1) sudah pernah dituntaskan (10 soal
+   *  dilewati, benar/salah — non-punitive). */
   function renderMap(): void {
-    // 🔒 Back dari layar Map TIDAK perlu pop up konfirmasi lagi (permintaan
-    // user) — lihat komentar `isGameRoundActive` `interaction.ts`.
+    // 🔒 Back dari layar Map TIDAK perlu pop up konfirmasi (lihat komentar
+    // `isGameRoundActive` `interaction.ts`).
     setGameRoundActive(false);
-    const stops = SOUND_HUNT_LEVELS.map((lvl, i) => {
-      const cleared = crystals.has(i);
+    const stops = SOUND_HUNT_NODES.map((node, i) => {
+      const cleared = visited.has(i);
       // Akun tes dev ("124") lihat SEMUA markas terbuka — lihat account.ts isDevTestAccount().
       const unlocked = isDevTestAccount() || i === 0 || visited.has(i - 1);
       const stateClass = cleared ? 'is-cleared' : unlocked ? 'is-open' : 'is-locked';
-      // 🔒 Badge kunci/centang (ikon) DIGANTI persentase — pola SAMA PERSIS
-      // `games/wordmatch.ts` `renderMap()` (permintaan user "tambahkan
-      // percentage di setiap card"), lihat komentar lengkap di sana.
       const pct = cleared ? 100 : 0;
       const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
       return `
       <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-read)">
         ${badge}
-        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${lvl.nodeEmoji}</span></span>
-        <h3>${lvl.node}</h3>
-        <span class="tag diff-${lvl.difficulty}">${DIFFICULTY_LABEL[lvl.difficulty]}</span>
+        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${node.nodeEmoji}</span></span>
+        <h3>${node.node}</h3>
+        <span class="tag diff-${node.difficulty}">${TIER_CONFIG[node.difficulty].label}</span>
       </button>`;
     }).join('');
 
-    // 🔒 `current` = markas berikutnya yang belum ditaklukkan (posisi anak
-    // sekarang), permintaan user "beri pembeda di progress yang sedang
-    // disinggahi" — lihat komentar `.game-progress-dot.current` styles.css.
-    const nextIdx = SOUND_HUNT_LEVELS.findIndex((_, i) => !crystals.has(i));
-    const dots = SOUND_HUNT_LEVELS.map((_, i) => {
-      const done = crystals.has(i);
+    // 🔒 `current` = markas berikutnya yang belum ditaklukkan (lihat komentar
+    // `.game-progress-dot.current` styles.css).
+    const nextIdx = SOUND_HUNT_NODES.findIndex((_, i) => !visited.has(i));
+    const dots = SOUND_HUNT_NODES.map((_, i) => {
+      const done = visited.has(i);
       const cls = [done ? 'done' : '', i === nextIdx ? 'current' : ''].filter(Boolean).join(' ');
       return `<span class="game-progress-dot${cls ? ' ' + cls : ''}" aria-hidden="true">${done ? '✓' : ''}</span>`;
     }).join('');
@@ -318,93 +278,168 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
         <div class="card game-progress-card">
           ${GAME_STAR_FIELD}
           <h2>Taklukkan markas satu per satu, ya!</h2>
-          <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${crystals.size} dari ${total}</span></div>
+          <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${visited.size} dari ${total}</span></div>
         </div>
         <div class="raja-grid">${stops}</div>
         ${gameHowToHtml([
           'Dengar instruksi Bahasa Inggrisnya',
           'Tap gambar yang sesuai',
-          'Sound Crystal muncul kalau jawabannya tepat',
+          `Tiap markas ada ${ROUND_COUNT} soal — makin jauh, instruksinya makin menantang`,
           'Taklukkan markas satu per satu sampai tuntas!',
         ])}
       </div>`;
     setHandlers({ enterNode: (payload) => drawLevel(Number(payload)) });
   }
 
+  /** 1 markas = `ROUND_COUNT` soal (pola Balloon Hunt/Word Quest), bentuk
+   *  soal dari `TIER_CONFIG` (`soundhunt-data.ts`). */
   function drawLevel(idx: number): void {
-    setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
-    const lvl = SOUND_HUNT_LEVELS[idx];
+    setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan"; keluar = balik ke Map
+    const node = SOUND_HUNT_NODES[idx];
+    const cfg = TIER_CONFIG[node.difficulty];
+    const questions = buildQuestions(node.difficulty);
+    let round = 0;
+    // State per soal — direset HANYA saat pindah soal (`startRound`), BUKAN
+    // saat "Coba Lagi" (Petunjuk yang sudah terbuka tetap terbuka).
     let revealed = false;
-    const play = () => speak(lvl.instruction);
+    let attempted = false;
+    let picks: number[] = [];
+    let answered = false;
+
+    const q = () => questions[round];
+    const play = () => speak(q().instruction);
 
     function paint(): void {
+      const hintLocked = cfg.hintGated && !attempted;
+      const hintBtn = hintLocked
+        ? `<button class="speak-btn-ghost" type="button" disabled aria-disabled="true">🔒 Petunjuk</button>`
+        : `<button class="speak-btn-ghost" type="button" data-action="hint"><span class="hint-bulb">💡</span> Petunjuk</button>`;
       container.innerHTML = `
         <div class="latihan-head">
-          <span class="stage-badge">${lvl.nodeEmoji} ${lvl.node}</span>
-          <span class="tag accent" id="shCrystalTag">💎 ${crystals.size}/${total}</span>
+          <span class="stage-badge">${node.nodeEmoji} ${node.node}</span>
+          <span class="tag accent">💎 ${crystals.size}/${crystalTotal}</span>
         </div>
-        <p class="meta" style="margin-top:var(--s3)">🧙‍♂️ "${lvl.guideLine}"</p>
-        ${progressDotsHtml(total, (i) => visited.has(i), idx)}
+        <p class="meta" style="margin-top:var(--s3)">🧙‍♂️ "${node.guideLine}"</p>
+        ${progressDotsHtml(ROUND_COUNT, (i) => i < round || (i === round && answered), round)}
+        <p class="sh-badge">${cfg.badge}</p>
         <div class="speak-row">
           <button class="speak-btn pt-cta" type="button" data-action="listen">🔊 Dengar</button>
-          <button class="speak-btn-ghost" type="button" data-action="hint"><span class="hint-bulb">💡</span> Petunjuk</button>
+          ${hintBtn}
         </div>
-        ${revealed ? `<div class="en-text">${lvl.instruction}</div><div class="id-text">${lvl.instructionId}</div>` : ''}
-        ${optionCardsHtml(lvl.options)}
+        ${revealed ? `<div class="en-text">${q().instruction}</div><div class="id-text">${q().instructionId}</div>` : ''}
+        ${optionCardsHtml(q().options, picks)}
         <div class="feedback" id="fb"></div>`;
       setHandlers({
         listen: play,
         hint: () => {
           revealed = true;
           play();
-          speakLater(() => speakLocalized(lvl.instructionId, 'id-ID'), 1500);
+          speakLater(() => speakLocalized(q().instructionId, 'id-ID'), 1600);
           paint();
         },
         pick: (payload) => onPick(Number(payload)),
       });
     }
 
-    function onPick(i: number): void {
-      const opt = lvl.options[i];
-      const btn = container.querySelectorAll<HTMLButtonElement>('.opt-btn')[i];
-      const fb = container.querySelector<HTMLElement>('#fb')!;
-      lockOptionButtons(container);
-      recordAttempt(opt.correct, GAME_KEY);
+    function startRound(): void {
+      revealed = false;
+      attempted = false;
+      picks = [];
+      answered = false;
+      paint();
+      play();
+    }
 
-      if (opt.correct) {
-        btn.classList.add('correct', 'win-burst');
-        crystals.add(idx);
-        const crystalTag = container.querySelector<HTMLElement>('#shCrystalTag');
-        if (crystalTag) crystalTag.textContent = `💎 ${crystals.size}/${total}`;
+    function finish(correct: boolean, btn: HTMLButtonElement | undefined): void {
+      answered = true;
+      attempted = true;
+      recordAttempt(correct, GAME_KEY);
+      lockOptionButtons(container);
+      const fb = container.querySelector<HTMLElement>('#fb')!;
+      if (correct) {
+        btn?.classList.add('correct', 'win-burst');
+        crystals.add(`${idx}:${round}`);
         playCorrectTone();
         fireConfetti();
         fb.textContent = pickPraise(level);
         fb.className = 'feedback good';
       } else {
-        btn.classList.add('wrong');
+        btn?.classList.add('wrong');
         playWrongTone();
         vibrateDevice(160);
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';
       }
-
-      fb.insertAdjacentHTML('afterend', roundActionsHtml(idx === total - 1));
+      const dots = container.querySelector('.quiz-nav');
+      if (dots) dots.outerHTML = progressDotsHtml(ROUND_COUNT, (i) => i <= round, round);
+      const tag = container.querySelector<HTMLElement>('.latihan-head .tag');
+      if (tag) tag.textContent = `💎 ${crystals.size}/${crystalTotal}`;
+      // Petunjuk bergerbang terbuka setelah 1x coba.
+      if (cfg.hintGated) {
+        const lockedHint = container.querySelector<HTMLButtonElement>('.speak-row .speak-btn-ghost[disabled]');
+        if (lockedHint) lockedHint.outerHTML = `<button class="speak-btn-ghost" type="button" data-action="hint"><span class="hint-bulb">💡</span> Petunjuk</button>`;
+      }
+      const lastRound = round === ROUND_COUNT - 1;
+      fb.insertAdjacentHTML('afterend', roundActionsHtml(lastRound && idx === total - 1));
       setHandlers({
-        tryAgainRound: () => {
-          revealed = false;
-          paint();
+        listen: play,
+        hint: () => {
+          revealed = true;
           play();
+          speakLater(() => speakLocalized(q().instructionId, 'id-ID'), 1600);
+          const actions = container.querySelector('.round-actions')?.outerHTML ?? '';
+          const fbState = { text: fb.textContent, cls: fb.className };
+          paint();
+          lockOptionButtons(container);
+          const fb2 = container.querySelector<HTMLElement>('#fb')!;
+          fb2.textContent = fbState.text;
+          fb2.className = fbState.cls;
+          fb2.insertAdjacentHTML('afterend', actions);
+          setHandlers({ tryAgainRound, nextRound });
         },
-        nextRound: () => {
-          visited.add(idx);
-          if (visited.size >= total) renderMissionComplete();
-          else renderMap();
-        },
+        tryAgainRound,
+        nextRound,
       });
     }
 
-    paint();
-    play();
+    function tryAgainRound(): void {
+      picks = [];
+      answered = false;
+      paint();
+      play();
+    }
+
+    function nextRound(): void {
+      if (round < ROUND_COUNT - 1) {
+        round += 1;
+        startRound();
+        return;
+      }
+      visited.add(idx);
+      if (visited.size >= total) renderMissionComplete();
+      else renderMap();
+    }
+
+    function onPick(i: number): void {
+      if (answered) return;
+      const btns = container.querySelectorAll<HTMLButtonElement>('.opt-btn');
+      const expected = q().answer[picks.length];
+      if (i !== expected) return finish(false, btns[i]);
+      picks.push(i);
+      if (q().answer.length > 1) {
+        // Mode 2 perintah — tandai urutan tiap kartu yang ditap benar.
+        btns[i].classList.add('sh-picked');
+        btns[i].insertAdjacentHTML('afterbegin', `<span class="sh-order" aria-hidden="true">${picks.length}</span>`);
+      }
+      if (picks.length < q().answer.length) {
+        btns[i].disabled = true;
+        playCorrectTone();
+        return;
+      }
+      finish(true, btns[i]);
+    }
+
+    startRound();
   }
 
   function renderMissionComplete(): void {
@@ -413,7 +448,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
       <div class="done-wrap win">
         <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">💎</span><span class="crown">✨</span></div>
         <h2 class="win-banner">Misi Hutan Selesai!</h2>
-        <p class="done-sub">"Hebaaat! Kamu menemukan ${crystals.size} dari ${total} Sound Crystal." — Penjaga Hutan</p>
+        <p class="done-sub">"Hebaaat! Kamu menemukan ${crystals.size} dari ${crystalTotal} Sound Crystal." — Penjaga Hutan</p>
         <p class="done-sub">👑 Raja akan sangat senang! <span class="tag ok">🏆 Sound Hunter Badge</span></p>
         <button class="primary-btn" type="button" data-action="continueAdventure">Continue Adventure ➡️</button>
       </div>`;

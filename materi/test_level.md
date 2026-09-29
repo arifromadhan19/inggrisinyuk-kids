@@ -6,7 +6,7 @@ Dokumen ini melanjutkan [test_perlevel.md](test_perlevel.md). Dokumen itu membah
 
 **Lingkup (keputusan user 2026-09-29): keputusan naik/tetap HANYA dari tes kemampuan.** Syarat kehadiran/penyelesaian materi (padanan "absen" di lembaga) tidak dipakai. Fakta absen di §3 tetap dicatat sebagai hasil riset saja.
 
-Status: **desain final (semua keputusan user sudah diambil, §7), belum diimplementasikan.** Rencana implementasi: §8. Keputusan Opsi A mengganti aturan lama PRD §4.6/§14.8 (Tantangan Raja tidak pernah menahan anak); PRD & CLAUDE.md ikut diubah saat implementasi (§8.3).
+Status: **✅ diimplementasikan 2026-09-29 di semua 6 level** (§9). Keputusan user: §7. Keputusan Opsi A mengganti aturan lama PRD §4.6/§14.8 (Tantangan Raja tidak pernah menahan anak); PRD & CLAUDE.md ikut diubah saat implementasi (§8.3).
 
 ---
 
@@ -441,6 +441,25 @@ Poin 1–3 berlaku apa pun keputusan di §7, karena itu bug validitas.
 | 4. Rapor | §5.5: riwayat tes + bintang per skill + kalimat "Anak bisa…" | Orang tua melihat hasil tes |
 
 Tiap tahap diverifikasi `npm run build` + browser 390px & 1280px di 6 level.
+
+---
+
+## 9. Implementasi (2026-09-29)
+
+| Bagian | File |
+|---|---|
+| Bank soal per skill & tier, jumlah soal, ambang 80%, soal bonus | `app/src/games/boss-bank.ts` |
+| Arena 5 babak, soal ber-bullet progress, hasil babak, misi, menang | `app/src/games/boss.ts` |
+| Penyimpanan run/lolos/skor terbaik/riwayat (`Store.bossTests`), event `boss_skill` | `app/src/progress.ts` |
+| Layar Arena & menang, misi → Latihan Inti, persentase "menuju level", kartu Rapor "🏰 Hasil Tantangan Raja" | `app/src/app.ts` |
+| Tampilan (`.boss-hub`, `.boss-skill-*`, `.boss-list`, `.boss-tf`, `.boss-playing`) | `app/public/styles.css` |
+
+- Tahap 1 (bug): opsi Listening selalu diacak & pertanyaan dibacakan + ditampilkan; 1 tap = jawaban terkunci (tap dobel / tap pill tidak bisa menggandakan atau mereset skor); jawaban tes tidak masuk akurasi global; `setTimeout` lama diganti tombol "Lanjut".
+- Tahap 2 (soal): bentuk soal = Tantangan level (§5.4), merata per topik, hindari soal 3 percobaan terakhir; stok Listening Explorer/Adventurer diperluas dari `kenalanGame` + cerita (± 100 soal/level). Jalur legacy 8 soal & `PILOT_LEVELS` dihapus.
+- Tahap 3 (aturan): ≥ 80% per babak utama, 3 soal bonus kalau kurang tepat 1, 3 hasil (lolos / hampir → bonus / belum lolos + misi), Speaking bonus. "Menuju level berikutnya" = ½ materi level ini tuntas + ½ babak lolos (dulu salah hitung lintas level).
+- Tahap 4 (Rapor): kartu bintang terbaik tiap babak + status per level.
+- **Verifikasi**: `npm run build` lolos (termasuk `scripts/verify-boss-bank.mjs`, permanen); skrip bank (semua soal 6 level × 5 skill, sampel 30 pick/skill) → 0 soal tanpa tepat 1 jawaban benar / opsi kembar; Playwright 390px & 1280px di 6 level (Arena + soal pertama tiap babak + jawab) → 0 pageerror, tanpa scroll horizontal; alur lolos → menang ("Raja Kelinci Ditaklukkan!"), hampir → soal bonus → belum lolos → misi membuka Latihan Inti topik yang tepat, lanjut setelah reload (soal 6/20), popup keluar hanya di layar soal, kartu Rapor tampil.
+- **Belum dikerjakan**: kalimat "Anak bisa…" per skill di Rapor (§5.5); `bossTests` belum ditarik balik dari server saat pindah perangkat (lokal, seperti `gameStats` — ringkasan tetap tercatat di server lewat event `boss_skill`).
 
 ---
 

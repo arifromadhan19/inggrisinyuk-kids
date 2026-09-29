@@ -11,6 +11,16 @@ Permintaan user — app ini dipakai anak/orang tua lewat HP (mayoritas) TAPI jug
 3. **Test kedua lebar sebelum melapor selesai** — verifikasi live (Playwright/browser) WAJIB dicoba minimal di viewport mobile (~390px) DAN desktop (~1280px+), bukan cuma salah satu. Screenshot kedua lebar kalau mengubah layout/grid.
 4. Ini berlaku SEMUA layar app (`app/`) — bukan cuma Game Hub/Map Kerajaan, tapi juga Menu Belajar, Rapor, Pengaturan, dst.
 
+## 🔒 Aturan Wajib: Tantangan Raja = Tes Naik Level (≥ 80% per Babak)
+
+Keputusan user 2026-09-29 (riset & rasional: [materi/test_level.md](materi/test_level.md)), MENGGANTIKAN aturan lama "Tantangan Raja selalu menang, skor cuma laporan" (`test_perlevel.md`):
+1. **Naik level HANYA kalau ke-4 babak utama (Vocabulary, Listening, Reading, Grammar) masing-masing ≥ 80% benar** (percobaan pertama, `passNeed`). Speaking = babak bonus, dilaporkan saja (ASR anak belum andal). Tidak ada syarat materi/kehadiran — murni tes kemampuan.
+2. **Jumlah soal** (`questionCount`, `games/boss-bank.ts`): babak utama 5/8/11/14/17/20 (Little Stars→Trailblazer, +3 per level), Speaking 3/3/4/4/5/5.
+3. **Non-punitive**: tes dipecah per babak (Arena, kemajuan tersimpan `Store.bossTests`, babak lolos tidak diulang); kurang TEPAT 1 dari syarat → 3 soal bonus (benar semua = lolos); belum lolos → "Belum lolos, gapapa!" + misi latihan (topik yang paling sering meleset) + coba lagi dgn soal BARU; tidak pernah turun level; level di bawah tetap terbuka; tanpa timer.
+4. **Soal = bentuk Tantangan level itu** (`boss-bank.ts`), diambil merata per topik, opsi selalu diacak, menghindari soal 3 percobaan terakhir. Jawaban tes TIDAK masuk akurasi global (`recordAttempt` tidak dipanggil); ringkasan tiap babak = event `boss_skill`. Hasil tampil di Rapor ("🏰 Hasil Tantangan Raja").
+5. Anak yang sudah menaklukkan Raja di versi lama tetap dianggap lolos. Placement test tidak berubah (`unlockLevelsUpTo`).
+6. **Menambah format konten/tipe soal baru di skill mana pun**: tambahkan cabangnya di `candidates()`/`buildQuestion()` `boss-bank.ts`, lalu `npm run build` (`scripts/verify-boss-bank.mjs`: stok cukup, tiap soal tepat 1 jawaban benar, tanpa opsi kembar).
+
 ## 🔒 Aturan Wajib: Pop Up Konfirmasi Keluar Game — Hanya di Halaman Mengerjakan
 
 Permintaan user — Game Hub (`/game/<slug-raja>`, `app.ts renderGamePlay()`) py pop up konfirmasi "Yuk Lanjut"/"Keluar" (`placementGame.renderExitConfirm`) tiap tombol balik ditekan, supaya anak tidak kehilangan progres tanpa sengaja. **TAPI popup ini TIDAK BOLEH tampil kalau anak belum benar-benar mulai mengerjakan soal apa pun** — sebelumnya popup SELALU muncul walau anak baru lihat layar Map Kerajaan (daftar markas, belum tap satu pun), padahal tidak ada progres yang bisa hilang di situ.

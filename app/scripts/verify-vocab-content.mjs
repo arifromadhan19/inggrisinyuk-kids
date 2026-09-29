@@ -414,6 +414,86 @@ async function main() {
     mmSeen(g.answer.trim().toLowerCase(), 'legendaris', tag);
   }
 
+  // Sound Hunt (`src/games/soundhunt-data.ts`) — denylist emoji makhluk
+  // hidup; emoji tidak kembar di bank "cari benda" (Pemanasan+Mudah, juga
+  // dipakai bersama di Jago); tiap kelompok Mudah ≥4 benda; tiap warna Sedang
+  // dimiliki ≥2 benda & tiap benda ≥2 warna (pengecoh warna/benda); teka-teki
+  // Legendaris: 4 opsi beda, arti wajib, tidak menyebut nama jawabannya.
+  const shOut = path.join(__dirname, '.verify-soundhunt-bundle.mjs');
+  await build({ entryPoints: [path.join(__dirname, '../src/games/soundhunt-data.ts')], bundle: true, format: 'esm', platform: 'node', outfile: shOut, logLevel: 'silent' });
+  let sh;
+  try {
+    sh = await import(`${shOut}?t=${Date.now()}`);
+  } finally {
+    await unlink(shOut).catch(() => {});
+  }
+  const shDeny = (tag, emoji, word) => {
+    if (PROBLEMATIC_EMOJI.has(emoji) && !ALLOWED_EMOJI_WORD_EXCEPTIONS.has(`${emoji}::${word}`)) errors.push(`${tag} (emoji="${emoji}"): ${PROBLEMATIC_EMOJI.get(emoji)}.`);
+  };
+  const shEmoji = new Map();
+  for (const t of [...sh.WARMUP_BANK, ...sh.GROUP_BANK.flatMap((g) => g.items)]) {
+    const tag = `Sound Hunt "${t.en}"`;
+    shDeny(tag, t.emoji, t.en);
+    if (!t.id) errors.push(`${tag} belum py arti Indonesia.`);
+    if (shEmoji.has(t.emoji)) errors.push(`${tag} emoji ${t.emoji} sudah dipakai "${shEmoji.get(t.emoji)}" (bank Pemanasan/Mudah dipakai bersama di Jago).`);
+    else shEmoji.set(t.emoji, t.en);
+  }
+  for (const g of sh.GROUP_BANK) if (g.items.length < 4) errors.push(`Sound Hunt kelompok "${g.name}" cuma ${g.items.length} benda — minimal 4 (1 papan = 4 kartu sekelompok).`);
+  for (const n of sh.COLOR_BANK) {
+    const cs = Object.keys(n.colors);
+    if (cs.length < 2) errors.push(`Sound Hunt warna: "${n.en}" cuma 1 warna.`);
+    for (const c of cs) {
+      if (!sh.COLOR_ID[c]) errors.push(`Sound Hunt warna "${c}" belum py arti Indonesia.`);
+      if (sh.COLOR_BANK.filter((m) => m.colors[c]).length < 2) errors.push(`Sound Hunt warna "${c}" cuma dimiliki "${n.en}" — pengecoh "warna sama, benda lain" tidak bisa dibuat.`);
+    }
+  }
+  for (const r of sh.RIDDLE_BANK) {
+    const tag = `Sound Hunt teka-teki "${r.text}"`;
+    if (r.options.length !== 4 || new Set(r.options.map((o) => o.emoji)).size !== 4) errors.push(`${tag} wajib 4 opsi dgn emoji beda.`);
+    if (!r.textId) errors.push(`${tag} belum py arti Indonesia.`);
+    if (new RegExp(`\\b${escapeRegExp(r.options[0].en)}`, 'i').test(r.text)) errors.push(`${tag} menyebut jawabannya "${r.options[0].en}".`);
+    for (const o of r.options) shDeny(tag, o.emoji, o.en);
+  }
+
+  // Story Quest (`src/games/storyquest-data.ts`) — tiap markas 5 halaman,
+  // 4 opsi beda, jawaban & bukti valid, emoji denylist, opsi bergambar wajib
+  // ber-emoji (markas gambar), dan ANTI-TEBAK: jawaban benar tidak boleh
+  // jadi satu-satunya opsi yang paling banyak memakai kata dari teks halaman
+  // (dulu 21/25 soal bisa dijawab dgn mencocokkan kata).
+  const sqOut = path.join(__dirname, '.verify-storyquest-bundle.mjs');
+  await build({ entryPoints: [path.join(__dirname, '../src/games/storyquest-data.ts')], bundle: true, format: 'esm', platform: 'node', outfile: sqOut, logLevel: 'silent' });
+  let sq;
+  try {
+    sq = await import(`${sqOut}?t=${Date.now()}`);
+  } finally {
+    await unlink(sqOut).catch(() => {});
+  }
+  const SQ_STOP = new Set('a an the is are was were it its to of in on at and or but he she they his her their with for from this that some very all not be do does did has have had what who where why how when which there so as by up out no too'.split(' '));
+  const sqWords = (t) => t.toLowerCase().replace(/[^a-z\s']/g, ' ').split(/\s+/).filter((w) => w && !SQ_STOP.has(w)).map((w) => w.replace(/'s$/, '').replace(/s$/, ''));
+  for (const book of sq.STORY_BOOKS) {
+    const cfg = sq.TIER_CONFIG[book.difficulty];
+    if (book.pages.length !== 5) errors.push(`Story Quest "${book.id}" py ${book.pages.length} halaman — wajib 5 (5 soal per markas).`);
+    shDeny(`Story Quest "${book.id}" sampul`, book.coverEmoji, '');
+    book.pages.forEach((p, pi) => {
+      const tag = `Story Quest "${book.id}" hal. ${pi + 1}`;
+      shDeny(tag, p.sceneEmoji, '');
+      if (p.options.length !== 4 || new Set(p.options.map((o) => o.text)).size !== 4) errors.push(`${tag} wajib 4 opsi beda.`);
+      if (!(p.answer >= 0 && p.answer < p.options.length)) errors.push(`${tag} indeks jawaban tidak valid.`);
+      if (!p.evidence.length || p.evidence.some((e) => e < 0 || e >= p.lines.length)) errors.push(`${tag} kalimat bukti (evidence) tidak valid.`);
+      if (!p.clue) errors.push(`${tag} belum py clue.`);
+      for (const o of p.options) {
+        if (cfg.answer !== 'text' && !o.emoji) errors.push(`${tag} opsi "${o.text}" wajib py emoji (markas bergambar).`);
+        if (o.emoji) shDeny(tag, o.emoji, o.text.toLowerCase());
+      }
+      if (cfg.answer !== 'picture') {
+        const txt = new Set(sqWords(p.lines.join(' ')));
+        const ov = p.options.map((o) => sqWords(o.text).filter((w) => txt.has(w)).length);
+        const top = Math.max(...ov);
+        if (top > 0 && ov[p.answer] === top && ov.filter((x) => x === top).length === 1) errors.push(`${tag} jawaban "${p.options[p.answer].text}" satu-satunya opsi yang paling banyak memakai kata dari teks — bisa ditebak dgn mencocokkan kata. Pakai kata lain di jawaban / kata dari teks di pengecoh.`);
+      }
+    });
+  }
+
   if (errors.length > 0) {
     console.error(`\n❌ Verifikasi konten Vocab GAGAL (${errors.length} masalah):\n`);
     for (const e of errors) console.error(`  - ${e}`);

@@ -76,6 +76,8 @@ import {
   getWeekActivity,
   getXp,
   grammarTopicPercent,
+  bossTestLevels,
+  getBossTest,
   isBossCleared,
   isStepVisited,
   levelUnlockMap,
@@ -208,6 +210,27 @@ function visibleSkillKeys(level: LevelKey): SkillKey[] {
 }
 function totalTopicsForLevel(level: LevelKey): number {
   return SKILL_KEYS.reduce((n, key) => n + topicsForSkill(key, level).length, 0);
+}
+
+/** "X% menuju level berikutnya" — 🔒 tes akhir level (`materi/test_level.md`):
+ *  setengah dari materi level INI yang tuntas (dulu `doneCount()` global
+ *  dibagi topik level ini → salah lintas level), setengah dari babak utama
+ *  Tantangan Raja yang sudah lolos (naik level ditentukan tes). */
+function levelProgressPct(level: LevelKey): number {
+  if (isBossCleared(level)) return 100;
+  const total = totalTopicsForLevel(level);
+  const finished = SKILL_KEYS.reduce((n, key) => n + topicsForSkill(key, level).filter((t) => topicFinished(key, t.id, level)).length, 0);
+  const materi = total > 0 ? finished / total : 0;
+  const test = getBossTest(level).passed.filter((s) => s !== 'speaking').length / 4;
+  return Math.round((materi * 0.5 + test * 0.5) * 100);
+}
+
+function levelProgressCaption(level: LevelKey): string {
+  const total = totalTopicsForLevel(level);
+  const finished = SKILL_KEYS.reduce((n, key) => n + topicsForSkill(key, level).filter((t) => topicFinished(key, t.id, level)).length, 0);
+  const babak = getBossTest(level).passed.filter((s) => s !== 'speaking').length;
+  if (finished === 0 && babak === 0) return 'Ayo mulai dari modul pertama!';
+  return `${finished} dari ${total} modul tuntas · ${babak} dari 4 babak ${BOSS_NAME[level]} lolos.`;
 }
 
 const state: AppState = {
@@ -993,9 +1016,7 @@ function buildProgressPanel(): string {
   // benar-salah (PRD §4.5/§4.6: tanpa rasio benar/salah dalam bentuk apa pun
   // dipakai untuk buka/kunci apa pun; "Ketepatan" di bawah cuma motivasi
   // tampilan, tidak pernah menggerbang progres).
-  const done = doneCount();
-  const totalTopics = totalTopicsForLevel(currentPlayableLevel().key);
-  const bossPct = totalTopics > 0 ? Math.round((done / totalTopics) * 100) : 0;
+  const bossPct = levelProgressPct(hereLevel?.key ?? currentPlayableLevel().key);
 
   const xp = getXp();
   const streakDays = getStreak();
@@ -1042,9 +1063,7 @@ function buildProgressPanel(): string {
       <div class="progress-fill" style="width:${bossPct}%"></div>
     </div>
     <p class="meta" style="margin-top:8px">${
-      done > 0
-        ? `${done} dari ${totalTopics} modul sudah kamu tuntaskan.`
-        : `Ayo mulai dari modul pertama!`
+      levelProgressCaption(hereLevel?.key ?? currentPlayableLevel().key)
     }</p>`;
 
   return `
@@ -1093,6 +1112,30 @@ function buildPlacementResultCard(): string {
       <div style="font-size:20px;letter-spacing:2px;margin:6px 0" aria-hidden="true">${starRow}</div>
       <p class="meta">Titik mulai kamu di Jalur Petualangan — keren, sudah dicoba! 🎉</p>
     </div>`;
+}
+
+/** 🏰 Hasil Tantangan Raja per level (tes akhir level, `materi/test_level.md`
+ *  §5.5, pola Statement of Results Cambridge) — bintang terbaik tiap babak +
+ *  status lolos. Disembunyikan kalau belum pernah dicoba. */
+function buildBossResultCard(): string {
+  const levels = LEVELS.filter((l) => bossTestLevels().includes(l.key) && Object.keys(getBossTest(l.key).best).length > 0);
+  if (!levels.length) return '';
+  const blocks = levels
+    .map((l) => {
+      const t = getBossTest(l.key);
+      const rows = (['vocabulary', 'listening', 'reading', 'grammar', 'speaking'] as SkillKey[])
+        .map((k) => {
+          const pct = t.best[k];
+          const status = k === 'speaking' ? 'bonus' : t.passed.includes(k) ? '✅ lolos' : pct === undefined ? 'belum dicoba' : '💪 latihan lagi';
+          return `<li><span class="stat-list-ic" aria-hidden="true">${SKILL_META[k].emoji}</span><span class="stat-list-label">${SKILL_META[k].label} <span class="meta">· ${status}</span></span><span class="stat-list-value">${pct === undefined ? '–' : skillStarsHtml(pct)}</span></li>`;
+        })
+        .join('');
+      const last = t.history[t.history.length - 1];
+      const when = last ? new Date(last.at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '';
+      return `<div class="card-title" style="margin:10px 0 0">${l.emoji} ${l.name}${isBossCleared(l.key) ? ' · 👑 ditaklukkan' : ''}${when ? ` <span class="meta">(${when})</span>` : ''}</div><ul class="stat-list">${rows}</ul>`;
+    })
+    .join('');
+  return `<div class="card"><span class="eyebrow">🏰 Hasil Tantangan Raja</span>${blocks}<p class="meta" style="margin-top:8px">Naik level kalau 4 babak utama benar 80%. Speaking = bonus.</p></div>`;
 }
 
 /**
@@ -1192,9 +1235,7 @@ function renderHome(): void {
   // mati sampai yang di depannya ditaklukkan dulu.
   const firstLockedIndex = LEVELS.findIndex((l) => !unlocked[l.key]);
 
-  const done = doneCount();
-  const mapTotalTopics = hereLevel ? totalTopicsForLevel(hereLevel.key) : 0;
-  const mapBossPct = mapTotalTopics > 0 ? Math.round((done / mapTotalTopics) * 100) : 0;
+  const mapBossPct = hereLevel ? levelProgressPct(hereLevel.key) : 0;
   // Selalu tampil (termasuk 0%) selama sudah ada perhentian aktif — heading
   // nama level + persentase besar di atas bar, supaya bar-nya jelas kebaca,
   // bukan garis dekoratif.
@@ -1208,7 +1249,7 @@ function renderHome(): void {
           <div class="progress-fill" style="width:${mapBossPct}%"></div>
         </div>
         <p class="meta" style="margin-top:8px;position:relative;z-index:1">${
-          done > 0 ? `${done} dari ${mapTotalTopics} modul sudah kamu tuntaskan.` : `Ayo mulai dari modul pertama!`
+          levelProgressCaption(hereLevel!.key)
         }</p>`
     : '';
 
@@ -1598,11 +1639,12 @@ function renderRapor(): void {
 
       <aside class="stack">
         ${buildDailyCard()}
+        ${buildBossResultCard()}
         ${buildPlacementResultCard()}
         ${buildLeaderboardCard()}
         <div class="card note-card">
           <div class="card-title">Untuk orang tua</div>
-          <p>Rapor ini murni progres & motivasi — bukan nilai ujian, tidak pernah dipakai menghukum atau mengunci apa pun. "Misi Berikutnya" cuma saran, boleh dilewati kapan saja.</p>
+          <p>Rapor ini untuk memantau progres, bukan menghukum. Level berikutnya terbuka lewat Tantangan Raja (4 babak utama benar 80%). "Misi Berikutnya" cuma saran.</p>
         </div>
       </aside>
     </section>
@@ -1774,7 +1816,7 @@ function renderMenu(): void {
           <div class="boss-teaser-body">
             <span class="eyebrow">${bossCleared ? 'Sudah kamu taklukkan' : 'Tantangan besar'}</span>
             <h2 class="h2">🏰 Markas ${BOSS_NAME[level.key]}</h2>
-            <p class="lede">Campuran soal dari semua kegiatan di atas, sekaligus — lebih rame, lebih seru. ${bossCleared ? 'Boleh dicoba lagi kapan saja.' : 'Menang sekali saja sudah cukup buat buka level berikutnya!'}</p>
+            <p class="lede">5 babak dari semua kegiatan di atas. ${bossCleared ? 'Boleh dicoba lagi kapan saja.' : 'Benar 80% di 4 babak utama, level berikutnya kebuka!'}</p>
             <button class="cta" type="button" data-action="openBoss">${ICON_PLAY} ${bossCleared ? `Main Lagi Lawan ${BOSS_NAME[level.key]}` : `Coba Tantangan ${BOSS_NAME[level.key]}`}</button>
           </div>
         </article>
@@ -2412,7 +2454,7 @@ const LANDING_STEPS: { emoji: string; title: string; desc: string }[] = [
   { emoji: '🎯', title: 'Cek Kemampuan Dulu', desc: 'First Placement Test yang seru, buat tahu level awal anak.' },
   { emoji: '🗺️', title: 'Pilih Petualangan', desc: 'Jelajahi Peta Level, dari Little Stars sampai Trailblazer.' },
   { emoji: '🎮', title: 'Belajar Sambil Main', desc: 'Vocabulary, Listening, Speaking, Grammar, Reading.' },
-  { emoji: '👑', title: 'Taklukkan Raja', desc: 'Menang Tantangan Bos, ujian naik level tiap dunia.' },
+  { emoji: '👑', title: 'Taklukkan Raja', desc: 'Lolos Tantangan Raja, tes naik level tiap dunia.' },
 ];
 
 /** Testimoni placeholder dari sudut pandang ORANG TUA (bukan anak, PRD §14.5
@@ -2964,47 +3006,11 @@ function renderBoss(): void {
     return;
   }
 
-  // Arena = kepala panggung Bos: siapa bosnya + peta babak yang akan dilewati.
-  // Sengaja diberitahu di depan — anak tahu persis apa yang datang (tenang, bukan
-  // kejutan menegangkan), dan tidak ada satu pun angka/nyawa yang bisa berkurang.
-  // 🔒 Redesain "test per level" (`materi/test_perlevel.md`) — babak Reading +
-  // estimasi waktu (info saja, BUKAN hitung mundur, PRD §4.6 tetap berlaku)
-  // HANYA utk `PILOT_LEVELS` (`games/boss.ts`, skrg cuma Little Stars,
-  // permintaan user "coba terapkan dulu di bos little star") — level lain
-  // TETAP tampilan LAMA (4 babak, tanpa baris estimasi waktu) apa adanya.
-  const pilot = bossGame.isPilotLevel(levelKey);
-  // 🔒 Permintaan user: baris pill statis di sini DIHAPUS (redundan — pill
-  // yang SAMA sekarang jadi tombol interaktif beneran di dalam `#stage`,
-  // `games/boss.ts` `skillPillsHtml()`, lihat komentar "Navigasi bebas
-  // antar skill" di sana). `phaseList` DIPERTAHANKAN murni utk `.length`
-  // (dipakai `subLine`/"Lima-Empat babak" di bawah), bukan lagi utk render.
-  const phaseList: [string, string][] = pilot
-    ? [
-        ['📚', 'Vocabulary'],
-        ['🎧', 'Listening'],
-        ['📖', 'Reading'],
-        ['✏️', 'Grammar'],
-        ['🗣️', 'Speaking'],
-      ]
-    : [
-        ['📚', 'Vocabulary'],
-        ['🎧', 'Listening'],
-        ['✏️', 'Grammar'],
-        ['🗣️', 'Speaking'],
-      ];
-  const estLine = pilot
-    ? (() => {
-        const [estMin, estMax] = bossGame.estimatedMinutesFor(levelKey);
-        return `<p class="meta" style="margin-top:8px">⏱️ Kira-kira ${estMin}–${estMax} menit, santai aja — tidak ada hitungan mundur, boleh dijeda kapan saja.</p>`;
-      })()
-    : '';
-
-  // Kalau level ini belum punya materi sendiri, Bos-nya berperan sebagai uji
-  // kemampuan umum (mirip placement test) buat buka jalurnya duluan — soalnya
-  // tetap dari materi yang sudah ada, bukan materi level ini (yang belum ada).
-  const subLine = level.hasContent
-    ? `Campuran soal dari ${phaseList.length} kegiatan sekaligus — sekali menang, level berikutnya kebuka!`
-    : 'Uji kemampuan umum, bukan materi level ini (yang belum ada) — sekali menang, jalur ke sini kebuka.';
+  // Arena = kepala panggung Raja. 🔒 Tes akhir level (`materi/test_level.md`):
+  // 5 babak dikerjakan satu-satu di `#stage` (`games/boss.ts`), naik level
+  // kalau ke-4 babak utama ≥ 80%. Estimasi waktu = info, bukan hitung mundur.
+  const [estMin, estMax] = bossGame.estimatedMinutesFor(levelKey);
+  const subLine = 'Lolos 4 babak utama (benar 80%), level berikutnya kebuka!';
 
   root.innerHTML = `
     <div class="act-head">
@@ -3021,8 +3027,7 @@ function renderBoss(): void {
       <div class="boss-arena-body">
         <span class="eyebrow" style="color:#7A4A08">Arena Tantangan</span>
         <h2>${BOSS_NAME[levelKey]} sudah siap main!</h2>
-        <p>${phaseList.length === 5 ? 'Lima' : 'Empat'} babak, santai saja — boleh diulang sebanyak yang kamu mau.</p>
-        ${estLine}
+        <p>5 babak — pilih mau mulai dari mana. Santai, ±${estMin}–${estMax} menit semuanya.</p>
       </div>
     </div>
     <div class="card boss-stage" id="stage"></div>
@@ -3031,41 +3036,47 @@ function renderBoss(): void {
     </footer>
   `;
 
-  // 🔒 Permintaan user: pop up konfirmasi "Lanjut"/"Keluar" sebelum keluar
-  // Markas Raja, SAMA PERSIS pola `renderGamePlay()` (Game Hub) — Arena ini
-  // TIDAK PUNYA layar Map/list terpisah (soal pertama SUDAH langsung tampil
-  // begitu halaman dibuka), jadi ikut konvensi "game TANPA layar Map"
-  // (Kelompok/Story Quest, CLAUDE.md § Pop Up Konfirmasi Keluar Game) — flag
-  // di-set `true` di sini & TIDAK PERNAH di-`false`-kan lagi selama ronde
-  // berjalan, popup SELALU tampil selama masih mengerjakan.
-  setGameRoundActive(true);
+  // 🔒 Pop up keluar HANYA saat sedang mengerjakan soal (CLAUDE.md § Pop Up
+  // Konfirmasi Keluar) — `games/boss.ts` set flag `true` di layar soal
+  // (dgn jalan pulang = daftar babak), `false` di Arena/hasil. "Keluar" dari
+  // soal = balik ke daftar babak (kemajuan tersimpan), dari Arena = Peta Level.
+  setGameRoundActive(false);
   setHandlers({
     exitBoss: () => {
       if (!isGameRoundActive()) {
         go('home');
         return;
       }
+      const toHub = getGameMapReturn();
       placementGame.renderExitConfirm(
         () => {
           /* "Yuk Lanjut" — overlay sudah menutup dirinya sendiri */
         },
-        () => go('home')
+        () => {
+          stopSpeaking();
+          if (toHub) toHub();
+          else go('home');
+        }
       );
     },
   });
 
   bossGame.runBoss(
     qs<HTMLDivElement>(root, '#stage'),
-    (result) => {
-      // Sudah menang — tidak ada progres lagi yang bisa hilang, matikan flag
-      // (pola sama `renderMissionComplete()`) supaya tombol kembali di layar
-      // menang TIDAK perlu konfirmasi lagi.
-      setGameRoundActive(false);
-      markBossCleared(levelKey);
-      paintLevelChips(); // naik level → header/rail langsung ikut
-      addXp(XP_BOSS);
-      requestSync();
-      renderBossWin(levelKey, result);
+    {
+      onWin: (result) => {
+        setGameRoundActive(false);
+        markBossCleared(levelKey);
+        paintLevelChips(); // naik level → header/rail langsung ikut
+        addXp(XP_BOSS);
+        requestSync();
+        renderBossWin(levelKey, result);
+      },
+      onPractice: (skill, topicId) => {
+        const idx = topicsForSkill(skill, levelKey).findIndex((t) => t.id === topicId);
+        if (idx < 0) return;
+        go('activity', { skillKey: skill, topicIndex: idx, step: 1, viewLevel: levelKey });
+      },
     },
     levelKey
   );
@@ -3098,27 +3109,15 @@ function renderBossWin(levelKey: LevelKey, result: bossGame.BossResult): void {
         }</p>`
       : '';
 
-  // 🔒 Redesain "test per level" (`materi/test_perlevel.md` §5/§6) — skor per
-  // skill (percobaan PERTAMA tiap ronde, `games/boss.ts`) dilaporkan sbg 1–5
-  // bintang, REUSE `skillStarsHtml`/`.stat-list` yang sama dgn Rapor (bukan
-  // komponen baru). HANYA utk `PILOT_LEVELS` (skrg cuma Little Stars,
-  // permintaan user "coba terapkan dulu di bos little star") — level lain
-  // TIDAK menampilkan kartu ini sama sekali (persis layar menang LAMA), biar
-  // levelnya tetap 1:1 perilaku sebelum redesain sampai pilot ini divalidasi.
-  // Skill dgn `total===0` (mis. Speaking di browser tanpa STT) disembunyikan,
-  // BUKAN ditampilkan kosong/0 bintang — konsisten pola kartu insight Rapor
-  // yang jg disembunyikan total kalau sinyalnya belum cukup. Skor ini MURNI
-  // pelaporan — TIDAK PERNAH menggerbangi kemenangan.
-  const scoreRows = bossGame.isPilotLevel(levelKey)
-    ? (['vocabulary', 'listening', 'reading', 'grammar', 'speaking'] as SkillKey[])
-        .map((key) => {
-          const s = result[key];
-          if (s.total <= 0) return '';
-          const pct = Math.round((s.correct / s.total) * 100);
-          return `<li><span class="stat-list-ic" aria-hidden="true">${SKILL_META[key].emoji}</span><span class="stat-list-label">${SKILL_META[key].label}</span><span class="stat-list-value">${skillStarsHtml(pct)}</span></li>`;
-        })
-        .join('')
-    : '';
+  // Skor terbaik tiap babak (1–5 bintang, pola shields Cambridge YLE).
+  const scoreRows = (['vocabulary', 'listening', 'reading', 'grammar', 'speaking'] as SkillKey[])
+    .map((key) => {
+      const pct = result[key];
+      if (pct === null) return '';
+      return `<li><span class="stat-list-ic" aria-hidden="true">${SKILL_META[key].emoji}</span><span class="stat-list-label">${SKILL_META[key].label}${key === 'speaking' ? ' (bonus)' : ''}</span><span class="stat-list-value">${skillStarsHtml(pct)}</span></li>`;
+    })
+    .join('');
+  const gold = (['vocabulary', 'listening', 'reading', 'grammar'] as SkillKey[]).every((k) => (result[k] ?? 0) >= 95);
   const scoreCard = scoreRows ? `<div class="card"><span class="eyebrow">🌟 Hasil Petualanganmu</span><ul class="stat-list">${scoreRows}</ul></div>` : '';
 
   stage.innerHTML = `
@@ -3126,8 +3125,9 @@ function renderBossWin(levelKey: LevelKey, result: bossGame.BossResult): void {
       <div class="boss-burst" aria-hidden="true"><span>⭐</span><span>✨</span><span>⭐</span><span>🎉</span><span>✨</span><span>🎊</span><span>⭐</span><span>🎉</span><span>✨</span></div>
       <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">${BOSS_AVATAR[levelKey]}</span><span class="crown">👑</span></div>
       <div class="stars stars-pop" aria-hidden="true">⭐⭐⭐</div>
-      <h2 class="win-banner">${BOSS_NAME[levelKey]} Ditaklukkan!</h2>
-      <p class="done-sub">Kamu menang lawan ${BOSS_NAME[levelKey]}. <b>+${XP_BOSS} XP</b> ⚡</p>
+      <h2 class="win-banner">${BOSS_NAME[levelKey]} Ditaklukkan!${gold ? ' Kamu Hebat!' : ''}</h2>
+      ${gold ? '<p class="done-sub"><span class="tag ok">🌟 Lencana Emas — hampir semua soal tepat!</span></p>' : ''}
+      <p class="done-sub">Semua babak utama lolos. <b>+${XP_BOSS} XP</b> ⚡</p>
       ${wonLine}
       ${nextLine}
       ${scoreCard}

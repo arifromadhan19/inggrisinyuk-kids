@@ -3175,3 +3175,120 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 
 /* Achiever/Trailblazer: ajakan buka Petunjuk sesudah jawaban belum tepat. */
 .feedback .fb-hint-nudge{ display:block; margin-top:4px; font-size:.9375rem; font-weight:700; color:var(--sun-600); }
+
+/* Sound Hunt (games/soundhunt.ts) — label jenis soal per markas, kartu
+   gambar tanpa tulisan, & nomor urutan di markas Jago ("Tap the X, then tap
+   the Y"): kartu yang sudah ditap benar diberi lencana 1. */
+.sh-badge{ text-align:center; font-family:var(--font-head); font-weight:800; color:var(--ink-2); margin:var(--s3) 0 0; }
+.opt-btn.sh-card{ position:relative; }
+.opt-btn.sh-card .answer-card-bottom{ justify-content:center; }
+.opt-btn.sh-picked{ border-color:var(--ok); background:var(--ok-bg); }
+.sh-order{ position:absolute; top:8px; left:8px; width:26px; height:26px; border-radius:50%; background:var(--ok); color:#fff; display:grid; place-items:center; font-weight:800; font-size:.875rem; }
+
+/* ------------------------------------------------------------------------
+   🏰 Tantangan Raja — tes akhir level (`materi/test_level.md`,
+   `games/boss.ts`). Arena = daftar 5 babak (1 kolom di semua lebar: 5 item
+   di grid 2/3 kolom selalu menyisakan baris timpang), soal ber-bullet
+   progress, layar hasil per babak.
+   ------------------------------------------------------------------------ */
+.boss-hub{ display:flex; flex-direction:column; gap:12px; max-width:640px; margin:0 auto; }
+.boss-target{
+  display:flex; align-items:center; gap:12px; padding:12px 14px;
+  background:var(--sun-100); border:2px solid var(--sun-300); border-radius:var(--r-md);
+}
+.boss-target .boss-target-ic{ font-size:34px; line-height:1; flex:none; }
+.boss-target b{ display:block; font-family:var(--font-head); font-size:var(--fs-h3); color:var(--ink); }
+.boss-target span{ font-size:var(--fs-meta); color:var(--sun-600); font-weight:700; }
+.boss-hub-dots{ display:flex; justify-content:center; gap:10px; }
+.boss-hub-dots span{
+  width:40px; height:40px; border-radius:50%; display:grid; place-items:center; font-size:20px;
+  background:var(--surface); box-shadow:inset 0 0 0 2px var(--line); color:var(--ok); font-weight:800;
+}
+.boss-hub-dots span.done{ background:var(--ok-bg); box-shadow:inset 0 0 0 2px var(--ok); }
+.boss-skill-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+.boss-skill-row{
+  width:100%; display:flex; align-items:center; gap:12px; padding:12px 14px; text-align:left;
+  background:var(--surface); border:2px solid var(--line); border-radius:var(--r-md);
+  font-family:inherit; cursor:pointer; box-shadow:var(--sh-1); transition:transform .12s ease, border-color .15s ease;
+}
+.boss-skill-row:active{ transform:scale(.98); }
+.boss-skill-row:hover{ border-color:var(--brand-300); }
+.boss-skill-ic{
+  width:48px; height:48px; flex:none; border-radius:50%; display:grid; place-items:center; font-size:26px;
+  background:radial-gradient(circle at 35% 30%, #fff, var(--brand-100));
+}
+.boss-skill-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.boss-skill-txt b{ font-family:var(--font-head); font-size:var(--fs-h3); color:var(--ink); }
+.boss-skill-status{ font-size:var(--fs-meta); color:var(--ink-2); font-weight:600; }
+.boss-skill-bar{ display:block; height:6px; border-radius:var(--r-pill); background:var(--muted); overflow:hidden; margin-top:3px; }
+.boss-skill-bar span{ display:block; height:100%; background:var(--brand-500); border-radius:inherit; }
+.boss-skill-end{ flex:none; text-align:right; }
+.boss-skill-go{ font-family:var(--font-head); font-weight:800; color:var(--brand-700); font-size:.9375rem; white-space:nowrap; }
+.boss-skill.is-passed .boss-skill-row{ background:var(--ok-bg); border-color:var(--ok); }
+.boss-skill.is-passed .boss-skill-ic{ background:radial-gradient(circle at 35% 30%, #fff, #BFE7CD); }
+.boss-skill.is-progress .boss-skill-row{ border-color:var(--brand-500); box-shadow:0 0 0 3px var(--brand-100); }
+.boss-skill.is-retry .boss-skill-row{ background:var(--sun-100); border-color:var(--sun-400); }
+.boss-skill.is-retry .boss-skill-go{ color:var(--sun-600); }
+.boss-stars{ font-size:15px; letter-spacing:1px; white-space:nowrap; }
+.boss-mission{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:8px 2px 0; font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; }
+.boss-mission-chip{
+  border:2px solid var(--sun-400); background:var(--surface); color:var(--sun-600); border-radius:var(--r-pill);
+  padding:5px 12px; font-family:var(--font-head); font-weight:800; font-size:.8125rem; cursor:pointer;
+}
+.boss-mission-chip:hover{ background:var(--sun-100); }
+.done-wrap .boss-mission{ justify-content:center; margin:6px 0; }
+.boss-hub-note{ text-align:center; margin:0; }
+.boss-hub > .ghost-btn{ align-self:center; }
+.boss-hub > .primary-btn{ margin-top:0; }
+
+.boss-q-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.boss-back-pill{
+  border:2px solid var(--line); background:var(--surface); color:var(--brand-700); border-radius:var(--r-pill);
+  padding:6px 14px; font-family:var(--font-head); font-weight:800; font-size:.875rem; cursor:pointer;
+}
+.boss-back-pill:hover{ border-color:var(--brand-300); }
+.boss-skill-tag{
+  background:var(--sun-100); color:var(--sun-600); border-radius:var(--r-pill); padding:6px 12px;
+  font-family:var(--font-head); font-weight:800; font-size:.875rem; white-space:nowrap;
+}
+/* Layar soal: banner Arena disembunyikan (soal & pilihan muat 1 layar HP). */
+.boss-playing .boss-arena{ display:none; }
+.boss-playing .boss-arena + .boss-stage{ border-top-left-radius:var(--r-lg); border-top-right-radius:var(--r-lg); border-top-color:#F3DDA8; }
+.quiz-dots.dense{ gap:6px; }
+.quiz-dots.dense .quiz-dot{ width:26px; height:26px; font-size:.75rem; }
+.boss-list{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.opt-btn.boss-list-opt{
+  display:flex; align-items:center; gap:12px; text-align:left; padding:12px 14px;
+  font-size:clamp(1rem, .95rem + .3vw, 1.125rem); line-height:1.3; font-family:var(--font-body); font-weight:700;
+}
+.boss-letter{
+  width:30px; height:30px; flex:none; border-radius:50%; display:grid; place-items:center;
+  background:var(--brand-100); color:var(--brand-700); font-family:var(--font-head); font-weight:800; font-size:.875rem;
+}
+.boss-tf{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+.boss-tf .opt-btn{ font-size:clamp(1.125rem, 1rem + .6vw, 1.375rem); font-family:var(--font-head); font-weight:800; padding:18px 10px; }
+.opt-btn.reveal{ border-color:var(--ok); box-shadow:inset 0 0 0 2px var(--ok); background:var(--ok-bg); }
+.opt-btn:disabled{ cursor:default; }
+.boss-answer{ display:inline-block; margin-top:4px; font-size:var(--fs-meta); color:var(--ink-2); }
+.boss-pic{ text-align:center; font-size:clamp(56px, 16vw, 84px); line-height:1.1; margin:6px 0; }
+.boss-bonus-note{ text-align:center; margin:6px 0 0; }
+.boss-mic-stars{ font-size:22px; letter-spacing:3px; text-align:center; margin-top:8px; }
+.boss-result-stars{ font-size:26px; letter-spacing:2px; text-align:center; margin:6px 0; }
+.boss-result-stars .boss-stars{ font-size:inherit; }
+.boss-result-actions{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:420px; margin:14px auto 0; }
+.boss-result-actions .primary-btn, .boss-result-actions .ghost-btn{ margin-top:0; width:100%; }
+.round-actions.single .primary-btn{ flex:1; }
+@media (min-width: 900px){
+  .boss-skill-row{ padding:14px 18px; }
+  .boss-list{ display:grid; grid-template-columns:1fr 1fr; }
+  .boss-list:has(> :nth-child(5)), .boss-list:has(> :nth-child(3):last-child){ grid-template-columns:1fr; }
+}
+
+/* Story Quest (games/storyquest.ts) — 💡 Petunjuk menyorot kalimat bukti
+   (bukan menyebut "kalimat ke-2"), & jawaban berupa kalimat (markas Sedang
+   ke atas) tampil sbg daftar 1 kolom: teks di kiri, lencana huruf di kanan. */
+.story-line.is-evidence{ background:color-mix(in srgb, var(--sun-500) 22%, transparent); border-radius:8px; padding:2px 6px; }
+.opt-grid.sq-list{ grid-template-columns:1fr; max-width:560px; margin-inline:auto; }
+.opt-grid.sq-list .opt-btn.answer-card{ padding:14px 16px; }
+.opt-grid.sq-list .answer-card-bottom{ width:100%; justify-content:space-between; }
+.opt-grid.sq-list .answer-card-label{ text-align:left; }

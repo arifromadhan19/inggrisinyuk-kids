@@ -1,5 +1,7 @@
 # Materi Test per Level ("Tantangan Raja" / `/bos?level=`) — Audit, Riset, & Redesain
 
+> ⚠️ **DIGANTIKAN [test_level.md](test_level.md) (2026-09-29)** — jumlah soal, aturan naik level (≥ 80% per babak), bentuk soal & tampilan sekarang mengikuti dokumen itu. Dokumen ini riwayat.
+
 Permintaan user: audit fitur test per level yang sudah ada (`/bos?level=little-stars`), riset bagaimana lembaga bahasa (Cambridge, LIA, EF, dll — target market anak Indonesia) mendesain jumlah soal & waktu tes per level, lalu **"buat test yang comprehensive, sesuai, terukur, mencerminkan kemampuan anak, sesuai secara soal, materi dan waktu"**.
 
 ## 0. Apa "Test per Level" di App Ini

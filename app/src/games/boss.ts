@@ -1,844 +1,625 @@
 /**
- * Tantangan Bos — dipinjam konsepnya dari "Duel Pembisu"/"Duel Verifikasi" di
- * `inggrisinyuk` (dewasa, project terpisah), tapi diadaptasi berat, BUKAN
- * diporting:
- *  - Di sana bos = pertarungan dialog AI sungguhan yang memanggil LLM
- *    (berbayar). Di sini bos 100% hardcoded & client-side — sesuai PRD §5
- *    (tanpa backend/AI di v1) — cuma mashup lebih besar dari mini-game yang
- *    sudah ada (Tebak & Cocokkan, Dengar & Pilih, Susun Kalimat, Ucapkan &
- *    Cek), dicampur dari lebih dari satu skill sekaligus & ditarik dari
- *    SEMUA topik level ini (bukan cuma 1 topik) supaya terasa lebih besar.
- *  - Di sana kalah = uang hangus, harus beli ulang. Di sini TIDAK ADA status
- *    kalah sama sekali — setiap ronde tetap pola "coba sampai benar, retry
- *    tanpa batas" yang sudah dipakai di seluruh app (non-punitive, PRD
- *    §4.5/§4.6/§11.2 RESEARCH). "Menang" = semua ronde tuntas dicoba, sama
- *    seperti aturan selesai modul biasa, cuma bentuknya lebih besar & seru
- *    (framing "bos" ala Mario/Pokémon gym-leader — bukan tegang/menakutkan).
+ * Tantangan Raja — tes akhir level (`materi/test_level.md`, keputusan user
+ * 2026-09-29, menggantikan desain "selalu menang" `test_perlevel.md`).
  *
- * 🔒 Redesain "Test per Level" (permintaan user, riset & rasional lengkap:
- * `materi/test_perlevel.md`) — audit menemukan versi lama JAUH dari
- * comprehensive: cuma 4 dari 5 skill (Reading bolong total), 2 soal/skill
- * TETAP di semua 6 level (Little Stars 3 th & Trailblazer 13+ th disamakan),
- * dan tidak ada skor yang benar² diukur (selalu menang, tidak ada laporan
- * hasil). Redesain: (1) tambah babak Reading (5 skill lengkap, adapter
- * `toReadingBossItems` menormalkan 3 format Reading yang hidup berdampingan
- * — lihat `AnyReadingTopic`, types.ts), (2) jumlah soal/skill naik seiring
- * usia (`ROUNDS_PER_SKILL`, riset Cambridge YLE/LIA/EF/Kumon SEMUA menaikkan
- * cakupan tes per level, bukan angka tetap), (3) skor per skill dihitung
- * dari percobaan PERTAMA tiap ronde (`BossResult`, dilaporkan sbg 1–5
- * bintang di `app.ts` `renderBossWin`, pola sama `skillStarsHtml` Rapor &
- * "Shields" Cambridge YLE). TETAP TANPA timer & TANPA status kalah — retry
- * tak terbatas & "menang = semua ronde dicoba" TIDAK berubah (PRD §4.6),
- * skor MURNI pelaporan tambahan, tidak pernah jadi gerbang blokir naik
- * level.
+ * 🔒 Aturan naik level (Opsi A): anak naik level HANYA kalau ke-4 babak
+ * objektif (Vocabulary, Listening, Reading, Grammar) masing-masing ≥ 80%
+ * benar (`passNeed`). Speaking = babak bonus, skornya dilaporkan saja
+ * (ASR anak belum andal). Tidak ada syarat materi/kehadiran.
  *
- * 🔒 PILOT — permintaan user "coba terapkan dulu di bos little star":
- * redesain di atas HANYA aktif utk `PILOT_LEVELS` (skrg cuma `little-stars`)
- * — 5 level lain TETAP persis perilaku LAMA (4 babak tanpa Reading, 2
- * soal/skill, tanpa kartu skor/estimasi waktu di `app.ts`), lewat cabang
- * `isPilotLevel()` di `runBoss` & `renderBoss` (app.ts). Kalau nanti mau
- * digenapkan ke level lain, TINGGAL tambah key-nya ke `PILOT_LEVELS` — tidak
- * ada kode lain yang perlu disentuh (pola sama preseden pilot lain di repo
- * ini, mis. Vocab `sortBaskets`/Speaking `SpeakingStoryTopic`).
+ * Alur:
+ *  - **Arena** (`renderHub`) — 5 babak, dikerjakan satu-satu (tes panjang
+ *    di level atas dipecah per skill, kemajuan tersimpan di `Store.bossTests`
+ *    sehingga boleh berhenti & lanjut nanti). Babak yang sudah lolos tidak
+ *    perlu diulang.
+ *  - **Soal** (`drawQuestion`) — bullet progress bisa diklik, 1 tap = jawaban
+ *    (skor = percobaan pertama). Benar → pujian + nada + confetti; belum
+ *    tepat → merah + getar + "tetot" + jawabannya ditunjukkan. Tanpa timer.
+ *  - **Zona batas** — kurang TEPAT 1 dari syarat → 3 soal bonus; benar semua
+ *    = lolos (peringatan Cambridge: skor pas di batas perlu dicek ulang).
+ *  - **Hasil babak** (`renderResult`) — lolos ✅ / "Belum lolos, gapapa!" +
+ *    misi latihan (topik yang paling banyak meleset) + coba lagi dgn soal
+ *    baru. Tidak ada status "gagal", tidak pernah turun level.
+ *  - Semua babak objektif lolos → `onWin` (app.ts `markBossCleared`).
  *
- * 🔒 Navigasi bebas antar skill (permintaan user: "test ini per materi...
- * button vocab/listening/dst bisa diklik jadi user bisa mengerjakan yang
- * dia inginkan") — SEBELUMNYA gauntlet linear kaku (Vocab→Listening→
- * Reading→Grammar→Speaking, tidak bisa lompat). Sekarang `SKILL_DEFS` +
- * `cursor` (posisi ronde TERAKHIR dikunjungi per skill) bikin urutan cuma
- * DEFAULT, bukan wajib — 5 (atau 4) pill `skillPillsHtml()` di atas tiap
- * ronde SEMUANYA bisa ditap kapan saja (`jumpTo()`), pill yang SEDANG
- * dikerjakan warna pekat/solid (`.boss-phase.active`), yang SUDAH tuntas
- * semua rondenya kehijauan+centang (`.boss-phase.done`) — permintaan user
- * "warnanya dibuat pekat/dibedakan". Nge-tap skill yang SUDAH tuntas
- * me-reset skill itu (retry penuh, non-punitive, "boleh diulang" — copy
- * Arena TIDAK berubah) drpd jadi no-op aneh. `continueOrFinish()` gantikan
- * pemanggilan langsung "skill berikutnya" tiap 1 skill kelar — otomatis
- * lanjut ke skill BELUM TUNTAS pertama dalam urutan default (tetap zippy,
- * tidak perlu anak pilih manual tiap kali), finish() dipanggil begitu
- * SEMUA skill (bukan cuma yang terakhir dlm urutan lama) sudah tuntas.
+ * Soal dibangun `boss-bank.ts` (bentuk Tantangan per tier, merata per topik,
+ * menghindari soal percobaan sebelumnya). Jawaban tes TIDAK masuk akurasi
+ * global Rapor (`recordAttempt` tidak dipanggil) — ringkasan per babak
+ * dikirim sbg event `boss_skill`.
  */
-import { readingPicHtml } from '../reading-pic';
-import {
-  GRAMMAR_TOPICS_BY_LEVEL,
-  LISTENING_TOPICS_BY_LEVEL,
-  READING_TOPICS_BY_LEVEL,
-  SPEAKING_TOPICS_BY_LEVEL,
-  VOCAB_TOPICS_BY_LEVEL,
-} from '../content';
-import { setHandlers } from '../interaction';
-import { recordAttempt, recordEvent } from '../progress';
+import { GRAMMAR_TOPICS_BY_LEVEL, LISTENING_TOPICS_BY_LEVEL, READING_TOPICS_BY_LEVEL, SPEAKING_TOPICS_BY_LEVEL, VOCAB_TOPICS_BY_LEVEL } from '../content';
+import { readingPicHtml as picHtml } from '../reading-pic';
+import { setGameRoundActive, setHandlers } from '../interaction';
+import { getBossTest, isBossCleared, recordEvent, requestSync, saveBossTest, type BossLevelTest, type BossSkillRun } from '../progress';
 import {
   listenAndRecordOnce,
   playCorrectTone,
+  playRecording,
   playTryAgainTone,
   playWrongTone,
-  speak,
+  speakLater,
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
-  playRecording,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
-import type { AnyReadingTopic, LevelKey, SkillKey } from '../types';
-import { shuffle } from '../util';
+import type { LevelKey, SkillKey } from '../types';
+import { escapeHtml } from '../util';
+import {
+  ALL_SKILLS,
+  baseOf,
+  buildQuestion,
+  EXTRA_COUNT,
+  minutesFor,
+  OBJECTIVE_SKILLS,
+  passNeed,
+  pickIds,
+  questionCount,
+  type BossChoiceQ,
+  type BossQ,
+  type BossSpeakQ,
+} from './boss-bank';
 
-/** Materi Bos ikut level yang ditantang (permintaan user: Adventurer
- *  sekarang punya materi sendiri, dulu Bos SELALU nyoal dari Explorer
- *  apa pun levelnya) — jatuh ke Explorer kalau skill tertentu di level itu
- *  belum ada topiknya sama sekali, konsisten dgn "Bos level terkunci
- *  pertama tetap bisa dicoba pakai materi yang ada" (app.ts `renderLevels`). */
-function poolFor<T>(byLevel: Partial<Record<LevelKey, T[]>>, level: LevelKey): T[] {
-  const own = byLevel[level];
-  return own && own.length > 0 ? own : (byLevel.explorer ?? []);
+/** Skor terbaik per babak (0–100, null = belum pernah selesai). */
+export type BossResult = Record<SkillKey, number | null>;
+
+export interface BossCallbacks {
+  onWin: (result: BossResult) => void;
+  /** Tap misi latihan → buka Latihan Inti topik itu. */
+  onPractice: (skill: SkillKey, topicId: string) => void;
 }
 
-/** Jumlah soal per SKILL, naik seiring usia/level (riset `materi/
- *  test_perlevel.md` §3/§5 — Cambridge YLE/LIA/EF/Kumon semua menaikkan
- *  cakupan tes per level, bukan angka tetap) — beda dari `ROUNDS_PER_PHASE`
- *  lama yang SELALU 2 di semua 6 level.
- *
- * 🔒 `little-stars` 3→5 (permintaan user "apakah cukup 3 soal... apakah
- * tidak 5 saja", `materi/test_perlevel.md` §8) — ALASAN UTAMA bukan cuma
- * "lebih banyak lebih baik", tapi bug matematis konkret: skor 1-5 bintang
- * (`skillStarsHtml`, `app.ts`) dihitung `round(pct/20)` — dengan N=3 soal,
- * satu²nya persentase yang mungkin (0/33/67/100%) MEMBULAT ke 0/2/3/5
- * bintang — bintang 1 & 4 TIDAK PERNAH bisa muncul sama sekali (dicek via
- * skrip, N mana pun yang BUKAN kelipatan 5 py celah serupa; N=5 memetakan
- * bersih ke keenam nilai 0-5). `starter`/`explorer`/`adventurer` (3/4/4)
- * py cacat SAMA — SEKARANG DIKOREKSI JUGA (permintaan user "terapkan yang
- * belum diterapkan") jadi 5, SAMA PERSIS `little-stars`/`achiever`/
- * `trailblazer` — ketiganya BELUM `PILOT_LEVELS` jadi tidak ada anak
- * sungguhan yang terdampak, aman diubah kapan saja.
- *
- * 🔒 Efek samping YANG DISADARI (bukan bug): progresi "naik seiring usia"
- * yang jadi tema utama redesain ini (§3/§5, meniru Cambridge YLE/dst
- * menaikkan cakupan per level) jadi RATA di 5 utk KEENAM level, krn
- * kendala matematis di atas MEMAKSA tiap level pakai kelipatan 5, dan
- * kelipatan 5 PALING KECIL yang cocok utk semua umur (3-5 th s.d. 12+ th)
- * ya 5 itu sendiri — melompat ke 10 utk sebagian level akan melanggar
- * urutan monoton (level lebih tua HARUS ≥ level lebih muda) tanpa jg
- * menaikkan `achiever`/`trailblazer` yang TIDAK diminta disentuh sesi ini.
- * Diferensiasi usia yang lebih halus (mis. 5/5/5/10/10/10) adalah
- * keputusan produk TERPISAH yang sengaja TIDAK diambil sepihak di sini —
- * tanya user dulu kalau mau progresi berjenjang lagi nanti. */
-const ROUNDS_PER_SKILL: Record<LevelKey, number> = {
-  'little-stars': 5,
-  starter: 5,
-  explorer: 5,
-  adventurer: 5,
-  achiever: 5,
-  trailblazer: 5,
+const SKILL_UI: Record<SkillKey, { label: string; emoji: string }> = {
+  vocabulary: { label: 'Vocabulary', emoji: '📚' },
+  listening: { label: 'Listening', emoji: '🎧' },
+  reading: { label: 'Reading', emoji: '📖' },
+  grammar: { label: 'Grammar', emoji: '✏️' },
+  speaking: { label: 'Speaking', emoji: '🗣️' },
 };
 
-/** Jumlah ronde/skill LAMA (versi pra-redesain) — dipertahankan apa adanya
- *  utk level di luar `PILOT_LEVELS`. */
-const LEGACY_ROUNDS_PER_PHASE = 2;
+const LETTERS = 'ABCDE';
 
-/** Level yang SUDAH pakai redesain "test per level" (5 skill, skor
- *  terukur) — lihat catatan PILOT di komentar atas file. Tambah key di sini
- *  kalau mau menggenapkan ke level lain.
- *
- * 🔒 `explorer` ditambahkan (permintaan user: "untuk test materi reading,
- * mirip vocab cuma user baca... apakah baiknya buat statement dan ada
- * pertanyaan?") — Little Stars TETAP kata tunggal (SENGAJA, riset usia 3-5
- * th belum siap kalimat, `materi/reading.md`), TAPI materi Reading Explorer
- * (sekarang format "Baca Teks", `toReadingBossItems` bawah)
- * SUDAH berbentuk 1 kalimat (statement) + judge Benar/Salah — genapkan
- * Explorer ke pilot ini supaya "statement + pertanyaan" kelihatan hidup di
- * test. (Catatan 2026-09-25: Reading kini format "Baca Teks" di semua level
- * — adapter `toReadingBossItems` di bawah.) */
-const PILOT_LEVELS: LevelKey[] = ['little-stars', 'explorer'];
-
-export function isPilotLevel(level: LevelKey): boolean {
-  return PILOT_LEVELS.includes(level);
-}
-
-export function roundsPerSkillFor(level: LevelKey): number {
-  return isPilotLevel(level) ? ROUNDS_PER_SKILL[level] : LEGACY_ROUNDS_PER_PHASE;
-}
-
-/** Estimasi durasi — MURNI informasi ditampilkan sebelum mulai (`app.ts`
- *  `renderBoss`), BUKAN timer/hitung mundur (PRD §4.6 tidak berubah).
- *  🔒 `little-stars`/`starter`/`explorer`/`adventurer` disesuaikan ikut
- *  kenaikan soal/skill di atas — pacing PER-RONDE dipertahankan SAMA
- *  persis dgn sebelum revisi (cuma jumlah rondenya naik ke 25), jadi
- *  rentang menit brubah proporsional: `little-stars` ~24–36 detik/ronde
- *  (riset attention-span preschool 3–5 th §8: 10–15 menit MASIH masuk
- *  rentang "didukung" 8–15 menit, bukan "independen" 3–6 menit — app ini
- *  py TTS+dorongan+animasi terus-menerus, bukan lembar kerja senyap);
- *  `starter` ~28–40 detik/ronde; `explorer` ~30–39 detik/ronde;
- *  `adventurer` ~33–42 detik/ronde (usia lebih tua, rentang perhatian
- *  lebih panjang, §3.6, jadi tetap wajar walau totalnya sama 25 ronde).
- *  Detail & sumber: `materi/test_perlevel.md` §8. */
-const EST_MINUTES: Record<LevelKey, [number, number]> = {
-  'little-stars': [10, 15],
-  starter: [12, 17],
-  explorer: [13, 16],
-  adventurer: [14, 18],
-  achiever: [14, 18],
-  trailblazer: [15, 19],
-};
-
+/** Total perkiraan menit semua babak (info Arena, bukan timer). */
 export function estimatedMinutesFor(level: LevelKey): [number, number] {
-  return EST_MINUTES[level];
+  return ALL_SKILLS.reduce<[number, number]>((acc, s) => {
+    const [a, b] = minutesFor(level, s);
+    return [acc[0] + a, acc[1] + b];
+  }, [0, 0]);
 }
 
-/** 🔒 Permintaan user: "tambahkan bullet progress dan tambahkan percentage
- *  biar user tau berapa lagi yang perlu di kerjakan" — dots READ-ONLY (bukan
- *  quiz-dot jump-around, boss ini linear/tidak bisa lompat ronde), REUSE
- *  PERSIS class `.quiz-dot.static`/`.quiz-nav`/`.quiz-dots` yang sudah ada
- *  (pola sama `games/storyquest.ts` `dotsHtml()`) — 1 dot per ronde DALAM
- *  skill yang sedang jalan (bukan seluruh boss run, supaya tidak kepadatan
- *  dots kalau totalnya besar). Persentase di `progressLine` (dideklarasikan
- *  di `runBoss`, butuh akses `cursor`) cakup progres KESELURUHAN gauntlet
- *  (lintas 5/4 babak). */
-function skillDotsHtml(skillIdx: number, skillTotal: number): string {
-  const dots = Array.from({ length: skillTotal }, (_, i) => {
-    const cls = i < skillIdx ? 'done' : i === skillIdx ? 'current' : '';
-    return `<span class="quiz-dot static ${cls}" aria-hidden="true">${i < skillIdx ? '✓' : i + 1}</span>`;
-  }).join('');
-  return `<div class="quiz-nav"><div class="quiz-dots">${dots}</div></div>`;
+function starsHtml(pct: number): string {
+  const n = Math.max(0, Math.min(5, Math.round(pct / 20)));
+  return `<span class="boss-stars" aria-label="${n} dari 5 bintang">${'⭐'.repeat(n)}${'☆'.repeat(5 - n)}</span>`;
 }
 
-/** Skor per skill, dihitung dari percobaan PERTAMA tiap ronde (bukan
- *  "menang setelah retry tak terbatas") — retry tetap bebas dipakai anak
- *  utk belajar (poin 2/3 `materi/test_perlevel.md` §4), cuma tidak menambah
- *  skor yang dilaporkan. Dilaporkan sbg 1–5 bintang di `app.ts`
- *  `renderBossWin` (`skillStarsHtml`, pola sama Rapor). */
-export interface BossSkillScore {
-  correct: number;
-  total: number;
-}
-export type BossResult = Record<SkillKey, BossSkillScore>;
-
-function emptyResult(): BossResult {
-  return {
-    vocabulary: { correct: 0, total: 0 },
-    listening: { correct: 0, total: 0 },
-    reading: { correct: 0, total: 0 },
-    grammar: { correct: 0, total: 0 },
-    speaking: { correct: 0, total: 0 },
+function topicTitle(level: LevelKey, skill: SkillKey, topicId: string): string {
+  const pools: Record<SkillKey, { id: string; title: string }[]> = {
+    vocabulary: VOCAB_TOPICS_BY_LEVEL[level] ?? [],
+    listening: LISTENING_TOPICS_BY_LEVEL[level] ?? [],
+    reading: READING_TOPICS_BY_LEVEL[level] ?? [],
+    grammar: GRAMMAR_TOPICS_BY_LEVEL[level] ?? [],
+    speaking: SPEAKING_TOPICS_BY_LEVEL[level] ?? [],
   };
+  const t = pools[skill].find((x) => x.id === topicId);
+  // Judul "Indonesia (English)" — cukup bagian Indonesia di chip misi.
+  return t ? t.title.replace(/\s*\(.*\)\s*$/, '') : topicId;
 }
 
-/** 🔒 Permintaan user: "audit dan pastikan icon nya relevan dengan jawaban"
- *  — audit menemukan `runVocabPhase`/`runListenPhase` di bawah menampilkan
- *  emoji opsi jawaban APA ADANYA (ambil dari SELURUH topik level, target
- *  Vocab bisa jatuh ke topik `kenal-warna`/`angka-pertama` Little Stars)
- *  TANPA lewat deteksi `isColorTopic`/`isNumberTopic`/dst yang sudah ada di
- *  `games/vocabulary.ts` — celah PERSIS yang sudah diperbaiki di sana
- *  (CLAUDE.md "Soal Tidak Boleh Bisa Ditebak Tanpa Paham": swatch warna
- *  🔴 utk "Red"/digit 2️⃣ utk "Two" bikin anak bisa cocokkan tanpa paham kata
- *  Inggrisnya SAMA SEKALI) — reinject ulang krn boss.ts py adapter sendiri,
- *  tidak lewat `answerCardsHtml` yang sudah dibentengi. Daftar kata SAMA
- *  PERSIS 4 kategori `vocabulary.ts` (`NUMBER_WORDS`/`COLOR_WORDS`/
- *  `SHAPE_WORDS`/`DAY_WORDS`), diduplikasi ke sini (konvensi helper generik
- *  per file game). 🔒 TIDAK diterapkan ke `toReadingBossItems` (soal gambar
- *  "Baca Teks") — beda kasus: game Reading ASLI-nya SENGAJA
- *  TIDAK menyaring kategori ini, krn tugasnya "baca kata TERCETAK (tanpa
- *  audio wajib) → tunjuk gambar", bukan "dengar kata → tunjuk gambar" —
- *  tidak ada jalur dengar-lalu-cocok-warna/angka yang bisa dilewati tanpa
- *  benar² membaca, jadi bukan celah yang sama.
- */
-const LEAKY_EMOJI_WORDS = new Set(
-  [
-    // NUMBER_WORDS
-    'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
-    'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty',
-    // COLOR_WORDS
-    'red', 'blue', 'yellow', 'green', 'orange', 'purple', 'pink', 'black', 'white', 'brown', 'gray', 'grey',
-    // SHAPE_WORDS
-    'circle', 'square', 'triangle', 'star', 'heart', 'diamond', 'oval', 'cross', 'arrow', 'moon', 'crescent',
-    // DAY_WORDS
-    'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'today', 'tomorrow', 'yesterday',
-  ]
-);
+const topicOf = (id: string): string => id.split('~')[1] ?? '';
 
-function isLeakyEmojiWord(en: string): boolean {
-  return LEAKY_EMOJI_WORDS.has(en.trim().toLowerCase());
+/** Hitung hasil 1 run. Speaking: rata-rata skor mic yang terhitung. */
+function runScore(skill: SkillKey, run: BossSkillRun): { correct: number; total: number; pct: number } {
+  if (skill === 'speaking') {
+    const counted = run.res.filter((r): r is number => r !== null && r >= 0);
+    const pct = counted.length ? Math.round((counted.reduce((a, b) => a + b, 0) / counted.length) * 100) : 0;
+    return { correct: counted.length, total: run.res.length, pct };
+  }
+  const correct = run.res.filter((r) => r === 1).length;
+  return { correct, total: run.res.length, pct: run.res.length ? Math.round((correct / run.res.length) * 100) : 0 };
 }
 
-interface ReadingBossItem {
-  text: string;
-  /** `true` cuma utk soal gambar buku mini (Little Stars/Starter, divergensi
-   *  TTS sah pra-pembaca) — soal teks level atas TIDAK dapat tombol suara. */
-  speakable: boolean;
-  /** `label` ada = opsi TEKS (soal "Baca Teks" level atas), dirender tombol
-   *  teks 1 kolom; tanpa `label` = opsi gambar/emoji. */
-  opts: { emoji: string; ok?: boolean; label?: string }[];
-}
+export function runBoss(container: HTMLElement, cb: BossCallbacks, level: LevelKey): void {
+  let test: BossLevelTest = getBossTest(level);
+  const save = () => saveBossTest(level, test);
 
-/** Soal Reading "Baca Teks" (`AnyReadingTopic`) → bentuk MCQ generik babak
- *  Reading: `picture` = kalimat halaman → gambar (bisa didengar, divergensi
- *  TTS sah utk pra-pembaca); `truefalse` = gambar + pernyataan → ✅/❌;
- *  `text` = kalimat BUKTI (bukan seluruh kartu, supaya muat 1 layar) +
- *  pertanyaan → opsi teks. Pertanyaan tanpa bukti (topik/judul keseluruhan)
- *  dilewati krn butuh teks utuh. */
-function toReadingBossItems(topics: AnyReadingTopic[]): ReadingBossItem[] {
-  return topics.flatMap((t) =>
-    [...t.texts, ...t.newTexts].flatMap((x) =>
-      x.questions.flatMap((q): ReadingBossItem[] => {
-        if (q.kind === 'picture') {
-          const opts = q.options.map((emoji, i) => ({ emoji, ok: i === q.answer }));
-          return [{ text: x.lines[q.about ?? 0].en, speakable: true, opts: shuffle(opts) }];
-        }
-        if (q.kind === 'truefalse') {
-          return [{ text: `${readingPicHtml(q.picture)} "${q.q}"`, speakable: false, opts: [{ emoji: '✅', ok: q.answer === 0 }, { emoji: '❌', ok: q.answer === 1 }] }];
-        }
-        if (!q.evidence.length) return [];
-        const passage = q.evidence.map((e) => x.lines[e].en).join(' ');
-        const opts = q.options.map((label, i) => ({ emoji: '', label, ok: i === q.answer }));
-        return [{ text: `${passage} — ${q.q}`, speakable: false, opts: shuffle(opts) }];
-      })
-    )
-  );
-}
-
-/** Jalankan seluruh gauntlet (4 babak lama, atau 5 babak hasil redesain kalau
- *  `level` termasuk `PILOT_LEVELS`), lalu panggil onWin dgn skor per skill
- *  (selalu tercapai — tidak ada jalur "kalah", cuma jalur "belum selesai"). */
-export function runBoss(container: HTMLElement, onWin: (result: BossResult) => void, level: LevelKey): void {
-  const pilot = isPilotLevel(level);
-  const roundsPerSkill = roundsPerSkillFor(level);
-  const totalPhases = pilot ? 5 : 4;
-  const totalRounds = roundsPerSkill * totalPhases;
-  const result = emptyResult();
-  // Menjalankan blok render 1 ronde — dulu jg increment counter global
-  // `roundNo` utk hitung "Ronde X dari Y", TAPI itu cuma valid selama urutan
-  // KETAT linear (setiap render = 1 progres nyata). Sekarang navigasi bebas
-  // antar skill (`jumpTo`) bikin counter model itu SALAH (nge-loncat ke
-  // Speaking lalu balik ke Vocab yg belum disentuh akan salah menghitung
-  // "sudah 2 ronde" padahal belum ada progres nyata sama sekali) — diganti
-  // `progressLine()`/`overallPct()` di bawah yg baca progres ASLI dari
-  // `cursor` (posisi per skill), bukan "berapa kali render dipanggil". Nama
-  // dipertahankan generik biar tiap call site (5 titik) tak perlu diubah.
-  const render = (fn: () => void) => fn();
-
-  const vocabTopics = poolFor(VOCAB_TOPICS_BY_LEVEL, level);
-  const listeningTopics = poolFor(LISTENING_TOPICS_BY_LEVEL, level);
-  const readingTopics = pilot ? poolFor(READING_TOPICS_BY_LEVEL, level) : [];
-  const grammarTopics = poolFor(GRAMMAR_TOPICS_BY_LEVEL, level);
-  const speakingTopics = poolFor(SPEAKING_TOPICS_BY_LEVEL, level);
-
-  const vocabItems = shuffle(vocabTopics.flatMap((t) => t.items)).slice(0, roundsPerSkill);
-  // Listening py 4 format berdampingan (`AnyListeningTopic`, types.ts) —
-  // SEMUA 3 format yang py `items` (dikte/note-completion/dialog+inferensi)
-  // diadaptasi jadi bentuk `ListeningDrill` di sini lewat cabang generik
-  // `'items' in t` (`ListeningQuestionOption` sudah struktural cocok dgn
-  // `ListeningOption`) — supaya babak ini TETAP 1 implementasi generik
-  // tanpa perlu tahu format aslinya, termasuk 2 format yang ditambahkan
-  // belakangan (note-completion Achiever, dialog+inferensi Trailblazer).
-  const listenDrills = shuffle(
-    listeningTopics.flatMap((t) =>
-      'items' in t ? t.items.map((it) => ({ en: it.example.en, id: it.example.id, opts: it.question.options })) : t.drill
-    )
-  ).slice(0, roundsPerSkill);
-  const readingItems = pilot ? shuffle(toReadingBossItems(readingTopics)).slice(0, roundsPerSkill) : [];
-  // Grammar py 3 format berdampingan (`AnyGrammarTopic`, types.ts) — format
-  // KEDUA (`items`, Little Stars/Starter) diadaptasi jadi bentuk
-  // `GrammarScramble` (susun kata dari kalimat formA-nya, tanda titik
-  // dibuang biar cocok dgn `target.join(' ')` di `runGrammarPhase`), format
-  // KETIGA (`transforms`, Trailblazer) diadaptasi dari kalimat reported
-  // speech yang BENAR per item, format KALIMAT (`sentences`) diratakan jadi
-  // susun kata tanpa tanda baca (+ `alt` urutan lain yang juga benar),
-  // supaya babak ini TETAP 1 implementasi generik.
-  const grammarScrambles: { emoji: string; target: string[]; alt?: string[][] }[] = shuffle(
-    grammarTopics.flatMap((t) =>
-      'items' in t
-        ? t.items.map((it) => ({ emoji: it.emoji, target: it.formA.en.replace(/\.$/, '').split(' ') }))
-        : 'transforms' in t
-          ? t.transforms.map((tr) => ({ emoji: tr.emoji, target: tr.reportedOptions.find((o) => o.ok)!.text.replace(/\.$/, '').split(' ') }))
-          : t.sentences.map((st) => ({
-              emoji: st.emoji ?? '',
-              target: st.en.replace(/[.,!?]/g, '').split(' '),
-              // Urutan lain yang juga benar (mis. keterangan waktu di depan).
-              alt: (st.alt ?? []).map((a) => a.replace(/[.,!?]/g, '').split(' ')),
-            }))
-    )
-  ).slice(0, roundsPerSkill);
-  // Speaking py 4 format berdampingan (`AnySpeakingTopic`, types.ts) — sama
-  // adapter inline dgn `listenDrills` di atas: format KEDUA (`items`, Little
-  // Stars/Starter) diratakan jadi `string[]` frasa target, format KETIGA
-  // (`turns`, Trailblazer) diratakan jadi jawaban model `peerName` (anak
-  // menirukan itu sbg "phrase" di gauntlet — tidak perlu simulasi giliran
-  // penuh di sini), format KEEMPAT (`stories`, pilot Explorer) diratakan
-  // jadi jawaban kanonis tiap cerita (`story.answer.en` — anak mengucapkan
-  // itu sbg "phrase", tidak perlu simulasi baca cerita+pertanyaan penuh di
-  // sini), format lama tetap `.drill` apa adanya, supaya babak ini TETAP 1
-  // implementasi generik.
-  const speakPhrases = shuffle(
-    speakingTopics.flatMap((t) =>
-      'items' in t
-        ? t.items.map((it) => it.phrase.en)
-        : 'turns' in t
-          ? t.turns.map((turn) => turn.peerAnswer.en)
-          : 'stories' in t
-            ? t.stories.map((s) => s.answer.en)
-            : t.drill.map((d) => d.en)
-    )
-  ).slice(0, roundsPerSkill);
-  const allVocab = vocabTopics.flatMap((t) => t.items);
-
-  // Posisi ronde TERAKHIR dikunjungi per skill — dasar "sudah tuntas belum"
-  // pill (`skillPillsHtml`) & titik resume tiap `jumpTo()`. Di-set di AWAL
-  // tiap fungsi babak (`cursor.X = round`), termasuk pas keluar (round ===
-  // panjang array) — jadi otomatis jadi penanda "tuntas" tanpa field lain.
-  const cursor: Record<SkillKey, number> = { vocabulary: 0, listening: 0, reading: 0, grammar: 0, speaking: 0 };
-
-  function completeRound(key: SkillKey, score: number): void {
-    result[key].total += 1;
-    result[key].correct += score;
+  function newRun(skill: SkillKey): BossSkillRun {
+    const n = questionCount(level, skill);
+    const ids = pickIds(level, skill, n, test.recent[skill] ?? []).filter((id) => buildQuestion(level, id));
+    const run: BossSkillRun = { ids, res: ids.map(() => null) };
+    test.runs[skill] = run;
+    save();
+    return run;
   }
 
-  const SKILL_DEFS: { key: SkillKey; label: string; emoji: string; total: number; run: (round: number) => void }[] = (
-    pilot
-      ? [
-          { key: 'vocabulary', label: 'Vocabulary', emoji: '📚', total: vocabItems.length, run: runVocabPhase },
-          { key: 'listening', label: 'Listening', emoji: '🎧', total: listenDrills.length, run: runListenPhase },
-          { key: 'reading', label: 'Reading', emoji: '📖', total: readingItems.length, run: runReadingPhase },
-          { key: 'grammar', label: 'Grammar', emoji: '✏️', total: grammarScrambles.length, run: runGrammarPhase },
-          { key: 'speaking', label: 'Speaking', emoji: '🗣️', total: speakPhrases.length, run: runSpeakPhase },
-        ]
-      : [
-          { key: 'vocabulary', label: 'Vocabulary', emoji: '📚', total: vocabItems.length, run: runVocabPhase },
-          { key: 'listening', label: 'Listening', emoji: '🎧', total: listenDrills.length, run: runListenPhase },
-          { key: 'grammar', label: 'Grammar', emoji: '✏️', total: grammarScrambles.length, run: runGrammarPhase },
-          { key: 'speaking', label: 'Speaking', emoji: '🗣️', total: speakPhrases.length, run: runSpeakPhase },
-        ]
-  ) as { key: SkillKey; label: string; emoji: string; total: number; run: (round: number) => void }[];
-
-  /** 🔒 Permintaan user: "button vocab/listening/dst bisa diklik... ketika
-   *  berada dalam materi test warnanya dibuat pekat/dibedakan" — pill YANG
-   *  SEDANG dikerjakan (`.active`, warna solid) beda jelas dari yang belum
-   *  (pucat/translusen, style dasar `.boss-phase`) & yang sudah tuntas
-   *  (`.done`, hijau+centang). Direnderi ulang tiap ronde (bkn statis) spy
-   *  status selalu akurat begitu skill lain diselesaikan di background. */
-  function skillPillsHtml(activeKey: SkillKey): string {
-    const pills = SKILL_DEFS.map((s) => {
-      const done = cursor[s.key] >= s.total;
-      const cls = [s.key === activeKey ? 'active' : '', done ? 'done' : ''].filter(Boolean).join(' ');
-      return `<button type="button" class="boss-phase ${cls}" data-action="jumpPhase" data-payload="${s.key}">${s.emoji} ${s.label}${done ? ' ✓' : ''}</button>`;
-    }).join('');
-    return `<div class="boss-phases">${pills}</div>`;
+  function allObjectivePassed(): boolean {
+    return OBJECTIVE_SKILLS.every((s) => test.passed.includes(s));
   }
 
-  /** Progres KESELURUHAN gauntlet (lintas skill), dihitung dari `cursor`
-   *  ASLI — bukan "berapa kali render dipanggil" (lihat komentar `render`
-   *  di atas soal kenapa counter lama salah begitu navigasi bebas dibuka). */
-  function overallPct(): number {
-    const done = SKILL_DEFS.reduce((sum, s) => sum + Math.min(cursor[s.key], s.total), 0);
-    return totalRounds > 0 ? Math.round((done / totalRounds) * 100) : 0;
+  function resultForWin(): BossResult {
+    const out = {} as BossResult;
+    for (const s of ALL_SKILLS) out[s] = test.best[s] ?? null;
+    return out;
   }
 
-  /** Teks progres per ronde — "Soal ke-N dari skillTotal" (versi teks dari
-   *  `skillDotsHtml` yg `aria-hidden`, jadi tetap ada info yg sama utk
-   *  pembaca layar) + persentase KESELURUHAN dari `overallPct()`. */
-  function progressLine(round: number, skillTotal: number): string {
-    return `<div class="id-text">Soal ${round + 1} dari ${skillTotal} · ${overallPct()}% selesai</div>`;
+  /* ---------------------------------------------------------- Arena -- */
+
+  /** Layar soal: banner Arena disembunyikan supaya soal & pilihan muat
+   *  1 layar HP (`.boss-playing`, styles.css). */
+  function setPlaying(on: boolean): void {
+    container.parentElement?.classList.toggle('boss-playing', on);
+    if (on) container.scrollIntoView({ block: 'start' });
   }
 
-  /** Dipanggil tiap 1 skill kelar semua rondenya — lanjut OTOMATIS ke skill
-   *  belum-tuntas PERTAMA dlm urutan default (tetap zippy, anak tidak wajib
-   *  pilih manual tiap kali), ATAU `finish()` kalau SEMUA skill sudah
-   *  tuntas (bukan cuma yang terakhir dlm urutan lama). */
-  function continueOrFinish(): void {
-    const nextDef = SKILL_DEFS.find((s) => cursor[s.key] < s.total);
-    if (!nextDef) return finish();
-    nextDef.run(cursor[nextDef.key]);
-  }
-
-  /** Tap pill (`jumpPhase`) — pindah ke skill itu, resume dari posisi
-   *  terakhir. Skill yang SUDAH tuntas direset total (skor & posisi) begitu
-   *  ditap lagi — non-punitive, "boleh diulang sebanyak yang kamu mau"
-   *  (copy Arena, TIDAK berubah) drpd jadi tap yang tidak berefek apa pun. */
-  function jumpTo(key: SkillKey): void {
-    const def = SKILL_DEFS.find((s) => s.key === key);
-    if (!def) return;
-    if (cursor[key] >= def.total) {
-      cursor[key] = 0;
-      result[key] = { correct: 0, total: 0 };
-    }
-    def.run(cursor[key]);
-  }
-
-  setHandlers({ jumpPhase: (payload) => jumpTo(payload as SkillKey) });
-
-  runVocabPhase();
-
-  function runVocabPhase(round = 0): void {
-    cursor.vocabulary = round;
-    if (round >= vocabItems.length) return continueOrFinish();
-    const target = vocabItems[round];
-    const distractors = shuffle(allVocab.filter((i) => i.en !== target.en)).slice(0, 3);
-    const opts = shuffle([target, ...distractors]);
-    // 🔒 Target dari kategori bocor (warna/angka/bentuk/hari) → SELURUH 4
-    // opsi ronde ini teks-saja (bukan cuma milik target), biar grid tetap
-    // seragam — lihat komentar `isLeakyEmojiWord` di atas.
-    const textOnly = isLeakyEmojiWord(target.en);
-    let firstTry = true;
-
-    render(() => {
-      container.innerHTML = `
-        ${skillPillsHtml('vocabulary')}
-        ${skillDotsHtml(round, vocabItems.length)}
-        ${progressLine(round, vocabItems.length)}
-        <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar Lagi</button></div>
-        <div class="opt-grid">
-          ${opts.map((o, i) => `<button class="opt-btn ${textOnly ? 'opt-btn-text' : ''}" data-action="pick" data-payload="${i}">${textOnly ? o.en : o.emoji}</button>`).join('')}
-        </div>
-        <div class="feedback" id="fb"></div>
-      `;
-      speak(target.en);
-
-      setHandlers({
-        replay: () => speak(target.en),
-        pick: (payload) => {
-          const i = Number(payload);
-          const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
-          const fb = container.querySelector<HTMLElement>('#fb')!;
-          if (opts[i] === target) {
-            completeRound('vocabulary', firstTry ? 1 : 0);
-            recordAttempt(true);
-            btn.classList.add('correct');
-            playCorrectTone();
-            fireConfetti();
-            fb.textContent = 'Kena! 🎉';
-            fb.className = 'feedback good';
-            setTimeout(() => runVocabPhase(round + 1), 750);
-          } else {
-            firstTry = false;
-            recordAttempt(false);
-            btn.classList.add('wrong');
-            playWrongTone();
-            vibrateDevice(160);
-            fb.textContent = 'Coba lagi ya 💪';
-            fb.className = 'feedback bad';
-            setTimeout(() => btn.classList.remove('wrong'), 350);
-          }
-        },
-      });
-    });
-  }
-
-  function runListenPhase(round = 0): void {
-    cursor.listening = round;
-    if (round >= listenDrills.length) return continueOrFinish();
-    const d = listenDrills[round];
-    let firstTry = true;
-    // 🔒 Sama fix icon-leak dgn `runVocabPhase` — cek label opsi yang BENAR
-    // (format baru py `.text`, format lama kadang py `.lbl`), kalau kata
-    // itu warna/angka/bentuk/hari, SELURUH opsi ronde ini teks-saja.
-    const correctLabel = (d.opts.find((o) => o.ok) as { text?: string; lbl?: string } | undefined)?.text
-      ?? (d.opts.find((o) => o.ok) as { text?: string; lbl?: string } | undefined)?.lbl;
-    const textOnly = !!correctLabel && isLeakyEmojiWord(correctLabel);
-    const optLabel = (o: { emoji: string }) => (o as { text?: string; lbl?: string }).text ?? (o as { text?: string; lbl?: string }).lbl ?? o.emoji;
-
-    render(() => {
-      container.innerHTML = `
-        ${skillPillsHtml('listening')}
-        ${skillDotsHtml(round, listenDrills.length)}
-        ${progressLine(round, listenDrills.length)}
-        <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Putar Kalimat</button></div>
-        <div class="opt-grid ${d.opts.length === 3 ? 'three' : ''}">
-          ${/* 🔒 Permintaan user (screenshot: 4 opsi tampil 3+1 timpang) —
-             `.opt-grid.three` cuma dipasang utk PERSIS 3 opsi (baris tunggal
-             rapi). 4 opsi (SELALU muncul di Listening format baru Little
-             Stars, `item.question.options`) jatuh ke `.opt-grid` default
-             (2 kolom, 2×2), SAMA PERSIS grid Vocab — bukan lagi `>2` yang
-             salah menyamaratakan 4 opsi jadi 3 kolom+1 sisa. */ ''}
-          ${d.opts.map((o, i) => `<button class="opt-btn ${textOnly ? 'opt-btn-text' : ''}" data-action="pick" data-payload="${i}">${textOnly ? optLabel(o) : o.emoji}</button>`).join('')}
-        </div>
-        <div class="feedback" id="fb"></div>
-      `;
-      speak(d.en);
-
-      setHandlers({
-        replay: () => speak(d.en),
-        pick: (payload) => {
-          const i = Number(payload);
-          const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
-          const fb = container.querySelector<HTMLElement>('#fb')!;
-          if (d.opts[i].ok) {
-            completeRound('listening', firstTry ? 1 : 0);
-            recordAttempt(true);
-            btn.classList.add('correct');
-            playCorrectTone();
-            fireConfetti();
-            fb.textContent = 'Tepat! 🎉';
-            fb.className = 'feedback good';
-            setTimeout(() => runListenPhase(round + 1), 750);
-          } else {
-            firstTry = false;
-            recordAttempt(false);
-            btn.classList.add('wrong');
-            playWrongTone();
-            vibrateDevice(160);
-            fb.textContent = 'Dengar lagi, yuk 💪';
-            fb.className = 'feedback bad';
-            setTimeout(() => btn.classList.remove('wrong'), 350);
-          }
-        },
-      });
-    });
-  }
-
-  /** Babak Reading BARU (`materi/test_perlevel.md` §5/§6) — sebelumnya
-   *  bolong total di Tantangan Bos, padahal Reading sekarang py materi
-   *  TUNTAS di semua 6 level. SILENT by default (konsisten "Reading tidak
-   *  pernah TTS") — cuma item `speakable` (soal gambar buku mini, Little
-   *  Stars/Starter) yang dapat tombol "🔊 Dengar" OPSIONAL. */
-  function runReadingPhase(round = 0): void {
-    cursor.reading = round;
-    if (round >= readingItems.length) return continueOrFinish();
-    const item = readingItems[round];
-    let firstTry = true;
-
-    render(() => {
-      container.innerHTML = `
-        ${skillPillsHtml('reading')}
-        ${skillDotsHtml(round, readingItems.length)}
-        ${progressLine(round, readingItems.length)}
-        <div class="en-text">${item.text}</div>
-        ${item.speakable ? '<div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar</button></div>' : ''}
-        <div class="opt-grid ${item.opts[0]?.label ? 'rt-opts' : item.opts.length === 3 ? 'three' : ''}">
-          ${/* Sama fix dgn `runListenPhase` di atas — 4 opsi (`ReadingWordTopic`
-             target+3 distraktor) WAJIB grid 2×2 default, bukan 3 kolom+1 sisa. */ ''}
-          ${item.opts.map((o, i) => `<button class="opt-btn${o.label ? ' opt-btn-text' : ''}" data-action="pick" data-payload="${i}">${o.label ?? readingPicHtml(o.emoji)}</button>`).join('')}
-        </div>
-        <div class="feedback" id="fb"></div>
-      `;
-
-      setHandlers({
-        ...(item.speakable ? { replay: () => speak(item.text) } : {}),
-        pick: (payload) => {
-          const i = Number(payload);
-          const btn = container.querySelectorAll<HTMLElement>('.opt-btn')[i];
-          const fb = container.querySelector<HTMLElement>('#fb')!;
-          if (item.opts[i].ok) {
-            completeRound('reading', firstTry ? 1 : 0);
-            recordAttempt(true);
-            btn.classList.add('correct');
-            playCorrectTone();
-            fireConfetti();
-            fb.textContent = 'Tepat! 🎉';
-            fb.className = 'feedback good';
-            setTimeout(() => runReadingPhase(round + 1), 750);
-          } else {
-            firstTry = false;
-            recordAttempt(false);
-            btn.classList.add('wrong');
-            playWrongTone();
-            vibrateDevice(160);
-            fb.textContent = 'Baca lagi, yuk 💪';
-            fb.className = 'feedback bad';
-            setTimeout(() => btn.classList.remove('wrong'), 350);
-          }
-        },
-      });
-    });
-  }
-
-  /**
-   * 🔒 Permintaan user (screenshot "Cek Jawaban"): samakan ke pola "Susun
-   * Kalimat" Vocab (`games/vocabulary.ts` `runSusunKalimat`) — TANPA tombol
-   * "Cek Jawaban" (evaluasi OTOMATIS begitu semua kata tersusun, dicek di
-   * `pick`), TAMBAH "⌫ Hapus Kata" (hapus kata TERAKHIR) berdampingan dgn
-   * "🔄 Bersihkan" (hapus semua) yang sudah ada. BEDA dari Vocab: papan
-   * TIDAK dikunci (tanpa state `answered`/tombol "Coba Lagi") begitu salah —
-   * tombol edit (Hapus Kata/Bersihkan/tap chip) TETAP aktif sesudahnya,
-   * anak cukup betulkan susunannya lewat situ & otomatis DICEK ULANG begitu
-   * penuh lagi — konsisten pace boss.ts yang lain (retry instan tanpa perlu
-   * tap "Lanjut", BUKAN pola locked-then-retry-button Vocab). `speak(built)`
-   * tetap dipanggil pas BENAR (sama persis `runSusunKalimat`).
-   */
-  function runGrammarPhase(round = 0): void {
-    cursor.grammar = round;
-    if (round >= grammarScrambles.length) return continueOrFinish();
-    const sc = grammarScrambles[round];
-    let answer: { w: string; idx: number }[] = [];
-    let bank = shuffle(sc.target.map((w, i) => ({ w, used: false, idx: i })));
-    let firstTry = true;
-
-    const paint = () => {
-      container.innerHTML = `
-        ${skillPillsHtml('grammar')}
-        ${skillDotsHtml(round, grammarScrambles.length)}
-        ${progressLine(round, grammarScrambles.length)}
-        <div class="answer-row ${answer.length ? '' : 'empty'}">
-          ${answer.map((a, ai) => `<span class="chip placed" data-action="unpick" data-payload="${ai}">${a.w}</span>`).join('')}
-        </div>
-        <div class="bank-row">
-          ${bank.map((b, bi) => `<span class="chip ${b.used ? 'hidden' : ''}" data-action="pick" data-payload="${bi}">${b.w}</span>`).join('')}
-        </div>
-        <div class="feedback" id="fb"></div>
-        <div class="letter-actions">
-          <button class="ghost-btn slim" type="button" data-action="removeLastWord" ${answer.length ? '' : 'disabled'}>⌫ Hapus Kata</button>
-          <button class="ghost-btn slim" type="button" data-action="clear">🔄 Bersihkan</button>
-        </div>
-      `;
-      setHandlers({
-        clear: () => {
-          answer = [];
-          bank = shuffle(sc.target.map((w, i) => ({ w, used: false, idx: i })));
-          paint();
-        },
-        removeLastWord: () => {
-          if (!answer.length) return;
-          const last = answer[answer.length - 1];
-          answer = answer.slice(0, -1);
-          bank.find((b) => b.idx === last.idx)!.used = false;
-          paint();
-        },
-        pick: (payload) => {
-          const bi = Number(payload);
-          if (bank[bi].used) return;
-          bank[bi].used = true;
-          answer.push(bank[bi]);
-          paint();
-          if (answer.length === bank.length) checkAnswer();
-        },
-        unpick: (payload) => {
-          const ai = Number(payload);
-          const item = answer[ai];
-          answer.splice(ai, 1);
-          bank.find((b) => b.idx === item.idx)!.used = false;
-          paint();
-        },
-      });
-    };
-
-    function checkAnswer(): void {
-      const fb = container.querySelector<HTMLElement>('#fb')!;
-      const built = answer.map((a) => a.w).join(' ');
-      // Tidak peka huruf besar/kecil & terima urutan `alt` — sama aturan
-      // Susun Kalimat format kalimat (`games/grammar.ts`).
-      const accepted = [sc.target, ...(sc.alt ?? [])].map((t) => t.join(' ').toLowerCase());
-      if (accepted.includes(built.toLowerCase())) {
-        completeRound('grammar', firstTry ? 1 : 0);
-        recordAttempt(true);
-        playCorrectTone();
-        fireConfetti();
-        fb.textContent = 'Pas banget! 🎉';
-        fb.className = 'feedback good';
-        speak(built);
-        setTimeout(() => runGrammarPhase(round + 1), 900);
-      } else {
-        firstTry = false;
-        recordAttempt(false);
-        container.querySelector('.answer-row')?.classList.add('is-wrong');
-        playWrongTone();
-        vibrateDevice(160);
-        fb.textContent = 'Urutannya belum pas, coba atur lagi 💪';
-        fb.className = 'feedback bad';
+  function renderHub(): void {
+    setGameRoundActive(false);
+    setPlaying(false);
+    const n = questionCount(level, 'vocabulary');
+    const cleared = isBossCleared(level);
+    const rows = ALL_SKILLS.map((skill) => {
+      const ui = SKILL_UI[skill];
+      const run = test.runs[skill];
+      const passed = test.passed.includes(skill);
+      const bonus = skill === 'speaking';
+      const total = questionCount(level, skill);
+      const [mLo, mHi] = minutesFor(level, skill);
+      let status = `${total} soal · ±${mLo === mHi ? mLo : `${mLo}–${mHi}`} menit`;
+      let end = '<span class="boss-skill-go">Mulai ▶</span>';
+      let cls = '';
+      let bar = '';
+      if (run && !run.done) {
+        const answered = run.res.filter((r) => r !== null).length + (run.extra?.res.filter((r) => r !== null).length ?? 0);
+        const all = run.res.length + (run.extra?.res.length ?? 0);
+        status = run.extra ? `Soal bonus ${run.extra.res.filter((r) => r !== null).length + 1} dari ${run.extra.res.length}` : `Soal ${Math.min(answered + 1, all)} dari ${all}`;
+        bar = `<span class="boss-skill-bar" aria-hidden="true"><span style="width:${Math.round((answered / Math.max(all, 1)) * 100)}%"></span></span>`;
+        end = '<span class="boss-skill-go">Lanjut ▶</span>';
+        cls = 'is-progress';
+      } else if (passed || (bonus && test.best.speaking !== undefined)) {
+        const best = test.best[skill] ?? 0;
+        status = bonus ? 'Bonus selesai 🎁' : 'Lolos ✅';
+        end = starsHtml(best);
+        cls = 'is-passed';
+      } else if (run?.done) {
+        const sc = runScore(skill, run);
+        status = `Belum lolos · ${sc.correct} dari ${sc.total} (target ${passNeed(sc.total)})`;
+        end = '<span class="boss-skill-go">Coba lagi 💪</span>';
+        cls = 'is-retry';
       }
-    }
-
-    render(paint);
-  }
-
-  /**
-   * 🔒 Fix Aturan Wajib Speaking (audit sesi Little Stars — CLAUDE.md sendiri
-   * menyebut eksplisit `games/boss.ts` sbg salah satu tempat wajib) —
-   * sebelumnya pakai `looseMatch` biner & tidak py "▶️ Play Suaramu" sama
-   * sekali. Sekarang skor proporsional (`wordMatchDetail`, sama pola
-   * `games/speaking.ts` `scoreMic`) + rekam paralel utk Play Suaramu
-   * (`listenAndRecordOnce`, bukan `listenOnce` lagi) — TETAP auto-advance
-   * (konsisten pace 3 babak lain di gauntlet ini, BUKAN diubah jadi manual
-   * "Lanjut" spt `games/speaking.ts`) & TETAP maju apa pun hasilnya (sudah
-   * begitu dari awal — bukan diubah, cuma sekarang py tampilan skor yang
-   * proporsional). Jeda diperpanjang dikit (850ms→1400ms) supaya sempat
-   * kebaca bintang/kata yang kedengaran sebelum ronde berikutnya muncul.
-   */
-  function runSpeakPhase(round = 0): void {
-    cursor.speaking = round;
-    if (round >= speakPhrases.length) return continueOrFinish();
-    const phrase = speakPhrases[round];
-
-    render(() => {
-      container.innerHTML = `
-        ${skillPillsHtml('speaking')}
-        ${skillDotsHtml(round, speakPhrases.length)}
-        ${progressLine(round, speakPhrases.length)}
-        <div class="en-text">"${phrase}"</div>
-        <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar Contoh</button></div>
-        <div class="mic-wrap">
-          <button class="mic-btn" id="micBtn" data-action="mic">🎤</button>
-          <div class="mic-hint">${sttSupported ? 'Tap mic, lalu ucapkan kalimatnya' : 'Mikrofon tidak didukung browser ini'}</div>
+      const mission = !passed && !bonus && run?.done ? missionHtml(skill, run) : '';
+      return `
+        <li class="boss-skill ${cls}">
+          <button class="boss-skill-row" type="button" data-action="bossSkill" data-payload="${skill}">
+            <span class="boss-skill-ic" aria-hidden="true">${ui.emoji}</span>
+            <span class="boss-skill-txt">
+              <b>${ui.label}${bonus ? ' <span class="tag">Bonus</span>' : ''}</b>
+              <span class="boss-skill-status">${status}</span>
+              ${bar}
+            </span>
+            <span class="boss-skill-end">${end}</span>
+          </button>
+          ${mission}
+        </li>`;
+    }).join('');
+    const passedCount = OBJECTIVE_SKILLS.filter((s) => test.passed.includes(s)).length;
+    const [tLo, tHi] = estimatedMinutesFor(level);
+    const winReady = allObjectivePassed();
+    container.innerHTML = `
+      <div class="boss-hub">
+        <div class="boss-target">
+          <span class="boss-target-ic" aria-hidden="true">🎯</span>
+          <div><b>Target tiap babak: benar ${passNeed(n)} dari ${n} soal</b>
+          <span>${passedCount} dari 4 babak utama lolos${cleared ? ' · 👑 Raja sudah ditaklukkan' : ''}</span></div>
         </div>
-        <div id="micResult"></div>
-        <div class="feedback" id="fb"></div>
-        ${sttSupported ? '' : `<button class="ghost-btn" data-action="skip">✅ Aku Sudah Coba Ucapkan</button>`}
-      `;
-
-      setHandlers({
-        replay: () => speak(phrase),
-        skip: () => runSpeakPhase(round + 1),
-        mic: () => {
-          const btn = container.querySelector<HTMLElement>('#micBtn')!;
-          btn.classList.add('listening');
-          let recordedAudioUrl: string | null = null;
-          listenAndRecordOnce(
-            (said) => {
-              btn.classList.remove('listening');
-              const words = wordMatchDetail(said, phrase);
-              const matchedCount = words.filter((w) => w.matched).length;
-              const hitRatio = words.length ? matchedCount / words.length : 0;
-              // Ditotal HANYA pas beneran ada percobaan mic terukur (bukan di
-              // awal ronde) — device tanpa STT (jalur `skip` di bawah) TIDAK
-              // dihitung sama sekali ke skor, supaya keterbatasan teknis
-              // browser tidak ikut menurunkan bintang Speaking anak.
-              completeRound('speaking', hitRatio);
-              const stars = hitRatio >= 0.8 ? 3 : hitRatio >= 0.4 ? 2 : 1;
-              const perfect = stars === 3;
-              if (perfect) {
-                playCorrectTone();
-                fireConfetti();
-              } else playTryAgainTone();
-              recordEvent({
-                kind: 'speak',
-                skill: 'speaking',
-                topicId: 'boss',
-                activity: 'mic',
-                graded: false,
-                score: Math.round(hitRatio * 100),
-                detail: { heard: said },
-              });
-              container.querySelector<HTMLElement>('#micResult')!.innerHTML = `
-                <div style="font-size:20px;letter-spacing:3px;text-align:center;margin-top:8px" aria-hidden="true">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>
-                <div class="word-diff" style="margin-top:6px">${words.map((w) => `<span class="${w.matched ? 'ok' : 'miss'}">${w.word}</span>`).join('')}</div>
-                <div class="heard-text">Terdengar: "${said}"</div>
-                <div class="speak-row" style="margin-top:8px">
-                  <button class="speak-btn" type="button" id="playMineBtn" data-action="playMine" disabled>▶️ Play Suaramu</button>
-                </div>
-              `;
-              const fb = container.querySelector<HTMLElement>('#fb')!;
-              fb.textContent = perfect ? pickPraise(level) : pickEncourage(level);
-              fb.className = 'feedback good';
-              setHandlers({ playMine: () => { if (recordedAudioUrl) playRecording(recordedAudioUrl); } });
-              setTimeout(() => container.isConnected && runSpeakPhase(round + 1), 1400);
-            },
-            (kind) => {
-              btn.classList.remove('listening');
-              // 'aborted' — mic dihentikan paksa krn "🔊 Dengar Contoh"
-              // ditap pas masih dengar (speech.ts `stopListening()`), bukan
-              // STT gagal — reset diam-diam.
-              if (kind === 'aborted') return;
-              container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
-            },
-            (audioUrl) => {
-              recordedAudioUrl = audioUrl;
-              const playBtn = container.querySelector<HTMLButtonElement>('#playMineBtn');
-              if (playBtn) playBtn.disabled = false;
-            }
-          );
-        },
-      });
+        <div class="boss-hub-dots" aria-hidden="true">${OBJECTIVE_SKILLS.map((s) => `<span class="${test.passed.includes(s) ? 'done' : ''}">${test.passed.includes(s) ? '✓' : SKILL_UI[s].emoji}</span>`).join('')}</div>
+        <ul class="boss-skill-list">${rows}</ul>
+        ${winReady ? `<button class="primary-btn" type="button" data-action="bossWin">👑 Taklukkan Raja!</button>` : ''}
+        <p class="meta boss-hub-note">⏱️ Semua babak ±${tLo}–${tHi} menit. Boleh dikerjakan satu-satu, tidak ada hitungan mundur.</p>
+        ${cleared && passedCount > 0 ? `<button class="ghost-btn slim" type="button" data-action="bossReset">🔁 Ulang Semua Babak</button>` : ''}
+      </div>`;
+    setHandlers({
+      bossSkill: (payload) => openSkill(payload as SkillKey),
+      bossPractice: (payload) => {
+        const [skill, topicId] = (payload ?? '').split('|');
+        cb.onPractice(skill as SkillKey, topicId);
+      },
+      bossWin: () => cb.onWin(resultForWin()),
+      bossReset: () => {
+        test = { runs: {}, passed: [], best: {}, recent: test.recent, history: test.history };
+        save();
+        renderHub();
+      },
     });
   }
 
-  function finish(): void {
-    onWin(result);
+  function missionHtml(skill: SkillKey, run: BossSkillRun): string {
+    const counts = new Map<string, number>();
+    const tally = (ids: string[], res: (number | null)[]) =>
+      ids.forEach((id, i) => {
+        if (res[i] === 0) counts.set(topicOf(id), (counts.get(topicOf(id)) ?? 0) + 1);
+      });
+    tally(run.ids, run.res);
+    if (run.extra) tally(run.extra.ids, run.extra.res);
+    const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
+    if (!top.length) return '';
+    return `<div class="boss-mission"><span>🗺️ Latihan dulu:</span>${top
+      .map(([t]) => `<button class="boss-mission-chip" type="button" data-action="bossPractice" data-payload="${skill}|${t}">${escapeHtml(topicTitle(level, skill, t))}</button>`)
+      .join('')}</div>`;
   }
+
+  function openSkill(skill: SkillKey): void {
+    const run = test.runs[skill];
+    if (run && !run.done) return resume(skill, run);
+    if (run?.done) return renderResult(skill);
+    resume(skill, newRun(skill));
+  }
+
+  function resume(skill: SkillKey, run: BossSkillRun): void {
+    if (run.extra) {
+      const i = run.extra.res.findIndex((r) => r === null);
+      return i < 0 ? renderResult(skill) : drawQuestion(skill, i, true);
+    }
+    const i = run.res.findIndex((r) => r === null);
+    if (i < 0) return renderResult(skill);
+    drawQuestion(skill, i, false);
+  }
+
+  /* ------------------------------------------------------------ soal -- */
+
+  function slotsOf(run: BossSkillRun, extra: boolean): { ids: string[]; res: (number | null)[] } {
+    return extra && run.extra ? run.extra : run;
+  }
+
+  function dotsHtml(res: (number | null)[], current: number): string {
+    const dense = res.length > 10 ? ' dense' : '';
+    const dots = res
+      .map((r, i) => {
+        const cls = [i === current ? 'current' : '', r !== null ? 'done' : ''].filter(Boolean).join(' ');
+        return `<button type="button" class="quiz-dot ${cls}" data-action="bossJump" data-payload="${i}" aria-label="Ke soal ${i + 1}">${i + 1}</button>`;
+      })
+      .join('');
+    return `<div class="quiz-nav"><div class="quiz-dots${dense}">${dots}</div></div>`;
+  }
+
+  function nextUnanswered(res: (number | null)[], from: number): number {
+    for (let step = 1; step <= res.length; step++) {
+      const i = (from + step) % res.length;
+      if (res[i] === null) return i;
+    }
+    return -1;
+  }
+
+  function drawQuestion(skill: SkillKey, i: number, extra: boolean): void {
+    const run = test.runs[skill];
+    if (!run) return renderHub();
+    const slots = slotsOf(run, extra);
+    const q = buildQuestion(level, slots.ids[i]);
+    if (!q) {
+      // Soal basi (konten berubah) — anggap tidak ada, tidak menghukum anak.
+      slots.res[i] = skill === 'speaking' ? -1 : 1;
+      save();
+      return advance(skill, i, extra);
+    }
+    setGameRoundActive(true, renderHub);
+    setPlaying(true);
+    const ui = SKILL_UI[skill];
+    const answered = slots.res[i] !== null;
+    container.innerHTML = `
+      <div class="boss-q-head">
+        <button class="boss-back-pill" type="button" data-action="bossHub">🏰 Semua Babak</button>
+        <span class="boss-skill-tag">${ui.emoji} ${ui.label}${extra ? ' · Bonus' : ''}</span>
+      </div>
+      <div class="latihan-head"><span class="stage-badge">${q.badge}</span></div>
+      ${dotsHtml(slots.res, i)}
+      <div class="id-text">Soal ${i + 1} dari ${slots.res.length}</div>
+      ${q.kind === 'choice' ? choiceBody(q) : speakBody(q, answered)}
+      <div class="feedback" id="fb"></div>
+      <div id="bossActions"></div>`;
+    setHandlers({
+      bossHub: renderHub,
+      bossJump: (payload) => drawQuestion(skill, Number(payload), extra),
+      bossPlay: () => q.play?.(),
+    });
+    if (q.kind === 'choice') wireChoice(skill, q, i, extra, answered);
+    else wireSpeak(skill, q, i, extra, answered);
+    if (!answered && q.autoPlay) q.play?.();
+  }
+
+  function playBtn(q: BossQ): string {
+    return q.play ? `<div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="bossPlay">${(q.kind === 'choice' && q.playLabel) || '🔊 Dengar'}</button></div>` : '';
+  }
+
+  function choiceBody(q: BossChoiceQ): string {
+    let opts: string;
+    if (q.layout === 'tf') {
+      opts = `<div class="boss-tf">${q.options.map((o, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="bossPick" data-payload="${i}">${o.label}</button>`).join('')}</div>`;
+    } else if (q.layout === 'list') {
+      opts = `<div class="boss-list">${q.options
+        .map((o, i) => `<button class="opt-btn opt-btn-text boss-list-opt" type="button" data-action="bossPick" data-payload="${i}"><span class="boss-letter" aria-hidden="true">${LETTERS[i]}</span><span>${o.emoji ? `${picHtml(o.emoji)} ` : ''}${o.label ?? ''}</span></button>`)
+        .join('')}</div>`;
+    } else {
+      const three = q.options.length === 3 ? ' three' : '';
+      opts = `<div class="opt-grid${three}">${q.options
+        .map((o, i) =>
+          o.html
+            ? `<button class="opt-btn" type="button" data-action="bossPick" data-payload="${i}">${o.html}</button>`
+            : `<button class="opt-btn answer-card" type="button" data-action="bossPick" data-payload="${i}" ${o.label ? '' : `aria-label="Pilihan ${LETTERS[i]}"`}>
+                <span class="answer-card-emoji" aria-hidden="true">${picHtml(o.emoji)}</span>
+                <span class="answer-card-bottom">${o.label ? `<span class="answer-card-label">${o.label}</span>` : ''}<span class="answer-card-badge" aria-hidden="true">${LETTERS[i]}</span></span>
+              </button>`
+        )
+        .join('')}</div>`;
+    }
+    return `${q.body}${playBtn(q)}${opts}`;
+  }
+
+  function actionsHtml(res: (number | null)[]): string {
+    const last = res.every((r) => r !== null);
+    return `<div class="round-actions single"><button class="primary-btn" type="button" data-action="bossNext" style="margin-top:0">${last ? 'Lihat Hasil 🏁' : 'Lanjut ➡️'}</button></div>`;
+  }
+
+  function lock(): void {
+    container.querySelectorAll<HTMLButtonElement>('[data-action="bossPick"]').forEach((b) => (b.disabled = true));
+  }
+
+  function wireChoice(skill: SkillKey, q: BossChoiceQ, i: number, extra: boolean, answered: boolean): void {
+    const run = test.runs[skill]!;
+    const slots = slotsOf(run, extra);
+    const btns = () => container.querySelectorAll<HTMLElement>('[data-action="bossPick"]');
+    const okIdx = q.options.findIndex((o) => o.ok);
+    const fb = () => container.querySelector<HTMLElement>('#fb')!;
+    const showActions = () => {
+      container.querySelector('#bossActions')!.innerHTML = actionsHtml(slots.res);
+      setHandlers({ bossNext: () => advance(skill, i, extra) });
+    };
+    if (answered) {
+      lock();
+      btns()[okIdx]?.classList.add('reveal');
+      fb().textContent = slots.res[i] === 1 ? 'Soal ini sudah kamu jawab dengan tepat 👍' : `Soal ini sudah dijawab. Jawabannya: ${q.answerText}`;
+      fb().className = 'feedback';
+      showActions();
+      return;
+    }
+    setHandlers({
+      bossPick: (payload) => {
+        if (slots.res[i] !== null) return;
+        const k = Number(payload);
+        const ok = !!q.options[k]?.ok;
+        slots.res[i] = ok ? 1 : 0;
+        save();
+        lock();
+        const btn = btns()[k];
+        if (ok) {
+          btn?.classList.add('correct', 'win-burst');
+          playCorrectTone();
+          fireConfetti();
+          fb().textContent = pickPraise(level);
+          fb().className = 'feedback good';
+          if (q.sayAnswer) {
+            const say = q.sayAnswer;
+            speakLater(() => container.isConnected && say(), 1500);
+          }
+        } else {
+          btn?.classList.add('wrong');
+          btns()[okIdx]?.classList.add('reveal');
+          playWrongTone();
+          vibrateDevice(160);
+          fb().innerHTML = `${escapeHtml(pickEncourage(level))}<br><span class="boss-answer">Jawabannya: <b>${escapeHtml(q.answerText)}</b></span>`;
+          fb().className = 'feedback bad';
+        }
+        showActions();
+      },
+    });
+  }
+
+  function speakBody(q: BossSpeakQ, answered: boolean): string {
+    const note = '<p class="meta boss-bonus-note">🎁 Babak bonus — tidak menentukan naik level.</p>';
+    const mic = answered
+      ? ''
+      : `<div class="mic-wrap">
+          <button class="mic-btn" id="micBtn" type="button" data-action="bossMic" ${sttSupported ? '' : 'disabled'}>🎤</button>
+          <div class="mic-hint">${sttSupported ? 'Tap mic, lalu ucapkan' : 'Mikrofon tidak tersedia di browser ini'}</div>
+        </div>
+        ${sttSupported ? '' : '<button class="ghost-btn" type="button" data-action="bossSkip">⏭️ Lewati Soal Ini</button>'}`;
+    return `${note}${q.body}${playBtn(q)}${mic}<div id="micResult"></div>`;
+  }
+
+  function wireSpeak(skill: SkillKey, q: BossSpeakQ, i: number, extra: boolean, answered: boolean): void {
+    const run = test.runs[skill]!;
+    const slots = slotsOf(run, extra);
+    const fb = () => container.querySelector<HTMLElement>('#fb')!;
+    const showActions = () => {
+      container.querySelector('#bossActions')!.innerHTML = actionsHtml(slots.res);
+      setHandlers({ bossNext: () => advance(skill, i, extra) });
+    };
+    if (answered) {
+      fb().textContent = slots.res[i] === -1 ? 'Soal ini dilewati.' : 'Soal ini sudah kamu ucapkan 👍';
+      fb().className = 'feedback';
+      showActions();
+      return;
+    }
+    setHandlers({
+      bossSkip: () => {
+        slots.res[i] = -1;
+        save();
+        advance(skill, i, extra);
+      },
+      bossMic: () => {
+        const btn = container.querySelector<HTMLElement>('#micBtn');
+        if (!btn || slots.res[i] !== null) return;
+        btn.classList.add('listening');
+        let audioUrl: string | null = null;
+        listenAndRecordOnce(
+          (said) => {
+            if (!container.isConnected) return;
+            btn.classList.remove('listening');
+            const words = wordMatchDetail(said, q.target);
+            const ratio = words.length ? words.filter((w) => w.matched).length / words.length : 0;
+            slots.res[i] = Math.round(ratio * 100) / 100;
+            save();
+            recordEvent({ kind: 'speak', skill: 'speaking', topicId: q.topicId, activity: 'boss', graded: false, score: Math.round(ratio * 100), level, detail: { heard: said } });
+            const stars = ratio >= 0.8 ? 3 : ratio >= 0.4 ? 2 : 1;
+            if (stars === 3) {
+              playCorrectTone();
+              fireConfetti();
+            } else playTryAgainTone();
+            container.querySelector('.mic-wrap')?.remove();
+            container.querySelector<HTMLElement>('#micResult')!.innerHTML = `
+              <div class="boss-mic-stars" aria-hidden="true">${'⭐'.repeat(stars)}${'☆'.repeat(3 - stars)}</div>
+              ${q.showTarget ? '' : `<p class="meta">Contoh jawaban: <b>${escapeHtml(q.target)}</b></p>`}
+              <div class="word-diff">${words.map((w) => `<span class="${w.matched ? 'ok' : 'miss'}">${escapeHtml(w.word)}</span>`).join('')}</div>
+              <div class="heard-text">Terdengar: "${escapeHtml(said)}"</div>
+              <div class="speak-row"><button class="speak-btn" type="button" id="playMineBtn" data-action="bossPlayMine" ${audioUrl ? '' : 'disabled'}>▶️ Play Suaramu</button></div>`;
+            setHandlers({ bossPlayMine: () => audioUrl && playRecording(audioUrl) });
+            fb().textContent = stars === 3 ? pickPraise(level) : pickEncourage(level);
+            fb().className = 'feedback good';
+            showActions();
+          },
+          (kind) => {
+            btn.classList.remove('listening');
+            if (kind === 'aborted' || !container.isConnected) return;
+            fb().textContent = 'Belum kedengaran, coba tap mic lagi 🎧';
+            fb().className = 'feedback';
+          },
+          (url) => {
+            audioUrl = url;
+            const b = container.querySelector<HTMLButtonElement>('#playMineBtn');
+            if (b) b.disabled = false;
+          }
+        );
+      },
+    });
+  }
+
+  function advance(skill: SkillKey, i: number, extra: boolean): void {
+    const run = test.runs[skill];
+    if (!run) return renderHub();
+    const slots = slotsOf(run, extra);
+    const next = nextUnanswered(slots.res, i);
+    if (next < 0) return renderResult(skill);
+    drawQuestion(skill, next, extra);
+  }
+
+  /* ----------------------------------------------------------- hasil -- */
+
+  function finalize(skill: SkillKey, run: BossSkillRun, passed: boolean): void {
+    const sc = runScore(skill, run);
+    run.done = true;
+    run.passed = passed;
+    if (passed && skill !== 'speaking' && !test.passed.includes(skill)) test.passed.push(skill);
+    test.best[skill] = Math.max(test.best[skill] ?? 0, sc.pct);
+    const bases = [...run.ids, ...(run.extra?.ids ?? [])].map(baseOf);
+    test.recent[skill] = [...(test.recent[skill] ?? []), ...bases].slice(-questionCount(level, skill) * 3);
+    test.history.push({ at: new Date().toISOString(), skill, correct: sc.correct, total: sc.total, passed });
+    save();
+    recordEvent({
+      kind: 'boss_skill',
+      level,
+      skill,
+      graded: skill !== 'speaking',
+      correct: passed,
+      score: sc.pct,
+      detail: { correct: sc.correct, total: sc.total, extra: run.extra ? run.extra.res.filter((r) => r === 1).length : null },
+    });
+    requestSync();
+  }
+
+  function renderResult(skill: SkillKey): void {
+    setGameRoundActive(false);
+    setPlaying(false);
+    const run = test.runs[skill];
+    if (!run) return renderHub();
+    const ui = SKILL_UI[skill];
+    const sc = runScore(skill, run);
+    const need = passNeed(sc.total);
+
+    if (!run.done) {
+      if (skill === 'speaking') finalize(skill, run, true);
+      else if (run.extra) finalize(skill, run, run.extra.res.every((r) => r === 1));
+      else if (sc.correct >= need) finalize(skill, run, true);
+      else if (sc.correct === need - 1) {
+        const avoid = [...(test.recent[skill] ?? []), ...run.ids.map(baseOf)];
+        const ids = pickIds(level, skill, EXTRA_COUNT, avoid).filter((id) => buildQuestion(level, id));
+        if (ids.length) {
+          run.extra = { ids, res: ids.map(() => null) };
+          save();
+          return renderBonusOffer(skill, sc.correct, sc.total);
+        }
+        finalize(skill, run, false);
+      } else finalize(skill, run, false);
+    }
+
+    const passed = !!run.passed;
+    const nextSkill = OBJECTIVE_SKILLS.find((s) => !test.passed.includes(s)) ?? (test.best.speaking === undefined ? 'speaking' : null);
+    const winReady = allObjectivePassed();
+    const extraLine = run.extra ? `<p class="done-sub">Soal bonus: ${run.extra.res.filter((r) => r === 1).length} dari ${run.extra.res.length} benar</p>` : '';
+    let html: string;
+    if (skill === 'speaking') {
+      html = `
+        <div class="done-wrap win">
+          <div class="sunburst mascot-pop" aria-hidden="true"><span class="face">${ui.emoji}</span><span class="crown">🎁</span></div>
+          <h2 class="win-banner">Babak Bonus Selesai!</h2>
+          <div class="boss-result-stars">${starsHtml(sc.pct)}</div>
+          <p class="done-sub">Kamu berani ngomong ${sc.correct} kalimat. Hebat! (tidak menentukan naik level)</p>`;
+    } else if (passed) {
+      html = `
+        <div class="done-wrap win">
+          <div class="sunburst mascot-pop" aria-hidden="true"><span class="face">${ui.emoji}</span><span class="crown">✅</span></div>
+          <h2 class="win-banner">Babak ${ui.label} Lolos!</h2>
+          <div class="boss-result-stars">${starsHtml(sc.pct)}</div>
+          <p class="done-sub">Benar <b>${sc.correct} dari ${sc.total}</b> soal.</p>${extraLine}`;
+    } else {
+      html = `
+        <div class="done-wrap">
+          <div class="sunburst mascot-pop" aria-hidden="true"><span class="face">💪</span></div>
+          <h2 class="h2" style="text-align:center">Belum lolos, gapapa!</h2>
+          <div class="boss-result-stars">${starsHtml(sc.pct)}</div>
+          <p class="done-sub">Benar <b>${sc.correct} dari ${sc.total}</b>. Target: ${need} dari ${sc.total}.</p>${extraLine}
+          ${missionHtml(skill, run)}
+          <p class="done-sub">Latihan dulu, lalu coba lagi dengan soal baru, ya!</p>`;
+    }
+    const buttons = [
+      winReady ? `<button class="primary-btn" type="button" data-action="bossWin">👑 Taklukkan Raja!</button>` : '',
+      !passed && skill !== 'speaking' ? `<button class="primary-btn" type="button" data-action="bossRetry">🔁 Coba Lagi (soal baru)</button>` : '',
+      !winReady && (passed || skill === 'speaking') && nextSkill && nextSkill !== skill
+        ? `<button class="primary-btn" type="button" data-action="bossGoSkill" data-payload="${nextSkill}">Babak Berikutnya: ${SKILL_UI[nextSkill].emoji} ${SKILL_UI[nextSkill].label} ➡️</button>`
+        : '',
+      (passed || skill === 'speaking') ? `<button class="ghost-btn" type="button" data-action="bossRetry">🔁 Main Lagi Babak Ini</button>` : '',
+      `<button class="ghost-btn" type="button" data-action="bossHub">🏰 Semua Babak</button>`,
+    ].join('');
+    container.innerHTML = `${html}<div class="boss-result-actions">${buttons}</div></div>`;
+    if (passed || skill === 'speaking') {
+      playCorrectTone();
+      fireConfetti(40);
+    }
+    setHandlers({
+      bossWin: () => cb.onWin(resultForWin()),
+      bossRetry: () => resume(skill, newRun(skill)),
+      bossGoSkill: (payload) => openSkill(payload as SkillKey),
+      bossHub: renderHub,
+      bossPractice: (payload) => {
+        const [s, t] = (payload ?? '').split('|');
+        cb.onPractice(s as SkillKey, t);
+      },
+    });
+  }
+
+  function renderBonusOffer(skill: SkillKey, correct: number, total: number): void {
+    setGameRoundActive(false);
+    setPlaying(false);
+    const ui = SKILL_UI[skill];
+    container.innerHTML = `
+      <div class="done-wrap">
+        <div class="sunburst mascot-pop" aria-hidden="true"><span class="face">${ui.emoji}</span><span class="crown">✨</span></div>
+        <h2 class="h2" style="text-align:center">Hampir lolos!</h2>
+        <p class="done-sub">Benar <b>${correct} dari ${total}</b> — kurang 1 lagi.</p>
+        <p class="done-sub">Jawab <b>${EXTRA_COUNT} soal bonus</b>. Benar semua = lolos! 💪</p>
+        <div class="boss-result-actions">
+          <button class="primary-btn" type="button" data-action="bossBonus">▶️ Mulai Soal Bonus</button>
+          <button class="ghost-btn" type="button" data-action="bossHub">🏰 Nanti Saja</button>
+        </div>
+      </div>`;
+    setHandlers({ bossBonus: () => drawQuestion(skill, 0, true), bossHub: renderHub });
+  }
+
+  renderHub();
 }

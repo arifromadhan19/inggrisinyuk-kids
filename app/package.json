@@ -8,8 +8,9 @@
     "typecheck": "tsc --noEmit",
     "verify:content": "node scripts/verify-vocab-content.mjs",
     "verify:duplicates": "node scripts/verify-content-duplicates.mjs",
+    "verify:boss": "node scripts/verify-boss-bank.mjs",
     "sync-images": "node scripts/sync-images.mjs",
-    "build": "npm run typecheck && npm run verify:content && npm run verify:duplicates && esbuild src/main.ts --bundle --outfile=public/bundle.js --format=iife --target=es2019 --minify",
+    "build": "npm run typecheck && npm run verify:content && npm run verify:duplicates && npm run verify:boss && esbuild src/main.ts --bundle --outfile=public/bundle.js --format=iife --target=es2019 --minify",
     "dev": "node dev-server.mjs",
     "dev:all": "node scripts/dev-all.mjs"
   },

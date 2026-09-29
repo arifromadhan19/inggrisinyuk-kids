@@ -124,6 +124,41 @@ export interface Store {
    *  ulang (hasContent + terbuka) tiap dipakai oleh `browsingLevel()`, jadi
    *  nilai basi/tidak valid otomatis diabaikan, bukan bikin layar rusak. */
   browseLevel: LevelKey | null;
+  /** Tantangan Raja (tes akhir level, `materi/test_level.md`) per level —
+   *  run tiap babak, babak yang sudah lolos (≥ 80%), skor terbaik, soal yang
+   *  baru dipakai (dihindari di percobaan berikut) & riwayat. Lokal
+   *  (seperti `gameStats`); ringkasan tiap babak ikut ke server lewat event
+   *  `boss_skill`. Naik level tetap dari `bossCleared`. */
+  bossTests: Record<string, BossLevelTest>;
+}
+
+/** 1 percobaan 1 babak. `res`: null = belum dijawab, 1/0 = benar/belum
+ *  tepat di percobaan pertama (Speaking: skor 0–1, -1 = dilewati krn tanpa
+ *  mic). `extra` = 3 soal bonus zona batas. */
+export interface BossSkillRun {
+  ids: string[];
+  res: (number | null)[];
+  extra?: { ids: string[]; res: (number | null)[] };
+  done?: boolean;
+  /** Hasil akhir run (diisi saat `done`). */
+  passed?: boolean;
+}
+
+export interface BossHistoryEntry {
+  at: string;
+  skill: SkillKey;
+  correct: number;
+  total: number;
+  passed: boolean;
+}
+
+export interface BossLevelTest {
+  runs: Partial<Record<SkillKey, BossSkillRun>>;
+  passed: SkillKey[];
+  /** Persentase terbaik per babak (0–100). */
+  best: Partial<Record<SkillKey, number>>;
+  recent: Partial<Record<SkillKey, string[]>>;
+  history: BossHistoryEntry[];
 }
 
 /** `kind` soal Latihan Inti (`games/vocabulary.ts` `LatihanQuestion`) — cuma
@@ -180,7 +215,7 @@ export interface SectionState {
  *  (volumenya beda: Store = state, ini = log, lihat TRD.md §3). */
 export interface LearningEventInput {
   id: string;
-  kind: 'answer' | 'speak' | 'interact' | 'topic_done' | 'boss_clear' | 'freeplay';
+  kind: 'answer' | 'speak' | 'interact' | 'topic_done' | 'boss_clear' | 'boss_skill' | 'freeplay';
   occurredAt: string;
   localDay: string;
   localHour: number;
@@ -236,6 +271,7 @@ const EMPTY: Store = {
   lastGame: null,
   gameStats: {},
   browseLevel: null,
+  bossTests: {},
 };
 
 function read(): Store {
@@ -271,6 +307,10 @@ function read(): Store {
       lastGame: typeof parsed.lastGame === 'string' ? parsed.lastGame : null,
       gameStats: sanitizeGameStats(parsed.gameStats, num),
       browseLevel: typeof parsed.browseLevel === 'string' ? (parsed.browseLevel as LevelKey) : null,
+      bossTests:
+        parsed.bossTests && typeof parsed.bossTests === 'object' && !Array.isArray(parsed.bossTests)
+          ? (parsed.bossTests as Record<string, BossLevelTest>)
+          : {},
     };
   } catch {
     // Storage bisa diblokir (mode privat). App tetap jalan, cuma tanpa progres.
@@ -853,6 +893,36 @@ export function markBossCleared(level: LevelKey): void {
   if (!already) recordEvent({ kind: 'boss_clear', level });
 }
 
+/* ---------------------------------------------- tantangan raja (tes) -- */
+
+function emptyBossTest(): BossLevelTest {
+  return { runs: {}, passed: [], best: {}, recent: {}, history: [] };
+}
+
+export function getBossTest(level: LevelKey): BossLevelTest {
+  const t = read().bossTests[level];
+  if (!t || typeof t !== 'object') return emptyBossTest();
+  return {
+    runs: t.runs && typeof t.runs === 'object' ? t.runs : {},
+    passed: Array.isArray(t.passed) ? t.passed : [],
+    best: t.best && typeof t.best === 'object' ? t.best : {},
+    recent: t.recent && typeof t.recent === 'object' ? t.recent : {},
+    history: Array.isArray(t.history) ? t.history : [],
+  };
+}
+
+export function saveBossTest(level: LevelKey, test: BossLevelTest): void {
+  const store = read();
+  store.bossTests[level] = { ...test, history: test.history.slice(-30) };
+  markActiveToday(store);
+  write(store);
+}
+
+/** Level yang pernah dicoba Tantangan Raja-nya (untuk Rapor). */
+export function bossTestLevels(): LevelKey[] {
+  return Object.keys(read().bossTests) as LevelKey[];
+}
+
 /**
  * Status buka/kunci tiap level di Peta Level (PRD tangga §3), konsep dipinjam
  * dari "World Map gating" + "Duel Verifikasi" `inggrisinyuk` (dewasa) — bukan
@@ -1406,6 +1476,7 @@ export function mergeFromServer(remote: Partial<Store> | null | undefined): void
     lastGame: local.lastGame,
     gameStats: local.gameStats,
     browseLevel: local.browseLevel,
+    bossTests: local.bossTests,
   });
 }
 

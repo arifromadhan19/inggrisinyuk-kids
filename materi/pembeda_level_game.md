@@ -503,3 +503,225 @@ Berlaku di semua markas:
 - [Cowan dkk. (2009), Investigating the childhood development of working memory using sentences](https://pubmed.ncbi.nlm.nih.gov/19539305/) · [Cowan (2016), Working memory maturation](https://memory.psych.missouri.edu/assets/doc/articles/2016/cowan-pps-2016-working-memory-maturation.pdf)
 - [Laufer & McLean (2016), Loanwords and vocabulary size test scores](https://www.researchgate.net/publication/307091093_Laufer_B_McLean_S_2016_Loanwords_and_vocabulary_size_test_scores_A_case_of_different_estimates_for_different_L1_learners_Language_Assessment_Quarterly_133_202-217)
 - [Duolingo Wiki — Exercise](https://duolingo.fandom.com/wiki/Exercise) · [Cambridge A2 Flyers Reading & Writing Part 1](https://www.cambridgeenglish.org/Images/584855--online-teaching-a2-flyers-reading-and-writing-part-1.pdf)
+
+---
+
+# Sound Hunt (Raja Pemburu Suara)
+
+Status: **sudah diimplementasi** (2026-09-29). Kode: `app/src/games/soundhunt.ts` (mesin & Map), `app/src/games/soundhunt-data.ts` (tabel tier + bank soal, satu-satunya tempat mengubah pembeda/soal). Di roster namanya "Sound Hunt" (`key: 'soundhunt'`, `/game/sound-hunt`). 6 markas Hutan Ajaib: Village Edge → Forest Entrance → Whispering Woods → Mushroom Garden → Crystal Cave → Castle Gate.
+
+## Ringkasan (High-Level)
+
+**Sebelum**: 1 markas = **1 soal saja** (seluruh game 6 soal). Keenam soal punya bentuk sama (dengar 1 instruksi → tap 1 dari 4 kartu) dan urutannya tidak naik: Legendaris "Find the rabbit." justru lebih mudah dari Sulit "Touch the blue star.".
+
+**Sekarang**: bentuk game tetap (dengar → tap gambar), tapi tiap markas menambah **SATU hal baru di instruksi yang didengar**: 1 kata → 1 kata dengan pengecoh sekelompok → warna + benda → angka + benda → 2 perintah berurutan → tebak dari deskripsi. **10 soal per markas**, bullet progress per soal, sama konsepnya dengan game lain:
+
+| Game | Isi 1 markas | Bullet progress |
+|---|---|---|
+| Word Quest | 10 papan | per papan |
+| Balloon Hunt | 10 kata | per kata |
+| Sentence Puzzle | 5 kalimat | per kalimat |
+| Memory Hunt | 5 papan | per papan |
+| **Sound Hunt** | **10 soal** | **per soal** |
+
+10 soal (bukan 5): 1 soal Sound Hunt cuma 1x dengar + 1 tap, secepat 1 balon di Balloon Hunt.
+
+## Kondisi Sebelum Dirombak [F]
+
+| Markas | Soal (satu-satunya) | Masalah |
+|---|---|---|
+| Pemanasan | Find the dog. | pengecoh 🐦 Bird & 🐟 Fish melanggar "Kepala SAJA" |
+| Mudah | Find the elephant. | 🐘 melanggar "Kepala SAJA" |
+| Sedang | Find the red apple. | 🍎 vs 🍏 — cuma 1 warna yang dibedakan |
+| Sulit | Touch the blue star. | "blue star" = ⭐ **kuning** di atas lingkaran biru (tidak ada emoji bintang biru) → gambar & kata tidak cocok |
+| Jago | Find the small cat. | ukuran lewat `font-size` 20px vs 40px |
+| Legendaris | Find the rabbit. | **lebih mudah** dari Sulit & Jago (1 kata benda polos) |
+
+- **Kartu jawaban berlabel teks** ("Blue Star", "Small Cat") → anak yang bisa membaca cukup mencocokkan tulisan, tidak perlu mendengar (CLAUDE.md "Soal Tidak Boleh Bisa Ditebak" pola #2; tugas Listening jadi Reading).
+- Bullet progress = markas yang sudah dikunjungi, bukan soal.
+- Data soal tidak dicek build.
+
+## Tangga Tier (Terimplementasi) [F]
+
+| Markas | Instruksi (contoh) | Pengecoh (4 kartu gambar) | 💡 Petunjuk | Tantangan baru |
+|---|---|---|---|---|
+| Pemanasan (Village Edge) | "Find the dog." | benda dari kelompok beda (anjing, bola, kue, pohon) | langsung | kenal 1 kata dari suara |
+| Mudah (Forest Entrance) | "Find the pear." | **satu kelompok** (4 buah / 4 hewan / 4 kendaraan / 4 makanan) | langsung | bedakan kata sekelompok dari suara |
+| Sedang (Whispering Woods) | "Find the blue book." | benda sama beda warna + warna sama beda benda (📘 📕 💙 ❤️) | langsung | dengar **2 kata** sekaligus (warna + benda) — Starters Listening Part 4 "listen and colour" |
+| Sulit (Mushroom Garden) | "Find four stars." | jumlah ±1 + benda lain jumlah sama (⭐⭐⭐⭐ ⭐⭐⭐ 📖📖📖📖 📖📖📖) | langsung | dengar **angka** + benda jamak — Starters Listening Part 2 |
+| Jago (Crystal Cave) | "Tap the cow, then tap the bus." | 4 benda acak; tap **2 berurutan** (kartu diberi nomor 1, 2) | 🔒 sampai 1x coba | ikuti **perintah 2 langkah** (simpan urutan di ingatan) |
+| Legendaris (Castle Gate) | "It says moo. It gives us milk." | 3 benda yang cocok **sebagian** ciri (babi, kuda, anjing) | 🔒 sampai 1x coba | pahami **deskripsi** tanpa nama bendanya |
+
+Berlaku di semua markas:
+- **10 soal per markas** (`ROUND_COUNT`), bullet 1–10. Instruksi diputar otomatis tiap soal dibuka + tombol "🔊 Dengar" (bebas diulang).
+- **Kartu jawaban gambar saja**, tanpa tulisan (label cuma `aria-label`).
+- 💡 Petunjuk = teks Inggris + arti Indonesia (arti dibacakan). Yang sudah terbuka tetap terbuka saat "Coba Lagi".
+- Benar → nada + confetti + pujian + 💎 (1 Sound Crystal per soal, total 60). Salah → merah + getar + tetot + teks semangat. Selalu ada "🔁 Coba Lagi" / "Lanjut ➡️" (non-punitive, soal salah tetap boleh dilewati).
+- Soal diambil dari antrian acak (semua keluar dulu sebelum berulang), posisi jawaban diacak.
+
+## Implementasi [F]
+
+- `TIER_CONFIG` (`soundhunt-data.ts`): per markas `mode` (`find`/`color`/`count`/`sequence`/`riddle`), `hintGated`, `badge` (label jenis soal di atas tombol Dengar).
+- Bank: `WARMUP_BANK` (12 benda, Pemanasan), `GROUP_BANK` (4 kelompok × 7–8, Mudah), `COLOR_BANK` + `COLOR_ID` (5 benda berwarna, Sedang), `COUNT_BANK` + `NUMBER_WORDS` (8 benda × angka 2–5, Sulit), Jago memakai gabungan bank Pemanasan+Mudah, `RIDDLE_BANK` (12 teka-teki, Legendaris).
+- Mesin (`buildQuestions()` di `soundhunt.ts`): soal dibuat saat markas dibuka; mode `sequence` punya 2 indeks jawaban yang harus ditap berurutan (tap pertama benar → kartu hijau bernomor 1 + nada benar kecil, tunggu tap kedua).
+- **Build** (`verify-vocab-content.mjs`): denylist emoji makhluk hidup; emoji tidak kembar di bank Pemanasan+Mudah (dipakai bersama di Jago); tiap kelompok ≥4 benda; tiap warna dimiliki ≥2 benda & tiap benda ≥2 warna; teka-teki 4 opsi beda, berarti, dan tidak menyebut nama jawabannya.
+- CSS (`public/styles.css`): `.sh-badge`, `.sh-card`, `.sh-picked`, `.sh-order`. Dihapus: hack `tint`/`size` inline.
+- 6 markas lama tetap (nama, emoji, urutan); kalimat pemandu disesuaikan dengan jenis soal barunya.
+- **Diverifikasi live** (Playwright, 390px & 1280px): keenam markas × 10 soal dituntaskan dalam 1 sesi sampai "Misi Hutan Selesai!" (60/60 💎); di tiap markas 1 jawaban salah diuji (kartu merah), 🔒 Petunjuk Jago/Legendaris terbuka setelah 1x coba, Petunjuk tetap terbuka saat "Coba Lagi"; soal ke-10 = "Lanjut ➡️", markas terakhir = "Selesai ✅"; tanpa scroll horizontal; 0 pageerror.
+
+## Bukti Riset per Sumbu
+
+| Sumbu | Temuan | Dipakai di |
+|---|---|---|
+| **Format tes Listening anak** | Cambridge Pre A1 Starters Listening: Part 2 tulis nama/angka, Part 3 dengar lalu centang 1 dari 3 gambar, Part 4 **dengar lalu warnai** benda sesuai instruksi. | Pemanasan–Mudah (tunjuk gambar), Sedang (warna), Sulit (angka) |
+| **Interferensi semantik** | Kata satu kategori yang muncul bersamaan saling mengganggu → lebih sulit (Tinkham 1997, lihat Word Quest). | Mudah (4 kartu sekelompok) |
+| **Pengecoh 2 dimensi** | Pengecoh yang mirip di satu ciri & beda di ciri lain memaksa anak memperhatikan kedua ciri (distractor plausibility, Ludewig dkk. 2023). | Sedang & Sulit (pengecoh warna/benda, angka/benda) |
+| **Perintah bertahap** | Mengikuti instruksi lisan beberapa langkah membebani memori kerja; kemampuan ini naik seiring usia dan bervariasi antar anak (Gathercole dkk. 2008; studi 2026 soal waktu & pengulangan instruksi). | Jago (2 langkah — bukan 3, supaya tetap terjangkau anak kecil; replay tanpa batas) |
+| **Deskripsi → benda** | Tingkat atas Cambridge (Flyers R&W Part 1) mencocokkan definisi dengan kata; dalam Listening berarti memahami seluruh kalimat, bukan 1 kata kunci. | Legendaris (teka-teki, pengecoh cocok sebagian ciri) |
+| **Fading bantuan** | Bantuan dikurangi bertahap (lihat Word Quest). | Petunjuk langsung di 4 markas awal, 🔒 sampai 1x coba di Jago/Legendaris |
+
+## Yang SENGAJA Tidak Dibedakan
+
+- **Tanpa timer, nyawa, batas dengar ulang.** Replay bebas di semua markas (riset Listening app ini: putar ulang menurunkan cemas, `pembeda_level.md` § Listening).
+- **Kecepatan suara** ikut setelan app (0.75x default), tidak dipercepat di markas atas.
+- **4 kartu di semua markas** (grid 2×2 rapi di HP & desktop).
+- **Unlock markas "cukup pernah dituntaskan"**, progres tidak disimpan, tidak ditautkan ke `LevelKey` anak (konsisten game lain).
+
+## Gotcha
+
+- Kartu **tanpa tulisan** itu sengaja — jangan tambahkan label kembali (game ini Listening, bukan Reading).
+- Menambah warna Sedang: warna itu harus dimiliki ≥2 benda (📙 oranye dibuang karena cuma buku yang punya). Jangan pakai "tint" di belakang emoji untuk memalsukan warna.
+- Angka Sulit maksimal 5 (lebih dari itu ikon jadi terlalu kecil di kartu); pakai benda yang emojinya 1 benda tunggal (bukan 🍇 setandan — aturan Jumlah Ikon).
+- Teka-teki: jangan sebut nama bendanya (dicek build), pengecoh cocok sebagian ciri tapi **tidak** seluruhnya (Lemon kuning tapi tidak panjang). Hindari pengecoh yang juga cocok seluruhnya (sofa untuk "You sleep on it").
+- Jago: benda di bank Pemanasan+Mudah tidak boleh ber-emoji sama (build), kalau tidak anak tidak bisa membedakan 2 kartu.
+- TTS: instruksi Inggris lewat `speak()`, arti Petunjuk lewat `speakLater(speakLocalized(...))` supaya ikut berhenti saat keluar (aturan audio).
+
+## Batasan Riset (Jujur)
+
+- Belum ada studi khusus game "dengar & tunjuk" untuk anak Indonesia; tangga diambil dari format Cambridge YLE & riset memori kerja umum.
+- Kata di bank belum dicek dengan skrip ke wordlist Cambridge; sebagian (pineapple, helicopter, watermelon) mungkin di atas Starters walau dipakai di markas Mudah — dengan kartu bergambar risikonya kecil.
+- Tangga belum diuji ke anak.
+
+## Sumber
+
+- Kode: `app/src/games/soundhunt.ts`, `app/src/games/soundhunt-data.ts`, `app/scripts/verify-vocab-content.mjs`
+- [Cambridge Pre A1 Starters, A1 Movers & A2 Flyers Sample Papers (2018)](https://www.cambridgeenglish.org/images/young-learners-sample-papers-2018-vol1.pdf) · [Sample Papers Volume 2](https://www.cambridgeenglish.org/Images/722536-cambridge-english-young-learners-sample-papers-volume-2.pdf)
+- [Collins — Pre A1 Starters Teacher's Guide (format tiap Part)](https://resources.collins.co.uk/Samples/ELT/74863_Pre_A1_Starters_Teacher's_Guide.pdf)
+- [Gathercole dkk. (2008), Working memory abilities and children's performance in laboratory analogues of classroom activities](https://onlinelibrary.wiley.com/doi/10.1002/acp.1407)
+- [Following Spoken Instructions in School-Aged Children and Young Adults: Does Giving More Time or Repeating Instructions Help? (2026)](https://www.tandfonline.com/doi/full/10.1080/15248372.2026.2649214)
+- [Tinkham (1997), The effects of semantic and thematic clustering on L2 vocabulary learning](https://journals.sagepub.com/doi/10.1191/026765897672376469)
+- [Ludewig dkk. (2023), Distractor Plausibility in Synonym-Based Vocabulary Tests](https://journals.sagepub.com/doi/10.1177/07342829231167892)
+- [Cambridge A2 Flyers Reading & Writing Part 1](https://www.cambridgeenglish.org/Images/584855--online-teaching-a2-flyers-reading-and-writing-part-1.pdf)
+
+---
+
+# Story Quest (Raja Cerita)
+
+Status: **sudah diimplementasi** (2026-09-29). Kode: `app/src/games/storyquest.ts` (mesin & Map), `app/src/games/storyquest-data.ts` (tabel tier + 6 cerita, satu-satunya tempat mengubah pembeda/cerita). Di roster namanya "Story Quest" (`key: 'storyquest'`, `/game/story-quest`). 6 markas = 6 cerita: Mia at the Park → The Lost Puppy → The Missing Kite → Rani's Science Project → Rescue on the Hill → The Time Capsule Mystery.
+
+## Ringkasan (High-Level)
+
+**Sebelum**: sudah ada beberapa soal per markas (1 cerita, 3–5 halaman, 1 soal per halaman), tapi **pembedanya cuma cerita makin panjang & kosakata makin sulit**. Semua 25 soal bertipe sama, "cari fakta yang tertulis", dan **21 dari 25 bisa dijawab dengan mencocokkan kata** (jawaban benar = satu-satunya opsi yang paling banyak memakai kata dari teks: "A red collar" ↔ "a red collar"). 💡 Petunjuk menyebut langsung "baca kalimat kedua".
+
+**Sekarang**: tiap markas = 1 cerita **5 halaman = 5 soal** (sama dengan Sentence Puzzle & Memory Hunt), dan yang naik tiap markas = **jenis pemahaman** yang diuji, bentuk jawaban, dan bantuan:
+
+| Game | Isi 1 markas | Bullet progress |
+|---|---|---|
+| Word Quest | 10 papan | per papan |
+| Balloon Hunt | 10 kata | per kata |
+| Sentence Puzzle | 5 kalimat | per kalimat |
+| Memory Hunt | 5 papan | per papan |
+| Sound Hunt | 10 soal | per soal |
+| **Story Quest** | **5 halaman** | **per halaman** |
+
+5 halaman (bukan 10): 1 soal Story Quest = membaca 2–4 kalimat dulu, lebih lama dari 1 soal game lain.
+
+## Kondisi Sebelum Dirombak [F]
+
+Skrip ukur (kata isi, tanpa kata tugas; jamak disamakan):
+
+| Markas | Halaman | Jawaban benar = satu-satunya opsi yang berbagi kata dgn teks | Jawaban benar = opsi paling banyak berbagi kata |
+|---|---|---|---|
+| Pemanasan | 3 | 1/3 | 2/3 |
+| Mudah | 5 | 4/5 | 4/5 |
+| Sedang | 4 | 4/4 | 4/4 |
+| Sulit | 4 | 2/4 | 4/4 |
+| Jago | 4 | 2/4 | 3/4 |
+| Legendaris | 5 | 2/5 | 4/5 |
+
+- **Satu jenis soal di semua markas**: info tersurat ("What does Tom see?", "Where is the kite stuck?"). Soal "How does X feel?" pun jawabannya hampir tertulis ("smiles" → Happy).
+- **Petunjuk menunjuk kalimat** ("Kalimat kedua bilang…") + coret 2 opsi, sama di Pemanasan & Legendaris.
+- **Opsi salah cuma dinonaktifkan** sampai anak menemukan jawaban → bisa diketuk satu per satu (maks 3 salah).
+- **Jumlah halaman tidak rata** (3/5/4/4/4/5).
+- **Ikon**: 🐦 & 👴 (denylist build), 🦅 elang badan penuh (sampul & halaman), 🐛; ikon tidak relevan untuk jawaban abstrak (🔴 untuk "a red collar", 🤝 untuk "Tightly", 🧵 untuk "cuts the wire", 😴 untuk "Loosely").
+- 🔊 Dengar (TTS opt-in) tersedia di semua markas.
+
+## Tangga Tier (Terimplementasi) [F]
+
+| Markas | Teks/halaman | Jenis soal (baru) | Contoh | Opsi | 🔊 Dengar | 💡 Petunjuk |
+|---|---|---|---|---|---|---|
+| Pemanasan | 2 kalimat | info tersurat, **jawab dengan gambar** | "Mia has a kite." → tunjuk 🪁 | gambar saja | ada | sorot kalimat bukti + coret 2 |
+| Mudah | 3 kalimat | info tersurat, **pengecoh ikut disebut di teks** | "Tom gives it some water, not food." → Water (bukan Food) | gambar + teks | ada | sorot kalimat bukti + coret 2 |
+| Sedang | 3 kalimat | **rujukan kata ganti** (she/he/it/"the boy" = siapa?) | "At the market, Sam meets Mrs. Rosa and Mr. Tono. She saw the kite…" → Mrs. Rosa | teks | — | sorot kalimat bukti |
+| Sulit | 3 kalimat | **parafrase** (jawaban benar pakai kata lain, pengecoh pakai kata dari teks) | "nothing has come out of the soil" → "The plant has not grown." | teks | — | sorot kalimat bukti |
+| Jago | 3 kalimat | **simpulkan yang tidak tertulis** (perasaan, alasan, siapa) | "…a small 'meow' from a tall tree." → A kitten | teks | — | 🔒 sampai 1x coba, sorot kalimat |
+| Legendaris | 4 kalimat | **gabungkan beberapa kalimat** (hitung, lokasi, tebak kelanjutan) | "two letters… gives one letter to his teacher" → One | teks | — | 🔒 sampai 1x coba, sorot kalimat |
+
+Berlaku di semua markas:
+- **5 halaman per markas**, bullet 1–5, posisi opsi diacak tiap halaman.
+- Jawaban salah = pola raja lain: kartu merah + getar + tetot + teks semangat, lalu "🔁 Coba Lagi" (halaman sama, Petunjuk yang sudah terbuka tetap) / "Lanjut ➡️" (non-punitive). Jawaban benar = nada + confetti + pujian.
+- 💡 Petunjuk menyorot kalimat bukti di halaman + 1 kalimat penuntun Indonesia yang **tidak** menyebut jawaban dan tidak lagi menyebut nomor kalimat.
+- Jawaban berupa kalimat (Sedang ke atas) tampil sebagai daftar 1 kolom supaya tidak terpotong.
+
+## Implementasi [F]
+
+- `TIER_CONFIG` (`storyquest-data.ts`): per markas `answer` (`picture`/`picture-text`/`text`), `listen`, `eliminate`, `hintGated`, `badge` (label jenis soal di atas pertanyaan).
+- `StoryPage`: `lines`, `question`, `options` (`emoji` hanya di markas bergambar), `answer`, `evidence` (indeks kalimat bukti), `clue`.
+- Mesin (`runStoryBookRound`): opsi diacak per halaman, kalimat bukti diberi `.is-evidence` saat 💡, 🔒 Petunjuk terbuka setelah 1x mencoba.
+- **Build** (`verify-vocab-content.mjs`): tiap cerita tepat 5 halaman; 4 opsi beda; jawaban & bukti valid; clue wajib; emoji wajib di markas bergambar; denylist emoji (sampul, adegan, opsi); **anti-tebak**: jawaban benar tidak boleh jadi satu-satunya opsi yang paling banyak memakai kata dari teks halaman (cek ini langsung menangkap 2 soal saat penulisan & sudah diperbaiki).
+- CSS (`public/styles.css`): `.story-line.is-evidence`, `.opt-grid.sq-list`; `.sh-badge` dipakai bersama Sound Hunt.
+- Cerita: "The Lost Puppy" (Mudah), "The Missing Kite" (Sedang), "The Time Capsule Mystery" (Legendaris) dipertahankan tokohnya tapi ditulis ulang per jenis soal; Pemanasan, Sulit ("Rani's Science Project"), & Jago ("Rescue on the Hill", pengganti elang badan penuh → anak kucing) ditulis baru/dirombak.
+- **Diverifikasi live** (Playwright, 390px & 1280px): keenam markas × 5 halaman dituntaskan dalam 1 sesi sampai "Semua Cerita Selesai!"; di tiap halaman 1 jawaban salah (merah + teks semangat) → Coba Lagi → Petunjuk (kalimat bukti tersorot; coret 2 opsi hanya di Pemanasan/Mudah; 🔒 di Jago/Legendaris sebelum mencoba) → jawaban benar; kartu gambar saja di Pemanasan, gambar+teks di Mudah, teks di atasnya; 🔊 cuma di Pemanasan/Mudah; halaman 5 markas terakhir = "Selesai ✅"; tanpa scroll horizontal; 0 pageerror.
+
+## Bukti Riset per Sumbu
+
+| Sumbu | Temuan | Dipakai di |
+|---|---|---|
+| **Proses membaca** | PIRLS membagi pemahaman jadi 4 proses: temukan info tersurat → simpulkan yang lugas → tafsirkan & gabungkan → evaluasi. Taksonomi Barrett: literal → reorganisasi → inferensi → evaluasi. | Urutan markas: tersurat → kata ganti → parafrase → simpulkan → gabungkan |
+| **Rujukan kata ganti** | Menentukan rujukan kata ganti (anaphora) adalah keterampilan kohesi yang sulit bagi pembaca pemula & L2. Reading Achiever di app ini juga sudah punya soal "🔗 Tunjuk Rujukan" (`pembeda_level.md` § Reading). | Sedang |
+| **Parafrase** | Soal yang jawabannya memakai kata sama persis dengan teks cuma menguji pencocokan kata (*lexical matching*), bukan pemahaman; soal yang baik memparafrase. | Sulit + cek anti-tebak build |
+| **Pengecoh dari teks** | Pengecoh yang disebut di teks (tapi bukan jawaban) lebih plausibel & menaikkan daya beda soal (Ludewig dkk. 2023). | Mudah ("not food", "stays home") dan semua markas teks |
+| **Format Cambridge** | Starters R&W: baca kalimat → tunjuk/centang gambar; Movers/Flyers: cerita + jawab/lengkapi, pilih jawaban dari beberapa kalimat. | Pemanasan (gambar), Mudah–Legendaris (cerita + opsi) |
+| **Fading bantuan** | Bantuan dikurangi bertahap (lihat Word Quest); lensa CLAUDE.md: Reading yang dibacakan TTS diam-diam menguji Listening. | 🔊 cuma di 2 markas awal; coret opsi → sorot kalimat → 🔒 |
+
+## Yang SENGAJA Tidak Dibedakan
+
+- **Tanpa timer, nyawa, skor kecepatan.** Halaman salah tetap boleh dilewati.
+- **🔊 Dengar tidak pernah auto-play** (Reading, bukan Listening) — cuma tombol di Pemanasan/Mudah.
+- **4 opsi di semua markas.**
+- **Unlock markas "cukup pernah dituntaskan"**, progres tidak disimpan, tidak ditautkan ke `LevelKey` anak.
+
+## Gotcha
+
+- Menulis soal baru: jawaban benar **jangan** menyalin kata dari kalimat bukti; pengecoh justru boleh memakai kata dari teks (build menolak jawaban yang jadi satu-satunya opsi paling mirip teks).
+- Soal Sedang (kata ganti): teks harus menyebut ≥2 orang/benda supaya "she/he/it" memang perlu dipecahkan (contoh perbaikan: "Mrs. Rosa and Mr. Tono … She saw the kite, but he did not").
+- Soal Jago: jawabannya **tidak boleh tertulis** di teks, tapi harus bisa disimpulkan dengan pasti (hindari pengecoh yang juga masuk akal, mis. "Hungry" untuk anak kucing yang menangis — diganti "Proud"/"Bored").
+- Soal Legendaris hitungan: angka di teks & di opsi harus ditulis sama (kata "one/two/three"), supaya opsi salah juga memakai angka dari teks.
+- Opsi markas teks **tanpa emoji** — jawaban berupa kalimat tidak punya ikon yang relevan (aturan Ikon Wajib Relevan).
+- `clue` jangan menyebut nomor kalimat — 💡 sudah menyorot kalimatnya.
+
+## Batasan Riset (Jujur)
+
+- Tangga PIRLS/Barrett disusun untuk bahasa ibu; untuk anak Indonesia yang membaca bahasa Inggris, urutan kesulitan kata ganti vs parafrase belum diukur langsung.
+- Cek anti-tebak memakai heuristik kata sederhana (tanpa sinonim/lema), jadi lolos cek ≠ pasti tidak bisa ditebak; tetap perlu dibaca manual.
+- 1 cerita per markas → mengulang markas = cerita yang sama (urutan opsi saja yang berubah). Menambah cerita kedua per markas bisa jadi langkah berikutnya.
+- Tangga belum diuji ke anak.
+
+## Sumber
+
+- Kode: `app/src/games/storyquest.ts`, `app/src/games/storyquest-data.ts`, `app/scripts/verify-vocab-content.mjs`
+- [PIRLS 2021 Assessment Framework — Processes of Comprehension](https://pirls2021.org/frameworks/home/reading-assessment-framework/processes-of-comprehension/index.html)
+- [The Barrett Taxonomy of Cognitive and Affective Dimensions of Reading](http://www.joebyrne.net/Curriculum/barrett.pdf)
+- [Ludewig dkk. (2023), Distractor Plausibility in Synonym-Based Vocabulary Tests](https://journals.sagepub.com/doi/10.1177/07342829231167892)
+- [Cambridge Pre A1 Starters, A1 Movers & A2 Flyers Sample Papers (2018)](https://www.cambridgeenglish.org/images/young-learners-sample-papers-2018-vol1.pdf)
+- [Cambridge A2 Flyers Reading & Writing Part 1](https://www.cambridgeenglish.org/Images/584855--online-teaching-a2-flyers-reading-and-writing-part-1.pdf)
