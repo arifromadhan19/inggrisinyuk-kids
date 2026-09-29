@@ -1117,6 +1117,36 @@ function buildPlacementResultCard(): string {
 /** 🏰 Hasil Tantangan Raja per level (tes akhir level, `materi/test_level.md`
  *  §5.5, pola Statement of Results Cambridge) — bintang terbaik tiap babak +
  *  status lolos. Disembunyikan kalau belum pernah dicoba. */
+/** Kalimat "Anak bisa…" (orang tua) per babak yang LOLOS — disarikan dari
+ *  deskriptor CEFR young learners & can-do Cambridge YLE per jenjang
+ *  (`materi/test_level.md` §5.5). Tier sama dgn pembeda level materi. */
+const CAN_DO: Record<'dasar' | 'menengah' | 'lanjut', Record<SkillKey, string>> = {
+  dasar: {
+    vocabulary: 'Kenal kata sehari-hari dari gambar & suara',
+    listening: 'Paham kalimat sangat pendek yang diucapkan',
+    reading: 'Bisa membaca kata & kalimat pendek bergambar',
+    grammar: 'Bisa membedakan pola dasar (satu/banyak, ya/tidak)',
+    speaking: 'Berani menirukan kata & frasa pendek',
+  },
+  menengah: {
+    vocabulary: 'Paham arti kata topik sehari-hari, Inggris ↔ Indonesia',
+    listening: 'Paham cerita & percakapan pendek sehari-hari',
+    reading: 'Bisa membaca teks pendek & menemukan informasinya',
+    grammar: 'Bisa memilih bentuk kata yang tepat dalam kalimat',
+    speaking: 'Bisa menjawab pertanyaan pendek dengan kalimat',
+  },
+  lanjut: {
+    vocabulary: 'Paham kosakata sekolah, hobi & pendapat',
+    listening: 'Paham inti & detail percakapan, termasuk menyimpulkan',
+    reading: 'Bisa membaca teks panjang & menilai pernyataan',
+    grammar: 'Bisa memakai pola kalimat lanjutan',
+    speaking: 'Bisa menyampaikan pendapat singkat dengan alasan',
+  },
+};
+function canDoTier(level: LevelKey): 'dasar' | 'menengah' | 'lanjut' {
+  return level === 'little-stars' || level === 'starter' ? 'dasar' : level === 'explorer' || level === 'adventurer' ? 'menengah' : 'lanjut';
+}
+
 function buildBossResultCard(): string {
   const levels = LEVELS.filter((l) => bossTestLevels().includes(l.key) && Object.keys(getBossTest(l.key).best).length > 0);
   if (!levels.length) return '';
@@ -1127,7 +1157,8 @@ function buildBossResultCard(): string {
         .map((k) => {
           const pct = t.best[k];
           const status = k === 'speaking' ? 'bonus' : t.passed.includes(k) ? '✅ lolos' : pct === undefined ? 'belum dicoba' : '💪 latihan lagi';
-          return `<li><span class="stat-list-ic" aria-hidden="true">${SKILL_META[k].emoji}</span><span class="stat-list-label">${SKILL_META[k].label} <span class="meta">· ${status}</span></span><span class="stat-list-value">${pct === undefined ? '–' : skillStarsHtml(pct)}</span></li>`;
+          const canDo = t.passed.includes(k) ? `<span class="can-do">${CAN_DO[canDoTier(l.key)][k]}</span>` : '';
+          return `<li><span class="stat-list-ic" aria-hidden="true">${SKILL_META[k].emoji}</span><span class="stat-list-label">${SKILL_META[k].label} <span class="meta">· ${status}</span>${canDo}</span><span class="stat-list-value">${pct === undefined ? '–' : skillStarsHtml(pct)}</span></li>`;
         })
         .join('');
       const last = t.history[t.history.length - 1];

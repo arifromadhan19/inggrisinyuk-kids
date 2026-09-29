@@ -734,33 +734,6 @@ body.is-boss-play .tabbar{ display:none; }
 .boss-arena-body{ position:relative; z-index:1; flex:1; min-width:210px; }
 .boss-arena-body h2{ font-family:var(--font-head); font-size:var(--fs-h2); }
 .boss-arena-body p{ font-size:var(--fs-meta); font-weight:700; color:#7A4A08; margin-top:3px; }
-.boss-phases{ display:flex; gap:6px; margin-top:11px; flex-wrap:wrap; }
-.boss-phase{
-  display:inline-flex; align-items:center; gap:5px;
-  background:rgba(255,255,255,.78); border-radius:var(--r-pill);
-  padding:5px 11px; font-size:var(--fs-eyebrow); font-weight:800; color:#7A4A08;
-}
-/* 🔒 Permintaan user: "test ini per materi... button vocab/listening/dst
-   bisa diklik, ketika berada dalam materi test warnanya dibuat pekat/
-   dibedakan" — dirender sbg `<button>` beneran (`games/boss.ts`
-   `skillPillsHtml()`) supaya anak bebas pilih urutan kegiatan sendiri,
-   bukan gauntlet linear terkunci (preview statis `<span>` yang dulu ada di
-   Arena, `app.ts`, SUDAH DIHAPUS — redundan, ini SEKARANG satu-satunya
-   pemakai `.boss-phase`, jadi reset tombol boleh langsung di kelas dasar). */
-.boss-phase{ border:2px solid var(--line); cursor:pointer; font-family:inherit; transition:transform .12s ease, background .15s ease, color .15s ease, box-shadow .15s ease, border-color .15s ease; }
-.boss-phase:active{ transform:scale(.96); }
-/* Kegiatan yang SEDANG dikerjakan — warna pekat/solid (permintaan user),
-   beda jelas dari pill lain yang masih pucat/translusen. Border ikut warna
-   isian (bukan `--line` netral lagi) spy tidak ada cincin nyempil di dalam
-   box-shadow. */
-.boss-phase.active{ background:var(--brand-500); border-color:var(--brand-500); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
-/* Kegiatan yang SUDAH tuntas semua rondenya — hijau checkmark, pola sama
-   `.quiz-dot.done`, supaya anak lihat sekilas sisa berapa yang belum. Border
-   sendiri (di atas) SUDAH jadi cincinnya — tidak perlu box-shadow lagi di
-   sini (beda dari `.quiz-dot.done` yg dasarnya `border:none`). */
-.boss-phase.done{ background:var(--ok-bg); border-color:var(--ok); color:var(--ok); }
-.boss-phase.active.done{ background:var(--ok); border-color:var(--ok); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
-
 /* ------------------------------------------------------- daftar materi --- */
 .screen-head{ display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s4); }
 .screen-head .txt{ min-width:0; flex:1; }
@@ -3292,3 +3265,6 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .opt-grid.sq-list .opt-btn.answer-card{ padding:14px 16px; }
 .opt-grid.sq-list .answer-card-bottom{ width:100%; justify-content:space-between; }
 .opt-grid.sq-list .answer-card-label{ text-align:left; }
+/* Rapor "🏰 Hasil Tantangan Raja": kalimat "Anak bisa…" di bawah babak lolos. */
+.stat-list-label .can-do{ display:block; font-size:.75rem; font-weight:600; color:var(--ok); margin-top:2px; }
+.stat-list-label .can-do::before{ content:'✓ '; }

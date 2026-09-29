@@ -459,7 +459,13 @@ Tiap tahap diverifikasi `npm run build` + browser 390px & 1280px di 6 level.
 - Tahap 3 (aturan): ≥ 80% per babak utama, 3 soal bonus kalau kurang tepat 1, 3 hasil (lolos / hampir → bonus / belum lolos + misi), Speaking bonus. "Menuju level berikutnya" = ½ materi level ini tuntas + ½ babak lolos (dulu salah hitung lintas level).
 - Tahap 4 (Rapor): kartu bintang terbaik tiap babak + status per level.
 - **Verifikasi**: `npm run build` lolos (termasuk `scripts/verify-boss-bank.mjs`, permanen); skrip bank (semua soal 6 level × 5 skill, sampel 30 pick/skill) → 0 soal tanpa tepat 1 jawaban benar / opsi kembar; Playwright 390px & 1280px di 6 level (Arena + soal pertama tiap babak + jawab) → 0 pageerror, tanpa scroll horizontal; alur lolos → menang ("Raja Kelinci Ditaklukkan!"), hampir → soal bonus → belum lolos → misi membuka Latihan Inti topik yang tepat, lanjut setelah reload (soal 6/20), popup keluar hanya di layar soal, kartu Rapor tampil.
-- **Belum dikerjakan**: kalimat "Anak bisa…" per skill di Rapor (§5.5); `bossTests` belum ditarik balik dari server saat pindah perangkat (lokal, seperti `gameStats` — ringkasan tetap tercatat di server lewat event `boss_skill`).
+- **Lanjutan (sesi yang sama)**:
+  - *Anti-tebak*: Vocab "dengar" Dasar = kartu gambar saja (tulisan = bunyi yang diucapkan); topik tanpa gambar aman / `iconAmbiguous` tidak dapat tipe ini. Reading Lengkapi Cerita/Rujukan: pengecoh dari baris SELAIN bukti & sejenis (nama↔nama, angka↔angka, kata awal kalimat bukan nama). Soal bentuk khas level (cerita/catatan/dialog ber-pengecoh, bentuk Cambridge) dijatah ⅔.
+  - *Speaking*: diuji dgn mic tiruan (Playwright, SpeechRecognition palsu + perangkat audio palsu) di 5 level — skor proporsional (ucapan lengkap ⭐⭐⭐, separuh ⭐⭐, lain ⭐), "▶️ Play Suaramu" aktif, hasil bonus tercatat.
+  - *Sinkron antar perangkat*: kolom `child_progress_state.boss_tests` (JSONB, migrasi `20260929090000_add_boss_tests`), disimpan `upsertStoreSnapshot` & dikirim balik `rebuildStoreForChild`; `mergeFromServer` → `mergeBossTests` (babak lolos union, skor terbaik max, riwayat digabung, run yang sedang dikerjakan di perangkat ini menang). Diuji: SQL simpan/baca (transaksi ROLLBACK) & skenario 2 perangkat.
+  - *Rapor*: kalimat "Anak bisa…" (✓ hijau) di bawah tiap babak lolos, 3 tier (`CAN_DO`, `app.ts`).
+  - `scripts/verify-boss-bank.mjs` masuk `npm run build`; CSS `.boss-phase*` lama dihapus.
+- **Masih terbuka (butuh orang/konten)**: uji ke anak sungguhan (ambang 80% di Little Stars paling ketat); di Listening Dasar kata jawaban memang terdengar di kalimat (perlu penulisan ulang konten ala Cambridge — pengecoh ikut disebut); uji mic di HP asli.
 
 ---
 

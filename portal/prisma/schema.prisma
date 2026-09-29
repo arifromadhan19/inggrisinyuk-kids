@@ -96,6 +96,12 @@ model ChildProgressState {
 
   lastActiveDay String? @map("last_active_day") @db.VarChar(10)
 
+  /** `Store.bossTests` (Tantangan Raja = tes naik level, app/src/progress.ts)
+   *  — JSON utuh per level (run, babak lolos, skor terbaik, riwayat). Klien
+   *  sudah menggabung data server + lokal sebelum mengirim (`mergeFromServer`),
+   *  jadi di sini cukup simpan versi terbaru. */
+  bossTests Json? @map("boss_tests")
+
   clientUpdatedAt DateTime? @map("client_updated_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 

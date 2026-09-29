@@ -1439,6 +1439,40 @@ function mergeSections(
   return out;
 }
 
+/** Tantangan Raja dari perangkat lain — babak lolos di-union (tidak pernah
+ *  hilang), skor terbaik max, riwayat digabung (dedupe per waktu+babak).
+ *  Run yang SEDANG dikerjakan: punya perangkat ini menang kalau ada (anak
+ *  sedang melihatnya); kalau tidak ada, ambil punya server supaya bisa
+ *  dilanjutkan di perangkat ini. */
+function mergeBossTests(local: Record<string, BossLevelTest>, remote: unknown): Record<string, BossLevelTest> {
+  if (!remote || typeof remote !== 'object' || Array.isArray(remote)) return local;
+  const out: Record<string, BossLevelTest> = { ...local };
+  for (const [lvl, rv] of Object.entries(remote as Record<string, Partial<BossLevelTest>>)) {
+    if (!rv || typeof rv !== 'object') continue;
+    const lv = local[lvl];
+    const rPassed = Array.isArray(rv.passed) ? rv.passed : [];
+    const rHistory = Array.isArray(rv.history) ? rv.history : [];
+    const rBest = rv.best && typeof rv.best === 'object' ? rv.best : {};
+    const rRuns = rv.runs && typeof rv.runs === 'object' ? rv.runs : {};
+    if (!lv) {
+      out[lvl] = { runs: rRuns, passed: rPassed, best: rBest, recent: rv.recent ?? {}, history: rHistory };
+      continue;
+    }
+    const best: Partial<Record<SkillKey, number>> = { ...lv.best };
+    for (const [k, v] of Object.entries(rBest) as [SkillKey, number][]) if (typeof v === 'number') best[k] = Math.max(best[k] ?? 0, v);
+    const seen = new Set(lv.history.map((h) => `${h.at}|${h.skill}`));
+    const history = [...lv.history, ...rHistory.filter((h) => h && !seen.has(`${h.at}|${h.skill}`))].sort((a, b) => a.at.localeCompare(b.at)).slice(-30);
+    out[lvl] = {
+      runs: { ...rRuns, ...lv.runs },
+      passed: Array.from(new Set([...lv.passed, ...rPassed])),
+      best,
+      recent: lv.recent,
+      history,
+    };
+  }
+  return out;
+}
+
 /**
  * Gabungkan progres dari server ke localStorage (dipanggil `app.ts` sekali
  * setelah login/boot kalau sudah ada akun) — BUKAN overwrite, supaya progres
@@ -1476,7 +1510,7 @@ export function mergeFromServer(remote: Partial<Store> | null | undefined): void
     lastGame: local.lastGame,
     gameStats: local.gameStats,
     browseLevel: local.browseLevel,
-    bossTests: local.bossTests,
+    bossTests: mergeBossTests(local.bossTests, remote.bossTests),
   });
 }
 

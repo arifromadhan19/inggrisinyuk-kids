@@ -47,6 +47,8 @@ export interface StoreInput {
   name?: string;
   avatar?: string;
   sections?: Record<string, SectionStateInput>;
+  /** Tantangan Raja per level — disimpan utuh (JSON), lihat schema. */
+  bossTests?: unknown;
 }
 
 export interface LearningEventInput {
@@ -96,14 +98,17 @@ export async function upsertStoreSnapshot(childId: string, level: string | null,
   await db.$transaction(async (tx) => {
     // (a) child_progress_state — counter monoton + posisi terakhir (LWW).
     const last = data.last ?? null;
+    const bossTests =
+      data.bossTests && typeof data.bossTests === 'object' && !Array.isArray(data.bossTests) ? JSON.stringify(data.bossTests) : null;
     await tx.$executeRaw`
       INSERT INTO child_progress_state AS s
         (id, child_id, xp, correct_attempts, total_attempts, nickname, avatar,
-         last_skill, last_topic_id, last_topic_index, last_level, client_updated_at, updated_at)
+         last_skill, last_topic_id, last_topic_index, last_level, boss_tests, client_updated_at, updated_at)
       VALUES
         (gen_random_uuid(), ${childId}, ${data.xp ?? 0}, ${data.correctAttempts ?? 0}, ${data.totalAttempts ?? 0},
          ${data.name ?? null}, ${data.avatar ?? null},
          ${last?.skill ?? null}, ${null}, ${last?.topicIndex ?? null}, ${level},
+         ${bossTests}::jsonb,
          now(), now())
       ON CONFLICT (child_id) DO UPDATE SET
         xp               = GREATEST(s.xp, EXCLUDED.xp),
@@ -115,6 +120,7 @@ export async function upsertStoreSnapshot(childId: string, level: string | null,
         last_skill       = COALESCE(EXCLUDED.last_skill, s.last_skill),
         last_topic_index = COALESCE(EXCLUDED.last_topic_index, s.last_topic_index),
         last_level       = COALESCE(EXCLUDED.last_level, s.last_level),
+        boss_tests       = COALESCE(EXCLUDED.boss_tests, s.boss_tests),
         client_updated_at = now(),
         updated_at        = now()
     `;
@@ -374,5 +380,6 @@ export async function rebuildStoreForChild(childId: string): Promise<Record<stri
     avatar: state?.avatar ?? '',
     wordInteractions,
     sections: sectionsOut,
+    bossTests: (state?.bossTests as Record<string, unknown> | null) ?? {},
   };
 }

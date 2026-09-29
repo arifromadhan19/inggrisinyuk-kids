@@ -118,7 +118,7 @@ interface Candidate {
   base: string;
   topicId: string;
   variants: string[];
-  /** Soal bentuk khas level (cerita/catatan/dialog/teks pendek) — dijatah ±½. */
+  /** Soal bentuk khas level (cerita/catatan/dialog/teks pendek) — dijatah ±⅔. */
   special?: boolean;
 }
 
@@ -137,7 +137,11 @@ function vocabTopics(level: LevelKey): VocabTopic[] {
 }
 
 function vocabKinds(level: LevelKey, topic: VocabTopic, it: VocabItem): string[] {
-  const kinds = ['hear', 'toEn', 'toId'];
+  // 'hear' Dasar = kartu GAMBAR SAJA (tulisan Inggris = bunyi yang diucapkan
+  // → anak yang bisa membaca cukup mencocokkan tulisan). Topik tanpa gambar
+  // aman (angka/bentuk/hari) tidak dapat 'hear' di Dasar.
+  const noPic = isNumberTopic(topic) || isShapeTopic(topic) || isDayTopic(topic) || !!topic.iconAmbiguous;
+  const kinds = isAboveStarter(level) || !noPic ? ['hear', 'toEn', 'toId'] : ['toEn', 'toId'];
   // "Lengkapi Kalimat" butuh membaca kalimat — Little Stars belum bisa baca.
   if (level !== 'little-stars' && blankSentence(it.example.en, it.en) !== it.example.en) kinds.push('sentence');
   return topic.items.length >= 4 ? kinds : [];
@@ -173,7 +177,7 @@ function candidates(level: LevelKey, skill: SkillKey): Candidate[] {
         texts.forEach((x, xi) =>
           x.questions.forEach((q, qi) => {
             const k = q.kind ?? 'text';
-            if ((k === 'gap' || k === 'ref') && gapDistractors(x, q.word ?? '', q.q).length < 3) return;
+            if ((k === 'gap' || k === 'ref') && gapDistractors(x, q.word ?? '', q.q, q.evidence).length < 3) return;
             add(t.id, [set, xi, qi], ['-'], k !== 'text' && k !== 'picture' && k !== 'truefalse');
           })
         );
@@ -202,7 +206,9 @@ function candidates(level: LevelKey, skill: SkillKey): Candidate[] {
 }
 
 /** Ambil `count` soal merata per topik (round-robin topik acak), soal bentuk
- *  khas level dijatah ±½, hindari `avoidBases` kalau stoknya cukup. */
+ *  khas level dijatah ±⅔ (cerita/catatan/dialog Listening punya pengecoh yang
+ *  ikut disebut — tidak bisa dijawab cuma dgn menangkap 1 kata; bentuk
+ *  Cambridge Reading/Grammar), hindari `avoidBases` kalau stoknya cukup. */
 export function pickIds(level: LevelKey, skill: SkillKey, count: number, avoidBases: string[] = []): string[] {
   const all = candidates(level, skill);
   const avoid = new Set(avoidBases);
@@ -210,7 +216,7 @@ export function pickIds(level: LevelKey, skill: SkillKey, count: number, avoidBa
   const pool = fresh.length >= count ? fresh : all;
   const special = pool.filter((c) => c.special);
   const core = pool.filter((c) => !c.special);
-  const quota = special.length && core.length ? Math.min(special.length, Math.ceil(count / 2)) : special.length ? count : 0;
+  const quota = special.length && core.length ? Math.min(special.length, Math.ceil((count * 2) / 3)) : special.length ? count : 0;
   const chosen = [...spread(special, quota), ...spread(core, count - Math.min(quota, special.length))];
   if (chosen.length < count) chosen.push(...spread(pool.filter((c) => !chosen.includes(c)), count - chosen.length));
   return shuffle(chosen)
@@ -295,7 +301,8 @@ function vocabQ(level: LevelKey, id: string, topicId: string, idx: number, kind:
     distract.push(o);
   }
   if (distract.length < 2) return null;
-  const opts = shuffle([it, ...distract]).map((o) => ({ emoji: emo(o), label: labelOf(o), ok: o === it }));
+  const picOnly = kind === 'hear' && !above;
+  const opts = shuffle([it, ...distract]).map((o) => ({ emoji: emo(o), label: picOnly ? undefined : labelOf(o), ok: o === it }));
   let body = '';
   let play: (() => void) | undefined;
   let badge = '🎧 Dengar & Pilih';
@@ -445,20 +452,41 @@ function listeningQ(level: LevelKey, id: string, topicId: string, kind: string, 
 
 const READ_STOP = new Set(['the', 'and', 'but', 'with', 'this', 'that', 'there', 'they', 'them', 'then', 'have', 'has', 'had', 'was', 'were', 'are', 'for', 'from', 'you', 'your', 'she', 'her', 'his', 'him', 'our', 'its', 'not', 'very', 'can', 'will', 'into', 'onto', 'too', 'also', 'what', 'when', 'who', 'how', 'why']);
 
-function gapDistractors(x: ReadingText, word: string, q: string): string[] {
+const NUMBER_WORDS = new Set(['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'twenty', 'thirty', 'fifty', 'hundred']);
+
+/** Pengecoh "Lengkapi Cerita"/"Tunjuk Rujukan": kata dari teks yang SAMA
+ *  (anak tetap harus membaca), TAPI (1) bukan dari baris bukti — kata di
+ *  baris bukti paling mungkin ikut cocok mengisi rumpang, (2) jenisnya
+ *  dicocokkan: nama (huruf besar) ↔ nama, angka ↔ angka, kata biasa ↔
+ *  kata biasa, supaya pengecoh tidak langsung ketahuan dari bentuknya. */
+function gapDistractors(x: ReadingText, word: string, q: string, evidence: number[] = []): string[] {
   const w = word.toLowerCase();
+  const kindOf = (raw: string): string => (NUMBER_WORDS.has(raw.toLowerCase().split('-')[0]) || /^\d/.test(raw) ? 'num' : /^[A-Z]/.test(raw) ? 'name' : 'word');
+  const want = kindOf(word);
   const inQ = new Set(q.toLowerCase().replace(/[^a-z' ]/g, ' ').split(/\s+/));
-  const words = x.lines.flatMap((l) => {
-    const t = x.genre === 'dialog' && l.en.indexOf(': ') > 0 ? l.en.slice(l.en.indexOf(': ') + 2) : l.en;
-    return t.replace(/[^A-Za-z' ]/g, ' ').split(/\s+/);
-  });
-  const uniq = new Map<string, string>();
-  for (const raw of words) {
-    const k = raw.toLowerCase();
-    if (k.length < 3 || READ_STOP.has(k) || k === w || inQ.has(k) || uniq.has(k)) continue;
-    uniq.set(k, raw);
-  }
-  return shuffle([...uniq.values()]).slice(0, 3);
+  const tokens = (lines: number[]) =>
+    lines.flatMap((li) => {
+      const l = x.lines[li];
+      if (!l) return [];
+      const t = x.genre === 'dialog' && l.en.indexOf(': ') > 0 ? l.en.slice(l.en.indexOf(': ') + 2) : l.en;
+      // Kata pertama kalimat berhuruf besar krn posisi, bukan nama → huruf kecil.
+      return t.replace(/[^A-Za-z0-9'\- ]/g, ' ').split(/\s+/).filter((raw) => raw && raw !== '-').map((raw, i) => (i === 0 ? raw.toLowerCase() : raw));
+    });
+  const evidenceWords = new Set(tokens(evidence).map((t) => t.toLowerCase()));
+  const other = x.lines.map((_, i) => i).filter((i) => !evidence.includes(i));
+  const pick = (pool: string[], sameKind: boolean): string[] => {
+    const uniq = new Map<string, string>();
+    for (const raw of pool) {
+      const k = raw.toLowerCase();
+      if (k.length < 3 || READ_STOP.has(k) || k.includes("'") || k === w || inQ.has(k) || uniq.has(k) || evidenceWords.has(k)) continue;
+      if (sameKind && kindOf(raw) !== want) continue;
+      uniq.set(k, raw);
+    }
+    return shuffle([...uniq.values()]);
+  };
+  const out = pick(tokens(other), true);
+  if (out.length < 3) out.push(...pick(tokens(other), false).filter((t) => !out.includes(t)));
+  return out.slice(0, 3);
 }
 
 function readingQ(level: LevelKey, id: string, topicId: string, set: string, xi: number, qi: number): BossChoiceQ | null {
@@ -502,7 +530,7 @@ function readingQ(level: LevelKey, id: string, topicId: string, set: string, xi:
   const card = textCardHtml(x, k === 'reply' || k === 'missing' ? { hide: q.hide } : {});
   if (k === 'gap' || k === 'ref') {
     const word = q.word ?? '';
-    const labels = shuffle([word, ...gapDistractors(x, word, q.q)]);
+    const labels = shuffle([word, ...gapDistractors(x, word, q.q, q.evidence)]);
     return {
       kind: 'choice',
       id,
