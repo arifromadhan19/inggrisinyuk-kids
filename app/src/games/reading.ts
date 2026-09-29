@@ -27,15 +27,11 @@ import {
 } from '../progress';
 import {
   getPlaybackRate,
-  listenAndRecordOnce,
   playCorrectTone,
-  playTryAgainTone,
   playWrongTone,
   speak,
   speakLocalized,
-  sttSupported,
   vibrateDevice,
-  wordMatchDetail,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -144,6 +140,9 @@ interface TextTier {
   hint: 'translate' | 'question' | 'evidence' | 'eliminate';
   /** Petunjuk 🔒 sampai anak sudah 1x mencoba soal itu. */
   hintGate: boolean;
+  /** Soal teks: Petunjuk 2 tahap (1 = arti soal, 2 = + arti teks) & cuma
+   *  2 opsi (1 benar + 1 pengecoh acak) — permintaan user utk Explorer. */
+  textTwoStep?: boolean;
 }
 
 /** Tier mekanik "Baca Teks" per level KONTEN (bukan badge anak) —
@@ -156,7 +155,7 @@ function textTier(level: LevelKey): TextTier {
     case 'starter':
       return { latihanAudio: 'button', tantanganAudio: 'button', hint: 'translate', hintGate: false };
     case 'explorer':
-      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'question', hintGate: false };
+      return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'question', hintGate: false, textTwoStep: true };
     case 'adventurer':
       return { latihanAudio: 'none', tantanganAudio: 'none', hint: 'evidence', hintGate: false };
     case 'achiever':
@@ -294,55 +293,6 @@ function textCardHtml(text: ReadingText, o: { showId?: boolean; selected?: numbe
     </div>`;
 }
 
-/** Popup hasil 🎤 baca nyaring — pola sama `renderKenalan`/`renderKenalanWord`
- *  (skor proporsional `wordMatchDetail` + ▶️ Play Suaramu, Aturan Wajib
- *  Speaking). */
-function readAloudPopup(topicId: string, target: string, slot: number, said: string | null, errorText: string | null, level: LevelKey, onRetry: () => void): void {
-  const overlay = document.createElement('div');
-  overlay.className = 'mic-pop-overlay';
-  let body = `<p class="meta" style="margin:10px 0">${errorText ?? ''}</p>`;
-  if (said !== null) {
-    const words = wordMatchDetail(said, target);
-    const hitRatio = words.length ? words.filter((w) => w.matched).length / words.length : 0;
-    const stars = hitRatio >= 0.8 ? 3 : hitRatio >= 0.4 ? 2 : 1;
-    const perfect = stars === 3;
-    if (perfect) {
-      playCorrectTone();
-      fireConfetti();
-    } else playTryAgainTone();
-    recordEvent({ kind: 'speak', skill: 'reading', topicId, section: 'kenalan', slot, itemRef: target, activity: 'mic', graded: false, score: Math.round(hitRatio * 100), detail: { heard: said, words } });
-    body = `
-      <div class="${perfect ? 'win-burst' : ''}" style="font-size:20px;letter-spacing:3px" aria-hidden="true">${'⭐'.repeat(stars) + '☆'.repeat(3 - stars)}</div>
-      <div class="word-diff" style="margin:8px 0">${words.map((w) => `<span class="${w.matched ? 'ok' : 'miss'}">${w.word}</span>`).join('')}</div>
-      <div class="heard-text">Terdengar: "${said}"</div>
-      <div class="feedback good" style="margin-top:6px">${perfect ? pickPraise(level) : pickEncourage(level)}</div>
-      <div class="speak-row" style="margin:12px 0 2px">
-        <button class="speak-btn" type="button" id="micPopPlayMine" data-action="micPopPlayMine" disabled>▶️ Play Suaramu</button>
-      </div>`;
-  }
-  overlay.innerHTML = `
-    <div class="mic-pop-card">
-      <div class="en-text" style="margin:2px 0 10px">${target}</div>
-      ${body}
-      <div class="round-actions">
-        <button class="ghost-btn" type="button" data-action="micPopTryAgain">🔁 Coba Lagi</button>
-        <button class="primary-btn" type="button" data-action="micPopClose" style="margin-top:0">Lanjut ➡️</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-  setHandlers({
-    micPopClose: () => overlay.remove(),
-    micPopTryAgain: () => {
-      overlay.remove();
-      onRetry();
-    },
-    micPopPlayMine: () => {
-      const url = overlay.dataset.audioUrl;
-      if (url) new Audio(url).play().catch(() => {});
-    },
-  });
-}
-
 export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopic, onNext: OnDone, level: LevelKey, _contentLevel: LevelKey): void {
   let page = 0;
   let sub = 0; // halaman di dalam buku (genre 'book')
@@ -351,7 +301,7 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
   // hijau = sudah dibaca). Kenalan tidak dihitung ke progres topik.
   const seen = new Set<string>();
   const positions = topic.texts.flatMap((t, ti) => (t.genre === 'book' ? t.lines.map((_, li) => ({ page: ti, sub: li })) : [{ page: ti, sub: 0 }]));
-  const doneCls = (action: 'listen' | 'mic' | 'game'): string => (hasWordInteraction('reading', topic.id, TEXT_PAGE_SLOT_BASE + page, action) ? ' done' : '');
+  const doneCls = (action: 'listen' | 'game'): string => (hasWordInteraction('reading', topic.id, TEXT_PAGE_SLOT_BASE + page, action) ? ' done' : '');
 
   function gameLabel(text: ReadingText): string | null {
     // Buku mini (Little Stars/Starter) SENGAJA tanpa 🎮 — "Urutkan Halaman"
@@ -395,7 +345,6 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
       ${body}
       <div class="rt-actions">
         <button class="rt-act${doneCls('listen')}" type="button" data-action="rtListen">${isBook ? '🔊 Dengar' : '🔊 Dengar Semua'}</button>
-        ${sttSupported ? `<button class="rt-act${doneCls('mic')}" type="button" id="rtMic" data-action="rtMic">${isBook ? '🎤 Ikut Baca' : '🎤 Baca Nyaring'}</button>` : ''}
         ${game ? `<button class="rt-act${doneCls('game')}" type="button" data-action="rtGame">${game}</button>` : ''}
       </div>
       ${atEnd ? `<div class="round-actions"><button class="primary-btn" type="button" data-action="rtNext" style="margin-top:0">Lanjut ke Latihan Inti →</button></div>` : ''}
@@ -429,7 +378,6 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
           readAllLines();
         }
       },
-      rtMic: () => micFor(line.en),
       rtGame: () => {
         markWordInteraction('reading', topic.id, TEXT_PAGE_SLOT_BASE + page, 'game', text.heading);
         recordEvent({ kind: 'interact', skill: 'reading', topicId: topic.id, section: 'kenalan', slot: page, itemRef: text.heading, activity: 'game' });
@@ -446,37 +394,6 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
   function readAllLines(): void {
     const card = container.querySelector<HTMLElement>('.rt-card');
     if (card) readLinesAlong(card, topic.texts[page].lines.map((l) => l.en));
-  }
-
-  function micFor(target: string): void {
-    const btn = document.getElementById('rtMic');
-    if (!btn || btn.classList.contains('listening')) return;
-    stopKaraoke();
-    markWordInteraction('reading', topic.id, TEXT_PAGE_SLOT_BASE + page, 'mic', target);
-    btn.classList.add('listening');
-    btn.textContent = '🎙️ Mendengarkan…';
-    const retry = () => {
-      draw();
-      micFor(target);
-    };
-    listenAndRecordOnce(
-      (said) => {
-        draw();
-        readAloudPopup(topic.id, target, page, said, null, level, retry);
-      },
-      (kind) => {
-        draw();
-        if (kind === 'aborted') return;
-        readAloudPopup(topic.id, target, page, null, 'Belum kedengaran, coba lagi ya 🎧', level, retry);
-      },
-      (audioUrl) => {
-        const overlay = document.querySelector<HTMLElement>('.mic-pop-overlay');
-        if (!overlay) return;
-        overlay.dataset.audioUrl = audioUrl;
-        const playBtn = overlay.querySelector<HTMLButtonElement>('#micPopPlayMine');
-        if (playBtn) playBtn.disabled = false;
-      }
-    );
   }
 
   draw(true);
@@ -672,8 +589,13 @@ function runTextQuizSet(
   let revOpts: string[] = [];
   const isRev = (q: ReadingTextQuestion): boolean => reverse && q.kind === 'picture';
   const answerIdx = (q: ReadingTextQuestion): number => (isRev(q) ? 0 : q.answer);
-  const hintSteps = (q: ReadingTextQuestion): number => (isRev(q) ? 2 : 1);
-  const hintLabel = (q: ReadingTextQuestion): string => (isRev(q) && hintStep === 1 ? 'Petunjuk 2' : 'Petunjuk');
+  const isTwoStepText = (q: ReadingTextQuestion): boolean => !!tier.textTwoStep && (q.kind ?? 'text') === 'text';
+  const hintSteps = (q: ReadingTextQuestion): number => (isRev(q) || isTwoStepText(q) ? 2 : 1);
+  /** Tantangan Explorer "🔍 Cari di Teks": soal ber-bukti dijawab dgn TAP
+   *  kalimat di teks (tanpa kartu pilihan) — beda bentuk dari Latihan Inti
+   *  yang memilih 1 dari 2 kartu. Soal topik (tanpa bukti) tetap 2 kartu. */
+  const isFind = (q: ReadingTextQuestion): boolean => reverse && isTwoStepText(q) && q.evidence.length > 0;
+  const hintLabel = (q: ReadingTextQuestion): string => (hintSteps(q) === 2 && hintStep === 1 ? 'Petunjuk 2' : 'Petunjuk');
 
   /** Pengecoh = kalimat buku yang gambarnya jadi pengecoh di data; kalau
    *  gambar pengecoh tidak punya kalimat (mis. topik angka), ambil kalimat
@@ -706,6 +628,8 @@ function runTextQuizSet(
     const { text, q } = items[round];
     revOpts = isRev(q) ? reverseOptions(text, q) : [];
     order = q.kind === 'truefalse' ? [0, 1] : shuffle((isRev(q) ? revOpts : q.options).map((_, i) => i));
+    // Explorer: 2 opsi saja — jawaban benar + 1 pengecoh acak dari data.
+    if (isTwoStepText(q)) order = shuffle([q.answer, shuffle(q.options.map((_, i) => i).filter((i) => i !== q.answer))[0]]);
     redraw();
     const scope = container.querySelector<HTMLElement>('.rt-book-text');
     if (audio === 'auto' && scope) readAlong(scope, sentenceOf(items[round]));
@@ -772,24 +696,30 @@ function runTextQuizSet(
       const firstOfText = round === 0 || items[round - 1].text !== text;
       stimulus = `
         ${firstOfText && status(round) !== 2 ? `<div class="id-text" style="margin-bottom:8px">Baca dulu teksnya sampai habis, baru jawab ya.</div>` : ''}
-        ${textCardHtml(text, { hinted: hintedLines })}
-        <p class="reading-question">${q.q}</p>`;
-      optionsHtml = `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${q.options[oi]}</button>`).join('')}</div>`;
+        ${textCardHtml(text, { hinted: hintedLines, showId: isTwoStepText(q) && hintStep >= 2, tappable: isFind(q) })}
+        <p class="reading-question">${q.q}${isTwoStepText(q) && showHintText ? `<span class="rt-id">${q.qId}</span>` : ''}</p>
+        ${isFind(q) ? `<div class="rt-find-ask">👆 Tap kalimat di teks yang menjawab pertanyaan ini.</div>` : ''}`;
+      optionsHtml = isFind(q)
+        ? ''
+        : isTwoStepText(q)
+        ? `<div class="opt-grid rt-opts rt-two">${order.map((oi, i) => `<button class="opt-btn opt-btn-text rt-two-card" type="button" data-action="rtPick" data-payload="${i}"><span class="rt-two-badge" aria-hidden="true">${'AB'[i]}</span><span class="rt-two-text">${q.options[oi]}</span></button>`).join('')}</div>`
+        : `<div class="opt-grid rt-opts">${order.map((oi, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="${i}">${q.options[oi]}</button>`).join('')}</div>`;
     }
     container.innerHTML = `
       <div class="latihan-head">
-        <span class="stage-badge">${badge}</span>
+        <span class="stage-badge">${isFind(q) ? '🔍 Cari di Teks' : badge}</span>
         ${hintBtn}
       </div>
       ${quizNavHtml(round, total, status)}
       ${stimulus}
-      ${showHintText && !hintInCard ? `<div class="id-text rt-hint-text">💡 ${hintText(it)}</div>` : ''}
+      ${showHintText && !hintInCard && !isTwoStepText(q) ? `<div class="id-text rt-hint-text">💡 ${hintText(it)}</div>` : ''}
       ${optionsHtml}
       <div class="feedback" id="fb"></div>
       <div class="rt-evidence" id="rtEvidence"></div>
     `;
     wireSay();
     wireQuizNav(goTo);
+    if (isFind(q)) container.querySelector('.rt-card')?.classList.add('asking');
     if (eliminated >= 0) {
       const b = container.querySelectorAll<HTMLButtonElement>('.opt-btn')[order.indexOf(eliminated)];
       if (b) {
@@ -816,13 +746,66 @@ function runTextQuizSet(
         if (scope) readAlong(scope, sentenceOf(it));
       },
       rtPick: (payload) => onAnswer(Number(payload)),
-      rtLine: () => {},
+      rtLine: (payload) => {
+        if (isFind(q) && !container.querySelector('.round-actions')) onFind(Number(payload));
+      },
       rtWord: (payload) => {
         if (audio === 'none') return;
         const w = sentenceOf(it).split(' ')[Number(payload)];
         if (w) speak(w.replace(/[^A-Za-z']/g, ''));
       },
     });
+  }
+
+  /** 🔍 Cari di Teks: tap 1 kalimat. Benar = salah satu kalimat bukti
+   *  (semua bukti disorot hijau) + tone + confetti + pujian; belum tepat =
+   *  merah + getar + tetot (Aturan Wajib Notifikasi Jawaban Salah). */
+  function onFind(li: number): void {
+    const it = items[round];
+    const { q } = it;
+    const correct = q.evidence.includes(li);
+    const card = container.querySelector<HTMLElement>('.rt-card');
+    const lines = container.querySelectorAll<HTMLElement>('.rt-card .rt-line');
+    const fb = container.querySelector<HTMLElement>('#fb')!;
+    card?.classList.remove('tappable', 'asking');
+    container.querySelector('.rt-find-ask')?.remove();
+    const hb = container.querySelector<HTMLButtonElement>('#hintBtn');
+    if (hb) hb.disabled = true;
+    markSlotAnswered('reading', topic.id, section, round, correct, { hint: revealed, itemRef: sentenceOf(it) });
+    recordAttempt(correct);
+    recordEvent({ kind: 'answer', skill: 'reading', topicId: topic.id, section, slot: round, itemRef: text0(it, li), activity: 'text-find', correct });
+    if (correct) {
+      q.evidence.forEach((e) => lines[e]?.classList.add('is-evidence'));
+      lines[li]?.classList.add('win-burst');
+      playCorrectTone();
+      fireConfetti();
+      fb.textContent = `🔍 Ketemu! ${pickPraise(level)}`;
+      fb.className = 'feedback good';
+    } else {
+      attempted = true;
+      lines[li]?.classList.add('is-wrong');
+      playWrongTone();
+      vibrateDevice(160);
+      fb.textContent = `${pickEncourage(level)} Coba baca lagi, ya.`;
+      fb.className = 'feedback bad';
+      if (hb && hintStep < hintSteps(q)) {
+        hb.disabled = false;
+        hb.innerHTML = `<span class="hint-bulb">💡</span> ${hintLabel(q)}`;
+      }
+    }
+    container.querySelector('#rtEvidence')!.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(total, status)));
+    setHandlers({
+      tryAgainRound: () => redraw(),
+      nextRound: () => {
+        const next = nextUnfinishedRound(round, total, status);
+        if (next < total) goTo(next);
+        else onDone();
+      },
+    });
+  }
+
+  function text0(it: { text: ReadingText }, li: number): string {
+    return it.text.lines[li]?.en ?? '';
   }
 
   function onAnswer(i: number): void {
@@ -856,7 +839,7 @@ function runTextQuizSet(
         window.clearTimeout(sayTimer);
         sayTimer = window.setTimeout(() => speak(sentenceOf(it)), 1500);
       }
-      else if ((q.kind ?? 'text') === 'text' && q.evidence.length) askEvidence(it);
+      else if ((q.kind ?? 'text') === 'text' && q.evidence.length && !tier.textTwoStep) askEvidence(it);
     } else {
       attempted = true;
       btn.classList.add('wrong');

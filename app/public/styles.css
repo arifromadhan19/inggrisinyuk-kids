@@ -3086,6 +3086,26 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
   display:flex; align-items:center; justify-content:center; white-space:nowrap;
 }
 .rt-hint-text{ margin:-4px auto 12px; max-width:520px; }
+/* Explorer: arti soal (💡 tahap 1) langsung di bawah pertanyaan — ukuran & gaya SAMA dgn arti kalimat teks (.rt-line .rt-id). */
+.rt-find-ask{ text-align:center; font-family:var(--font-head); font-weight:700; color:var(--brand-700); margin:-6px 0 12px; }
+.reading-question .rt-id{ display:block; font-size:.875rem; font-weight:600; color:var(--ink-3); margin-top:1px; font-family:inherit; }
+/* Explorer: 2 pilihan = 2 kartu sebaris, lencana A/B berwarna. */
+.opt-grid.rt-two{ grid-template-columns:1fr 1fr; gap:12px; max-width:560px; }
+.opt-grid.rt-two .rt-two-card{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  min-height:112px; padding:14px 10px; font-size:1.0625rem; line-height:1.3; text-align:center;
+  overflow-wrap:anywhere;
+}
+.rt-two-badge{
+  width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-head); font-weight:800; font-size:1rem; color:#fff; flex:none;
+  background:var(--sun-500); box-shadow:0 3px 0 rgba(0,0,0,.12);
+}
+.opt-grid.rt-two .rt-two-card:nth-child(2) .rt-two-badge{ background:var(--brand-500); }
+.opt-grid.rt-two .rt-two-card.correct .rt-two-badge{ background:var(--ok); }
+.opt-grid.rt-two .rt-two-card.wrong .rt-two-badge{ background:var(--try); }
+/* Kartu yang dipilih tetap terang (bukan ikut pudar tombol terkunci). */
+.opt-grid.rt-two .rt-two-card.correct:disabled, .opt-grid.rt-two .rt-two-card.wrong:disabled{ opacity:1; }
 .rt-card .rt-line.hinted{ background:var(--brand-100); box-shadow:inset 0 0 0 2px var(--brand-500); }
 .rt-card .rt-line.rt-br{ margin-top:12px; }
 .rt-speaker{ color:var(--brand-700); }

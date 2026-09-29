@@ -564,6 +564,7 @@ User setuju alur §19 ("ok mulai") → dibangun 1 topik percobaan di Explorer (l
 **Isi topik**: Kenalan/Latihan Inti = undangan ulang tahun Rani (7 kalimat) + balasan chat Budi (6 kalimat), 5 pertanyaan per teks; Tantangan = undangan piknik Dimas + catatan dari Mama (teks baru, 5 pertanyaan per teks). Distraktor sengaja ikut disebut di teks ("three"/"five", "cake"/"swimsuit", "Rani"/"Budi", "home"/"Grandma's house") → tidak bisa dijawab cuma dgn mencocokkan kata; 2 pertanyaan "tentang apa?" (topik teks, CP Fase C) tanpa langkah 🔎.
 
 **Layar** (`games/reading.ts`):
+- ⚠️ **2026-09-29**: tombol 🎤 (Ikut Baca / Baca Nyaring) DIHAPUS dari Kenalan atas permintaan user — Kenalan kini 🔊 Dengar + 🎮 saja.
 - **📖 Baca Bareng** (`renderKenalanText`) — kartu per halaman (undangan = pinggir putus-putus, pesan = gelembung chat, catatan = kertas kuning), tap kalimat = pilih + dengar, 🔊 Dengar Semua, 🎤 Baca Nyaring kalimat terpilih (skor proporsional + Play Suaramu), 🌐 Arti, 🎮 Tunjuk di Gambar (`runTextPointGame`: kalimat → 1 dari 4 gambar adegan, bullet progress 9 kalimat, slot `'kenalan'` +100), tombol halaman sebelumnya/berikutnya.
 - **🔎 Baca & Temukan** (`runLatihanIntiText`, section `latihan`, 10 soal) — kartu tetap di layar, 3 opsi TEKS (1 kolom), 💡 Petunjuk = arti pertanyaan. Setelah benar: "🔎 Buktinya di mana?" → kalimat di kartu bisa ditap; benar = hijau + tone + confetti, salah = merah + getar + tetot (boleh tap lagi). Lanjut selalu tersedia (🔎 = bonus).
 - **📚 Baca Sendiri** (`runTantanganText`, section `tantangan-teks`, 10 soal) — mekanik sama, teks baru.
