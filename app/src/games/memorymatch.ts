@@ -33,6 +33,7 @@
  * persentase, kenapa halo, kenapa "Cara Main"/footer standar): lihat
  * komentar `games/wordmatch.ts`, TIDAK diulang detail di sini.
  */
+import { readingPicHtml as picHtml } from '../reading-pic';
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
@@ -243,7 +244,7 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
               data-action="flip" data-payload="${i}" ${isOpen ? 'disabled' : ''} aria-label="${isOpen ? label.text : 'Kartu tertutup'}">
               ${
                 isOpen
-                  ? `${c.matched ? '<span class="mm-check" aria-hidden="true">✅</span>' : ''}${label.emoji ? `<span class="mm-emoji">${label.emoji}</span>` : ''}<span class="mm-text">${label.text}</span>`
+                  ? `${c.matched ? '<span class="mm-check" aria-hidden="true">✅</span>' : ''}${label.emoji ? `<span class="mm-emoji">${picHtml(label.emoji)}</span>` : ''}<span class="mm-text">${label.text}</span>`
                   : `<span class="mm-mark" aria-hidden="true">❓</span>`
               }
             </button>`;

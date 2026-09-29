@@ -569,7 +569,7 @@ function overrideIconHtml(topicId: string, en: string): string | null {
   return path ? `<img src="${path}" alt="" style="width:1em;height:1em;object-fit:cover;border-radius:20%;vertical-align:-0.2em" />` : null;
 }
 function itemGlyph(topicId: string, it: VocabItem): string {
-  return overrideIconHtml(topicId, it.en) ?? it.emoji;
+  return overrideIconHtml(topicId, it.en) ?? picHtml(it.emoji);
 }
 
 /** Ikon kalimat contoh di "🗣️ Penggunaan": topik angka (semua kata = kata
@@ -587,7 +587,7 @@ function primerIconHtml(topic: VocabTopic, it: VocabItem): string {
   const override = overrideIconHtml(topic.id, it.en);
   if (override) return `<div class="primer-ic is-img">${override}</div>`;
   if (isDayTopic(topic)) return '';
-  return `<div class="primer-ic">${it.emoji}</div>`;
+  return `<div class="primer-ic">${picHtml(it.emoji)}</div>`;
 }
 
 /** Objek yang dihitung di soal Angka — bukan emoji kata itu sendiri (kata
@@ -843,7 +843,7 @@ function drawListenSpeakQuestion(
       <span class="stage-badge">🎮 MAIN · Dengar &amp; Ucapkan</span>
       ${navHtml}
       <div class="id-text">Dengarkan katanya, lalu ucapkan lagi ya</div>
-      ${isDayTopic(topic) ? '' : `<div class="big-emoji">${item.emoji}</div>`}
+      ${isDayTopic(topic) ? '' : `<div class="big-emoji">${picHtml(item.emoji)}</div>`}
       <div class="speak-row">
         <button class="speak-btn" type="button" data-action="replay">🔊 Dengar Lagi</button>
         ${sttSupported ? `<button class="speak-btn" id="micBtn" type="button" data-action="mic">🎤 Ucapkan</button>` : ''}
@@ -988,7 +988,7 @@ function drawSortQuestion(
     ${navHtml}
     <span class="stage-badge">🎮 MAIN · Kelompokkan</span>
     <div class="id-text">Ini masuk kelompok yang mana?</div>
-    <div class="big-emoji" style="font-size:clamp(40px,10vw,60px)" aria-hidden="true">${item.emoji}</div>
+    <div class="big-emoji" style="font-size:clamp(40px,10vw,60px)" aria-hidden="true">${picHtml(item.emoji)}</div>
     <p class="reading-question">${item.en}</p>
     <div class="speak-row"><button class="speak-btn" type="button" data-action="replay">🔊 Dengar</button></div>
     <div class="opt-grid">
@@ -1053,7 +1053,7 @@ function drawPictureWordQuestion(
     </div>
     ${navHtml}
     <div class="id-text">Ini gambar apa? Pilih kata Inggrisnya!</div>
-    <div class="big-emoji" style="font-size:clamp(40px,10vw,60px)" aria-hidden="true">${item.emoji}</div>
+    <div class="big-emoji" style="font-size:clamp(40px,10vw,60px)" aria-hidden="true">${picHtml(item.emoji)}</div>
     <div class="opt-grid ${options.length === 3 ? 'three' : ''}">
       ${options.map((o, i) => `<button class="opt-btn opt-btn-text" type="button" data-action="pick" data-payload="${i}">${o.en}</button>`).join('')}
     </div>
@@ -1349,7 +1349,7 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
       .map(
         (o, i) => `
       <button class="opt-btn answer-card" type="button" data-action="${action}" data-payload="${i}">
-        ${o.emoji ? `<span class="answer-card-emoji" aria-hidden="true">${o.emoji}</span>` : ''}
+        ${o.emoji ? `<span class="answer-card-emoji" aria-hidden="true">${picHtml(o.emoji)}</span>` : ''}
         ${o.label ? `<span class="answer-card-bottom"><span class="answer-card-label">${o.label}</span></span>` : ''}
       </button>`
       )
@@ -2625,7 +2625,7 @@ export function runMemoryMatch(container: HTMLElement, topic: VocabTopic, onDone
               data-action="flip" data-payload="${i}" ${isOpen ? 'disabled' : ''} aria-label="${isOpen ? label.text : 'Kartu tertutup'}">
               ${
                 isOpen
-                  ? `${c.matched ? '<span class="mm-check" aria-hidden="true">✅</span>' : ''}${label.emoji ? `<span class="mm-emoji">${label.emoji}</span>` : ''}<span class="mm-text">${label.text}</span>`
+                  ? `${c.matched ? '<span class="mm-check" aria-hidden="true">✅</span>' : ''}${label.emoji ? `<span class="mm-emoji">${picHtml(label.emoji)}</span>` : ''}<span class="mm-text">${label.text}</span>`
                   : `<span class="mm-mark" aria-hidden="true">❓</span>`
               }
             </button>`;

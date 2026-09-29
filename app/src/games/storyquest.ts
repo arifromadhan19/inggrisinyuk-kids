@@ -63,6 +63,7 @@
  * progress.ts/localStorage lintas sesi (di luar scope MVP). `onDone()`
  * tetap menambah XP via app.ts sama seperti raja lain.
  */
+import { readingPicHtml as picHtml } from '../reading-pic';
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
@@ -263,11 +264,11 @@ export const STORY_BOOKS: StoryBook[] = [
     pages: [
       {
         title: 'Windy Day',
-        sceneEmoji: '🌬️',
+        sceneEmoji: '🍃💨',
         lines: ['Sam flies his new kite on a windy day.', 'Suddenly, a strong gust pulls the string from his hand.', 'The kite flies high over the rooftops and disappears.'],
         question: 'What pulls the kite away?',
         options: [
-          { emoji: '🌬️', text: 'A strong wind' },
+          { emoji: '🍃💨', text: 'A strong wind' },
           { emoji: '🐦', text: 'A big bird' },
           { emoji: '⚡', text: 'A storm' },
           { emoji: '🚗', text: 'A car' },
@@ -560,7 +561,7 @@ function optionCardsHtml(options: StoryOption[], wrong: Set<number>, eliminated:
         const disabled = wrong.has(i) || eliminated.has(i) ? 'disabled' : '';
         return `
       <button class="${classes.join(' ')}" type="button" data-action="pick" data-payload="${i}" ${disabled}>
-        <span class="answer-card-emoji" aria-hidden="true">${o.emoji}</span>
+        <span class="answer-card-emoji" aria-hidden="true">${picHtml(o.emoji)}</span>
         <span class="answer-card-bottom">
           <span class="answer-card-label">${o.text}</span>
           <span class="answer-card-badge" aria-hidden="true">${ANSWER_LETTERS[i] ?? i + 1}</span>

@@ -21,6 +21,7 @@ function multiScale(n: number): number {
 
 export function readingPicHtml(pic: string | undefined): string {
   if (!pic) return '';
+  if (pic.startsWith('<')) return pic; // sudah HTML (mis. <img> override Vocab)
   if (!pic.startsWith(IMG_PREFIX)) {
     const parts = splitEmoji(pic);
     if (parts.length <= 1) return pic;

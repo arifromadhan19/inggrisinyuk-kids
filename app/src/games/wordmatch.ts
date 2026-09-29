@@ -68,6 +68,7 @@
  * app.ts's Door Flow "Buka Pintu Kastil", SUDAH DIHAPUS TOTAL — permintaan
  * user — jangan cari referensinya lagi.)
  */
+import { readingPicHtml as picHtml } from '../reading-pic';
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
@@ -269,7 +270,7 @@ export function runWordMatchRound(container: HTMLElement, difficulty: WordMatchD
       label = `<span class="wm-word-text">${c.entry.en}</span>`;
       aria = c.entry.en;
     } else {
-      label = `<span class="wm-emoji" aria-hidden="true">${c.entry.emoji}</span>`;
+      label = `<span class="wm-emoji" aria-hidden="true">${picHtml(c.entry.emoji)}</span>`;
       aria = `${c.entry.en} picture`;
     }
     return `

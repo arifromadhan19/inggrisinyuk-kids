@@ -35,6 +35,7 @@
  * apa pun hasil jawabannya — Sound Crystal 💎 cuma didapat kalau BENAR,
  * tapi jawaban salah TIDAK PERNAH mengunci/menahan anak di 1 markas.
  */
+import { readingPicHtml as picHtml } from '../reading-pic';
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
@@ -241,7 +242,7 @@ function optionCardsHtml(options: SoundHuntOption[]): string {
           .join('');
         return `
       <button class="opt-btn answer-card" type="button" data-action="pick" data-payload="${i}">
-        <span class="answer-card-emoji" ${style ? `style="${style}"` : ''} aria-hidden="true">${o.emoji}</span>
+        <span class="answer-card-emoji" ${style ? `style="${style}"` : ''} aria-hidden="true">${picHtml(o.emoji)}</span>
         <span class="answer-card-bottom">
           <span class="answer-card-label">${o.label}</span>
           <span class="answer-card-badge" aria-hidden="true">${ANSWER_LETTERS[i] ?? i + 1}</span>
