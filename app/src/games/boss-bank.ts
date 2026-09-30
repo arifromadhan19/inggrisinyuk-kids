@@ -354,6 +354,8 @@ function listeningQ(level: LevelKey, id: string, topicId: string, kind: string, 
   if (kind === 'i' || kind === 'k') {
     const item = 'items' in topic ? topic.items[idx] : topic.kenalanGame[idx];
     if (!item) return null;
+    // Kalimat tes khusus (pengecoh ikut disebut) kalau ada — lihat types.ts `test`.
+    const line = item.test?.en ?? item.example.en;
     const { options, layout } = listenOpts(item.question.options.map((o) => ({ emoji: o.emoji, label: o.text, ok: o.ok })));
     const ok = item.question.options.find((o) => o.ok);
     return {
@@ -362,12 +364,12 @@ function listeningQ(level: LevelKey, id: string, topicId: string, kind: string, 
       topicId,
       badge: '🎧 Dengar & Jawab',
       body: `<p class="reading-question">${escapeHtml(item.question.en)}</p>`,
-      play: () => speakSequence([item.example.en, item.question.en], gap),
+      play: () => speakSequence([line, item.question.en], gap),
       autoPlay: true,
       options,
       layout,
       answerText: ok?.text ?? '',
-      sayAnswer: () => speak(item.example.en),
+      sayAnswer: () => speak(line),
     };
   }
   if (kind === 's' && !('items' in topic)) {

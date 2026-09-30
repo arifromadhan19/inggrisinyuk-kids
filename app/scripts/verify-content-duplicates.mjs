@@ -345,6 +345,35 @@ function checkListeningPracticeVariants(topicsByLevel, errors) {
  *  BOLEH sama persis antar topik MAUPUN antar level — permintaan user audit
  *  Listening. Yang dibanding = kalimat UTUH (≥2 kata, dinormalisasi tanpa
  *  tanda baca/kapital); kata/frasa yang sebagian sama boleh. */
+/** Kalimat tes Tantangan Raja (`ListeningSentenceItem.test`, types.ts) —
+ *  wajib di Little Stars & Starter; memuat jawaban benar DAN ≥1 pilihan salah
+ *  (gaya Cambridge, tidak bisa dijawab cuma menangkap 1 kata); beda dari
+ *  example/practice. Keunikan lintas topik/level ikut checkListeningGlobalUnique. */
+function checkListeningTestLines(topicsByLevel, errors) {
+  const stem = (w) => w.toLowerCase().replace(/[^a-z]/g, '').replace(/(ing|es|ed|s)$/, '');
+  const words = (s) => s.split(/[^A-Za-z']+/).filter(Boolean).map((w) => w.toLowerCase());
+  const toks = (s) => words(s).flatMap((w) => [w, stem(w)]);
+  const STOP = new Set(['the', 'a', 'an', 'my', 'his', 'her', 'of', 'in', 'on', 'to', 'at', 'is', 'it']);
+  const has = (sent, opt) => {
+    const t = new Set(toks(sent));
+    const c = words(opt).filter((w) => !STOP.has(w));
+    return c.length > 0 && c.every((w) => t.has(w) || t.has(stem(w)));
+  };
+  for (const level of ['little-stars', 'starter']) {
+    for (const topic of topicsByLevel[level] ?? []) {
+      (topic.items ?? []).forEach((it, i) => {
+        const tag = `Listening "${topic.id}" (${level}) item #${i}`;
+        if (!it.test?.en?.trim() || !it.test?.id?.trim()) return errors.push(`${tag}: belum py kalimat tes (test.en/id) utk Tantangan Raja.`);
+        const ok = it.question.options.find((o) => o.ok)?.text ?? '';
+        const wrong = it.question.options.filter((o) => !o.ok).map((o) => o.text);
+        if (!has(it.test.en, ok)) errors.push(`${tag}: test "${it.test.en}" tidak menyebut jawaban "${ok}".`);
+        if (!wrong.some((w) => has(it.test.en, w))) errors.push(`${tag}: test "${it.test.en}" tidak menyebut pilihan salah mana pun — bisa dijawab cuma menangkap 1 kata.`);
+        if ([it.example.en, it.practice?.en].filter(Boolean).some((x) => norm(x) === norm(it.test.en))) errors.push(`${tag}: test sama dgn example/practice.`);
+      });
+    }
+  }
+}
+
 function checkListeningGlobalUnique(topicsByLevel, errors) {
   const stim = new Map();
   const ques = new Map();
@@ -371,6 +400,7 @@ function checkListeningGlobalUnique(topicsByLevel, errors) {
       t.items.forEach((it, i) => {
         add(stim, it.example.en, w(`items[${i}].example`));
         if (it.practice) add(stim, it.practice.en, w(`items[${i}].practice`));
+        if (it.test) add(stim, it.test.en, w(`items[${i}].test`));
         add(ques, it.question.en, w(`items[${i}].question`));
       });
       (t.notePassage ?? []).forEach((l, i) => add(stim, l.en, w(`notePassage[${i}]`)));
@@ -536,6 +566,7 @@ async function main() {
   checkSpeakingStoryDuplicates(mod.SPEAKING_TOPICS_BY_LEVEL, errors);
   checkListeningPracticeVariants(mod.LISTENING_TOPICS_BY_LEVEL, errors);
   checkListeningGlobalUnique(mod.LISTENING_TOPICS_BY_LEVEL, errors);
+  checkListeningTestLines(mod.LISTENING_TOPICS_BY_LEVEL, errors);
   checkListeningTantanganData(mod.LISTENING_TOPICS_BY_LEVEL, errors);
   checkListeningKenalanData(mod.LISTENING_TOPICS_BY_LEVEL, errors);
   checkListeningSubjectMatch(mod.LISTENING_TOPICS_BY_LEVEL, errors);

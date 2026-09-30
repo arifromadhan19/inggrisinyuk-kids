@@ -123,6 +123,13 @@ export interface ListeningSentenceItem {
    *  item/topik (`verify-content-duplicates.mjs`), sisanya boleh pakai
    *  `example` apa adanya. */
   practice?: { en: string; id: string };
+  /** Kalimat KHUSUS Tantangan Raja (tes naik level, `games/boss-bank.ts`) —
+   *  gaya Cambridge: jawaban benar DAN ≥1 pilihan salah ikut disebut, tapi
+   *  yang salah jelas bukan jawabannya (subjek lain / "not" / dulu-sekarang),
+   *  jadi tidak bisa dijawab cuma dgn menangkap 1 kata. Anak belum pernah
+   *  mendengarnya di Kenalan/Latihan Inti. WAJIB di Little Stars & Starter
+   *  (dicek `verify-content-duplicates.mjs`). */
+  test?: { en: string; id: string };
   question: {
     en: string;
     id: string;

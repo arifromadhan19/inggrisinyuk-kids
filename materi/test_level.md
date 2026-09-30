@@ -465,7 +465,40 @@ Tiap tahap diverifikasi `npm run build` + browser 390px & 1280px di 6 level.
   - *Sinkron antar perangkat*: kolom `child_progress_state.boss_tests` (JSONB, migrasi `20260929090000_add_boss_tests`), disimpan `upsertStoreSnapshot` & dikirim balik `rebuildStoreForChild`; `mergeFromServer` → `mergeBossTests` (babak lolos union, skor terbaik max, riwayat digabung, run yang sedang dikerjakan di perangkat ini menang). Diuji: SQL simpan/baca (transaksi ROLLBACK) & skenario 2 perangkat.
   - *Rapor*: kalimat "Anak bisa…" (✓ hijau) di bawah tiap babak lolos, 3 tier (`CAN_DO`, `app.ts`).
   - `scripts/verify-boss-bank.mjs` masuk `npm run build`; CSS `.boss-phase*` lama dihapus.
-- **Masih terbuka (butuh orang/konten)**: uji ke anak sungguhan (ambang 80% di Little Stars paling ketat); di Listening Dasar kata jawaban memang terdengar di kalimat (perlu penulisan ulang konten ala Cambridge — pengecoh ikut disebut); uji mic di HP asli.
+- *Listening Dasar anti-tebak*: 210 kalimat tes baru (`ListeningSentenceItem.test`, 110 Little Stars + 100 Starter) — jawaban benar + ≥1 pilihan salah ikut disebut tapi jelas bukan jawabannya (mis. "What is the cat doing?" → "The dog is running, but the cat is sleeping."). Dipakai HANYA di tes (anak belum pernah dengar → bukan hafalan); Kenalan/Latihan Inti tidak berubah. Dicek build; diverifikasi live: 13/13 soal Listening tes memutar kalimat tes.
+- **Masih terbuka (butuh orang)**: deploy migrasi produksi, uji mic di HP asli, uji ke anak — panduan §10.
+
+---
+
+## 10. Panduan Uji & Deploy (untuk dijalankan tim)
+
+### 10.1 Deploy ke produksi
+1. Backup database produksi.
+2. Di server: `cd portal && npx prisma migrate deploy` — menambah kolom `child_progress_state.boss_tests` (JSONB, boleh kosong; tidak mengubah data lain).
+3. Deploy `portal/` lalu `app/` (`npm run build`).
+4. Cek: selesaikan 1 babak di perangkat A → buka akun sama di perangkat B → Arena menunjukkan babak itu ✅.
+
+### 10.2 Uji mic di HP asli (±15 menit)
+Pakai 1 Android (Chrome) & 1 iPhone (Safari), level Starter & Achiever, babak 🗣️ Speaking:
+- [ ] Izin mikrofon muncul 1x, lalu mic merah saat merekam.
+- [ ] Ucapan jelas → ⭐⭐⭐; setengah kalimat → ⭐⭐; diam/ngawur → ⭐ + "Belum kedengaran" kalau benar-benar diam.
+- [ ] "▶️ Play Suaramu" memutar suara sendiri.
+- [ ] Tombol kembali saat merekam → popup "Keluar", suara berhenti.
+- [ ] Browser tanpa pengenalan suara (mis. Firefox) → tombol "⏭️ Lewati", babak tetap bisa selesai.
+- Catat: kalimat yang sering tidak tertangkap padahal diucapkan benar (kandidat diganti).
+
+### 10.3 Uji ke anak (5–10 anak, idealnya 1–2 per level)
+- Orang tua/guru mendampingi tapi TIDAK membantu menjawab. Biarkan anak memilih babak sendiri.
+- Amati per babak: lama pengerjaan, tanda bosan/frustrasi, soal yang membingungkan (bukan karena belum paham, tapi karena tampilan/suara).
+- Data otomatis: event `boss_skill` di database (satu baris per babak selesai). Contoh query:
+  ```sql
+  SELECT level, skill, count(*) AS percobaan,
+         round(avg((detail->>'correct')::numeric / NULLIF((detail->>'total')::numeric,0)) * 100) AS rata_benar_pct,
+         round(avg(CASE WHEN correct THEN 1 ELSE 0 END) * 100) AS lolos_pct
+  FROM learning_events WHERE kind = 'boss_skill'
+  GROUP BY level, skill ORDER BY level, skill;
+  ```
+- Aturan penyesuaian (semua di `app/src/games/boss-bank.ts`): kalau anak yang sudah menguasai materi level itu (materi ≥ 80% tuntas) tetap < 50% lolos di satu babak → cek soal babak itu dulu (bentuk/ikon/suara), baru pertimbangkan `PASS_RATIO`. Kalau durasi babak jauh di atas perkiraan Arena → kurangi `questionCount` level itu (jaga kelipatan yang bintangnya lengkap: 5/8/10/11/14/17/20).
 
 ---
 
