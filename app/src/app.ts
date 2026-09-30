@@ -4179,13 +4179,13 @@ const RAJA_LIST: RajaDef[] = [
   // satu-satunya yang masih "Raja [Indonesia]", sekarang jadi Word Quest/
   // Balloon Hunt/Memory Hunt. `key`/slug/icon TIDAK berubah (progres lokal
   // anak & URL lama tetap valid) — MURNI label yang tampil ke user.
-  { key: 'kata', name: 'Word Quest', sub: 'Cocokkan kata & gambar', color: 'var(--c-vocab)', icon: '/img/word_match.jpeg' },
-  { key: 'balon', name: 'Balloon Hunt', sub: 'Letupkan balon yang cocok', color: 'var(--sun-500)', icon: '/img/baloon.jpeg' },
-  { key: 'susun', name: 'Sentence Puzzle', sub: 'Susun kalimat dari gelembung kata', color: 'var(--c-gram)', icon: '/img/sentence puzzle.png' },
+  { key: 'kata', name: 'Word Quest', sub: 'Cocokkan kata & gambar', color: 'var(--c-vocab)', icon: '/img/word_match_2.jpeg' },
+  { key: 'balon', name: 'Balloon Hunt', sub: 'Letupkan balon yang cocok', color: 'var(--sun-500)', icon: '/img/baloon_2.jpeg' },
+  { key: 'susun', name: 'Sentence Puzzle', sub: 'Susun kalimat dari gelembung kata', color: 'var(--c-gram)', icon: '/img/sentence_puzzle_2.jpeg' },
   { key: 'kelompok', name: 'Raja Kelompok', sub: 'Kelompokkan katanya', color: 'var(--c-listen)' },
   { key: 'ingatan', name: 'Memory Hunt', sub: 'Cari pasangan katanya', color: 'var(--c-speak)', icon: '/img/ingatan.jpeg' },
-  { key: 'soundhunt', name: 'Sound Hunt', sub: 'Dengar & temukan Sound Crystal', color: 'var(--c-read)', icon: '/img/sound_hunt.png' },
-  { key: 'storyquest', name: 'Story Quest', sub: 'Baca cerita, jawab, lanjut petualang', color: 'var(--brand-500)', icon: '/img/story_quest.png' },
+  { key: 'soundhunt', name: 'Sound Hunt', sub: 'Dengar & temukan Sound Crystal', color: 'var(--c-read)', icon: '/img/sound_hunt_2.jpeg' },
+  { key: 'storyquest', name: 'Story Quest', sub: 'Baca cerita, jawab, lanjut petualang', color: 'var(--brand-500)', icon: '/img/story_quest_2.jpeg' },
 ];
 
 /** Emoji ikon kecil per Raja — dipakai kartu "🎮 Hasil Main Game" Rapor
