@@ -101,7 +101,7 @@ Berlaku di semua markas:
 
 # Taman Balon (Balloon Hunt)
 
-Status: **riset saja, belum diimplementasi** (2026-09-25). Kode: `app/src/games/balloonpop.ts`. Di roster namanya "Balloon Hunt" (`key: 'balon'`); "Taman Balon" = nama tempat markas ke-2, dipakai user untuk menyebut game ini secara keseluruhan.
+Status: **sudah diimplementasi** (2026-09-29) — lihat "Implementasi" di bawah; bagian "Kondisi Sekarang" & "Temuan Masalah" = kondisi SEBELUM dirombak. Kode: `app/src/games/balloonpop.ts` (mesin & Map), `app/src/games/balloonpop-data.ts` (tabel tier + bank, satu-satunya tempat mengubah pembeda/kata). Di roster namanya "Balloon Hunt" (`key: 'balon'`); "Taman Balon" = nama tempat markas ke-2, dipakai user untuk menyebut game ini secara keseluruhan.
 
 ## Ringkasan (High-Level)
 
@@ -185,6 +185,26 @@ Detail usulan:
 - **Ukuran**: teks balon min ±15px, balon tidak mengecil di markas tinggi; kata >8 huruf boleh balon lebih lebar.
 - **Kecepatan** tetap berbeda per markas supaya terasa "naik", tapi rentangnya dipersempit (±18 → ±10 dtk, bukan 20 → 5) karena anak level mana pun bisa mencapai Legendaris.
 
+## Implementasi (2026-09-29) [F]
+
+Pertanyaan terbuka dijawab dengan rekomendasi: Legendaris = **kalimat rumpang**, markas tetap sama untuk semua anak (tidak ditautkan ke `LevelKey`).
+
+| Markas | Prompt | Isi balon | Pengecoh | Balon | Kecepatan | 💡 Bantuan |
+|---|---|---|---|---|---|---|
+| Pemanasan (Halaman Balon) | 🔊 "Pop the apple!" (otomatis + tombol Dengar) | **gambar** | acak, beda jauh | 3 | 17–19 dtk | balon benar berkedip setelah 2x salah |
+| Mudah (Taman Balon) | gambar + kata Indonesia (dibacakan 🔊 Indonesia) | kata Inggris | acak | 3 | 15–17 dtk | coret 1 balon |
+| Sedang (Pasar Balon) | kata Indonesia | kata Inggris | **mirip bentuk** (Boat/Goat/Coat) | 4 | 13–15 dtk | coret 1 balon |
+| Sulit (Awan Balon) | kata Indonesia | kata Inggris | **1 kategori** (Buah/Kendaraan/Pakaian/Hewan) | 4 | 12–13,5 dtk | coret 1 balon |
+| Jago (Puncak Balon) | 🔊 kata Inggris **saja**, tanpa tulisan | kata Inggris | **mirip bunyi** (Ship/Sheep/Shop/Chip, Fan/Van/Fun) | 4 | 11–12 dtk | arti Indonesia |
+| Legendaris (Balon Emas) | **kalimat Inggris rumpang** ("I brush my teeth with a ___.") | kata Inggris | cocok bentuk, salah makna | 4 | 10–11 dtk | arti kalimat (tetap berlubang) |
+
+- **10 kata per markas** (`WORD_COUNT`), diambil dari antrian acak (semua keluar dulu sebelum berulang).
+- **Beda dari usulan**: Legendaris 4 balon (bukan 5) — 5 balon di papan HP 390px terlalu rapat untuk diketuk.
+- **`DIFFICULTY_META`/`BANK_BY_DIFFICULTY` & bank lama dihapus.** Bank baru: `WARMUP_BANK` (12, bergambar), `EASY_BANK` (12, gambar + ID), `LOOKALIKE_GROUPS` (7 grup × 3), `CATEGORY_GROUPS` (4 kategori × 5–7), `SOUNDALIKE_GROUPS` (8 grup × 3–4, pasangan bunyi yang sering tertukar anak Indonesia: i/ee, f/v, l/r, th/t, e/a), `GAP_BANK` (12 kalimat).
+- **Tampilan**: teks balon min ±15px (dulu 11–13px); kata ≥8 huruf dapat balon lebih lebar; balon gambar lebih besar; 💡 diubah langsung di DOM supaya balon yang sedang melayang tidak mulai lagi dari bawah.
+- **Build** (`verify-vocab-content.mjs`): emoji wajib & denylist di bank bergambar; **tanpa kognat** di markas berprompt Indonesia (menangkap "Monyet" ↔ "Monkey" saat penulisan → diganti Chicken/Ayam); kata tidak kembar per markas; ukuran grup/kategori cukup; kalimat rumpang: `___` tepat 1x (EN & ID), 4 opsi beda, jawaban tidak tertulis di kalimat, tanpa "an ___", "a ___" tanpa opsi berawalan vokal.
+- **Diverifikasi live** (Playwright, 390px & 1280px): keenam markas × 10 kata dituntaskan dalam 1 sesi sampai "Semua Balon Ditemukan!"; di tiap markas 1 balon salah (merah + teks semangat), 💡 dicoba (Pemanasan: balon benar berkedip setelah 2x salah; Mudah–Sulit: 1 balon dicoret; Jago/Legendaris: arti muncul); kata ke-10 = "Lanjut ➡️", markas terakhir = "Selesai ✅"; tanpa scroll horizontal; 0 pageerror. Garis rumpang sempat tampil dobel → diperbaiki.
+
 ## Yang SENGAJA Tidak Dibedakan
 
 - **Tanpa timer, nyawa, skor kecepatan, bonus waktu** di markas mana pun (CLAUDE.md, `materi/game.md` §5) — termasuk tidak mengadopsi "Bonus Points for speed" Wordwall.
@@ -199,11 +219,11 @@ Detail usulan:
 - Kalimat rumpang Legendaris: pastikan hanya 1 balon yang gramatikal **dan** bermakna (pelajaran Grammar `fill`: dulu semua opsi benar → soal tidak menguji apa pun).
 - Kalau prompt dibacakan TTS Indonesia (Mudah/Sedang), pakai `speakLocalized(…, 'id-ID')`; pujian tetap audio Inggris (aturan praise).
 
-## Pertanyaan Terbuka (Butuh Keputusan User)
+## Keputusan yang Diambil (dulu Pertanyaan Terbuka)
 
-1. Legendaris: **kalimat rumpang** atau **letupkan semua balon satu kategori**?
-2. Perlukah markas awal disesuaikan dengan level anak (mis. Little Stars otomatis mulai & berhenti di Pemanasan–Mudah), atau tetap sama untuk semua anak seperti game lain?
-3. Nilai kecepatan & ukuran di tabel = usulan; perlu dicoba langsung di HP sebelum dikunci.
+1. Legendaris = **kalimat rumpang** (lebih dekat format Cambridge; "letupkan semua balon satu kategori" tidak dipakai).
+2. Markas **tetap sama untuk semua anak**, tidak ditautkan ke level anak (konsisten 6 game lain).
+3. Kecepatan & ukuran = nilai di tabel Implementasi; belum dicoba di HP fisik anak.
 
 ## Batasan Riset (Jujur)
 
@@ -725,3 +745,107 @@ Berlaku di semua markas:
 - [Ludewig dkk. (2023), Distractor Plausibility in Synonym-Based Vocabulary Tests](https://journals.sagepub.com/doi/10.1177/07342829231167892)
 - [Cambridge Pre A1 Starters, A1 Movers & A2 Flyers Sample Papers (2018)](https://www.cambridgeenglish.org/images/young-learners-sample-papers-2018-vol1.pdf)
 - [Cambridge A2 Flyers Reading & Writing Part 1](https://www.cambridgeenglish.org/Images/584855--online-teaching-a2-flyers-reading-and-writing-part-1.pdf)
+
+---
+
+# Raja Kelompok
+
+Status: **sudah diimplementasi — Opsi B** (2026-09-30, lihat "Implementasi" di bawah; bagian "Kondisi Sekarang" & "Temuan Masalah" = kondisi SEBELUM dirombak). Kode: `app/src/games/kelompok.ts` (mesin & Map), `app/src/games/kelompok-data.ts` (tabel tier + bank, satu-satunya tempat mengubah pembeda/kata). Dulu: `runKelompokkan`/`drawSortQuestion` di `games/vocabulary.ts` (SUDAH DIHAPUS). `key: 'kelompok'`, `/game/raja-kelompok`, ikon 🧺 "Kelompokkan katanya".
+
+## Ringkasan (High-Level)
+
+**Verdict: Raja Kelompok belum sejajar dengan 6 game lain, dan tugasnya belum menguji bahasa Inggris.**
+
+1. **Tidak punya markas & tidak punya pembeda.** Game ini langsung 1 aktivitas; tidak ada Map 6 markas, tidak ada tingkat.
+2. **Cuma 1 topik yang bisa dipakai** (Little Stars "Bentuk (Shapes)", pilot), jadi **game ini tersembunyi untuk 5 dari 6 level** (roster memfilternya kalau level anak tidak punya topik "sortable").
+3. **Keputusannya tidak butuh bahasa Inggris.** Anak melihat gambar bentuk, lalu memilih keranjang berlabel **Indonesia** ("Bundar"/"Bersudut"). Bentuk bulat atau bersudut bisa dinilai dari gambarnya saja; kata Inggris ("Circle") cuma ditampilkan & dibacakan, tidak pernah dipakai untuk menjawab.
+
+## Kondisi Sebelum Dirombak [F]
+
+- **Sumber soal**: topik Vocab level anak yang punya `sortBaskets` DAN item ber-`group` (`isSortableTopic`). Saat ini hanya `bentuk` (Little Stars): 8 dari 10 kata diberi kelompok (Cross & Arrow sengaja dilepas).
+- **1 sesi = 8 soal** biner (2 keranjang), urutan dari plan yang disimpan (`ensureTantanganPlan`), jadi urutannya sama tiap kali dimainkan ulang.
+- **Layar soal**: gambar bentuk + kata Inggris tertulis + 🔊 dibacakan otomatis + 2 tombol teks Indonesia.
+- **Kelompok yang ambigu**: ❤️ Heart & 🌙 Crescent dimasukkan ke **"Bundar"**, padahal hati punya ujung lancip di bawah & bulan sabit punya 2 ujung lancip. Anak yang menjawab "Bersudut" dengan alasan masuk akal dianggap salah.
+- **Tebakan 50%** — 2 pilihan, tanpa bantuan (tidak ada 💡).
+- **Progres ikut tersimpan di data skill Vocabulary** (`markSlotAnswered('vocabulary', 'bentuk', 'tantangan-kelompok', …)`), beda dari 6 game lain yang progresnya hanya hidup selama 1 sesi. Section ini tidak ikut dihitung ke persen topik (`vocabTopicPercent`), jadi tidak merusak Menu Belajar, tapi datanya bercampur dengan data materi.
+- **Melanggar 2 aturan wajib "Selesai ✅"** (CLAUDE.md): bullet progress bisa dilompat (`wireQuizNav`), tetapi tombol "Selesai ✅" dihitung dari posisi (`round === items.length - 1`) dan "Lanjut" memakai `round += 1` polos. Anak yang lompat ke soal terakhir dulu melihat "Selesai ✅" padahal soal lain belum dikerjakan (harusnya `allSlotsDone` + `nextUnfinishedRound`).
+- **Riwayat**: mekanik "Kelompokkan" dulu juga dipakai di Kenalan 🎮 Main topik Bentuk, lalu **diganti atas permintaan user** setelah 2 laporan "soal & jawaban tidak match" (komentar `vocabulary.ts` di atas `drawPictureWordQuestion`). Game Hub masih memakai mekanik lama itu.
+
+## Temuan Masalah (Urut Prioritas)
+
+1. **Tidak menguji bahasa Inggris** — melanggar semangat CLAUDE.md "Soal Tidak Boleh Bisa Ditebak Tanpa Paham": anak bisa benar 100% tanpa mengerti satu kata Inggris pun.
+2. **Tersembunyi di 5 dari 6 level** — satu-satunya Raja yang tidak bisa dimainkan semua anak.
+3. **Kelompok ambigu** (Heart, Crescent) → jawaban masuk akal dianggap salah.
+4. **Tidak ada markas, pembeda, atau bantuan** — tidak ikut konsep Game Hub.
+5. **Bug "Selesai ✅" prematur & "Lanjut" yang bisa melewati soal** (aturan wajib).
+6. **Kategorisasi bentuk bulat/bersudut sulit diperluas** — sudah dicoba di Kenalan dan ditolak user; menambah `sortBaskets` ke topik lain level lain (warna? fungsi?) berisiko kategori yang terasa dipaksakan.
+
+## Bukti Riset per Sumbu
+
+| Sumbu | Temuan | Konsekuensi |
+|---|---|---|
+| **Kategorisasi dalam belajar kosakata** | Kategorisasi/mengelompokkan kata adalah kategori mekanik yang luas dipakai kompetitor tapi belum dimiliki app ini (`materi/game.md` §4 kandidat #13). Mengelompokkan menurut makna melatih jaringan makna kata (semantic mapping). | Mekaniknya layak dipertahankan, asal keputusan mengelompokkan **bergantung pada arti kata Inggris**. |
+| **Interferensi semantik** | Kata satu kategori yang dipelajari bersamaan saling mengganggu (Tinkham 1997). | Keranjang harus kategori yang **jelas beda** (Animals vs Food), jangan kategori yang saling tumpang tindih. |
+| **Kategori yang jelas untuk anak** | Anak kecil mengelompokkan benda sehari-hari (hewan, makanan, pakaian) jauh sebelum kategori abstrak (bentuk geometri, sifat). Label kategori bentuk (bundar/bersudut) bergantung persepsi & rawan ambigu. | Ganti kategori geometri dengan kategori benda sehari-hari yang tidak ambigu. |
+| **Format Cambridge** | Starters–Flyers menguji pengetahuan kata lewat gambar, definisi, & kategori kata (wordlist Cambridge sendiri disusun per kategori: Animals, Food, Clothes, Places, …). | Bank bisa disusun per kategori wordlist Cambridge, naik Starters → Movers → Flyers. |
+| **Pola Game Hub** | 6 Raja lain sudah memakai Map 6 markas + beberapa soal per markas + 1 tantangan baru per markas. | Raja Kelompok sebaiknya ikut pola yang sama supaya muncul di semua level. |
+
+## Usulan (Riset Awal) [U → Opsi B sudah diimplementasi]
+
+**Opsi A — perbaiki kecil, tetap khusus Little Stars.** Pindahkan Heart & Crescent keluar dari kelompok (atau ganti dengan bentuk yang tidak ambigu), perbaiki bug "Selesai ✅"/"Lanjut", tambah 💡. Masalah #1, #2, #4 tetap ada.
+
+**Opsi B (rekomendasi) — jadikan game penuh seperti Raja lain.** Bank sendiri (`kelompok-data.ts`, dicek build), Map 6 markas, **10 soal per markas**, tidak lagi bergantung pada topik Vocab (jadi muncul di semua level), progres per sesi seperti game lain. Keputusan mengelompokkan **harus** memakai arti kata Inggris:
+
+| Markas | Yang dikelompokkan | Keranjang | Tantangan baru | 💡 Bantuan |
+|---|---|---|---|---|
+| Pemanasan | gambar + kata Inggris dibacakan 🔊 | 2, gambar + label Inggris (🐶 Animals / 🍎 Food) | kenal nama kategori Inggris | coret 1 keranjang |
+| Mudah | **kata Inggris tertulis, tanpa gambar** | 2, gambar + label Inggris | baca kata sendiri untuk tahu kelompoknya | gambar kata muncul |
+| Sedang | kata Inggris tertulis | **3** keranjang (Animals / Food / Clothes) | pilihan lebih banyak | gambar kata muncul |
+| Sulit | kata Inggris tertulis | 3, **label Inggris saja tanpa ikon**, kategori tempat (Kitchen / Bathroom / Classroom) | kategori tempat, bukan jenis benda | arti Indonesia kata |
+| Jago | **🔊 kata didengar saja** | 3, label Inggris | kenali kata & kelompoknya dari suara | tulisan kata muncul |
+| Legendaris | **"Odd One Out"**: 4 kata Inggris, 3 satu kelompok, tap yang BUKAN | — | temukan sendiri kelompoknya (Flyers-style) | nama kelompoknya muncul |
+
+Catatan Opsi B:
+- Bentuk Word Quest Sulit (1 kategori/papan), Balloon Hunt Sulit (4 balon sekelompok), dan Sound Hunt Mudah (4 kartu sekelompok) memakai kategori sebagai **pengecoh**; Raja Kelompok memakai kategori sebagai **tugasnya sendiri** (menamai/memilih kelompok), jadi tidak tumpang tindih.
+- Topik Vocab `bentuk` tetap punya `sortBaskets` untuk riwayat, tapi tidak lagi dipakai Game Hub (atau `sortBaskets` dihapus bersama `runKelompokkan`).
+- Kategori wajib tidak ambigu: satu kata hanya cocok ke satu keranjang (hindari "egg" di Food vs Animals, "tomato" di Fruit vs Vegetable).
+
+## Implementasi (2026-09-30) [F]
+
+User memilih **Opsi B**, Legendaris = **"Odd One Out"**, mekanik lama `runKelompokkan` + `drawSortQuestion` **dihapus** (`sortBaskets` di topik Vocab `bentuk` & `isSortableTopic` tetap, masih dipakai Kenalan 🎮 Main topik itu).
+
+| Markas | Yang dikelompokkan | Keranjang | 💡 Bantuan |
+|---|---|---|---|
+| Pemanasan (Halaman Keranjang) | gambar + kata, dibacakan 🔊 | 2, ikon + label Inggris (Animals/Food/Clothes/Vehicles) | arti Indonesia nama keranjang (+ nama keranjang dibacakan) |
+| Mudah (Lumbung Desa) | **kata Inggris tertulis, tanpa gambar** | 2, ikon + label Inggris | gambar katanya muncul |
+| Sedang (Pasar Rakyat) | kata Inggris tertulis | **3** keranjang | gambar katanya muncul |
+| Sulit (Rumah Besar) | kata Inggris tertulis | 3 **tempat** (Kitchen/Bathroom/Classroom/Bedroom), ikon 🧺 polos yang sama | arti Indonesia kata |
+| Jago (Menara Gema) | **🔊 kata didengar saja** | 3, ikon + label Inggris | 🔒 sampai 1x coba, tulisan kata muncul |
+| Legendaris (Istana Teka-teki) | **Odd One Out**: 4 kata (3 satu kelompok + 1 dari kelompok lain; kelompok Colors/Numbers/Days/Feelings/Jobs/Weather/Animals/Vehicles) | — | 🔒 sampai 1x coba, nama kelompok 3 kata lainnya |
+
+- **10 soal per markas**, bullet progress statis (tidak bisa dilompat → bug "Selesai ✅" prematur hilang), jawaban salah = merah + getar + tetot → "🔁 Coba Lagi" (bantuan tetap terbuka) / "Lanjut ➡️".
+- **Muncul di semua level** — filter roster (`renderGame`) & Rapor (`gameRosterForRapor`) dihapus.
+- **Ikut aturan pop up keluar** (CLAUDE.md): `setGameRoundActive(false)` di Map/selesai, `true` + `renderMap` saat masuk markas.
+- Keranjang berlabel **Inggris** (bukan lagi "Bundar/Bersudut"); ikon keranjang bukan ikon salah satu kata (🐾 🍴 👚 🛞) supaya tidak bisa dijawab dengan mencocokkan gambar.
+- "Odd One Out" tidak memasangkan Weather & Feelings (sunny/happy bisa terasa mirip).
+- **Build** (`verify-vocab-content.mjs`): kata tidak boleh ada di 2 kelompok; nama & arti kelompok wajib; tiap kelompok ≥4 kata; emoji wajib & lolos denylist di markas bergambar; ikon keranjang ≠ ikon kata mana pun.
+- **Diverifikasi live** (Playwright, 390px & 1280px): Raja Kelompok tampil di daftar game akun Explorer (dulu tersembunyi); keenam markas × 10 soal dituntaskan dalam 1 sesi sampai "Semua Keranjang Rapi!"; di tiap markas 1 jawaban salah → Coba Lagi → 💡 (arti keranjang / gambar / arti kata / tulisan / nama kelompok sesuai tier; 🔒 di Jago & Legendaris sebelum mencoba); soal ke-10 markas terakhir = "Selesai ✅"; tanpa scroll horizontal; 0 pageerror. Label keranjang sempat tampil 🧺 ganda & terpotong di Sulit → diperbaiki.
+
+## Keputusan yang Diambil (dulu Pertanyaan Terbuka)
+
+1. **Opsi B** — game penuh untuk semua level.
+2. Legendaris = **Odd One Out**.
+3. `runKelompokkan` + `drawSortQuestion` **dihapus**; `sortBaskets` topik `bentuk` dibiarkan (dipakai `isSortableTopic` di Kenalan).
+
+## Batasan Riset (Jujur)
+
+- Belum ada studi khusus game "kelompokkan kata" untuk anak Indonesia; rekomendasi disusun dari riset kosakata umum, pola Game Hub app ini, dan pengalaman revisi Kenalan Bentuk sebelumnya.
+- Kategori tempat (Sulit) memakai kebiasaan umum (sabun di kamar mandi, pensil di kelas); beberapa benda bisa ada di lebih dari 1 ruangan di rumah tertentu — dipilih yang paling khas.
+- Tangga belum diuji ke anak.
+
+## Sumber
+
+- Kode: `app/src/games/kelompok.ts`, `app/src/games/kelompok-data.ts`, `app/scripts/verify-vocab-content.mjs`, `app/src/app.ts` (`runRajaRound`); versi lama: `app/src/games/vocabulary.ts` (dihapus), `app/src/content.ts` (topik `bentuk`)
+- `materi/game.md` §4 (#13 Urutkan/Kelompokkan) & §7
+- [Tinkham (1997), The effects of semantic and thematic clustering on L2 vocabulary learning](https://journals.sagepub.com/doi/10.1191/026765897672376469)
+- [Cambridge Pre A1 Starters, A1 Movers & A2 Flyers Wordlists (disusun per kategori)](https://www.cambridgeenglish.org/images/149681-yle-flyers-word-list.pdf)

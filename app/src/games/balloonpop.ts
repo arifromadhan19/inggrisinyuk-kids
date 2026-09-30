@@ -52,156 +52,33 @@
  * INTERNAL yang dipakai orkestrator `runBalloonPop()` (nama BARU, exported,
  * dipanggil app.ts — signature BARU TANPA parameter `difficulty` lagi, sama
  * persis pola `runWordMatch`).
+ *
+ * 🔒 **Revisi 2026-09-29 (permintaan user "kerjakan Balloon Hunt", riset
+ * `materi/pembeda_level_game.md` § Taman Balon)**: `DIFFICULTY_META`/
+ * `BANK_BY_DIFFICULTY` DIHAPUS — pembeda lama cuma KECEPATAN (tantangan
+ * motorik) + kata makin panjang/langka (penuh kognat, Satelit↔Satellite,
+ * bisa dijawab dgn mencocokkan ejaan), tanpa audio sama sekali. Sekarang
+ * tabel tier + bank di `balloonpop-data.ts` (dicek build): tiap markas
+ * menambah 1 tantangan bahasa (dengar→gambar, gambar+kata ID→kata EN, kata
+ * mirip bentuk, 1 kategori, suara→ejaan mirip bunyi, kalimat rumpang),
+ * kecepatan cuma naik tipis (18 → 10 dtk). Paragraf di atas yang menyebut
+ * `DIFFICULTY_META` = catatan historis.
  */
 import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
-import { playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
+import { playCorrectTone, playWrongTone, speak, speakLocalized, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
 import { GAME_STAR_FIELD } from '../scenery';
 import { shuffle } from '../util';
 import type { BalloonDifficulty, LevelKey, OnDone } from '../types';
+import { CATEGORY_GROUPS, EASY_BANK, GAP_BANK, LOOKALIKE_GROUPS, SOUNDALIKE_GROUPS, TIER_CONFIG, WARMUP_BANK, WORD_COUNT, type BalloonWord, type HintKind } from './balloonpop-data';
 
 /** `RajaKey` game ini — dikirim ke `recordAttempt()`, lihat komentar
  *  `GAME_KEY` `games/wordmatch.ts`. */
 const GAME_KEY = 'balon';
 
-interface BalloonWord {
-  id: string;
-  en: string;
-}
-
-/** 3 bank kata sendiri per tingkat (bukan reuse topik Vocab manapun — pola
- *  sama Raja Kata `games/wordmatch.ts` BANK_MUDAH/SEDANG/SULIT), kata makin
- *  panjang/jarang seiring naik tingkat supaya "soalnya pun sesuaikan dengan
- *  level" (permintaan user), bukan cuma kecepatan yang beda. */
-/** Tingkat PEMANASAN (BARU, permintaan user "tambahkan 1 sehingga ada 6...
- *  levelnya ada pemanasan, mudah, sedang, sulit, jago, legendaris") — kata
- *  sesederhana BANK_MUDAH, balon paling lambat (lihat DIFFICULTY_META).
- *  TIDAK ada kata yang tumpang tindih dgn bank lain. */
-const BANK_PEMANASAN: BalloonWord[] = [
-  { id: 'Bola', en: 'Ball' },
-  { id: 'Topi', en: 'Hat' },
-  { id: 'Cangkir', en: 'Cup' },
-  { id: 'Kotak', en: 'Box' },
-  { id: 'Tempat Tidur', en: 'Bed' },
-  { id: 'Sapi', en: 'Cow' },
-  { id: 'Babi', en: 'Pig' },
-  { id: 'Ayam Betina', en: 'Hen' },
-  { id: 'Bus', en: 'Bus' },
-  { id: 'Pena', en: 'Pen' },
-];
-
-const BANK_MUDAH: BalloonWord[] = [
-  { id: 'Kucing', en: 'Cat' },
-  { id: 'Anjing', en: 'Dog' },
-  { id: 'Matahari', en: 'Sun' },
-  { id: 'Bulan', en: 'Moon' },
-  { id: 'Bintang', en: 'Star' },
-  { id: 'Pohon', en: 'Tree' },
-  { id: 'Ikan', en: 'Fish' },
-  { id: 'Telur', en: 'Egg' },
-  { id: 'Mobil', en: 'Car' },
-  { id: 'Lebah', en: 'Bee' },
-];
-
-const BANK_SEDANG: BalloonWord[] = [
-  { id: 'Kelinci', en: 'Rabbit' },
-  { id: 'Gajah', en: 'Elephant' },
-  { id: 'Pisang', en: 'Banana' },
-  { id: 'Payung', en: 'Umbrella' },
-  { id: 'Gitar', en: 'Guitar' },
-  { id: 'Pelangi', en: 'Rainbow' },
-  { id: 'Kupu-kupu', en: 'Butterfly' },
-  { id: 'Pinguin', en: 'Penguin' },
-  { id: 'Labu', en: 'Pumpkin' },
-  { id: 'Lumba-lumba', en: 'Dolphin' },
-  { id: 'Kanguru', en: 'Kangaroo' },
-  { id: 'Istana', en: 'Castle' },
-];
-
-const BANK_SULIT: BalloonWord[] = [
-  { id: 'Dinosaurus', en: 'Dinosaur' },
-  { id: 'Gurita', en: 'Octopus' },
-  { id: 'Teleskop', en: 'Telescope' },
-  { id: 'Gunung Berapi', en: 'Volcano' },
-  { id: 'Astronot', en: 'Astronaut' },
-  { id: 'Buaya', en: 'Crocodile' },
-  { id: 'Kalajengking', en: 'Scorpion' },
-  { id: 'Helikopter', en: 'Helicopter' },
-  { id: 'Roket', en: 'Rocket' },
-  { id: 'Landak', en: 'Hedgehog' },
-  { id: 'Merak', en: 'Peacock' },
-  { id: 'Flamingo', en: 'Flamingo' },
-];
-
-/** Tingkat ke-4/5 (BARU, "jadikan konsepnya seperti Raja Kata" — 5 markas
- *  Map, pola SAMA `BANK_JAGO`/`BANK_LEGENDARIS` di `games/wordmatch.ts`),
- *  kata lebih panjang/jarang dari BANK_SULIT & SENGAJA tidak tumpang tindih
- *  dgn bank Raja Kata (biar 2 game berasa beda meski sama-sama "kata
- *  susah"). */
-const BANK_JAGO: BalloonWord[] = [
-  { id: 'Pemadam Kebakaran', en: 'Firefighter' },
-  { id: 'Bulan Sabit', en: 'Crescent' },
-  { id: 'Terumbu Karang', en: 'Coral Reef' },
-  { id: 'Petir', en: 'Lightning' },
-  { id: 'Kompas', en: 'Compass' },
-  { id: 'Ransel', en: 'Backpack' },
-  { id: 'Bunglon', en: 'Chameleon' },
-  { id: 'Papan Seluncur', en: 'Skateboard' },
-  { id: 'Cerobong Asap', en: 'Chimney' },
-  { id: 'Layang-layang', en: 'Kite' },
-];
-
-const BANK_LEGENDARIS: BalloonWord[] = [
-  { id: 'Gedung Pencakar Langit', en: 'Skyscraper' },
-  { id: 'Komet', en: 'Comet' },
-  { id: 'Satelit', en: 'Satellite' },
-  { id: 'Komidi Putar', en: 'Carousel' },
-  { id: 'Akordeon', en: 'Accordion' },
-  { id: 'Terompet', en: 'Trumpet' },
-  { id: 'Mikroskop', en: 'Microscope' },
-  { id: 'Kembang Api', en: 'Firework' },
-  { id: 'Kincir Angin', en: 'Windmill' },
-  { id: 'Labirin', en: 'Labyrinth' },
-];
-
-export interface DifficultyMeta {
-  label: string;
-  sub: string;
-  /** Rentang detik 1 balon menempuh papan bawah→atas (dur makin besar =
-   *  makin LAMBAT) — mudah paling besar, legendaris paling kecil. */
-  durMin: number;
-  durMax: number;
-  swayMin: number;
-  swayMax: number;
-}
-
-export const DIFFICULTY_META: Record<BalloonDifficulty, DifficultyMeta> = {
-  pemanasan: { label: 'Pemanasan', sub: 'Balon paling pelan, kata terpendek', durMin: 16, durMax: 20, swayMin: 3.8, swayMax: 4.8 },
-  mudah: { label: 'Mudah', sub: 'Balon pelan, kata pendek', durMin: 13, durMax: 17, swayMin: 3.2, swayMax: 4.2 },
-  sedang: { label: 'Sedang', sub: 'Balon sedang, kata menengah', durMin: 10, durMax: 13, swayMin: 2.6, swayMax: 3.4 },
-  sulit: { label: 'Sulit', sub: 'Balon lebih cepat, kata panjang', durMin: 7.5, durMax: 9.5, swayMin: 2, swayMax: 2.6 },
-  jago: { label: 'Jago', sub: 'Balon makin cepat, kata makin jarang', durMin: 6, durMax: 8, swayMin: 1.6, swayMax: 2.2 },
-  legendaris: { label: 'Legendaris', sub: 'Balon tercepat, kata paling langka', durMin: 5, durMax: 6.5, swayMin: 1.3, swayMax: 1.8 },
-};
-
-const BANK_BY_DIFFICULTY: Record<BalloonDifficulty, BalloonWord[]> = {
-  pemanasan: BANK_PEMANASAN,
-  mudah: BANK_MUDAH,
-  sedang: BANK_SEDANG,
-  sulit: BANK_SULIT,
-  jago: BANK_JAGO,
-  legendaris: BANK_LEGENDARIS,
-};
-
-const WORD_COUNT = 10;
-const OPTION_COUNT = 4;
-/** Posisi TENGAH tiap slot balon (persen, dipasangkan dgn `transform:
- *  translateX(-50%)` di CSS) — dijitter dikit di JS supaya tidak selalu
- *  presisi sama tiap ronde tapi tidak pernah bertabrakan/terlalu mepet tepi. */
-const LANES = [15, 39, 62, 86];
 /** Jeda mulai antar-balon (detik) — POSITIF & bertingkat per slot (bukan
  *  delay negatif acak spt versi awal) supaya SEMUA balon konsisten mulai
  *  dari bawah papan dalam urutan cascade, bukan langsung muncul di tengah
@@ -256,67 +133,195 @@ interface RoundJourneyCtx {
   headerHtml: string;
 }
 
-/** Mesin 1 markas/1 tingkat kesulitan — dulu bernama `runBalloonPop` &
- *  dipanggil langsung dari picker tingkat kesulitan (app.ts, SUDAH DIHAPUS
- *  lihat komentar file). Sekarang dipakai `runBalloonPop()` orkestrator di
- *  bawah (dipanggil 1× tiap markas ditap). */
+/** 1 soal siap tampil. */
+interface BalloonQ {
+  options: { text: string; emoji?: string }[];
+  answer: number;
+  /** Kata Inggris jawaban (aria/log). */
+  en: string;
+  /** Teks prompt Indonesia (Mudah/Sedang/Sulit). */
+  id?: string;
+  emoji?: string;
+  /** Kalimat rumpang (Legendaris). */
+  sentence?: string;
+  /** Arti yang dibuka 💡 (Jago: arti kata, Legendaris: arti kalimat). */
+  meaning?: string;
+  /** Nama kelompok (instruksi Sulit). */
+  category?: string;
+}
+
+/** Antrian acak tanpa ulang (semua keluar dulu sebelum ada yang berulang). */
+function makeQueue<T>(items: T[]): () => T {
+  let q: T[] = [];
+  return () => {
+    if (q.length === 0) q = shuffle(items);
+    return q.shift()!;
+  };
+}
+
+function others<T extends { en: string }>(pool: T[], exclude: string[], n: number): T[] {
+  return shuffle(pool.filter((w) => !exclude.includes(w.en))).slice(0, n);
+}
+
+function assemble(target: { text: string; emoji?: string }, rest: { text: string; emoji?: string }[], extra: Omit<BalloonQ, 'options' | 'answer'>): BalloonQ {
+  const options = shuffle([target, ...rest]);
+  return { options, answer: options.indexOf(target), ...extra };
+}
+
+/** `WORD_COUNT` soal untuk 1 markas, sesuai tier (`balloonpop-data.ts`). */
+function buildQuestions(difficulty: BalloonDifficulty): BalloonQ[] {
+  const cfg = TIER_CONFIG[difficulty];
+  const n = cfg.balloons - 1;
+  const out: BalloonQ[] = [];
+  const word = (w: BalloonWord) => ({ text: w.en, emoji: cfg.balloonPicture ? w.emoji : undefined });
+  for (let i = 0; i < WORD_COUNT; i++) out.push(null as unknown as BalloonQ);
+  if (difficulty === 'pemanasan' || difficulty === 'mudah') {
+    const bank = difficulty === 'pemanasan' ? WARMUP_BANK : EASY_BANK;
+    const next = makeQueue(bank);
+    return out.map(() => {
+      const t = next();
+      return assemble(word(t), others(bank, [t.en], n).map(word), { en: t.en, id: t.id, emoji: t.emoji });
+    });
+  }
+  if (difficulty === 'sedang' || difficulty === 'jago') {
+    const groups = difficulty === 'sedang' ? LOOKALIKE_GROUPS : SOUNDALIKE_GROUPS;
+    const all = groups.flatMap((g) => g.items.map((w) => ({ w, g })));
+    const next = makeQueue(all);
+    return out.map(() => {
+      const { w, g } = next();
+      // Semua kata mirip dalam grup dulu, sisanya diisi kata grup lain.
+      const same = others(g.items, [w.en], n);
+      const fill = others(all.map((x) => x.w), [w.en, ...same.map((x) => x.en)], n - same.length);
+      return assemble(word(w), [...same, ...fill].map(word), { en: w.en, id: w.id, meaning: `Artinya: ${w.id}` });
+    });
+  }
+  if (difficulty === 'sulit') {
+    const nextGroup = makeQueue(CATEGORY_GROUPS);
+    const perGroup = new Map(CATEGORY_GROUPS.map((g) => [g, makeQueue(g.items)]));
+    return out.map(() => {
+      const g = nextGroup();
+      const t = perGroup.get(g)!();
+      return assemble(word(t), others(g.items, [t.en], n).map(word), { en: t.en, id: t.id, category: g.name });
+    });
+  }
+  const next = makeQueue(GAP_BANK);
+  return out.map(() => {
+    const s = next();
+    return assemble({ text: s.options[0] }, s.options.slice(1).map((text) => ({ text })), { en: s.options[0], sentence: s.sentence, meaning: s.sentenceId });
+  });
+}
+
+const HINT_LABEL: Record<HintKind, string> = { flash: 'Petunjuk', strike: 'Petunjuk', meaning: 'Arti' };
+
+/** Mesin 1 markas — `WORD_COUNT` soal, bentuk prompt/balon/bantuan dari
+ *  `TIER_CONFIG` (`balloonpop-data.ts`). Dipanggil `runBalloonPop()`
+ *  orkestrator di bawah tiap markas ditap. */
 function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficulty, onDone: OnDone, level: LevelKey, journey?: RoundJourneyCtx): void {
-  const bank = BANK_BY_DIFFICULTY[difficulty];
-  const meta = DIFFICULTY_META[difficulty];
-  let words: BalloonWord[] = shuffle(bank).slice(0, Math.min(WORD_COUNT, bank.length));
+  const cfg = TIER_CONFIG[difficulty];
+  let questions = buildQuestions(difficulty);
   let wordIndex = 0;
-  let currentOptions: BalloonWord[] = [];
   let busy = false;
   let roundDone = false;
+  let wrongCount = 0;
+  let hintUsed = false;
 
-  function buildOptions(target: BalloonWord): BalloonWord[] {
-    const distractors = shuffle(bank.filter((w) => w.en !== target.en)).slice(0, OPTION_COUNT - 1);
-    return shuffle([target, ...distractors]);
+  const q = () => questions[wordIndex];
+  const lanes = cfg.balloons === 3 ? [20, 50, 80] : [15, 39, 62, 86];
+
+  function playPrompt(): void {
+    if (cfg.prompt === 'audio') speak(`Pop the ${q().en}!`);
+    else if (cfg.prompt === 'audio-only') speak(q().en);
+    else if (cfg.prompt === 'picture-id' && q().id) speakLocalized(q().id!, 'id-ID');
   }
 
-  function balloonHtml(opt: BalloonWord, i: number): string {
-    const lane = LANES[i % LANES.length];
+  function balloonHtml(opt: { text: string; emoji?: string }, i: number): string {
+    const lane = lanes[i % lanes.length];
     const jitter = Math.random() * 8 - 4;
-    const dur = (meta.durMin + Math.random() * (meta.durMax - meta.durMin)).toFixed(2);
+    const dur = (cfg.durMin + Math.random() * (cfg.durMax - cfg.durMin)).toFixed(2);
     const delay = (i * SPAWN_STAGGER).toFixed(2);
-    const sway = (meta.swayMin + Math.random() * (meta.swayMax - meta.swayMin)).toFixed(2);
+    const sway = (cfg.swayMin + Math.random() * (cfg.swayMax - cfg.swayMin)).toFixed(2);
     const bg = BALLOON_COLORS[Math.floor(Math.random() * BALLOON_COLORS.length)];
+    const inner = opt.emoji ? `<span class="bp-balloon-pic">${opt.emoji}</span>` : `<span class="bp-balloon-text">${opt.text}</span>`;
+    const long = !opt.emoji && opt.text.length >= 8 ? ' is-long' : '';
     return `
-      <button class="bp-balloon" type="button" data-action="popBalloon" data-payload="${i}"
+      <button class="bp-balloon${long}" type="button" data-action="popBalloon" data-payload="${i}"
         style="--x:${(lane + jitter).toFixed(1)}%; --dur:${dur}s; --delay:${delay}s; --sway:${sway}s; --bg:${bg};"
-        aria-label="${opt.en}">
-        <span class="bp-balloon-body"><span class="bp-balloon-text">${opt.en}</span></span>
+        aria-label="${opt.text}">
+        <span class="bp-balloon-body">${inner}</span>
         <span class="bp-balloon-string" aria-hidden="true"></span>
       </button>`;
   }
 
+  function promptHtml(): string {
+    const cur = q();
+    const listen = `<button class="speak-btn pt-cta" type="button" data-action="listen">🔊 Dengar</button>`;
+    switch (cfg.prompt) {
+      case 'audio':
+        return `<div class="speak-row">${listen}</div>`;
+      case 'picture-id':
+        return `<p class="bp-prompt"><span class="bp-prompt-pic" aria-hidden="true">${cur.emoji}</span> <b>&ldquo;${cur.id}&rdquo;</b> <button class="bp-say" type="button" data-action="listen" aria-label="Dengar">🔊</button></p>`;
+      case 'id':
+        return `<p class="bp-prompt">🎈 Letupkan balon: <b>&ldquo;${cur.id}&rdquo;</b></p>`;
+      case 'audio-only':
+        return `<div class="speak-row">${listen}</div>`;
+      case 'gap':
+        return `<p class="bp-prompt bp-sentence">${cur.sentence!.replace('___', '<span class="bp-gap" aria-label="kosong"></span>')}</p>`;
+    }
+  }
+
   function paint(): void {
-    const target = words[wordIndex];
-    currentOptions = buildOptions(target);
     busy = false;
+    wrongCount = 0;
+    hintUsed = false;
+    const task = cfg.task.replace('{cat}', q().category ?? '');
+    const hintBtn = cfg.hint === 'flash' ? '' : `<button class="speak-btn-ghost" type="button" data-action="hint"><span class="hint-bulb">💡</span> ${HINT_LABEL[cfg.hint]}</button>`;
     container.innerHTML = `
       ${journey?.headerHtml ?? ''}
-      <div class="bp-head"><span class="tag">${meta.label}</span></div>
-      ${progressDotsHtml(words.length, (i) => i < wordIndex, wordIndex)}
-      <p class="bp-prompt">🎈 Letupkan balon: <b>&ldquo;${target.id}&rdquo;</b></p>
-      <div class="bp-board">${currentOptions.map((opt, i) => balloonHtml(opt, i)).join('')}</div>
+      ${progressDotsHtml(WORD_COUNT, (i) => i < wordIndex || roundDone, wordIndex)}
+      <div class="wm-head"><p class="wm-task">${task}</p>${hintBtn}</div>
+      ${promptHtml()}
+      <p class="bp-meaning" id="bpMeaning" hidden></p>
+      <div class="bp-board${cfg.balloonPicture ? ' is-picture' : ''}">${q().options.map((opt, i) => balloonHtml(opt, i)).join('')}</div>
       <div class="feedback" id="fb"></div>
     `;
-    setHandlers({ popBalloon: (payload) => onPop(Number(payload)) });
+    setHandlers({ popBalloon: (payload) => onPop(Number(payload)), listen: playPrompt, hint: useHint });
+    playPrompt();
+  }
+
+  function balloonEl(i: number): HTMLButtonElement | null {
+    return container.querySelector<HTMLButtonElement>(`.bp-balloon[data-payload="${i}"]`);
+  }
+
+  /** 💡 diubah langsung di DOM (tanpa paint ulang) supaya balon yang sedang
+   *  melayang tidak mulai lagi dari bawah. */
+  function useHint(): void {
+    if (hintUsed || busy || roundDone) return;
+    hintUsed = true;
+    container.querySelector('[data-action="hint"]')?.remove();
+    if (cfg.hint === 'strike') {
+      const cand = shuffle(q().options.map((_, i) => i).filter((i) => i !== q().answer && !balloonEl(i)?.disabled));
+      const el = cand.length ? balloonEl(cand[0]) : null;
+      el?.classList.add('is-struck');
+      if (el) el.disabled = true;
+    } else if (cfg.hint === 'meaning') {
+      const m = container.querySelector<HTMLElement>('#bpMeaning');
+      if (m) {
+        m.textContent = `💭 ${q().meaning}`;
+        m.hidden = false;
+      }
+    }
   }
 
   function onPop(i: number): void {
     if (busy || roundDone) return;
-    const opt = currentOptions[i];
-    const target = words[wordIndex];
-    const btn = container.querySelector<HTMLButtonElement>(`.bp-balloon[data-payload="${i}"]`);
+    const btn = balloonEl(i);
     const fb = container.querySelector<HTMLElement>('#fb');
-    if (!opt) return;
+    if (!btn || btn.disabled) return;
 
-    if (opt.en === target.en) {
+    if (i === q().answer) {
       busy = true;
-      btn?.classList.add('is-pop');
-      btn?.setAttribute('disabled', 'true');
+      btn.classList.add('is-pop');
+      btn.disabled = true;
       recordAttempt(true, GAME_KEY);
       playCorrectTone();
       fireConfetti();
@@ -325,21 +330,24 @@ function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficult
         fb.className = 'feedback good';
       }
       setTimeout(() => {
+        if (!container.isConnected) return;
         wordIndex += 1;
-        if (wordIndex >= words.length) {
+        if (wordIndex >= WORD_COUNT) {
+          wordIndex = WORD_COUNT - 1;
           roundDone = true;
-          if (fb) {
-            fb.insertAdjacentHTML('afterend', roundActionsHtml(journey?.isLast ?? true));
-            setHandlers({
-              tryAgainRound: () => {
-                words = shuffle(bank).slice(0, Math.min(WORD_COUNT, bank.length));
-                wordIndex = 0;
-                roundDone = false;
-                paint();
-              },
-              nextRound: () => onDone(),
-            });
-          }
+          const dots = container.querySelector('.quiz-nav');
+          if (dots) dots.outerHTML = progressDotsHtml(WORD_COUNT, () => true, WORD_COUNT - 1);
+          container.querySelector('[data-action="hint"]')?.remove();
+          fb?.insertAdjacentHTML('afterend', roundActionsHtml(journey?.isLast ?? true));
+          setHandlers({
+            tryAgainRound: () => {
+              questions = buildQuestions(difficulty);
+              wordIndex = 0;
+              roundDone = false;
+              paint();
+            },
+            nextRound: () => onDone(),
+          });
         } else {
           paint();
         }
@@ -348,8 +356,11 @@ function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficult
       recordAttempt(false, GAME_KEY);
       playWrongTone();
       vibrateDevice(160);
-      btn?.classList.add('is-wrong');
-      setTimeout(() => btn?.classList.remove('is-wrong'), 380);
+      btn.classList.add('is-wrong');
+      setTimeout(() => btn.classList.remove('is-wrong'), 380);
+      wrongCount += 1;
+      // Pemanasan: setelah 2x salah, balon yang benar berkedip.
+      if (cfg.hint === 'flash' && wrongCount >= 2) balloonEl(q().answer)?.classList.add('is-hint');
       if (fb) {
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';
@@ -380,12 +391,12 @@ interface JourneyNode {
  *  tidak terasa ketuker di kepala anak, pola sama alasan "Balairung" vs
  *  "Throne Room". */
 const JOURNEY_NODES: JourneyNode[] = [
-  { difficulty: 'pemanasan', place: 'Halaman Balon', emoji: '🏡', guideLine: 'Yuk pemanasan dulu di Halaman Balon sebelum masuk taman!' },
-  { difficulty: 'mudah', place: 'Taman Balon', emoji: '🎈', guideLine: 'Selamat datang di Taman Balon! Ayo letupkan balon kata pertama ini.' },
-  { difficulty: 'sedang', place: 'Pasar Balon', emoji: '🎪', guideLine: 'Balonnya makin ramai di pasar ini! Cari kata yang pas sebelum melayang jauh.' },
-  { difficulty: 'sulit', place: 'Awan Balon', emoji: '☁️', guideLine: 'Wah, sudah setinggi awan! Balonnya melaju lebih cepat dari sebelumnya.' },
-  { difficulty: 'jago', place: 'Puncak Balon', emoji: '🏔️', guideLine: 'Ini puncak tertinggi! Kata-katanya makin jarang terdengar, tapi kamu pasti bisa.' },
-  { difficulty: 'legendaris', place: 'Balon Emas', emoji: '🏆', guideLine: 'Selamat datang di Balon Emas terakhir! Buktikan kamu Jago Balon sejati.' },
+  { difficulty: 'pemanasan', place: 'Halaman Balon', emoji: '🏡', guideLine: 'Yuk pemanasan! Dengarkan katanya, lalu letupkan gambarnya.' },
+  { difficulty: 'mudah', place: 'Taman Balon', emoji: '🎈', guideLine: 'Selamat datang di Taman Balon! Sekarang balonnya berisi kata Inggris.' },
+  { difficulty: 'sedang', place: 'Pasar Balon', emoji: '🎪', guideLine: 'Pasar ini penuh kata kembar! Hurufnya cuma beda sedikit, baca teliti.' },
+  { difficulty: 'sulit', place: 'Awan Balon', emoji: '☁️', guideLine: 'Wah, sudah setinggi awan! Semua balon di sini satu kelompok.' },
+  { difficulty: 'jago', place: 'Puncak Balon', emoji: '🏔️', guideLine: 'Ini puncak tertinggi! Tidak ada tulisan, cuma suara — bunyinya mirip-mirip.' },
+  { difficulty: 'legendaris', place: 'Balon Emas', emoji: '🏆', guideLine: 'Balon Emas terakhir! Cari kata yang pas untuk melengkapi kalimatnya.' },
 ];
 
 /** Header dalam layar 1 markas (dipasok ke `runBalloonPopRound()` via
@@ -437,7 +448,7 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
       // percentage di setiap card"), lihat komentar lengkap di sana.
       const pct = cleared ? 100 : 0;
       const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
-      const meta = DIFFICULTY_META[node.difficulty];
+      const meta = TIER_CONFIG[node.difficulty];
       return `
       <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--sun-500)">
         ${badge}
@@ -468,8 +479,8 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
         <div class="raja-grid">${stops}</div>
         ${gameHowToHtml([
           'Baca/dengar kata yang diminta',
-          'Tap balon yang jawabannya cocok',
-          'Balon meletup kalau jawabannya tepat',
+          'Tap balon yang jawabannya cocok (tiap markas 10 kata)',
+          'Makin jauh markasnya, soalnya makin menantang — bukan cuma makin cepat',
           'Taklukkan markas satu per satu sampai tuntas!',
         ])}
       </div>`;

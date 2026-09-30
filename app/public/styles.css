@@ -1507,7 +1507,7 @@ body.is-boss-play .tabbar{ display:none; }
 }
 .bp-balloon-string{ display:block; width:2px; height:22px; margin:0 auto; background:var(--ink-3); opacity:.55; }
 .bp-balloon-text{
-  font-family:var(--font-head); font-weight:800; font-size:clamp(.6875rem, 2.6vw, .8125rem); color:#fff;
+  font-family:var(--font-head); font-weight:800; font-size:clamp(.9375rem, 3.6vw, 1.0625rem); color:#fff;
   text-align:center; line-height:1.15; text-shadow:0 1px 2px rgba(0,0,0,.2);
 }
 @keyframes bpRise{
@@ -3265,6 +3265,39 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .opt-grid.sq-list .opt-btn.answer-card{ padding:14px 16px; }
 .opt-grid.sq-list .answer-card-bottom{ width:100%; justify-content:space-between; }
 .opt-grid.sq-list .answer-card-label{ text-align:left; }
+
+/* Balloon Hunt (games/balloonpop.ts, revisi tier 2026-09-29) — teks balon
+   min 15px (dulu 11–13px, sulit dibaca di balon yang bergerak); kata ≥8
+   huruf dapat balon lebih lebar & teks sedikit lebih kecil; balon gambar
+   (Pemanasan); prompt gambar+kata (Mudah) & kalimat rumpang (Legendaris);
+   💡 coret balon (.is-struck) & balon benar berkedip setelah 2x salah
+   (.is-hint, Pemanasan). */
+.bp-balloon.is-long{ width:clamp(76px, 22vw, 120px); }
+.bp-balloon.is-long .bp-balloon-text{ font-size:clamp(.8125rem, 3.2vw, .9375rem); }
+.bp-board.is-picture .bp-balloon{ width:clamp(76px, 22vw, 116px); }
+.bp-balloon-pic{ font-size:clamp(34px, 10vw, 52px); line-height:1; }
+.bp-balloon.is-struck{ opacity:.3; filter:grayscale(1); }
+.bp-balloon.is-struck .bp-balloon-body::after{ content:'✕'; position:absolute; inset:0; display:grid; place-items:center; color:#fff; font-size:2rem; font-weight:900; }
+.bp-balloon.is-hint .bp-balloon-body{ animation:ctaPulse 1.2s ease-in-out infinite; box-shadow:0 0 0 5px var(--ok); }
+.bp-prompt-pic{ font-size:1.6em; vertical-align:middle; }
+.bp-say{ border:0; background:transparent; font-size:1.25rem; cursor:pointer; vertical-align:middle; }
+.bp-sentence{ border-radius:var(--r-lg); line-height:1.4; }
+.bp-gap{ display:inline-block; width:3.5em; height:1em; vertical-align:-.15em; border-bottom:3px dashed var(--sun-600); }
+.bp-meaning{ text-align:center; color:var(--ink-2); font-weight:700; margin:0 0 var(--s3); }
 /* Rapor "🏰 Hasil Tantangan Raja": kalimat "Anak bisa…" di bawah babak lolos. */
 .stat-list-label .can-do{ display:block; font-size:.75rem; font-weight:600; color:var(--ok); margin-top:2px; }
 .stat-list-label .can-do::before{ content:'✓ '; }
+
+/* Raja Kelompok (games/kelompok.ts) — kata/gambar yang dikelompokkan &
+   keranjang berlabel Inggris. Jumlah keranjang 2 atau 3 → kolom sama
+   dengan jumlahnya (1 baris rapi di HP & desktop). */
+.kl-item{ display:flex; flex-direction:column; align-items:center; gap:6px; margin:var(--s3) 0; }
+.kl-pic{ font-size:clamp(56px, 16vw, 84px); line-height:1; }
+.kl-word{ font-family:var(--font-head); font-weight:800; font-size:clamp(1.75rem, 7vw, 2.25rem); color:var(--ink); letter-spacing:.02em; }
+.kl-meaning{ font-weight:700; color:var(--ink-2); font-size:.875rem; }
+.kl-baskets{ display:grid; gap:10px; margin:var(--s4) auto 0; max-width:560px; }
+.kl-baskets.kl-n2{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+.kl-baskets.kl-n3{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+.opt-btn.kl-basket{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; min-width:0; min-height:112px; padding:14px 8px; }
+.kl-basket-icon{ font-size:clamp(34px, 9vw, 46px); line-height:1; }
+.kl-basket-label{ font-family:var(--font-head); font-weight:800; font-size:clamp(.9375rem, 3.6vw, 1.0625rem); overflow-wrap:anywhere; text-align:center; }

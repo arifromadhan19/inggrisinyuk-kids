@@ -494,6 +494,107 @@ async function main() {
     });
   }
 
+  // Balloon Hunt (`src/games/balloonpop-data.ts`) — emoji wajib & denylist di
+  // bank bergambar; TANPA kognat di markas yang prompt-nya kata Indonesia
+  // (Mudah/Sedang/Sulit — "Satelit" ↔ "Satellite" bisa dicocokkan dari
+  // ejaan saja); grup mirip bentuk/bunyi & kategori cukup isi; kata tidak
+  // kembar dalam 1 bank; kalimat rumpang Legendaris: `___` tepat 1x (EN &
+  // ID), 4 opsi beda, jawaban tidak tertulis di kalimat, "a ___" tidak
+  // boleh punya opsi berawalan vokal, tanpa "an ___".
+  const bpOut = path.join(__dirname, '.verify-balloonpop-bundle.mjs');
+  await build({ entryPoints: [path.join(__dirname, '../src/games/balloonpop-data.ts')], bundle: true, format: 'esm', platform: 'node', outfile: bpOut, logLevel: 'silent' });
+  let bp;
+  try {
+    bp = await import(`${bpOut}?t=${Date.now()}`);
+  } finally {
+    await unlink(bpOut).catch(() => {});
+  }
+  const bpCognate = (tag, w) => {
+    const a = w.id.trim().toLowerCase();
+    const b = w.en.trim().toLowerCase();
+    const sim = 1 - lev(a, b) / Math.max(a.length, b.length);
+    if (sim >= 0.6) errors.push(`${tag} kognat "${w.id}" ↔ "${w.en}" (kemiripan ${sim.toFixed(2)}) — bisa dicocokkan dari ejaan saja.`);
+  };
+  const bpUnique = (tag, words) => {
+    const seen = new Set();
+    for (const w of words) {
+      const k = w.en.toLowerCase();
+      if (seen.has(k)) errors.push(`${tag} kata "${w.en}" kembar.`);
+      seen.add(k);
+    }
+  };
+  for (const [tier, bank] of [['pemanasan', bp.WARMUP_BANK], ['mudah', bp.EASY_BANK]]) {
+    const tag = `Balloon Hunt (${tier})`;
+    if (bank.length < bp.WORD_COUNT) errors.push(`${tag} bank cuma ${bank.length} kata — minimal ${bp.WORD_COUNT}.`);
+    bpUnique(tag, bank);
+    for (const w of bank) {
+      if (!w.emoji) errors.push(`${tag} "${w.en}" wajib py emoji.`);
+      else shDeny(`${tag} "${w.en}"`, w.emoji, w.en.toLowerCase());
+      if (tier === 'mudah') bpCognate(tag, w);
+    }
+  }
+  for (const [tier, groups, minSize] of [['sedang', bp.LOOKALIKE_GROUPS, 3], ['sulit', bp.CATEGORY_GROUPS, bp.TIER_CONFIG.sulit.balloons], ['jago', bp.SOUNDALIKE_GROUPS, 3]]) {
+    const tag = `Balloon Hunt (${tier})`;
+    const all = groups.flatMap((g) => g.items);
+    bpUnique(tag, all);
+    if (all.length < bp.WORD_COUNT) errors.push(`${tag} total cuma ${all.length} kata — minimal ${bp.WORD_COUNT}.`);
+    for (const g of groups) if (g.items.length < minSize) errors.push(`${tag} grup "${g.name}" cuma ${g.items.length} kata — minimal ${minSize}.`);
+    for (const w of all) {
+      if (!w.id) errors.push(`${tag} "${w.en}" belum py arti Indonesia.`);
+      else if (tier !== 'jago') bpCognate(tag, w);
+    }
+  }
+  for (const g of bp.GAP_BANK) {
+    const tag = `Balloon Hunt (legendaris) "${g.sentence}"`;
+    if ((g.sentence.match(/___/g) ?? []).length !== 1) errors.push(`${tag} wajib py tepat 1 "___".`);
+    if ((g.sentenceId.match(/___/g) ?? []).length !== 1) errors.push(`${tag} arti Indonesia wajib py tepat 1 "___".`);
+    if (g.options.length !== 4 || new Set(g.options.map((o) => o.toLowerCase())).size !== 4) errors.push(`${tag} wajib 4 opsi beda.`);
+    if (new RegExp(`\\b${escapeRegExp(g.options[0])}\\b`, 'i').test(g.sentence.replace('___', ''))) errors.push(`${tag} memuat jawabannya.`);
+    if (/\ban ___/i.test(g.sentence)) errors.push(`${tag} "an ___" membocorkan jawaban lewat kata sandang.`);
+    if (/\ba ___/i.test(g.sentence) && g.options.some((o) => /^[aeiou]/i.test(o))) errors.push(`${tag} "a ___" tapi ada opsi berawalan vokal — kata sandang membocorkan.`);
+  }
+
+  // Raja Kelompok (`src/games/kelompok-data.ts`) — kata TIDAK boleh ada di 2
+  // kelompok (kelompok ambigu = jawaban benar bisa dianggap salah, spt Heart
+  // "Bundar" di versi lama); nama & arti kelompok wajib; markas bergambar /
+  // bantuan gambar → item wajib emoji & lolos denylist; ikon keranjang tidak
+  // boleh sama dgn ikon item mana pun; kelompok cukup isi (Odd One Out butuh
+  // ≥4 supaya 3 kata tidak berulang terus).
+  const klOut = path.join(__dirname, '.verify-kelompok-bundle.mjs');
+  await build({ entryPoints: [path.join(__dirname, '../src/games/kelompok-data.ts')], bundle: true, format: 'esm', platform: 'node', outfile: klOut, logLevel: 'silent' });
+  let kl;
+  try {
+    kl = await import(`${klOut}?t=${Date.now()}`);
+  } finally {
+    await unlink(klOut).catch(() => {});
+  }
+  const klOwner = new Map();
+  const klItemEmoji = new Set();
+  for (const [key, g] of Object.entries(kl.GROUPS)) {
+    if (!g.en || !g.id) errors.push(`Raja Kelompok kelompok "${key}" wajib py nama Inggris & arti Indonesia.`);
+    if (g.items.length < 4) errors.push(`Raja Kelompok kelompok "${key}" cuma ${g.items.length} kata — minimal 4.`);
+    for (const it of g.items) {
+      const k = it.en.toLowerCase();
+      if (klOwner.has(k)) errors.push(`Raja Kelompok kata "${it.en}" ada di 2 kelompok ("${klOwner.get(k)}" & "${key}") — ambigu.`);
+      else klOwner.set(k, key);
+      if (!it.id) errors.push(`Raja Kelompok "${it.en}" belum py arti Indonesia.`);
+      if (it.emoji) {
+        klItemEmoji.add(it.emoji);
+        shDeny(`Raja Kelompok "${it.en}"`, it.emoji, k);
+      }
+    }
+  }
+  for (const [key, g] of Object.entries(kl.GROUPS)) if (g.emoji && klItemEmoji.has(g.emoji)) errors.push(`Raja Kelompok ikon keranjang "${key}" (${g.emoji}) sama dgn ikon salah satu kata — bisa dijawab dgn mencocokkan gambar.`);
+  for (const [tier, cfg] of Object.entries(kl.TIER_CONFIG)) {
+    for (const key of cfg.groups) {
+      const g = kl.GROUPS[key];
+      if (!g) { errors.push(`Raja Kelompok (${tier}) kelompok "${key}" tidak ada.`); continue; }
+      if (cfg.basketIcon && !g.emoji) errors.push(`Raja Kelompok (${tier}) keranjang "${key}" wajib py ikon.`);
+      if ((cfg.show === 'picture' || cfg.hint === 'picture') && g.items.some((it) => !it.emoji)) errors.push(`Raja Kelompok (${tier}) kelompok "${key}" ada kata tanpa emoji (markas ini butuh gambar).`);
+    }
+    if (cfg.mode === 'sort' && cfg.groups.length < cfg.baskets) errors.push(`Raja Kelompok (${tier}) kelompok lebih sedikit dari jumlah keranjang.`);
+  }
+
   if (errors.length > 0) {
     console.error(`\n❌ Verifikasi konten Vocab GAGAL (${errors.length} masalah):\n`);
     for (const e of errors) console.error(`  - ${e}`);

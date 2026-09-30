@@ -32,6 +32,7 @@ import * as placementGame from './games/placement';
 import * as readingGame from './games/reading';
 import * as sentencePuzzleGame from './games/sentencepuzzle';
 import * as soundHuntGame from './games/soundhunt';
+import * as kelompokGame from './games/kelompok';
 import * as speakingGame from './games/speaking';
 import * as storyQuestGame from './games/storyquest';
 import * as vocabularyGame from './games/vocabulary';
@@ -1571,11 +1572,10 @@ function renderRapor(): void {
   // keluarga visual. Bintang dari `getGameAccuracy()` (`Store.gameStats`,
   // diisi `recordAttempt(correct, gameKey)` — lihat komentar `GAME_KEY`
   // `games/wordmatch.ts`), BUKAN dari `gameXp` (itu cuma kosmetik biner
-  // main/belum, tidak merefleksikan SEBERAPA TEPAT jawabannya). Roster
-  // difilter SAMA PERSIS `renderGame()` (Raja Kelompok cuma tampil kalau
-  // level ini punya topik `sortBaskets`) — jangan sampai Rapor menyebut
-  // game yang anak sendiri tidak bisa akses dari Game Hub-nya.
-  const gameRosterForRapor = RAJA_LIST.filter((r) => r.key !== 'kelompok' || vocabTopicsForLevel(level.key).filter(vocabularyGame.isSortableTopic).length > 0);
+  // main/belum, tidak merefleksikan SEBERAPA TEPAT jawabannya). Semua 7
+  // Raja tampil di semua level (Raja Kelompok dulu cuma di level yang punya
+  // topik `sortBaskets`; sejak punya bank sendiri, `games/kelompok.ts`).
+  const gameRosterForRapor = RAJA_LIST;
   const gameCards = gameRosterForRapor
     .map((r) => {
       const acc = getGameAccuracy(r.key);
@@ -3317,7 +3317,7 @@ const RAJA_LIST: RajaDef[] = [
   { key: 'kata', name: 'Word Quest', sub: 'Cocokkan kata & gambar', color: 'var(--c-vocab)', icon: '/img/word_match.jpeg' },
   { key: 'balon', name: 'Balloon Hunt', sub: 'Letupkan balon yang cocok', color: 'var(--sun-500)', icon: '/img/baloon.jpeg' },
   { key: 'susun', name: 'Sentence Puzzle', sub: 'Susun kalimat dari gelembung kata', color: 'var(--c-gram)', icon: '/img/sentence puzzle.png' },
-  { key: 'kelompok', name: 'Raja Kelompok', sub: 'Kelompokkan gambarnya', color: 'var(--c-listen)' },
+  { key: 'kelompok', name: 'Raja Kelompok', sub: 'Kelompokkan katanya', color: 'var(--c-listen)' },
   { key: 'ingatan', name: 'Memory Hunt', sub: 'Cari pasangan katanya', color: 'var(--c-speak)', icon: '/img/ingatan.jpeg' },
   { key: 'soundhunt', name: 'Sound Hunt', sub: 'Dengar & temukan Sound Crystal', color: 'var(--c-read)', icon: '/img/sound_hunt.png' },
   { key: 'storyquest', name: 'Story Quest', sub: 'Baca cerita, jawab, lanjut petualang', color: 'var(--brand-500)', icon: '/img/story_quest.png' },
@@ -3446,12 +3446,10 @@ const SLUG_TO_RAJA: Record<string, RajaKey> = Object.fromEntries(
  *    masing-masing `games/*.ts`.
  */
 function renderGame(): void {
-  const level = currentPlayableLevel().key;
-  const sortableCount = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic).length;
-  // Raja Kelompok cuma tampil kalau level ini punya ≥1 topik `sortBaskets`
-  // (baru pilot 1 topik, `bentuk`/Little Stars, materi/game.md §7) — pola
-  // sama `visibleSkillKeys()`, sembunyikan diam-diam drpd kartu mati.
-  const roster = RAJA_LIST.filter((r) => r.key !== 'kelompok' || sortableCount > 0);
+  // Semua Raja tampil di semua level — Raja Kelompok dulu disembunyikan di
+  // level tanpa topik `sortBaskets` (cuma Little Stars), sekarang punya bank
+  // sendiri (`games/kelompok.ts`).
+  const roster = RAJA_LIST;
 
   const playedCount = gamesPlayedCount(roster.map((r) => r.key));
   const gamePct = roster.length > 0 ? Math.round((playedCount / roster.length) * 100) : 0;
@@ -3626,7 +3624,7 @@ function renderGamePlay(): void {
 
 /** Topik dipilih ACAK tiap "Main" (bukan daftar-lalu-pilih) — permintaan
  *  user "ini game bukan materi": langsung main, bukan browsing materi dulu.
- *  Raja Kelompok wajib dari pool topik `sortBaskets` (`isSortableTopic`);
+ *  Raja Kelompok py bank sendiri (games/kelompok.ts, Map 6 markas);
  *  Raja Kata py bank kata sendiri (games/wordmatch.ts, TIDAK dari
  *  vocabTopicsForLevel — Map Kerajaan Kata 5-markas Mudah→Sedang→Sulit→
  *  Jago→Legendaris TANPA picker, lihat `wordMatchGame.runWordMatch`); Raja
@@ -3639,7 +3637,6 @@ function renderGamePlay(): void {
  *  memakai topik Vocab level anak). */
 function runRajaRound(key: RajaKey): void {
   const stage = qs<HTMLDivElement>(root, '#rajaStage');
-  const level = currentPlayableLevel().key;
   const praiseLevel = currentLevelMeta().key;
   const onRoundDone = () => {
     addXp(XP_FREEPLAY);
@@ -3649,12 +3646,9 @@ function runRajaRound(key: RajaKey): void {
   };
 
   if (key === 'kelompok') {
-    const pool = vocabTopicsForLevel(level).filter(vocabularyGame.isSortableTopic);
-    const topic = pool[Math.floor(Math.random() * pool.length)];
-    // Level tanpa topik sortable (roster sudah menyembunyikan game ini) —
-    // URL langsung `/game/raja-kelompok` jangan crash, balik ke list game.
-    if (!topic) return go('game');
-    vocabularyGame.runKelompokkan(stage, topic.id, topic.items, topic.sortBaskets, onRoundDone, praiseLevel);
+    // Raja Kelompok: Map 6 markas + bank sendiri (games/kelompok.ts), tidak
+    // lagi mengambil topik Vocab ber-`sortBaskets`.
+    kelompokGame.runKelompok(stage, onRoundDone, praiseLevel);
     return;
   }
 

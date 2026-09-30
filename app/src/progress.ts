@@ -109,8 +109,8 @@ export interface Store {
    *  hasil main game"), bukan cuma status biner "sudah main/belum". Diisi
    *  `recordAttempt()`'s parameter KEDUA opsional (`gameKey`) — dipanggil
    *  dari `games/wordmatch.ts`/`balloonpop.ts`/`sentencepuzzle.ts`/
-   *  `memorymatch.ts`/`soundhunt.ts`/`storyquest.ts` & `runKelompokkan()`
-   *  (`games/vocabulary.ts`, khusus Raja Kelompok — fungsi lain di file itu
+   *  `memorymatch.ts`/`soundhunt.ts`/`storyquest.ts` & `kelompok.ts`
+   *  (`games/kelompok.ts`, Raja Kelompok — dulu `runKelompokkan` di `games/vocabulary.ts`; fungsi lain di file itu
    *  TIDAK pakai param ini, bukan bagian Game Hub). TIDAK disinkron ke
    *  server (lokal murni, alasan sama `gameXp`/`lastGame`). */
   gameStats: Record<string, { correct: number; total: number }>;
