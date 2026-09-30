@@ -1310,6 +1310,11 @@ export interface LearningInsights {
    *  soal pilih/susun. Speaking (skor mic, ASR anak belum andal) = rata-rata
    *  skor mic TERBAIK tiap soal (`SlotState.sc`), bukan tepat/belum. */
   skillAccuracy: Record<SkillKey, number | null>;
+  /** Ketepatan GABUNGAN 4 skill objektif (Vocab/Listening/Reading/Grammar,
+   *  tanpa mic) — rumus sama `skillAccuracy`, dipakai ubin 🎯 Rapor supaya
+   *  angkanya selaras dgn bintang skill (dulu `getAccuracy()`, beda sumber:
+   *  ikut game & tanpa pemisah per skill). `null` = belum ada jawaban. */
+  objectiveAccuracy: number | null;
   /** Jumlah percobaan yang jadi dasar `skillAccuracy` (Speaking: jumlah soal
    *  ber-skor mic) — dipakai supaya ringkasan tidak menyimpulkan dari data
    *  yang terlalu sedikit. */
@@ -1497,6 +1502,10 @@ export function computeInsights(
     masteredWords: masteredVocabWords.size,
     skillAccuracy,
     skillAttempts,
+    objectiveAccuracy: pct({
+      n: skillTally.vocabulary.n + skillTally.listening.n + skillTally.reading.n + skillTally.grammar.n,
+      ok: skillTally.vocabulary.ok + skillTally.listening.ok + skillTally.reading.ok + skillTally.grammar.ok,
+    }),
     hintRatio: ratio(hintAll),
     hintRatioBySkill,
     weekAnswered,

@@ -3492,3 +3492,4 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
   .rapor-sekilas{ grid-template-columns:repeat(2, minmax(0, 1fr)); align-items:stretch; }
   .rapor-more-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); align-items:start; }
 }
+.screen-note{ margin:12px 0 0; padding:10px 12px; border-radius:var(--r-md); background:var(--sun-100); color:var(--ink-2); font-size:var(--fs-meta); font-weight:700; line-height:1.45; }

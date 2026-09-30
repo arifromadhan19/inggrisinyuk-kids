@@ -53,7 +53,7 @@ import {
 } from './icons';
 import { bindDelegatedClicks, clearHandlers, getGameMapReturn, isGameRoundActive, setGameRoundActive, setHandlers } from './interaction';
 import { CLOUD, HILLS_RIDGE, HILLS_SHORE, rajaMascot, TRAIL_BEND_LEFT, TRAIL_BEND_RIGHT, placeFor } from './scenery';
-import type { LastSpot, Store, TopicSignal } from './progress';
+import type { LastSpot, LearningInsights, Store, TopicSignal } from './progress';
 import {
   addGameXp,
   addXp,
@@ -61,7 +61,6 @@ import {
   ANIMAL_AVATARS,
   clearOutboxIds,
   computeInsights,
-  getAccuracy,
   getActiveDaysInLast,
   getWeekMinutes,
   getAvatar,
@@ -1023,7 +1022,7 @@ function findNextMateri(level: LevelKey): NextMateri | null {
  * lengkap), supaya angkanya tidak pernah beda antar 2 layar. Dulu cuma ada
  * di `renderHome`, diekstrak begitu tab Rapor ditambahkan.
  */
-function buildProgressPanel(withDetail = false): string {
+function buildProgressPanel(withDetail = false, insights: LearningInsights = computeInsights()): string {
   const mapUnlocked = levelUnlockMap(LEVELS);
   const hereKey = currentStopKey(mapUnlocked);
   const hereIdx = LEVELS.findIndex((l) => l.key === hereKey);
@@ -1038,7 +1037,8 @@ function buildProgressPanel(withDetail = false): string {
 
   const xp = getXp();
   const streakDays = getStreak();
-  const accuracy = getAccuracy();
+  // Sama sumber dgn bintang skill (`computeInsights`), bukan `getAccuracy()`.
+  const accuracy = insights.objectiveAccuracy;
 
   // Terinspirasi strip stat + progress bar level di beranda kompetitor, tapi
   // difilter kid-friendly (CLAUDE.md, PRD §4.6/§12.4):
@@ -1647,6 +1647,14 @@ function renderRapor(): void {
   const dayChips = week
     .map((d) => `<span class="day-chip ${d.active ? 'is-active' : ''} ${d.isToday ? 'is-today' : ''}">${d.label}</span>`)
     .join('');
+  // Catatan waktu layar yang lembut (WHO: usia 3–4 th ≤ 1 jam layar/hari) —
+  // cuma utk anak Little Stars (usia 3–5) & rata-rata > 60 menit. Informasi
+  // untuk orang tua, bukan batasan otomatis & tanpa nada menghukum.
+  const avgDaily = getAvgDailyMinutes();
+  const screenNote =
+    currentLevelMeta().key === 'little-stars' && avgDaily !== null && avgDaily > SCREEN_NOTE_MINUTES
+      ? `<p class="screen-note">🌤️ Rata-rata belajar ${avgDaily} menit/hari. Untuk usia 3–5 tahun, WHO menyarankan waktu layar maksimal 1 jam sehari. Sesekali selingi dengan main di luar layar, ya.</p>`
+      : '';
   const sekilasCard = `
     <div class="card">
       <span class="eyebrow">📝 Ringkasan untuk Orang Tua</span>
@@ -1658,6 +1666,7 @@ function renderRapor(): void {
         <span><b>${getWeekMinutes()}</b> menit</span>
         <span><b>${insights.weekAnswered}</b> soal</span>
       </div>
+      ${screenNote}
     </div>`;
 
   /* ---------- 2. Kemampuan: daftar skill + Tantangan Raja ---------- */
@@ -1798,7 +1807,7 @@ function renderRapor(): void {
     <div class="rapor-layout">
       <section class="rapor-sec full" aria-label="Sekilas">
         <div class="rapor-sekilas">
-          ${buildProgressPanel(true)}
+          ${buildProgressPanel(true, insights)}
           ${sekilasCard}
         </div>
       </section>
@@ -1854,6 +1863,9 @@ function renderRapor(): void {
   });
 }
 
+/** Ambang catatan waktu layar Little Stars (menit/hari), pedoman WHO. */
+const SCREEN_NOTE_MINUTES = 60;
+
 /** Status buka/tutup "Rincian lainnya" di Rapor (preferensi perangkat). */
 const RAPOR_MORE_KEY = 'inggrisinyuk-kids.rapor-more';
 
@@ -1874,8 +1886,8 @@ function renderRaporDetail(): void {
     {
       ic: '🎯',
       name: 'Ketepatan',
-      what: 'Seberapa sering jawaban anak tepat di soal pilihan & susun kata.',
-      how: 'Jawaban tepat ÷ semua jawaban × 100%, termasuk game & tiap "Coba Lagi". Jawaban lewat mic (Speaking) & soal Tantangan Raja tidak dihitung.',
+      what: 'Seberapa sering jawaban anak tepat di Vocabulary, Listening, Reading & Grammar. Angka ini gabungan dari ketepatan tiap skill.',
+      how: 'Jawaban tepat ÷ semua jawaban × 100%, termasuk tiap "Coba Lagi". Tidak termasuk: jawaban lewat mic (Speaking), game (nilainya di bagian Game), & soal Tantangan Raja.',
     },
     {
       ic: '🔥',
@@ -1917,7 +1929,7 @@ function renderRaporDetail(): void {
       ic: '⏱️',
       name: 'Waktu belajar',
       what: 'Total menit 7 hari terakhir & rata-rata menit di hari anak belajar.',
-      how: 'Dihitung hanya saat app terbuka & anak aktif menyentuh layar (diam > 1 menit tidak dihitung). Rata-rata = total menit ÷ hari yang ada catatannya; hari libur tidak ikut membagi. Tercatat per perangkat.',
+      how: 'Dihitung hanya saat app terbuka & anak aktif menyentuh layar (diam > 1 menit tidak dihitung). Rata-rata = total menit ÷ hari yang ada catatannya; hari libur tidak ikut membagi. Tercatat per perangkat. Untuk Little Stars, muncul catatan kalau rata-rata lebih dari 60 menit/hari (pedoman WHO usia 3–4 tahun: maksimal 1 jam layar sehari).',
     },
     {
       ic: '💡',

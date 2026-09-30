@@ -2,7 +2,7 @@
 
 Permintaan user (2026-09-30): audit halaman Rapor (UI, nilai yang ditampilkan, formula), riset ke Cambridge, LIA, EF, dan lembaga/aplikasi lain, lalu sesuaikan ke app ini. Termasuk 2 screenshot Rapor kompetitor sebagai referensi.
 
-Status: **§4 sudah diimplementasikan 2026-09-30.** §5 = daftar rekomendasi awal. **§6 = analisis ulang & rekomendasi akhir** (menggantikan urutan prioritas §5). **Fase 1 (§6.5) selesai 2026-09-30**; Fase 2 & 3 belum.
+Status: **§4 sudah diimplementasikan 2026-09-30.** §5 = daftar rekomendasi awal. **§6 = analisis ulang & rekomendasi akhir** (menggantikan urutan prioritas §5). **Fase 1 (§6.5) & Fase 2 (§6.6) selesai 2026-09-30**; Fase 3 belum.
 
 Kode terkait: `app/src/app.ts` (`renderRapor`, `renderRaporDetail`, `buildProgressPanel`, `startActiveTimer`), `app/src/progress.ts` (`computeInsights`, `getActiveDaysInLast`, `getWeekMinutes`, `getAvgDailyMinutes`).
 
@@ -278,6 +278,23 @@ Suara orang tua: caption progres ("Belum ada modul yang tuntas di level ini."), 
 Rumus baru di Fase 1: kesiapan Tantangan Raja (semua skill objektif ≥ 4 bintang & ≥ 10 jawaban), "soal minggu ini" (`computeInsights().weekAnswered`, per soal dari `SlotState.t`). Detail Rapor ditambah aturan Minggu Ini & Tantangan Raja.
 
 Sisa untuk Fase 2: ubin 🎯 Ketepatan masih memakai `recordAttempt` (beda sumber dengan bintang skill), dan catatan waktu layar Little Stars.
+
+### 6.6 Hasil Fase 2 (2026-09-30)
+
+1. **Ubin 🎯 Ketepatan = gabungan 4 skill objektif** (`computeInsights().objectiveAccuracy`: jawaban tepat ÷ semua jawaban di Vocabulary, Listening, Reading, Grammar, tanpa mic).
+   - Sekarang 1 sumber dengan bintang skill, jadi angka ubin selalu sejalan dengan daftar skill.
+   - Dulu memakai `getAccuracy()` (`recordAttempt`), yang ikut menghitung game. Contoh data uji: ubin lama 99%, padahal skill-nya 60% & 90%. Ubin baru 75%.
+   - Nilai game tetap di bagian Game (Rincian). `recordAttempt`/`getAccuracy` tetap ada (masih mengisi `gameStats` & data server), cuma tidak dipakai di ubin lagi.
+2. **"Anak bisa…" per skill & status "Siap mencoba Tantangan Raja"**: sudah ikut dikerjakan di Fase 1 (§6.5).
+3. **Catatan waktu layar yang lembut** di kartu Ringkasan untuk Orang Tua.
+   - Muncul hanya kalau level anak Little Stars (usia 3–5) DAN rata-rata belajar > 60 menit/hari (`SCREEN_NOTE_MINUTES`).
+   - Dasarnya pedoman WHO: usia 3–4 tahun maksimal 1 jam layar per hari.
+   - Cuma informasi untuk orang tua. Tidak ada pembatasan otomatis, tidak ada nada menghukum.
+4. Detail Rapor ikut diperbarui (arti & cara hitung Ketepatan, catatan waktu layar).
+
+Diuji live di HP (390px) & desktop (1280px): ubin 🎯 memakai angka gabungan; catatan waktu layar muncul untuk Little Stars 75 menit/hari, tidak muncul untuk Little Stars 40 menit/hari maupun Explorer 75 menit/hari.
+
+Sisa untuk Fase 3 (butuh server): sinkron waktu belajar & nilai game ke akun, laporan mingguan + email orang tua, grafik tren 4 minggu.
 
 ---
 
