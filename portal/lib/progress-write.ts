@@ -49,6 +49,11 @@ export interface StoreInput {
   sections?: Record<string, SectionStateInput>;
   /** Tantangan Raja per level — disimpan utuh (JSON), lihat schema. */
   bossTests?: unknown;
+  /** Data Rapor (materi/rapor.md §6.7) — digabung per kunci, lihat `mergeRaporJson`. */
+  activeMs?: unknown;
+  dailyAnswers?: unknown;
+  gameStats?: unknown;
+  gameXp?: unknown;
 }
 
 export interface LearningEventInput {
@@ -89,6 +94,64 @@ function parseSectionKey(key: string): { skill: string; topicId: string; section
   return { skill: key.slice(0, first), topicId: key.slice(first + 1, last), section: key.slice(last + 1) };
 }
 
+/* ------------------------------------------------ data Rapor (JSON kecil) -- */
+
+type NumMap = Record<string, number>;
+type PairMap = Record<string, { a: number; b: number }>;
+
+const nonNeg = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? Math.round(v) : null);
+const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+
+/** {kunci: angka} yang valid saja (angka ≥ 0), `dayKeys` = kunci harus tanggal. */
+function cleanNumMap(v: unknown, dayKeys: boolean): NumMap {
+  const out: NumMap = {};
+  if (!isObj(v)) return out;
+  for (const [k, raw] of Object.entries(v)) {
+    const n = nonNeg(raw);
+    if (n === null || (dayKeys && !isDateStr(k)) || k.length > 40) continue;
+    out[k] = n;
+  }
+  return out;
+}
+
+/** {kunci: {x, y}} berpasangan (x ≤ y), mis. {correct,total} atau {ok,n}. */
+function cleanPairMap(v: unknown, xKey: string, yKey: string, dayKeys: boolean): PairMap {
+  const out: PairMap = {};
+  if (!isObj(v)) return out;
+  for (const [k, raw] of Object.entries(v)) {
+    if (!isObj(raw) || (dayKeys && !isDateStr(k)) || k.length > 40) continue;
+    const a = nonNeg(raw[xKey]);
+    const b = nonNeg(raw[yKey]);
+    if (a === null || b === null || a > b) continue;
+    out[k] = { a, b };
+  }
+  return out;
+}
+
+/** Gabung 2 map angka: nilai terbesar per kunci (angka ini cuma naik). */
+function maxNumMap(x: NumMap, y: NumMap): NumMap {
+  const out: NumMap = { ...x };
+  for (const [k, v] of Object.entries(y)) out[k] = Math.max(out[k] ?? 0, v);
+  return out;
+}
+
+/** Gabung 2 map berpasangan: ambil PASANGAN dari sisi yang totalnya lebih
+ *  besar (jangan max() tiap angka sendiri-sendiri — bisa correct > total). */
+function maxPairMap(x: PairMap, y: PairMap): PairMap {
+  const out: PairMap = { ...x };
+  for (const [k, v] of Object.entries(y)) if (!out[k] || v.b > out[k].b) out[k] = v;
+  return out;
+}
+
+/** Simpan maks ±60 hari terbaru (kunci tanggal). */
+function lastDays<T>(m: Record<string, T>, keep = 60): Record<string, T> {
+  const keys = Object.keys(m).sort().slice(-keep);
+  return Object.fromEntries(keys.map((k) => [k, m[k]]));
+}
+
+const pairsToJson = (m: PairMap, xKey: string, yKey: string) =>
+  Object.fromEntries(Object.entries(m).map(([k, v]) => [k, { [xKey]: v.a, [yKey]: v.b }]));
+
 /**
  * Proyeksikan snapshot `Store` client ke semua tabel STATE (self-healing —
  * aman dipanggil berkali-kali/telat/duplikat, TRD.md §7). Dijalankan dalam
@@ -96,6 +159,24 @@ function parseSectionKey(key: string): { skill: string; topicId: string; section
  */
 export async function upsertStoreSnapshot(childId: string, level: string | null, data: StoreInput): Promise<void> {
   await db.$transaction(async (tx) => {
+    // (a0) Data Rapor — digabung dgn yang sudah tersimpan (nilai terbesar per
+    // hari/game), BUKAN ditimpa: 2 perangkat yang sama-sama aktif tidak
+    // saling menghapus catatan menit/jawaban harian satu sama lain.
+    const prev = await tx.childProgressState.findUnique({
+      where: { childId },
+      select: { activeMs: true, dailyAnswers: true, gameStats: true, gameXp: true },
+    });
+    const activeMs = lastDays(maxNumMap(cleanNumMap(prev?.activeMs, true), cleanNumMap(data.activeMs, true)));
+    const dailyAnswers = lastDays(
+      maxPairMap(cleanPairMap(prev?.dailyAnswers, 'ok', 'n', true), cleanPairMap(data.dailyAnswers, 'ok', 'n', true))
+    );
+    const gameStats = maxPairMap(cleanPairMap(prev?.gameStats, 'correct', 'total', false), cleanPairMap(data.gameStats, 'correct', 'total', false));
+    const gameXp = maxNumMap(cleanNumMap(prev?.gameXp, false), cleanNumMap(data.gameXp, false));
+    const activeMsJson = JSON.stringify(activeMs);
+    const dailyAnswersJson = JSON.stringify(pairsToJson(dailyAnswers, 'ok', 'n'));
+    const gameStatsJson = JSON.stringify(pairsToJson(gameStats, 'correct', 'total'));
+    const gameXpJson = JSON.stringify(gameXp);
+
     // (a) child_progress_state — counter monoton + posisi terakhir (LWW).
     const last = data.last ?? null;
     const bossTests =
@@ -103,12 +184,14 @@ export async function upsertStoreSnapshot(childId: string, level: string | null,
     await tx.$executeRaw`
       INSERT INTO child_progress_state AS s
         (id, child_id, xp, correct_attempts, total_attempts, nickname, avatar,
-         last_skill, last_topic_id, last_topic_index, last_level, boss_tests, client_updated_at, updated_at)
+         last_skill, last_topic_id, last_topic_index, last_level, boss_tests,
+         active_ms, daily_answers, game_stats, game_xp, client_updated_at, updated_at)
       VALUES
         (gen_random_uuid(), ${childId}, ${data.xp ?? 0}, ${data.correctAttempts ?? 0}, ${data.totalAttempts ?? 0},
          ${data.name ?? null}, ${data.avatar ?? null},
          ${last?.skill ?? null}, ${null}, ${last?.topicIndex ?? null}, ${level},
          ${bossTests}::jsonb,
+         ${activeMsJson}::jsonb, ${dailyAnswersJson}::jsonb, ${gameStatsJson}::jsonb, ${gameXpJson}::jsonb,
          now(), now())
       ON CONFLICT (child_id) DO UPDATE SET
         xp               = GREATEST(s.xp, EXCLUDED.xp),
@@ -121,6 +204,10 @@ export async function upsertStoreSnapshot(childId: string, level: string | null,
         last_topic_index = COALESCE(EXCLUDED.last_topic_index, s.last_topic_index),
         last_level       = COALESCE(EXCLUDED.last_level, s.last_level),
         boss_tests       = COALESCE(EXCLUDED.boss_tests, s.boss_tests),
+        active_ms        = EXCLUDED.active_ms,
+        daily_answers    = EXCLUDED.daily_answers,
+        game_stats       = EXCLUDED.game_stats,
+        game_xp          = EXCLUDED.game_xp,
         client_updated_at = now(),
         updated_at        = now()
     `;
@@ -381,5 +468,9 @@ export async function rebuildStoreForChild(childId: string): Promise<Record<stri
     wordInteractions,
     sections: sectionsOut,
     bossTests: (state?.bossTests as Record<string, unknown> | null) ?? {},
+    activeMs: (state?.activeMs as Record<string, unknown> | null) ?? {},
+    dailyAnswers: (state?.dailyAnswers as Record<string, unknown> | null) ?? {},
+    gameStats: (state?.gameStats as Record<string, unknown> | null) ?? {},
+    gameXp: (state?.gameXp as Record<string, unknown> | null) ?? {},
   };
 }

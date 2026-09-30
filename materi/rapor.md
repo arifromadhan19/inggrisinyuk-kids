@@ -2,7 +2,7 @@
 
 Permintaan user (2026-09-30): audit halaman Rapor (UI, nilai yang ditampilkan, formula), riset ke Cambridge, LIA, EF, dan lembaga/aplikasi lain, lalu sesuaikan ke app ini. Termasuk 2 screenshot Rapor kompetitor sebagai referensi.
 
-Status: **§4 sudah diimplementasikan 2026-09-30.** §5 = daftar rekomendasi awal. **§6 = analisis ulang & rekomendasi akhir** (menggantikan urutan prioritas §5). **Fase 1 (§6.5) & Fase 2 (§6.6) selesai 2026-09-30**; Fase 3 belum.
+Status: **§4 sudah diimplementasikan 2026-09-30.** §5 = daftar rekomendasi awal. **§6 = analisis ulang & rekomendasi akhir** (menggantikan urutan prioritas §5). **Fase 1 (§6.5), Fase 2 (§6.6) & Fase 3 (§6.7) selesai 2026-09-30**, kecuali email laporan mingguan (menunggu keputusan penyedia email).
 
 Kode terkait: `app/src/app.ts` (`renderRapor`, `renderRaporDetail`, `buildProgressPanel`, `startActiveTimer`), `app/src/progress.ts` (`computeInsights`, `getActiveDaysInLast`, `getWeekMinutes`, `getAvgDailyMinutes`).
 
@@ -295,6 +295,34 @@ Sisa untuk Fase 2: ubin 🎯 Ketepatan masih memakai `recordAttempt` (beda sumbe
 Diuji live di HP (390px) & desktop (1280px): ubin 🎯 memakai angka gabungan; catatan waktu layar muncul untuk Little Stars 75 menit/hari, tidak muncul untuk Little Stars 40 menit/hari maupun Explorer 75 menit/hari.
 
 Sisa untuk Fase 3 (butuh server): sinkron waktu belajar & nilai game ke akun, laporan mingguan + email orang tua, grafik tren 4 minggu.
+
+### 6.7 Hasil Fase 3 (2026-09-30)
+
+1. **Data Rapor ikut akun.** Migrasi `portal/prisma/migrations/20260930090000_add_rapor_sync` menambah 4 kolom JSONB di `child_progress_state`:
+
+   | Kolom | Isi (`Store`) | Cara gabung |
+   |---|---|---|
+   | `active_ms` | menit belajar aktif per hari | nilai terbesar per hari |
+   | `daily_answers` | jawaban per hari `{n, ok}` (soal pilih/susun, tanpa mic & Kenalan) | pasangan dengan `n` terbesar |
+   | `game_stats` | nilai tiap game `{correct, total}` | pasangan dengan `total` terbesar |
+   | `game_xp` | XP tiap game | nilai terbesar per game |
+
+   - Digabung 2 kali: di server (`upsertStoreSnapshot`, baca nilai lama dulu dalam transaksi yang sama) dan di app (`mergeFromServer`). Jadi 2 perangkat yang sama-sama aktif tidak saling menghapus.
+   - Server membuang data tidak valid (kunci bukan tanggal, angka negatif, tepat > total) & menyimpan maks 60 hari.
+   - Pengiriman tetap lewat jalur lama (saat 1 bagian selesai), tanpa request baru.
+   - **Deploy:** jalankan `npx prisma migrate deploy` di `portal/` sebelum app baru dipakai.
+2. **Jawaban per hari** (`Store.dailyAnswers`) dicatat di `markSlotAnswered`, definisi sama dengan ketepatan skill. Mulai terisi sejak Fase 3, jadi periode sebelum itu kosong.
+3. **Kartu "📈 Tren 4 Minggu"** di bagian Kemampuan: 4 periode 7 hari (bergulir, bukan minggu kalender), tiap baris = bar menit belajar + angka menit + ketepatan periode itu (`getWeeklyTrend`). Menit & ketepatan sengaja kolom terpisah (beda satuan, tidak digabung 1 sumbu). Disembunyikan kalau belum ada data.
+4. **Perbandingan mingguan** di strip Minggu Ini: "7 hari sebelumnya: X menit · ketepatan Y%". Netral, tanpa panah naik/turun.
+5. Detail Rapor: aturan Tren 4 Minggu; "Cara Data Dicatat" & "Waktu belajar" sekarang menyebut data ikut akun.
+
+Diuji:
+- Server langsung ke Postgres lokal dengan akun+anak sementara (dihapus sesudahnya): 2 snapshot "perangkat" digabung benar; data tidak valid dibuang.
+- `mergeFromServer` & `getWeeklyTrend` lewat skrip (localStorage tiruan): mic & Kenalan tidak masuk jawaban harian; data server 8 hari lalu masuk ke periode yang benar.
+- Rapor live di HP (390px) & desktop (1280px), 0 error.
+- **Belum diuji:** alur login → sync → buka di perangkat kedua lewat HTTP asli (butuh sesi login portal). Disarankan dicoba di staging.
+
+**Belum dikerjakan: email laporan mingguan ke orang tua.** `portal/` belum punya layanan email. Butuh keputusan: penyedia (mis. SMTP sendiri, Resend, Mailgun), biaya, alamat pengirim, dan persetujuan orang tua (opt-in). Setelah itu, isi email = ringkasan yang sama dengan kartu Ringkasan + Minggu Ini + Tren, dikirim terjadwal (cron di VPS).
 
 ---
 

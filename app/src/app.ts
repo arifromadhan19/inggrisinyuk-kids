@@ -63,6 +63,7 @@ import {
   computeInsights,
   getActiveDaysInLast,
   getWeekMinutes,
+  getWeeklyTrend,
   getAvatar,
   getBossClearedCount,
   getBrowseLevel,
@@ -1644,6 +1645,8 @@ function renderRapor(): void {
 
   const week = getWeekActivity();
   const weekDays = week.filter((d) => d.active).length;
+  const trend = getWeeklyTrend(4);
+  const lastWeek = trend[trend.length - 2];
   const dayChips = week
     .map((d) => `<span class="day-chip ${d.active ? 'is-active' : ''} ${d.isToday ? 'is-today' : ''}">${d.label}</span>`)
     .join('');
@@ -1666,6 +1669,7 @@ function renderRapor(): void {
         <span><b>${getWeekMinutes()}</b> menit</span>
         <span><b>${insights.weekAnswered}</b> soal</span>
       </div>
+      ${lastWeek && (lastWeek.minutes > 0 || lastWeek.answers > 0) ? `<p class="meta" style="margin-top:4px">7 hari sebelumnya: ${lastWeek.minutes} menit${lastWeek.accuracy === null ? '' : ` · ketepatan ${lastWeek.accuracy}%`}</p>` : ''}
       ${screenNote}
     </div>`;
 
@@ -1704,6 +1708,31 @@ function renderRapor(): void {
       <ul class="skill-list">${skillRows || '<li class="meta">Belum ada materi di level ini.</li>'}</ul>
       <p class="meta" style="margin-top:8px">⭐ dari ketepatan jawaban · 💡 = soal yang dikerjakan pakai Petunjuk.</p>
     </div>`;
+
+  // Tren 4 minggu (pola grafik progres Kumon) — 1 baris per 7 hari: bar menit
+  // (1 seri, angka ditulis langsung) + kolom ketepatan terpisah. Menit &
+  // ketepatan beda satuan → tidak digabung dalam 1 sumbu.
+  const maxMin = Math.max(1, ...trend.map((t) => t.minutes));
+  const trendRows = trend
+    .map((t) => {
+      const w = Math.round((t.minutes / maxMin) * 100);
+      return `
+        <li class="trend-row${t.weeksAgo === 0 ? ' is-now' : ''}">
+          <span class="trend-label">${t.weeksAgo === 0 ? '7 hari terakhir' : weekRangeLabel(t.from, t.to)}</span>
+          <span class="trend-bar" role="img" aria-label="${t.minutes} menit"><span class="trend-fill" style="width:${w}%"></span></span>
+          <span class="trend-min">${t.minutes} mnt</span>
+          <span class="trend-acc">${t.accuracy === null ? '–' : `${t.accuracy}%`}</span>
+        </li>`;
+    })
+    .join('');
+  const trendCard = trend.some((t) => t.minutes > 0 || t.answers > 0)
+    ? `
+    <div class="card">
+      <span class="eyebrow">📈 Tren 4 Minggu</span>
+      <div class="trend-head" aria-hidden="true"><span></span><span>waktu belajar</span><span>ketepatan</span></div>
+      <ul class="trend-list">${trendRows}</ul>
+    </div>`
+    : '';
 
   /* ---------- 3. Yang Perlu Dilakukan ---------- */
 
@@ -1815,6 +1844,7 @@ function renderRapor(): void {
       <section class="rapor-sec" aria-labelledby="raporKemampuan">
         <h2 class="rapor-h" id="raporKemampuan">Kemampuan</h2>
         ${skillCard}
+        ${trendCard}
         ${buildBossResultCard()}
       </section>
 
@@ -1861,6 +1891,15 @@ function renderRapor(): void {
       go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 2, viewLevel: level.key });
     },
   });
+}
+
+/** "24–30 Sep" / "28 Sep–4 Okt" dari 2 tanggal YYYY-MM-DD. */
+function weekRangeLabel(from: string, to: string): string {
+  const d = (iso: string) => new Date(`${iso}T12:00:00`);
+  const a = d(from);
+  const b = d(to);
+  const mon = (x: Date) => x.toLocaleDateString('id-ID', { month: 'short' }).replace('.', '');
+  return a.getMonth() === b.getMonth() ? `${a.getDate()}–${b.getDate()} ${mon(b)}` : `${a.getDate()} ${mon(a)}–${b.getDate()} ${mon(b)}`;
 }
 
 /** Ambang catatan waktu layar Little Stars (menit/hari), pedoman WHO. */
@@ -1929,7 +1968,7 @@ function renderRaporDetail(): void {
       ic: '⏱️',
       name: 'Waktu belajar',
       what: 'Total menit 7 hari terakhir & rata-rata menit di hari anak belajar.',
-      how: 'Dihitung hanya saat app terbuka & anak aktif menyentuh layar (diam > 1 menit tidak dihitung). Rata-rata = total menit ÷ hari yang ada catatannya; hari libur tidak ikut membagi. Tercatat per perangkat. Untuk Little Stars, muncul catatan kalau rata-rata lebih dari 60 menit/hari (pedoman WHO usia 3–4 tahun: maksimal 1 jam layar sehari).',
+      how: 'Dihitung hanya saat app terbuka & anak aktif menyentuh layar (diam > 1 menit tidak dihitung). Rata-rata = total menit ÷ hari yang ada catatannya; hari libur tidak ikut membagi. Ikut akun (digabung dari semua perangkat). Untuk Little Stars, muncul catatan kalau rata-rata lebih dari 60 menit/hari (pedoman WHO usia 3–4 tahun: maksimal 1 jam layar sehari).',
     },
     {
       ic: '💡',
@@ -1960,6 +1999,12 @@ function renderRaporDetail(): void {
       name: 'Minggu Ini',
       what: 'Hari belajar, menit belajar, dan soal yang dikerjakan dalam 7 hari terakhir.',
       how: 'Soal dihitung per soal: soal yang dikerjakan ulang minggu ini tetap 1.',
+    },
+    {
+      ic: '📈',
+      name: 'Tren 4 Minggu',
+      what: 'Waktu belajar & ketepatan tiap 7 hari, 4 periode terakhir.',
+      how: 'Ketepatan = jawaban tepat ÷ semua jawaban di periode itu (Vocabulary, Listening, Reading, Grammar; tanpa mic). Mulai tercatat sejak fitur ini ada, jadi periode lama bisa masih kosong.',
     },
     {
       ic: '🏰',
@@ -1996,7 +2041,7 @@ function renderRaporDetail(): void {
         <li><b>Dikirim ke akun hanya saat 1 bagian selesai</b>: Latihan Inti, tiap tab Tantangan, tiap babak Tantangan Raja, atau 1 markas game. Kenalan saja tidak memicu pengiriman.</li>
         <li>Bagian yang baru setengah jalan tetap aman di perangkat, dan ikut terkirim saat bagian berikutnya selesai.</li>
         <li>Data dari perangkat lain <b>digabung</b>, tidak saling menimpa: nilai tertinggi & soal yang sudah dikerjakan tidak pernah hilang.</li>
-        <li>Tercatat di perangkat ini saja (belum ikut akun): waktu belajar & bintang game.</li>
+        <li>Waktu belajar, tren, dan nilai game juga ikut akun, jadi Rapor sama di HP mana pun setelah bagian berikutnya selesai.</li>
       </ul>
     </div>
   `;

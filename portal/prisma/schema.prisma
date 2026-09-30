@@ -102,6 +102,13 @@ model ChildProgressState {
    *  jadi di sini cukup simpan versi terbaru. */
   bossTests Json? @map("boss_tests")
 
+  /** Data Rapor (materi/rapor.md §6.7) — JSON kecil, digabung per kunci
+   *  (nilai terbesar) di `upsertStoreSnapshot`, bukan ditimpa. */
+  activeMs     Json? @map("active_ms")
+  dailyAnswers Json? @map("daily_answers")
+  gameStats    Json? @map("game_stats")
+  gameXp       Json? @map("game_xp")
+
   clientUpdatedAt DateTime? @map("client_updated_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
 

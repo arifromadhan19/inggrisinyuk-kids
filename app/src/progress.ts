@@ -94,8 +94,8 @@ export interface Store {
    *  bukan sumber kebenaran baru: tetap ditambah BARENGAN `xp` total lewat
    *  `addXp` di titik yang sama (lihat `app.ts` `onRajaRoundDone`), cuma
    *  dipecah per-Raja di sini biar tiap kartu bisa nunjukin progresnya
-   *  sendiri. Key = `RajaKey` (app.ts), TIDAK disinkron ke server (lokal
-   *  murni, sama alasan `name`/`avatar` — lihat `mergeFromServer`). */
+   *  sendiri. Key = `RajaKey` (app.ts). Ikut akun sejak Rapor Fase 3
+   *  (`child_progress_state.game_xp`, digabung nilai terbesar per game). */
   gameXp: Record<string, number>;
   /** "Raja" Game Hub terakhir dibuka (`RajaKey`, app.ts) — dipakai kartu
    *  "Yuk Mulai"/"Yuk Lanjutkan" di puncak layar Game (permintaan user, pola
@@ -111,8 +111,8 @@ export interface Store {
    *  dari `games/wordmatch.ts`/`balloonpop.ts`/`sentencepuzzle.ts`/
    *  `memorymatch.ts`/`soundhunt.ts`/`storyquest.ts` & `kelompok.ts`
    *  (`games/kelompok.ts`, Raja Kelompok — dulu `runKelompokkan` di `games/vocabulary.ts`; fungsi lain di file itu
-   *  TIDAK pakai param ini, bukan bagian Game Hub). TIDAK disinkron ke
-   *  server (lokal murni, alasan sama `gameXp`/`lastGame`). */
+   *  TIDAK pakai param ini, bukan bagian Game Hub). Ikut akun sejak Rapor
+   *  Fase 3 (`child_progress_state.game_stats`, pasangan dgn total terbesar). */
   gameStats: Record<string, { correct: number; total: number }>;
   /** Level yang TERAKHIR dipilih lewat pemilih level Menu Belajar
    *  (`#menuLevelSelect`/tombol per-level Peta Level, `app.ts`
@@ -133,9 +133,14 @@ export interface Store {
   /** Lama belajar aktif per hari (YYYY-MM-DD → milidetik) — dipakai Rapor
    *  "Rata-rata durasi / hari". Cuma dihitung saat app tampil DAN anak
    *  berinteraksi (lihat `startActiveTimer`, app.ts), bukan tab yang
-   *  dibiarkan terbuka. Lokal (tidak disinkron, sama alasan `gameStats`);
-   *  disimpan ±60 hari terakhir. */
+   *  dibiarkan terbuka. Ikut akun (`child_progress_state.active_ms`, digabung
+   *  nilai terbesar per hari); disimpan ±60 hari terakhir. */
   activeMs: Record<string, number>;
+  /** Jawaban per hari di soal pilih/susun (tanpa mic & Kenalan, definisi
+   *  SAMA `computeInsights().skillAccuracy`) — dasar grafik tren 4 minggu
+   *  Rapor. `n` = percobaan, `ok` = yang tepat. Ikut akun
+   *  (`child_progress_state.daily_answers`); ±60 hari terakhir. */
+  dailyAnswers: Record<string, { n: number; ok: number }>;
 }
 
 /** 1 percobaan 1 babak. `res`: null = belum dijawab, 1/0 = benar/belum
@@ -261,6 +266,20 @@ function sanitizeGameStats(v: unknown, num: (x: unknown) => number): Record<stri
   return out;
 }
 
+/** `dailyAnswers` valid saja: kunci tanggal, 0 ≤ ok ≤ n. */
+function sanitizeDailyAnswers(raw: unknown, num: (v: unknown) => number): Record<string, { n: number; ok: number }> {
+  const out: Record<string, { n: number; ok: number }> = {};
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const [day, val] of Object.entries(raw as Record<string, unknown>)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !val || typeof val !== 'object') continue;
+    const n = num((val as { n?: unknown }).n);
+    const ok = num((val as { ok?: unknown }).ok);
+    if (ok > n) continue;
+    out[day] = { n, ok };
+  }
+  return out;
+}
+
 const EMPTY: Store = {
   done: [],
   last: null,
@@ -279,6 +298,7 @@ const EMPTY: Store = {
   browseLevel: null,
   bossTests: {},
   activeMs: {},
+  dailyAnswers: {},
 };
 
 function read(): Store {
@@ -322,6 +342,7 @@ function read(): Store {
         parsed.activeMs && typeof parsed.activeMs === 'object' && !Array.isArray(parsed.activeMs)
           ? Object.fromEntries(Object.entries(parsed.activeMs).filter(([, v]) => num(v) === v))
           : {},
+      dailyAnswers: sanitizeDailyAnswers(parsed.dailyAnswers, num),
     };
   } catch {
     // Storage bisa diblokir (mode privat). App tetap jalan, cuma tanpa progres.
@@ -551,6 +572,13 @@ export function markSlotAnswered(
     t: Date.now(),
   };
   store.sections[key] = s;
+  if (isGradedSection(section) && !isMicSection(skill, section)) {
+    const today = isoDate(new Date());
+    const d = store.dailyAnswers[today] ?? { n: 0, ok: 0 };
+    store.dailyAnswers = { ...store.dailyAnswers, [today]: { n: d.n + 1, ok: d.ok + (correct ? 1 : 0) } };
+    const days = Object.keys(store.dailyAnswers).sort();
+    if (days.length > 60) days.slice(0, days.length - 60).forEach((k) => delete store.dailyAnswers[k]);
+  }
   write(store);
 }
 
@@ -1184,6 +1212,46 @@ export function addActiveTime(ms: number): void {
 /** Rata-rata menit belajar per hari AKTIF (hari tanpa belajar tidak ikut
  *  dibagi — non-punitive, libur tidak "menurunkan" rata-rata). `null`
  *  kalau belum ada durasi yang tercatat sama sekali. */
+export interface WeekTrend {
+  /** 0 = 7 hari terakhir (termasuk hari ini), 1 = 7 hari sebelumnya, dst. */
+  weeksAgo: number;
+  /** Hari pertama & terakhir jendela ini (YYYY-MM-DD). */
+  from: string;
+  to: string;
+  minutes: number;
+  answers: number;
+  /** Ketepatan 0..100 (soal pilih/susun, tanpa mic), `null` = belum ada jawaban. */
+  accuracy: number | null;
+}
+
+/** Tren per 7 hari (jendela bergulir, bukan minggu kalender) — `weeks`
+ *  jendela, urut dari yang terlama. Dari `activeMs` & `dailyAnswers`. */
+export function getWeeklyTrend(weeks = 4): WeekTrend[] {
+  const store = read();
+  const today = toEpochDay(isoDate(new Date()));
+  // Kebalikan `toEpochDay` (keduanya UTC murni, jadi tidak geser zona waktu).
+  const dayIso = (epochDay: number) => new Date(epochDay * 864e5).toISOString().slice(0, 10);
+  const out: WeekTrend[] = [];
+  for (let w = weeks - 1; w >= 0; w -= 1) {
+    const end = today - w * 7;
+    const start = end - 6;
+    let ms = 0;
+    let n = 0;
+    let ok = 0;
+    for (let d = start; d <= end; d += 1) {
+      const key = dayIso(d);
+      ms += store.activeMs[key] ?? 0;
+      const a = store.dailyAnswers[key];
+      if (a) {
+        n += a.n;
+        ok += a.ok;
+      }
+    }
+    out.push({ weeksAgo: w, from: dayIso(start), to: dayIso(end), minutes: Math.round(ms / 60000), answers: n, accuracy: n > 0 ? Math.round((ok / n) * 100) : null });
+  }
+  return out;
+}
+
 /** Total menit belajar 7 hari terakhir (termasuk hari ini). */
 export function getWeekMinutes(): number {
   const today = toEpochDay(isoDate(new Date()));
@@ -1641,6 +1709,34 @@ function mergeBossTests(local: Record<string, BossLevelTest>, remote: unknown): 
  * preferensi perangkat ini (localnya selalu sudah terisi default, jadi tidak
  * ada cara membedakan "belum pernah diisi" dari "sengaja default").
  */
+const nonNeg = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : 0);
+
+/** Gabung {kunci: angka}: nilai terbesar per kunci (menit/XP cuma naik). */
+function maxNumRecord(local: Record<string, number>, remote: unknown): Record<string, number> {
+  const out = { ...local };
+  if (remote && typeof remote === 'object' && !Array.isArray(remote)) {
+    for (const [k, v] of Object.entries(remote as Record<string, unknown>)) {
+      const n = nonNeg(v);
+      if (n > (out[k] ?? 0)) out[k] = n;
+    }
+  }
+  return out;
+}
+
+/** Gabung {kunci: pasangan}: ambil PASANGAN dari sisi yang `totalKey`-nya
+ *  lebih besar (pola sama correctAttempts/totalAttempts di bawah). */
+function mergePairs<T extends Record<K, number>, K extends string>(local: Record<string, T>, remote: Record<string, T>, totalKey: K): Record<string, T> {
+  const out = { ...local };
+  for (const [k, v] of Object.entries(remote)) if (!out[k] || v[totalKey] > out[k][totalKey]) out[k] = v;
+  return out;
+}
+
+/** Simpan ±60 hari terbaru (kunci tanggal). */
+function keepLastDays<T>(m: Record<string, T>, keep = 60): Record<string, T> {
+  const keys = Object.keys(m).sort().slice(-keep);
+  return Object.fromEntries(keys.map((k) => [k, m[k]]));
+}
+
 export function mergeFromServer(remote: Partial<Store> | null | undefined): void {
   if (!remote || typeof remote !== 'object') return;
   const local = read();
@@ -1665,12 +1761,13 @@ export function mergeFromServer(remote: Partial<Store> | null | undefined): void
     avatar: local.avatar,
     wordInteractions: union(local.wordInteractions, strings(remote.wordInteractions)),
     sections: mergeSections(local.sections, remote.sections),
-    gameXp: local.gameXp,
+    gameXp: maxNumRecord(local.gameXp, remote.gameXp),
     lastGame: local.lastGame,
-    gameStats: local.gameStats,
+    gameStats: mergePairs(local.gameStats, sanitizeGameStats(remote.gameStats, nonNeg), 'total'),
     browseLevel: local.browseLevel,
     bossTests: mergeBossTests(local.bossTests, remote.bossTests),
-    activeMs: local.activeMs,
+    activeMs: keepLastDays(maxNumRecord(local.activeMs, remote.activeMs)),
+    dailyAnswers: keepLastDays(mergePairs(local.dailyAnswers, sanitizeDailyAnswers(remote.dailyAnswers, nonNeg), 'n')),
   });
 }
 
