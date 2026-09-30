@@ -3094,8 +3094,13 @@ function renderLandingPage(): void {
         </div>
         <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
       </footer>
+      ${stickyBuyBarHtml('landingRegister')}
+      ${waFloatHtml('Halo Admin, saya tertarik dengan InggrisinYuk Kids. Boleh minta info lebih lanjut?')}
     </div>
   `;
+
+  // Bar "Daftar" menempel — sembunyi saat tombol Daftar navbar/hero/bawah terlihat.
+  wireStickyBuyBar(Array.from(root.querySelectorAll('.landing-page > :not(.mk-sticky) [data-action="landingRegister"]')));
 
   setHandlers({
     landingAccount: () => go('account'),
@@ -3147,6 +3152,7 @@ function renderAccount(): void {
         <footer class="standalone-footer">
           <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
         </footer>
+        ${waFloatHtml('Halo Admin, saya butuh bantuan untuk masuk ke akun InggrisinYuk Kids.')}
       </div>
     `;
 
@@ -3223,7 +3229,8 @@ const REGISTER_BENEFITS: string[] = [
   'Akses selamanya & sekali bayar — tanpa biaya tambahan',
 ];
 
-const SUPPORT_WA = '6285294569271'; // nomor bantuan yang sama dgn inggrisinyuk-app
+/** No WA bantuan InggrisinYuk Kids — tombol WA melayang di homepage, login & Daftar. */
+const SUPPORT_WA = '6285169733727';
 
 const SOCIAL_LINKS: { href: string; title: string; svg: string }[] = [
   {
@@ -3261,6 +3268,38 @@ function buyFooterHtml(): string {
       <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
       <div class="buy-social">${icons}</div>
     </footer>`;
+}
+
+/** Bar "Daftar" yang menempel di bawah layar (HP/tablet) — dipakai homepage
+ *  & /daftar. Catatan layanan WAJIB ikut krn ada klaim "akses selamanya". */
+function stickyBuyBarHtml(action: string): string {
+  return `
+    <div class="mk-sticky is-hidden" id="mkSticky">
+      <div class="mk-sticky-text">
+        <p><b>Rp 99.000</b><span class="mk-sticky-sep"> · </span><span class="mk-sticky-claim">akses selamanya &amp; sekali bayar</span></p>
+        <small>Selama layanan InggrisinYuk Kids berjalan.</small>
+      </div>
+      <button class="buy-submit" type="button" data-action="${action}">Daftar</button>
+    </div>`;
+}
+
+/** Bar menempel muncul HANYA saat tidak ada satu pun pintu daftar lain
+ *  (`targets`) yang terlihat di layar — permintaan user. */
+function wireStickyBuyBar(targets: Element[]): void {
+  const sticky = root.querySelector('#mkSticky');
+  if (!sticky || targets.length === 0 || !('IntersectionObserver' in window)) return;
+  const visible = new Set<Element>();
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) visible.add(e.target);
+        else visible.delete(e.target);
+      }
+      sticky.classList.toggle('is-hidden', visible.size > 0);
+    },
+    { threshold: 0.15 }
+  );
+  targets.forEach((t) => io.observe(t));
 }
 
 function waFloatHtml(message: string): string {
@@ -3435,22 +3474,13 @@ function renderRegister(): void {
           </div>
         </main>
         ${buyFooterHtml()}
-        <div class="mk-sticky" id="mkSticky">
-          <span><b>Rp 99.000</b> · sekali bayar</span>
-          <button class="buy-submit" type="button" data-action="regCta">Daftar</button>
-        </div>
-        ${waFloatHtml('hi saya butuh bantuan untuk pembelian InggrisinYuk Kids')}
+        ${stickyBuyBarHtml('regCta')}
+        ${waFloatHtml('Halo Admin, saya ingin mendaftar InggrisinYuk Kids. Boleh minta info lebih lanjut?')}
       </div>
     `;
 
-    // Tombol "Daftar" menempel di bawah (HP) — sembunyi begitu bagian beli terlihat.
-    const buy = root.querySelector('#beli');
-    const sticky = root.querySelector('#mkSticky');
-    if (buy && sticky && 'IntersectionObserver' in window) {
-      new IntersectionObserver(([entry]) => sticky.classList.toggle('is-hidden', entry.isIntersecting), {
-        threshold: 0.15,
-      }).observe(buy);
-    }
+    // Bar "Daftar" menempel — sembunyi saat tombol hero atau bagian beli terlihat.
+    wireStickyBuyBar(Array.from(root.querySelectorAll('.mk-cta, #beli')));
 
     setHandlers({
       regBack: () => go('landing'),
