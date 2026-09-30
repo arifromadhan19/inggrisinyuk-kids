@@ -251,6 +251,12 @@ export interface AuthResult {
  */
 export async function login(identifier: string): Promise<void> {
   const data = await apiFetch<AuthResult>('/api/auth/login', { method: 'POST', body: JSON.stringify({ identifier }) });
+  adoptSession(data);
+}
+
+/** Simpan token baru & kosongkan cache akun lama (login biasa ATAU token
+ *  dari halaman /pembayaran setelah lunas). */
+function adoptSession(data: AuthResult): void {
   write({
     token: data.token,
     identifier: data.identifier,
@@ -262,6 +268,39 @@ export async function login(identifier: string): Promise<void> {
     parentEmail: null,
     parentCreatedAt: null,
   });
+}
+
+/** Halaman Daftar — buat pesanan Rp 99.000 (portal `POST /api/checkout`),
+ *  balikan `invoiceUrl` halaman bayar Xendit. Akun dibuat portal saat lunas. */
+export async function startCheckout(input: {
+  childName: string;
+  email: string;
+  phone: string;
+}): Promise<{ invoiceUrl: string; orderId: string }> {
+  return apiFetch('/api/checkout', { method: 'POST', body: JSON.stringify(input) });
+}
+
+export type CheckoutStatus = 'pending' | 'success' | 'claimed' | 'expired' | 'failed' | 'not_found';
+
+/** Dipolling halaman /pembayaran. Begitu lunas, portal memberi token SEKALI —
+ *  langsung disimpan (anak & orang tua otomatis masuk). */
+export async function finalizeCheckout(orderId: string): Promise<CheckoutStatus> {
+  let data: { status?: string; token?: string; identifier?: string | null; claimed?: boolean };
+  try {
+    data = await apiFetch(`/api/checkout/finalize?orderId=${encodeURIComponent(orderId)}`);
+  } catch (err) {
+    if (err instanceof ApiRequestError && err.status === 404) return 'not_found';
+    throw err;
+  }
+  if (data.status === 'success') {
+    if (data.token) {
+      adoptSession({ token: data.token, identifier: data.identifier ?? null });
+      return 'success';
+    }
+    return 'claimed';
+  }
+  if (data.status === 'expired' || data.status === 'failed') return data.status;
+  return 'pending';
 }
 
 export interface ChildInfo {

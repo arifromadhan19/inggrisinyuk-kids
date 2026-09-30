@@ -882,6 +882,12 @@ export type Screen =
    *  tabbar dulu masih nyangkut kelihatan di layar ini. */
   | 'gamePlay'
   | 'account'
+  /** Halaman Daftar (tombol "Daftar" homepage) — nama anak + email & no WA
+   *  orang tua → bayar Rp 99.000 lewat Xendit. */
+  | 'register'
+  /** Kembali dari halaman bayar Xendit (`/pembayaran?orderId=`) — menunggu
+   *  pembayaran terkonfirmasi lalu otomatis masuk. */
+  | 'payment'
   | 'placementTest'
   /** Homepage marketing (hero/cara-kerja/fitur/testimoni/CTA) — satu-satunya
    *  layar yang boleh dilihat pengunjung yang BELUM login sebelum digerbang
@@ -916,6 +922,8 @@ export interface AppState {
   viewLevel: LevelKey | null;
   /** "Raja" Game Hub yang sedang dimainkan (screen 'gamePlay'). */
   gameKey: RajaKey | null;
+  /** Pesanan yang sedang ditunggu layar 'payment' (dari URL `?orderId=`). */
+  orderId: string | null;
 }
 
 /** Handler dipanggil dari klik yang didelegasikan lewat data-action/data-payload. */

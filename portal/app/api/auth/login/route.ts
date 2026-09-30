@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { createSession } from '@/lib/session';
 import { withErrorHandling } from '@/lib/api-error';
+import { normalizePhone } from '@/lib/phone';
 
 /**
  * Passwordless — persis pola inggrisinyuk asli: cukup no HP atau email yang
@@ -17,7 +18,11 @@ export const POST = withErrorHandling(async (req: NextRequest): Promise<NextResp
   }
 
   const parent = await db.parentAccount.findFirst({
-    where: { OR: [{ phone: identifier }, { email: identifier.toLowerCase() }] },
+    // Akun dari halaman Daftar menyimpan no WA dlm format 62xxx — "0812…"
+    // yang diketik orang tua ikut dicocokkan lewat bentuk normalnya.
+    where: {
+      OR: [{ phone: identifier }, { phone: normalizePhone(identifier) }, { email: identifier.toLowerCase() }],
+    },
   });
 
   if (!parent || parent.isSuspended) {

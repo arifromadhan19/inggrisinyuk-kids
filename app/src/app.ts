@@ -12,6 +12,7 @@ import {
 import {
   ApiRequestError,
   cacheChildStatus,
+  finalizeCheckout,
   getAccountInfo,
   getCachedChildStatus,
   getCachedLeaderboard,
@@ -22,6 +23,7 @@ import {
   refreshChildStatus,
   refreshLeaderboard,
   saveProgress,
+  startCheckout,
 } from './account';
 import * as bossGame from './games/boss';
 import { OBJECTIVE_SKILLS } from './games/boss-bank';
@@ -256,6 +258,7 @@ const state: AppState = {
   soonLevel: null,
   viewLevel: null,
   gameKey: null,
+  orderId: null,
 };
 
 let root: HTMLElement;
@@ -632,6 +635,8 @@ const SCREEN_TO_SLUG: Record<Screen, string> = {
   // `SLUG_TO_SCREEN` (reverse map).
   gamePlay: 'game-play',
   account: 'masuk',
+  register: 'daftar',
+  payment: 'pembayaran',
   placementTest: 'placement-test',
   landing: '',
 };
@@ -656,6 +661,7 @@ function pathFromState(s: AppState): string {
   // query `level=` yang sama bentuknya — biar URL-nya konsisten & gampang
   // di-reverse-parse. `viewLevel` cuma ditulis kalau memang diisi (jelajah
   // markas lain) — default (ikut level asli anak) tidak perlu nongol di URL.
+  if (s.screen === 'payment' && s.orderId) query.push(`orderId=${encodeURIComponent(s.orderId)}`);
   if (s.screen === 'boss' && s.bossLevel) query.push(`level=${s.bossLevel}`);
   if (s.screen === 'levelSoon' && s.soonLevel) query.push(`level=${s.soonLevel}`);
   if ((s.screen === 'menu' || s.screen === 'topics' || s.screen === 'activity') && s.viewLevel) {
@@ -712,6 +718,7 @@ function applyPathToState(pathname: string, search: string): void {
       }
     }
   }
+  if (screen === 'payment') state.orderId = params.get('orderId');
   if (screen === 'boss') state.bossLevel = levelFromUrl;
   if (screen === 'levelSoon') state.soonLevel = levelFromUrl;
   if (screen === 'menu' || screen === 'topics' || screen === 'activity') state.viewLevel = levelFromUrl;
@@ -739,6 +746,10 @@ function go(screen: Screen, extra?: Partial<AppState>): void {
   const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
 }
+
+/** Layar yang boleh dibuka TANPA login (homepage, masuk, daftar, menunggu
+ *  pembayaran) — begitu sudah login, layar ini dilewati ke Beranda. */
+const PUBLIC_SCREENS: Screen[] = ['landing', 'account', 'register', 'payment'];
 
 function render(): void {
   // Setiap pindah screen/step (back, keluar, tab lain, jumpStep/prevStep/
@@ -771,13 +782,13 @@ function render(): void {
   // 'account'. Dipusatkan di sini (bukan per-tombol) supaya SEMUA jalur
   // navigasi (nav, tombol dalam, deep action) otomatis kena, tanpa perlu
   // guard berulang di tiap handler.
-  if (!isLoggedIn() && state.screen !== 'account' && state.screen !== 'landing') {
+  if (!isLoggedIn() && !PUBLIC_SCREENS.includes(state.screen)) {
     state.screen = 'landing';
   }
   // Kebalikannya: URL bisa saja masih "/" atau "/masuk" (mis. dari sesi lama
   // yang tokennya sudah kedaluwarsa, atau bookmark homepage) padahal sekarang
   // sudah login — jangan tampilkan layar marketing/login ke orang yang sudah masuk.
-  if (isLoggedIn() && (state.screen === 'account' || state.screen === 'landing')) {
+  if (isLoggedIn() && PUBLIC_SCREENS.includes(state.screen)) {
     state.screen = getCachedChildStatus().placementTestDone === false ? 'placementTest' : 'home';
   }
 
@@ -792,7 +803,7 @@ function render(): void {
   // Layar login = halaman tersendiri (pola inggrisinyuk dewasa) — tanpa rail/
   // topline/tabbar & tanpa header nama+level, supaya tidak kelihatan separuh
   // app di baliknya sebelum benar-benar masuk.
-  document.body.classList.toggle('is-login', state.screen === 'account');
+  document.body.classList.toggle('is-login', ['account', 'register', 'payment'].includes(state.screen));
   // Homepage marketing = halaman tersendiri juga (pola sama .is-login) —
   // tanpa rail/topline/tabbar, full-bleed, punya nav+footer sendiri.
   document.body.classList.toggle('is-landing', state.screen === 'landing');
@@ -827,6 +838,8 @@ function render(): void {
   if (state.screen === 'gamePlay') return renderGamePlay();
   if (state.screen === 'boss') return renderBoss();
   if (state.screen === 'account') return renderAccount();
+  if (state.screen === 'register') return renderRegister();
+  if (state.screen === 'payment') return renderPayment();
   if (state.screen === 'placementTest') return renderPlacementTestScreen();
   if (state.screen === 'landing') return renderLandingPage();
   renderActivity();
@@ -2866,14 +2879,14 @@ function renderSettings(): void {
 /* ------------------------------------------------------------- homepage -- */
 
 /** Fitur yang ditonjolkan di homepage — 5 skill asli `SKILL_META` + 1 kartu
- *  bonus Peta Level/Tantangan Bos (bukan skill, ditulis manual krn di luar
+ *  bonus Peta Level/Tes Naik Level (bukan skill, ditulis manual krn di luar
  *  `SKILL_META`). Dibuat sekali di module scope, bukan tiap render. */
 const LANDING_FEATURES: { emoji: string; label: string; desc: string; accent: string; accentBg: string }[] = [
   ...Object.values(SKILL_META).map((s) => ({ emoji: s.emoji, label: s.label, desc: s.tagline, accent: s.accent, accentBg: s.accentBg })),
   {
     emoji: '👑',
-    label: 'Peta Level & Tantangan Bos',
-    desc: '6 dunia, taklukkan Raja di tiap level',
+    label: 'Peta Level & Tes Naik Level',
+    desc: '6 level; tiap level ditutup tes seru (Tantangan Raja)',
     accent: 'var(--brand-700)',
     accentBg: 'var(--brand-100)',
   },
@@ -2900,8 +2913,8 @@ const LANDING_FEATURES: { emoji: string; label: string; desc: string; accent: st
 const LANDING_STEPS: { emoji: string; title: string; desc: string }[] = [
   { emoji: '🎯', title: 'Cek Kemampuan Dulu', desc: 'First Placement Test yang seru, buat tahu level awal anak.' },
   { emoji: '🗺️', title: 'Pilih Petualangan', desc: 'Jelajahi Peta Level, dari Little Stars sampai Trailblazer.' },
-  { emoji: '🎮', title: 'Belajar Sambil Main', desc: 'Vocabulary, Listening, Speaking, Grammar, Reading.' },
-  { emoji: '👑', title: 'Taklukkan Raja', desc: 'Lolos Tantangan Raja, tes naik level tiap dunia.' },
+  { emoji: '🎮', title: 'Jalani Misi Tiap Level', desc: 'Vocabulary, Listening, Speaking, Grammar, Reading.' },
+  { emoji: '👑', title: 'Tes Naik Level', desc: 'Di akhir tiap level ada tes seru (Tantangan Raja). Lolos, naik ke level berikutnya.' },
 ];
 
 /** Testimoni placeholder dari sudut pandang ORANG TUA (bukan anak, PRD §14.5
@@ -2910,12 +2923,12 @@ const LANDING_STEPS: { emoji: string; title: string; desc: string }[] = [
 const LANDING_TESTIMONIALS: { quote: string; name: string; role: string }[] = [
   { quote: 'Anakku jadi suka buka sendiri, seneng banget tiap kali naik level.', name: 'Bunda Sari', role: 'Orang tua anak Explorer' },
   { quote: 'Cuma latihan 10 menit sehari, tapi progresnya kelihatan jelas tiap minggu.', name: 'Ayah Denis', role: 'Orang tua anak Adventurer' },
-  { quote: 'Anakku semangat belajar demi bisa menaklukkan Raja berikutnya.', name: 'Bunda Wulan', role: 'Orang tua anak Little Stars' },
+  { quote: 'Anakku semangat belajar biar lolos tes naik level berikutnya.', name: 'Bunda Wulan', role: 'Orang tua anak Little Stars' },
 ];
 
 const LANDING_FAQS: { q: string; a: string }[] = [
-  { q: 'Apakah ada biaya lagi setelah bayar?', a: 'Tidak. Rp 99.000 itu sekali bayar untuk akses selamanya — semua level, semua skill, tanpa biaya bulanan atau tambahan lain.' },
-  { q: 'Apakah aksesnya dibatasi (per hari/tanggal habis)?', a: 'Tidak. Akses selamanya, anak bisa main kapan saja tanpa batas waktu harian atau tanggal kedaluwarsa.' },
+  { q: 'Apakah ada biaya lagi setelah bayar?', a: 'Tidak. Cukup sekali bayar Rp 99.000 untuk akses selamanya ke semua level & semua skill — tanpa langganan bulanan, biaya per level, atau pembelian di dalam aplikasi.' },
+  { q: 'Apa maksud akses selamanya?', a: 'Tidak ada batas main harian dan tidak ada masa langganan yang habis — akun tetap aktif tanpa perlu bayar lagi. Akses berlaku selama layanan InggrisinYuk Kids berjalan.' },
   { q: 'Untuk usia berapa aplikasi ini?', a: '3 sampai 13+ tahun — dari Little Stars sampai Trailblazer, kontennya otomatis menyesuaikan level anak.' },
   { q: 'Apakah anak perlu akun sendiri?', a: 'Tidak, cukup 1 akun keluarga (orang tua) untuk masuk & pantau progres — anak main langsung di app yang sama.' },
   { q: 'Bisa dimainkan tanpa internet?', a: 'Bisa. Progres anak tersimpan otomatis di perangkat; internet cuma dibutuhkan buat masuk akun & sinkron data.' },
@@ -2970,12 +2983,12 @@ function renderLandingPage(): void {
   // `renderLevels`), bukan angka baru. Little Stars (3-5 th) sengaja TANPA
   // CEFR (`cefr:''`) — riset (RESEARCH.md §3.4, British Council "Early
   // Years") & EF Kids "Small Stars" sama-sama TIDAK memberi label CEFR di
-  // usia ini, jadi "Fase Awal" lebih jujur drpd mengarang band CEFR palsu.
+  // usia ini, jadi "Sebelum Pre-A1" lebih jujur drpd mengarang band CEFR palsu.
   // Warna tiap kartu reuse `placeFor()` (scenery.ts) — token tanah yang SAMA
   // dgn Peta Level asli, bukan palet baru, biar kartu ini kebaca sbg preview
   // sungguhan bukan ilustrasi marketing lepas.
   const levelCards = LEVELS.map((lvl) => {
-    const cefrTag = lvl.cefr ? `<span class="tag">${lvl.cefr}</span>` : `<span class="tag">Fase Awal</span>`;
+    const cefrTag = lvl.cefr ? `<span class="tag">${lvl.cefr}</span>` : `<span class="tag">Sebelum Pre-A1</span>`;
     return `
       <div class="landing-level ${placeFor(lvl.key).cls}">
         <span class="landing-level-ic" aria-hidden="true">${lvl.emoji}</span>
@@ -3013,18 +3026,22 @@ function renderLandingPage(): void {
         <span class="brand">${brandMark}<span class="brand-word">InggrisinYuk<small>Kids</small></span></span>
         <div class="landing-nav-actions">
           <button class="ghost-btn landing-nav-btn" type="button" data-action="landingAccount">Masuk</button>
-          <button class="cta landing-nav-btn" type="button" data-action="landingAccount">Daftar</button>
+          <button class="cta landing-nav-btn" type="button" data-action="landingRegister">Daftar</button>
         </div>
       </div>
 
       <section class="landing-hero">
         <div class="landing-hero-inner">
           <span class="landing-mascot mascot-idle" aria-hidden="true">🦁</span>
-          <span class="eyebrow">Petualangan Bahasa Inggris Anak</span>
-          <h1 class="display">Naik Level, Taklukkan Raja, Makin Jago Inggris!</h1>
-          <p class="lede">Anak main sendiri, level naik sendiri — dari Little Stars sampai Trailblazer, kapan saja dan di mana saja.</p>
-          <span class="landing-price">✨ Akses Selamanya — Rp 99.000 sekali bayar</span>
-          <button class="cta pt-cta" type="button" data-action="landingAccount">🚀 Daftar &amp; Mulai Sekarang</button>
+          <span class="eyebrow">Petualangan Ilmu Bahasa Inggris untuk Anak</span>
+          <h1 class="display">Berpetualang, Naik Level, Makin Jago Inggris!</h1>
+          <p class="lede">Anak main sendiri, level naik sendiri — dari Little Stars (usia 3–5, sebelum Pre-A1) sampai Trailblazer (setara CEFR B1).</p>
+          <div class="mk-offer">
+            <p class="mk-offer-price">Rp 99.000</p>
+            <p class="mk-offer-claim">Akses selamanya &amp; sekali bayar</p>
+            <p class="mk-offer-note">Akses berlaku selama layanan InggrisinYuk Kids berjalan. Tanpa langganan &amp; biaya tambahan.</p>
+          </div>
+          <button class="cta pt-cta" type="button" data-action="landingRegister">🚀 Daftar &amp; Mulai Sekarang</button>
         </div>
       </section>
 
@@ -3035,6 +3052,7 @@ function renderLandingPage(): void {
 
       <section class="landing-section" id="level">
         <h2 class="h2" style="margin-bottom:8px">6 Level, Ikuti Standar CEFR/Cambridge</h2>
+        <p class="meta" style="text-align:center;max-width:72ch;margin:0 auto 8px;text-wrap:balance">CEFR = standar internasional tingkat kemampuan bahasa (Pre-A1 → A1 → A2 → B1, dst).</p>
         <p class="lede" style="text-align:center;max-width:60ch;margin:0 auto var(--s5)">Tiap level makin menantang, bukan materi yang itu-itu saja diulang — soal & format latihan ikut naik tingkat di tiap level, sama seperti ujian Cambridge asli.</p>
         <div class="landing-levels">${levelCards}</div>
       </section>
@@ -3057,9 +3075,13 @@ function renderLandingPage(): void {
       <section class="landing-section">
         <div class="landing-bottomcta">
           <h2 class="h2">Yuk, Mulai Petualangan Bahasa Inggris Anak!</h2>
-          <p class="lede">Akses semua level, semua skill, selamanya — sekali bayar, tanpa langganan bulanan.</p>
-          <span class="landing-price">✨ Rp 99.000 sekali bayar</span>
-          <button class="cta pt-cta" type="button" data-action="landingAccount">🚀 Daftar &amp; Mulai Sekarang</button>
+          <p class="lede">Semua level & semua skill, akses selamanya dengan sekali bayar — tanpa langganan bulanan.</p>
+          <div class="mk-offer">
+            <p class="mk-offer-price">Rp 99.000</p>
+            <p class="mk-offer-claim">Akses selamanya &amp; sekali bayar</p>
+            <p class="mk-offer-note">Akses berlaku selama layanan InggrisinYuk Kids berjalan.</p>
+          </div>
+          <button class="cta pt-cta" type="button" data-action="landingRegister">🚀 Daftar &amp; Mulai Sekarang</button>
         </div>
       </section>
 
@@ -3077,6 +3099,7 @@ function renderLandingPage(): void {
 
   setHandlers({
     landingAccount: () => go('account'),
+    landingRegister: () => go('register'),
   });
 }
 
@@ -3117,7 +3140,7 @@ function renderAccount(): void {
               <input id="acIdentifier" class="text-input" type="text" placeholder="08123456789 atau nama@email.com" />
             </div>
             <button class="primary-btn" type="button" data-action="acSubmit" ${loading ? 'disabled' : ''}>${loading ? 'Memproses…' : 'Masuk'}</button>
-            <p class="meta" style="margin-top:14px;text-align:center">Belum terdaftar? No HP/email kamu terdaftar otomatis setelah beli.</p>
+            <p class="meta" style="margin-top:14px;text-align:center">Belum punya akun? <button type="button" class="auth-link" data-action="acRegister">Daftar di sini</button></p>
           </div>
         </main>
 
@@ -3135,6 +3158,7 @@ function renderAccount(): void {
         const identifier = qs<HTMLInputElement>(root, '#acIdentifier').value.trim();
         void submit(identifier);
       },
+      acRegister: () => go('register'),
     });
   }
 
@@ -3144,12 +3168,7 @@ function renderAccount(): void {
     paint();
     try {
       await apiLogin(identifier);
-      await refreshChildStatus();
-      await hydrateProgressFromServer(); // tarik progres akun ini (perangkat lain) & gabung ke lokal
-      paintLevelChips(); // chip header/rail langsung pakai level akun ini, bukan default lama
-      syncUnlocksFromAccount(); // peta ikut hasil tes akun ini walau tesnya dikerjakan di perangkat lain
-      const status = getCachedChildStatus();
-      go(status.placementTestDone ? 'home' : 'placementTest');
+      await enterAfterLogin();
     } catch (err) {
       error = err instanceof ApiRequestError ? err.message : 'Gagal terhubung, coba lagi.';
       loading = false;
@@ -3158,6 +3177,406 @@ function renderAccount(): void {
   }
 
   paint();
+}
+
+/** Sesudah token didapat (login ATAU lunas bayar): tarik status & progres
+ *  akun, lalu ke Beranda — atau ke First Placement Test kalau belum. */
+async function enterAfterLogin(): Promise<void> {
+  await refreshChildStatus();
+  await hydrateProgressFromServer(); // tarik progres akun ini (perangkat lain) & gabung ke lokal
+  paintLevelChips(); // chip header/rail langsung pakai level akun ini, bukan default lama
+  syncUnlocksFromAccount(); // peta ikut hasil tes akun ini walau tesnya dikerjakan di perangkat lain
+  const status = getCachedChildStatus();
+  go(status.placementTestDone ? 'home' : 'placementTest');
+}
+
+/** Pesanan yang sedang dibayar di Xendit — nama anak dipakai jadi sapaan
+ *  "Hi {nama}" begitu lunas. Cuma di perangkat ini (kenyamanan saja). */
+const PENDING_SIGNUP_KEY = 'inggrisinyuk-kids.pendingSignup.v1';
+
+function readPendingSignup(): { orderId: string; childName: string } | null {
+  try {
+    const raw = localStorage.getItem(PENDING_SIGNUP_KEY);
+    return raw ? (JSON.parse(raw) as { orderId: string; childName: string }) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writePendingSignup(value: { orderId: string; childName: string } | null): void {
+  try {
+    if (value) localStorage.setItem(PENDING_SIGNUP_KEY, JSON.stringify(value));
+    else localStorage.removeItem(PENDING_SIGNUP_KEY);
+  } catch {
+    /* diabaikan dengan sengaja */
+  }
+}
+
+/** Isi "Ringkasan Pesanan" — pola `OrderSummary` inggrisinyuk-app. */
+const REGISTER_BENEFITS: string[] = [
+  '5 skill: Vocabulary, Listening, Reading, Grammar, Speaking',
+  '6 level, dari Little Stars (sebelum Pre-A1) sampai Trailblazer (setara B1)',
+  'Tes naik level (Tantangan Raja) di akhir tiap level',
+  '7 game seru di Game Hub',
+  'First Placement Test untuk menentukan level awal anak',
+  'Rapor untuk orang tua — skor tiap skill, kekuatan & misi berikutnya',
+  'Akses selamanya & sekali bayar — tanpa biaya tambahan',
+];
+
+const SUPPORT_WA = '6285294569271'; // nomor bantuan yang sama dgn inggrisinyuk-app
+
+const SOCIAL_LINKS: { href: string; title: string; svg: string }[] = [
+  {
+    href: 'https://www.instagram.com/inggrisinyuk/',
+    title: 'Instagram',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".75" fill="currentColor" stroke="none"/></svg>',
+  },
+  {
+    href: 'https://www.facebook.com/inggrisinyuk',
+    title: 'Facebook',
+    svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>',
+  },
+  {
+    href: 'https://www.tiktok.com/@inggrisinyuk',
+    title: 'TikTok',
+    svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.79 1.54V6.76a4.85 4.85 0 0 1-1.03-.07z"/></svg>',
+  },
+  {
+    href: 'https://www.linkedin.com/in/inggrisinyuk/',
+    title: 'LinkedIn',
+    svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>',
+  },
+];
+
+const WA_ICON =
+  '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.45 9.45 0 0 1-4.82-1.32l-.35-.21-3.58.94.96-3.49-.23-.36a9.43 9.43 0 0 1-1.45-5.03c0-5.22 4.25-9.47 9.48-9.47a9.4 9.4 0 0 1 6.7 2.78 9.4 9.4 0 0 1 2.77 6.7c0 5.23-4.25 9.46-9.47 9.46zm8.06-17.53A11.33 11.33 0 0 0 12.04.63C5.76.63.65 5.74.65 12.02c0 2 .52 3.96 1.52 5.69L.55 23.63l6.05-1.59a11.37 11.37 0 0 0 5.43 1.38h.01c6.28 0 11.39-5.11 11.39-11.39 0-3.04-1.18-5.9-3.33-8.06z"/></svg>';
+
+/** Footer halaman beli (pola inggrisinyuk-app `/beli`): © + ikon sosial. */
+function buyFooterHtml(): string {
+  const icons = SOCIAL_LINKS.map(
+    (l) => `<a href="${l.href}" target="_blank" rel="noopener noreferrer" title="${l.title}" aria-label="${l.title}">${l.svg}</a>`
+  ).join('');
+  return `
+    <footer class="buy-footer">
+      <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
+      <div class="buy-social">${icons}</div>
+    </footer>`;
+}
+
+function waFloatHtml(message: string): string {
+  return `<a class="wa-float" href="https://wa.me/${SUPPORT_WA}?text=${encodeURIComponent(message)}" target="_blank" rel="noopener noreferrer" aria-label="Chat via WhatsApp">${WA_ICON}</a>`;
+}
+
+/** Konten marketing halaman Daftar (permintaan user: "konsepnya mirip
+ *  landing page — munculkan dulu kelebihannya, baru di bawah beli"). Pola
+ *  PAS → manfaat → cara mulai → nilai → beli → FAQ. Tetap lensa kid-friendly
+ *  (CLAUDE.md): tanpa hitung mundur/stok palsu/urgensi, harga ditampilkan
+ *  polos, teks singkat. */
+const REGISTER_PAINS: { emoji: string; pain: string; fix: string }[] = [
+  { emoji: '😴', pain: 'Bosan dengan hafalan', fix: 'Tiap materi jadi misi petualangan, anak penasaran ingin lanjut.' },
+  { emoji: '😟', pain: 'Takut salah & malu ngomong', fix: 'Tidak ada nilai gagal — selalu dapat semangat & boleh coba lagi.' },
+  { emoji: '🤔', pain: 'Orang tua bingung progresnya', fix: 'Rapor menunjukkan skor tiap skill & yang perlu dilatih.' },
+];
+
+const REGISTER_FEATURES: { emoji: string; title: string; desc: string }[] = [
+  { emoji: '🎮', title: 'Belajar Lewat Petualangan', desc: 'Peta Level, misi seru, & 7 game di tiap perjalanan.' },
+  { emoji: '🎯', title: 'Mulai dari Level yang Pas', desc: 'Placement Test menentukan titik mulai anak.' },
+  { emoji: '📚', title: '5 Skill Lengkap', desc: 'Vocabulary, Listening, Reading, Grammar, Speaking.' },
+  { emoji: '🎤', title: 'Berani Ngomong', desc: 'Latihan bicara lewat mic & dengar ulang suaranya sendiri.' },
+  { emoji: '🗺️', title: '6 Level ala Cambridge', desc: 'Little Stars (usia 3–5, sebelum Pre-A1) sampai Trailblazer (setara B1).' },
+  { emoji: '📊', title: 'Rapor Orang Tua', desc: 'Kekuatan anak, misi berikutnya, & kata yang masih dilatih.' },
+];
+
+const REGISTER_STEPS: { title: string; desc: string }[] = [
+  { title: 'Daftar & bayar', desc: 'Isi 3 data, bayar lewat QRIS, e-wallet, atau VA.' },
+  { title: 'Placement Test', desc: 'Tes singkat yang seru untuk menentukan level awal.' },
+  { title: 'Main tiap hari', desc: 'Cukup 10–15 menit sehari, level naik sendiri.' },
+];
+
+const REGISTER_VALUES: string[] = ['Tanpa langganan bulanan', 'Tanpa biaya per level', 'Tanpa iklan', 'Semua level & skill', '1 akun untuk keluarga'];
+
+/**
+ * Halaman Daftar (tombol "Daftar" homepage) — tata letak MENGIKUTI `/beli`
+ * inggrisinyuk-app (permintaan user): "← Kembali ke Beranda", 2 kartu —
+ * form (kiri) & Ringkasan Pesanan (kanan, sticky); di HP ringkasan di ATAS
+ * form. Isian cukup 3 (permintaan user): nama anak, email & no WA orang tua
+ * → `startCheckout` → halaman bayar Xendit. Akun dibuat portal saat lunas.
+ */
+function renderRegister(): void {
+  let error: string | null = null;
+  let alreadyRegistered = false;
+  let loading = false;
+  const values = { childName: '', email: '', phone: '' };
+
+  function field(id: string, label: string, attrs: string, value: string, hint: string, hintClass = ''): string {
+    return `
+      <div class="buy-field">
+        <label for="${id}">${label} <span class="buy-req" aria-hidden="true">*</span></label>
+        <input id="${id}" class="buy-input" required ${attrs} value="${escapeHtml(value)}" ${loading ? 'disabled' : ''} />
+        <p class="buy-hint ${hintClass}">${hint}</p>
+      </div>`;
+  }
+
+  function paint(): void {
+    const benefits = REGISTER_BENEFITS.map(
+      (b) => `<li><span class="buy-check" aria-hidden="true">✓</span><span>${b}</span></li>`
+    ).join('');
+    const pains = REGISTER_PAINS.map(
+      (p) => `
+        <div class="buy-card mk-pain">
+          <span class="mk-pain-ic" aria-hidden="true">${p.emoji}</span>
+          <p class="mk-pain-title">${p.pain}</p>
+          <p class="mk-pain-fix"><span aria-hidden="true">✓</span> ${p.fix}</p>
+        </div>`
+    ).join('');
+    const features = REGISTER_FEATURES.map(
+      (f) => `
+        <div class="buy-card mk-feature">
+          <span class="mk-feature-ic" aria-hidden="true">${f.emoji}</span>
+          <p class="mk-feature-title">${f.title}</p>
+          <p class="mk-feature-desc">${f.desc}</p>
+        </div>`
+    ).join('');
+    const steps = REGISTER_STEPS.map(
+      (st, i) => `
+        <li class="mk-step">
+          <span class="mk-step-num" aria-hidden="true">${i + 1}</span>
+          <div><p class="mk-step-title">${st.title}</p><p class="mk-step-desc">${st.desc}</p></div>
+        </li>`
+    ).join('');
+    const valueChips = REGISTER_VALUES.map((v) => `<li><span aria-hidden="true">✓</span> ${v}</li>`).join('');
+    const faqs = LANDING_FAQS.slice(0, 5)
+      .map((f) => `<details class="buy-card mk-faq"><summary>${f.q}</summary><p>${f.a}</p></details>`)
+      .join('');
+
+    root.innerHTML = `
+      <div class="buy-page">
+        <main class="buy-main">
+          <div class="buy-wrap">
+            <button class="buy-back" type="button" data-action="regBack">← Kembali ke Beranda</button>
+
+            <section class="mk-hero">
+              <span class="mk-mascot mascot-idle" aria-hidden="true">🦁</span>
+              <p class="mk-eyebrow">Untuk anak usia 3–13 tahun</p>
+              <h1 class="mk-h1">Ajak Anak Berpetualang Jadi Jago Bahasa Inggris</h1>
+              <p class="mk-lede">Tiap level adalah petualangan baru. Anak menjelajah sendiri, orang tua tinggal pantau hasilnya di Rapor.</p>
+              <div class="mk-offer">
+                <p class="mk-offer-price">Rp 99.000</p>
+                <p class="mk-offer-claim">Akses selamanya &amp; sekali bayar</p>
+                <p class="mk-offer-note">Akses berlaku selama layanan InggrisinYuk Kids berjalan.</p>
+              </div>
+              <button class="buy-submit mk-cta" type="button" data-action="regCta">🚀 Daftar Sekarang</button>
+              <p class="mk-trust">Bayar aman lewat QRIS, e-wallet, atau VA</p>
+            </section>
+
+            <section class="mk-section">
+              <h2 class="mk-h2">Belajar Bahasa Inggris Sering Bikin Anak…</h2>
+              <div class="mk-grid-3">${pains}</div>
+            </section>
+
+            <section class="mk-section">
+              <h2 class="mk-h2">Kenapa InggrisinYuk Kids?</h2>
+              <div class="mk-grid-feat">${features}</div>
+            </section>
+
+            <section class="mk-section">
+              <h2 class="mk-h2">Mulai dalam 3 Langkah</h2>
+              <ol class="mk-steps">${steps}</ol>
+            </section>
+
+            <section class="mk-section">
+              <div class="buy-card mk-value">
+                <p class="mk-value-title">Akses selamanya &amp; sekali bayar</p>
+                <ul class="mk-value-list">${valueChips}</ul>
+              </div>
+            </section>
+
+            <section class="mk-section mk-buy" id="beli">
+              <h2 class="mk-h2">Yuk, Mulai Petualangannya!</h2>
+            <div class="buy-grid">
+              <aside class="buy-card buy-summary" aria-label="Ringkasan pesanan">
+                <h2 class="buy-summary-title">Ringkasan Pesanan</h2>
+                <p class="buy-product">InggrisinYuk Kids — Akses Selamanya</p>
+                <ul class="buy-benefits">${benefits}</ul>
+                <div class="buy-divider"></div>
+                <div class="buy-total"><span>Total</span><b>Rp 99.000</b></div>
+              </aside>
+
+              <section class="buy-card buy-form">
+                <h2 class="buy-title">Akses Selamanya — Rp 99.000</h2>
+                <p class="buy-lede">Isi data di bawah untuk membuat akun. Pembayaran diproses aman.</p>
+                <div class="buy-fields">
+                  ${field('regChild', 'Nama Anak', 'type="text" maxlength="40" autocomplete="off" placeholder="contoh: Aisyah"', values.childName, 'Dipakai untuk menyapa anak di aplikasi')}
+                  ${field('regEmail', 'Email Orang Tua', 'type="email" autocomplete="email" inputmode="email" placeholder="contoh: bunda@email.com"', values.email, 'Bukti pembayaran dikirim ke email ini')}
+                  ${field('regPhone', 'Nomor WhatsApp Orang Tua', 'type="tel" autocomplete="tel" inputmode="numeric" placeholder="contoh: 08123456789"', values.phone, 'Pastikan benar — digunakan sebagai kunci login kamu', 'is-warn')}
+                </div>
+                ${
+                  error
+                    ? `<div class="buy-error" role="alert"><span aria-hidden="true">⚠️</span><p>${escapeHtml(error)}${
+                        alreadyRegistered ? ` <button type="button" class="auth-link" data-action="regLogin">Masuk di sini</button>` : ''
+                      }</p></div>`
+                    : ''
+                }
+                <button class="buy-submit" type="button" data-action="regSubmit" ${loading ? 'disabled' : ''}>${
+                  loading ? '<span class="buy-spin" aria-hidden="true"></span> Membuat pesanan...' : 'Bayar Sekarang — Rp 99.000'
+                }</button>
+                <p class="buy-note buy-note-access">Catatan: akses selamanya berlaku selama layanan InggrisinYuk Kids berjalan.</p>
+                <p class="buy-note">Kamu akan diarahkan ke halaman pembayaran (QRIS, e-wallet, atau VA)</p>
+                <p class="buy-note">Dengan melanjutkan, kamu setuju dengan syarat &amp; ketentuan InggrisinYuk Kids</p>
+                <p class="buy-note">Sudah punya akun? <button type="button" class="auth-link" data-action="regLogin">Masuk</button></p>
+              </section>
+            </div>
+            </section>
+
+            <section class="mk-section">
+              <h2 class="mk-h2">Pertanyaan yang Sering Ditanyakan</h2>
+              <div class="mk-faqs">${faqs}</div>
+            </section>
+          </div>
+        </main>
+        ${buyFooterHtml()}
+        <div class="mk-sticky" id="mkSticky">
+          <span><b>Rp 99.000</b> · sekali bayar</span>
+          <button class="buy-submit" type="button" data-action="regCta">Daftar</button>
+        </div>
+        ${waFloatHtml('hi saya butuh bantuan untuk pembelian InggrisinYuk Kids')}
+      </div>
+    `;
+
+    // Tombol "Daftar" menempel di bawah (HP) — sembunyi begitu bagian beli terlihat.
+    const buy = root.querySelector('#beli');
+    const sticky = root.querySelector('#mkSticky');
+    if (buy && sticky && 'IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => sticky.classList.toggle('is-hidden', entry.isIntersecting), {
+        threshold: 0.15,
+      }).observe(buy);
+    }
+
+    setHandlers({
+      regBack: () => go('landing'),
+      regLogin: () => go('account'),
+      regCta: () => {
+        const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        root.querySelector('#beli')?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+        window.setTimeout(() => qs<HTMLInputElement>(root, '#regChild').focus({ preventScroll: true }), smooth ? 500 : 0);
+      },
+      regSubmit: () => {
+        // Baca SEBELUM paint() menimpa DOM (pola sama renderAccount).
+        values.childName = qs<HTMLInputElement>(root, '#regChild').value.trim();
+        values.email = qs<HTMLInputElement>(root, '#regEmail').value.trim();
+        values.phone = qs<HTMLInputElement>(root, '#regPhone').value.trim();
+        void submit();
+      },
+    });
+  }
+
+  async function submit(): Promise<void> {
+    alreadyRegistered = false;
+    if (!values.childName || !values.email || !values.phone) {
+      error = 'Isi ketiga data dulu, ya.';
+      paint();
+      return;
+    }
+    error = null;
+    loading = true;
+    paint();
+    try {
+      const { invoiceUrl, orderId } = await startCheckout(values);
+      writePendingSignup({ orderId, childName: values.childName });
+      window.location.href = invoiceUrl;
+    } catch (err) {
+      error = err instanceof ApiRequestError ? err.message : 'Gagal terhubung, coba lagi.';
+      alreadyRegistered = err instanceof ApiRequestError && err.data.alreadyRegistered === true;
+      loading = false;
+      paint();
+    }
+  }
+
+  paint();
+}
+
+/**
+ * Kembali dari halaman bayar Xendit (`/pembayaran?orderId=`) — polling portal
+ * tiap 2 dtk sampai webhook menandai lunas, lalu otomatis masuk. Tata letak &
+ * alur mengikuti `/payment/success` inggrisinyuk-app (kartu kecil di tengah).
+ */
+function renderPayment(): void {
+  const orderId = state.orderId ?? readPendingSignup()?.orderId ?? null;
+  const startedAt = Date.now();
+  const MAX_WAIT_MS = 10 * 60 * 1000;
+
+  function paint(icon: string, title: string, desc: string, actions = ''): void {
+    root.innerHTML = `
+      <div class="buy-page">
+        <main class="buy-main pay-main">
+          <div class="pay-wrap">
+            <p class="pay-brand">InggrisinYuk Kids</p>
+            <div class="buy-card pay-card" aria-live="polite">
+              <div class="pay-icon" aria-hidden="true">${icon}</div>
+              <p class="pay-title">${title}</p>
+              <p class="pay-desc">${desc}</p>
+              ${actions}
+            </div>
+          </div>
+        </main>
+        ${buyFooterHtml()}
+      </div>
+    `;
+  }
+
+  const backToRegister = `<button class="auth-link" type="button" data-action="payRegister">Kembali ke halaman pembelian</button>`;
+  const toLogin = `<button class="buy-submit" type="button" data-action="payLogin">Masuk</button>`;
+  setHandlers({ payRegister: () => go('register'), payLogin: () => go('account') });
+
+  if (!orderId) {
+    paint('<span class="pay-x">✕</span>', 'Order tidak ditemukan', 'Silakan ulangi dari halaman pembelian.', backToRegister);
+    return;
+  }
+
+  paint('<span class="buy-spin is-lg"></span>', 'Memverifikasi pembayaran...', 'Mohon tunggu sebentar, jangan tutup halaman ini.');
+
+  const poll = async (): Promise<void> => {
+    if (state.screen !== 'payment') return; // sudah pindah layar
+    let status;
+    try {
+      status = await finalizeCheckout(orderId);
+    } catch {
+      status = 'pending' as const; // internet putus sebentar — coba lagi
+    }
+    if (state.screen !== 'payment') return;
+
+    if (status === 'success') {
+      const pending = readPendingSignup();
+      if (pending?.childName && !getName()) setName(pending.childName);
+      writePendingSignup(null);
+      paint('<span class="pay-ok">✓</span>', 'Pembayaran berhasil!', 'Mengarahkan kamu ke aplikasi...');
+      await enterAfterLogin();
+      return;
+    }
+    if (status === 'claimed') {
+      writePendingSignup(null);
+      paint('<span class="pay-ok">✓</span>', 'Akun sudah aktif', 'Masuk pakai no WhatsApp atau email yang didaftarkan.', toLogin);
+      return;
+    }
+    if (status === 'expired' || status === 'failed' || status === 'not_found') {
+      writePendingSignup(null);
+      const title = status === 'expired' ? 'Invoice sudah kedaluwarsa' : status === 'failed' ? 'Pembayaran gagal' : 'Order tidak ditemukan';
+      paint('<span class="pay-x">✕</span>', title, 'Silakan ulangi dari halaman pembelian.', backToRegister);
+      return;
+    }
+    if (Date.now() - startedAt > MAX_WAIT_MS) {
+      paint(
+        '<span class="pay-wait">⏳</span>',
+        'Pembayaran belum terkonfirmasi',
+        'Kalau sudah bayar, tunggu beberapa menit lalu cek lagi.',
+        `<button class="buy-submit" type="button" data-action="payReload">Cek Lagi</button>`
+      );
+      setHandlers({ payReload: () => location.reload() });
+      return;
+    }
+    window.setTimeout(() => void poll(), 2000);
+  };
+  void poll();
 }
 
 /* --------------------------------------------------------- placement test -- */

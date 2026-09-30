@@ -17,6 +17,9 @@
 | `POST /api/auth/logout` | — | `{ok}` (client cukup hapus token lokal, ini formalitas) |
 | `GET /api/me` | header `Authorization: Bearer <token>` | `{parent, child}` |
 | `POST /api/placement-test` | `{answers}` atau `{skip:true}` | `{ok, levelRecommended, correctByLevel, totalCorrect}` |
+| `POST /api/checkout` | `{childName, email, phone}` | `{invoiceUrl, orderId}` — halaman Daftar app, invoice Xendit Rp 99.000 |
+| `GET /api/checkout/finalize?orderId=` | — | `{status}`; sekali saat lunas: `{status:'success', token, identifier}` |
+| `POST /api/webhooks/xendit` | callback Xendit (header `x-callback-token`) | lunas → buat akun orang tua + profil anak |
 
 ## Menjalankan (development)
 
@@ -34,4 +37,7 @@ npm run dev                 # http://localhost:3000 (cuma API, tidak ada UI)
 
 - `SESSION_SECRET` asli.
 - `DATABASE_URL` ke Postgres production.
-- `APP_ORIGIN` ke domain `app/` yang sebenarnya (buat CORS).
+- `APP_ORIGIN` ke domain `app/` yang sebenarnya (buat CORS & URL balik dari halaman bayar).
+- `XENDIT_SECRET_KEY` (Live) & `XENDIT_WEBHOOK_TOKEN`, hapus `XENDIT_MOCK`. Di Dashboard Xendit, arahkan webhook "Invoice paid" ke `https://<domain>/api/webhooks/xendit`.
+
+Tes lokal tanpa akun Xendit: `XENDIT_MOCK="1"` di `.env` → pembayaran di halaman Daftar dianggap langsung lunas (otomatis mati kalau `NODE_ENV=production`).

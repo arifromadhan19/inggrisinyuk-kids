@@ -20,7 +20,8 @@ model ParentAccount {
   lastLoginAt DateTime? @map("last_login_at")
   isSuspended Boolean   @default(false) @map("is_suspended")
 
-  children ChildProfile[]
+  children     ChildProfile[]
+  transactions Transaction[]
 
   @@map("parent_accounts")
 }
@@ -349,4 +350,32 @@ model PlacementTestResult {
   child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
 
   @@map("placement_test_results")
+}
+
+/**
+ * Pembelian Paket Lengkap (Rp 99.000 sekali bayar) lewat Xendit Invoice — pola SAMA
+ * inggrisinyuk-app (`Transaction`, alur WA). Akun orang tua BARU dibuat saat
+ * webhook Xendit bilang PAID (`lib/checkout.ts` `markTransactionPaid`), bukan
+ * saat form Daftar dikirim — jadi tidak ada akun "gratis" tanpa bayar.
+ * `tokenClaimedAt`: token login dibagikan SEKALI ke halaman /pembayaran
+ * (siapa pun yang tahu orderId tidak bisa mengambil token berkali-kali).
+ */
+model Transaction {
+  orderId         String    @id @map("order_id")
+  phone           String
+  email           String
+  childName       String    @map("child_name")
+  parentId        String?   @map("parent_id")
+  xenditInvoiceId String?   @unique @map("xendit_invoice_id")
+  paymentMethod   String?   @map("payment_method")
+  amount          Int       @default(99000)
+  status          String    @default("pending")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  paidAt          DateTime? @map("paid_at")
+  tokenClaimedAt  DateTime? @map("token_claimed_at")
+
+  parent ParentAccount? @relation(fields: [parentId], references: [id], onDelete: SetNull)
+
+  @@index([phone])
+  @@map("transactions")
 }
