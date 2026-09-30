@@ -866,6 +866,8 @@ export type Screen =
   | 'activity'
   | 'settings'
   | 'rapor'
+  /** Penjelasan aturan tiap nilai di Rapor (XP, ketepatan, bintang, dst). */
+  | 'raporDetail'
   /** Perhentian yang sudah terbuka tapi materinya belum ada (`hasContent:false`)
    *  — layar placeholder jujur, lihat `renderLevelSoon` di app.ts. */
   | 'levelSoon'

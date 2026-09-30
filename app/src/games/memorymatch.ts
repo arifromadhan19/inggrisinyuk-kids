@@ -48,8 +48,9 @@
  * puncak `memorymatch-data.ts`; riset: `materi/pembeda_level_game.md`
  * § Memory Hunt.
  */
+import { journeyMapHtml, markasIntro } from '../game-ui';
+import { sfx } from '../game-audio';
 import { readingPicHtml as picHtml } from '../reading-pic';
-import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
 import { playCorrectTone, playWrongTone, speak, vibrateDevice } from '../speech';
@@ -82,7 +83,7 @@ function roundActionsHtml(isLast: boolean): string {
   return `
     <div class="round-actions">
       <button class="ghost-btn" type="button" data-action="tryAgainRound">🔁 Coba Lagi</button>
-      <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Lanjut ➡️'}</button>
+      <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Jalan terus ➡️'}</button>
     </div>`;
 }
 
@@ -272,7 +273,7 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
       ${journey?.headerHtml ?? ''}
       ${progressDotsHtml(BOARD_COUNT, (i) => i < boardIndex || (i === boardIndex && boardDone), boardIndex)}
       <div class="mm-head">
-        <span class="mm-score">SKOR: <b>${score}</b></span>
+        <span class="mm-score">⭐ <b>${score}</b></span>
         <span class="mm-score">Pasangan: <b>${matchedPairs}/${pairs.length}</b></span>
       </div>
       <div class="wm-head"><p class="wm-task">${cfg.task}</p>${hintBtn}</div>
@@ -320,6 +321,7 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
   function flip(i: number): void {
     if (busy || cards[i].matched || opened.includes(i) || opened.length >= 2) return;
     opened.push(i);
+    sfx('flip');
     const f = faceOf(cards[i]);
     if (f.speak) speak(f.speak);
     paint();
@@ -458,22 +460,7 @@ export function runMemoryMatch(container: HTMLElement, onDone: OnDone, level: Le
     // 🔒 Back dari layar Map TIDAK perlu pop up konfirmasi lagi (permintaan
     // user) — lihat komentar `isGameRoundActive` `interaction.ts`.
     setGameRoundActive(false);
-    const stops = JOURNEY_NODES.map((node, i) => {
-      const cleared = visited.has(i);
-      // Akun tes dev ("124") lihat SEMUA markas terbuka — lihat account.ts isDevTestAccount().
-      const unlocked = isDevTestAccount() || i === 0 || visited.has(i - 1);
-      const stateClass = cleared ? 'is-cleared' : unlocked ? 'is-open' : 'is-locked';
-      const pct = cleared ? 100 : 0;
-      const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
-      const meta = DIFFICULTY_META[node.difficulty];
-      return `
-      <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-speak)">
-        ${badge}
-        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${node.emoji}</span></span>
-        <h3>${node.place}</h3>
-        <span class="tag diff-${node.difficulty}">${meta.label}</span>
-      </button>`;
-    }).join('');
+    const stops = journeyMapHtml('ingatan', JOURNEY_NODES.map((n) => ({ name: n.place, emoji: n.emoji, difficulty: n.difficulty, label: DIFFICULTY_META[n.difficulty].label })), visited);
 
     // 🔒 `current` = markas berikutnya yang belum ditaklukkan (posisi anak
     // sekarang), permintaan user "beri pembeda di progress yang sedang
@@ -493,7 +480,7 @@ export function runMemoryMatch(container: HTMLElement, onDone: OnDone, level: Le
           <h2>Taklukkan markas satu per satu, ya!</h2>
           <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${visited.size} dari ${total}</span></div>
         </div>
-        <div class="raja-grid">${stops}</div>
+        ${stops}
         ${gameHowToHtml([
           'Tap 1 kartu, lalu tap 1 kartu lain',
           'Ingat posisi kartu yang sudah dibuka',
@@ -506,6 +493,7 @@ export function runMemoryMatch(container: HTMLElement, onDone: OnDone, level: Le
 
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
+    markasIntro(JOURNEY_NODES[idx].emoji, JOURNEY_NODES[idx].place);
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runMemoryMatchRound(
@@ -523,6 +511,7 @@ export function runMemoryMatch(container: HTMLElement, onDone: OnDone, level: Le
 
   function renderMissionComplete(): void {
     setGameRoundActive(false); // layar selesai, tidak ada progres yang bisa hilang
+    sfx('mission');
     container.innerHTML = `
       <div class="done-wrap win">
         <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">🧠</span><span class="crown">🏆</span></div>

@@ -1993,7 +1993,7 @@ export function runEjaKata(
             fb.textContent = pickEncourage(level);
             fb.className = 'feedback bad';
           }
-          markSlotAnswered('vocabulary', topicId, 'tantangan-eja', round, correct, { itemRef: it.en });
+          markSlotAnswered('vocabulary', topicId, 'tantangan-eja', round, correct, { hint: hintUsed, itemRef: it.en });
           recordEvent({
             kind: 'answer',
             skill: 'vocabulary',
@@ -2391,7 +2391,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';
       }
-      markSlotAnswered('vocabulary', topicId, 'tantangan-susun', round, correct, { itemRef: it.en });
+      markSlotAnswered('vocabulary', topicId, 'tantangan-susun', round, correct, { hint: hintUsed, itemRef: it.en });
       recordEvent({
         kind: 'answer',
         skill: 'vocabulary',

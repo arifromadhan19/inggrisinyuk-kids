@@ -26,6 +26,7 @@ import {
   firstUnansweredSlot,
   hasWordInteraction,
   markSlotAnswered,
+  markSlotHint,
   markWordInteraction,
   recordAttempt,
   recordEvent,
@@ -335,7 +336,7 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
-        markSlotAnswered('listening', topic.id, 'latihan', round, correct, { itemRef: d.en });
+        markSlotAnswered('listening', topic.id, 'latihan', round, correct, { hint: revealed, itemRef: d.en });
         recordEvent({
           kind: 'answer',
           skill: 'listening',
@@ -1332,6 +1333,7 @@ export function runLatihanIntiSentence(
       hint: () => {
         if (revealedThisSlot) return;
         revealedThisSlot = true;
+        hintUsedThisSlot = true;
         speak(line.en);
         redraw();
       },
@@ -1503,6 +1505,7 @@ function runSusunKalimatSentence(
         petunjuk: () => {
           if (revealed || answered) return;
           revealed = true;
+          markSlotHint('listening', topicId, 'tantangan-susun', round);
           speak(ex.en);
           paint();
         },
@@ -1749,6 +1752,7 @@ export function runTantanganNote(
         petunjuk: () => {
           if (revealed || answered) return;
           revealed = true;
+          markSlotHint('listening', topicId, section, cursor);
           playPassage();
           paint();
         },
@@ -1912,6 +1916,7 @@ export function runTantanganDialogue(
         petunjuk: () => {
           if (revealed || answered) return;
           revealed = true;
+          markSlotHint('listening', topicId, section, cursor);
           playDialogue();
           paint();
         },

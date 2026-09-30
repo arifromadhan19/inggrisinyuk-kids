@@ -20,8 +20,9 @@
  * `setGameRoundActive(false)` di Map/selesai, `true` + `renderMap` saat masuk
  * markas.
  */
+import { journeyMapHtml, markasIntro } from '../game-ui';
+import { sfx } from '../game-audio';
 import { readingPicHtml as picHtml } from '../reading-pic';
-import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
 import { speak, playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
@@ -110,7 +111,7 @@ function roundActionsHtml(isLast: boolean): string {
   return `
     <div class="round-actions">
       <button class="ghost-btn" type="button" data-action="tryAgainRound">🔁 Coba Lagi</button>
-      <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Lanjut ➡️'}</button>
+      <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Jalan terus ➡️'}</button>
     </div>`;
 }
 
@@ -144,20 +145,7 @@ export function runKelompok(container: HTMLElement, onDone: OnDone, level: Level
   function renderMap(): void {
     // 🔒 Back dari layar Map tidak perlu pop up konfirmasi (CLAUDE.md).
     setGameRoundActive(false);
-    const stops = NODES.map((node, i) => {
-      const cleared = visited.has(i);
-      // Akun tes dev ("124") lihat SEMUA markas terbuka — lihat account.ts isDevTestAccount().
-      const unlocked = isDevTestAccount() || i === 0 || visited.has(i - 1);
-      const stateClass = cleared ? 'is-cleared' : unlocked ? 'is-open' : 'is-locked';
-      const pct = cleared ? 100 : 0;
-      return `
-      <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--c-listen)">
-        <span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>
-        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${node.emoji}</span></span>
-        <h3>${node.place}</h3>
-        <span class="tag diff-${node.difficulty}">${TIER_CONFIG[node.difficulty].label}</span>
-      </button>`;
-    }).join('');
+    const stops = journeyMapHtml('kelompok', NODES.map((n) => ({ name: n.place, emoji: n.emoji, difficulty: n.difficulty, label: TIER_CONFIG[n.difficulty].label })), visited);
 
     const nextIdx = NODES.findIndex((_, i) => !visited.has(i));
     const dots = NODES.map((_, i) => {
@@ -174,7 +162,7 @@ export function runKelompok(container: HTMLElement, onDone: OnDone, level: Level
           <h2>Taklukkan markas satu per satu, ya!</h2>
           <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${visited.size} dari ${total}</span></div>
         </div>
-        <div class="raja-grid">${stops}</div>
+        ${stops}
         ${gameHowToHtml([
           'Lihat, baca, atau dengar katanya',
           'Masukkan ke keranjang yang artinya pas',
@@ -187,6 +175,7 @@ export function runKelompok(container: HTMLElement, onDone: OnDone, level: Level
 
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan"; keluar = balik ke Map
+    markasIntro(NODES[idx].emoji, NODES[idx].place);
     const node = NODES[idx];
     const cfg = TIER_CONFIG[node.difficulty];
     const questions = buildQuestions(node.difficulty);
@@ -327,6 +316,7 @@ export function runKelompok(container: HTMLElement, onDone: OnDone, level: Level
       const fb = container.querySelector<HTMLElement>('#fb')!;
       if (correct) {
         btns[i].classList.add('correct', 'win-burst');
+        sfx('drop');
         playCorrectTone();
         fireConfetti();
         fb.textContent = pickPraise(level);
@@ -347,6 +337,7 @@ export function runKelompok(container: HTMLElement, onDone: OnDone, level: Level
 
   function renderMissionComplete(): void {
     setGameRoundActive(false); // layar selesai, tidak ada progres yang bisa hilang
+    sfx('mission');
     container.innerHTML = `
       <div class="done-wrap win">
         <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">🧺</span><span class="crown">🏆</span></div>

@@ -91,7 +91,7 @@ export const STORY_BOOKS: StoryBook[] = [
     id: 'mia-at-the-park',
     title: 'Mia at the Park',
     subtitle: 'Temani Mia main di taman!',
-    coverEmoji: '🪁',
+    coverEmoji: '🌳',
     difficulty: 'pemanasan',
     pages: [
       {

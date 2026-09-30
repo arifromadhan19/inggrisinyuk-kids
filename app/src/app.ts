@@ -24,6 +24,7 @@ import {
   saveProgress,
 } from './account';
 import * as bossGame from './games/boss';
+import { OBJECTIVE_SKILLS } from './games/boss-bank';
 import * as grammarGame from './games/grammar';
 import * as listeningGame from './games/listening';
 import * as balloonPopGame from './games/balloonpop';
@@ -33,6 +34,7 @@ import * as readingGame from './games/reading';
 import * as sentencePuzzleGame from './games/sentencepuzzle';
 import * as soundHuntGame from './games/soundhunt';
 import * as kelompokGame from './games/kelompok';
+import { isMusicOn, isSfxOn, musicToggleHtml, setMusicOn, setSfxOn, sfx, startGameMusic, stopGameMusic } from './game-audio';
 import * as speakingGame from './games/speaking';
 import * as storyQuestGame from './games/storyquest';
 import * as vocabularyGame from './games/vocabulary';
@@ -59,9 +61,9 @@ import {
   ANIMAL_AVATARS,
   clearOutboxIds,
   computeInsights,
-  doneCount,
   getAccuracy,
-  getActiveDaysCount,
+  getActiveDaysInLast,
+  getWeekMinutes,
   getAvatar,
   getBossClearedCount,
   getBrowseLevel,
@@ -72,6 +74,8 @@ import {
   getLast,
   getLastGame,
   getLongestStreak,
+  addActiveTime,
+  getAvgDailyMinutes,
   getName,
   getStreak,
   getWeekActivity,
@@ -213,6 +217,14 @@ function totalTopicsForLevel(level: LevelKey): number {
   return SKILL_KEYS.reduce((n, key) => n + topicsForSkill(key, level).length, 0);
 }
 
+/** Modul tuntas (100%, `topicFinished`) di 1 level — sumber yang SAMA dgn
+ *  progres level/Menu Belajar/Rapor, supaya angka "tuntas" tidak pernah
+ *  beda antar layar (dulu Menu Belajar & Rapor pakai `doneCount()` global
+ *  lintas SEMUA level ÷ total modul 1 level — bisa lewat 100%). */
+function finishedTopicsForLevel(level: LevelKey): number {
+  return SKILL_KEYS.reduce((n, key) => n + topicsForSkill(key, level).filter((t) => topicFinished(key, t.id, level)).length, 0);
+}
+
 /** "X% menuju level berikutnya" — 🔒 tes akhir level (`materi/test_level.md`):
  *  setengah dari materi level INI yang tuntas (dulu `doneCount()` global
  *  dibagi topik level ini → salah lintas level), setengah dari babak utama
@@ -226,11 +238,11 @@ function levelProgressPct(level: LevelKey): number {
   return Math.round((materi * 0.5 + test * 0.5) * 100);
 }
 
-function levelProgressCaption(level: LevelKey): string {
+function levelProgressCaption(level: LevelKey, parentVoice = false): string {
   const total = totalTopicsForLevel(level);
   const finished = SKILL_KEYS.reduce((n, key) => n + topicsForSkill(key, level).filter((t) => topicFinished(key, t.id, level)).length, 0);
   const babak = getBossTest(level).passed.filter((s) => s !== 'speaking').length;
-  if (finished === 0 && babak === 0) return 'Ayo mulai dari modul pertama!';
+  if (finished === 0 && babak === 0) return parentVoice ? 'Belum ada modul yang tuntas di level ini.' : 'Ayo mulai dari modul pertama!';
   return `${finished} dari ${total} modul tuntas · ${babak} dari 4 babak ${BOSS_NAME[level]} lolos.`;
 }
 
@@ -387,6 +399,7 @@ export function initApp(): void {
 
   paintLevelChips();
   paintNav();
+  startActiveTimer();
   wireProgressSync(); // pasang sekali — requestSync() (dipanggil eksplisit di titik section selesai) ikut ke-push kalau login
   // SEBELUM render pertama — supaya peta (/peta) & strip peta di Beranda
   // langsung tampil sinkron dengan hasil placement test yang tersimpan,
@@ -553,7 +566,7 @@ function activeNav(): NavKey {
   if (state.screen === 'home' || state.screen === 'levelSoon') return 'home';
   if (state.screen === 'settings') return 'settings';
   if (state.screen === 'game' || state.screen === 'gamePlay') return 'game';
-  if (state.screen === 'rapor') return 'rapor';
+  if (state.screen === 'rapor' || state.screen === 'raporDetail') return 'rapor';
   return 'belajar'; // menu, topics, activity, boss
 }
 
@@ -607,6 +620,7 @@ const SCREEN_TO_SLUG: Record<Screen, string> = {
   activity: 'aktivitas',
   settings: 'pengaturan',
   rapor: 'rapor',
+  raporDetail: 'rapor-detail',
   levelSoon: 'materi-segera',
   boss: 'bos',
   game: 'game',
@@ -735,6 +749,8 @@ function render(): void {
   stopSpeaking();
   // Mic yang masih merekam juga dimatikan — keluar layar = semua audio berhenti.
   stopListening();
+  // Musik latar Game Hub ikut berhenti (dinyalakan lagi `renderGamePlay`).
+  stopGameMusic();
   clearHandlers();
   setHandlers({
     navigate: (payload) => {
@@ -803,6 +819,7 @@ function render(): void {
   if (state.screen === 'levelSoon') return renderLevelSoon();
   if (state.screen === 'settings') return renderSettings();
   if (state.screen === 'rapor') return renderRapor();
+  if (state.screen === 'raporDetail') return renderRaporDetail();
   if (state.screen === 'menu') return renderMenu();
   if (state.screen === 'topics') return renderTopics();
   if (state.screen === 'game') return renderGame();
@@ -1006,7 +1023,7 @@ function findNextMateri(level: LevelKey): NextMateri | null {
  * lengkap), supaya angkanya tidak pernah beda antar 2 layar. Dulu cuma ada
  * di `renderHome`, diekstrak begitu tab Rapor ditambahkan.
  */
-function buildProgressPanel(): string {
+function buildProgressPanel(withDetail = false): string {
   const mapUnlocked = levelUnlockMap(LEVELS);
   const hereKey = currentStopKey(mapUnlocked);
   const hereIdx = LEVELS.findIndex((l) => l.key === hereKey);
@@ -1064,33 +1081,17 @@ function buildProgressPanel(): string {
       <div class="progress-fill" style="width:${bossPct}%"></div>
     </div>
     <p class="meta" style="margin-top:8px">${
-      levelProgressCaption(hereLevel?.key ?? currentPlayableLevel().key)
+      levelProgressCaption(hereLevel?.key ?? currentPlayableLevel().key, withDetail)
     }</p>`;
 
   return `
     <div class="card progress-panel">
-      <span class="eyebrow">📈 Progresmu</span>
+      <div class="progress-panel-head">
+        <span class="eyebrow">📈 Progresmu</span>
+        ${withDetail ? '<button class="ghost-btn slim" type="button" data-action="openRaporDetail">📖 Detail Rapor</button>' : ''}
+      </div>
       ${levelProgress}
       <div class="stat-row">${statTiles}</div>
-    </div>`;
-}
-
-/** Strip 7 hari aktif belajar — beda dari angka streak di panel Progresmu
- *  (yang punya aturan "berturut-turut" + 1 hari pelindung): strip ini murni
- *  menunjukkan hari mana saja anak main minggu ini, tanpa aturan yang bisa
- *  "putus". Dipakai Beranda & Rapor, sama alasan `buildProgressPanel`. */
-function buildDailyCard(): string {
-  const dayChips = getWeekActivity()
-    .map(
-      (d) =>
-        `<span class="day-chip ${d.active ? 'is-active' : ''} ${d.isToday ? 'is-today' : ''}">${d.label}</span>`
-    )
-    .join('');
-  return `
-    <div class="card">
-      <span class="eyebrow">Progres Harian</span>
-      <div class="day-row" style="margin-top:10px" aria-label="Hari kamu aktif belajar dalam 7 hari terakhir">${dayChips}</div>
-      <p class="meta" style="margin-top:10px">Ini hari-hari kamu sudah main minggu ini — libur sehari juga santai saja.</p>
     </div>`;
 }
 
@@ -1111,7 +1112,7 @@ function buildPlacementResultCard(): string {
       <span class="eyebrow">🎈 Hasil Placement Test</span>
       <div class="card-title" style="margin:4px 0 2px">${levelLbl}</div>
       <div style="font-size:20px;letter-spacing:2px;margin:6px 0" aria-hidden="true">${starRow}</div>
-      <p class="meta">Titik mulai kamu di Jalur Petualangan — keren, sudah dicoba! 🎉</p>
+      <p class="meta">Level awal anak dari placement test.</p>
     </div>`;
 }
 
@@ -1206,8 +1207,113 @@ function buildLeaderboardCard(): string {
     <div class="card">
       <span class="eyebrow">🏆 Papan Peringkat</span>
       <div class="leaderboard-list" style="margin-top:10px">${rows}</div>
-      <p class="meta" style="margin-top:8px">XP tertinggi dari anak-anak lain yang lagi main — dianonimkan, tanpa nama asli.</p>
+      <p class="meta" style="margin-top:8px">XP tertinggi semua pemain, dianonimkan (tanpa nama).</p>
     </div>`;
+}
+
+/**
+ * Kartu "Hari Ini" Beranda (permintaan user — pengganti kartu "Main lagi"
+ * yang dobel dgn kartu "Yuk Lanjutkan" Menu Belajar). SATU ajakan, dipilih
+ * urut prioritas dari data yang SUDAH ada (tanpa field Store baru):
+ * 1. First Placement Test belum dikerjakan (akun login) — gantikan kartu
+ *    nudge lama di kolom samping peta;
+ * 2. Tantangan Raja level sekarang sudah dimulai tapi belum lolos semua babak;
+ * 3. topik yang masih sering meleset (`computeInsights().weakTopics`);
+ * 4. belum pernah belajar → Menu Belajar; selain itu → Game Hub.
+ * Lanjut materi TIDAK di sini — itu tugas kartu atas Menu Belajar.
+ */
+type TodayMission =
+  | { kind: 'placement' }
+  | { kind: 'raja'; level: LevelKey; passed: number }
+  | { kind: 'weak'; skill: SkillKey; topicIndex: number; title: string; level: LevelKey }
+  | { kind: 'start' }
+  | { kind: 'game' };
+
+function pickTodayMission(): TodayMission {
+  if (getCachedChildStatus().placementTestDone === false) return { kind: 'placement' };
+
+  const hereKey = currentStopKey(levelUnlockMap(LEVELS));
+  if (hereKey && !isBossCleared(hereKey)) {
+    const test = getBossTest(hereKey);
+    const started = test.passed.length > 0 || Object.keys(test.runs).length > 0;
+    if (started) {
+      const passed = OBJECTIVE_SKILLS.filter((k) => test.passed.includes(k)).length;
+      if (passed < OBJECTIVE_SKILLS.length) return { kind: 'raja', level: hereKey, passed };
+    }
+  }
+
+  const level = currentPlayableLevel().key;
+  for (const sig of computeInsights().weakTopics) {
+    const list = topicsForSkill(sig.skill, level);
+    const idx = list.findIndex((t) => t.id === sig.topicId);
+    if (idx >= 0) return { kind: 'weak', skill: sig.skill, topicIndex: idx, title: list[idx].title, level };
+  }
+
+  return validLast() ? { kind: 'game' } : { kind: 'start' };
+}
+
+function buildTodayCard(m: TodayMission): string {
+  const week = getWeekActivity();
+  const activeCount = week.filter((d) => d.active).length;
+  const dots = week
+    .map((d) => `<span class="today-dot${d.active ? ' is-active' : ''}${d.isToday ? ' is-today' : ''}">${d.label}</span>`)
+    .join('');
+
+  let title: string;
+  let sub: string;
+  let cta: string;
+  let art: string;
+  let accent = '';
+  if (m.kind === 'placement') {
+    title = 'Cari titik mulaimu dulu, yuk!';
+    sub = '4 kegiatan seru, santai tanpa waktu.';
+    cta = 'Coba Placement Test';
+    art = '🎈';
+  } else if (m.kind === 'raja') {
+    title = `Tantangan ${BOSS_NAME[m.level]} menunggu`;
+    sub = `${m.passed} dari ${OBJECTIVE_SKILLS.length} babak sudah lolos`;
+    cta = 'Lanjut Tantangan';
+    art = BOSS_AVATAR[m.level];
+  } else if (m.kind === 'weak') {
+    title = `Misi kilat: ${m.title}`;
+    sub = `${SKILL_META[m.skill].label} · latihan sebentar biar makin lancar`;
+    cta = 'Latihan Yuk';
+    art = SKILL_META[m.skill].emoji;
+    accent = ` style="--spark-accent:${SKILL_META[m.skill].accent}"`;
+  } else if (m.kind === 'start') {
+    title = 'Yuk kenalan sama kata baru';
+    sub = 'Dengar, tebak, ucapkan, lalu susun.';
+    cta = 'Mulai Belajar';
+    art = '🦁';
+  } else {
+    title = 'Waktunya main!';
+    sub = 'Taklukkan markas Raja di Game Hub.';
+    cta = 'Main Game';
+    art = '🎮';
+  }
+
+  return `
+    <article class="spark compact today-card"${accent}>
+      <span class="cloud c1" aria-hidden="true">${CLOUD}</span><span class="cloud c2" aria-hidden="true">${CLOUD}</span>${HILLS_SHORE}
+      <div class="spark-body">
+        <span class="eyebrow">Hari Ini</span>
+        <h2 class="spark-title">${title}</h2>
+        <p class="spark-sub">${sub}</p>
+        <button class="cta" type="button" data-action="todayMission">${ICON_PLAY} ${cta}</button>
+        <div class="today-week" aria-label="${activeCount} dari 7 hari terakhir kamu main">${dots}</div>
+      </div>
+      <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${art}</span></div>
+    </article>`;
+}
+
+function runTodayMission(m: TodayMission): void {
+  if (m.kind === 'placement') return go('placementTest');
+  if (m.kind === 'raja') return go('boss', { bossLevel: m.level });
+  // `viewLevel` dipin ke level asli anak — `topicIndex` dihitung thd topik
+  // level itu (alasan sama `practiceInsightTopic` di Rapor).
+  if (m.kind === 'weak') return go('activity', { skillKey: m.skill, topicIndex: m.topicIndex, step: 1, viewLevel: m.level });
+  if (m.kind === 'start') return go('menu', { viewLevel: null });
+  go('game');
 }
 
 /**
@@ -1222,37 +1328,11 @@ function buildLeaderboardCard(): string {
  * dihapus total (bukan lagi alias) — semua pemanggil lama sekarang `go('home')`.
  */
 function renderHome(): void {
-  const last = validLast();
-
-  // Panorama kecil di balik kartu "lanjutkan" — langit, awan, dan siluet
-  // pantai yang sama dengan peta di bawahnya, supaya terasa satu dunia
-  // (hiasan murni, aria-hidden, tidak menambah informasi baru).
-  const sky = `<span class="cloud c1" aria-hidden="true">${CLOUD}</span><span class="cloud c2" aria-hidden="true">${CLOUD}</span>${HILLS_SHORE}`;
-
-  // Slim (permintaan user) — modifier `compact` KHUSUS instance Beranda,
-  // TIDAK dipakai di `.spark` Menu Belajar (biar tidak ikut mengecil) — dan
-  // tanpa eyebrow "Lanjutkan"/"Mulai di sini" di atas judul (permintaan user).
-  const spark = last
-    ? `
-      <article class="spark compact">
-        ${sky}
-        <div class="spark-body">
-          <h2 class="spark-title">${topicTitle(last.skill, last.topicIndex, currentPlayableLevel().key)}</h2>
-          <p class="spark-sub">${SKILL_META[last.skill].label} · ${SKILL_META[last.skill].tagline}</p>
-          <button class="cta" type="button" data-action="resume">${ICON_PLAY} Main lagi</button>
-        </div>
-        <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${SKILL_META[last.skill].emoji}</span></div>
-      </article>`
-    : `
-      <article class="spark compact">
-        ${sky}
-        <div class="spark-body">
-          <h2 class="spark-title">Yuk kenalan sama kata baru</h2>
-          <p class="spark-sub">Dengar, tebak, ucapkan, lalu susun. Semua lewat main.</p>
-          <button class="cta" type="button" data-action="openMenu">${ICON_PLAY} Buka Menu Belajar</button>
-        </div>
-        <div class="spark-art" aria-hidden="true"><span class="mascot-idle">🦁</span></div>
-      </article>`;
+  // Kartu "Hari Ini" (permintaan user) — pengganti kartu "Main lagi" yang
+  // dobel dgn kartu "Yuk Lanjutkan" Menu Belajar. Isinya berubah sesuai
+  // kondisi anak (`pickTodayMission`), bukan lanjut materi lagi.
+  const today = pickTodayMission();
+  const spark = buildTodayCard(today);
 
   // --- Peta Petualangan (dulu `renderLevels`, isi PERSIS sama) ---
   const unlocked = levelUnlockMap(LEVELS);
@@ -1378,19 +1458,6 @@ function renderHome(): void {
       </li>`;
   }).join('');
 
-  // Nudge First Placement Test — sama syarat munculnya dgn Belajar (PRD §16):
-  // cuma tampil kalau belum benar-benar selesai (termasuk sempat di-skip).
-  const ptDone = getCachedChildStatus().placementTestDone;
-  const placementNudge =
-    ptDone === false
-      ? `
-    <div class="card note-card">
-      <div class="card-title">🎈 Belum coba First Placement Test</div>
-      <p>Kenalan sama 4 kegiatan seru buat cari tahu titik mulai yang paling pas.</p>
-      <button class="ghost-btn" type="button" data-action="openPlacementTest" style="margin-top:var(--s3)">Ambil First Placement Test →</button>
-    </div>`
-      : '';
-
   root.innerHTML = `
     ${spark}
 
@@ -1408,7 +1475,6 @@ function renderHome(): void {
       </div>
 
       <aside class="stack">
-        ${placementNudge}
         <div class="card">
           <span class="eyebrow">Tanda di peta</span>
           <ul class="map-legend" style="margin-top:12px">
@@ -1435,15 +1501,7 @@ function renderHome(): void {
   setHandlers({
     openMenu: () => go('menu', { viewLevel: null }),
     openPlacementTest: () => go('placementTest'),
-    resume: () => {
-      if (!last) return go('menu', { viewLevel: null });
-      // 🔒 `viewLevel` DIPIN eksplisit ke level ASLI anak (BUKAN `null` lagi)
-      // — `topicIndex` di sini terikat ke array topik `currentPlayableLevel()`
-      // (lihat `getLast()`/`setLast()`), jadi HARUS menang di atas cache
-      // "nempel" (`browsingLevel()` lapis 1 vs 2) — kalau jatuh ke level lain
-      // yang lagi di-browse, topicIndex bisa nunjuk topik yang SALAH.
-      go('activity', { skillKey: last.skill, topicIndex: last.topicIndex, step: 0, viewLevel: currentPlayableLevel().key });
-    },
+    todayMission: () => runTodayMission(today),
     openMenuFromLevels: (payload) => {
       setBrowseLevel(payload as LevelKey);
       go('menu', { viewLevel: payload as LevelKey });
@@ -1478,8 +1536,13 @@ function renderHome(): void {
  * navigasi/fungsional ("berapa lagi tersisa"), bukan laporan ke orang tua,
  * jadi angka presisi masih lebih berguna di sana.
  */
+/** Bintang 0–5 dari persentase — tiap 20% = 1 bintang, dibulatkan. */
+function skillStarCount(pct: number): number {
+  return Math.max(0, Math.min(5, Math.round(pct / 20)));
+}
+
 function skillStarsHtml(skillPct: number): string {
-  const stars = Math.max(0, Math.min(5, Math.round(skillPct / 20)));
+  const stars = skillStarCount(skillPct);
   return '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
 }
 
@@ -1505,7 +1568,7 @@ function insightTopicRowHtml(sig: TopicSignal, level: LevelKey, kind: 'weak' | '
   const s = SKILL_META[sig.skill];
   const action = kind === 'weak' ? 'practiceInsightTopic' : 'reviewInsightTopic';
   const label = kind === 'weak' ? 'Latihan Yuk' : 'Uji Lagi';
-  const sub = kind === 'weak' ? `${s.label} · masih suka kepeleset di sini` : `${s.label} · sudah lancar, jaga terus!`;
+  const sub = kind === 'weak' ? `${s.label} · masih sering meleset` : `${s.label} · sudah lancar`;
   return `
     <div class="topic-card">
       <div class="num" aria-hidden="true" style="background:${s.accentBg};color:${s.accent}">${s.emoji}</div>
@@ -1543,149 +1606,243 @@ function insightTopicRowHtml(sig: TopicSignal, level: LevelKey, kind: 'weak' | '
 function renderRapor(): void {
   const level = currentPlayableLevel();
   const insights = computeInsights();
+  const tier = canDoTier(level.key);
+  const skills = visibleSkillKeys(level.key);
+  // Skill objektif (bukan mic) dgn data cukup — dasar ringkasan, kesiapan
+  // Tantangan Raja & kalimat "Anak bisa…". Speaking tidak ikut: skornya
+  // dari mic (ASR bisa salah dengar), beda jenis angka.
+  const enoughData = (k: SkillKey) => k !== 'speaking' && insights.skillAccuracy[k] !== null && insights.skillAttempts[k] >= 10;
 
-  const skillCards = visibleSkillKeys(level.key)
+  /* ---------- 1. Sekilas: ringkasan kalimat + Minggu Ini ---------- */
+
+  // Pola rapor Kurikulum Merdeka (capaian tertinggi & terendah) + Statement
+  // of Results Cambridge (kekuatan, yang bisa ditingkatkan, kesiapan naik:
+  // 4–5 perisai di tiap skill).
+  const ranked = skills
+    .filter(enoughData)
+    .map((k) => ({ k, acc: insights.skillAccuracy[k] as number }))
+    .sort((a, b) => b.acc - a.acc);
+  const best = ranked[0];
+  const low = ranked.length > 1 ? ranked[ranked.length - 1] : undefined;
+  const skillName = (k: SkillKey) => `<b>${SKILL_META[k].emoji} ${SKILL_META[k].label}</b>`;
+  const sentences: string[] = [];
+  if (best) sentences.push(`Paling kuat di ${skillName(best.k)} (${best.acc}%).`);
+  if (best && low && low.acc < best.acc) sentences.push(`Paling perlu latihan: ${skillName(low.k)} (${low.acc}%).`);
+  const rajaLevel = currentStopKey(levelUnlockMap(LEVELS)) ?? level.key;
+  if (!isBossCleared(rajaLevel)) {
+    const objective = skills.filter((k) => k !== 'speaking');
+    const readyCount = objective.filter((k) => enoughData(k) && skillStarCount(insights.skillAccuracy[k] as number) >= 4).length;
+    if (objective.length && readyCount === objective.length) {
+      sentences.push(`Sudah siap mencoba <b>Tantangan ${BOSS_NAME[rajaLevel]}</b> 🏰.`);
+    } else if (ranked.length) {
+      sentences.push(`Menuju Tantangan ${BOSS_NAME[rajaLevel]}: ${readyCount} dari ${objective.length} skill sudah 4–5 bintang.`);
+    }
+  }
+  const summaryHtml = sentences.length
+    ? `<p class="rapor-summary">${sentences.join(' ')}</p>`
+    : '<p class="rapor-summary">Ringkasan muncul setelah anak menjawab minimal 10 soal di satu skill.</p>';
+
+  const week = getWeekActivity();
+  const weekDays = week.filter((d) => d.active).length;
+  const dayChips = week
+    .map((d) => `<span class="day-chip ${d.active ? 'is-active' : ''} ${d.isToday ? 'is-today' : ''}">${d.label}</span>`)
+    .join('');
+  const sekilasCard = `
+    <div class="card">
+      <span class="eyebrow">📝 Ringkasan untuk Orang Tua</span>
+      ${summaryHtml}
+      <span class="eyebrow sub" style="margin-top:14px">🗓️ Minggu Ini</span>
+      <div class="day-row" style="margin-top:8px" aria-label="Hari anak belajar dalam 7 hari terakhir">${dayChips}</div>
+      <div class="week-stats">
+        <span><b>${weekDays}</b>/7 hari</span>
+        <span><b>${getWeekMinutes()}</b> menit</span>
+        <span><b>${insights.weekAnswered}</b> soal</span>
+      </div>
+    </div>`;
+
+  /* ---------- 2. Kemampuan: daftar skill + Tantangan Raja ---------- */
+
+  // Bintang = KEMAMPUAN (ketepatan, pola perisai Cambridge), materi tuntas
+  // ditulis terpisah. 1 baris per skill (dulu 5 kartu besar).
+  const skillRows = skills
     .map((key) => {
       const s = SKILL_META[key];
       const topics = topicsForSkill(key, level.key);
       const doneHere = topics.filter((t) => topicFinished(key, t.id, level.key)).length;
-      const skillPct = topics.length > 0 ? Math.round((doneHere / topics.length) * 100) : 0;
+      const acc = insights.skillAccuracy[key];
+      const hintPct = insights.hintRatioBySkill[key];
+      const parts = [
+        acc === null ? 'belum ada jawaban' : key === 'speaking' ? `skor ucapan ${acc}%` : `ketepatan ${acc}%`,
+        ...(hintPct === null ? [] : [`💡 ${hintPct}%`]),
+        `${doneHere}/${topics.length} materi`,
+      ];
+      const canDo = enoughData(key) && skillStarCount(acc as number) >= 4 ? `<span class="can-do">✅ ${CAN_DO[tier][key]}</span>` : '';
       return `
-        <div class="skill-card">
-          <span class="skill-pct stars${skillPct >= 100 ? ' done' : ''}" aria-label="${Math.round(skillPct / 20)} dari 5 bintang">${skillStarsHtml(skillPct)}</span>
-          <span class="ic" style="background:${s.accentBg};color:${s.accent}" aria-hidden="true">${s.emoji}</span>
-          <div class="body">
-            <h3>${s.label}</h3>
-            <p>${doneHere}/${topics.length} materi selesai</p>
-          </div>
-        </div>`;
+        <li>
+          <span class="skill-row-ic" style="background:${s.accentBg};color:${s.accent}" aria-hidden="true">${s.emoji}</span>
+          <span class="skill-row-body">
+            <b>${s.label}</b>
+            <span class="meta">${parts.join(' · ')}</span>
+            ${canDo}
+          </span>
+          <span class="skill-stars" aria-label="${acc === null ? 'belum ada bintang' : `${skillStarCount(acc)} dari 5 bintang`}">${acc === null ? '☆☆☆☆☆' : skillStarsHtml(acc)}</span>
+        </li>`;
     })
     .join('');
-
-  // 🔒 "Hasil Main Game" (permintaan user "update rapor dimana masukan
-  // nilai dari hasil main game") — dulu Game Hub ("Raja" Kata/Balon/Susun/
-  // Kelompok/Ingatan/Sound Hunt/Story Quest) SAMA SEKALI TIDAK muncul di
-  // Rapor (`gameXp`/`recordAttempt` tercatat tapi tidak pernah dibaca di
-  // sini) — sekarang tiap Raja dapat kartu SAMA PERSIS pola "Skor Tiap
-  // Skill" di atas (`.skill-grid`/`.skill-card`/`skillStarsHtml`, komponen
-  // yang SAMA, bukan bikin baru) supaya 2 kartu breakdown ini terasa 1
-  // keluarga visual. Bintang dari `getGameAccuracy()` (`Store.gameStats`,
-  // diisi `recordAttempt(correct, gameKey)` — lihat komentar `GAME_KEY`
-  // `games/wordmatch.ts`), BUKAN dari `gameXp` (itu cuma kosmetik biner
-  // main/belum, tidak merefleksikan SEBERAPA TEPAT jawabannya). Semua 7
-  // Raja tampil di semua level (Raja Kelompok dulu cuma di level yang punya
-  // topik `sortBaskets`; sejak punya bank sendiri, `games/kelompok.ts`).
-  const gameRosterForRapor = RAJA_LIST;
-  const gameCards = gameRosterForRapor
-    .map((r) => {
-      const acc = getGameAccuracy(r.key);
-      const stats = getGameStats(r.key);
-      const pct = acc ?? 0;
-      const sub = acc === null ? 'Belum dimainkan' : `${stats.correct}/${stats.total} jawaban tepat`;
-      return `
-        <div class="skill-card">
-          <span class="skill-pct stars${pct >= 100 ? ' done' : ''}" aria-label="${Math.round(pct / 20)} dari 5 bintang">${skillStarsHtml(pct)}</span>
-          <span class="ic" style="background:color-mix(in srgb, ${r.color} 20%, var(--surface-2));color:${r.color}" aria-hidden="true">${RAJA_ICON_EMOJI[r.key]}</span>
-          <div class="body">
-            <h3>${r.name}</h3>
-            <p>${sub}</p>
-          </div>
-        </div>`;
-    })
-    .join('');
-
-  // List/baris (permintaan user, dibanding grid 3-tile sebelumnya) — pola
-  // ikon+label+angka per baris ala referensi kompetitor, TAPI visual bahasa
-  // TETAP punya (lingkaran gradien radial sama dgn `.stat-ic` Progresmu,
-  // bukan ikon flat kompetitor) supaya konsisten 1 keluarga tampilan dgn
-  // kartu lain, bukan tempelan gaya asing. List (bukan grid) juga membuka
-  // jalan nambah stat lain nanti tanpa kartu jadi padat/berdesakan.
-  const statRowsHtml = [
-    { ic: '📘', label: 'Modul tuntas', value: doneCount() },
-    { ic: '📝', label: 'Soal dijawab', value: insights.totalAnswered },
-    { ic: '🔤', label: 'Kata dikuasai', value: insights.masteredWords },
-    { ic: '🗓️', label: 'Hari aktif', value: getActiveDaysCount() },
-    { ic: '🔥', label: 'Rekor beruntun', value: getLongestStreak() },
-    { ic: '🏰', label: 'Markas ditaklukkan', value: getBossClearedCount() },
-  ]
-    .map((r) => `<li><span class="stat-list-ic" aria-hidden="true">${r.ic}</span><span class="stat-list-label">${r.label}</span><span class="stat-list-value">${r.value}</span></li>`)
-    .join('');
-
-  const statsSingkatCard = `
+  const skillCard = `
     <div class="card">
-      <span class="eyebrow">📊 Stats Singkat</span>
-      <ul class="stat-list">${statRowsHtml}</ul>
+      <span class="eyebrow">⭐ Tiap Skill</span>
+      <ul class="skill-list">${skillRows || '<li class="meta">Belum ada materi di level ini.</li>'}</ul>
+      <p class="meta" style="margin-top:8px">⭐ dari ketepatan jawaban · 💡 = soal yang dikerjakan pakai Petunjuk.</p>
     </div>`;
 
-  const strongRows = insights.strongTopics.map((t) => insightTopicRowHtml(t, level.key, 'strong')).join('');
-  const weakRows = insights.weakTopics.map((t) => insightTopicRowHtml(t, level.key, 'weak')).join('');
+  /* ---------- 3. Yang Perlu Dilakukan ---------- */
 
-  // Kedua kartu disembunyikan total (bukan kartu "belum ada data" kosong,
-  // konsisten `buildPlacementResultCard`/`buildLeaderboardCard`) kalau belum
-  // cukup sinyal — anak baru mulai belum "punya kelemahan", itu wajar.
+  const weakRows = insights.weakTopics.map((t) => insightTopicRowHtml(t, level.key, 'weak')).join('');
+  const strongRows = insights.strongTopics.map((t) => insightTopicRowHtml(t, level.key, 'strong')).join('');
+  const wordChips = insights.strugglingWords.length
+    ? `<span class="eyebrow sub" style="margin-top:14px">📝 Kata yang masih dilatih</span>
+       <div class="word-chips">${insights.strugglingWords.map((w) => `<span class="tag">${SKILL_META[w.skill].emoji} ${escapeHtml(w.ir)}</span>`).join('')}</div>`
+    : '';
+  const missionCard =
+    weakRows || wordChips
+      ? `
+    <div class="card">
+      <span class="eyebrow">🗺️ Misi Berikutnya</span>
+      ${weakRows ? `<p class="meta" style="margin-top:2px">Materi yang masih sering meleset — bagus dilatih lagi.</p><div class="topic-grid" style="margin-top:12px">${weakRows}</div>` : ''}
+      ${wordChips}
+    </div>`
+      : '';
   const strengthsCard = strongRows
     ? `
     <div class="card">
       <span class="eyebrow">💪 Kekuatan Sekarang</span>
-      <p class="meta" style="margin-top:2px">Materi yang sudah dikuasai dengan mantap — sekali-sekali diuji lagi biar tetap tajam.</p>
+      <p class="meta" style="margin-top:2px">Materi yang sudah dikuasai — sesekali uji lagi supaya tetap ingat.</p>
       <div class="topic-grid" style="margin-top:12px">${strongRows}</div>
     </div>`
     : '';
+  const todoHtml =
+    missionCard || strengthsCard
+      ? `${missionCard}${strengthsCard}`
+      : `<div class="card"><p class="meta">Saran latihan muncul setelah anak menjawab minimal 3 soal di satu materi.</p></div>`;
 
-  const missionCard = weakRows
-    ? `
-    <div class="card">
-      <span class="eyebrow">🗺️ Misi Berikutnya</span>
-      <p class="meta" style="margin-top:2px">Materi yang masih suka kepeleset — cocok buat dilatih sebentar lagi.</p>
-      <div class="topic-grid" style="margin-top:12px">${weakRows}</div>
-    </div>`
-    : '';
+  /* ---------- 4. Rincian (dilipat) ---------- */
 
-  const wordsCard = insights.strugglingWords.length
-    ? `
+  // Game: yang sudah dimainkan 1 baris masing-masing, yang belum digabung
+  // jadi 1 kalimat (dulu 7 kartu besar, kebanyakan "Belum dimainkan").
+  const played = RAJA_LIST.filter((r) => getGameAccuracy(r.key) !== null);
+  const unplayed = RAJA_LIST.filter((r) => getGameAccuracy(r.key) === null);
+  const gameRows = played
+    .map((r) => {
+      const acc = getGameAccuracy(r.key) as number;
+      const st = getGameStats(r.key);
+      return `<li><span class="stat-list-ic" aria-hidden="true">${RAJA_ICON_EMOJI[r.key]}</span><span class="stat-list-label">${r.name} <span class="meta">· ${st.correct}/${st.total} tepat</span></span><span class="skill-stars" aria-label="${skillStarCount(acc)} dari 5 bintang">${skillStarsHtml(acc)}</span></li>`;
+    })
+    .join('');
+  const gameCard = `
     <div class="card">
-      <span class="eyebrow">📝 Kata yang Masih Dilatih</span>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
-        ${insights.strugglingWords.map((w) => `<span class="tag">${SKILL_META[w.skill].emoji} ${escapeHtml(w.ir)}</span>`).join('')}
-      </div>
-    </div>`
-    : '';
+      <span class="eyebrow">🎮 Game · ${played.length}/${RAJA_LIST.length} dimainkan</span>
+      ${gameRows ? `<ul class="stat-list">${gameRows}</ul>` : ''}
+      ${unplayed.length ? `<p class="meta" style="margin-top:8px">Belum dimainkan: ${unplayed.map((r) => r.name).join(', ')}.</p>` : ''}
+    </div>`;
+
+  // Progres per Level — % modul tuntas tiap level (rumus `finishedTopicsForLevel`).
+  const levelRows = LEVELS.filter((l) => l.hasContent)
+    .map((l) => {
+      const total = totalTopicsForLevel(l.key);
+      const pct = total > 0 ? Math.round((finishedTopicsForLevel(l.key) / total) * 100) : 0;
+      const here = l.key === rajaLevel ? ' <span class="meta">📍 sekarang</span>' : '';
+      return `
+        <li class="lvl-row${pct >= 100 ? ' done' : ''}">
+          <span class="lvl-name">${l.emoji} ${l.name}${here}${l.cefr ? `<span class="lvl-cefr">${l.cefr}</span>` : ''}</span>
+          <span class="lvl-track" role="img" aria-label="${pct}% modul ${l.name} tuntas"><span class="lvl-fill" style="width:${pct}%"></span></span>
+          <span class="lvl-pct">${pct}%</span>
+        </li>`;
+    })
+    .join('');
+  const levelCard = `
+    <div class="card">
+      <span class="eyebrow">🗺️ Progres per Level</span>
+      <ul class="lvl-list">${levelRows}</ul>
+    </div>`;
+
+  const avgMin = getAvgDailyMinutes();
+  const finishedAll = LEVELS.filter((l) => l.hasContent).reduce((n, l) => n + finishedTopicsForLevel(l.key), 0);
+  const statRowsHtml = [
+    { ic: '📘', label: 'Modul tuntas', value: finishedAll },
+    { ic: '📝', label: 'Soal dijawab', value: insights.totalAnswered },
+    { ic: '🔤', label: 'Kata dikuasai', value: insights.masteredWords },
+    { ic: '💡', label: 'Soal dikerjakan pakai Petunjuk', value: insights.hintRatio === null ? '–' : `${insights.hintRatio}%` },
+    { ic: '🗓️', label: 'Hari aktif (30 hari terakhir)', value: `${getActiveDaysInLast(30)}/30` },
+    { ic: '🔥', label: 'Rekor beruntun', value: `${getLongestStreak()} hari` },
+    { ic: '⌛', label: 'Rata-rata belajar / hari', value: avgMin === null ? '–' : `${avgMin} menit` },
+    { ic: '🏰', label: 'Markas ditaklukkan', value: getBossClearedCount() },
+  ]
+    .map((r) => `<li><span class="stat-list-ic" aria-hidden="true">${r.ic}</span><span class="stat-list-label">${r.label}</span><span class="stat-list-value">${r.value}</span></li>`)
+    .join('');
+  const statsCard = `
+    <div class="card">
+      <span class="eyebrow">📊 Statistik</span>
+      <ul class="stat-list">${statRowsHtml}</ul>
+    </div>`;
+
+  // Bagian rincian dilipat; status buka/tutup diingat per perangkat.
+  let moreOpen = false;
+  try {
+    moreOpen = localStorage.getItem(RAPOR_MORE_KEY) === '1';
+  } catch {
+    /* storage diblokir — default tertutup */
+  }
 
   root.innerHTML = `
-    <section class="two-col">
-      <div class="stack">
-        ${buildProgressPanel()}
-        ${statsSingkatCard}
-        <div class="card">
-          <span class="eyebrow">🏅 Skor Belajar &amp; Game</span>
-          <span class="eyebrow sub" style="margin-top:12px">📘 Skill Belajar</span>
-          <div class="skill-grid" style="margin-top:8px">${skillCards || '<p class="meta">Belum ada materi di level ini.</p>'}</div>
-          <span class="eyebrow sub" style="margin-top:16px">🎮 Game</span>
-          <div class="skill-grid" style="margin-top:8px">${gameCards || '<p class="meta">Belum ada game di level ini.</p>'}</div>
+    <div class="rapor-layout">
+      <section class="rapor-sec full" aria-label="Sekilas">
+        <div class="rapor-sekilas">
+          ${buildProgressPanel(true)}
+          ${sekilasCard}
         </div>
-        ${strengthsCard}
-        ${missionCard}
-        ${wordsCard}
-      </div>
+      </section>
 
-      <aside class="stack">
-        ${buildDailyCard()}
+      <section class="rapor-sec" aria-labelledby="raporKemampuan">
+        <h2 class="rapor-h" id="raporKemampuan">Kemampuan</h2>
+        ${skillCard}
         ${buildBossResultCard()}
-        ${buildPlacementResultCard()}
-        ${buildLeaderboardCard()}
-        <div class="card note-card">
-          <div class="card-title">Untuk orang tua</div>
-          <p>Rapor ini untuk memantau progres, bukan menghukum. Level berikutnya terbuka lewat Tantangan Raja (4 babak utama benar 80%). "Misi Berikutnya" cuma saran.</p>
-        </div>
-      </aside>
-    </section>
+      </section>
+
+      <section class="rapor-sec" aria-labelledby="raporTodo">
+        <h2 class="rapor-h" id="raporTodo">Yang Perlu Dilakukan</h2>
+        ${todoHtml}
+      </section>
+
+      <section class="rapor-sec full">
+        <details class="rapor-more" id="raporMore"${moreOpen ? ' open' : ''}>
+          <summary><span>📂 Rincian lainnya</span><span class="meta">game, progres per level, statistik, placement test, peringkat</span></summary>
+          <div class="rapor-more-grid">
+            ${gameCard}
+            ${levelCard}
+            ${statsCard}
+            ${buildPlacementResultCard()}
+            ${buildLeaderboardCard()}
+          </div>
+        </details>
+      </section>
+    </div>
   `;
+
+  root.querySelector<HTMLDetailsElement>('#raporMore')?.addEventListener('toggle', (e) => {
+    try {
+      localStorage.setItem(RAPOR_MORE_KEY, (e.currentTarget as HTMLDetailsElement).open ? '1' : '0');
+    } catch {
+      /* diabaikan — cuma kenyamanan tampilan */
+    }
+  });
 
   // 🔒 `viewLevel` DIPIN eksplisit ke `currentPlayableLevel()` di KEDUA
   // handler di bawah (BUKAN `null`) — `topicIndex`-nya dihitung `computeInsights()`
   // thd topik `level` (level ASLI anak) di atas, jadi harus menang di atas
   // cache "nempel" `browsingLevel()`, sama alasan `resume` (app.ts).
   setHandlers({
+    openRaporDetail: () => go('raporDetail'),
     practiceInsightTopic: (payload) => {
       const [skill, idxStr] = (payload ?? '').split('|');
       go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 1, viewLevel: level.key });
@@ -1695,6 +1852,161 @@ function renderRapor(): void {
       go('activity', { skillKey: skill as SkillKey, topicIndex: Number(idxStr), step: 2, viewLevel: level.key });
     },
   });
+}
+
+/** Status buka/tutup "Rincian lainnya" di Rapor (preferensi perangkat). */
+const RAPOR_MORE_KEY = 'inggrisinyuk-kids.rapor-more';
+
+/* -------------------------------------------------------- detail rapor -- */
+
+/** Layar "Detail Rapor" — cuma menjelaskan ATURAN tiap nilai di Rapor (apa
+ *  artinya & cara bertambahnya), buat orang tua. Angkanya sendiri tetap di
+ *  Rapor; sumber aturannya konstanta/fungsi yang sama (XP_*, getStreak,
+ *  getAccuracy, levelProgressPct) supaya teks tidak basi kalau angka berubah. */
+function renderRaporDetail(): void {
+  const rules: { ic: string; name: string; what: string; how: string }[] = [
+    {
+      ic: '⚡',
+      name: 'XP',
+      what: 'Poin semangat belajar. Cuma bisa naik, tidak pernah berkurang.',
+      how: `+${XP_MODULE} XP tiap modul selesai · +${XP_BOSS} XP lolos Tantangan Raja · +${XP_FREEPLAY} XP tiap markas game selesai.`,
+    },
+    {
+      ic: '🎯',
+      name: 'Ketepatan',
+      what: 'Seberapa sering jawaban anak tepat di soal pilihan & susun kata.',
+      how: 'Jawaban tepat ÷ semua jawaban × 100%, termasuk game & tiap "Coba Lagi". Jawaban lewat mic (Speaking) & soal Tantangan Raja tidak dihitung.',
+    },
+    {
+      ic: '🔥',
+      name: 'Hari beruntun',
+      what: 'Berapa hari berturut-turut anak belajar.',
+      how: 'Hari dihitung aktif kalau anak dapat XP atau mengerjakan Tantangan Raja. Libur 1 hari tidak memutus; libur 2 hari berturut-turut baru mulai dari awal. Rekor = beruntun terpanjang dalam 60 hari terakhir.',
+    },
+    {
+      ic: '📈',
+      name: 'Progres level',
+      what: 'Seberapa dekat anak ke level berikutnya.',
+      how: '50% dari modul yang tuntas + 50% dari babak Tantangan Raja yang lolos (4 babak). Raja ditaklukkan = 100%.',
+    },
+    {
+      ic: '⭐',
+      name: 'Bintang skill',
+      what: 'Kemampuan tiap skill belajar, dari ketepatan jawaban (bukan banyaknya materi). Jumlah materi tuntas ditulis terpisah di bawahnya.',
+      how: 'Jawaban tepat ÷ semua jawaban di skill itu, lalu tiap 20% = 1 bintang (dibulatkan, maks 5). Speaking: rata-rata skor ucapan terbaik tiap soal (perkiraan dari mic). 4–5 bintang = sudah mantap.',
+    },
+    {
+      ic: '🎮',
+      name: 'Bintang game',
+      what: 'Skor tiap game di Game Hub.',
+      how: 'Jawaban tepat ÷ semua jawaban di game itu, lalu tiap 20% = 1 bintang (dibulatkan).',
+    },
+    {
+      ic: '📘',
+      name: 'Modul tuntas & Progres per Level',
+      what: 'Modul yang Latihan Inti & Tantangannya sudah dikerjakan semua (100%).',
+      how: 'Stats Singkat: jumlah dari semua level. Progres per Level: modul tuntas ÷ semua modul di level itu. Kenalan tidak dihitung.',
+    },
+    {
+      ic: '🔤',
+      name: 'Kata dikuasai',
+      what: 'Kata Vocabulary yang jawaban terakhirnya tepat.',
+      how: 'Kalau sempat meleset lalu diulang dan tepat, tetap dihitung dikuasai.',
+    },
+    {
+      ic: '⏱️',
+      name: 'Waktu belajar',
+      what: 'Total menit 7 hari terakhir & rata-rata menit di hari anak belajar.',
+      how: 'Dihitung hanya saat app terbuka & anak aktif menyentuh layar (diam > 1 menit tidak dihitung). Rata-rata = total menit ÷ hari yang ada catatannya; hari libur tidak ikut membagi. Tercatat per perangkat.',
+    },
+    {
+      ic: '💡',
+      name: 'Pakai Petunjuk',
+      what: 'Seberapa sering anak membuka 💡 Petunjuk saat mengerjakan. Makin kecil = makin mandiri. Petunjuk boleh dipakai, bukan kesalahan.',
+      how: 'Soal yang Petunjuknya dibuka ÷ semua soal yang sudah dikerjakan × 100%. Dihitung per soal (bukan per percobaan), di Latihan Inti & Tantangan semua skill. Kenalan & "💡 Jawabannya" yang muncul otomatis tidak dihitung.',
+    },
+    {
+      ic: '🗓️',
+      name: 'Hari aktif',
+      what: 'Berapa hari anak belajar dalam 30 hari terakhir.',
+      how: 'Hari dihitung aktif kalau anak dapat XP atau mengerjakan Tantangan Raja.',
+    },
+    {
+      ic: '🗺️',
+      name: 'Misi Berikutnya & Kekuatan',
+      what: 'Materi yang masih suka meleset vs yang sudah mantap.',
+      how: 'Muncul setelah minimal 3 jawaban di materi itu. Meleset ≥ 34% → Misi Berikutnya; ≤ 10% → Kekuatan. Soal ucapan (mic) tidak ikut, karena mic bisa salah dengar.',
+    },
+    {
+      ic: '📝',
+      name: 'Ringkasan untuk Orang Tua',
+      what: 'Skill terkuat, skill yang paling perlu latihan, dan kesiapan mencoba Tantangan Raja.',
+      how: 'Dari ketepatan skill yang punya minimal 10 jawaban. "Siap mencoba Tantangan Raja" kalau semua skill (kecuali Speaking) sudah 4–5 bintang, sama aturan kesiapan Cambridge. Speaking tidak ikut (skornya dari mic).',
+    },
+    {
+      ic: '🗓️',
+      name: 'Minggu Ini',
+      what: 'Hari belajar, menit belajar, dan soal yang dikerjakan dalam 7 hari terakhir.',
+      how: 'Soal dihitung per soal: soal yang dikerjakan ulang minggu ini tetap 1.',
+    },
+    {
+      ic: '🏰',
+      name: 'Tantangan Raja',
+      what: 'Tes akhir level. Satu-satunya jalan naik level.',
+      how: 'Naik level kalau 4 babak utama (Vocabulary, Listening, Reading, Grammar) masing-masing benar ≥ 80% di percobaan pertama. Speaking = babak bonus. Bisa diulang dengan soal baru, tidak pernah turun level.',
+    },
+  ];
+
+  root.innerHTML = `
+    <div class="screen-head">
+      <button class="iconbtn" type="button" data-action="backToRapor" aria-label="Kembali ke Rapor">${ICON_BACK}</button>
+      <div class="txt">
+        <h1>📖 Detail Rapor</h1>
+        <p>Arti tiap nilai & cara menghitungnya. Rapor untuk memantau, bukan menghukum.</p>
+      </div>
+    </div>
+    <div class="rule-grid">
+      ${rules
+        .map(
+          (r) => `
+        <div class="card rule-card">
+          <div class="rule-head"><span class="stat-list-ic" aria-hidden="true">${r.ic}</span><h3>${r.name}</h3></div>
+          <p>${r.what}</p>
+          <p class="meta rule-how"><b>Cara hitung:</b> ${r.how}</p>
+        </div>`
+        )
+        .join('')}
+    </div>
+    <div class="card note-card track-note">
+      <div class="card-title">📡 Cara Data Dicatat</div>
+      <ul>
+        <li><b>Tiap jawaban</b> langsung disimpan di perangkat ini. App tetap jalan tanpa internet.</li>
+        <li><b>Dikirim ke akun hanya saat 1 bagian selesai</b>: Latihan Inti, tiap tab Tantangan, tiap babak Tantangan Raja, atau 1 markas game. Kenalan saja tidak memicu pengiriman.</li>
+        <li>Bagian yang baru setengah jalan tetap aman di perangkat, dan ikut terkirim saat bagian berikutnya selesai.</li>
+        <li>Data dari perangkat lain <b>digabung</b>, tidak saling menimpa: nilai tertinggi & soal yang sudah dikerjakan tidak pernah hilang.</li>
+        <li>Tercatat di perangkat ini saja (belum ikut akun): waktu belajar & bintang game.</li>
+      </ul>
+    </div>
+  `;
+  setHandlers({ backToRapor: () => go('rapor') });
+}
+
+/** Catat lama belajar aktif (Rapor "Rata-rata belajar / hari"): tiap 15 dtk,
+ *  kalau app tampil & ada sentuhan/ketikan dalam 60 dtk terakhir, tambah
+ *  15 dtk ke hari ini. Tab yang dibiarkan terbuka tanpa disentuh tidak ikut. */
+const ACTIVE_TICK_MS = 15000;
+const ACTIVE_IDLE_MS = 60000;
+function startActiveTimer(): void {
+  let lastInput = Date.now();
+  const bump = () => {
+    lastInput = Date.now();
+  };
+  ['pointerdown', 'keydown', 'touchstart'].forEach((ev) => document.addEventListener(ev, bump, { passive: true, capture: true }));
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    if (Date.now() - lastInput > ACTIVE_IDLE_MS) return;
+    addActiveTime(ACTIVE_TICK_MS);
+  }, ACTIVE_TICK_MS);
 }
 
 /**
@@ -1745,9 +2057,9 @@ function renderMenu(): void {
   const menuLevelHead = renderLevelSwitcher(level.key, 'Pilih level Menu Belajar');
   // Progres keseluruhan lintas SEMUA modul di level ini (permintaan user) —
   // formula SAMA dgn levelProgress Beranda/mapProgress Peta Level
-  // (doneCount() global ÷ totalTopicsForLevel level ini), supaya angkanya
-  // konsisten di mana pun ditampilkan.
-  const doneTotal = doneCount();
+  // (modul tuntas level ini ÷ totalTopicsForLevel level ini), supaya
+  // angkanya konsisten di mana pun ditampilkan.
+  const doneTotal = finishedTopicsForLevel(level.key);
   const topicsTotal = totalTopicsForLevel(level.key);
   const menuPct = topicsTotal > 0 ? Math.round((doneTotal / topicsTotal) * 100) : 0;
   const progressBar = `
@@ -2400,6 +2712,15 @@ function renderSettings(): void {
         <p class="meta" style="margin-top:10px">Cuma tersimpan di perangkat ini — tidak dikirim ke mana pun.</p>
       </section>
 
+      <section class="card">
+        <div class="card-title" style="margin:4px 0 12px">Musik &amp; efek suara game</div>
+        <div class="audio-toggles">
+          <button class="music-toggle${isMusicOn() ? ' is-on' : ''}" type="button" data-action="settingsMusic" role="switch" aria-checked="${isMusicOn()}">${isMusicOn() ? '🎵 Musik latar: Nyala' : '🔇 Musik latar: Mati'}</button>
+          <button class="music-toggle${isSfxOn() ? ' is-on' : ''}" type="button" data-action="settingsSfx" role="switch" aria-checked="${isSfxOn()}">${isSfxOn() ? '🔔 Efek suara: Nyala' : '🔕 Efek suara: Mati'}</button>
+        </div>
+        <p class="meta" style="margin-top:10px">Cuma di Game Hub. Musik otomatis mengecil saat ada suara bicara. Nada jawaban benar/salah tetap bunyi.</p>
+      </section>
+
       <section class="card voice-flush">
         <div class="card-title" style="margin:4px 0 12px">Kecepatan &amp; jenis suara</div>
         <div id="voicePanelMount"></div>
@@ -2423,6 +2744,14 @@ function renderSettings(): void {
 
   setHandlers({
     openPlacementTestFromSettings: () => go('placementTest'),
+    settingsMusic: () => {
+      setMusicOn(!isMusicOn());
+      render();
+    },
+    settingsSfx: () => {
+      setSfxOn(!isSfxOn());
+      render();
+    },
     logoutAccount: () => {
       apiLogout();
       cacheChildStatus(null, null);
@@ -3590,13 +3919,19 @@ function renderGamePlay(): void {
         <h1>${raja.name}</h1>
         <div class="sub"><span class="tag accent">🎮 ${raja.sub}</span></div>
       </div>
+      <span id="musicToggleMount">${musicToggleHtml()}</span>
     </div>
-    <div class="card raja-stage" id="rajaStage" style="--k:${raja.color}"></div>
+    <div class="card raja-stage world-${raja.key}" id="rajaStage" style="--k:${raja.color}"></div>
     <footer class="standalone-footer">
       <p>© ${new Date().getFullYear()} InggrisinYuk Kids</p>
     </footer>
   `;
   setHandlers({
+    toggleGameMusic: () => {
+      setMusicOn(!isMusicOn());
+      const mount = root.querySelector('#musicToggleMount');
+      if (mount) mount.innerHTML = musicToggleHtml();
+    },
     backToGame: () => {
       if (!isGameRoundActive()) {
         go('game');
@@ -3618,6 +3953,14 @@ function renderGamePlay(): void {
         exit
       );
     },
+  });
+  // Fase 1 suasana game (`materi/suasana_game.md`): musik latar tema game
+  // ini + bunyi ketuk lembut utk setiap tombol di area main. Anak baru saja
+  // mengetuk kartu game → AudioContext boleh bunyi (kebijakan autoplay).
+  startGameMusic(raja.key);
+  qs<HTMLDivElement>(root, '#rajaStage').addEventListener('pointerdown', (e) => {
+    const btn = (e.target as HTMLElement).closest('button');
+    if (btn && !btn.disabled) sfx('tap');
   });
   runRajaRound(raja.key);
 }

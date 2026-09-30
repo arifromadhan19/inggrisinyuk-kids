@@ -130,6 +130,12 @@ export interface Store {
    *  (seperti `gameStats`); ringkasan tiap babak ikut ke server lewat event
    *  `boss_skill`. Naik level tetap dari `bossCleared`. */
   bossTests: Record<string, BossLevelTest>;
+  /** Lama belajar aktif per hari (YYYY-MM-DD → milidetik) — dipakai Rapor
+   *  "Rata-rata durasi / hari". Cuma dihitung saat app tampil DAN anak
+   *  berinteraksi (lihat `startActiveTimer`, app.ts), bukan tab yang
+   *  dibiarkan terbuka. Lokal (tidak disinkron, sama alasan `gameStats`);
+   *  disimpan ±60 hari terakhir. */
+  activeMs: Record<string, number>;
 }
 
 /** 1 percobaan 1 babak. `res`: null = belum dijawab, 1/0 = benar/belum
@@ -272,6 +278,7 @@ const EMPTY: Store = {
   gameStats: {},
   browseLevel: null,
   bossTests: {},
+  activeMs: {},
 };
 
 function read(): Store {
@@ -310,6 +317,10 @@ function read(): Store {
       bossTests:
         parsed.bossTests && typeof parsed.bossTests === 'object' && !Array.isArray(parsed.bossTests)
           ? (parsed.bossTests as Record<string, BossLevelTest>)
+          : {},
+      activeMs:
+        parsed.activeMs && typeof parsed.activeMs === 'object' && !Array.isArray(parsed.activeMs)
+          ? Object.fromEntries(Object.entries(parsed.activeMs).filter(([, v]) => num(v) === v))
           : {},
     };
   } catch {
@@ -1118,6 +1129,14 @@ export function getActiveDaysCount(): number {
   return new Set(read().activeDays).size;
 }
 
+/** Hari aktif dalam `days` hari terakhir (termasuk hari ini) — "absensi"
+ *  Rapor. Pakai jendela tetap krn `activeDays` cuma menyimpan ±60 hari
+ *  terakhir (total "sepanjang waktu" diam-diam berhenti di 60). */
+export function getActiveDaysInLast(days: number): number {
+  const today = toEpochDay(isoDate(new Date()));
+  return new Set(read().activeDays.map(toEpochDay).filter((d) => d > today - days && d <= today)).size;
+}
+
 /**
  * Rekor hari beruntun TERPANJANG yang PERNAH dicapai (beda dari `getStreak()`
  * yang cuma streak SAAT INI, bisa 0 kalau lagi libur) — dipakai pendamping
@@ -1148,6 +1167,36 @@ export function getLongestStreak(): number {
     best = Math.max(best, current);
   }
   return best;
+}
+
+/** Tambah lama belajar aktif hari ini (dipanggil berkala oleh
+ *  `startActiveTimer`, app.ts). Simpan ±60 hari terakhir saja. */
+export function addActiveTime(ms: number): void {
+  if (!(ms > 0)) return;
+  const store = read();
+  const today = isoDate(new Date());
+  store.activeMs = { ...store.activeMs, [today]: (store.activeMs[today] ?? 0) + ms };
+  const days = Object.keys(store.activeMs).sort();
+  if (days.length > 60) days.slice(0, days.length - 60).forEach((d) => delete store.activeMs[d]);
+  write(store);
+}
+
+/** Rata-rata menit belajar per hari AKTIF (hari tanpa belajar tidak ikut
+ *  dibagi — non-punitive, libur tidak "menurunkan" rata-rata). `null`
+ *  kalau belum ada durasi yang tercatat sama sekali. */
+/** Total menit belajar 7 hari terakhir (termasuk hari ini). */
+export function getWeekMinutes(): number {
+  const today = toEpochDay(isoDate(new Date()));
+  const ms = Object.entries(read().activeMs)
+    .filter(([d]) => toEpochDay(d) > today - 7)
+    .reduce((a, [, v]) => a + v, 0);
+  return Math.round(ms / 60000);
+}
+
+export function getAvgDailyMinutes(): number | null {
+  const vals = Object.values(read().activeMs).filter((v) => v > 0);
+  if (vals.length === 0) return null;
+  return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length / 60000);
 }
 
 /** Jumlah Raja/Markas yang sudah ditaklukkan (`bossCleared`, dipakai
@@ -1256,6 +1305,24 @@ export interface LearningInsights {
    *  union non-punitive — sekali benar tetap dihitung "dikuasai" walau
    *  sempat salah di percobaan lain). Dipakai "Stats Singkat" Rapor. */
   masteredWords: number;
+  /** Ketepatan per skill (0..100, `null` = belum ada soal dijawab) — rumus
+   *  SAMA dgn wrong-rate topik di atas: jawaban tepat ÷ semua percobaan di
+   *  soal pilih/susun. Speaking (skor mic, ASR anak belum andal) = rata-rata
+   *  skor mic TERBAIK tiap soal (`SlotState.sc`), bukan tepat/belum. */
+  skillAccuracy: Record<SkillKey, number | null>;
+  /** Jumlah percobaan yang jadi dasar `skillAccuracy` (Speaking: jumlah soal
+   *  ber-skor mic) — dipakai supaya ringkasan tidak menyimpulkan dari data
+   *  yang terlalu sedikit. */
+  skillAttempts: Record<SkillKey, number>;
+  /** Rasio soal yang dikerjakan DENGAN 💡 Petunjuk (0..100, `null` = belum
+   *  ada soal) — per SOAL (slot sudah dijawab, `SlotState.h`), bukan per
+   *  percobaan. Semua section ber-soal (termasuk mic), tanpa Kenalan. */
+  hintRatio: number | null;
+  hintRatioBySkill: Record<SkillKey, number | null>;
+  /** Soal yang terakhir dikerjakan dalam 7 hari terakhir (per soal, dari
+   *  `SlotState.t`) — strip "Minggu Ini" Rapor. Soal yang dikerjakan lagi
+   *  minggu ini tetap dihitung 1. */
+  weekAnswered: number;
 }
 
 /** Section 'kenalan' (tap 🔊/🎤/🎮, bukan soal berjawaban benar-salah) &
@@ -1265,6 +1332,15 @@ export interface LearningInsights {
  *  bawah; guard nama section ini murni buat kejelasan/skip lebih cepat. */
 function isGradedSection(section: string): boolean {
   return section !== 'kenalan' && !section.endsWith('-visited');
+}
+
+/** Soal yang dinilai lewat MIC (Speaking semua section, Vocab "🗣️ Penggunaan")
+ *  — hasilnya skor proporsional ASR, bukan benar/salah. TIDAK boleh ikut
+ *  wrong-rate/"Kata yang Masih Dilatih": ucapan yang tidak tertangkap
+ *  sempurna akan terbaca "meleset" padahal bisa cuma ASR yang salah dengar
+ *  (sama alasan `recordAttempt` tidak dipanggil di jalur mic). */
+function isMicSection(skill: SkillKey, section: string): boolean {
+  return skill === 'speaking' || section === 'tantangan-ucap';
 }
 
 /**
@@ -1295,13 +1371,46 @@ export function computeInsights(
   const itemMap = new Map<string, { skill: SkillKey; topicId: string; ir: string; attempts: number; wrong: number }>();
   const masteredVocabWords = new Set<string>();
   let totalAnswered = 0;
+  let weekAnswered = 0;
+  const weekStart = Date.now() - 7 * 864e5;
+  const skillTally: Record<SkillKey, { n: number; ok: number }> = {
+    vocabulary: { n: 0, ok: 0 },
+    listening: { n: 0, ok: 0 },
+    reading: { n: 0, ok: 0 },
+    grammar: { n: 0, ok: 0 },
+    speaking: { n: 0, ok: 0 },
+  };
+  const micScores: number[] = [];
+  const hintTally: Record<SkillKey, { slots: number; hinted: number }> = {
+    vocabulary: { slots: 0, hinted: 0 },
+    listening: { slots: 0, hinted: 0 },
+    reading: { slots: 0, hinted: 0 },
+    grammar: { slots: 0, hinted: 0 },
+    speaking: { slots: 0, hinted: 0 },
+  };
 
   for (const [key, section] of Object.entries(store.sections)) {
     const [skill, topicId, sectionName] = key.split(':') as [SkillKey, string, string];
     if (!isGradedSection(sectionName)) continue;
+    const mic = isMicSection(skill, sectionName);
     for (const slot of Object.values(section.slots)) {
       if (!slot.n) continue;
       totalAnswered += slot.n;
+      if ((slot.t ?? 0) >= weekStart) weekAnswered += 1;
+      const ht = hintTally[skill];
+      if (ht) {
+        ht.slots += 1;
+        if (slot.h) ht.hinted += 1;
+      }
+      if (mic) {
+        if (skill === 'speaking' && typeof slot.sc === 'number') micScores.push(slot.sc);
+        continue;
+      }
+      const tally = skillTally[skill];
+      if (tally) {
+        tally.n += slot.n;
+        tally.ok += slot.n - (slot.w ?? 0);
+      }
 
       const tKey = `${skill}:${topicId}`;
       const t = topicMap.get(tKey) ?? { skill, topicId, attempts: 0, wrong: 0 };
@@ -1316,7 +1425,10 @@ export function computeInsights(
         it.wrong += slot.w ?? 0;
         itemMap.set(iKey, it);
 
-        if (skill === 'vocabulary' && slot.ok === 1) masteredVocabWords.add(slot.ir);
+        // "Dikuasai" = jawaban TERAKHIR kata itu tepat (definisi mastery:
+        // kredit ke hasil terbaru, meleset lalu diulang & tepat tetap
+        // dikuasai) — bukan "pernah tepat sekali" yang bisa menggelembung.
+        if (skill === 'vocabulary' && slot.lc === 1) masteredVocabWords.add(slot.ir);
       }
     }
   }
@@ -1350,7 +1462,45 @@ export function computeInsights(
     .sort((a, b) => b.wrongRate - a.wrongRate)
     .slice(0, limit * 2);
 
-  return { weakTopics, strongTopics, strugglingWords, totalAnswered, masteredWords: masteredVocabWords.size };
+  const pct = (t: { n: number; ok: number }): number | null => (t.n > 0 ? Math.round((t.ok / t.n) * 100) : null);
+  const skillAccuracy: Record<SkillKey, number | null> = {
+    vocabulary: pct(skillTally.vocabulary),
+    listening: pct(skillTally.listening),
+    reading: pct(skillTally.reading),
+    grammar: pct(skillTally.grammar),
+    speaking: micScores.length ? Math.round(micScores.reduce((a, b) => a + b, 0) / micScores.length) : null,
+  };
+
+  const skillAttempts: Record<SkillKey, number> = {
+    vocabulary: skillTally.vocabulary.n,
+    listening: skillTally.listening.n,
+    reading: skillTally.reading.n,
+    grammar: skillTally.grammar.n,
+    speaking: micScores.length,
+  };
+
+  const ratio = (t: { slots: number; hinted: number }): number | null => (t.slots > 0 ? Math.round((t.hinted / t.slots) * 100) : null);
+  const hintAll = Object.values(hintTally).reduce((a, t) => ({ slots: a.slots + t.slots, hinted: a.hinted + t.hinted }), { slots: 0, hinted: 0 });
+  const hintRatioBySkill: Record<SkillKey, number | null> = {
+    vocabulary: ratio(hintTally.vocabulary),
+    listening: ratio(hintTally.listening),
+    reading: ratio(hintTally.reading),
+    grammar: ratio(hintTally.grammar),
+    speaking: ratio(hintTally.speaking),
+  };
+
+  return {
+    weakTopics,
+    strongTopics,
+    strugglingWords,
+    totalAnswered,
+    masteredWords: masteredVocabWords.size,
+    skillAccuracy,
+    skillAttempts,
+    hintRatio: ratio(hintAll),
+    hintRatioBySkill,
+    weekAnswered,
+  };
 }
 
 /* ----------------------------------------------------------------- nama -- */
@@ -1511,6 +1661,7 @@ export function mergeFromServer(remote: Partial<Store> | null | undefined): void
     gameStats: local.gameStats,
     browseLevel: local.browseLevel,
     bossTests: mergeBossTests(local.bossTests, remote.bossTests),
+    activeMs: local.activeMs,
   });
 }
 

@@ -64,7 +64,8 @@
  * kecepatan cuma naik tipis (18 → 10 dtk). Paragraf di atas yang menyebut
  * `DIFFICULTY_META` = catatan historis.
  */
-import { isDevTestAccount } from '../account';
+import { journeyMapHtml, markasIntro } from '../game-ui';
+import { sfx } from '../game-audio';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
 import { playCorrectTone, playWrongTone, speak, speakLocalized, vibrateDevice } from '../speech';
@@ -92,7 +93,7 @@ function roundActionsHtml(isLast: boolean): string {
   return `
     <div class="round-actions">
       <button class="ghost-btn" type="button" data-action="tryAgainRound">🔁 Coba Lagi</button>
-      <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Lanjut ➡️'}</button>
+      <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Jalan terus ➡️'}</button>
     </div>`;
 }
 
@@ -321,6 +322,7 @@ function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficult
     if (i === q().answer) {
       busy = true;
       btn.classList.add('is-pop');
+      sfx('pop');
       btn.disabled = true;
       recordAttempt(true, GAME_KEY);
       playCorrectTone();
@@ -438,25 +440,7 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
     // 🔒 Back dari layar Map TIDAK perlu pop up konfirmasi lagi (permintaan
     // user) — lihat komentar `isGameRoundActive` `interaction.ts`.
     setGameRoundActive(false);
-    const stops = JOURNEY_NODES.map((node, i) => {
-      const cleared = visited.has(i);
-      // Akun tes dev ("124") lihat SEMUA markas terbuka — lihat account.ts isDevTestAccount().
-      const unlocked = isDevTestAccount() || i === 0 || visited.has(i - 1);
-      const stateClass = cleared ? 'is-cleared' : unlocked ? 'is-open' : 'is-locked';
-      // 🔒 Badge kunci/centang (ikon) DIGANTI persentase — pola SAMA PERSIS
-      // `games/wordmatch.ts` `renderMap()` (permintaan user "tambahkan
-      // percentage di setiap card"), lihat komentar lengkap di sana.
-      const pct = cleared ? 100 : 0;
-      const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
-      const meta = TIER_CONFIG[node.difficulty];
-      return `
-      <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--sun-500)">
-        ${badge}
-        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${node.emoji}</span></span>
-        <h3>${node.place}</h3>
-        <span class="tag diff-${node.difficulty}">${meta.label}</span>
-      </button>`;
-    }).join('');
+    const stops = journeyMapHtml('balon', JOURNEY_NODES.map((n) => ({ name: n.place, emoji: n.emoji, difficulty: n.difficulty, label: TIER_CONFIG[n.difficulty].label })), visited);
 
     // 🔒 `current` = markas berikutnya yang belum ditaklukkan (posisi anak
     // sekarang), permintaan user "beri pembeda di progress yang sedang
@@ -476,7 +460,7 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
           <h2>Taklukkan markas satu per satu, ya!</h2>
           <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${visited.size} dari ${total}</span></div>
         </div>
-        <div class="raja-grid">${stops}</div>
+        ${stops}
         ${gameHowToHtml([
           'Baca/dengar kata yang diminta',
           'Tap balon yang jawabannya cocok (tiap markas 10 kata)',
@@ -489,6 +473,7 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
 
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
+    markasIntro(JOURNEY_NODES[idx].emoji, JOURNEY_NODES[idx].place);
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runBalloonPopRound(
@@ -506,6 +491,7 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
 
   function renderMissionComplete(): void {
     setGameRoundActive(false); // layar selesai, tidak ada progres yang bisa hilang
+    sfx('mission');
     container.innerHTML = `
       <div class="done-wrap win">
         <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">🎈</span><span class="crown">🏆</span></div>

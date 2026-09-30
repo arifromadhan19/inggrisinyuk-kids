@@ -251,6 +251,7 @@ body.is-boss-play .tabbar{ display:none; }
 .raja-map-wrap{ position:relative; }
 .raja-map-wrap > .game-progress-card,
 .raja-map-wrap > .raja-grid,
+.raja-map-wrap > .journey-map,
 .raja-map-wrap > .game-howto-title,
 .raja-map-wrap > .game-howto-card{ position:relative; z-index:1; }
 .game-star-field{
@@ -3301,3 +3302,193 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .opt-btn.kl-basket{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; min-width:0; min-height:112px; padding:14px 8px; }
 .kl-basket-icon{ font-size:clamp(34px, 9vw, 46px); line-height:1; }
 .kl-basket-label{ font-family:var(--font-head); font-weight:800; font-size:clamp(.9375rem, 3.6vw, 1.0625rem); overflow-wrap:anywhere; text-align:center; }
+
+/* ======================================================================
+   Suasana game — Fase 2 (`materi/suasana_game.md`, src/game-ui.ts)
+   ====================================================================== */
+
+/* Tombol musik di header game — berlabel jelas (bukan ikon 🔇 saja), ≥44px. */
+.act-head #musicToggleMount{ margin-left:auto; flex:none; }
+.music-toggle{
+  min-height:44px; padding:8px 14px; border-radius:var(--r-pill); border:2px solid var(--line);
+  background:var(--surface); color:var(--ink-2); font-family:var(--font-head); font-weight:800; font-size:.875rem; cursor:pointer;
+}
+.music-toggle.is-on{ border-color:var(--k, var(--brand-500)); color:var(--ink); background:color-mix(in srgb, var(--k, var(--brand-500)) 12%, var(--surface)); }
+.audio-toggles{ display:flex; flex-wrap:wrap; gap:10px; }
+@media (max-width:420px){ .act-head .music-toggle{ padding:8px 10px; font-size:.75rem; } }
+
+/* Latar dunia per game — pastel supaya teks & kartu tetap mudah dibaca;
+   dekorasi emoji tipis di bawah (pseudo-element, tidak bisa diketuk). */
+.raja-stage{ position:relative; overflow:hidden; }
+.raja-stage > *{ position:relative; z-index:1; }
+.raja-stage::after{
+  content:var(--world-deco, ''); position:absolute; left:0; right:0; bottom:-6px; z-index:0;
+  font-size:clamp(28px, 8vw, 44px); letter-spacing:.35em; text-align:center; white-space:nowrap; opacity:.22; pointer-events:none;
+}
+.raja-stage.world-kata{ background:linear-gradient(180deg,#FFF7E0 0%,#FDEFD2 60%,#F3E4C4 100%); --world-deco:'🏰 🌳 🏡 🌳 🏰'; }
+.raja-stage.world-balon{ background:linear-gradient(180deg,#DDF2FF 0%,#EEF8FF 55%,#E6F7E4 100%); --world-deco:'☁️ 🎈 ☁️ 🎈 ☁️'; }
+.raja-stage.world-susun{ background:linear-gradient(180deg,#F1ECFF 0%,#F8F5FF 60%,#EAE3FA 100%); --world-deco:'🧩 ✨ 🧩 ✨ 🧩'; }
+.raja-stage.world-kelompok{ background:linear-gradient(180deg,#FFF1E6 0%,#FFF8F1 60%,#FBE8D6 100%); --world-deco:'🧺 🏪 🧺 🏪 🧺'; }
+.raja-stage.world-ingatan{ background:linear-gradient(180deg,#EAF0FF 0%,#F4F7FF 60%,#E3E9FA 100%); --world-deco:'🕯️ 📖 🗝️ 📖 🕯️'; }
+.raja-stage.world-soundhunt{ background:linear-gradient(180deg,#E3F6EA 0%,#F2FBF4 55%,#DCEFD9 100%); --world-deco:'🌲 🍄 🌳 🍄 🌲'; }
+.raja-stage.world-storyquest{ background:linear-gradient(180deg,#FFF4EC 0%,#FFFAF5 60%,#F6E7D9 100%); --world-deco:'📚 🕯️ 📖 🕯️ 📚'; }
+
+/* Peta petualangan ber-ilustrasi (src/game-ui.ts `journeyMapHtml`, referensi
+   user: peta hijau + sungai + jembatan + lencana bintang). Ilustrasi = 1 SVG
+   (`.jm-scene`), markas = tombol absolut di atasnya (posisi % dari kanvas
+   yang sama, jadi selalu pas di lebar berapa pun). */
+.journey-map{
+  position:relative; margin:var(--s4) auto var(--s2); width:100%; max-width:480px;
+  border-radius:24px; overflow:hidden; border:4px solid #fff; box-shadow:0 10px 26px rgba(15,46,56,.16);
+}
+.jm-scene{ position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none; }
+/* Tombol = lencana saja (titik tengahnya tepat di jalan); label menempel
+   absolut di samping, jadi posisi lencana tidak bergeser oleh panjang label. */
+.journey-node{
+  --jb:clamp(58px, 17vw, 72px);
+  position:absolute; z-index:1; left:var(--x); top:var(--y); transform:translate(-50%,-50%);
+  width:var(--jb); height:var(--jb); display:block; padding:0; border:0; background:none; cursor:pointer; color:var(--ink);
+}
+.journey-node:disabled{ cursor:default; }
+.jn-badge{
+  position:relative; width:100%; height:100%; border-radius:22px; display:grid; place-items:center;
+  background:linear-gradient(180deg,#FF7A6B,#E8453C); border:4px solid #fff;
+  box-shadow:0 6px 0 #B92F28, 0 10px 18px rgba(15,46,56,.25);
+  transition:transform .15s ease;
+}
+.jn-emoji{ font-size:clamp(28px, 8vw, 36px); line-height:1; filter:drop-shadow(0 2px 0 rgba(0,0,0,.15)); }
+.journey-node:not(:disabled):active .jn-badge{ transform:translateY(4px); box-shadow:0 2px 0 #B92F28, 0 6px 12px rgba(15,46,56,.25); }
+.journey-node.is-cleared .jn-badge{ background:linear-gradient(180deg,#FFD85A,#F5B521); box-shadow:0 6px 0 #C98A0E, 0 10px 18px rgba(15,46,56,.25); }
+.journey-node.is-locked .jn-badge{ background:linear-gradient(180deg,#C9CFD4,#A5ADB4); box-shadow:0 6px 0 #7E868D, 0 10px 18px rgba(15,46,56,.2); }
+.journey-node.is-locked .jn-emoji{ opacity:.45; filter:grayscale(1); }
+.jn-lock{ position:absolute; font-size:22px; }
+.jn-num{
+  position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); min-width:24px; height:24px; padding:0 6px; border-radius:12px;
+  background:#fff; color:var(--ink); font-family:var(--font-head); font-weight:800; font-size:.8125rem; display:grid; place-items:center; box-shadow:var(--sh-1);
+}
+.jn-stars{ position:absolute; top:-17px; left:50%; transform:translateX(-50%); white-space:nowrap; font-size:15px; letter-spacing:-1px; }
+.jn-stars i{ font-style:normal; color:#fff; opacity:.9; text-shadow:0 1px 2px rgba(0,0,0,.35); font-size:16px; }
+.jn-here{ position:absolute; top:-48px; left:50%; margin-left:-.5em; font-size:26px; animation:jnBob 1.2s ease-in-out infinite; z-index:2; }
+.jn-label{
+  position:absolute; top:50%; left:calc(100% + 10px); transform:translateY(-50%);
+  display:flex; flex-direction:column; align-items:flex-start; gap:4px; text-align:left; width:max-content;
+  background:rgba(255,255,255,.94); border-radius:14px; padding:6px 10px; box-shadow:0 3px 8px rgba(15,46,56,.15);
+  max-width:clamp(118px, 34vw, 160px);
+}
+.journey-node.is-right .jn-label{ left:auto; right:calc(100% + 10px); align-items:flex-end; text-align:right; }
+.jn-label b{ font-family:var(--font-head); font-size:.8125rem; line-height:1.2; }
+.journey-node.is-current .jn-badge{ animation:jnPulse 1.8s ease-in-out infinite; }
+.journey-node.just-cleared .jn-badge{ animation:jnStamp .7s ease-out; }
+.journey-node.just-opened .jn-badge{ animation:jnPop .6s ease-out .5s both; }
+@keyframes jnPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.08); } }
+@keyframes jnBob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+@keyframes jnStamp{ 0%{ transform:scale(1.5) rotate(-12deg); } 60%{ transform:scale(.92); } 100%{ transform:scale(1); } }
+@keyframes jnPop{ 0%{ transform:scale(.6); opacity:.3; } 70%{ transform:scale(1.12); opacity:1; } 100%{ transform:scale(1); } }
+
+/* Jejak progres di dalam markas — bullet bernomor diganti langkah bergambar
+   (⭐ sudah lewat, 👣 posisi sekarang), disambung garis seperti jalan. */
+.raja-stage .quiz-nav .quiz-dots{ gap:6px; background:linear-gradient(var(--line),var(--line)) center/100% 3px no-repeat; }
+.raja-stage .quiz-dot.static{ width:22px; height:22px; font-size:0; }
+.raja-stage .quiz-dot.static.done::after{ content:'⭐'; font-size:13px; }
+.raja-stage .quiz-dot.static.current:not(.done)::after{ content:'👣'; font-size:12px; }
+.raja-stage .quiz-dot.static.done{ background:#FFF4C8; box-shadow:inset 0 0 0 1.5px #F5C542; }
+
+/* Kalimat pemandu markas tampil sbg balon bicara. */
+.raja-stage .latihan-head + .meta{
+  position:relative; background:#fff; border-radius:16px; padding:10px 14px; box-shadow:var(--sh-1); color:var(--ink-2);
+}
+
+/* Tekan tombol di area main = sedikit mengecil (umpan balik sentuhan). */
+/* Cuma tombol/kartu biasa — BUKAN tombol yang posisinya pakai transform
+   (markas peta, balon): scale di sini menimpa translate-nya → tombol
+   melompat saat ditekan & ketukan meleset. */
+.raja-stage :is(.opt-btn, .ghost-btn, .primary-btn, .mm-card, .wm-card, .kl-basket):not(:disabled):active{ transform:scale(.97); }
+
+/* Pengumuman masuk markas (±1,2 dtk, tidak menghalangi ketukan). */
+.markas-intro{
+  position:fixed; left:50%; top:38%; z-index:60; transform:translate(-50%,-50%);
+  display:flex; flex-direction:column; align-items:center; gap:6px; pointer-events:none;
+  padding:18px 26px; border-radius:24px; background:rgba(255,255,255,.95); box-shadow:0 16px 40px rgba(15,46,56,.22);
+  animation:miShow 1.35s ease forwards;
+}
+.mi-emoji{ font-size:56px; line-height:1; }
+.mi-name{ font-family:var(--font-head); font-weight:800; font-size:1.25rem; color:var(--ink); }
+@keyframes miShow{ 0%{ opacity:0; transform:translate(-50%,-40%) scale(.8); } 18%{ opacity:1; transform:translate(-50%,-50%) scale(1); } 75%{ opacity:1; } 100%{ opacity:0; transform:translate(-50%,-60%) scale(.95); } }
+
+@media (prefers-reduced-motion: reduce){
+  .journey-node.is-current .jn-badge, .jn-here, .journey-node.just-cleared .jn-badge, .journey-node.just-opened .jn-badge{ animation:none; }
+  .markas-intro{ animation:miShowStill 1.35s linear forwards; }
+}
+@keyframes miShowStill{ 0%,85%{ opacity:1; } 100%{ opacity:0; } }
+
+/* Kartu "Hari Ini" Beranda (app.ts buildTodayCard) — strip 7 hari aktif di
+   bawah tombol, versi mini `.day-chip` utk latar gelap `.spark`. */
+.today-week{ display:flex; gap:5px; margin-top:12px; flex-wrap:wrap; }
+.today-dot{
+  width:26px; height:26px; border-radius:50%; display:grid; place-items:center;
+  font-size:10px; font-weight:800; color:rgba(255,255,255,.75);
+  background:rgba(255,255,255,.14); border:1.5px solid transparent;
+}
+.today-dot.is-active{ background:var(--sun-400); color:var(--brand-900); }
+.today-dot.is-today{ border-color:#fff; }
+
+/* Rapor: tombol "Detail Rapor" sejajar judul Progresmu + layar Detail Rapor */
+.progress-panel-head{ display:flex; align-items:center; justify-content:space-between; gap:var(--s2); }
+.progress-panel-head .eyebrow{ white-space:nowrap; }
+.progress-panel-head .ghost-btn{ display:inline-block; width:auto; flex:none; margin-top:0; padding:6px 12px; font-size:.8125rem; }
+.rule-grid{ display:grid; grid-template-columns:1fr; gap:var(--s3); }
+@media (min-width: 900px){ .rule-grid{ grid-template-columns:repeat(2, 1fr); } }
+.rule-card{ padding:var(--s4); }
+.rule-card .rule-head{ display:flex; align-items:center; gap:var(--s2); margin-bottom:var(--s2); }
+.rule-card .rule-head h3{ margin:0; font-size:1rem; }
+.rule-card p{ margin:0; }
+.rule-card .rule-how{ margin-top:var(--s2); }
+/* Rapor: bar tipis "materi tuntas" di kartu skill (bintang = kemampuan). */
+.skill-card .mini-track{ height:5px; margin-top:6px; border-radius:var(--r-pill); background:var(--muted); overflow:hidden; }
+.skill-card .mini-fill{ height:100%; border-radius:inherit; background:var(--accent); }
+.summary-card p{ margin:0; color:var(--ink-2); font-weight:700; }
+.skill-card .skill-stars-row{ display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; margin:2px 0; font-size:var(--fs-meta); font-weight:800; color:var(--ink-2); }
+.skill-card .skill-stars{ font-size:14px; letter-spacing:1px; }
+.track-note{ margin-top:var(--s3); }
+.track-note ul{ margin:var(--s2) 0 0; padding-left:1.1em; display:grid; gap:6px; }
+.track-note li{ font-size:var(--fs-meta); font-weight:700; }
+/* Rapor: Progres per Level */
+.lvl-list{ list-style:none; margin:var(--s3) 0 0; padding:0; display:grid; gap:10px; }
+.lvl-row{ display:grid; grid-template-columns:minmax(0, 11em) 1fr 3em; align-items:center; gap:var(--s2); }
+.lvl-name{ font-family:var(--font-head); font-weight:700; font-size:.875rem; color:var(--ink); }
+.lvl-cefr{ display:block; font-family:var(--font-body, inherit); font-size:.6875rem; font-weight:700; color:var(--ink-3); }
+.lvl-track{ height:10px; border-radius:var(--r-pill); background:var(--muted); overflow:hidden; }
+.lvl-fill{ display:block; height:100%; border-radius:inherit; background:var(--brand-500); }
+.lvl-row.done .lvl-fill{ background:var(--ok); }
+.lvl-pct{ text-align:right; font-weight:800; font-size:.875rem; color:var(--ink); }
+
+/* ---------------- Rapor (susunan 4 bagian, materi/rapor.md §6.3) ---------------- */
+.rapor-layout{ display:grid; gap:var(--s4); }
+.rapor-sec{ display:flex; flex-direction:column; gap:var(--s3); min-width:0; }
+.rapor-sekilas{ display:grid; gap:var(--s4); }
+.rapor-h{ font-family:var(--font-head); font-size:1.0625rem; margin:var(--s2) 0 0; color:var(--ink); }
+.rapor-summary{ margin:8px 0 0; color:var(--ink-2); font-weight:700; line-height:1.5; }
+.week-stats{ display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:10px; font-size:var(--fs-meta); font-weight:700; color:var(--ink-3); }
+.week-stats b{ font-family:var(--font-head); font-size:1rem; color:var(--ink); }
+.skill-list{ list-style:none; margin:var(--s2) 0 0; padding:0; }
+.skill-list li{ display:flex; align-items:center; gap:var(--s3); padding:10px 0; border-top:1px solid var(--line); }
+.skill-list li:first-child{ border-top:none; }
+.skill-row-ic{ width:38px; height:38px; border-radius:12px; flex:none; display:grid; place-items:center; font-size:19px; }
+.skill-row-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.skill-row-body b{ font-family:var(--font-head); font-size:.9375rem; color:var(--ink); }
+.skill-list .can-do{ display:block; font-size:.75rem; font-weight:700; color:var(--ok); }
+.skill-list .skill-stars, .stat-list .skill-stars{ flex:none; font-size:12px; letter-spacing:0; }
+.word-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.rapor-more{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh-1); }
+.rapor-more > summary{ list-style:none; cursor:pointer; display:flex; flex-direction:column; gap:2px; padding:var(--s4); font-family:var(--font-head); font-weight:700; color:var(--ink); }
+.rapor-more > summary::-webkit-details-marker{ display:none; }
+.rapor-more > summary::after{ content:'Tap untuk buka ▾'; font-family:var(--font-body, inherit); font-size:.75rem; font-weight:800; color:var(--accent); }
+.rapor-more[open] > summary::after{ content:'Tutup ▴'; }
+.rapor-more-grid{ display:grid; gap:var(--s3); padding:0 var(--s3) var(--s3); }
+.rapor-more-grid .card{ box-shadow:none; }
+@media (min-width: 900px){
+  .rapor-layout{ grid-template-columns:repeat(2, minmax(0, 1fr)); align-items:start; }
+  .rapor-sec.full{ grid-column:1 / -1; }
+  .rapor-sekilas{ grid-template-columns:repeat(2, minmax(0, 1fr)); align-items:stretch; }
+  .rapor-more-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); align-items:start; }
+}

@@ -6,6 +6,8 @@ Pasangan dokumen: [pembeda_level_game.md](pembeda_level_game.md) (isi & tingkat 
 
 Penanda: **[F]** = fakta (dari kode/sumber), **[U]** = usulan (belum dibangun).
 
+**Status:** Fase 1 (suara) & Fase 2 (tampilan) **sudah diimplementasi** 2026-09-30 — lihat §4.5. Fase 3 belum.
+
 ---
 
 ## 1. Ringkasan
@@ -132,6 +134,56 @@ Prinsip: **kemasan game + aksi game, tetap kid-friendly** (tanpa timer, nyawa, k
 | **3. Karakter & alur** | Raja pendamping 3 keadaan, misi & adegan penutup, stiker koleksi, aksi seret/buka untuk 3 game | sedang–besar | game terasa punya cerita & tujuan; paling kuat untuk motivasi jangka panjang |
 
 ---
+
+## 4.5 Implementasi Fase 1 & 2 (2026-09-30) [F]
+
+Permintaan user: *"kerjakan fase 1 dan 2"*. Pertanyaan §6 belum dijawab, jadi dipakai pilihan paling aman: **musik dibuat kode** (bukan file unduhan — tanpa lisensi & tanpa beban unduhan, bisa diganti file asli nanti), **1 tema per game**, **menyala otomatis** (bisa dimatikan).
+
+**Fase 1 — Suara** (`app/src/game-audio.ts`):
+- **Musik latar per game** (Web Audio: melodi + bass + ketukan lembut): Word Quest mars riang, Balloon Hunt melambung, Sentence Puzzle langkah berpikir, Raja Kelompok riuh pasar, Memory Hunt misteri lembut, Sound Hunt suling hutan (pentatonik), Story Quest kotak musik waltz. Di peta versi tenang (tanpa ketukan), di dalam markas versi lengkap — dipicu otomatis dari `setGameRoundActive` (`interaction.ts`).
+- **Musik mengecil otomatis** (×0,25) selama TTS bicara — dicek tiap 120 ms via `speechSynthesis.speaking`, jadi berlaku utk semua `speak*()`.
+- **Berhenti** saat pindah layar (`render()` app.ts, bareng `stopSpeaking`), dijeda saat tab disembunyikan; mulai setelah anak mengetuk kartu game (kebijakan autoplay).
+- **Efek suara**: ketuk tombol (semua tombol di area main), balon meletup, kartu dibalik, kata masuk keranjang, masuk markas, markas tuntas, semua markas tuntas. Nada benar/salah lama tetap (wajib, tidak ikut dimatikan).
+- **Kontrol**: tombol "🎵 Musik: Nyala/Mati" di header game (berlabel, ≥44px, `role="switch"`) + kartu "Musik & efek suara game" di Pengaturan (musik & efek terpisah), disimpan per perangkat.
+
+**Fase 2 — Tampilan** (`app/src/game-ui.ts` + `public/styles.css`):
+- **Peta jalan berkelok** (`journeyMapHtml`) menggantikan grid kartu di ketujuh game: markas zig-zag disambung jalan SVG, 📍 "kamu di sini" di markas berikutnya, ⭐ di markas tuntas, 🔒 di markas terkunci, jejak titik-titik sepanjang jalan yang sudah dilewati. Markas yang **baru** tuntas dapat animasi cap + jingle, markas berikutnya muncul ("pop").
+- **Latar dunia per game** (`.raja-stage.world-<key>`): gradasi pastel + deretan hiasan emoji tipis di bawah (istana, awan & balon, puzzle, pasar, lilin & kunci, hutan & jamur, buku).
+- **Jejak progres** di dalam markas: bullet bernomor 1–10 diganti langkah bergambar (⭐ sudah lewat, 👣 sekarang) yang disambung garis.
+- **Kalimat pemandu** tampil sbg balon bicara; **pengumuman masuk markas** (emoji + nama, ±1,3 dtk, tidak menghalangi ketukan) (`markasIntro`).
+- **Kata-kata**: "Lanjut ➡️" → "Jalan terus ➡️" di ketujuh game; "SKOR" Memory Hunt → ⭐.
+- **Umpan balik sentuhan**: kartu/tombol biasa mengecil sedikit saat ditekan (tidak berlaku ke markas & balon, yang posisinya memakai `transform`).
+- `prefers-reduced-motion` dihormati (animasi peta & pengumuman dimatikan).
+- **Diverifikasi live** (Playwright, 390px & 1280px): ketujuh game — peta 6 markas tampil, tombol musik & latar dunia terpasang, masuk markas memunculkan pengumuman, tanpa scroll horizontal, 0 error; tombol musik menyimpan pilihan; Raja Kelompok dimainkan penuh 6 markas (animasi markas tuntas & "Jalan terus ➡️"/"Selesai ✅" benar). **Bug ketemu & diperbaiki saat uji**: (1) garis jalan SVG menutupi tombol markas; (2) efek "mengecil saat ditekan" menimpa posisi markas & balon sehingga ketukan meleset.
+
+**Belum (Fase 3)**: Raja pendamping yang bereaksi, misi besar per game & adegan penutup, stiker koleksi, aksi seret/buka. Musik masih buatan kode — kualitas bisa naik dengan file musik asli (Pixabay/Kenney) tanpa mengubah pemanggil.
+
+## 4.5b Peta Ber-ilustrasi (2026-09-30) [F]
+
+Permintaan user (3 gambar referensi: peta pulau harta karun, peta perkamen, peta jalan hijau berbintang) *"apakah petanya bisa didesain lebih bagus... lebih menarik dan kids friendly"*. Dipakai gaya referensi ke-3 (paling ramah anak); dari referensi pulau harta karun hanya gaya jalan & pulaunya — **tengkorak, bajak laut, pedang TIDAK diambil** (filter kid-friendly).
+
+- Peta = 1 ilustrasi SVG buatan kode (`mapSceneSvg`, `game-ui.ts`): padang bergradasi + petak rumput terang, **sungai + jembatan kayu** (jembatan mengikuti arah jalan), **jalan tanah bertepi** dengan titik-titik putih, hiasan emoji per dunia (pohon, bunga, batu, rumah, jamur, awan, dll. — tanpa makhluk hidup), papan kayu **"MULAI"**, penanda finish (🏰/🎪/🎭/⭐).
+- Warna & hiasan beda per game (`WORLDS`): hijau istana (Word Quest), langit & balon (Balloon Hunt), taman bunga (Sentence Puzzle), sawah & pasar (Raja Kelompok), hutan redup (Memory Hunt), hutan pinus & jamur (Sound Hunt), padang buku (Story Quest).
+- Markas = **lencana kotak membulat** tebal (merah = terbuka, emas + ⭐⭐⭐ = tuntas, abu-abu + 🔒 = terkunci), nomor markas di bawah, bintang di atas, label nama + tingkat di samping; 📍 di markas berikutnya; jejak titik emas di jalan yang sudah dilewati.
+- Lencana selalu tepat di atas jalan (label menempel absolut, tidak menggeser lencana); kanvas diskalakan ke lebar layar (maks 480px di desktop). Tanpa file gambar tambahan.
+- Diverifikasi live (390px & 1280px): ketujuh peta tampil, markas bisa diketuk, markas tuntas berubah emas + bintang, tanpa scroll horizontal, 0 error.
+
+## 4.6 Musik Asli dari Pixabay (2026-09-30) [F]
+
+Permintaan user: *"gunakan musik ini ... 3 musik tadi di assign ke 7 game"* — musik buatan kode diganti 3 lagu Pixabay (musik buatan kode tetap jadi cadangan kalau file gagal dimuat).
+
+| Lagu | Pembuat | File | Dipakai di |
+|---|---|---|---|
+| [Adventure Game Loop – Fun and Uplifting](https://pixabay.com/music/upbeat-adventure-game-loop-fun-and-uplifting-background-music-247664/) | Cyberwave-Orchestra | `app/public/audio/adventure-game-loop.mp3` (1,7 menit) | Word Quest, Sound Hunt, Story Quest |
+| [Happy Kids Loop – Ready To Play](https://pixabay.com/music/upbeat-happy-kids-loop-ready-to-play-275784/) | Sonican | `app/public/audio/happy-kids-loop.mp3` (1,8 menit) | Balloon Hunt, Raja Kelompok |
+| [Upbeat Background Loop – Casual Video Game Music](https://pixabay.com/music/happy-childrens-tunes-upbeat-background-loop-casual-video-game-music-249200/) | Cyberwave-Orchestra | `app/public/audio/upbeat-background-loop.mp3` (38 dtk) | Sentence Puzzle, Memory Hunt |
+
+- **Lisensi**: Pixabay Content License — boleh dipakai komersial tanpa atribusi, **tidak boleh** dibagikan/dijual sebagai file musik lepas (dipakai di dalam app = boleh). Diunduh 2026-09-30 dari halaman di atas.
+- **Pembagian tetap per game** (tiap game selalu lagu yang sama, `GAME_TRACK` di `game-audio.ts`).
+- **Dikompres** dari 256 → 96 kbps (total ±8 MB → ±3 MB) supaya ringan di HP & VPS; dimuat hanya saat game dibuka, di-cache per sesi.
+- **Loop mulus**: diputar lewat Web Audio (`AudioBufferSourceNode`, bukan `<audio loop>`), jeda hening di awal/akhir MP3 dipangkas otomatis.
+- Volume file ×0,32, peta ×0,75 dari itu, dan tetap **mengecil ke ×0,25 saat TTS bicara**.
+- Diverifikasi: ketiga file tersaji 200 dari server dev, ketujuh game memuat lagu sesuai pembagian, 0 error dari app (satu-satunya error console = API akun `127.0.0.1:3000` yang memang tidak jalan di lokal). Kualitas & volume belum didengar langsung — perlu dicoba di HP.
 
 ## 5. Risiko & Hal yang Perlu Dijaga
 

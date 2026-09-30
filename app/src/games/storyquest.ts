@@ -74,8 +74,9 @@
  * progress.ts/localStorage lintas sesi (di luar scope MVP). `onDone()`
  * tetap menambah XP via app.ts sama seperti raja lain.
  */
+import { journeyMapHtml, markasIntro } from '../game-ui';
+import { sfx } from '../game-audio';
 import { readingPicHtml as picHtml } from '../reading-pic';
-import { isDevTestAccount } from '../account';
 import { setGameRoundActive, setHandlers } from '../interaction';
 import { recordAttempt } from '../progress';
 import { speak, playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
@@ -125,7 +126,7 @@ function roundActionsHtml(isLast: boolean): string {
   return `
     <div class="round-actions">
       <button class="ghost-btn" type="button" data-action="tryAgainRound">🔁 Coba Lagi</button>
-      <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Lanjut ➡️'}</button>
+      <button class="primary-btn" type="button" data-action="nextRound" style="margin-top:0">${isLast ? 'Selesai ✅' : 'Jalan terus ➡️'}</button>
     </div>`;
 }
 
@@ -303,22 +304,7 @@ export function runStoryQuest(container: HTMLElement, onDone: OnDone, level: Lev
     // 🔒 Back dari layar Map TIDAK perlu pop up konfirmasi lagi (permintaan
     // user) — lihat komentar `isGameRoundActive` `interaction.ts`.
     setGameRoundActive(false);
-    const stops = STORY_BOOKS.map((book, i) => {
-      const cleared = visited.has(i);
-      // Akun tes dev ("124") lihat SEMUA markas terbuka — lihat account.ts isDevTestAccount().
-      const unlocked = isDevTestAccount() || i === 0 || visited.has(i - 1);
-      const stateClass = cleared ? 'is-cleared' : unlocked ? 'is-open' : 'is-locked';
-      const pct = cleared ? 100 : 0;
-      const badge = `<span class="skill-pct${pct >= 100 ? ' done' : ''}">${pct}%</span>`;
-      const meta = TIER_CONFIG[book.difficulty];
-      return `
-      <button class="raja-card terrain-card ${stateClass}" type="button" data-action="enterNode" data-payload="${i}" ${unlocked ? '' : 'disabled aria-disabled="true"'} style="--band-deep:var(--brand-500)">
-        ${badge}
-        <span class="raja-card-icon" aria-hidden="true"><span class="mascot-idle" style="font-size:clamp(52px,14vw,68px);animation-delay:${(i * 0.15).toFixed(2)}s">${book.coverEmoji}</span></span>
-        <h3>${book.title}</h3>
-        <span class="tag diff-${book.difficulty}">${meta.label}</span>
-      </button>`;
-    }).join('');
+    const stops = journeyMapHtml('storyquest', STORY_BOOKS.map((n) => ({ name: n.title, emoji: n.coverEmoji, difficulty: n.difficulty, label: TIER_CONFIG[n.difficulty].label })), visited);
 
     // 🔒 `current` = markas berikutnya yang belum ditaklukkan (posisi anak
     // sekarang), permintaan user "beri pembeda di progress yang sedang
@@ -338,7 +324,7 @@ export function runStoryQuest(container: HTMLElement, onDone: OnDone, level: Lev
           <h2>Taklukkan markas satu per satu, ya!</h2>
           <div class="game-progress-dots">${dots}<span class="game-progress-label">Selesai ${visited.size} dari ${total}</span></div>
         </div>
-        <div class="raja-grid">${stops}</div>
+        ${stops}
         ${gameHowToHtml([
           'Baca tiap halaman cerita pelan-pelan',
           'Jawab pertanyaan di bawahnya (tiap markas 5 halaman)',
@@ -351,6 +337,7 @@ export function runStoryQuest(container: HTMLElement, onDone: OnDone, level: Lev
 
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
+    markasIntro(STORY_BOOKS[idx].coverEmoji, STORY_BOOKS[idx].title);
     const book = STORY_BOOKS[idx];
     const isLast = idx === total - 1;
     runStoryBookRound(
@@ -368,6 +355,7 @@ export function runStoryQuest(container: HTMLElement, onDone: OnDone, level: Lev
 
   function renderMissionComplete(): void {
     setGameRoundActive(false); // layar selesai, tidak ada progres yang bisa hilang
+    sfx('mission');
     container.innerHTML = `
       <div class="done-wrap win">
         <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">📖</span><span class="crown">✨</span></div>

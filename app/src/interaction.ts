@@ -1,4 +1,5 @@
 import type { ActionMap } from './types';
+import { setGameMusicMode } from './game-audio';
 
 /**
  * Klik di seluruh app didelegasikan ke satu listener (dipasang sekali di #root),
@@ -39,6 +40,8 @@ let gameMapReturn: (() => void) | null = null;
 export function setGameRoundActive(active: boolean, backToMap?: () => void): void {
   gameRoundActive = active;
   gameMapReturn = active ? backToMap ?? null : null;
+  // Musik latar: versi tenang di Map/selesai, versi lengkap di dalam markas.
+  setGameMusicMode(active ? 'play' : 'map');
 }
 
 export function isGameRoundActive(): boolean {

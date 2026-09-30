@@ -1757,7 +1757,7 @@ export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatt
           fb.textContent = pickEncourage(level);
           fb.className = 'feedback bad';
         }
-        markSlotAnswered('grammar', topic.id, 'latihan', round, correct, { itemRef: form.en });
+        markSlotAnswered('grammar', topic.id, 'latihan', round, correct, { hint: revealed, itemRef: form.en });
         recordEvent({
           kind: 'answer',
           skill: 'grammar',
@@ -1923,7 +1923,7 @@ function runTantanganPatternMain(container: HTMLElement, topic: GrammarPatternTo
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';
       }
-      markSlotAnswered('grammar', topic.id, 'tantangan-pola', round, correct, { itemRef: target.en });
+      markSlotAnswered('grammar', topic.id, 'tantangan-pola', round, correct, { hint: revealed, itemRef: target.en });
       recordEvent({
         kind: 'answer',
         skill: 'grammar',

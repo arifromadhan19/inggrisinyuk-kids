@@ -746,6 +746,7 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
         petunjuk: () => {
           if (revealed) return;
           revealed = true;
+          markSlotHint('speaking', topic.id, SECTION_LATIHAN, round);
           speak(target.line.en);
           paint();
         },

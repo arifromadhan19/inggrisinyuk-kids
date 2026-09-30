@@ -821,7 +821,7 @@ let audioCtx: AudioContext | null = null;
  *  dibuat baru cuma kalau belum ada/gagal, dan di-resume kalau browser
  *  men-suspend-nya (kebijakan autoplay — aman di sini karena selalu
  *  dipanggil dari dalam handler tap anak, bukan otomatis). */
-function getAudioCtx(): AudioContext | null {
+export function getAudioCtx(): AudioContext | null {
   try {
     if (!audioCtx) {
       const Ctor = window.AudioContext ?? window.webkitAudioContext;
