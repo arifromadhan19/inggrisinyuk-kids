@@ -344,7 +344,7 @@ export function runKelompok(container: HTMLElement, onDone: OnDone, level: Level
       <div class="done-wrap win">
         <div class="sunburst lg mascot-pop" aria-hidden="true"><span class="face">🧺</span><span class="crown">🏆</span></div>
         <h2 class="win-banner">Semua Keranjang Rapi!</h2>
-        <p class="done-sub">Kamu berhasil menjelajahi seluruh Kerajaan Kelompok & mengelompokkan semua katanya!</p>
+        <p class="done-sub">Kamu berhasil menjelajahi seluruh Kerajaan Keranjang & memasukkan semua kata ke keranjangnya!</p>
         <button class="primary-btn" type="button" data-action="finish">Selesai ✅</button>
       </div>`;
     setHandlers({ finish: () => onDone() });
