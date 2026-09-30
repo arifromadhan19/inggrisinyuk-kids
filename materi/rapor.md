@@ -2,7 +2,7 @@
 
 Permintaan user (2026-09-30): audit halaman Rapor (UI, nilai yang ditampilkan, formula), riset ke Cambridge, LIA, EF, dan lembaga/aplikasi lain, lalu sesuaikan ke app ini. Termasuk 2 screenshot Rapor kompetitor sebagai referensi.
 
-Status: **§4 sudah diimplementasikan 2026-09-30.** §5 = daftar rekomendasi awal. **§6 = analisis ulang & rekomendasi akhir** (menggantikan urutan prioritas §5). **Fase 1 (§6.5), Fase 2 (§6.6) & Fase 3 (§6.7) selesai 2026-09-30**, kecuali email laporan mingguan (menunggu keputusan penyedia email).
+Status: **§4 sudah diimplementasikan 2026-09-30.** §5 = daftar rekomendasi awal. **§6 = analisis ulang & rekomendasi akhir** (menggantikan urutan prioritas §5). **Fase 1 (§6.5), Fase 2 (§6.6) & Fase 3 (§6.7) selesai 2026-09-30.** Email laporan mingguan **dibatalkan** (keputusan user 2026-09-30: semua laporan cukup di dalam aplikasi).
 
 Kode terkait: `app/src/app.ts` (`renderRapor`, `renderRaporDetail`, `buildProgressPanel`, `startActiveTimer`), `app/src/progress.ts` (`computeInsights`, `getActiveDaysInLast`, `getWeekMinutes`, `getAvgDailyMinutes`).
 
@@ -146,7 +146,7 @@ Yang sudah benar dan dipertahankan:
    - Tambahkan juga penanda "Siap Tantangan Raja" kalau 4 skill objektif ≥ 4 bintang (aturan kesiapan Cambridge).
 4. **Laporan mingguan** (Lingokids, Khan Academy Kids).
    - Kartu "Minggu Ini": menit belajar, soal dijawab, kata baru dikuasai, materi yang naik/turun dibanding minggu lalu.
-   - Kirim ke email orang tua kalau nanti ada layanan email di `portal/`.
+   - ~~Kirim ke email orang tua~~ — dibatalkan user, laporan hanya di dalam aplikasi (§6.7).
 5. **Grafik tren 4 minggu** (Kumon progress chart).
    - Ketepatan & menit per minggu, supaya orang tua melihat arah, bukan satu angka saja.
    - Butuh data per minggu tersimpan; event log `LearningEvent` di server sudah punya `localDay`.
@@ -322,7 +322,24 @@ Diuji:
 - Rapor live di HP (390px) & desktop (1280px), 0 error.
 - **Belum diuji:** alur login → sync → buka di perangkat kedua lewat HTTP asli (butuh sesi login portal). Disarankan dicoba di staging.
 
-**Belum dikerjakan: email laporan mingguan ke orang tua.** `portal/` belum punya layanan email. Butuh keputusan: penyedia (mis. SMTP sendiri, Resend, Mailgun), biaya, alamat pengirim, dan persetujuan orang tua (opt-in). Setelah itu, isi email = ringkasan yang sama dengan kartu Ringkasan + Minggu Ini + Tren, dikirim terjadwal (cron di VPS).
+**🔒 Email laporan mingguan TIDAK dibuat** (keputusan user 2026-09-30): semua laporan hanya di dalam aplikasi (Rapor). Jangan tambahkan email/notifikasi laporan ke luar aplikasi tanpa arahan baru. Pengganti laporan mingguan = strip Minggu Ini + kartu Tren 4 Minggu.
+
+### 6.8 Hasil Game (Opsi B, 2026-09-30)
+
+Permintaan user: "untuk game apakah masuk rapor? maksudnya hasil game". Sebelumnya hasil game cuma 1 kartu di Rincian (dilipat), hanya total per game, Petunjuk game tidak tercatat, dan menit Minggu Ini diam-diam termasuk game. User memilih Opsi B (rapikan tanpa mengubah rumus nilai skill).
+
+1. **Bagian baru "🎮 Hasil Game"** di area utama (setelah Yang Perlu Dilakukan, sebelum Rincian). Susunan Rapor jadi 5 bagian.
+   - Per game: tepat/total, 💡 jumlah soal yang Petunjuknya dibuka, dan "paling sulit: markas X (y%)" (ketepatan terendah, minimal 3 jawaban, minimal 2 markas).
+   - Tap game → rincian tiap markas (bintang, tepat/total, 💡).
+   - Game yang belum dimainkan digabung 1 kalimat. Catatan: nilai game terpisah dari nilai skill.
+2. **Pencatatan per markas** (`Store.gameMarkas`): tiap game memanggil `setGameMarkas(GAME_KEY, idx, nama, emoji)` saat masuk markas; `recordAttempt(…, GAME_KEY)` otomatis menambah angka markas itu. Petunjuk game dicatat `markGameHint(GAME_KEY)` (sekali per soal). Terpasang di 7 game.
+3. **Ikut akun:** migrasi `20260930100000_add_game_markas` (kolom `game_markas` JSONB), digabung per markas (total terbesar menang, petunjuk terbesar) di server & app.
+4. **Minggu Ini:** "menit (termasuk game)" & "soal belajar" supaya jelas.
+5. Nilai game tetap TIDAK masuk bintang skill, ketepatan 🎯, ringkasan, Misi/Kekuatan, dan tren.
+
+Data lama: total per game (`gameStats`) sudah ada sejak dulu; rincian per markas & Petunjuk baru tercatat mulai sekarang, jadi jumlah markas bisa lebih kecil dari total.
+
+Diuji: Sound Hunt & Story Quest dimainkan live (masuk markas, buka Petunjuk, menjawab) → tercatat per markas dengan nama markasnya; Rapor Hasil Game di HP 390px & desktop 1280px; 0 error. Deploy: `npx prisma migrate deploy` di `portal/`.
 
 ---
 

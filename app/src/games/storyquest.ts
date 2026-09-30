@@ -78,7 +78,7 @@ import { journeyMapHtml, markasIntro } from '../game-ui';
 import { sfx } from '../game-audio';
 import { readingPicHtml as picHtml } from '../reading-pic';
 import { setGameRoundActive, setHandlers } from '../interaction';
-import { recordAttempt } from '../progress';
+import { markGameHint, recordAttempt, setGameMarkas } from '../progress';
 import { speak, playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -235,6 +235,7 @@ function runStoryBookRound(container: HTMLElement, book: StoryBook, onDone: OnDo
         hint: () => {
           if (hintUsed) return;
           hintUsed = true;
+          markGameHint(GAME_KEY);
           if (cfg.eliminate) {
             const untried = page.options.map((_, i) => i).filter((i) => i !== page.answer && !wrong.has(i));
             shuffle(untried)
@@ -338,6 +339,7 @@ export function runStoryQuest(container: HTMLElement, onDone: OnDone, level: Lev
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     markasIntro(STORY_BOOKS[idx].coverEmoji, STORY_BOOKS[idx].title);
+    setGameMarkas(GAME_KEY, idx, STORY_BOOKS[idx].title, STORY_BOOKS[idx].coverEmoji);
     const book = STORY_BOOKS[idx];
     const isLast = idx === total - 1;
     runStoryBookRound(

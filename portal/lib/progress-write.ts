@@ -54,6 +54,7 @@ export interface StoreInput {
   dailyAnswers?: unknown;
   gameStats?: unknown;
   gameXp?: unknown;
+  gameMarkas?: unknown;
 }
 
 export interface LearningEventInput {
@@ -149,6 +150,50 @@ function lastDays<T>(m: Record<string, T>, keep = 60): Record<string, T> {
   return Object.fromEntries(keys.map((k) => [k, m[k]]));
 }
 
+type MarkasStat = { c: number; t: number; h: number; name: string; emoji: string };
+type MarkasMap = Record<string, Record<string, MarkasStat>>;
+
+/** `gameMarkas` valid saja: {game: {index: {c ≤ t, h, name, emoji}}}. */
+function cleanGameMarkas(v: unknown): MarkasMap {
+  const out: MarkasMap = {};
+  if (!isObj(v)) return out;
+  for (const [game, markas] of Object.entries(v)) {
+    if (!isObj(markas) || game.length > 40) continue;
+    for (const [idx, raw] of Object.entries(markas)) {
+      if (!/^\d{1,3}$/.test(idx) || !isObj(raw)) continue;
+      const c = nonNeg(raw.c);
+      const t = nonNeg(raw.t);
+      const h = nonNeg(raw.h) ?? 0;
+      if (c === null || t === null || c > t) continue;
+      (out[game] ??= {})[idx] = {
+        c,
+        t,
+        h,
+        name: typeof raw.name === 'string' ? raw.name.slice(0, 60) : '',
+        emoji: typeof raw.emoji === 'string' ? raw.emoji.slice(0, 16) : '',
+      };
+    }
+  }
+  return out;
+}
+
+/** Gabung per markas: tepat/total dari sisi yang totalnya lebih besar, petunjuk terbesar. */
+function mergeGameMarkas(x: MarkasMap, y: MarkasMap): MarkasMap {
+  const out: MarkasMap = {};
+  for (const game of new Set([...Object.keys(x), ...Object.keys(y)])) {
+    const a = x[game] ?? {};
+    const b = y[game] ?? {};
+    out[game] = {};
+    for (const idx of new Set([...Object.keys(a), ...Object.keys(b)])) {
+      const l = a[idx];
+      const r = b[idx];
+      const base = !l ? r : !r ? l : r.t > l.t ? r : l;
+      out[game][idx] = { ...base, h: Math.max(l?.h ?? 0, r?.h ?? 0), name: l?.name || r?.name || '', emoji: l?.emoji || r?.emoji || '' };
+    }
+  }
+  return out;
+}
+
 const pairsToJson = (m: PairMap, xKey: string, yKey: string) =>
   Object.fromEntries(Object.entries(m).map(([k, v]) => [k, { [xKey]: v.a, [yKey]: v.b }]));
 
@@ -164,7 +209,7 @@ export async function upsertStoreSnapshot(childId: string, level: string | null,
     // saling menghapus catatan menit/jawaban harian satu sama lain.
     const prev = await tx.childProgressState.findUnique({
       where: { childId },
-      select: { activeMs: true, dailyAnswers: true, gameStats: true, gameXp: true },
+      select: { activeMs: true, dailyAnswers: true, gameStats: true, gameXp: true, gameMarkas: true },
     });
     const activeMs = lastDays(maxNumMap(cleanNumMap(prev?.activeMs, true), cleanNumMap(data.activeMs, true)));
     const dailyAnswers = lastDays(
@@ -176,6 +221,7 @@ export async function upsertStoreSnapshot(childId: string, level: string | null,
     const dailyAnswersJson = JSON.stringify(pairsToJson(dailyAnswers, 'ok', 'n'));
     const gameStatsJson = JSON.stringify(pairsToJson(gameStats, 'correct', 'total'));
     const gameXpJson = JSON.stringify(gameXp);
+    const gameMarkasJson = JSON.stringify(mergeGameMarkas(cleanGameMarkas(prev?.gameMarkas), cleanGameMarkas(data.gameMarkas)));
 
     // (a) child_progress_state — counter monoton + posisi terakhir (LWW).
     const last = data.last ?? null;
@@ -185,13 +231,13 @@ export async function upsertStoreSnapshot(childId: string, level: string | null,
       INSERT INTO child_progress_state AS s
         (id, child_id, xp, correct_attempts, total_attempts, nickname, avatar,
          last_skill, last_topic_id, last_topic_index, last_level, boss_tests,
-         active_ms, daily_answers, game_stats, game_xp, client_updated_at, updated_at)
+         active_ms, daily_answers, game_stats, game_xp, game_markas, client_updated_at, updated_at)
       VALUES
         (gen_random_uuid(), ${childId}, ${data.xp ?? 0}, ${data.correctAttempts ?? 0}, ${data.totalAttempts ?? 0},
          ${data.name ?? null}, ${data.avatar ?? null},
          ${last?.skill ?? null}, ${null}, ${last?.topicIndex ?? null}, ${level},
          ${bossTests}::jsonb,
-         ${activeMsJson}::jsonb, ${dailyAnswersJson}::jsonb, ${gameStatsJson}::jsonb, ${gameXpJson}::jsonb,
+         ${activeMsJson}::jsonb, ${dailyAnswersJson}::jsonb, ${gameStatsJson}::jsonb, ${gameXpJson}::jsonb, ${gameMarkasJson}::jsonb,
          now(), now())
       ON CONFLICT (child_id) DO UPDATE SET
         xp               = GREATEST(s.xp, EXCLUDED.xp),
@@ -208,6 +254,7 @@ export async function upsertStoreSnapshot(childId: string, level: string | null,
         daily_answers    = EXCLUDED.daily_answers,
         game_stats       = EXCLUDED.game_stats,
         game_xp          = EXCLUDED.game_xp,
+        game_markas      = EXCLUDED.game_markas,
         client_updated_at = now(),
         updated_at        = now()
     `;
@@ -472,5 +519,6 @@ export async function rebuildStoreForChild(childId: string): Promise<Record<stri
     dailyAnswers: (state?.dailyAnswers as Record<string, unknown> | null) ?? {},
     gameStats: (state?.gameStats as Record<string, unknown> | null) ?? {},
     gameXp: (state?.gameXp as Record<string, unknown> | null) ?? {},
+    gameMarkas: (state?.gameMarkas as Record<string, unknown> | null) ?? {},
   };
 }

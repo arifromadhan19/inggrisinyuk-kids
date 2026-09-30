@@ -3504,3 +3504,17 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .trend-bar{ height:10px; border-radius:var(--r-pill); background:var(--muted); overflow:hidden; }
 .trend-fill{ display:block; height:100%; border-radius:4px; background:var(--brand-500); }
 .trend-min, .trend-acc{ text-align:right; font-size:.8125rem; font-weight:800; color:var(--ink); }
+/* Rapor: Hasil Game (per game bisa dibuka → per markas) */
+.game-results{ display:grid; gap:0; margin-top:var(--s2); }
+.game-result{ border-top:1px solid var(--line); }
+.game-result:first-child{ border-top:none; }
+.game-result > summary{ list-style:none; cursor:pointer; display:flex; align-items:center; gap:var(--s3); padding:10px 0; }
+.game-result > summary::-webkit-details-marker{ display:none; }
+.game-result > summary .skill-row-body::after{ content:'Lihat tiap markas ▾'; font-size:.6875rem; font-weight:800; color:var(--accent); }
+.game-result[open] > summary .skill-row-body::after{ content:'Tutup ▴'; }
+.game-result > .stat-list{ margin:0 0 var(--s2); padding-left:calc(38px + var(--s3)); }
+.game-result-empty{ margin:0 0 var(--s2); padding-left:calc(38px + var(--s3)); }
+@media (min-width: 900px){
+  .game-results{ grid-template-columns:repeat(2, minmax(0, 1fr)); column-gap:var(--s5); }
+  .game-result:nth-child(2){ border-top:none; }
+}

@@ -141,6 +141,21 @@ export interface Store {
    *  Rapor. `n` = percobaan, `ok` = yang tepat. Ikut akun
    *  (`child_progress_state.daily_answers`); ±60 hari terakhir. */
   dailyAnswers: Record<string, { n: number; ok: number }>;
+  /** Hasil game PER MARKAS (Rapor "🎮 Hasil Game") — `{game: {indexMarkas:
+   *  {c tepat, t total jawaban, h petunjuk dipakai, name, emoji}}}`. Diisi
+   *  `recordAttempt(…, gameKey)`/`markGameHint` selama markas itu aktif
+   *  (`setGameMarkas`, dipanggil tiap game saat masuk markas). Ikut akun
+   *  (`child_progress_state.game_markas`). Total per game tetap `gameStats`
+   *  (sudah ada sebelum rincian ini, jadi bisa lebih besar dari jumlah markas). */
+  gameMarkas: Record<string, Record<string, GameMarkasStat>>;
+}
+
+export interface GameMarkasStat {
+  c: number;
+  t: number;
+  h: number;
+  name: string;
+  emoji: string;
 }
 
 /** 1 percobaan 1 babak. `res`: null = belum dijawab, 1/0 = benar/belum
@@ -280,6 +295,30 @@ function sanitizeDailyAnswers(raw: unknown, num: (v: unknown) => number): Record
   return out;
 }
 
+/** `gameMarkas` valid saja: 0 ≤ c ≤ t, h ≥ 0, nama/emoji string pendek. */
+function sanitizeGameMarkas(raw: unknown, num: (v: unknown) => number): Record<string, Record<string, GameMarkasStat>> {
+  const out: Record<string, Record<string, GameMarkasStat>> = {};
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const [game, markas] of Object.entries(raw as Record<string, unknown>)) {
+    if (!markas || typeof markas !== 'object' || Array.isArray(markas)) continue;
+    for (const [idx, val] of Object.entries(markas as Record<string, unknown>)) {
+      if (!/^\d{1,3}$/.test(idx) || !val || typeof val !== 'object') continue;
+      const v = val as Record<string, unknown>;
+      const c = num(v.c);
+      const t = num(v.t);
+      if (c > t) continue;
+      (out[game] ??= {})[idx] = {
+        c,
+        t,
+        h: num(v.h),
+        name: typeof v.name === 'string' ? v.name.slice(0, 60) : '',
+        emoji: typeof v.emoji === 'string' ? v.emoji.slice(0, 16) : '',
+      };
+    }
+  }
+  return out;
+}
+
 const EMPTY: Store = {
   done: [],
   last: null,
@@ -299,6 +338,7 @@ const EMPTY: Store = {
   bossTests: {},
   activeMs: {},
   dailyAnswers: {},
+  gameMarkas: {},
 };
 
 function read(): Store {
@@ -343,6 +383,7 @@ function read(): Store {
           ? Object.fromEntries(Object.entries(parsed.activeMs).filter(([, v]) => num(v) === v))
           : {},
       dailyAnswers: sanitizeDailyAnswers(parsed.dailyAnswers, num),
+      gameMarkas: sanitizeGameMarkas(parsed.gameMarkas, num),
     };
   } catch {
     // Storage bisa diblokir (mode privat). App tetap jalan, cuma tanpa progres.
@@ -1298,8 +1339,50 @@ export function recordAttempt(correct: boolean, gameKey?: string): void {
     g.total += 1;
     if (correct) g.correct += 1;
     store.gameStats[gameKey] = g;
+    const m = currentMarkasStat(store, gameKey);
+    if (m) {
+      m.t += 1;
+      if (correct) m.c += 1;
+    }
   }
   write(store);
+}
+
+/** Markas game yang sedang dimainkan — dipasang tiap game saat masuk 1
+ *  markas (`playStage`/`drawLevel`), dipakai `recordAttempt`/`markGameHint`
+ *  supaya hasil tercatat per markas tanpa mengubah semua pemanggilnya. */
+let gameMarkasCtx: { game: string; idx: number; name: string; emoji: string } | null = null;
+
+export function setGameMarkas(game: string, idx: number, name: string, emoji: string): void {
+  gameMarkasCtx = { game, idx, name, emoji };
+}
+
+function currentMarkasStat(store: Store, gameKey: string): GameMarkasStat | null {
+  const ctx = gameMarkasCtx;
+  if (!ctx || ctx.game !== gameKey) return null;
+  const game = (store.gameMarkas[gameKey] = { ...(store.gameMarkas[gameKey] ?? {}) });
+  const key = String(ctx.idx);
+  const cur = game[key] ?? { c: 0, t: 0, h: 0, name: ctx.name, emoji: ctx.emoji };
+  game[key] = { ...cur, name: ctx.name, emoji: ctx.emoji };
+  return game[key];
+}
+
+/** 💡 Petunjuk dibuka di game — dipanggil SEKALI per soal (tiap game sudah
+ *  punya penanda "petunjuk sudah dipakai" per soal). */
+export function markGameHint(gameKey: string): void {
+  const store = read();
+  const m = currentMarkasStat(store, gameKey);
+  if (!m) return;
+  m.h += 1;
+  write(store);
+}
+
+/** Rincian per markas 1 game, urut sesuai urutan markas. */
+export function getGameMarkas(gameKey: string): (GameMarkasStat & { idx: number })[] {
+  const game = read().gameMarkas[gameKey] ?? {};
+  return Object.entries(game)
+    .map(([idx, v]) => ({ ...v, idx: Number(idx) }))
+    .sort((a, b) => a.idx - b.idx);
 }
 
 export function getAccuracy(): number | null {
@@ -1737,6 +1820,27 @@ function keepLastDays<T>(m: Record<string, T>, keep = 60): Record<string, T> {
   return Object.fromEntries(keys.map((k) => [k, m[k]]));
 }
 
+/** Gabung per game per markas: angka tepat/total dari sisi yang totalnya
+ *  lebih besar, petunjuk = terbesar. */
+function mergeGameMarkas(
+  local: Record<string, Record<string, GameMarkasStat>>,
+  remote: Record<string, Record<string, GameMarkasStat>>
+): Record<string, Record<string, GameMarkasStat>> {
+  const out: Record<string, Record<string, GameMarkasStat>> = {};
+  for (const game of new Set([...Object.keys(local), ...Object.keys(remote)])) {
+    const l = local[game] ?? {};
+    const r = remote[game] ?? {};
+    out[game] = {};
+    for (const idx of new Set([...Object.keys(l), ...Object.keys(r)])) {
+      const a = l[idx];
+      const b = r[idx];
+      const base = !a ? b : !b ? a : b.t > a.t ? b : a;
+      out[game][idx] = { ...base, h: Math.max(a?.h ?? 0, b?.h ?? 0), name: a?.name || b?.name || '', emoji: a?.emoji || b?.emoji || '' };
+    }
+  }
+  return out;
+}
+
 export function mergeFromServer(remote: Partial<Store> | null | undefined): void {
   if (!remote || typeof remote !== 'object') return;
   const local = read();
@@ -1768,6 +1872,7 @@ export function mergeFromServer(remote: Partial<Store> | null | undefined): void
     bossTests: mergeBossTests(local.bossTests, remote.bossTests),
     activeMs: keepLastDays(maxNumRecord(local.activeMs, remote.activeMs)),
     dailyAnswers: keepLastDays(mergePairs(local.dailyAnswers, sanitizeDailyAnswers(remote.dailyAnswers, nonNeg), 'n')),
+    gameMarkas: mergeGameMarkas(local.gameMarkas, sanitizeGameMarkas(remote.gameMarkas, nonNeg)),
   });
 }
 

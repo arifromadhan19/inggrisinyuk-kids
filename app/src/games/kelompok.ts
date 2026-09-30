@@ -24,7 +24,7 @@ import { journeyMapHtml, markasIntro } from '../game-ui';
 import { sfx } from '../game-audio';
 import { readingPicHtml as picHtml } from '../reading-pic';
 import { setGameRoundActive, setHandlers } from '../interaction';
-import { recordAttempt } from '../progress';
+import { markGameHint, recordAttempt, setGameMarkas } from '../progress';
 import { speak, playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -176,6 +176,7 @@ export function runKelompok(container: HTMLElement, onDone: OnDone, level: Level
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan"; keluar = balik ke Map
     markasIntro(NODES[idx].emoji, NODES[idx].place);
+    setGameMarkas(GAME_KEY, idx, NODES[idx].place, NODES[idx].emoji);
     const node = NODES[idx];
     const cfg = TIER_CONFIG[node.difficulty];
     const questions = buildQuestions(node.difficulty);
@@ -263,6 +264,7 @@ export function runKelompok(container: HTMLElement, onDone: OnDone, level: Level
     function useHint(): void {
       if (hintUsed) return;
       hintUsed = true;
+      markGameHint(GAME_KEY);
       const cur = q();
       const fbHtml = answered ? container.querySelector('#fb')?.outerHTML ?? '' : '';
       const actions = answered ? container.querySelector('.round-actions')?.outerHTML ?? '' : '';

@@ -70,6 +70,7 @@ import {
   gamesPlayedCount,
   getGameAccuracy,
   getGameStats,
+  getGameMarkas,
   getGameXp,
   getLast,
   getLastGame,
@@ -1666,8 +1667,8 @@ function renderRapor(): void {
       <div class="day-row" style="margin-top:8px" aria-label="Hari anak belajar dalam 7 hari terakhir">${dayChips}</div>
       <div class="week-stats">
         <span><b>${weekDays}</b>/7 hari</span>
-        <span><b>${getWeekMinutes()}</b> menit</span>
-        <span><b>${insights.weekAnswered}</b> soal</span>
+        <span><b>${getWeekMinutes()}</b> menit (termasuk game)</span>
+        <span><b>${insights.weekAnswered}</b> soal belajar</span>
       </div>
       ${lastWeek && (lastWeek.minutes > 0 || lastWeek.answers > 0) ? `<p class="meta" style="margin-top:4px">7 hari sebelumnya: ${lastWeek.minutes} menit${lastWeek.accuracy === null ? '' : ` · ketepatan ${lastWeek.accuracy}%`}</p>` : ''}
       ${screenNote}
@@ -1766,22 +1767,47 @@ function renderRapor(): void {
 
   /* ---------- 4. Rincian (dilipat) ---------- */
 
-  // Game: yang sudah dimainkan 1 baris masing-masing, yang belum digabung
-  // jadi 1 kalimat (dulu 7 kartu besar, kebanyakan "Belum dimainkan").
+  // 🎮 Hasil Game — bagian sendiri (bukan di Rincian), TERPISAH dari nilai
+  // skill: 1 game mencampur beberapa skill & dimainkan bebas. Per game:
+  // total tepat/total + 💡 petunjuk + markas paling sulit; buka untuk rincian
+  // per markas (`Store.gameMarkas`). Yang belum dimainkan digabung 1 kalimat.
   const played = RAJA_LIST.filter((r) => getGameAccuracy(r.key) !== null);
   const unplayed = RAJA_LIST.filter((r) => getGameAccuracy(r.key) === null);
-  const gameRows = played
+  const gameBlocks = played
     .map((r) => {
       const acc = getGameAccuracy(r.key) as number;
       const st = getGameStats(r.key);
-      return `<li><span class="stat-list-ic" aria-hidden="true">${RAJA_ICON_EMOJI[r.key]}</span><span class="stat-list-label">${r.name} <span class="meta">· ${st.correct}/${st.total} tepat</span></span><span class="skill-stars" aria-label="${skillStarCount(acc)} dari 5 bintang">${skillStarsHtml(acc)}</span></li>`;
+      const markas = getGameMarkas(r.key);
+      const hints = markas.reduce((n, m) => n + m.h, 0);
+      const rated = markas.filter((m) => m.t >= 3).map((m) => ({ ...m, pct: Math.round((m.c / m.t) * 100) }));
+      const hardest = rated.length > 1 ? [...rated].sort((a, b) => a.pct - b.pct)[0] : undefined;
+      const hardestTxt = hardest && hardest.pct < Math.max(...rated.map((m) => m.pct)) ? ` · paling sulit: ${hardest.emoji} ${escapeHtml(hardest.name)} (${hardest.pct}%)` : '';
+      const rows = markas
+        .filter((m) => m.t > 0 || m.h > 0)
+        .map((m) => {
+          const pct = m.t > 0 ? Math.round((m.c / m.t) * 100) : null;
+          return `<li><span class="stat-list-ic" aria-hidden="true">${m.emoji}</span><span class="stat-list-label">${escapeHtml(m.name)} <span class="meta">· ${m.c}/${m.t} tepat${m.h ? ` · 💡 ${m.h}` : ''}</span></span><span class="skill-stars" aria-label="${pct === null ? 'belum ada bintang' : `${skillStarCount(pct)} dari 5 bintang`}">${pct === null ? '☆☆☆☆☆' : skillStarsHtml(pct)}</span></li>`;
+        })
+        .join('');
+      return `
+        <details class="game-result">
+          <summary>
+            <span class="skill-row-ic" style="background:color-mix(in srgb, ${r.color} 20%, var(--surface-2));color:${r.color}" aria-hidden="true">${RAJA_ICON_EMOJI[r.key]}</span>
+            <span class="skill-row-body">
+              <b>${r.name}</b>
+              <span class="meta">${st.correct}/${st.total} tepat${hints ? ` · 💡 ${hints}x` : ''}${hardestTxt}</span>
+            </span>
+            <span class="skill-stars" aria-label="${skillStarCount(acc)} dari 5 bintang">${skillStarsHtml(acc)}</span>
+          </summary>
+          ${rows ? `<ul class="stat-list">${rows}</ul>` : '<p class="meta game-result-empty">Rincian per markas tercatat untuk permainan berikutnya.</p>'}
+        </details>`;
     })
     .join('');
-  const gameCard = `
+  const gameSection = `
     <div class="card">
-      <span class="eyebrow">🎮 Game · ${played.length}/${RAJA_LIST.length} dimainkan</span>
-      ${gameRows ? `<ul class="stat-list">${gameRows}</ul>` : ''}
-      ${unplayed.length ? `<p class="meta" style="margin-top:8px">Belum dimainkan: ${unplayed.map((r) => r.name).join(', ')}.</p>` : ''}
+      <span class="eyebrow">🎮 ${played.length}/${RAJA_LIST.length} game dimainkan</span>
+      ${gameBlocks ? `<div class="game-results">${gameBlocks}</div><p class="meta" style="margin-top:8px">Tap game untuk lihat tiap markas. Nilai game terpisah dari nilai skill.</p>` : ''}
+      ${unplayed.length ? `<p class="meta" style="margin-top:8px">${played.length ? 'Belum dimainkan' : 'Belum ada game yang dimainkan'}: ${unplayed.map((r) => r.name).join(', ')}.</p>` : ''}
     </div>`;
 
   // Progres per Level — % modul tuntas tiap level (rumus `finishedTopicsForLevel`).
@@ -1853,11 +1879,15 @@ function renderRapor(): void {
         ${todoHtml}
       </section>
 
+      <section class="rapor-sec full" aria-labelledby="raporGame">
+        <h2 class="rapor-h" id="raporGame">Hasil Game</h2>
+        ${gameSection}
+      </section>
+
       <section class="rapor-sec full">
         <details class="rapor-more" id="raporMore"${moreOpen ? ' open' : ''}>
-          <summary><span>📂 Rincian lainnya</span><span class="meta">game, progres per level, statistik, placement test, peringkat</span></summary>
+          <summary><span>📂 Rincian lainnya</span><span class="meta">progres per level, statistik, placement test, peringkat</span></summary>
           <div class="rapor-more-grid">
-            ${gameCard}
             ${levelCard}
             ${statsCard}
             ${buildPlacementResultCard()}
@@ -1948,9 +1978,9 @@ function renderRaporDetail(): void {
     },
     {
       ic: '🎮',
-      name: 'Bintang game',
-      what: 'Skor tiap game di Game Hub.',
-      how: 'Jawaban tepat ÷ semua jawaban di game itu, lalu tiap 20% = 1 bintang (dibulatkan).',
+      name: 'Hasil Game',
+      what: 'Nilai tiap game & tiap markasnya, jumlah Petunjuk yang dibuka, dan markas yang paling sulit.',
+      how: 'Bintang = jawaban tepat ÷ semua jawaban di game/markas itu, tiap 20% = 1 bintang (dibulatkan). 💡 = berapa soal yang Petunjuknya dibuka. "Paling sulit" = markas dengan ketepatan terendah (minimal 3 jawaban). Nilai game TIDAK masuk nilai skill, karena 1 game mencampur beberapa skill. Rincian per markas mulai tercatat sejak fitur ini ada.',
     },
     {
       ic: '📘',
@@ -1997,8 +2027,8 @@ function renderRaporDetail(): void {
     {
       ic: '🗓️',
       name: 'Minggu Ini',
-      what: 'Hari belajar, menit belajar, dan soal yang dikerjakan dalam 7 hari terakhir.',
-      how: 'Soal dihitung per soal: soal yang dikerjakan ulang minggu ini tetap 1.',
+      what: 'Hari belajar, menit belajar (termasuk main game), dan soal belajar yang dikerjakan dalam 7 hari terakhir.',
+      how: 'Soal belajar = soal di Menu Belajar (tanpa game), dihitung per soal: soal yang dikerjakan ulang minggu ini tetap 1.',
     },
     {
       ic: '📈',

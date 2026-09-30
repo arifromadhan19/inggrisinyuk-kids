@@ -108,6 +108,8 @@ model ChildProgressState {
   dailyAnswers Json? @map("daily_answers")
   gameStats    Json? @map("game_stats")
   gameXp       Json? @map("game_xp")
+  /** Hasil game per markas (Rapor "Hasil Game"), digabung per markas. */
+  gameMarkas   Json? @map("game_markas")
 
   clientUpdatedAt DateTime? @map("client_updated_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")

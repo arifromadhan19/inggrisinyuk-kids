@@ -26,7 +26,7 @@
 import { journeyMapHtml, markasIntro } from '../game-ui';
 import { sfx } from '../game-audio';
 import { setGameRoundActive, setHandlers } from '../interaction';
-import { recordAttempt } from '../progress';
+import { markGameHint, recordAttempt, setGameMarkas } from '../progress';
 import { playCorrectTone, playWrongTone, speak, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -268,6 +268,7 @@ function runSentencePuzzleRound(
   function useHint(): void {
     if (answered || hintUsed || (cfg.hintGated && !attempted)) return;
     hintUsed = true;
+    markGameHint(GAME_KEY);
     if (cfg.hint === 'listen') {
       paint();
       speak(round.sentence.en);
@@ -433,6 +434,7 @@ export function runSentencePuzzle(container: HTMLElement, onDone: OnDone, level:
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     markasIntro(JOURNEY_NODES[idx].emoji, JOURNEY_NODES[idx].place);
+    setGameMarkas(GAME_KEY, idx, JOURNEY_NODES[idx].place, JOURNEY_NODES[idx].emoji);
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runSentencePuzzleRound(

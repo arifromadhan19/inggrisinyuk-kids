@@ -49,7 +49,7 @@ import { journeyMapHtml, markasIntro } from '../game-ui';
 import { sfx } from '../game-audio';
 import { readingPicHtml as picHtml } from '../reading-pic';
 import { setGameRoundActive, setHandlers } from '../interaction';
-import { recordAttempt } from '../progress';
+import { markGameHint, recordAttempt, setGameMarkas } from '../progress';
 import { speak, speakLocalized, speakLater, playCorrectTone, playWrongTone, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -283,6 +283,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
   function drawLevel(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan"; keluar = balik ke Map
     markasIntro(SOUND_HUNT_NODES[idx].nodeEmoji, SOUND_HUNT_NODES[idx].node);
+    setGameMarkas(GAME_KEY, idx, SOUND_HUNT_NODES[idx].node, SOUND_HUNT_NODES[idx].nodeEmoji);
     const node = SOUND_HUNT_NODES[idx];
     const cfg = TIER_CONFIG[node.difficulty];
     const questions = buildQuestions(node.difficulty);
@@ -320,6 +321,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
       setHandlers({
         listen: play,
         hint: () => {
+          if (!revealed) markGameHint(GAME_KEY);
           revealed = true;
           play();
           speakLater(() => speakLocalized(q().instructionId, 'id-ID'), 1600);
@@ -372,6 +374,7 @@ export function runSoundHunt(container: HTMLElement, onDone: OnDone, level: Leve
       setHandlers({
         listen: play,
         hint: () => {
+          if (!revealed) markGameHint(GAME_KEY);
           revealed = true;
           play();
           speakLater(() => speakLocalized(q().instructionId, 'id-ID'), 1600);

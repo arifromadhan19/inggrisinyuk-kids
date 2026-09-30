@@ -67,7 +67,7 @@
 import { journeyMapHtml, markasIntro } from '../game-ui';
 import { sfx } from '../game-audio';
 import { setGameRoundActive, setHandlers } from '../interaction';
-import { recordAttempt } from '../progress';
+import { markGameHint, recordAttempt, setGameMarkas } from '../progress';
 import { playCorrectTone, playWrongTone, speak, speakLocalized, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -298,6 +298,7 @@ function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficult
   function useHint(): void {
     if (hintUsed || busy || roundDone) return;
     hintUsed = true;
+    markGameHint(GAME_KEY);
     container.querySelector('[data-action="hint"]')?.remove();
     if (cfg.hint === 'strike') {
       const cand = shuffle(q().options.map((_, i) => i).filter((i) => i !== q().answer && !balloonEl(i)?.disabled));
@@ -474,6 +475,7 @@ export function runBalloonPop(container: HTMLElement, onDone: OnDone, level: Lev
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     markasIntro(JOURNEY_NODES[idx].emoji, JOURNEY_NODES[idx].place);
+    setGameMarkas(GAME_KEY, idx, JOURNEY_NODES[idx].place, JOURNEY_NODES[idx].emoji);
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runBalloonPopRound(

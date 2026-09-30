@@ -52,7 +52,7 @@ import { journeyMapHtml, markasIntro } from '../game-ui';
 import { sfx } from '../game-audio';
 import { readingPicHtml as picHtml } from '../reading-pic';
 import { setGameRoundActive, setHandlers } from '../interaction';
-import { recordAttempt } from '../progress';
+import { markGameHint, recordAttempt, setGameMarkas } from '../progress';
 import { playCorrectTone, playWrongTone, speak, vibrateDevice } from '../speech';
 import { pickPraise, pickEncourage } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -299,6 +299,7 @@ function runMemoryMatchRound(container: HTMLElement, difficulty: WordMatchDiffic
   function useHint(): void {
     if (hintUsed || busy) return;
     hintUsed = true;
+    markGameHint(GAME_KEY);
     if (cfg.hint === 'meaning') {
       showMeaning = true;
       paint();
@@ -494,6 +495,7 @@ export function runMemoryMatch(container: HTMLElement, onDone: OnDone, level: Le
   function playStage(idx: number): void {
     setGameRoundActive(true, renderMap); // masuk markas = "halaman mengerjakan", popup keluar aktif lagi; keluar = balik ke Map
     markasIntro(JOURNEY_NODES[idx].emoji, JOURNEY_NODES[idx].place);
+    setGameMarkas(GAME_KEY, idx, JOURNEY_NODES[idx].place, JOURNEY_NODES[idx].emoji);
     const node = JOURNEY_NODES[idx];
     const isLast = idx === total - 1;
     runMemoryMatchRound(
