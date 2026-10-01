@@ -19,6 +19,11 @@ model ParentAccount {
   createdAt   DateTime  @default(now()) @map("created_at")
   lastLoginAt DateTime? @map("last_login_at")
   isSuspended Boolean   @default(false) @map("is_suspended")
+  /** Dihapus CS (mis. refund) — SOFT delete: data progres tetap disimpan,
+   *  tapi login & token lama ditolak. Dipulihkan otomatis kalau orang tua
+   *  membayar lagi dgn no WA/email yang sama (`markTransactionPaid`). */
+  removedAt     DateTime? @map("removed_at")
+  removedReason String?   @map("removed_reason")
 
   children     ChildProfile[]
   transactions Transaction[]
@@ -181,6 +186,7 @@ model ChildDailyStat {
   child ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
 
   @@unique([childId, day])
+  @@index([day])
   @@map("child_daily_stats")
 }
 
@@ -378,4 +384,43 @@ model Transaction {
 
   @@index([phone])
   @@map("transactions")
+}
+
+/**
+ * Akun tim internal (CS/owner) untuk panel manajemen user — TERPISAH total
+ * dari `ParentAccount` (sesi, secret & cookie sendiri, lihat lib/admin/).
+ * Dibuat lewat CLI `npm run admin:create`, tidak ada halaman daftar.
+ */
+model AdminUser {
+  id           String    @id @default(uuid())
+  username     String    @unique
+  passwordHash String    @map("password_hash")
+  /** Base32 TOTP (Google Authenticator dst) — wajib saat login kalau terisi. */
+  totpSecret   String?   @map("totp_secret")
+  role         String    @default("cs")
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  lastLoginAt  DateTime? @map("last_login_at")
+
+  auditLogs AdminAuditLog[]
+
+  @@map("admin_users")
+}
+
+/** Jejak tiap perubahan yang dilakukan tim (edit WA/email, hapus, pulihkan,
+ *  login) — siapa, kapan, apa sebelum/sesudah. Append-only. */
+model AdminAuditLog {
+  id             String   @id @default(uuid())
+  adminId        String?  @map("admin_id")
+  action         String
+  targetParentId String?  @map("target_parent_id")
+  detail         Json?
+  ip             String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  admin AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([targetParentId, createdAt])
+  @@index([createdAt])
+  @@map("admin_audit_logs")
 }

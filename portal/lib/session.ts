@@ -9,6 +9,7 @@
  */
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies, headers } from 'next/headers';
+import { db } from '@/lib/db';
 
 const COOKIE_NAME = 'portal_session';
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -49,7 +50,7 @@ async function verify(token: string): Promise<string | null> {
   }
 }
 
-export async function getSessionParentId(): Promise<string | null> {
+async function tokenParentId(): Promise<string | null> {
   const hdrs = await headers();
   const authHeader = hdrs.get('authorization');
   const bearer = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
@@ -60,6 +61,19 @@ export async function getSessionParentId(): Promise<string | null> {
   if (cookieToken) return verify(cookieToken);
 
   return null;
+}
+
+/** Token yang masih berlaku TETAP ditolak kalau akunnya sudah dihapus CS
+ *  (refund) atau disuspend — tanpa ini token 30 hari tetap bisa dipakai. */
+export async function getSessionParentId(): Promise<string | null> {
+  const id = await tokenParentId();
+  if (!id) return null;
+  const parent = await db.parentAccount.findUnique({
+    where: { id },
+    select: { isSuspended: true, removedAt: true },
+  });
+  if (!parent || parent.isSuspended || parent.removedAt) return null;
+  return id;
 }
 
 export async function clearSession(): Promise<void> {

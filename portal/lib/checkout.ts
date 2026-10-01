@@ -26,13 +26,20 @@ export function getAppUrl(): string {
 export async function markTransactionPaid(orderId: string, paymentMethod: string | null): Promise<void> {
   await db.$transaction(async (tx) => {
     const trx = await tx.transaction.findUnique({ where: { orderId } });
-    if (!trx || trx.status === 'success') return;
+    // 'refunded' = sudah dikembalikan CS — webhook yang terkirim ulang tidak boleh memulihkannya.
+    if (!trx || trx.status === 'success' || trx.status === 'refunded') return;
 
     let parent = await tx.parentAccount.findFirst({
       where: { OR: [{ phone: trx.phone }, { email: trx.email }] },
     });
     if (!parent) {
       parent = await tx.parentAccount.create({ data: { phone: trx.phone, email: trx.email } });
+    } else if (parent.removedAt) {
+      // Pernah dihapus CS (refund) lalu bayar lagi → akun & progres lamanya dipulihkan.
+      parent = await tx.parentAccount.update({
+        where: { id: parent.id },
+        data: { removedAt: null, removedReason: null, isSuspended: false },
+      });
     }
     const child = await tx.childProfile.findFirst({ where: { parentId: parent.id } });
     if (!child) {

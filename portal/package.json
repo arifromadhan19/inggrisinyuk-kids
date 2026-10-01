@@ -2,7 +2,7 @@
   "name": "inggrisinyuk-kids-portal",
   "version": "0.1.0",
   "private": true,
-  "description": "Portal akun orang tua (login + placement test) untuk InggrisinYuk Kids. Terpisah dari app/ (yang tetap statis) — lihat README.md.",
+  "description": "Portal akun orang tua (login + placement test) untuk InggrisinYuk Kids. Terpisah dari app/ (yang tetap statis) \u2014 lihat README.md.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "admin:create": "tsx scripts/admin-create.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

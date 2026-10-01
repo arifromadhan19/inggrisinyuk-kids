@@ -20,7 +20,7 @@ export const POST = withErrorHandling(async (req: NextRequest): Promise<NextResp
 
   const trx = await db.transaction.findUnique({ where: { orderId } });
   if (!trx) return NextResponse.json({ error: 'transaction_not_found' }, { status: 404 });
-  if (trx.status === 'success') return NextResponse.json({ ok: true });
+  if (trx.status === 'success' || trx.status === 'refunded') return NextResponse.json({ ok: true });
 
   if (status === 'PAID' || status === 'SETTLED') {
     const method = typeof payload?.payment_method === 'string' ? payload.payment_method : null;

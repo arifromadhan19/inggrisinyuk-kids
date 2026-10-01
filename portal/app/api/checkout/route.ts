@@ -24,7 +24,8 @@ export const POST = withErrorHandling(async (req: NextRequest): Promise<NextResp
     return NextResponse.json({ error: 'No WhatsApp belum benar (contoh: 08123456789).' }, { status: 400 });
   }
 
-  const existing = await db.parentAccount.findFirst({ where: { OR: [{ phone }, { email }] } });
+  // Akun yang sudah dihapus CS (refund) boleh membeli lagi — dipulihkan saat lunas.
+  const existing = await db.parentAccount.findFirst({ where: { OR: [{ phone }, { email }], removedAt: null } });
   if (existing) {
     return NextResponse.json(
       { error: 'No WA atau email ini sudah terdaftar.', alreadyRegistered: true },

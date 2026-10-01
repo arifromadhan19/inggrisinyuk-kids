@@ -25,7 +25,7 @@ export const POST = withErrorHandling(async (req: NextRequest): Promise<NextResp
     },
   });
 
-  if (!parent || parent.isSuspended) {
+  if (!parent || parent.isSuspended || parent.removedAt) {
     return NextResponse.json({ error: 'No HP/email ini belum terdaftar.' }, { status: 404 });
   }
 
