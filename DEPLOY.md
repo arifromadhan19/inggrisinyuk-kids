@@ -1,0 +1,183 @@
+# Deploy ke VPS — InggrisinYuk Kids
+
+Panduan untuk VPS Ubuntu 24.04 (contoh: Biznet Gio NEO Lite 2 vCPU / 4 GB / 60 GB).
+Tanpa Docker: **nginx** menyajikan app anak (file statis) dan meneruskan
+`/api/` + panel admin ke **portal** (Next.js, dijalankan systemd), datanya di
+**PostgreSQL** di server yang sama.
+
+```
+Internet ──HTTPS──> nginx ─┬─ /                 app/public (statis, SPA)
+                           ├─ /api/             ┐
+                           ├─ /<ADMIN_GATE>/    ├─> portal 127.0.0.1:3000 ──> PostgreSQL (localhost)
+                           └─ /_next/           ┘
+```
+
+Perintah di bawah dijalankan di VPS. Ganti `DOMAINMU` dengan domain kamu
+(mis. `kids.contoh.com`) dan `IP_VPS` dengan IP publik VPS.
+
+---
+
+## 0. Persiapan (sekali)
+
+1. **Domain** — di pengelola DNS, buat **A record** `DOMAINMU` → `IP_VPS`.
+   Cek: `ping DOMAINMU` sudah menjawab dari `IP_VPS`.
+2. **Biznet Gio → Security Group** — izinkan masuk (inbound) TCP **22, 80, 443** saja.
+3. **Xendit** — siapkan Secret Key (pakai **Test** dulu) & Webhook Verification Token.
+
+## 1. Masuk & amankan server
+
+```bash
+ssh root@IP_VPS            # atau user bawaan Biznet, lalu sudo -i
+
+apt update && apt upgrade -y
+adduser deploy             # user untuk menjalankan app (bukan root)
+usermod -aG sudo deploy
+rsync -a ~/.ssh /home/deploy/ && chown -R deploy:deploy /home/deploy/.ssh   # pakai SSH key yang sama
+
+ufw allow OpenSSH && ufw --force enable    # port 80/443 dibuka di langkah 2
+apt install -y unattended-upgrades                                  # update keamanan otomatis
+```
+
+Mulai dari sini login sebagai `deploy`: `ssh deploy@IP_VPS`.
+
+## 2. Pasang software
+
+```bash
+# Node.js 22 LTS
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs git nginx postgresql certbot python3-certbot-nginx
+node -v    # v22.x
+sudo ufw allow 'Nginx Full'
+```
+
+Opsional (disarankan): swap 2 GB supaya `next build` tidak kehabisan RAM.
+
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+## 3. Database
+
+```bash
+DBPASS=$(openssl rand -hex 24); echo "Simpan password DB ini: $DBPASS"
+sudo -u postgres psql -c "CREATE USER inggrisinyuk WITH PASSWORD '$DBPASS';"
+sudo -u postgres psql -c "CREATE DATABASE inggrisinyuk_kids_portal OWNER inggrisinyuk;"
+```
+
+Postgres Ubuntu default hanya mendengarkan `localhost` — **jangan** dibuka ke internet.
+
+## 4. Ambil kode
+
+```bash
+sudo mkdir -p /srv/inggrisinyuk-kids /srv/backups && sudo chown -R deploy:deploy /srv/inggrisinyuk-kids /srv/backups
+git clone https://github.com/arifromadhan19/inggrisinyuk-kids.git /srv/inggrisinyuk-kids
+```
+
+> Repo **private**? Buat deploy key: `ssh-keygen -t ed25519 -f ~/.ssh/github_deploy -N ""`,
+> tempel isi `~/.ssh/github_deploy.pub` di GitHub → repo → Settings → Deploy keys (read-only),
+> lalu clone pakai `GIT_SSH_COMMAND="ssh -i ~/.ssh/github_deploy" git clone git@github.com:arifromadhan19/inggrisinyuk-kids.git /srv/inggrisinyuk-kids`.
+
+## 5. Isi `portal/.env` (rahasia production)
+
+```bash
+cd /srv/inggrisinyuk-kids/portal
+cp .env.example .env && chmod 600 .env
+nano .env
+```
+
+| Variabel | Nilai production |
+|---|---|
+| `DATABASE_URL` | `postgresql://inggrisinyuk:PASSWORD_DB@localhost:5432/inggrisinyuk_kids_portal?sslmode=disable` |
+| `SESSION_SECRET` | hasil `openssl rand -base64 32` |
+| `APP_ORIGIN` | `https://DOMAINMU` |
+| `XENDIT_SECRET_KEY` | key Xendit (Test dulu, lalu Live) |
+| `XENDIT_WEBHOOK_TOKEN` | Verification token dari Dashboard Xendit |
+| `XENDIT_MOCK` | **hapus baris ini** (jangan ada di production) |
+| `ADMIN_GATE` | hasil `openssl rand -hex 16` (URL panel CS, rahasiakan) |
+| `ADMIN_SESSION_SECRET` | hasil `openssl rand -base64 48` (beda dari SESSION_SECRET) |
+| `ADMIN_IP_ALLOWLIST` | opsional, IP kantor/VPN CS |
+
+**Jangan** jalankan `npm run db:seed` di production (itu akun tes "123"/"124").
+
+## 6. Build pertama
+
+```bash
+cd /srv/inggrisinyuk-kids
+echo 'deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart inggrisinyuk-kids-portal' | sudo tee /etc/sudoers.d/inggrisinyuk-kids
+sudo cp deploy/inggrisinyuk-kids-portal.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable inggrisinyuk-kids-portal
+./deploy/deploy.sh main          # build app + portal, migrasi DB, nyalakan portal
+curl -s http://127.0.0.1:3000/api/me     # {"error":"Belum login."} = portal hidup
+```
+
+## 7. nginx
+
+```bash
+DOMAIN=kids.contoh.com      # <-- GANTI dengan domain kamu
+cd /srv/inggrisinyuk-kids
+sudo cp deploy/nginx-proxy-snippet.conf /etc/nginx/snippets/inggrisinyuk-proxy.conf
+sudo cp deploy/nginx.conf /etc/nginx/sites-available/inggrisinyuk-kids
+GATE=$(grep '^ADMIN_GATE=' portal/.env | cut -d= -f2- | tr -d '"')
+sudo sed -i "s/DOMAINMU/$DOMAIN/; s/GANTI_ADMIN_GATE/$GATE/" /etc/nginx/sites-available/inggrisinyuk-kids
+sudo ln -s /etc/nginx/sites-available/inggrisinyuk-kids /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Folder `/srv/inggrisinyuk-kids` harus bisa dibaca nginx: `chmod 755 /srv/inggrisinyuk-kids`.
+
+## 8. HTTPS (wajib — mic Speaking hanya jalan di HTTPS)
+
+```bash
+sudo certbot --nginx -d DOMAINMU --redirect -m email@kamu.com --agree-tos -n
+```
+
+Sertifikat diperpanjang otomatis oleh certbot.
+
+## 9. Xendit
+
+1. Dashboard Xendit → Settings → Webhooks → **Invoices paid**: `https://DOMAINMU/api/webhooks/xendit`.
+2. Coba beli sungguhan lewat `https://DOMAINMU/daftar` dengan **key Test** (bayar pakai simulasi Xendit).
+   Berhasil = setelah bayar diarahkan ke `/pembayaran`, lalu otomatis masuk ke Placement Test.
+3. Ganti ke **key Live** di `portal/.env`, lalu `sudo systemctl restart inggrisinyuk-kids-portal`.
+
+## 10. Backup database harian
+
+```bash
+echo "localhost:5432:inggrisinyuk_kids_portal:inggrisinyuk:PASSWORD_DB" > ~/.pgpass && chmod 600 ~/.pgpass
+crontab -e
+# tambahkan baris:
+30 2 * * * /srv/inggrisinyuk-kids/deploy/backup-db.sh
+```
+
+Backup tersimpan di `/srv/backups/db` (14 hari). Salin juga ke luar VPS secara berkala
+(mis. Biznet Snapshot / Object Storage, atau `scp` ke laptop).
+
+## 11. Cek akhir
+
+- [ ] `https://DOMAINMU` → homepage tampil, gembok HTTPS aktif
+- [ ] Reload di `https://DOMAINMU/daftar` tidak 404
+- [ ] Daftar → bayar (Test) → otomatis masuk
+- [ ] Logout → Masuk pakai no WA (format `08…`) berhasil
+- [ ] Speaking: mic minta izin & merekam
+- [ ] Panel CS: `https://DOMAINMU/<ADMIN_GATE>/login`
+
+---
+
+## Update rutin (setelah ada perubahan di GitHub)
+
+```bash
+ssh deploy@IP_VPS
+/srv/inggrisinyuk-kids/deploy/deploy.sh main
+```
+
+## Kalau ada masalah
+
+| Gejala | Cek |
+|---|---|
+| Login/Daftar "Server akun tidak bisa dihubungi" | `systemctl status inggrisinyuk-kids-portal`, `journalctl -u inggrisinyuk-kids-portal -n 100` |
+| 502 Bad Gateway | portal mati → perintah di atas |
+| Halaman putih / file tidak update | `sudo tail -50 /var/log/nginx/error.log`, lalu hard reload browser |
+| Bayar sukses tapi tidak masuk | Dashboard Xendit → webhook log; URL & token webhook benar? |
+| Build gagal kehabisan memori | pastikan swap aktif (`free -h`) |

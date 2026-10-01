@@ -13,11 +13,16 @@ import type { LevelKey } from './types';
 
 const KEY = 'inggrisinyuk-kids.account.v1';
 
-// Ganti ke domain production sebelum deploy sungguhan — belum ada sistem
-// env-var build-time di app/ (sama seperti PORTAL_URL lama, lihat app.ts).
-const API_BASE = 'http://127.0.0.1:3000';
+/** Dev lokal = app dibuka lewat `npm run dev` (port 8200) — portal jalan
+ *  terpisah di port 3000 host yang sama (localhost, 127.0.0.1, atau IP LAN
+ *  saat tes di HP). */
+const IS_DEV_SERVER = location.port === '8200';
 
-const SERVER_UNREACHABLE_MESSAGE = /127\.0\.0\.1|localhost/.test(API_BASE)
+/** Production: app & portal di SATU domain — nginx meneruskan `/api/*` ke
+ *  portal (lihat DEPLOY.md), jadi cukup path relatif (tanpa CORS). */
+const API_BASE = IS_DEV_SERVER ? `${location.protocol}//${location.hostname}:3000` : '';
+
+const SERVER_UNREACHABLE_MESSAGE = IS_DEV_SERVER
   ? 'Server akun belum jalan. Nyalakan dulu: cd portal && npm run dev'
   : 'Server akun tidak bisa dihubungi. Cek internet, lalu coba lagi.';
 
@@ -139,7 +144,7 @@ export function isLoggedIn(): boolean {
  *  akun ini, tanpa perlu jelajahi markas sebelumnya dulu — anak lain (akun
  *  non-124) TETAP kena aturan "Dikunci jika belum selesai" seperti biasa. */
 export function isDevTestAccount(): boolean {
-  return getIdentifier() === '124';
+  return IS_DEV_SERVER && getIdentifier() === '124'; // tidak pernah aktif di production
 }
 
 export function cacheChildStatus(

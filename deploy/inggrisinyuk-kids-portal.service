@@ -1,0 +1,19 @@
+# systemd — portal (Next.js) jalan terus & otomatis hidup lagi kalau crash/reboot.
+# Pasang: sudo cp deploy/inggrisinyuk-kids-portal.service /etc/systemd/system/
+#         sudo systemctl daemon-reload && sudo systemctl enable --now inggrisinyuk-kids-portal
+[Unit]
+Description=InggrisinYuk Kids portal (Next.js API + panel admin)
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/srv/inggrisinyuk-kids/portal
+Environment=NODE_ENV=production
+# Next.js membaca portal/.env sendiri. Hanya bisa diakses dari server ini (nginx).
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

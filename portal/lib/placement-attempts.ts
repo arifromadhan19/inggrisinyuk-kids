@@ -17,6 +17,7 @@ export const MAX_ATTEMPTS = 2;
 const UNLIMITED_ATTEMPT_PHONES = ['124'];
 
 export function resolveAttemptsUsed(phone: string | null | undefined, rawAttemptsUsed: number): number {
-  if (phone && UNLIMITED_ATTEMPT_PHONES.includes(phone)) return 0;
+  // Jalan pintas akun tes HANYA di dev — di production limit 2x berlaku utk semua.
+  if (process.env.NODE_ENV !== 'production' && phone && UNLIMITED_ATTEMPT_PHONES.includes(phone)) return 0;
   return rawAttemptsUsed;
 }

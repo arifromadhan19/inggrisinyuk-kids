@@ -79,32 +79,7 @@ Setelah ini, folder `public/` sudah lengkap dan siap dipindah ke server mana pun
 
 ## Deploy ke VPS
 
-Karena hasilnya cuma file statis (HTML + 1 file JS, tanpa proses Node yang perlu terus nyala), ini **lebih simpel dibanding `inggrisinyuk-app`** yang butuh `next start` + process manager (PM2) + reverse proxy ke port tertentu. Di sini cukup:
-
-1. Build di lokal: `npm run build`
-2. Upload folder `public/` ke VPS, misal:
-   ```bash
-   scp -r public/ user@vps-host:/var/www/inggrisinyuk-kids/
-   ```
-   (atau `git pull` + `npm install && npm run build` langsung di VPS kalau Node tersedia di sana)
-3. Arahkan web server yang sudah ada di VPS (kemungkinan besar nginx, karena dipakai juga untuk `inggrisinyuk-app`) ke folder itu sebagai static root — cukup tambah 1 `server`/`location` block baru, contoh:
-   ```nginx
-   server {
-       listen 80;
-       server_name kids.namadomainmu.com;
-       root /var/www/inggrisinyuk-kids/public;
-       index index.html;
-       # SPA fallback WAJIB — app.ts pakai History API routing (URL beneran
-       # berubah tiap layar, mis. /belajar, /pengaturan, bukan hash #/...).
-       # Tanpa fallback ke index.html ini, reload langsung di path seperti
-       # /belajar akan 404 karena file itu memang tidak ada.
-       location / { try_files $uri $uri/ /index.html; }
-   }
-   ```
-   lalu `sudo nginx -t && sudo systemctl reload nginx`.
-4. Kalau mau HTTPS, tinggal `certbot --nginx -d kids.namadomainmu.com` seperti biasa.
-
-Tidak ada langkah "jalankan app-nya" di server — begitu file ter-upload dan nginx diarahkan, sudah langsung bisa diakses. Tidak ada database/env var/proses background yang perlu dikelola.
+Lihat **[../DEPLOY.md](../DEPLOY.md)** — app ini sekarang dideploy BERSAMA `portal/` (login, Daftar/pembayaran Xendit, sinkron progres, panel CS) di satu domain: nginx menyajikan `app/public/` & meneruskan `/api/` ke portal. Alamat API otomatis: di `npm run dev` (port 8200) → portal `:3000`, di production → path relatif `/api` (`app/src/account.ts`).
 
 ## Kenapa TypeScript ringan, bukan Next.js seperti `inggrisinyuk-app`
 

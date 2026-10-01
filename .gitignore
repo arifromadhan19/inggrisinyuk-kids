@@ -1,0 +1,6 @@
+# macOS
+.DS_Store
+# Rahasia lokal (tiap sub-proyek juga punya .gitignore sendiri)
+.env
+.env.*
+!.env.example
