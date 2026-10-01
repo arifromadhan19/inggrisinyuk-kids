@@ -113,7 +113,7 @@ export const GROUPS: Record<string, KGroup> = {
     en: 'Bathroom', id: 'Kamar mandi', emoji: '',
     items: [
       { en: 'toothbrush', id: 'sikat gigi' }, { en: 'soap', id: 'sabun' }, { en: 'towel', id: 'handuk' },
-      { en: 'shower', id: 'pancuran' }, { en: 'toilet', id: 'toilet' }, { en: 'bathtub', id: 'bak mandi' },
+      { en: 'shower', id: 'pancuran' }, { en: 'toilet', id: 'toilet' }, { en: 'bathtub', id: 'bak rendam' },
     ],
   },
   classroom: {

@@ -200,7 +200,7 @@ export const RIDDLE_BANK: Riddle[] = [
     ],
   },
   {
-    text: 'It is in the sky in the day. It is hot and yellow.',
+    text: 'It is in the sky during the day. It is hot and yellow.',
     textId: 'Ada di langit pada siang hari. Panas dan kuning.',
     options: [
       { en: 'sun', id: 'matahari', emoji: '☀️' },
@@ -210,7 +210,7 @@ export const RIDDLE_BANK: Riddle[] = [
     ],
   },
   {
-    text: 'You wear it on your foot when you go to school.',
+    text: 'You wear them on your feet when you go to school.',
     textId: 'Kamu memakainya di kaki saat pergi ke sekolah.',
     options: [
       { en: 'shoe', id: 'sepatu', emoji: '👟' },

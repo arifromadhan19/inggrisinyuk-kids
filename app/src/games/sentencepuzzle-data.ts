@@ -141,7 +141,7 @@ const BANK_LEGENDARIS: PuzzleSentence[] = [
   { en: 'It is cold so I wear a jacket.', id: 'Udaranya dingin jadi aku memakai jaket.', wrong: ['because', 'but'] },
   { en: "I like apples but I don't like bananas.", id: 'Aku suka apel tapi aku tidak suka pisang.', wrong: ['so', 'because'] },
   { en: 'We went to the park and we played football.', id: 'Kami pergi ke taman dan kami bermain sepak bola.', wrong: ['but', 'because'] },
-  { en: 'She is tired because she ran a lot.', id: 'Dia lelah karena dia banyak berlari.', wrong: ['so', 'and'], alt: ['Because she ran a lot she is tired.'] },
+  { en: 'She is tired because she swam a lot.', id: 'Dia lelah karena dia banyak berenang.', wrong: ['so', 'and'], alt: ['Because she swam a lot she is tired.'] },
   { en: 'I was hungry so I ate a sandwich.', id: 'Aku lapar jadi aku makan roti lapis.', wrong: ['because', 'but'] },
   { en: 'He wanted to play but it was dark.', id: 'Dia ingin bermain tapi hari sudah gelap.', wrong: ['so', 'because'] },
   { en: 'I will read a book when I get home.', id: 'Aku akan membaca buku saat aku sampai di rumah.', wrong: ['because', 'so'], alt: ['When I get home I will read a book.'] },

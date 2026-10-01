@@ -165,7 +165,7 @@ export const PLACEMENT_QUESTIONS: PlacementQuestion[] = [
     level: 'explorer',
     kind: 'reading',
     story: ['My father visits the school today.', 'He works at the hospital.'],
-    question: 'Where does father work?',
+    question: 'Where does the father work?',
     options: [
       { emoji: '🏥', label: 'hospital', correct: true },
       { emoji: '🏫', label: 'school', correct: false },

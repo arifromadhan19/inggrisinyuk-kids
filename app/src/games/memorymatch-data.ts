@@ -160,7 +160,7 @@ export const OPPOSITE_BANK: OppositePair[] = [
   { a: 'Day', aId: 'Siang', b: 'Night', bId: 'Malam' },
   { a: 'Clean', aId: 'Bersih', b: 'Dirty', bId: 'Kotor' },
   { a: 'Loud', aId: 'Berisik', b: 'Quiet', bId: 'Tenang' },
-  { a: 'Early', aId: 'Lebih awal', b: 'Late', bId: 'Terlambat' },
+  { a: 'Early', aId: 'Awal', b: 'Late', bId: 'Terlambat' },
   { a: 'Old', aId: 'Tua', b: 'Young', bId: 'Muda' },
 ];
 

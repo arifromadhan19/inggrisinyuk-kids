@@ -111,7 +111,7 @@ export const LOOKALIKE_GROUPS: WordGroup[] = [
   { name: 'oat', items: [{ en: 'Boat', id: 'Perahu' }, { en: 'Goat', id: 'Kambing' }, { en: 'Coat', id: 'Mantel' }] },
   { name: 'ing', items: [{ en: 'King', id: 'Raja' }, { en: 'Ring', id: 'Cincin' }, { en: 'Wing', id: 'Sayap' }] },
   { name: 'ock', items: [{ en: 'Sock', id: 'Kaus kaki' }, { en: 'Rock', id: 'Batu' }, { en: 'Clock', id: 'Jam dinding' }] },
-  { name: 'all', items: [{ en: 'Ball', id: 'Bola' }, { en: 'Wall', id: 'Dinding' }, { en: 'Bell', id: 'Lonceng' }] },
+  { name: 'all', items: [{ en: 'Ball', id: 'Bola' }, { en: 'Wall', id: 'Dinding' }, { en: 'Hall', id: 'Aula' }] },
   { name: 'an', items: [{ en: 'Fan', id: 'Kipas angin' }, { en: 'Pan', id: 'Wajan' }, { en: 'Can', id: 'Kaleng' }] },
   { name: 'ice', items: [{ en: 'Rice', id: 'Nasi' }, { en: 'Dice', id: 'Dadu' }, { en: 'Ice', id: 'Es' }] },
 ];
