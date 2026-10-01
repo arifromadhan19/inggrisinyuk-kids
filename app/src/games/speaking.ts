@@ -935,7 +935,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
             ${choosing ? choiceHtml : '<div class="talk-instruct">Jawab pakai kalimat bahasa Inggris, ucapkan!</div>'}`;
       container.innerHTML = `
         <div class="stage-head">
-          <span class="stage-badge">💬 Ngobrol Yuk!</span>
+          <span class="stage-badge tab-dup">💬 Ngobrol Yuk!</span>
           ${petunjukButtonHtml(revealed, locked)}
         </div>
         ${quizNavHtml(round, total, slotStatus)}
@@ -1355,7 +1355,7 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
       const locked = tier === 'lanjut' && !attempted;
       container.innerHTML = `
         <div class="stage-head">
-          <span class="stage-badge">🙋 Giliranmu Bertanya</span>
+          <span class="stage-badge tab-dup">🙋 Giliranmu Bertanya</span>
           ${petunjukButtonHtml(revealed, locked)}
         </div>
         ${quizNavHtml(nav.round, plan.length, nav.status)}

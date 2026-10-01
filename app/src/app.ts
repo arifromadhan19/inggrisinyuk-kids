@@ -192,6 +192,33 @@ function readingTopicsForLevel(level: LevelKey) {
   return READING_TOPICS_BY_LEVEL[level] ?? [];
 }
 
+/** Label aktivitas di kartu skill Menu Belajar & "Yang dilatih di sini" —
+ *  ikut nama badge yang BENAR-BENAR tampil di level itu (audit UI 2026-10:
+ *  dulu 1 set global `SKILL_META.activities` yang sudah basi, mis. Speaking
+ *  "Mini-Roleplay"). Ganti nama badge di game → perbarui di sini juga. */
+function skillActivities(key: SkillKey, level: LevelKey): string[] {
+  const early = level === 'little-stars' || level === 'starter';
+  switch (key) {
+    case 'vocabulary':
+      return ['Tebak Arti', 'Eja Kata', 'Susun Kalimat'];
+    case 'listening':
+      if (early) return ['Dengar & Jawab', 'Benar atau Salah?', 'Dengar & Susun'];
+      if (level === 'achiever') return ['Dengar & Jawab', 'Lengkapi Catatan'];
+      if (level === 'trailblazer') return ['Dengar & Jawab', 'Dengar & Simpulkan'];
+      return ['Dengar & Pilih', 'Dengar Cerita Mini'];
+    case 'speaking':
+      return level === 'little-stars'
+        ? ['Tirukan', 'Lengkapi Kalimat', 'Ngobrol Yuk!']
+        : ['Tirukan', 'Ngobrol Yuk!', 'Giliranmu Bertanya'];
+    case 'grammar':
+      if (early) return ['Dengar & Tunjuk', 'Pilih yang Pas', 'Susun Kalimat'];
+      if (level === 'trailblazer') return ['Ubah Bentuk Kalimat', 'Cari Kalimat Asal'];
+      return ['Susun Kalimat', 'Pilih Bentuk', 'Detektif Kalimat'];
+    case 'reading':
+      return ['Baca Bareng', 'Baca & Temukan', 'Baca Sendiri'];
+  }
+}
+
 function topicsForSkill(key: SkillKey, level: LevelKey): TopicRef[] {
   const toRef = (t: { id: string; title: string; desc: string }): TopicRef => ({ id: t.id, title: t.title, desc: t.desc });
   switch (key) {
@@ -2210,7 +2237,7 @@ function renderMenu(): void {
     const topics = topicsForSkill(key, level.key);
     const doneHere = topics.filter((t) => topicFinished(key, t.id, level.key)).length;
     const skillPct = topics.length > 0 ? Math.round((doneHere / topics.length) * 100) : 0;
-    const tags = s.activities.map((a) => `<span class="tag">${a}</span>`).join('');
+    const tags = skillActivities(key, level.key).map((a) => `<span class="tag">${a}</span>`).join('');
     return `
       <div class="skill-card" role="button" tabindex="0" data-action="openSkill" data-payload="${key}">
         <span class="skill-pct${skillPct >= 100 ? ' done' : ''}">${skillPct}%</span>
@@ -2271,7 +2298,7 @@ function renderMenu(): void {
           <ol class="howto">
             <li><span class="n">1</span><span><b>Kenalan</b>Dengar contohnya dulu — tanpa hafalan, tanpa penjelasan panjang.</span></li>
             <li><span class="n">2</span><span><b>Latihan Inti</b>Main sampai semua soal dicoba. Salah? Ulang saja, tidak ada nilai.</span></li>
-            <li><span class="n">3</span><span><b>Tantangan</b>Bonus buat yang mau lanjut. Boleh dilewati.</span></li>
+            <li><span class="n">3</span><span><b>Tantangan</b>Soal paling seru. Selesaikan Latihan Inti &amp; Tantangan, materinya tuntas ⭐.</span></li>
           </ol>
         </div>
         <div class="card note-card">
@@ -2380,7 +2407,7 @@ function renderTopics(): void {
           <span class="eyebrow">Isi ${meta.label}</span>
           <div class="card-title" style="margin:4px 0 4px">Yang dilatih di sini</div>
           <ol class="howto">
-            ${meta.activities
+            ${skillActivities(key, level)
               .map((a, i) => `<li><span class="n">${i + 1}</span><span><b>${a}</b></span></li>`)
               .join('')}
           </ol>
@@ -2526,10 +2553,10 @@ function renderActivity(): void {
         <ol class="stepper">${steps}</ol>
         ${
           showVoicePanel
-            ? `<div class="voice-shown">
-          <div class="voice-shown-head">🔊 Suara &amp; kecepatan</div>
+            ? `<details class="voice-shown"${window.matchMedia('(min-width:1080px)').matches ? ' open' : ''}>
+          <summary class="voice-shown-head">🔊 Suara &amp; kecepatan</summary>
           <div id="voicePanelMount"></div>
-        </div>`
+        </details>`
             : ''
         }
       </div>

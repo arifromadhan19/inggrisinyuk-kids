@@ -639,7 +639,7 @@ export function renderKenalanSentence(
         ${topic.items
           .map(
             (it, i) => `
-          <div class="primer-item">
+          <div class="primer-item is-sentence">
             <div class="primer-ic">${picHtml(it.emoji)}</div>
             <div class="txt"><b>${it.example.en}</b><span>${it.example.id}</span></div>
             <div class="mini-play${doneCls(i, 'listen')}" data-action="playSentence" data-payload="${i}">🔊</div>

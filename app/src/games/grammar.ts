@@ -481,7 +481,7 @@ function runTantanganSentenceMain(container: HTMLElement, topic: GrammarSentence
     const meaningShown = cfg.showMeaning || !!topic.meaningNeeded || revealed;
     container.innerHTML = `
       <div class="latihan-head no-wrap">
-        <span class="stage-badge">${isText ? '📖 Baca Dulu, Lalu Pilih' : '🔎 Pilih Bentuk yang Pas'}</span>
+        <span class="stage-badge${isText ? '' : ' tab-dup'}">${isText ? '📖 Baca Dulu, Lalu Pilih' : '🔎 Pilih Bentuk yang Pas'}</span>
         ${hintChipHtml(cfg.hintGate && !attempted, revealed)}
       </div>
       ${quizNavHtml(round, order.length, slotStatus)}
@@ -1858,14 +1858,14 @@ function runTantanganPatternMain(container: HTMLElement, topic: GrammarPatternTo
     function paint(): void {
       container.innerHTML = `
         <div class="latihan-head no-wrap">
-          <span class="stage-badge">🔎 Lihat &amp; Dengar, Pilih yang Pas</span>
+          <span class="stage-badge tab-dup">🔎 Lihat &amp; Dengar, Pilih yang Pas</span>
           <button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>
         </div>
         ${quizNavHtml(round, order.length, slotStatus)}
         <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
-        <div style="text-align:center;margin:14px 0">${contrastVisualInner(target.emoji, wantFormB, visual, 1.7, !LABELED_VISUALS.has(visual))}${LABELED_VISUALS.has(visual) ? `<span class="pattern-card-label big">${choiceLabel(topic, target, wantFormB)}</span>` : ''}</div>
+        <div class="g-listen-pic">${contrastVisualInner(target.emoji, wantFormB, visual, 1.7, !LABELED_VISUALS.has(visual))}${LABELED_VISUALS.has(visual) ? `<span class="pattern-card-label big">${choiceLabel(topic, target, wantFormB)}</span>` : ''}</div>
         <div class="id-text" style="font-weight:800;margin:6px 0 4px">Dengarkan tiap pilihan (boleh berkali-kali), lalu pilih yang cocok dengan gambar ini</div>
-        <div class="opt-grid">
+        <div class="opt-grid g-listen">
           ${choices
             .map(
               (_, i) => `
