@@ -53,6 +53,7 @@ interface SpeechRecognition extends EventTarget {
   /** Suara PERTAMA terdeteksi sesudah jeda — dipakai reset jeda tunggu
    *  supaya napas anak di tengah kalimat tidak dihitung "sudah selesai". */
   onspeechstart: (() => void) | null;
+  onaudiostart: (() => void) | null;
   /** Recognition beneran BERHENTI (manual `stop()` ATAU browser sendiri) —
    *  titik final resmi untuk mengambil transkrip lengkap. */
   onend: (() => void) | null;

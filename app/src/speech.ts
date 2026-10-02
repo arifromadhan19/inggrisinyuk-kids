@@ -697,16 +697,56 @@ export function listenOnce(
 
 /**
  * Chrome Android meneruskan SpeechRecognition ke recognizer SISTEM (layanan
- * Google) yang membuka mic sendiri — kalau halaman sudah memegang mic lewat
- * getUserMedia/MediaRecorder, recognizer cuma kebagian hening & berakhir
- * "no-speech" (bug production 2026-10-02, 2 HP Android, lihat
- * `issue/20261002_mic_android_issue.md` #1). Di Android, skor (inti) yang
- * dapat mic — rekaman "▶️ Play Suaramu" (pelengkap, best-effort per
- * CLAUDE.md) dilewati, tombolnya tetap nonaktif.
+ * Google) yang membuka mic sendiri — kalau halaman SUDAH memegang mic lewat
+ * getUserMedia/MediaRecorder sebelum recognizer mulai, recognizer cuma
+ * kebagian hening & berakhir "no-speech" (bug production 2026-10-02,
+ * `issue/20261002_mic_android_issue.md` #1). Karena itu di Android rekaman
+ * "▶️ Play Suaramu" baru dimulai SETELAH recognizer memegang mic
+ * (`onaudiostart`), bukan paralel.
+ *
+ * Pengaman: kalau di perangkat ini cara itu tetap bikin recognizer tuli
+ * (`ANDROID_REC_FAIL_LIMIT`x berturut-turut "no-speech"/"audio-capture"
+ * SAAT rekaman ikut jalan), rekaman dimatikan permanen di perangkat itu
+ * (localStorage) — skor (fungsi inti) selalu menang atas Play Suaramu
+ * (pelengkap, best-effort per CLAUDE.md).
  */
 const IS_ANDROID = /Android/i.test(navigator.userAgent);
-/** `false` = "▶️ Play Suaramu" tidak akan pernah aktif di perangkat ini. */
-export const voiceRecordingSupported = !IS_ANDROID && typeof MediaRecorder !== 'undefined';
+const ANDROID_REC_OFF_KEY = 'iyk-android-rec-off';
+const ANDROID_REC_FAILS_KEY = 'iyk-android-rec-fails';
+const ANDROID_REC_FAIL_LIMIT = 2;
+
+function readLocal(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+function writeLocal(key: string, value: string | null): void {
+  try {
+    if (value === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, value);
+  } catch {
+    /* storage diblokir — pengaman cuma berlaku sesi ini, tidak apa-apa */
+  }
+}
+
+/** `false` = "▶️ Play Suaramu" tidak akan aktif di perangkat ini. */
+export function voiceRecordingSupported(): boolean {
+  if (typeof MediaRecorder === 'undefined') return false;
+  return !(IS_ANDROID && readLocal(ANDROID_REC_OFF_KEY) === '1');
+}
+
+/** Catat hasil 1 sesi mic Android yang rekamannya ikut jalan. */
+function noteAndroidRecOutcome(heardSomething: boolean): void {
+  if (heardSomething) {
+    writeLocal(ANDROID_REC_FAILS_KEY, null);
+    return;
+  }
+  const fails = Number(readLocal(ANDROID_REC_FAILS_KEY) ?? '0') + 1;
+  writeLocal(ANDROID_REC_FAILS_KEY, String(fails));
+  if (fails >= ANDROID_REC_FAIL_LIMIT) writeLocal(ANDROID_REC_OFF_KEY, '1');
+}
 
 let recordingStream: MediaStream | null = null;
 let activeRecorder: MediaRecorder | null = null;
@@ -783,37 +823,61 @@ export function listenAndRecordOnce(
   rec.lang = 'en-US';
   rec.maxAlternatives = 1;
 
-  if (voiceRecordingSupported) ensureMicStream(
-    (stream) => {
-      const chunks: BlobPart[] = [];
-      try {
-        const recorder = new MediaRecorder(stream);
-        activeRecorder = recorder;
-        recorder.ondataavailable = (e) => {
-          if (e.data.size > 0) chunks.push(e.data);
-        };
-        recorder.onstop = () => {
-          if (!chunks.length) return;
-          onAudioReady(URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' })));
-        };
-        recorder.start();
-      } catch {
-        activeRecorder = null;
+  // `finished` — sesi mic sudah berakhir; stream yang baru didapat
+  // SESUDAHNYA (getUserMedia async) langsung dilepas, jangan sampai mic
+  // tertinggal menyala.
+  let finished = false;
+  let recordingStarted = false;
+  const startRecording = (): void =>
+    ensureMicStream(
+      (stream) => {
+        if (finished) {
+          releaseMicStream();
+          return;
+        }
+        const chunks: BlobPart[] = [];
+        try {
+          const recorder = new MediaRecorder(stream);
+          activeRecorder = recorder;
+          recorder.ondataavailable = (e) => {
+            if (e.data.size > 0) chunks.push(e.data);
+          };
+          recorder.onstop = () => {
+            if (!chunks.length) return;
+            onAudioReady(URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' })));
+          };
+          recorder.start();
+          recordingStarted = true;
+        } catch {
+          activeRecorder = null;
+        }
+      },
+      () => {
+        /* diabaikan dengan sengaja — lihat catatan di atas */
       }
-    },
-    () => {
-      /* diabaikan dengan sengaja — lihat catatan di atas */
-    }
-  );
+    );
+
+  if (voiceRecordingSupported()) {
+    // Desktop/iOS: paralel sejak awal (mic bisa dibagi). Android: tunggu
+    // recognizer memegang mic dulu, lihat `IS_ANDROID` di atas.
+    if (IS_ANDROID) rec.onaudiostart = startRecording;
+    else startRecording();
+  }
 
   wireContinuousListen(
     rec,
     (transcript, confidence) => {
+      finished = true;
       releaseMicStream();
+      if (IS_ANDROID && recordingStarted) noteAndroidRecOutcome(true);
       onResult(transcript, confidence);
     },
     (kind) => {
+      finished = true;
       releaseMicStream();
+      if (IS_ANDROID && recordingStarted && (kind === 'no-speech' || kind === 'audio-capture')) {
+        noteAndroidRecOutcome(false);
+      }
       onError(kind);
     },
     opts.silenceMs

@@ -113,3 +113,17 @@ Berkas terkait: `app/src/speech.ts` (`wireContinuousListen`, `listenAndRecordOnc
 Solusi #3 (jeda setelah `stopSpeaking()`) belum dikerjakan. Dikerjakan nanti kalau tes HP masih menunjukkan kegagalan setelah 🔊.
 
 `npm run build` lolos. Tes wajib berikutnya: deploy, lalu coba 🎤 di 2 HP Android (Kenalan Vocab, Speaking, placement test).
+
+## Lanjutan: "Play Suaramu" dikembalikan di Android (2026-10-02)
+
+Setelah perbaikan di atas, mic Android **sudah berhasil** (dikonfirmasi user). User lalu meminta "▶️ Play Suaramu" tetap ada di Android, dan dipilih **opsi 1: urutan dibalik**:
+- Di Android, `MediaRecorder` baru dimulai di `rec.onaudiostart`, yaitu setelah recognizer memegang mic. Sebelumnya rekaman jalan paralel sejak awal.
+- **Pengaman:** kalau saat rekaman ikut jalan sesi mic berakhir `no-speech`/`audio-capture` 2x berturut-turut, rekaman dimatikan permanen di perangkat itu (localStorage `iyk-android-rec-off`). Satu kali berhasil mereset hitungan (`iyk-android-rec-fails`). Dengan begitu skor tidak bisa rusak permanen gara-gara Play Suaramu.
+- Cara reset manual di HP (via Eruda): `localStorage.removeItem('iyk-android-rec-off')`.
+
+Yang perlu dicek di HP:
+1. Skor tetap jalan.
+2. Tombol Play Suaramu aktif.
+3. Rekamannya berisi suara anak, bukan hening.
+
+Kalau rekamannya hening atau terpotong, ganti ke opsi 2 (tombol rekam terpisah).
