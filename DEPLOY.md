@@ -48,6 +48,7 @@ usermod -aG sudo deploy
 rsync -a ~/.ssh /home/deploy/ && chown -R deploy:deploy /home/deploy/.ssh   # pakai SSH key yang sama
 
 ufw allow OpenSSH && ufw --force enable    # port 80/443 dibuka di langkah 2
+systemctl enable ufw                        # image Biznet: service ufw mati -> firewall hilang setelah reboot
 apt install -y unattended-upgrades                                  # update keamanan otomatis
 ```
 
