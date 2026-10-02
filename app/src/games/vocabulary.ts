@@ -28,6 +28,7 @@ import {
   vibrateDevice,
   wordMatchDetail,
   playRecording,
+  micErrorText,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { shuffle } from '../util';
@@ -376,7 +377,7 @@ export function renderKenalan(container: HTMLElement, topic: VocabTopic, level: 
         // error, itu bukan STT gagal dengar (race condition, dilaporkan
         // user).
         if (kind === 'aborted') return;
-        openMicResultPopup(it, index, null, 'Belum kedengaran, coba lagi ya 🎧');
+        openMicResultPopup(it, index, null, micErrorText(kind));
       },
       (audioUrl) => {
         // Bisa nyala SETELAH popup sudah dirender (MediaRecorder.onstop
@@ -921,7 +922,7 @@ function drawListenSpeakQuestion(
           (kind) => {
             btn.classList.remove('listening');
             if (kind === 'aborted') return; // lihat komentar setara `runUcapan` di bawah file ini
-            container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
+            container.querySelector<HTMLElement>('#fb')!.textContent = micErrorText(kind);
           },
           (audioUrl) => {
             recordedAudioUrl = audioUrl;
@@ -2144,7 +2145,7 @@ function runUcapan(container: HTMLElement, topicId: string, allItems: VocabItem[
             // anak tap "🔊 Dengar Contoh" pas mic masih aktif, reset diam-
             // diam, bukan error STT.
             if (kind === 'aborted') return;
-            container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
+            container.querySelector<HTMLElement>('#fb')!.textContent = micErrorText(kind);
           },
           (audioUrl) => {
             // Bisa nyala SETELAH hasil mic dirender (MediaRecorder.onstop

@@ -45,6 +45,7 @@ import {
   vibrateDevice,
   wordMatchDetail,
   playRecording,
+  micErrorText,
 } from '../speech';
 import type { VoiceGender } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
@@ -775,7 +776,7 @@ export function renderKenalanSentence(
       (kind) => {
         btn.classList.remove('listening');
         if (kind === 'aborted') return;
-        openMicResultPopup(it, index, null, 'Belum kedengaran, coba lagi ya 🎧');
+        openMicResultPopup(it, index, null, micErrorText(kind));
       },
       (audioUrl) => {
         const overlay = document.querySelector<HTMLElement>('.mic-pop-overlay');

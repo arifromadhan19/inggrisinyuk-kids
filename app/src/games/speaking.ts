@@ -26,6 +26,7 @@ import {
   sttSupported,
   wordMatchDetail,
   playRecording,
+  micErrorText,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -638,7 +639,7 @@ export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, _
       (kind) => {
         btn.classList.remove('listening');
         if (kind === 'aborted') return;
-        openMicResultPopup(index, null, 'Belum kedengaran, coba lagi ya 🎧');
+        openMicResultPopup(index, null, micErrorText(kind));
       },
       (audioUrl) => {
         const overlay = document.querySelector<HTMLElement>('.mic-pop-overlay');
@@ -804,7 +805,7 @@ export function runLatihanInti(container: HTMLElement, topic: AnySpeakingTopic, 
         (kind) => {
           resetBtn();
           if (kind === 'aborted') return;
-          container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
+          container.querySelector<HTMLElement>('#fb')!.textContent = micErrorText(kind);
         },
         (audioUrl) => {
           recordedAudioUrl = audioUrl;
@@ -1064,7 +1065,7 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
         (kind) => {
           btn.classList.remove('listening');
           if (kind === 'aborted') return;
-          container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
+          container.querySelector<HTMLElement>('#fb')!.textContent = micErrorText(kind);
         },
         (audioUrl) => {
           recordedAudioUrl = audioUrl;
@@ -1316,7 +1317,7 @@ function runTebakGambar(container: HTMLElement, topic: SpeakingPhraseTopic, onDo
         (kind) => {
           btn.classList.remove('listening');
           if (kind === 'aborted') return;
-          container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
+          container.querySelector<HTMLElement>('#fb')!.textContent = micErrorText(kind);
         },
         (audioUrl) => {
           recordedAudioUrl = audioUrl;
@@ -1437,7 +1438,7 @@ function runTanyaTeman(container: HTMLElement, topic: AnySpeakingTopic, onDone: 
         (kind) => {
           btn.classList.remove('listening');
           if (kind === 'aborted') return;
-          container.querySelector<HTMLElement>('#fb')!.textContent = 'Belum kedengaran, coba lagi 🎧';
+          container.querySelector<HTMLElement>('#fb')!.textContent = micErrorText(kind);
         },
         (audioUrl) => {
           recordedAudioUrl = audioUrl;

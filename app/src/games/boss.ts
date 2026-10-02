@@ -41,6 +41,7 @@ import {
   sttSupported,
   vibrateDevice,
   wordMatchDetail,
+  micErrorText,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -477,7 +478,7 @@ export function runBoss(container: HTMLElement, cb: BossCallbacks, level: LevelK
           (kind) => {
             btn.classList.remove('listening');
             if (kind === 'aborted' || !container.isConnected) return;
-            fb().textContent = 'Belum kedengaran, coba tap mic lagi 🎧';
+            fb().textContent = micErrorText(kind);
             fb().className = 'feedback';
           },
           (url) => {

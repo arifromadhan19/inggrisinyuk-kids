@@ -474,6 +474,28 @@ export const sttSupported = !!SR;
  *  krn tap "Dengar Contoh"), yang salah/menyesatkan. */
 export type ListenErrorKind = 'unsupported' | 'no-speech' | 'not-allowed' | 'audio-capture' | 'network' | 'aborted' | 'error';
 
+/**
+ * Teks feedback per jenis error mic — SATU sumber utk semua layar ber-mic
+ * (dulu tiap pemanggil menulis "Belum kedengaran" utk SEMUA jenis error,
+ * jadi izin ditolak/tanpa internet tampak sama dgn "anak kurang keras",
+ * `issue/20261002_mic_android_issue.md`). Kid-friendly, tanpa kata
+ * "salah"/"gagal". `'aborted'` tidak pernah ditampilkan (pemanggil return).
+ */
+export function micErrorText(kind: ListenErrorKind): string {
+  switch (kind) {
+    case 'not-allowed':
+      return 'Mikrofon belum diizinkan — minta tolong Ayah/Bunda izinkan mikrofon di browser, lalu coba lagi 🎤';
+    case 'audio-capture':
+      return 'Mikrofon sedang dipakai aplikasi lain — tutup dulu, lalu coba lagi 🎤';
+    case 'unsupported':
+      return 'Browser ini belum bisa mendengar suara — coba pakai Google Chrome 🌐';
+    case 'network':
+      return 'Butuh internet untuk mendengar suaramu — cek koneksi, lalu coba lagi 📶';
+    default:
+      return 'Belum kedengaran, coba lagi ya 🎧';
+  }
+}
+
 function mapSpeechErrorKind(rawError: string): ListenErrorKind {
   if (rawError === 'no-speech') return 'no-speech';
   if (rawError === 'not-allowed' || rawError === 'service-not-allowed') return 'not-allowed';
@@ -537,6 +559,13 @@ function wireContinuousListen(
 
   let finalTranscript = '';
   let lastConfidence = 0;
+  // Cadangan hasil SEMENTARA (interim) — di Chrome Android hasil `isFinal`
+  // kadang tidak pernah dikirim sebelum `onend` (apalagi setelah kita
+  // `stop()` sendiri lewat silenceTimer), padahal ucapan anak sudah
+  // tertangkap sbg interim. Tanpa cadangan ini ucapannya dibuang & anak
+  // dapat "Belum kedengaran" (`issue/20261002_mic_android_issue.md` #2).
+  let interimTranscript = '';
+  const heard = (): string => finalTranscript || interimTranscript;
   let silenceTimer: ReturnType<typeof setTimeout> | undefined;
   let maxTimer: ReturnType<typeof setTimeout> | undefined;
   let settled = false;
@@ -566,6 +595,13 @@ function wireContinuousListen(
         lastConfidence = result[0].confidence;
       }
     }
+    // Interim = semua hasil yang BELUM final di event ini (Android sering
+    // mengirim transkrip utuh berulang di sini, jadi ditimpa, bukan digabung).
+    const pending: string[] = [];
+    for (let i = 0; i < e.results.length; i += 1) {
+      if (!e.results[i].isFinal) pending.push(e.results[i][0].transcript);
+    }
+    if (pending.length) interimTranscript = `${finalTranscript} ${pending.join(' ')}`.trim();
     resetSilenceTimer();
   };
   rec.onspeechstart = () => resetSilenceTimer();
@@ -583,7 +619,7 @@ function wireContinuousListen(
     // "Dengar Contoh" pas mic masih aktif) — JANGAN salvage finalTranscript
     // sekalipun sudah ada isinya: transkrip itu berpotensi tercampur ekor
     // audio TTS yang baru mau diputar, bukan murni ucapan anak.
-    if (finalTranscript && e.error === 'no-speech') onFinal(finalTranscript, lastConfidence);
+    if (heard() && e.error === 'no-speech') onFinal(heard(), lastConfidence);
     else onErr(mapSpeechErrorKind(e.error));
   };
   rec.onend = () => {
@@ -592,7 +628,7 @@ function wireContinuousListen(
     if (activeRec === rec) activeRec = null;
     clearTimeout(silenceTimer);
     clearTimeout(maxTimer);
-    if (finalTranscript) onFinal(finalTranscript, lastConfidence);
+    if (heard()) onFinal(heard(), lastConfidence);
     else onErr('no-speech');
   };
 
@@ -658,6 +694,19 @@ export function listenOnce(
 /* (cuma transkrip+confidence), jadi direkam TERPISAH lewat MediaRecorder,  */
 /* paralel dgn SpeechRecognition. Pola porting dari referensi              */
 /* backup/daily-conversation-asr (1).html (ensureMicStream/releaseMic).    */
+
+/**
+ * Chrome Android meneruskan SpeechRecognition ke recognizer SISTEM (layanan
+ * Google) yang membuka mic sendiri — kalau halaman sudah memegang mic lewat
+ * getUserMedia/MediaRecorder, recognizer cuma kebagian hening & berakhir
+ * "no-speech" (bug production 2026-10-02, 2 HP Android, lihat
+ * `issue/20261002_mic_android_issue.md` #1). Di Android, skor (inti) yang
+ * dapat mic — rekaman "▶️ Play Suaramu" (pelengkap, best-effort per
+ * CLAUDE.md) dilewati, tombolnya tetap nonaktif.
+ */
+const IS_ANDROID = /Android/i.test(navigator.userAgent);
+/** `false` = "▶️ Play Suaramu" tidak akan pernah aktif di perangkat ini. */
+export const voiceRecordingSupported = !IS_ANDROID && typeof MediaRecorder !== 'undefined';
 
 let recordingStream: MediaStream | null = null;
 let activeRecorder: MediaRecorder | null = null;
@@ -734,7 +783,7 @@ export function listenAndRecordOnce(
   rec.lang = 'en-US';
   rec.maxAlternatives = 1;
 
-  ensureMicStream(
+  if (voiceRecordingSupported) ensureMicStream(
     (stream) => {
       const chunks: BlobPart[] = [];
       try {

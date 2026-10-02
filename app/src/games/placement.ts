@@ -31,6 +31,7 @@ import {
   vibrateDevice,
   wordMatchDetail,
   playRecording,
+  micErrorText,
 } from '../speech';
 import { PLACEMENT_OPENMIC_ITEMS, PLACEMENT_QUESTIONS, type PlacementQuestion } from '../placement-test-data';
 import { BOSS_NAME, LEVELS } from '../content';
@@ -536,17 +537,8 @@ export function runPlacementQuestions(container: HTMLElement, onDone: (outcome: 
             // Pesan per jenis error (referensi: backup/daily-conversation-asr
             // (1).html) — "izin ditolak" butuh tindakan beda dari "belum
             // kedengaran", nada tetap hangat/actionable, bukan teknis.
-            if (kind === 'not-allowed') {
-              fb.textContent = 'Mikrofon belum diizinkan — klik ikon 🔒 di sebelah alamat browser, izinkan mikrofon, lalu coba lagi';
-              revealSkipButton();
-            } else if (kind === 'audio-capture' || kind === 'unsupported') {
-              fb.textContent = 'Mikrofon tidak didukung/tidak ditemukan di perangkat ini';
-              revealSkipButton();
-            } else if (kind === 'network') {
-              fb.textContent = 'Koneksi lagi bermasalah, coba lagi sebentar ya 🌐';
-            } else {
-              fb.textContent = 'Belum kedengaran, coba lagi 🎧';
-            }
+            fb.textContent = micErrorText(kind);
+            if (kind === 'not-allowed' || kind === 'audio-capture' || kind === 'unsupported') revealSkipButton();
           },
           (audioUrl) => {
             // Bisa nyala setelah hasil mic sudah dirender (async) — patch

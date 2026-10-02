@@ -39,6 +39,7 @@ import {
   vibrateDevice,
   wordMatchDetail,
   playRecording,
+  micErrorText,
 } from '../speech';
 import { pickEncourage, pickPraise } from '../praise';
 import { fireConfetti } from '../confetti';
@@ -1510,7 +1511,7 @@ export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatte
       (kind) => {
         btn.classList.remove('listening');
         if (kind === 'aborted') return;
-        openMicResultPopup(it, index, null, 'Belum kedengaran, coba lagi ya 🎧');
+        openMicResultPopup(it, index, null, micErrorText(kind));
       },
       (audioUrl) => {
         const overlay = document.querySelector<HTMLElement>('.mic-pop-overlay');
