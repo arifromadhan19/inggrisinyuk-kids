@@ -4,7 +4,7 @@ import { withErrorHandling } from '@/lib/api-error';
 import { signSessionToken } from '@/lib/session';
 
 /**
- * Dipolling halaman `/pembayaran` app anak tiap 2 dtk sampai webhook Xendit
+ * Dipolling halaman `/pembayaran` app anak tiap 2 dtk sampai webhook Midtrans
  * menandai lunas. Begitu lunas, token login diberikan SEKALI
  * (`tokenClaimedAt`) — polling berikutnya cuma dapat `claimed: true` (orang
  * tua tinggal masuk pakai no WA/email).

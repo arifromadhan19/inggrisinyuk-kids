@@ -1,7 +1,7 @@
 // Skema diadaptasi dari inggrisinyuk-app (project dewasa, sibling). Auth
 // SEKARANG passwordless — persis pola inggrisinyuk asli (WA/email lookup,
 // tanpa password sama sekali untuk end-user, lihat RESEARCH.md §15/§16).
-// Identitas dikonfirmasi lewat sukses bayar (Transaction/Xendit — masih
+// Identitas dikonfirmasi lewat sukses bayar (Transaction/Midtrans — masih
 // BACKLOG, PRD §14); sebelum itu digarap, registrasi langsung (tanpa bayar)
 // dipertahankan biar tetap bisa dites/dipakai.
 generator client {
@@ -359,9 +359,9 @@ model PlacementTestResult {
 }
 
 /**
- * Pembelian Paket Lengkap (Rp 99.000 sekali bayar) lewat Xendit Invoice — pola SAMA
+ * Pembelian Paket Lengkap (Rp 99.000 sekali bayar) lewat Midtrans Snap — pola SAMA
  * inggrisinyuk-app (`Transaction`, alur WA). Akun orang tua BARU dibuat saat
- * webhook Xendit bilang PAID (`lib/checkout.ts` `markTransactionPaid`), bukan
+ * webhook Midtrans bilang settlement (`lib/checkout.ts` `markTransactionPaid`), bukan
  * saat form Daftar dikirim — jadi tidak ada akun "gratis" tanpa bayar.
  * `tokenClaimedAt`: token login dibagikan SEKALI ke halaman /pembayaran
  * (siapa pun yang tahu orderId tidak bisa mengambil token berkali-kali).
@@ -372,7 +372,7 @@ model Transaction {
   email           String
   childName       String    @map("child_name")
   parentId        String?   @map("parent_id")
-  xenditInvoiceId String?   @unique @map("xendit_invoice_id")
+  paymentRef      String?   @unique @map("payment_ref")
   paymentMethod   String?   @map("payment_method")
   amount          Int       @default(99000)
   status          String    @default("pending")

@@ -276,7 +276,7 @@ function adoptSession(data: AuthResult): void {
 }
 
 /** Halaman Daftar — buat pesanan Rp 99.000 (portal `POST /api/checkout`),
- *  balikan `invoiceUrl` halaman bayar Xendit. Akun dibuat portal saat lunas. */
+ *  balikan `invoiceUrl` halaman bayar Midtrans. Akun dibuat portal saat lunas. */
 export async function startCheckout(input: {
   childName: string;
   email: string;

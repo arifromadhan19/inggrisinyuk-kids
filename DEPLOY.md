@@ -35,7 +35,7 @@ Alamat production: **https://inggrisinyuk.com** (domain di Hostinger;
    Sambil menunggu, kerjakan langkah 1–6. Aktifkan juga **auto-renew** domain
    (berlaku s/d 22 Juni 2027).
 2. **Biznet Gio → Security Group** — izinkan masuk (inbound) TCP **22, 80, 443** saja.
-3. **Xendit** — siapkan Secret Key (pakai **Test** dulu) & Webhook Verification Token.
+3. **Midtrans** — siapkan Server Key **Sandbox** dulu (Dashboard Midtrans → Environment Sandbox → Settings → Access Keys).
 
 ## 1. Masuk & amankan server
 
@@ -105,9 +105,9 @@ nano .env
 | `DATABASE_URL` | `postgresql://inggrisinyuk:PASSWORD_DB@localhost:5432/inggrisinyuk_kids_portal?sslmode=disable` |
 | `SESSION_SECRET` | hasil `openssl rand -base64 32` |
 | `APP_ORIGIN` | `https://inggrisinyuk.com` |
-| `XENDIT_SECRET_KEY` | key Xendit (Test dulu, lalu Live) |
-| `XENDIT_WEBHOOK_TOKEN` | Verification token dari Dashboard Xendit |
-| `XENDIT_MOCK` | **hapus baris ini** (jangan ada di production) |
+| `MIDTRANS_SERVER_KEY` | Server Key Midtrans (`SB-Mid-server-…` Sandbox dulu, lalu Production `Mid-server-…`) |
+| `MIDTRANS_IS_PRODUCTION` | `"false"` (Sandbox) → `"true"` setelah akun Production aktif |
+| `PAYMENT_MOCK` | **hapus baris ini** (jangan ada di production) |
 | `ADMIN_GATE` | hasil `openssl rand -hex 16` (URL panel CS, rahasiakan) |
 | `ADMIN_SESSION_SECRET` | hasil `openssl rand -base64 48` (beda dari SESSION_SECRET) |
 | `ADMIN_IP_ALLOWLIST` | opsional, IP kantor/VPN CS |
@@ -151,12 +151,17 @@ sudo certbot --nginx -d inggrisinyuk.com -d www.inggrisinyuk.com --redirect -m E
 
 Sertifikat diperpanjang otomatis oleh certbot.
 
-## 9. Xendit
+## 9. Midtrans
 
-1. Dashboard Xendit → Settings → Webhooks → **Invoices paid**: `https://inggrisinyuk.com/api/webhooks/xendit`.
-2. Coba beli sungguhan lewat `https://inggrisinyuk.com/daftar` dengan **key Test** (bayar pakai simulasi Xendit).
-   Berhasil = setelah bayar diarahkan ke `/pembayaran`, lalu otomatis masuk ke Placement Test.
-3. Ganti ke **key Live** di `portal/.env`, lalu `sudo systemctl restart inggrisinyuk-kids-portal`.
+1. Dashboard Midtrans → Environment **Sandbox** → Settings → Payment (Notification URL):
+   - **Payment Notification URL**: `https://inggrisinyuk.com/api/webhooks/midtrans`
+   - **Finish Redirect URL**: `https://inggrisinyuk.com/pembayaran`
+2. Coba beli lewat `https://inggrisinyuk.com/daftar` dengan **Server Key Sandbox**, bayar pakai
+   https://simulator.sandbox.midtrans.com. Berhasil = setelah bayar diarahkan ke `/pembayaran`,
+   lalu otomatis masuk ke Placement Test.
+3. Aktivasi akun Production (Business registration di dashboard, isi website `https://inggrisinyuk.com`).
+   Setelah disetujui: isi URL yang sama di Environment **Production**, ganti `MIDTRANS_SERVER_KEY`
+   ke key Production & `MIDTRANS_IS_PRODUCTION="true"`, lalu `sudo systemctl restart inggrisinyuk-kids-portal`.
 
 ## 10. Backup database harian
 
@@ -196,5 +201,5 @@ ssh deploy@IP_VPS
 | Login/Daftar "Server akun tidak bisa dihubungi" | `systemctl status inggrisinyuk-kids-portal`, `journalctl -u inggrisinyuk-kids-portal -n 100` |
 | 502 Bad Gateway | portal mati → perintah di atas |
 | Halaman putih / file tidak update | `sudo tail -50 /var/log/nginx/error.log`, lalu hard reload browser |
-| Bayar sukses tapi tidak masuk | Dashboard Xendit → webhook log; URL & token webhook benar? |
+| Bayar sukses tapi tidak masuk | Dashboard Midtrans → Transaction → detail → riwayat notifikasi; Notification URL & Server Key (Sandbox vs Production) cocok? |
 | Build gagal kehabisan memori | pastikan swap aktif (`free -h`) |

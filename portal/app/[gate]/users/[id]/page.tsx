@@ -159,7 +159,7 @@ export default async function UserDetail(props: PageProps<'/[gate]/users/[id]'>)
             <h2 style={{ marginTop: 0 }}>Hapus user</h2>
             <p className="muted" style={{ marginTop: 0, fontSize: 12 }}>
               Akun tidak bisa login lagi, tapi data progres tetap disimpan & bisa dipulihkan. Alasan <b>Refund</b> juga
-              menandai transaksinya refund (tidak dihitung pendapatan). Uang refund tetap dikirim manual lewat Xendit.
+              menandai transaksinya refund (tidak dihitung pendapatan). Uang refund tetap dikirim manual lewat Midtrans.
             </p>
             <form action={removeUserAction}>
               <input type="hidden" name="gate" value={gate} />

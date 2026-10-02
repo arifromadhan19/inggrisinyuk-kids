@@ -745,7 +745,8 @@ function applyPathToState(pathname: string, search: string): void {
       }
     }
   }
-  if (screen === 'payment') state.orderId = params.get('orderId');
+  // Midtrans menambahkan `order_id` sendiri ke Finish URL.
+  if (screen === 'payment') state.orderId = params.get('orderId') ?? params.get('order_id');
   if (screen === 'boss') state.bossLevel = levelFromUrl;
   if (screen === 'levelSoon') state.soonLevel = levelFromUrl;
   if (screen === 'menu' || screen === 'topics' || screen === 'activity') state.viewLevel = levelFromUrl;
@@ -3223,7 +3224,7 @@ async function enterAfterLogin(): Promise<void> {
   go(status.placementTestDone ? 'home' : 'placementTest');
 }
 
-/** Pesanan yang sedang dibayar di Xendit — nama anak dipakai jadi sapaan
+/** Pesanan yang sedang dibayar di Midtrans — nama anak dipakai jadi sapaan
  *  "Hi {nama}" begitu lunas. Cuma di perangkat ini (kenyamanan saja). */
 const PENDING_SIGNUP_KEY = 'inggrisinyuk-kids.pendingSignup.v1';
 
@@ -3366,7 +3367,7 @@ const REGISTER_VALUES: string[] = ['Tanpa langganan bulanan', 'Tanpa biaya per l
  * inggrisinyuk-app (permintaan user): "← Kembali ke Beranda", 2 kartu —
  * form (kiri) & Ringkasan Pesanan (kanan, sticky); di HP ringkasan di ATAS
  * form. Isian cukup 3 (permintaan user): nama anak, email & no WA orang tua
- * → `startCheckout` → halaman bayar Xendit. Akun dibuat portal saat lunas.
+ * → `startCheckout` → halaman bayar Midtrans. Akun dibuat portal saat lunas.
  */
 function renderRegister(): void {
   let error: string | null = null;
@@ -3553,7 +3554,7 @@ function renderRegister(): void {
 }
 
 /**
- * Kembali dari halaman bayar Xendit (`/pembayaran?orderId=`) — polling portal
+ * Kembali dari halaman bayar Midtrans (`/pembayaran?orderId=`) — polling portal
  * tiap 2 dtk sampai webhook menandai lunas, lalu otomatis masuk. Tata letak &
  * alur mengikuti `/payment/success` inggrisinyuk-app (kartu kecil di tengah).
  */

@@ -20,7 +20,7 @@ export function getAppUrl(): string {
 
 /**
  * Tandai transaksi lunas & buat akun orang tua + profil anak — dipanggil
- * webhook Xendit (PAID/SETTLED) & mode tes lokal. Idempoten: webhook yang
+ * webhook Midtrans (settlement/capture) & mode tes lokal. Idempoten: webhook yang
  * dikirim ulang tidak membuat akun dobel.
  */
 export async function markTransactionPaid(orderId: string, paymentMethod: string | null): Promise<void> {

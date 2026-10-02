@@ -883,9 +883,9 @@ export type Screen =
   | 'gamePlay'
   | 'account'
   /** Halaman Daftar (tombol "Daftar" homepage) — nama anak + email & no WA
-   *  orang tua → bayar Rp 99.000 lewat Xendit. */
+   *  orang tua → bayar Rp 99.000 lewat Midtrans. */
   | 'register'
-  /** Kembali dari halaman bayar Xendit (`/pembayaran?orderId=`) — menunggu
+  /** Kembali dari halaman bayar Midtrans (`/pembayaran?orderId=`) — menunggu
    *  pembayaran terkonfirmasi lalu otomatis masuk. */
   | 'payment'
   | 'placementTest'

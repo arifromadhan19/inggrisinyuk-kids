@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { withErrorHandling } from '@/lib/api-error';
-import { createInvoice, isMockPayment } from '@/lib/xendit';
+import { createSnapTransaction, isMockPayment } from '@/lib/midtrans';
 import { PRICE_IDR, generateOrderId, getAppUrl, markTransactionPaid } from '@/lib/checkout';
 import { isValidEmail, isValidPhone, normalizePhone } from '@/lib/phone';
 
 /**
  * Halaman Daftar (app anak `/daftar`) — nama anak + email & no WA orang tua
- * → buat invoice Xendit Rp 99.000 → app diarahkan ke `invoiceUrl`. Akun BELUM
+ * → buat transaksi Midtrans Snap Rp 99.000 → app diarahkan ke `invoiceUrl`. Akun BELUM
  * dibuat di sini; dibuat webhook saat lunas (`lib/checkout.ts`).
  */
 export const POST = withErrorHandling(async (req: NextRequest): Promise<NextResponse> => {
@@ -44,20 +44,21 @@ export const POST = withErrorHandling(async (req: NextRequest): Promise<NextResp
   }
 
   try {
-    const invoice = await createInvoice({
-      externalId: orderId,
+    const snap = await createSnapTransaction({
+      orderId,
       amount: PRICE_IDR,
-      description: `InggrisinYuk Kids — Akses Selamanya (${childName})`,
-      payerEmail: email,
-      successRedirectURL: successUrl,
-      failureRedirectURL: `${appUrl}/daftar`,
-      metadata: { phone, childName },
+      itemName: 'InggrisinYuk Kids - Akses Selamanya',
+      customerName: childName,
+      email,
+      phone,
+      // Tanpa query: Midtrans menambahkan `?order_id=...` sendiri.
+      finishUrl: `${appUrl}/pembayaran`,
     });
-    await db.transaction.update({ where: { orderId }, data: { xenditInvoiceId: invoice.id } });
-    return NextResponse.json({ invoiceUrl: invoice.invoiceUrl, orderId });
+    await db.transaction.update({ where: { orderId }, data: { paymentRef: snap.token } });
+    return NextResponse.json({ invoiceUrl: snap.redirectUrl, orderId });
   } catch (err) {
     await db.transaction.update({ where: { orderId }, data: { status: 'failed' } });
-    console.error('[checkout] Xendit createInvoice failed', err);
+    console.error('[checkout] Midtrans createSnapTransaction failed', err);
     return NextResponse.json({ error: 'Gagal membuat pesanan. Coba lagi sebentar.' }, { status: 502 });
   }
 });

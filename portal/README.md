@@ -17,9 +17,9 @@
 | `POST /api/auth/logout` | — | `{ok}` (client cukup hapus token lokal, ini formalitas) |
 | `GET /api/me` | header `Authorization: Bearer <token>` | `{parent, child}` |
 | `POST /api/placement-test` | `{answers}` atau `{skip:true}` | `{ok, levelRecommended, correctByLevel, totalCorrect}` |
-| `POST /api/checkout` | `{childName, email, phone}` | `{invoiceUrl, orderId}` — halaman Daftar app, invoice Xendit Rp 99.000 |
+| `POST /api/checkout` | `{childName, email, phone}` | `{invoiceUrl, orderId}` — halaman Daftar app, transaksi Midtrans Snap Rp 99.000 |
 | `GET /api/checkout/finalize?orderId=` | — | `{status}`; sekali saat lunas: `{status:'success', token, identifier}` |
-| `POST /api/webhooks/xendit` | callback Xendit (header `x-callback-token`) | lunas → buat akun orang tua + profil anak |
+| `POST /api/webhooks/midtrans` | notifikasi Midtrans (dicek `signature_key`) | lunas → buat akun orang tua + profil anak |
 
 ## Menjalankan (development)
 
@@ -38,9 +38,9 @@ npm run dev                 # http://localhost:3000 (cuma API, tidak ada UI)
 - `SESSION_SECRET` asli.
 - `DATABASE_URL` ke Postgres production.
 - `APP_ORIGIN` ke domain `app/` yang sebenarnya (buat CORS & URL balik dari halaman bayar).
-- `XENDIT_SECRET_KEY` (Live) & `XENDIT_WEBHOOK_TOKEN`, hapus `XENDIT_MOCK`. Di Dashboard Xendit, arahkan webhook "Invoice paid" ke `https://<domain>/api/webhooks/xendit`.
+- `MIDTRANS_SERVER_KEY` (Production) & `MIDTRANS_IS_PRODUCTION="true"`, hapus `PAYMENT_MOCK`. Di Dashboard Midtrans (Environment Production) → Settings → Payment, isi Notification URL `https://<domain>/api/webhooks/midtrans` & Finish URL ke halaman app `/pembayaran`.
 
-Tes lokal tanpa akun Xendit: `XENDIT_MOCK="1"` di `.env` → pembayaran di halaman Daftar dianggap langsung lunas (otomatis mati kalau `NODE_ENV=production`).
+Tes lokal tanpa payment gateway: `PAYMENT_MOCK="1"` di `.env` → pembayaran di halaman Daftar dianggap langsung lunas (otomatis mati kalau `NODE_ENV=production`).
 
 ## Panel Manajemen User (CS) — URL rahasia, BUKAN `/admin`
 
@@ -54,5 +54,5 @@ Satu-satunya halaman di portal: ringkasan (total terdaftar, sudah/belum bayar, d
   ADMIN_PASSWORD='...' npm run admin:create -- <username> --role owner   # cetak kode 2FA
   npm run admin:create -- <username> --disable                           # cabut akses
   ```
-- **Hapus user** = soft delete (`removed_at`): login & token lama langsung ditolak, progres tetap ada. Alasan *Refund* menandai transaksi `refunded` (uangnya tetap dikembalikan manual lewat Xendit). Kalau orang yang sama bayar lagi, akun lamanya dipulihkan otomatis.
+- **Hapus user** = soft delete (`removed_at`): login & token lama langsung ditolak, progres tetap ada. Alasan *Refund* menandai transaksi `refunded` (uangnya tetap dikembalikan manual lewat Midtrans). Kalau orang yang sama bayar lagi, akun lamanya dipulihkan otomatis.
 - Angka "aktif" dari `child_daily_stats` (tanggal lokal perangkat, cutoff WIB) — hanya anak yang sudah sinkron (login & online).
