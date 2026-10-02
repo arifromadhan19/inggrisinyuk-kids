@@ -12,15 +12,28 @@ Internet ──HTTPS──> nginx ─┬─ /                 app/public (statis
                            └─ /_next/           ┘
 ```
 
-Perintah di bawah dijalankan di VPS. Ganti `DOMAINMU` dengan domain kamu
-(mis. `kids.contoh.com`) dan `IP_VPS` dengan IP publik VPS.
+Alamat production: **https://inggrisinyuk.com** (domain di Hostinger;
+`www.inggrisinyuk.com` otomatis dialihkan ke sini). Perintah di bawah dijalankan di VPS; ganti `IP_VPS` dengan IP publik VPS
+(Biznet Gio → server → tab *Network and Security*).
 
 ---
 
 ## 0. Persiapan (sekali)
 
-1. **Domain** — di pengelola DNS, buat **A record** `DOMAINMU` → `IP_VPS`.
-   Cek: `ping DOMAINMU` sudah menjawab dari `IP_VPS`.
+1. **DNS di Hostinger** — hPanel → Domains → `inggrisinyuk.com` → DNS / Nameservers →
+   DNS Records:
+
+   | Type | Name | Points to | TTL | Aksi |
+   |---|---|---|---|---|
+   | A | `@` | `IP_VPS` | 300 | **ubah** (sekarang `2.57.91.91` = halaman parkir Hostinger) |
+   | CNAME | `www` | `inggrisinyuk.com` | — | biarkan |
+
+   Pastikan tidak ada record **AAAA** untuk `@`/`www` (saat ini tidak ada), dan tidak ada
+   A record `@` kedua yang masih ke `2.57.91.91`.
+   Cek dari laptop (5–30 menit): `dig +short inggrisinyuk.com` dan `dig +short www.inggrisinyuk.com`
+   → keduanya keluar `IP_VPS`.
+   Sambil menunggu, kerjakan langkah 1–6. Aktifkan juga **auto-renew** domain
+   (berlaku s/d 22 Juni 2027).
 2. **Biznet Gio → Security Group** — izinkan masuk (inbound) TCP **22, 80, 443** saja.
 3. **Xendit** — siapkan Secret Key (pakai **Test** dulu) & Webhook Verification Token.
 
@@ -90,7 +103,7 @@ nano .env
 |---|---|
 | `DATABASE_URL` | `postgresql://inggrisinyuk:PASSWORD_DB@localhost:5432/inggrisinyuk_kids_portal?sslmode=disable` |
 | `SESSION_SECRET` | hasil `openssl rand -base64 32` |
-| `APP_ORIGIN` | `https://DOMAINMU` |
+| `APP_ORIGIN` | `https://inggrisinyuk.com` |
 | `XENDIT_SECRET_KEY` | key Xendit (Test dulu, lalu Live) |
 | `XENDIT_WEBHOOK_TOKEN` | Verification token dari Dashboard Xendit |
 | `XENDIT_MOCK` | **hapus baris ini** (jangan ada di production) |
@@ -114,12 +127,12 @@ curl -s http://127.0.0.1:3000/api/me     # {"error":"Belum login."} = portal hid
 ## 7. nginx
 
 ```bash
-DOMAIN=kids.contoh.com      # <-- GANTI dengan domain kamu
+DOMAIN=inggrisinyuk.com
 cd /srv/inggrisinyuk-kids
 sudo cp deploy/nginx-proxy-snippet.conf /etc/nginx/snippets/inggrisinyuk-proxy.conf
 sudo cp deploy/nginx.conf /etc/nginx/sites-available/inggrisinyuk-kids
 GATE=$(grep '^ADMIN_GATE=' portal/.env | cut -d= -f2- | tr -d '"')
-sudo sed -i "s/DOMAINMU/$DOMAIN/; s/GANTI_ADMIN_GATE/$GATE/" /etc/nginx/sites-available/inggrisinyuk-kids
+sudo sed -i "s/DOMAINMU/$DOMAIN/g; s/GANTI_ADMIN_GATE/$GATE/" /etc/nginx/sites-available/inggrisinyuk-kids
 sudo ln -s /etc/nginx/sites-available/inggrisinyuk-kids /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
@@ -129,16 +142,18 @@ Folder `/srv/inggrisinyuk-kids` harus bisa dibaca nginx: `chmod 755 /srv/inggris
 
 ## 8. HTTPS (wajib — mic Speaking hanya jalan di HTTPS)
 
+Jalankan setelah `dig +short inggrisinyuk.com` **dan** `dig +short www.inggrisinyuk.com` sudah menampilkan IP VPS.
+
 ```bash
-sudo certbot --nginx -d DOMAINMU --redirect -m email@kamu.com --agree-tos -n
+sudo certbot --nginx -d inggrisinyuk.com -d www.inggrisinyuk.com --redirect -m EMAIL_KAMU --agree-tos -n   # ganti EMAIL_KAMU
 ```
 
 Sertifikat diperpanjang otomatis oleh certbot.
 
 ## 9. Xendit
 
-1. Dashboard Xendit → Settings → Webhooks → **Invoices paid**: `https://DOMAINMU/api/webhooks/xendit`.
-2. Coba beli sungguhan lewat `https://DOMAINMU/daftar` dengan **key Test** (bayar pakai simulasi Xendit).
+1. Dashboard Xendit → Settings → Webhooks → **Invoices paid**: `https://inggrisinyuk.com/api/webhooks/xendit`.
+2. Coba beli sungguhan lewat `https://inggrisinyuk.com/daftar` dengan **key Test** (bayar pakai simulasi Xendit).
    Berhasil = setelah bayar diarahkan ke `/pembayaran`, lalu otomatis masuk ke Placement Test.
 3. Ganti ke **key Live** di `portal/.env`, lalu `sudo systemctl restart inggrisinyuk-kids-portal`.
 
@@ -156,12 +171,13 @@ Backup tersimpan di `/srv/backups/db` (14 hari). Salin juga ke luar VPS secara b
 
 ## 11. Cek akhir
 
-- [ ] `https://DOMAINMU` → homepage tampil, gembok HTTPS aktif
-- [ ] Reload di `https://DOMAINMU/daftar` tidak 404
+- [ ] `https://inggrisinyuk.com` → homepage tampil, gembok HTTPS aktif
+- [ ] Reload di `https://inggrisinyuk.com/daftar` tidak 404
+- [ ] `https://www.inggrisinyuk.com` pindah otomatis ke `https://inggrisinyuk.com`
 - [ ] Daftar → bayar (Test) → otomatis masuk
 - [ ] Logout → Masuk pakai no WA (format `08…`) berhasil
 - [ ] Speaking: mic minta izin & merekam
-- [ ] Panel CS: `https://DOMAINMU/<ADMIN_GATE>/login`
+- [ ] Panel CS: `https://inggrisinyuk.com/<ADMIN_GATE>/login`
 
 ---
 

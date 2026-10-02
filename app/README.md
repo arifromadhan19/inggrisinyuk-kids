@@ -1,6 +1,6 @@
 # InggrisinYuk Kids — App (TypeScript)
 
-Port TypeScript dari prototipe [`alur-modul-belajar-prototype.html`](../alur-modul-belajar-prototype.html) — logic dan konten sama persis, cuma ditulis type-safe dan dipecah per modul, lalu dibundel jadi 1 file JS statis.
+Port TypeScript dari prototipe HTML awal `alur-modul-belajar-prototype.html` (sudah dihapus dari repo) — logic dan konten sama persis, cuma ditulis type-safe dan dipecah per modul, lalu dibundel jadi 1 file JS statis.
 
 Tetap **client-side murni, tanpa backend/database** (lihat `PRD.md` §5) — cuma nambah 1 langkah build kecil (TypeScript → JS) dibanding prototipe HTML yang bisa langsung dibuka di browser.
 
