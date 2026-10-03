@@ -12,8 +12,8 @@
  *
  * | Markas     | Prompt                                  | Isi balon      | Pengecoh                  | Balon | 💡 Bantuan                   |
  * |------------|-----------------------------------------|----------------|---------------------------|-------|------------------------------|
- * | Pemanasan  | 🔊 kata Inggris (dibacakan)             | GAMBAR         | acak, beda jauh           | 3     | balon benar berkedip (2x salah) |
- * | Mudah      | gambar + kata Indonesia (🔊 Indonesia)   | kata Inggris   | acak                      | 3     | coret 1 balon                |
+ * | Pemanasan  | 🔊 kata Inggris (dibacakan)             | GAMBAR         | acak, beda jauh           | 2     | balon benar berkedip (1x salah) |
+ * | Mudah      | gambar + kata Indonesia (🔊 Indonesia)   | kata Inggris   | acak                      | 4     | coret 1 balon                |
  * | Sedang     | kata Indonesia                          | kata Inggris   | MIRIP BENTUK (boat/goat)  | 4     | coret 1 balon                |
  * | Sulit      | kata Indonesia                          | kata Inggris   | SATU KATEGORI (4 buah)    | 4     | coret 1 balon                |
  * | Jago       | 🔊 kata Inggris SAJA (tanpa tulisan)     | kata Inggris   | MIRIP BUNYI (ship/sheep)  | 4     | arti Indonesia               |
@@ -50,8 +50,8 @@ export interface TierConfig {
 export const WORD_COUNT = 10;
 
 export const TIER_CONFIG: Record<BalloonDifficulty, TierConfig> = {
-  pemanasan: { label: 'Pemanasan', prompt: 'audio', balloonPicture: true, picker: 'random', balloons: 3, durMin: 17, durMax: 19, swayMin: 3.8, swayMax: 4.8, hint: 'flash', task: 'Dengarkan, lalu letupkan gambarnya!' },
-  mudah: { label: 'Mudah', prompt: 'picture-id', balloonPicture: false, picker: 'random', balloons: 3, durMin: 15, durMax: 17, swayMin: 3.4, swayMax: 4.4, hint: 'strike', task: 'Letupkan kata Inggrisnya!' },
+  pemanasan: { label: 'Pemanasan', prompt: 'audio', balloonPicture: true, picker: 'random', balloons: 2, durMin: 17, durMax: 19, swayMin: 3.8, swayMax: 4.8, hint: 'flash', task: 'Dengarkan, lalu letupkan gambarnya!' },
+  mudah: { label: 'Mudah', prompt: 'picture-id', balloonPicture: false, picker: 'random', balloons: 4, durMin: 15, durMax: 17, swayMin: 3.4, swayMax: 4.4, hint: 'strike', task: 'Letupkan kata Inggrisnya!' },
   sedang: { label: 'Sedang', prompt: 'id', balloonPicture: false, picker: 'group', balloons: 4, durMin: 13, durMax: 15, swayMin: 3, swayMax: 3.8, hint: 'strike', task: 'Awas, katanya mirip-mirip! Baca teliti, ya.' },
   sulit: { label: 'Sulit', prompt: 'id', balloonPicture: false, picker: 'group', balloons: 4, durMin: 12, durMax: 13.5, swayMin: 2.8, swayMax: 3.4, hint: 'strike', task: 'Semua balon dari kelompok {cat}. Pilih yang pas!' },
   jago: { label: 'Jago', prompt: 'audio-only', balloonPicture: false, picker: 'group', balloons: 4, durMin: 11, durMax: 12, swayMin: 2.6, swayMax: 3.2, hint: 'meaning', task: 'Dengarkan baik-baik, bunyinya mirip!' },

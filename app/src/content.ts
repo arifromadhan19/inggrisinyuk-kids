@@ -458,8 +458,8 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     scene: '🏪',
     desc: 'Cerita belanja',
     drill: [
-      { en: 'I want a red apple.', id: 'Aku mau apel merah.', opts: [{ emoji: '🍎', ok: true }, { emoji: '🍌' }, { emoji: '🍇' }] },
-      { en: 'Can I have a banana?', id: 'Bolehkah aku minta pisang?', opts: [{ emoji: '🍌', ok: true }, { emoji: '🍉' }, { emoji: '🍎' }] },
+      { en: 'I want a red apple.', id: 'Aku mau apel merah.', opts: [{ emoji: '🍎', ok: true }, { emoji: '🍌' }, { emoji: '🍇' }, { emoji: '🍊' }] },
+      { en: 'Can I have a banana?', id: 'Bolehkah aku minta pisang?', opts: [{ emoji: '🍌', ok: true }, { emoji: '🍉' }, { emoji: '🍎' }, { emoji: '🍓' }] },
     ],
     // `story` di 3 topik Listening ini (+ READING_TOPICS_ADVENTURER di
     // bawah) SENGAJA menyebut distraktor JUGA di teks (mis. "sees a
@@ -1011,7 +1011,7 @@ export const LISTENING_TOPICS: ListeningTopic[] = [
     scene: '🏥',
     desc: 'Cerita klinik',
     drill: [
-      { en: 'I have a headache.', id: 'Aku sakit kepala.', opts: [{ emoji: '🤕', ok: true }, { emoji: '😷' }, { emoji: '🤒' }] },
+      { en: 'I have a headache.', id: 'Aku sakit kepala.', opts: [{ emoji: '🤕', ok: true }, { emoji: '😷' }, { emoji: '🤒' }, { emoji: '🤧' }] },
       { en: 'The doctor gives me medicine.', id: 'Dokter memberiku obat.', opts: [{ emoji: '💊', ok: true }, { emoji: '💉' }] },
     ],
     story: ['Rani, what is wrong?', 'I do not have a cough. I have a fever.', 'Okay. I will give you medicine.'],
@@ -2339,9 +2339,9 @@ export const SPEAKING_TOPICS: AnySpeakingTopic[] = [
       { en: 'The train is long.', id: 'Keretanya panjang.', emoji: '🚆' },
     ],
     roleplay: [
-      { q: { en: 'Is the house big or small?', id: 'Rumah itu besar atau kecil?' }, answer: { en: 'The house is very big.', id: 'Rumahnya sangat besar.', emoji: '🏠' }, emoji: '🏠' },
-      { q: { en: 'Which is faster, a car or a bike?', id: 'Mana yang lebih cepat, mobil atau sepeda?' }, answer: { en: 'A car is much faster.', id: 'Mobil jauh lebih cepat.', emoji: '🏎️' }, emoji: '🏎️' },
-      { q: { en: 'What is the opposite of heavy?', id: 'Apa lawan kata berat?' }, answer: { en: 'The opposite of heavy is light.', id: 'Lawan kata berat adalah ringan.', emoji: '⚖️' }, emoji: '⚖️' },
+      { q: { en: 'Is the house big or small?', id: 'Rumah itu besar atau kecil?' }, answer: { en: 'The house is very big.', id: 'Rumahnya sangat besar.', emoji: '🏠' }, emoji: '🏠', choices: [{ en: 'The house is very small.', id: 'Rumahnya sangat kecil.', emoji: '🛖' }] },
+      { q: { en: 'Which is faster, a car or a bike?', id: 'Mana yang lebih cepat, mobil atau sepeda?' }, answer: { en: 'A car is much faster.', id: 'Mobil jauh lebih cepat.', emoji: '🏎️' }, emoji: '🏎️', choices: [{ en: 'A car is faster than a bike.', id: 'Mobil lebih cepat dari sepeda.', emoji: '🏎️' }] },
+      { q: { en: 'What is the opposite of heavy?', id: 'Apa lawan kata berat?' }, answer: { en: 'The opposite of heavy is light.', id: 'Lawan kata berat adalah ringan.', emoji: '⚖️' }, emoji: '⚖️', choices: [{ en: 'Light is the opposite of heavy.', id: 'Ringan adalah lawan kata berat.', emoji: '⚖️' }] },
     ],
   },
   {
@@ -2956,8 +2956,8 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     scene: '🛫',
     desc: 'Cerita bandara',
     drill: [
-      { en: 'The plane is blue and white.', id: 'Pesawatnya berwarna biru dan putih.', opts: [{ emoji: '✈️', ok: true }, { emoji: '🚗' }, { emoji: '🚢' }] },
-      { en: 'I need to check in my bag.', id: 'Aku perlu memasukkan tasku ke bagasi.', opts: [{ emoji: '🧳', ok: true }, { emoji: '🎒' }, { emoji: '📱' }] },
+      { en: 'The plane is blue and white.', id: 'Pesawatnya berwarna biru dan putih.', opts: [{ emoji: '✈️', ok: true }, { emoji: '🚗' }, { emoji: '🚢' }, { emoji: '🚂' }] },
+      { en: 'I need to check in my bag.', id: 'Aku perlu memasukkan tasku ke bagasi.', opts: [{ emoji: '🧳', ok: true }, { emoji: '🎒' }, { emoji: '📱' }, { emoji: '🧸' }] },
     ],
     // "10 o'clock" dilekatkan ke penerbangan TEMANNYA (bukan Rio) — anak
     // wajib bedakan penerbangan siapa yang ditanya, bukan cuma tangkap 1
@@ -3156,7 +3156,7 @@ export const LISTENING_TOPICS_ADVENTURER: ListeningTopic[] = [
     scene: '🌟',
     desc: 'Cerita cita-cita',
     drill: [
-      { en: 'The firefighter puts out fires.', id: 'Petugas pemadam kebakaran memadamkan api.', opts: [{ emoji: '👩‍🚒', ok: true }, { emoji: '👮' }, { emoji: '🧑‍🍳' }] },
+      { en: 'The firefighter puts out fires.', id: 'Petugas pemadam kebakaran memadamkan api.', opts: [{ emoji: '👩‍🚒', ok: true }, { emoji: '👮' }, { emoji: '🧑‍🍳' }, { emoji: '🧑‍🏫' }] },
       { en: 'The pilot flies the plane.', id: 'Pilot menerbangkan pesawat.', opts: [{ emoji: '🧑‍✈️', ok: true }, { emoji: '🧑‍🚀' }] },
     ],
     story: ['Sari, do you want to be a teacher like your mom?', 'No, I want to be a doctor.', 'That is a great dream!'],
@@ -6918,7 +6918,7 @@ export const SPEAKING_TOPICS_ADVENTURER: AnySpeakingTopic[] = [
     ],
     roleplay: [
       { q: { en: 'What does a giraffe look like?', id: 'Seperti apa rupa jerapah?' }, answer: { en: 'A giraffe is tall and has brown spots.', id: 'Jerapah tinggi dan punya bintik cokelat.' }, choices: [{ en: 'A giraffe has a very long neck and long legs.', id: 'Jerapah punya leher yang sangat panjang dan kaki panjang.' }] },
-      { q: { en: 'Which is bigger, an elephant or a mouse?', id: 'Mana yang lebih besar, gajah atau tikus?' }, answer: { en: 'An elephant is much bigger than a mouse.', id: 'Gajah jauh lebih besar dari tikus.', emoji: '🐭' }, emoji: '🐭' },
+      { q: { en: 'Which is bigger, an elephant or a mouse?', id: 'Mana yang lebih besar, gajah atau tikus?' }, answer: { en: 'An elephant is much bigger than a mouse.', id: 'Gajah jauh lebih besar dari tikus.', emoji: '🐭' }, emoji: '🐭', choices: [{ en: 'An elephant is bigger.', id: 'Gajah lebih besar.', emoji: '🐭' }] },
       { q: { en: 'Why do you like your favorite animal?', id: 'Kenapa kamu suka hewan favoritmu?' }, answer: { en: 'I like cats because they are soft and cute.', id: 'Aku suka kucing karena mereka lembut dan lucu.', emoji: '🐱🐱' }, emoji: '🐱', choices: [{ en: 'I like dogs because they are loyal and friendly.', id: 'Aku suka anjing karena setia dan ramah.', emoji: '🐶🐶' }] },
     ],
   },
@@ -34516,8 +34516,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Anak-anak harus membawa bekal makan siang sendiri.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -34530,7 +34529,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "The bus leaves at 7.",
               "Lunch starts at 6:30.",
-              "The zoo opens at 6:30."
+              "The zoo opens at 6:30.",
+              "They must clean the bus."
             ],
             "answer": 0,
             "evidence": [
@@ -34553,15 +34553,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "The bus trip takes one hour.",
-            "qId": "Perjalanan busnya satu jam.",
+            "q": "Children need to bring a hat.",
+            "qId": "Anak-anak perlu membawa topi.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [4]
           },
           {
             "q": "What will happen if it rains?",
@@ -34569,7 +34568,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "The picnic will be a week later.",
               "The picnic will be cancelled.",
-              "They will eat at school."
+              "They will eat at school.",
+              "They will go to the beach."
             ],
             "answer": 0,
             "evidence": [
@@ -34624,8 +34624,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Orang utan itu sangat berisik.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -34638,7 +34637,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Three hours",
               "One hour",
-              "The whole day"
+              "The whole day",
+              "Two hours"
             ],
             "answer": 0,
             "evidence": [
@@ -34660,15 +34660,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Andi fell asleep on the bus home.",
-            "qId": "Andi tertidur di bus saat pulang.",
+            "q": "The writer slept on the way home.",
+            "qId": "Penulis tertidur di perjalanan pulang.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [7]
           },
           {
             "q": "Why did Andi say the animals liked him?",
@@ -34676,7 +34675,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "The orangutan waved, and a monkey came close.",
               "He fed all the animals.",
-              "He won a prize."
+              "He won a prize.",
+              "He gave them his lunch."
             ],
             "answer": 0,
             "evidence": [
@@ -34974,8 +34974,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Kenji dan Yumi sama-sama suka sepak bola.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -34988,7 +34987,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "They like different things.",
               "They look very different.",
-              "They are different ages."
+              "They are different ages.",
+              "They live in different countries."
             ],
             "answer": 0,
             "evidence": [
@@ -35011,15 +35011,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Arif lives in Jakarta.",
-            "qId": "Arif tinggal di Jakarta.",
+            "q": "Kenji has never visited Indonesia.",
+            "qId": "Kenji belum pernah ke Indonesia.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [6]
           },
           {
             "q": "What does Kenji want to know?",
@@ -35027,7 +35026,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "If Indonesia has over 17,000 islands",
               "What Arif looks like",
-              "When Arif will visit Japan"
+              "When Arif will visit Japan",
+              "What Arif's favourite food is"
             ],
             "answer": 0,
             "evidence": [
@@ -35078,8 +35078,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Semua sahabat pena akhirnya saling berkunjung.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -35092,7 +35091,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Share your home address",
               "Write in English",
-              "Talk about food"
+              "Talk about food",
+              "Draw a picture"
             ],
             "answer": 0,
             "evidence": [
@@ -35114,15 +35114,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Pen pals must write every week.",
-            "qId": "Sahabat pena harus menulis surat setiap minggu.",
+            "q": "Pen pals can learn about food from other countries.",
+            "qId": "Sahabat pena bisa belajar tentang makanan dari negara lain.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [2]
           },
           {
             "q": "Who should help you first?",
@@ -35130,7 +35129,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "A parent or teacher",
               "Your pen pal",
-              "A shop assistant"
+              "A shop assistant",
+              "A stranger online"
             ],
             "answer": 0,
             "evidence": [
@@ -35411,8 +35411,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Lala dan Tante Mira akan bertemu di museum.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -35425,7 +35424,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "They will walk a lot.",
               "It will rain.",
-              "The museum is closed."
+              "The museum is closed.",
+              "They will go swimming."
             ],
             "answer": 0,
             "evidence": [
@@ -35447,15 +35447,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "The museum is free to enter.",
-            "qId": "Masuk museumnya gratis.",
+            "q": "Lala should wear comfortable shoes.",
+            "qId": "Lala sebaiknya memakai sepatu yang nyaman.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [4]
           },
           {
             "q": "Why does Aunt Mira say 'Don't worry'?",
@@ -35463,7 +35462,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Lala had very spicy food last time.",
               "Lala is scared of buses.",
-              "The museum is far away."
+              "The museum is far away.",
+              "The bus is very old."
             ],
             "answer": 0,
             "evidence": [
@@ -35514,8 +35514,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Udara di Bandung lebih hangat daripada di Jakarta.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -35528,7 +35527,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "It has many gardens.",
               "It sells flowers to Jakarta.",
-              "Its buildings are colourful."
+              "Its buildings are colourful.",
+              "Its people wear flowers."
             ],
             "answer": 0,
             "evidence": [
@@ -35550,15 +35550,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Bandung has the biggest garden in Indonesia.",
-            "qId": "Bandung punya taman terbesar di Indonesia.",
+            "q": "Bandung is famous for its many gardens.",
+            "qId": "Bandung terkenal dengan banyak tamannya.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [2]
           },
           {
             "q": "Why do visitors come on Friday night?",
@@ -35566,7 +35565,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "To avoid the traffic",
               "To eat batagor",
-              "To see the flowers at night"
+              "To see the flowers at night",
+              "To visit the museum"
             ],
             "answer": 0,
             "evidence": [
@@ -35848,8 +35848,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Perpustakaannya ada di sebelah bank.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -35862,7 +35861,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "At the zebra crossing",
               "At the traffic lights",
-              "Near the café"
+              "Near the café",
+              "In front of the mosque"
             ],
             "answer": 0,
             "evidence": [
@@ -35884,15 +35884,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "The man works at the library.",
-            "qId": "Bapak itu bekerja di perpustakaan.",
+            "q": "The library is five minutes away on foot.",
+            "qId": "Perpustakaannya lima menit jalan kaki.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [6]
           },
           {
             "q": "How will Rani probably get there?",
@@ -35900,7 +35899,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "On foot",
               "By bus",
-              "By car"
+              "By car",
+              "By train"
             ],
             "answer": 0,
             "evidence": [
@@ -35955,8 +35955,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Pak Hadi bisa mengambil paketnya hari ini.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -35969,7 +35968,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "This note and his ID card",
               "Some money",
-              "A big box"
+              "A big box",
+              "His school uniform"
             ],
             "answer": 0,
             "evidence": [
@@ -35991,15 +35991,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "The parcel is a present from Mr. Hadi's sister.",
-            "qId": "Paket itu hadiah dari kakak Pak Hadi.",
+            "q": "Nobody was at home when the postman came.",
+            "qId": "Tidak ada orang di rumah saat tukang pos datang.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [2]
           },
           {
             "q": "What other choice does Mr. Hadi have?",
@@ -36007,7 +36006,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "The postman can try again on Thursday.",
               "He can call the shop.",
-              "He can wait until next month."
+              "He can wait until next month.",
+              "He can get it from Pak Joko's house."
             ],
             "answer": 0,
             "evidence": [
@@ -36287,8 +36287,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Kevin belum punya kardus sama sekali.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -36301,7 +36300,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "His parents are working.",
               "He is sick.",
-              "It is raining."
+              "It is raining.",
+              "He has a lot of homework."
             ],
             "answer": 0,
             "evidence": [
@@ -36323,15 +36323,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Tara is good at painting.",
-            "qId": "Tara pandai mengecat.",
+            "q": "Tara's friend wants to build a cardboard castle.",
+            "qId": "Teman Tara ingin membuat istana dari kardus.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [2]
           },
           {
             "q": "Who will make pizza?",
@@ -36339,7 +36338,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Kevin's mom",
               "Kevin",
-              "Tara"
+              "Tara",
+              "Kevin's dad"
             ],
             "answer": 0,
             "evidence": [
@@ -36390,8 +36390,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Kebanyakan anak tetap bosan sepanjang akhir pekan.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -36404,7 +36403,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Families talk and laugh more.",
               "Children sleep more.",
-              "Families spend more money."
+              "Families spend more money.",
+              "Children read more books."
             ],
             "answer": 0,
             "evidence": [
@@ -36426,15 +36426,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Schools tell families to try screen-free weekends.",
-            "qId": "Sekolah menyuruh keluarga mencoba akhir pekan tanpa layar.",
+            "q": "A screen-free weekend lasts two days.",
+            "qId": "Akhir pekan tanpa layar berlangsung dua hari.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [1]
           },
           {
             "q": "What does the writer want readers to do?",
@@ -36442,7 +36441,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Try a screen-free weekend",
               "Buy a new tablet",
-              "Watch more TV"
+              "Watch more TV",
+              "Play games all weekend"
             ],
             "answer": 0,
             "evidence": [
@@ -36727,8 +36727,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Bayu cepat menemukan semua pemain.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -36741,7 +36740,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "In the living room",
               "In the garden",
-              "Under the bed"
+              "Under the bed",
+              "In the kitchen"
             ],
             "answer": 0,
             "evidence": [
@@ -36763,15 +36763,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Bayu's favourite cartoon is about animals.",
-            "qId": "Kartun kesukaan Bayu tentang hewan.",
+            "q": "Bayu was watching cartoons in the living room.",
+            "qId": "Bayu sedang menonton kartun di ruang tamu.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [5]
           },
           {
             "q": "Why didn't Bayu look for his friends?",
@@ -36779,7 +36778,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "He forgot they were playing.",
               "He was hiding too.",
-              "He was sick."
+              "He was sick.",
+              "He was angry with them."
             ],
             "answer": 0,
             "evidence": [
@@ -36830,8 +36830,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Main petak umpet butuh mainan khusus.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -36844,7 +36843,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Touch a 'home' tree",
               "Run home",
-              "Close the door"
+              "Close the door",
+              "Climb a tree"
             ],
             "answer": 0,
             "evidence": [
@@ -36866,15 +36866,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Hide and seek was first played in Indonesia.",
-            "qId": "Petak umpet pertama kali dimainkan di Indonesia.",
+            "q": "Hide and seek helps children plan.",
+            "qId": "Petak umpet membantu anak-anak merencanakan.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [5]
           },
           {
             "q": "According to scientists, how does the game help children?",
@@ -36882,7 +36881,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "It helps them think, plan and work with others.",
               "It helps them run faster than adults.",
-              "It helps them sleep better."
+              "It helps them sleep better.",
+              "It helps them win money."
             ],
             "answer": 0,
             "evidence": [
@@ -37153,8 +37153,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Murid harus mengunggah videonya ke media sosial.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -37167,7 +37166,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Two or three minutes",
               "Ten minutes",
-              "Thirty seconds"
+              "Thirty seconds",
+              "One hour"
             ],
             "answer": 0,
             "evidence": [
@@ -37189,15 +37189,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "The best video will win a prize.",
-            "qId": "Video terbaik akan mendapat hadiah.",
+            "q": "Students without a phone can make a poster.",
+            "qId": "Siswa tanpa ponsel boleh membuat poster.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [5]
           },
           {
             "q": "What can students without a phone do?",
@@ -37205,7 +37204,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Draw a poster",
               "Skip the project",
-              "Borrow Mr. Rudi's phone"
+              "Borrow Mr. Rudi's phone",
+              "Make a song"
             ],
             "answer": 0,
             "evidence": [
@@ -37256,8 +37256,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Semua keluarga punya koneksi internet yang bagus.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -37270,7 +37269,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "A mix of online and paper homework",
               "Only online homework",
-              "No homework at all"
+              "No homework at all",
+              "Only paper homework"
             ],
             "answer": 0,
             "evidence": [
@@ -37292,15 +37292,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Online homework is shorter than paper homework.",
-            "qId": "PR online lebih pendek daripada PR kertas.",
+            "q": "Online homework lets students watch videos again.",
+            "qId": "PR online membuat siswa bisa menonton video berulang.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [2]
           },
           {
             "q": "Why is that way best?",
@@ -37308,7 +37307,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Everyone can take part.",
               "It is faster.",
-              "Teachers work less."
+              "Teachers work less.",
+              "Students like it more."
             ],
             "answer": 0,
             "evidence": [
@@ -37589,8 +37589,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Sekolah lama Aisha lebih besar.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -37603,7 +37602,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "To thank Putri",
               "To say sorry",
-              "To invite Putri to a party"
+              "To invite Putri to a party",
+              "To ask for help with homework"
             ],
             "answer": 0,
             "evidence": [
@@ -37625,15 +37625,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Putri is Aisha's cousin.",
-            "qId": "Putri adalah sepupu Aisha.",
+            "q": "Aisha used to go to school in Makassar.",
+            "qId": "Dulu Aisha bersekolah di Makassar.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [2]
           },
           {
             "q": "What does Aisha want to borrow?",
@@ -37641,7 +37640,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "The book Putri told her about",
               "Putri's bag",
-              "A computer"
+              "A computer",
+              "Putri's pencil case"
             ],
             "answer": 0,
             "evidence": [
@@ -37692,8 +37692,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Di hari pertama sebaiknya datang pas waktunya saja.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -37706,7 +37705,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "To find your classroom",
               "To eat breakfast",
-              "To meet the head teacher"
+              "To meet the head teacher",
+              "To clean the classroom"
             ],
             "answer": 0,
             "evidence": [
@@ -37728,15 +37728,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "New students must wear a special badge.",
-            "qId": "Murid baru wajib memakai lencana khusus.",
+            "q": "Joining a club helps you make friends quickly.",
+            "qId": "Ikut klub membantumu cepat mendapat teman.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [5, 6]
           },
           {
             "q": "According to the writer, what are most students like?",
@@ -37744,7 +37743,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Friendly",
               "Unfriendly",
-              "Shy"
+              "Shy",
+              "Angry"
             ],
             "answer": 0,
             "evidence": [
@@ -38015,8 +38015,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Kacang di bawah lampu tumbuh lebih tinggi daripada kacang di jendela.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -38029,7 +38028,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "The window beans",
               "The lamp beans",
-              "The cupboard beans"
+              "The cupboard beans",
+              "The garden beans"
             ],
             "answer": 0,
             "evidence": [
@@ -38051,15 +38051,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Farah planted the beans with her dad.",
-            "qId": "Farah menanam kacangnya bersama ayahnya.",
+            "q": "The window beans grew the tallest.",
+            "qId": "Kacang di jendela tumbuh paling tinggi.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [3]
           },
           {
             "q": "What did they learn?",
@@ -38067,7 +38066,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Plants grow best in sunlight.",
               "Plants need no light.",
-              "Lamps are better than the sun."
+              "Lamps are better than the sun.",
+              "Plants grow best in water."
             ],
             "answer": 0,
             "evidence": [
@@ -38122,8 +38122,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Leo ingin menyimpan hadiahnya sendiri.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -38136,7 +38135,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "It was very clear.",
               "It was too short.",
-              "It was lost."
+              "It was lost.",
+              "It was too long."
             ],
             "answer": 0,
             "evidence": [
@@ -38158,15 +38158,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "The telescope is very expensive.",
-            "qId": "Teleskopnya sangat mahal.",
+            "q": "Leo and Farah will take turns keeping the telescope.",
+            "qId": "Leo dan Farah akan bergantian menyimpan teleskopnya.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [6]
           },
           {
             "q": "How does Leo want to share the prize?",
@@ -38174,7 +38173,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "They each keep it for a month.",
               "Leo keeps it forever.",
-              "They give it to Mr. Adi."
+              "They give it to Mr. Adi.",
+              "They sell it to a friend."
             ],
             "answer": 0,
             "evidence": [
@@ -38456,8 +38456,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Semua buku barunya tentang IPA.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -38470,7 +38469,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "45",
               "15",
-              "6"
+              "6",
+              "60"
             ],
             "answer": 0,
             "evidence": [
@@ -38492,15 +38492,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Class 6B will choose the next books.",
-            "qId": "Kelas 6B akan memilih buku-buku berikutnya.",
+            "q": "Each new book has a sign from Class 6B.",
+            "qId": "Setiap buku baru punya tanda dari Kelas 6B.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [4, 5]
           },
           {
             "q": "Who is borrowing the books?",
@@ -38508,7 +38507,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Students from other classes",
               "Only Class 6B",
-              "Only teachers"
+              "Only teachers",
+              "Only the librarian"
             ],
             "answer": 0,
             "evidence": [
@@ -38559,8 +38559,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Anak-anak sebaiknya menjaga uangnya sendiri.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -38573,7 +38572,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "What the money is for and how much you need",
               "Which cakes to bake",
-              "Who will make posters"
+              "Who will make posters",
+              "Which day to have a party"
             ],
             "answer": 0,
             "evidence": [
@@ -38595,15 +38595,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "A fun run always collects the most money.",
-            "qId": "Lari santai selalu mengumpulkan uang paling banyak.",
+            "q": "You should make posters about the event.",
+            "qId": "Kamu sebaiknya membuat poster tentang acaranya.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [3]
           },
           {
             "q": "Why should you make posters?",
@@ -38611,7 +38610,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "So everyone knows the date and time",
               "To sell them",
-              "To decorate the class"
+              "To decorate the class",
+              "To practise drawing"
             ],
             "answer": 0,
             "evidence": [
@@ -38904,8 +38904,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Sinta menemukan sampah paling banyak.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -38918,7 +38917,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "At the lighthouse",
               "At the school",
-              "At Beni's house"
+              "At Beni's house",
+              "At the beach café"
             ],
             "answer": 0,
             "evidence": [
@@ -38940,15 +38940,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "The scout group cleans the beach every Saturday.",
-            "qId": "Kelompok pramuka membersihkan pantai setiap Sabtu.",
+            "q": "Beni's prize was a book about sea turtles.",
+            "qId": "Hadiah Beni buku tentang penyu.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [4, 5]
           },
           {
             "q": "How did Sinta probably feel about the day?",
@@ -38956,7 +38955,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Tired but proud",
               "Bored and sad",
-              "Angry with Beni"
+              "Angry with Beni",
+              "Scared and lonely"
             ],
             "answer": 0,
             "evidence": [
@@ -39013,8 +39013,7 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "qId": "Danau Toba dibuat oleh manusia.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
             "answer": 1,
             "evidence": [
@@ -39027,7 +39026,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "Boats",
               "Mountains",
-              "Umbrellas"
+              "Umbrellas",
+              "Fish"
             ],
             "answer": 0,
             "evidence": [
@@ -39049,15 +39049,14 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
           },
           {
             "kind": "tfn",
-            "q": "Samosir island has a big airport.",
-            "qId": "Pulau Samosir punya bandara besar.",
+            "q": "Samosir is in the middle of Lake Toba.",
+            "qId": "Samosir ada di tengah Danau Toba.",
             "options": [
               "True",
-              "False",
-              "Doesn't say"
+              "False"
             ],
-            "answer": 2,
-            "evidence": []
+            "answer": 0,
+            "evidence": [2]
           },
           {
             "q": "Why is it a good idea to bring a jacket?",
@@ -39065,7 +39064,8 @@ export const READING_TOPICS_ACHIEVER: ReadingTextTopic[] = [
             "options": [
               "The evenings are cool.",
               "It rains every day.",
-              "The hotels are cold."
+              "The hotels are cold.",
+              "The lake water is hot."
             ],
             "answer": 0,
             "evidence": [

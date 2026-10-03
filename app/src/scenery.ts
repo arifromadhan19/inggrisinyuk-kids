@@ -116,6 +116,40 @@ export const GAME_STAR_FIELD = `<div class="game-star-field" aria-hidden="true">
 ).join('')}</div>`;
 
 /**
+ * Latar kelap-kelip Daftar Materi (permintaan user 2026-10-03: "background
+ * list materi kids friendly & menarik, animasi blink-blink seperti di
+ * game") — bintang SAMA dgn `GAME_STAR_FIELD` + gelembung warna lembut yang
+ * melayang pelan. `position:fixed` di belakang konten (styles.css
+ * `.topics-sky`), posisi TETAP (tidak acak tiap render). Sebagian besar di
+ * tepi kiri/kanan & celah antar-kartu supaya tidak mengganggu teks.
+ */
+const TOPICS_SPARKLES: SparkleSpot[] = [
+  { top: '22%', left: '3%', size: 18, color: 'var(--sun-400)', delay: 0 },
+  { top: '30%', left: '93%', size: 22, color: 'var(--accent, var(--brand-300))', delay: 0.9 },
+  { top: '44%', left: '48%', size: 14, color: 'var(--brand-300)', delay: 1.6 },
+  { top: '52%', left: '6%', size: 22, color: 'var(--accent, var(--c-vocab))', delay: 0.4 },
+  { top: '60%', left: '90%', size: 16, color: 'var(--sun-500)', delay: 2.2 },
+  { top: '72%', left: '30%', size: 12, color: 'var(--sun-400)', delay: 1.1 },
+  { top: '78%', left: '4%', size: 16, color: 'var(--brand-300)', delay: 1.9 },
+  { top: '84%', left: '94%', size: 20, color: 'var(--accent, var(--c-read))', delay: 0.6 },
+  { top: '94%', left: '62%', size: 14, color: 'var(--sun-500)', delay: 2.6 },
+];
+
+const TOPICS_BUBBLES: { top: string; left: string; size: number; color: string; delay: number }[] = [
+  { top: '26%', left: '82%', size: 90, color: 'var(--sun-400)', delay: 0 },
+  { top: '58%', left: '-4%', size: 120, color: 'var(--accent, var(--brand-300))', delay: 2 },
+  { top: '80%', left: '70%', size: 70, color: 'var(--brand-300)', delay: 4 },
+];
+
+export const TOPICS_SKY = `<div class="topics-sky" aria-hidden="true">${TOPICS_BUBBLES.map(
+  (b) =>
+    `<span class="topics-bubble" style="top:${b.top};left:${b.left};width:${b.size}px;height:${b.size}px;background:${b.color};animation-delay:${b.delay}s"></span>`
+).join('')}${TOPICS_SPARKLES.map(
+  (s) =>
+    `<span class="game-star" style="top:${s.top};left:${s.left};width:${s.size}px;height:${s.size}px;color:${s.color};animation-delay:${s.delay}s">${SPARKLE_SHAPE}</span>`
+).join('')}</div>`;
+
+/**
  * Maskot "Raja" Game Hub (`app.ts` `RAJA_LIST`, `materi/game.md` §7) — roster
  * KHUSUS Game Hub, beda karakter total dari 6 Raja Hewan Peta Level
  * (permintaan user eksplisit). Dibangun tangan dari bentuk SVG sederhana

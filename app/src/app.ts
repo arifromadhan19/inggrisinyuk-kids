@@ -54,7 +54,7 @@ import {
   ICON_SETTINGS,
 } from './icons';
 import { bindDelegatedClicks, clearHandlers, getGameMapReturn, isGameRoundActive, setGameRoundActive, setHandlers } from './interaction';
-import { CLOUD, HILLS_RIDGE, HILLS_SHORE, rajaMascot, TRAIL_BEND_LEFT, TRAIL_BEND_RIGHT, placeFor } from './scenery';
+import { CLOUD, HILLS_RIDGE, HILLS_SHORE, rajaMascot, TRAIL_BEND_LEFT, TRAIL_BEND_RIGHT, TOPICS_SKY, placeFor } from './scenery';
 import type { LastSpot, LearningInsights, Store, TopicSignal } from './progress';
 import {
   addGameXp,
@@ -112,7 +112,7 @@ import { escapeHtml, qs } from './util';
 import { renderVoicePanel } from './voice-panel';
 import { applyDefaultRate, DEFAULT_RATE, stopListening, stopSpeaking } from './speech';
 
-const STEP_LABELS = ['Kenalan', 'Latihan Inti', 'Tantangan'];
+const STEP_LABELS = ['Kenalan', 'Latihan', 'Tantangan'];
 
 /**
  * Avatar Bos per level — beda dari emoji level sendiri (LEVELS di content.ts,
@@ -850,6 +850,10 @@ function render(): void {
   // game") — pola SAMA PERSIS is-game-play, keluar tetap lewat tombol balik
   // yang sekarang jg digerbang pop up konfirmasi (`renderBoss`).
   document.body.classList.toggle('is-boss-play', state.screen === 'boss');
+  // Layar Belajar & semua sub-halamannya (Daftar Materi, Kenalan/Latihan/
+  // Tantangan, Kerja Bagus) tanpa header logo+sapaan di HP (permintaan user
+  // 2026-10-03) — layar soal jadi lebih lega; tabbar bawah tetap ada.
+  document.body.classList.toggle('is-belajar', activeNav() === 'belajar');
 
   syncNav();
   renderCrumb();
@@ -2026,7 +2030,7 @@ function renderRaporDetail(): void {
     {
       ic: '📘',
       name: 'Modul tuntas & Progres per Level',
-      what: 'Modul yang Latihan Inti & Tantangannya sudah dikerjakan semua (100%).',
+      what: 'Modul yang Latihan & Tantangannya sudah dikerjakan semua (100%).',
       how: 'Stats Singkat: jumlah dari semua level. Progres per Level: modul tuntas ÷ semua modul di level itu. Kenalan tidak dihitung.',
     },
     {
@@ -2045,7 +2049,7 @@ function renderRaporDetail(): void {
       ic: '💡',
       name: 'Pakai Petunjuk',
       what: 'Seberapa sering anak membuka 💡 Petunjuk saat mengerjakan. Makin kecil = makin mandiri. Petunjuk boleh dipakai, bukan kesalahan.',
-      how: 'Soal yang Petunjuknya dibuka ÷ semua soal yang sudah dikerjakan × 100%. Dihitung per soal (bukan per percobaan), di Latihan Inti & Tantangan semua skill. Kenalan & "💡 Jawabannya" yang muncul otomatis tidak dihitung.',
+      how: 'Soal yang Petunjuknya dibuka ÷ semua soal yang sudah dikerjakan × 100%. Dihitung per soal (bukan per percobaan), di Latihan & Tantangan semua skill. Kenalan & "💡 Jawabannya" yang muncul otomatis tidak dihitung.',
     },
     {
       ic: '🗓️',
@@ -2109,7 +2113,7 @@ function renderRaporDetail(): void {
       <div class="card-title">📡 Cara Data Dicatat</div>
       <ul>
         <li><b>Tiap jawaban</b> langsung disimpan di perangkat ini. App tetap jalan tanpa internet.</li>
-        <li><b>Dikirim ke akun hanya saat 1 bagian selesai</b>: Latihan Inti, tiap tab Tantangan, tiap babak Tantangan Raja, atau 1 markas game. Kenalan saja tidak memicu pengiriman.</li>
+        <li><b>Dikirim ke akun hanya saat 1 bagian selesai</b>: Latihan, tiap tab Tantangan, tiap babak Tantangan Raja, atau 1 markas game. Kenalan saja tidak memicu pengiriman.</li>
         <li>Bagian yang baru setengah jalan tetap aman di perangkat, dan ikut terkirim saat bagian berikutnya selesai.</li>
         <li>Data dari perangkat lain <b>digabung</b>, tidak saling menimpa: nilai tertinggi & soal yang sudah dikerjakan tidak pernah hilang.</li>
         <li>Waktu belajar, tren, dan nilai game juga ikut akun, jadi Rapor sama di HP mana pun setelah bagian berikutnya selesai.</li>
@@ -2210,25 +2214,29 @@ function renderMenu(): void {
   const sky = `<span class="cloud c1" aria-hidden="true">${CLOUD}</span><span class="cloud c2" aria-hidden="true">${CLOUD}</span>${HILLS_SHORE}`;
   const nextCard = next
     ? `
-      <article class="spark compact" style="--spark-accent:${SKILL_META[next.skill].accent}">
+      <article class="spark compact slim" style="--spark-accent:${SKILL_META[next.skill].accent}">
         ${sky}
         <div class="spark-body">
           <h2 class="spark-title">${topicTitle(next.skill, next.topicIndex, level.key)}</h2>
           <p class="spark-sub">${SKILL_META[next.skill].label} · ${SKILL_META[next.skill].tagline}</p>
-          <button class="cta" type="button" data-action="continueMateri">${ICON_PLAY} ${next.continuing ? 'Yuk Lanjutkan' : 'Yuk Mulai'}</button>
-          ${progressBar}
+          <div class="spark-row">
+            <button class="cta" type="button" data-action="continueMateri">${ICON_PLAY} ${next.continuing ? 'Yuk Lanjutkan' : 'Yuk Mulai'}</button>
+            ${progressBar}
+          </div>
         </div>
         <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${SKILL_META[next.skill].emoji}</span></div>
       </article>`
     : `
-      <article class="spark compact">
+      <article class="spark compact slim">
         ${sky}
         <div class="spark-body">
           <span class="eyebrow">Keren banget!</span>
           <h2 class="spark-title">Semua materi ${level.name} sudah tuntas! 🎉</h2>
           <p class="spark-sub">Yuk coba Markas ${BOSS_NAME[level.key]} — atau ulang materi mana saja kapan pun mau.</p>
-          <button class="cta" type="button" data-action="openBoss">🏰 Coba Tantangan ${BOSS_NAME[level.key]}</button>
-          ${progressBar}
+          <div class="spark-row">
+            <button class="cta" type="button" data-action="openBoss">🏰 Coba Tantangan ${BOSS_NAME[level.key]}</button>
+            ${progressBar}
+          </div>
         </div>
         <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${BOSS_AVATAR[level.key]}</span></div>
       </article>`;
@@ -2298,8 +2306,8 @@ function renderMenu(): void {
           <span class="eyebrow">Cara mainnya</span>
           <ol class="howto">
             <li><span class="n">1</span><span><b>Kenalan</b>Dengar contohnya dulu — tanpa hafalan, tanpa penjelasan panjang.</span></li>
-            <li><span class="n">2</span><span><b>Latihan Inti</b>Main sampai semua soal dicoba. Salah? Ulang saja, tidak ada nilai.</span></li>
-            <li><span class="n">3</span><span><b>Tantangan</b>Soal paling seru. Selesaikan Latihan Inti &amp; Tantangan, materinya tuntas ⭐.</span></li>
+            <li><span class="n">2</span><span><b>Latihan</b>Main sampai semua soal dicoba. Salah? Ulang saja, tidak ada nilai.</span></li>
+            <li><span class="n">3</span><span><b>Tantangan</b>Soal paling seru. Selesaikan Latihan &amp; Tantangan, materinya tuntas ⭐.</span></li>
           </ol>
         </div>
         <div class="card note-card">
@@ -2354,9 +2362,10 @@ function renderTopics(): void {
       const finished = topicFinished(key, t.id, level);
       return `
       <div class="topic-card ${finished ? 'done' : ''}" role="button" tabindex="0" data-action="openTopic" data-payload="${i}">
+        <span class="skill-pct topic-pct${finished ? ' done' : ''}">${finished ? '⭐ ' : ''}${pct}%</span>
         <div class="num" aria-hidden="true">${finished ? ICON_CHECK : i + 1}</div>
         <div class="info">
-          <b>${t.title} <span class="topic-pct${finished ? ' done' : ''}">- ${pct}%</span></b>
+          <b>${t.title}</b>
           <span>${finished ? '⭐ Sudah selesai' : t.desc}</span>
         </div>
         <div class="go">${finished ? 'Main lagi' : 'Mulai'}</div>
@@ -2377,6 +2386,7 @@ function renderTopics(): void {
   const topicPct = items.length > 0 ? Math.round((doneHere / items.length) * 100) : 0;
 
   root.innerHTML = `
+    ${TOPICS_SKY}
     <div class="topics-compact-bar" id="topicsCompactBar">
       <div class="topics-compact-inner">
         <button class="iconbtn" type="button" data-action="backToMenu" aria-label="Kembali ke Menu Belajar">${ICON_BACK}</button>
@@ -2388,14 +2398,17 @@ function renderTopics(): void {
     <div class="screen-head topics-head">
       <button class="iconbtn" type="button" data-action="backToMenu" aria-label="Kembali ke Menu Belajar">${ICON_BACK}</button>
       <div class="txt">
-        <h1>${meta.emoji} ${meta.label} <span class="tag accent">${items.length} materi</span></h1>
-        <p>${meta.tagline} — pilih materi untuk mulai</p>
-        <div class="progress-track" role="img" aria-label="${topicPct}% materi ${meta.label} sudah dikerjakan" style="margin-top:10px;max-width:340px">
-          <div class="progress-fill" style="width:${topicPct}%"></div>
-        </div>
-        <p class="meta" style="margin-top:6px">${doneHere} dari ${items.length} materi (${topicPct}%)${doneHere > 0 ? ' · Boleh diulang kapan saja.' : ''}</p>
+        <h1>${meta.emoji} ${meta.label}</h1>
+        <p class="topics-tagline">${meta.tagline}<span class="tl-extra"> — pilih materi untuk mulai</span></p>
       </div>
       <button class="ghost-btn cara-main-btn" type="button" data-action="openCaraMain">❓ Cara Main</button>
+      <p class="meta topics-count">${doneHere}/${items.length} materi</p>
+      <div class="topics-progress">
+        <div class="progress-track" role="img" aria-label="${topicPct}% materi ${meta.label} sudah dikerjakan">
+          <div class="progress-fill" style="width:${topicPct}%"></div>
+        </div>
+        <span class="meta topics-pct">${topicPct}%</span>
+      </div>
     </div>
 
     ${topicsLevelDropdown ? `<div class="topics-toolbar">${topicsLevelDropdown}</div>` : ''}
@@ -2412,7 +2425,7 @@ function renderTopics(): void {
               .map((a, i) => `<li><span class="n">${i + 1}</span><span><b>${a}</b></span></li>`)
               .join('')}
           </ol>
-          <p class="meta" style="margin-top:12px">Tiap materi jalannya sama: Kenalan → Latihan Inti → Tantangan.</p>
+          <p class="meta" style="margin-top:12px">Tiap materi jalannya sama: Kenalan → Latihan → Tantangan.</p>
         </div>
       </aside>
     </section>
@@ -2491,7 +2504,7 @@ function renderCaraMain(meta: SkillMeta, level: LevelMeta): void {
         </div>
         <div class="cara-main-step">
           <span class="num" aria-hidden="true">2</span>
-          <p><b>🎯 Latihan Inti</b><span>Jawab soalnya, boleh dicoba lagi kalau meleset.</span></p>
+          <p><b>🎯 Latihan</b><span>Jawab soalnya, boleh dicoba lagi kalau meleset.</span></p>
         </div>
         <div class="cara-main-step">
           <span class="num" aria-hidden="true">3</span>

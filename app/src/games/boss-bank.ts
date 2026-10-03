@@ -10,7 +10,7 @@
  * |-----------|----------------------------------|-----------------------------------|-------------------------------------------|
  * | Vocab     | dengar/arti/Inggrisnya (+gambar) | + lengkapi kalimat, kartu teks    | + 5 opsi                                  |
  * | Listening | kalimat + pertanyaan → gambar    | + cerita mini (+ jebakan)         | + Lengkapi Catatan / Dengar & Simpulkan   |
- * | Reading   | kalimat → gambar, ✅/❌          | teks utuh + soal, lengkapi cerita | + Benar/Salah/Tidak Disebut, kalimat hilang |
+ * | Reading   | kalimat → gambar, ✅/❌          | teks utuh + soal, lengkapi cerita | + Benar/Salah, kalimat hilang |
  * | Grammar   | dengar → kartu kontras (A & B)   | pilih bentuk yang pas (4 opsi)    | + teks pendek / transformasi              |
  * | Speaking  | tirukan frasa (dilaporkan saja)  | ucapkan jawaban                   | ucapkan jawaban                           |
  *
@@ -41,8 +41,8 @@ import type {
 } from '../types';
 import { escapeHtml, shuffle } from '../util';
 import { choiceLabel, contrastVisualInner, LABELED_VISUALS, sourceText, transformUi } from './grammar';
-import { dialogueGenders, listeningGapMs, pickDecoy } from './listening';
-import { textCardHtml } from './reading';
+import { dialogueGenders, listeningGapMs, withDecoysEven } from './listening';
+import { evenPictureQuestion, textCardHtml } from './reading';
 import { blankSentence, isAboveStarter, isColorTopic, isDayTopic, isFlyersOrAbove, isNumberTopic, isShapeTopic, itemGlyph } from './vocabulary';
 
 export const OBJECTIVE_SKILLS: SkillKey[] = ['vocabulary', 'listening', 'reading', 'grammar'];
@@ -258,7 +258,20 @@ export function buildQuestion(level: LevelKey, id: string): BossQ | null {
   return cache.get(key) ?? null;
 }
 
+/** 🔒 Jumlah opsi WAJIB genap (2/4/6) — sisa ganjil (mis. stok pengecoh
+ *  kurang, soal Reading 3 opsi) → 1 opsi salah dibuang. */
+function evenChoices(q: BossQ | null): BossQ | null {
+  if (!q || q.kind !== 'choice' || q.options.length % 2 === 0) return q;
+  const wrong = q.options.filter((o) => !o.ok);
+  const drop = shuffle(wrong)[0];
+  return drop ? { ...q, options: q.options.filter((o) => o !== drop) } : q;
+}
+
 function safeBuild(level: LevelKey, id: string): BossQ | null {
+  return evenChoices(buildRaw(level, id));
+}
+
+function buildRaw(level: LevelKey, id: string): BossQ | null {
   try {
     const parts = id.split(SEP);
     const [p, topicId] = parts;
@@ -287,7 +300,7 @@ function vocabQ(level: LevelKey, id: string, topicId: string, idx: number, kind:
     return leaky ? '' : itemGlyph(topic.id, o);
   };
   const labelOf = (o: VocabItem): string => (kind === 'toId' || (kind === 'hear' && above) ? o.id : o.en);
-  const count = isFlyersOrAbove(level) ? 4 : 3;
+  const count = isFlyersOrAbove(level) ? 5 : 3;
   const seenLabels = new Set([labelOf(it).toLowerCase()]);
   const seenEmoji = new Set([emo(it)]);
   const distract: VocabItem[] = [];
@@ -374,9 +387,7 @@ function listeningQ(level: LevelKey, id: string, topicId: string, kind: string, 
   }
   if (kind === 's' && !('items' in topic)) {
     const q = topic.question;
-    const existing = q.opts.map((o) => o.lbl ?? '');
-    const decoy = pickDecoy(q.decoys ?? [], (o) => o.lbl ?? '', existing, topic.story.join(' '));
-    const raw = [...q.opts, ...(decoy ? [{ ...decoy, ok: false }] : [])].map((o) => ({ emoji: o.emoji, label: o.lbl ?? o.emoji, ok: !!o.ok }));
+    const raw = withDecoysEven(q.opts, q.decoys ?? [], (o) => o.lbl ?? '', (o) => !!o.ok, topic.story.join(' '), (d) => ({ ...d, ok: false })).map((o) => ({ emoji: o.emoji, label: o.lbl ?? o.emoji, ok: !!o.ok }));
     const labeled = raw.every((o) => o.label && o.label !== o.emoji);
     const options = shuffle(raw).map((o) => ({ emoji: o.emoji, label: labeled ? o.label : undefined, ok: o.ok }));
     const voices = topic.storyVoices;
@@ -403,8 +414,7 @@ function listeningQ(level: LevelKey, id: string, topicId: string, kind: string, 
     if (!g) return null;
     const passage = topic.notePassage;
     const text = passage.map((l) => l.en).join(' ');
-    const decoy = pickDecoy(g.decoys ?? [], (s) => s, g.options, text);
-    const labels = shuffle([...g.options, ...(decoy ? [decoy] : [])]);
+    const labels = shuffle(withDecoysEven(g.options, g.decoys ?? [], (s) => s, (o) => o === g.answer, text, (d) => d));
     const withSpeaker = passage.every((l) => l.speaker);
     const genders = withSpeaker ? dialogueGenders(passage.map((l) => ({ speaker: l.speaker!, en: l.en, id: l.id }))) : null;
     return {
@@ -433,8 +443,7 @@ function listeningQ(level: LevelKey, id: string, topicId: string, kind: string, 
     if (!q) return null;
     const lines: ListeningDialogueLine[] = topic.dialogueLines;
     const genders = dialogueGenders(lines);
-    const decoy = pickDecoy(q.decoys ?? [], (o) => o.text, q.options.map((o) => o.text), lines.map((l) => l.en).join(' '));
-    const opts = shuffle([...q.options, ...(decoy ? [{ ...decoy, ok: false }] : [])]);
+    const opts = shuffle(withDecoysEven(q.options, q.decoys ?? [], (o) => o.text, (o) => o.ok, lines.map((l) => l.en).join(' '), (d) => ({ ...d, ok: false })));
     return {
       kind: 'choice',
       id,
@@ -494,8 +503,9 @@ function gapDistractors(x: ReadingText, word: string, q: string, evidence: numbe
 function readingQ(level: LevelKey, id: string, topicId: string, set: string, xi: number, qi: number): BossChoiceQ | null {
   const topic = ((READING_TOPICS_BY_LEVEL[level] ?? []) as AnyReadingTopic[]).find((t) => t.id === topicId);
   const x = (set === 'n' ? topic?.newTexts : topic?.texts)?.[xi];
-  const q = x?.questions[qi];
-  if (!topic || !x || !q) return null;
+  const raw = x?.questions[qi];
+  if (!topic || !x || !raw) return null;
+  const q = evenPictureQuestion(x, raw);
   const k = q.kind ?? 'text';
   const young = level === 'little-stars' || level === 'starter';
   const answer = q.options[q.answer] ?? '';

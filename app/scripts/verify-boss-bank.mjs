@@ -45,6 +45,7 @@ for (const lv of LEVELS) {
       if (oks !== 1) errors.push(`${lv}/${sk} "${id}": ${oks} jawaban benar (wajib tepat 1).`);
       if (new Set(labels).size !== labels.length) errors.push(`${lv}/${sk} "${id}": ada opsi kembar (${labels.join(' | ')}).`);
       if (q.options.length < 2) errors.push(`${lv}/${sk} "${id}": opsi kurang dari 2.`);
+      if (q.options.length % 2 === 1) errors.push(`${lv}/${sk} "${id}": jumlah opsi ganjil (${q.options.length}) — wajib genap 2/4/6.`);
     }
   }
 }
@@ -53,4 +54,4 @@ if (errors.length) {
   for (const e of errors.slice(0, 40)) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log(`✅ Verifikasi bank soal Tantangan Raja lolos — ${checked} soal (6 level × 5 skill) stok cukup, tepat 1 jawaban benar, tanpa opsi kembar.`);
+console.log(`✅ Verifikasi bank soal Tantangan Raja lolos — ${checked} soal (6 level × 5 skill) stok cukup, tepat 1 jawaban benar, tanpa opsi kembar, jumlah opsi genap.`);

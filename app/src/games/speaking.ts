@@ -440,9 +440,9 @@ function nextUnfinishedRound(round: number, total: number, statusOf: (i: number)
 
 /** 💡 Petunjuk — `locked` (tier Lanjut, #4) = baru bisa dibuka setelah 1x coba. */
 function petunjukButtonHtml(revealed: boolean, locked = false): string {
-  return `<button class="speak-btn-ghost" type="button" data-action="petunjuk" ${revealed || locked ? 'disabled' : ''}${
+  return `<button class="speak-btn-ghost icon-only" type="button" data-action="petunjuk" aria-label="Petunjuk" title="Petunjuk" ${revealed || locked ? 'disabled' : ''}${
     locked ? ' title="Coba jawab dulu, ya"' : ''
-  }><span class="hint-bulb">💡</span> Petunjuk${locked ? ' 🔒' : ''}</button>`;
+  }><span class="hint-bulb">${locked ? '🔒' : '💡'}</span></button>`;
 }
 
 function micResultHtml(s: MicScore, said: string, answerHtml: string): string {
@@ -876,6 +876,9 @@ function runNgobrol(container: HTMLElement, topic: AnySpeakingTopic, onDone: OnD
     const prepareChoices = (): void => {
       const t = prompt.turns[turnIdx];
       order = t.scoring === 'choose' ? shuffle(t.choices ?? [t.answer]) : [];
+      // 🔒 Jumlah kartu WAJIB genap (2/4/6) — Trailblazer py 3 pilihan (semua
+      // benar) → tampil 2 acak.
+      if (order.length > 1 && order.length % 2 === 1) order = order.slice(0, order.length - 1);
       chosen = order.length === 1 ? 0 : null;
     };
     prepareChoices();

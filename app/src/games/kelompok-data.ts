@@ -14,9 +14,9 @@
  * |------------|---------------------------------|-----------------------------------|-------------------------------|
  * | Pemanasan  | gambar + kata dibacakan 🔊       | 2, ikon + label Inggris           | arti Indonesia nama keranjang |
  * | Mudah      | KATA Inggris tertulis (tanpa gambar) | 2, ikon + label Inggris       | gambar katanya muncul         |
- * | Sedang     | kata Inggris tertulis           | 3, ikon + label Inggris           | gambar katanya muncul         |
- * | Sulit      | kata Inggris tertulis           | 3 TEMPAT, label Inggris SAJA      | arti Indonesia kata           |
- * | Jago       | 🔊 kata DIDENGAR saja            | 3, ikon + label Inggris           | tulisan katanya muncul        |
+ * | Sedang     | kata Inggris tertulis           | 4, ikon + label Inggris           | gambar katanya muncul         |
+ * | Sulit      | kata Inggris tertulis           | 4 TEMPAT, label Inggris SAJA      | arti Indonesia kata           |
+ * | Jago       | 🔊 kata DIDENGAR saja            | 4, ikon + label Inggris           | tulisan katanya muncul        |
  * | Legendaris | "Odd One Out": 4 kata, 1 bukan kelompoknya | —                      | nama kelompok 3 kata lain     |
  *
  * 10 soal per markas. Kategori WAJIB tidak ambigu: 1 kata cuma cocok ke 1
@@ -168,8 +168,8 @@ const PLACES = ['kitchen', 'bathroom', 'classroom', 'bedroom'];
 export const TIER_CONFIG: Record<WordMatchDifficulty, TierConfig> = {
   pemanasan: { label: 'Pemanasan', mode: 'sort', groups: THINGS, baskets: 2, basketIcon: true, show: 'picture', hint: 'basket-meaning', hintGated: false, task: 'Masuk keranjang yang mana?' },
   mudah: { label: 'Mudah', mode: 'sort', groups: THINGS, baskets: 2, basketIcon: true, show: 'word', hint: 'picture', hintGated: false, task: 'Baca katanya, lalu pilih keranjangnya.' },
-  sedang: { label: 'Sedang', mode: 'sort', groups: THINGS, baskets: 3, basketIcon: true, show: 'word', hint: 'picture', hintGated: false, task: 'Sekarang ada 3 keranjang. Pilih yang pas!' },
-  sulit: { label: 'Sulit', mode: 'sort', groups: PLACES, baskets: 3, basketIcon: false, show: 'word', hint: 'meaning', hintGated: false, task: 'Benda ini biasanya ada di mana?' },
-  jago: { label: 'Jago', mode: 'sort', groups: THINGS, baskets: 3, basketIcon: true, show: 'audio', hint: 'word', hintGated: true, task: 'Dengarkan katanya, lalu pilih keranjangnya.' },
+  sedang: { label: 'Sedang', mode: 'sort', groups: THINGS, baskets: 4, basketIcon: true, show: 'word', hint: 'picture', hintGated: false, task: 'Sekarang ada 4 keranjang. Pilih yang pas!' },
+  sulit: { label: 'Sulit', mode: 'sort', groups: PLACES, baskets: 4, basketIcon: false, show: 'word', hint: 'meaning', hintGated: false, task: 'Benda ini biasanya ada di mana?' },
+  jago: { label: 'Jago', mode: 'sort', groups: THINGS, baskets: 4, basketIcon: true, show: 'audio', hint: 'word', hintGated: true, task: 'Dengarkan katanya, lalu pilih keranjangnya.' },
   legendaris: { label: 'Legendaris', mode: 'odd', groups: ['colors', 'numbers', 'days', 'feelings', 'jobs', 'weather', 'animals', 'vehicles'], baskets: 0, basketIcon: false, show: 'word', hint: 'group-name', hintGated: true, task: 'Tiga kata satu kelompok. Tap yang BUKAN kelompoknya!' },
 };

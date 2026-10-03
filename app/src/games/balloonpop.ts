@@ -227,7 +227,8 @@ function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficult
   let hintUsed = false;
 
   const q = () => questions[wordIndex];
-  const lanes = cfg.balloons === 3 ? [20, 50, 80] : [15, 39, 62, 86];
+  // 🔒 Jumlah balon WAJIB genap (2/4) — opsi jawaban tidak boleh ganjil.
+  const lanes = cfg.balloons === 2 ? [30, 70] : [15, 39, 62, 86];
 
   function playPrompt(): void {
     if (cfg.prompt === 'audio') speak(`Pop the ${q().en}!`);
@@ -362,8 +363,8 @@ function runBalloonPopRound(container: HTMLElement, difficulty: BalloonDifficult
       btn.classList.add('is-wrong');
       setTimeout(() => btn.classList.remove('is-wrong'), 380);
       wrongCount += 1;
-      // Pemanasan: setelah 2x salah, balon yang benar berkedip.
-      if (cfg.hint === 'flash' && wrongCount >= 2) balloonEl(q().answer)?.classList.add('is-hint');
+      // Pemanasan (2 balon): setelah 1x salah, balon yang benar berkedip.
+      if (cfg.hint === 'flash' && wrongCount >= 1) balloonEl(q().answer)?.classList.add('is-hint');
       if (fb) {
         fb.textContent = pickEncourage(level);
         fb.className = 'feedback bad';

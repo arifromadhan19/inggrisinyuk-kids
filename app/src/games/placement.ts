@@ -145,7 +145,7 @@ const SKILL_TASTE: [string, string, string][] = [
  */
 export function renderPlacementIntro(container: HTMLElement, onStart: OnDone, onSkip: OnDone): void {
   container.innerHTML = `
-    <span class="stage-badge">🎈 SEBELUM MULAI</span>
+    <span class="stage-badge">🎈 Sebelum Mulai</span>
     <h2 class="h2" style="margin:12px 0 10px">First Placement Test</h2>
 
     <p class="lede" style="margin-bottom:14px">5 kegiatan seru buat nentuin titik mulaimu:</p>
@@ -175,7 +175,7 @@ export function renderPlacementIntro(container: HTMLElement, onStart: OnDone, on
 export function renderPlacementLimitReached(container: HTMLElement, level: string | undefined, onHome: OnDone): void {
   container.innerHTML = `
     <div style="text-align:center">
-      <span class="stage-badge">🎈 SUDAH DICOBA</span>
+      <span class="stage-badge">🎈 Sudah Dicoba</span>
       <h2 class="h2" style="margin:12px 0 6px">Keren, sudah eksplorasi 2 kali!</h2>
       <p class="lede" style="margin-bottom:16px">First Placement Test cuma bisa dicoba maksimal 2 kali — titik mulaimu sekarang:</p>
       <div style="font-size:48px;margin-bottom:6px">${level ? (LEVEL_LABEL[level]?.slice(0, 2) ?? '🌱') : '🌱'}</div>
@@ -312,7 +312,7 @@ export function runPlacementQuestions(container: HTMLElement, onDone: (outcome: 
                <div class="speak-row"><button class="speak-btn" data-action="ptReplay">🔊 Dengar Lagi</button></div>`
             : `<div class="speak-row"><button class="speak-btn" data-action="ptReplay">🔊 Dengar Lagi</button></div>`
       }
-      <div class="opt-grid ${!isTextOnly && opts.length > 2 ? 'three' : ''}">
+      <div class="opt-grid ${!isTextOnly && opts.length > 2 && opts.length % 3 === 0 ? 'three' : ''}">
         ${opts
           .map(
             (o, i) =>
@@ -628,7 +628,7 @@ export function renderPlacementResult(
 
   container.innerHTML = `
     <div style="text-align:center">
-      <span class="stage-badge">🎉 SELESAI</span>
+      <span class="stage-badge">🎉 Selesai</span>
       <h2 class="h2" style="margin:12px 0 6px">Keren, sudah dicoba semua!</h2>
       ${
         hasScore

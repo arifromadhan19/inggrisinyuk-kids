@@ -79,19 +79,19 @@ function susunDecoyCount(contentLevel: LevelKey): number {
 }
 
 /** #2 — jumlah distraktor MCQ Latihan Inti: 3 (4 opsi total, Explorer/
- *  Adventurer, spt semula) → 4 (5 opsi total, Achiever/Trailblazer). */
+ *  Adventurer, spt semula) → 5 (6 opsi total, Achiever/Trailblazer).
+ *  🔒 Jumlah opsi WAJIB genap (2/4/6) — dulu 4 distraktor = 5 opsi. */
 function latihanDistractorCount(contentLevel: LevelKey): number {
-  return isFlyersOrAbove(contentLevel) ? 4 : 3;
+  return isFlyersOrAbove(contentLevel) ? 5 : 3;
 }
 
 /** #4 — jumlah opsi salah yang dieliminasi tombol "💡 Petunjuk" Latihan
- *  Inti: 2 (Explorer/Adventurer, spt semula — dari 4 opsi nyisa 2) → 1
- *  (Achiever/Trailblazer — dari 5 opsi nyisa 4, bantuan lebih pelit).
+ *  Inti: 2 (Explorer/Adventurer, spt semula — dari 4 opsi nyisa 2) → 2
+ *  (Achiever/Trailblazer — dari 6 opsi nyisa 4, bantuan lebih pelit; sisa
+ *  opsi tetap genap).
  *  KHUSUS Latihan Inti (bukan Kenalan Main — itu tetap "pemanasan",
  *  scaffolding penuh semua level, tidak disentuh permintaan ini). */
-function latihanHintEliminateCount(contentLevel: LevelKey): number {
-  return isFlyersOrAbove(contentLevel) ? 1 : 2;
-}
+const LATIHAN_HINT_ELIMINATE = 2;
 
 /** #3 — ambang jumlah salah sebelum jawaban di-reveal otomatis (Eja Kata/
  *  Susun Kalimat Tantangan): 2x (Explorer/Adventurer, spt semula) → 3x
@@ -721,7 +721,7 @@ function drawListenPointQuestion(
   const colorTopic = isColorTopic(topic);
   container.innerHTML = `
     <div class="latihan-head">
-      <span class="stage-badge">🎮 MAIN · Dengar &amp; Tunjuk</span>
+      <span class="stage-badge">🎮 Dengar &amp; Tunjuk</span>
       ${hintButtonHtml}
     </div>
     ${navHtml}
@@ -783,7 +783,7 @@ function drawListenTextQuestion(
   const options = shuffle([item, ...distractors]);
   container.innerHTML = `
     <div class="latihan-head">
-      <span class="stage-badge">🎮 MAIN · Dengar &amp; Pilih</span>
+      <span class="stage-badge">🎮 Dengar &amp; Pilih</span>
       ${hintButtonHtml}
     </div>
     ${navHtml}
@@ -842,7 +842,7 @@ function drawListenSpeakQuestion(
 ): void {
   function draw(): void {
     container.innerHTML = `
-      <span class="stage-badge">🎮 MAIN · Dengar &amp; Ucapkan</span>
+      <span class="stage-badge">🎮 Dengar &amp; Ucapkan</span>
       ${navHtml}
       <div class="id-text">Dengarkan katanya, lalu ucapkan lagi ya</div>
       ${isDayTopic(topic) ? '' : `<div class="big-emoji">${picHtml(item.emoji)}</div>`}
@@ -998,7 +998,7 @@ function drawPictureWordQuestion(
   const options = shuffle([{ en: item.en, ok: true }, ...distractors.map((d) => ({ en: d.en, ok: false }))]);
   container.innerHTML = `
     <div class="latihan-head">
-      <span class="stage-badge">🎮 MAIN · Lihat &amp; Pilih</span>
+      <span class="stage-badge">🎮 Lihat &amp; Pilih</span>
       ${hintButtonHtml}
     </div>
     ${navHtml}
@@ -1092,7 +1092,7 @@ function runWordMiniGame(container: HTMLElement, topic: VocabTopic, startIndex: 
       // pola badge tipe soal lain di file ini (`🎮 MAIN · Dengar & Tunjuk`
       // dst — tidak pernah menyebut jawaban).
       const q = buildNumberQuestion(topic, item);
-      drawWordQuestion(container, '🎮 MAIN · Hitung Yuk!', 'Yuk coba!', q, navHtml);
+      drawWordQuestion(container, '🎮 Hitung Yuk!', 'Yuk coba!', q, navHtml);
       setHandlers({
         pick: (payload) => {
           const i = Number(payload);
@@ -1267,7 +1267,7 @@ function wireHintCorrect(container: HTMLElement, isCorrect: boolean[], onUsed?: 
 // "button petunjuk nya simpan di atas sejajarkan dengan text") — dipasang
 // via `.latihan-head` (flex row), bukan `.hint-row` lama (block penuh di
 // bawah opsi, sekarang tidak dipakai lagi di sini).
-const hintButtonHtml = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint"><span class="hint-bulb">💡</span> Petunjuk</button>`;
+const hintButtonHtml = `<button class="ghost-btn hint-chip icon-only" type="button" id="hintBtn" data-action="hint" aria-label="Petunjuk" title="Petunjuk"><span class="hint-bulb">💡</span></button>`;
 
 /**
  * Kartu jawaban 2×2 dgn gambar + teks + lencana huruf (permintaan user: "ada
@@ -1346,7 +1346,7 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
     section = ensureSection('vocabulary', topic.id, 'latihan');
   }
   // 🔒 Jumlah distraktor naik di Achiever/Trailblazer (`latihanDistractorCount`,
-  // 3→4, jadi 5 opsi bukan 4 — permintaan user "pembeda antar level di atas
+  // 3→5, jadi 6 opsi bukan 4 (wajib genap) — permintaan user "pembeda antar level di atas
   // starter", riset Cambridge Flyers/KET: opsi jawaban makin banyak seiring
   // tier naik, odds nebak makin kecil).
   const distractorCount = latihanDistractorCount(contentLevel);
@@ -1533,7 +1533,7 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
       <div class="feedback" id="fb"></div>
     `;
     playPrompt();
-    wireHint(container, opts, q.target, () => (hintUsedThisSlot = true), latihanHintEliminateCount(contentLevel));
+    wireHint(container, opts, q.target, () => (hintUsedThisSlot = true), LATIHAN_HINT_ELIMINATE);
     wireQuizNav(goTo);
 
     setHandlers({
@@ -1613,7 +1613,7 @@ export function runLatihanInti(container: HTMLElement, topic: VocabTopic, onDone
       )}
       <div class="feedback" id="fb"></div>
     `;
-    wireHint(container, opts, q.target, () => (hintUsedThisSlot = true), latihanHintEliminateCount(contentLevel));
+    wireHint(container, opts, q.target, () => (hintUsedThisSlot = true), LATIHAN_HINT_ELIMINATE);
     wireQuizNav(goTo);
 
     setHandlers({
@@ -1669,9 +1669,9 @@ export function runTantangan(container: HTMLElement, topic: VocabTopic, onDone: 
   function shellHtml(active: 'eja' | 'susun' | 'penggunaan'): string {
     return `
       <div class="tantangan-tabs">
-        <button class="tantangan-tab ${active === 'eja' ? 'active' : ''}" type="button" data-action="tabEja">✏️ Eja Kata</button>
-        <button class="tantangan-tab ${active === 'susun' ? 'active' : ''}" type="button" data-action="tabSusun">🔤 Susun Kalimat</button>
-        <button class="tantangan-tab ${active === 'penggunaan' ? 'active' : ''}" type="button" data-action="tabPenggunaan">🗣️ Penggunaan</button>
+        <button class="tantangan-tab ${active === 'eja' ? 'active' : ''}" type="button" data-action="tabEja">Eja Kata</button>
+        <button class="tantangan-tab ${active === 'susun' ? 'active' : ''}" type="button" data-action="tabSusun">Susun Kalimat</button>
+        <button class="tantangan-tab ${active === 'penggunaan' ? 'active' : ''}" type="button" data-action="tabPenggunaan">Penggunaan</button>
       </div>
       <div id="tantanganStage"></div>
     `;
@@ -1890,7 +1890,11 @@ export function runEjaKata(
       ${quizNavHtml(round, items.length, slotStatus)}
       <div class="id-text">Kata ${round + 1} dari ${items.length}</div>
       ${dayItems ? '' : `<div class="big-emoji">${itemGlyph(topicId, it)}</div>`}
-      <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar Kata</button></div>
+      <div class="speak-row"><button class="speak-btn" data-action="replay">🔊 Dengar Kata</button>${
+        answered
+          ? ''
+          : `<button class="speak-btn-ghost icon-only" type="button" id="hintBtn" data-action="hint" aria-label="Petunjuk" title="Petunjuk" ${hintUsed ? 'disabled' : ''}><span class="hint-bulb">💡</span></button>`
+      }</div>
       ${answerHintHtml}
       <div class="answer-row">
         ${slots
@@ -1911,7 +1915,6 @@ export function runEjaKata(
         answered
           ? ''
           : `<div class="letter-actions">
-        <button class="ghost-btn slim" type="button" id="hintBtn" data-action="hint" ${hintUsed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>
         <button class="ghost-btn slim" type="button" data-action="removeLast" ${placedOrder.length === 0 ? 'disabled' : ''}>⌫ Hapus Huruf</button>
         <button class="ghost-btn slim" type="button" data-action="clearLetters">🔄 Ulang Susunan</button>
       </div>`
@@ -1975,6 +1978,7 @@ export function runEjaKata(
           // `answered`, jadi papan kelihatan kosong tapi `pickLetter` diam-
           // diam selalu `return` duluan (bug "tidak bisa diisi/klik").
           container.querySelector('.letter-actions')?.remove();
+          container.querySelector('#hintBtn')?.remove();
           const built = slots.join('');
           const correct = built.toLowerCase() === it.en.toLowerCase();
           const fb = container.querySelector<HTMLElement>('#fb')!;
@@ -2289,9 +2293,12 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
         showAnswer ? `<p class="meta" style="margin:6px 0 0;text-align:center">💡 Jawabannya: <b>${ex.en}</b></p>` : '';
 
       container.innerHTML = `
-        <span class="stage-badge">🌟 Terjemahkan</span>
+        <div class="latihan-head">
+          <span class="stage-badge">🌟 Terjemahkan</span>
+          ${answered ? '' : `<button class="ghost-btn hint-chip icon-only" type="button" id="hintBtn" data-action="hint" aria-label="Petunjuk" title="Petunjuk" ${hintUsed ? 'disabled' : ''}><span class="hint-bulb">💡</span></button>`}
+        </div>
         ${quizNavHtml(round, items.length, susunStatus)}
-        <div class="id-text">Susun jadi Bahasa Inggris dari kalimat ini · ${round + 1} dari ${items.length}</div>
+        <div class="id-text">Susun jadi Bahasa Inggris dari kalimat ini</div>
         <div class="en-text" style="color:var(--c-vocab)">"${ex.id}"</div>
         ${answerHintHtml}
         <div class="answer-row ${answer.length ? '' : 'empty'}" style="margin-top:10px">
@@ -2305,7 +2312,6 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
           answered
             ? ''
             : `<div class="letter-actions">
-          <button class="ghost-btn slim" type="button" id="hintBtn" data-action="hint" ${hintUsed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>
           <button class="ghost-btn slim" type="button" data-action="removeLastWord" ${answer.length <= hintCount ? 'disabled' : ''}>⌫ Hapus Kata</button>
           <button class="ghost-btn slim" type="button" data-action="clear">🔄 Bersihkan</button>
         </div>`
@@ -2373,6 +2379,7 @@ export function runSusunKalimat(container: HTMLElement, topicId: string, allItem
       // tidak nyangkut kelihatan aktif sesudah soal ini kelar (konsisten
       // dgn fix serupa di Eja Kata — permintaan user).
       container.querySelector('.letter-actions')?.remove();
+      container.querySelector('#hintBtn')?.remove();
       const fb = container.querySelector<HTMLElement>('#fb')!;
       const built = answer.map((a) => a.w).join(' ');
       const correct = built.toLowerCase() === words.join(' ').toLowerCase();
@@ -2475,7 +2482,7 @@ export function runMemoryMatch(container: HTMLElement, topic: VocabTopic, onDone
     const matchedPairs = cards.filter((c) => c.matched).length / 2;
     container.innerHTML = `
       <div class="mm-head">
-        <span class="mm-score">SKOR: <b>${score}</b></span>
+        <span class="mm-score">Skor: <b>${score}</b></span>
         <span class="tag">${matchedPairs}/${pairItems.length}</span>
       </div>
       <div class="mm-grid">

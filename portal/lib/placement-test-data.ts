@@ -271,7 +271,7 @@ export const PLACEMENT_QUESTIONS: PlacementQuestion[] = [
   // --- Speaking (lapis 1, DI-SKOR): format recognition, preseden TOEFL Primary
   // (§4.4) — deterministik, tidak bergantung akurasi ASR terhadap suara anak.
   // TTS bacakan `question`, lalu bacakan tiap `options[].label` berurutan;
-  // anak tap 1 dari 3 kartu bernomor. ---
+  // anak tap 1 dari 4 kartu bernomor (opsi wajib genap). ---
   {
     id: 'sp1',
     level: 'starter',
@@ -281,6 +281,7 @@ export const PLACEMENT_QUESTIONS: PlacementQuestion[] = [
       { emoji: '1️⃣', label: "I'm happy!", correct: true },
       { emoji: '2️⃣', label: "It's a dog.", correct: false },
       { emoji: '3️⃣', label: 'Red car.', correct: false },
+      { emoji: '4️⃣', label: 'I live in Bandung.', correct: false },
     ],
   },
   {
@@ -292,6 +293,7 @@ export const PLACEMENT_QUESTIONS: PlacementQuestion[] = [
       { emoji: '1️⃣', label: "I'm fine, thank you.", correct: false },
       { emoji: '2️⃣', label: 'My name is Rio.', correct: true },
       { emoji: '3️⃣', label: "It's a book.", correct: false },
+      { emoji: '4️⃣', label: 'I am seven years old.', correct: false },
     ],
   },
   {
@@ -303,6 +305,7 @@ export const PLACEMENT_QUESTIONS: PlacementQuestion[] = [
       { emoji: '1️⃣', label: 'I live in Jakarta.', correct: true },
       { emoji: '2️⃣', label: 'I like pizza.', correct: false },
       { emoji: '3️⃣', label: "It's Monday.", correct: false },
+      { emoji: '4️⃣', label: 'My name is Sari.', correct: false },
     ],
   },
 ];

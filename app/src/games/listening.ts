@@ -135,6 +135,34 @@ export function pickDecoy<T>(candidates: T[], label: (c: T) => string, existing:
   return usable.length ? usable[Math.floor(Math.random() * usable.length)] : null;
 }
 
+/** 🔒 Jumlah opsi WAJIB genap (2/4/6, tidak boleh ganjil). Opsi authored +
+ *  jebakan (`pickDecoy`, minimal 1 kalau ada) — jebakan ditambah satu per
+ *  satu sampai jumlahnya genap; kalau stok jebakan habis & masih ganjil,
+ *  1 opsi salah authored dibuang (jawaban benar & jebakan tetap). */
+export function withDecoysEven<O, D>(
+  base: O[],
+  decoys: D[],
+  label: (x: O | D) => string,
+  isOk: (o: O) => boolean,
+  audioText: string,
+  asOption: (d: D) => O
+): O[] {
+  const out = [...base];
+  let pool = [...decoys];
+  do {
+    const d = pickDecoy(pool, label, out.map(label), audioText);
+    if (!d) break;
+    pool = pool.filter((x) => x !== d);
+    out.push(asOption(d));
+  } while (out.length % 2 === 1);
+  if (out.length % 2 === 1) {
+    const wrong = base.filter((o) => !isOk(o));
+    const drop = wrong[Math.floor(Math.random() * wrong.length)];
+    if (drop !== undefined) out.splice(out.indexOf(drop), 1);
+  }
+  return out;
+}
+
 /**
  * 🔒 Revisi user: "samakan UI Listening kenalan 'main' di Starter/Explorer/
  * Adventurer/Trailblazer dengan Little Stars". Format LAMA (Explorer/
@@ -294,7 +322,7 @@ export function runLatihanInti(container: HTMLElement, topic: ListeningTopic, on
         <button class="speak-btn" data-action="replay">🔊 Putar Kalimat</button>
       </div>
       ${revealed ? `<div class="en-text">${d.en}</div><div class="id-text">${d.id}</div>` : ''}
-      <div class="opt-grid ${opts.length > 2 ? 'three' : ''}">
+      <div class="opt-grid">
         ${opts
           .map(
             (o, i) =>
@@ -368,13 +396,9 @@ export function runTantangan(container: HTMLElement, topic: ListeningTopic, onDo
   // Opsi = opsi authored + 1 jebakan acak (`question.decoys`, tidak disebut di
   // audio), diacak sekali per sesi — jawaban benar authored di indeks 0, jadi
   // WAJIB diacak; "Coba Lagi" memakai susunan yang sama.
-  const decoy = pickDecoy(
-    topic.question.decoys ?? [],
-    (d) => d.lbl ?? '',
-    topic.question.opts.map((o) => o.lbl ?? ''),
-    topic.story.join(' ')
+  const opts: ListeningOption[] = shuffle(
+    withDecoysEven(topic.question.opts, topic.question.decoys ?? [], (d) => d.lbl ?? '', (o) => !!o.ok, topic.story.join(' '), (d) => ({ ...d, ok: false }))
   );
-  const opts: ListeningOption[] = shuffle(decoy ? [...topic.question.opts, { ...decoy, ok: false }] : [...topic.question.opts]);
 
   function draw(): void {
     const playStory = () => {
@@ -558,7 +582,7 @@ function answerCardsHtml(options: { emoji: string; label: string }[], action: st
  *  persist (`runTantangan` format lama, elimination-only tanpa reveal
  *  state) cukup panggil `hintButtonHtml(false)`. */
 function hintButtonHtml(disabled: boolean): string {
-  return `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint" ${disabled ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>`;
+  return `<button class="ghost-btn hint-chip icon-only" type="button" id="hintBtn" data-action="hint" aria-label="Petunjuk" title="Petunjuk" ${disabled ? 'disabled' : ''}><span class="hint-bulb">💡</span></button>`;
 }
 
 /**
@@ -601,8 +625,8 @@ function hintButtonHtml(disabled: boolean): string {
  *   Dipakai 3 fungsi Tantangan di atas (SEMUA py bullet progress).
  */
 function petunjukButtonHtml(revealed: boolean, compact = false): string {
-  const cls = compact ? 'ghost-btn hint-chip' : 'speak-btn-ghost';
-  return `<button class="${cls}" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>`;
+  const cls = compact ? 'ghost-btn hint-chip icon-only' : 'speak-btn-ghost icon-only';
+  return `<button class="${cls}" type="button" data-action="petunjuk" aria-label="Petunjuk" title="Petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span></button>`;
 }
 
 /** Kenalan — 1 baris per kalimat: 🔊 dengar, 🎤 ucap ulang (skor proporsional
@@ -1707,9 +1731,9 @@ export function runTantanganNote(
     // menjawab tepat).
     let answered = false;
     let revealed = false;
-    // Opsi authored + 1 jebakan acak (`gap.decoys`) yang tidak disebut di audio.
-    const decoy = pickDecoy(gap.decoys ?? [], (d) => d, gap.options, topic.notePassage.map((p) => p.en).join(' '));
-    const options = decoy ? [...gap.options, decoy] : gap.options;
+    // Opsi authored + jebakan acak (`gap.decoys`) yang tidak disebut di audio
+    // — jumlah total selalu genap (`withDecoysEven`).
+    const options = withDecoysEven(gap.options, gap.decoys ?? [], (d) => d, (o) => o === gap.answer, topic.notePassage.map((p) => p.en).join(' '), (d) => d);
     let order = shuffle(options.map((_, i) => i));
 
     function paint(): void {
@@ -1881,14 +1905,16 @@ export function runTantanganDialogue(
     // (termasuk yang sudah dijawab) selalu render ulang soal blank baru.
     let answered = false;
     let revealed = false;
-    // Jebakan acak: 1 dari `q.decoys` (authored, tidak disebut di dialog).
-    const decoy = pickDecoy(
+    // Jebakan acak dari `q.decoys` (authored, tidak disebut di dialog) —
+    // jumlah total selalu genap (`withDecoysEven`: 4 opsi + 2 jebakan = 6).
+    const options: ListeningInferenceOption[] = withDecoysEven(
+      q.options,
       q.decoys ?? [],
       (o) => o.text,
-      q.options.map((o) => o.text),
-      topic.dialogueLines.map((l) => l.en).join(' ')
+      (o) => o.ok,
+      topic.dialogueLines.map((l) => l.en).join(' '),
+      (d) => ({ ...d, ok: false })
     );
-    const options: ListeningInferenceOption[] = decoy ? [...q.options, { ...decoy, ok: false }] : q.options;
     let order = shuffle(options.map((_, i) => i));
 
     function paint(): void {

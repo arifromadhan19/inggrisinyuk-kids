@@ -250,9 +250,9 @@ function checkReadingTextData(byLevel, errors) {
               }
             }
             if (q.kind === 'tfn') {
-              // Benar/Salah/Tidak Disebut: Tidak Disebut tanpa bukti, Benar/Salah wajib 1 bukti.
-              if (q.options.length !== 3) errors.push(`${w}: tfn wajib 3 opsi.`);
-              if (q.answer === 2 ? q.evidence.length !== 0 : q.evidence.length < 1) errors.push(`${w}: tfn bukti tidak sesuai jawaban.`);
+              // Benar/Salah (opsi wajib genap — "Tidak Disebut" dihapus): wajib ≥1 bukti.
+              if (q.options.length !== 2 || q.options[0] !== 'True' || q.options[1] !== 'False') errors.push(`${w}: tfn wajib 2 opsi ['True','False'].`);
+              if (q.evidence.length < 1) errors.push(`${w}: tfn wajib ≥1 bukti.`);
               if (x.lines.some((l) => norm(l.en) === norm(q.q))) errors.push(`${w}: pernyataan tfn sama persis dgn kalimat teks.`);
             }
             if (q.kind === 'missing') {

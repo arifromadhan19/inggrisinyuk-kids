@@ -203,3 +203,39 @@ ssh deploy@IP_VPS
 | Halaman putih / file tidak update | `sudo tail -50 /var/log/nginx/error.log`, lalu hard reload browser |
 | Bayar sukses tapi tidak masuk | Dashboard Midtrans → Transaction → detail → riwayat notifikasi; Notification URL & Server Key (Sandbox vs Production) cocok? |
 | Build gagal kehabisan memori | pastikan swap aktif (`free -h`) |
+
+## Catatan
+
+### Deploy masih manual (belum otomatis)
+
+Push ke `main` di GitHub **tidak** otomatis meng-update VPS. Website baru berubah
+setelah perintah ini dijalankan (dari laptop yang SSH key-nya sudah terdaftar):
+
+```bash
+ssh deploy@139.190.100.39 '/srv/inggrisinyuk-kids/deploy/deploy.sh main'
+```
+
+Isinya: tarik `main` terbaru → build app & portal → migrasi database → restart portal.
+
+### Kalau nanti mau deploy otomatis tiap push ke `main`
+
+Cara yang disarankan: **GitHub Actions** yang masuk ke VPS lewat SSH lalu menjalankan
+`deploy.sh` yang sama. Hasil berhasil/gagal terlihat di tab **Actions** GitHub
+(+ email kalau gagal). Yang perlu disiapkan:
+
+1. **SSH key khusus GitHub** — dibuat baru khusus deploy (bukan key laptop), public key-nya
+   didaftarkan ke `/home/deploy/.ssh/authorized_keys` di VPS.
+2. **GitHub Secrets** — private key tadi disimpan di repo → Settings → Secrets → Actions
+   (jangan pernah di-commit).
+3. **File `.github/workflows/deploy.yml`** — dipicu `push` ke `main`, menjalankan
+   `ssh deploy@139.190.100.39 '/srv/inggrisinyuk-kids/deploy/deploy.sh main'`.
+
+Pertimbangan sebelum mengaktifkan:
+
+- **Tiap push ke `main` langsung tayang ke pengguna** — bug ikut tayang. Cocok dipasangkan
+  dengan proteksi `main`: perubahan lewat Pull Request dulu, deploy jalan setelah PR di-merge.
+- **Jeda singkat saat build portal** (±1 menit): login, daftar, & sinkron progres bisa gagal
+  sesaat; halaman app anak tetap tampil. Berlaku juga untuk deploy manual sekarang.
+  Perbaikan yang bisa dilakukan: build dulu di folder terpisah lalu ditukar (tanpa jeda).
+- **Build gagal bisa ikut menghentikan portal lama.** Perbaikan yang bisa dilakukan:
+  `deploy.sh` hanya restart portal kalau build berhasil.

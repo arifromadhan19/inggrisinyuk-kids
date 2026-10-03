@@ -321,9 +321,9 @@ export interface ReadingTextQuestion {
    *  ringkasan ber-`___`, dijawab TAP kata `word` di teks. `reply` ("🗨️ Pilih
    *  Jawaban Dialog", Movers P3) = baris dialog `hide` disembunyikan, pilih
    *  dari `options` (options[answer] = isi baris itu tanpa nama penutur). */
-  /** Achiever/Trailblazer (Tantangan): `tfn` = Benar/Salah/Tidak Disebut
-   *  (`q` = pernyataan, options ['True','False',"Doesn't say"], evidence kosong
-   *  kalau Tidak Disebut); `ref` = tunjuk rujukan (tap `word` di teks, spt
+  /** Achiever/Trailblazer (Tantangan): `tfn` = Benar/Salah (`q` = pernyataan,
+   *  options ['True','False'], evidence ≥1 — "Tidak Disebut" dihapus krn opsi
+   *  wajib genap); `ref` = tunjuk rujukan (tap `word` di teks, spt
    *  `gap`); `missing` = kalimat yang hilang (`hide` disembunyikan, 4 opsi,
    *  options[answer] = baris itu). */
   kind?: 'text' | 'picture' | 'truefalse' | 'gap' | 'reply' | 'tfn' | 'ref' | 'missing';

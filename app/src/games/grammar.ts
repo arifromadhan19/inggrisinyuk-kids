@@ -135,8 +135,8 @@ function ensureSentencePlan(topic: GrammarSentenceTopic, section: string): { ite
   return s.plan ?? [];
 }
 
-function hintChipHtml(locked: boolean, used: boolean, label = 'Petunjuk'): string {
-  return `<button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${locked || used ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> ${label}</button>`;
+function hintChipHtml(locked: boolean, used: boolean, label = ''): string {
+  return `<button class="ghost-btn hint-chip icon-only" type="button" data-action="petunjuk" aria-label="Petunjuk" title="Petunjuk" ${locked || used ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span>${label}</button>`;
 }
 
 export function renderKenalanSentence(container: HTMLElement, topic: GrammarSentenceTopic, _onNext: OnDone, contentLevel: LevelKey): void {
@@ -240,7 +240,7 @@ export function runLatihanIntiSentence(container: HTMLElement, topic: GrammarSen
       const wrongSoFar = getSlot('grammar', topic.id, 'latihan', round)?.w ?? 0;
       const hintUsed = wordsHinted;
       const hc = hintCount();
-      const hintLabel = !meaningAlwaysShown && revealed ? 'Petunjuk 2' : 'Petunjuk';
+      const hintLabel = !meaningAlwaysShown && revealed ? '<sup class="hint-step">2</sup>' : '';
       container.innerHTML = `
         <div class="latihan-head no-wrap">
           <span class="stage-badge">🎯 Susun Kalimat</span>
@@ -816,7 +816,7 @@ function runSusunTab(container: HTMLElement, topicId: string, all: SusunQuestion
           answered
             ? ''
             : `<div class="letter-actions">
-          <button class="ghost-btn slim" type="button" data-action="hint" ${hintUsed || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>
+          <button class="ghost-btn slim icon-only" type="button" data-action="hint" aria-label="Petunjuk" title="Petunjuk" ${hintUsed || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span></button>
           <button class="ghost-btn slim" type="button" data-action="removeLastWord" ${answer.length <= hintCount ? 'disabled' : ''}>⌫ Hapus Kata</button>
           <button class="ghost-btn slim" type="button" data-action="clear">🔄 Bersihkan</button>
         </div>`
@@ -1580,7 +1580,7 @@ function runPatternMiniGame(container: HTMLElement, topic: GrammarPatternTopic, 
     container.innerHTML = `
       <div class="latihan-head no-wrap">
         <span class="stage-badge">🎮 Main · Dengar &amp; Pilih</span>
-        ${answered ? '' : `<button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>`}
+        ${answered ? '' : `<button class="ghost-btn hint-chip icon-only" type="button" data-action="petunjuk" aria-label="Petunjuk" title="Petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span></button>`}
       </div>
       ${quizNavHtml(current, total, kenalanStatus)}
       <section class="gm-panel gm-question" aria-label="Soal">
@@ -1717,7 +1717,7 @@ export function runLatihanIntiPattern(container: HTMLElement, topic: GrammarPatt
     container.innerHTML = `
       <div class="latihan-head no-wrap">
         <span class="stage-badge">👂 Dengar &amp; Tunjuk</span>
-        <button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>
+        <button class="ghost-btn hint-chip icon-only" type="button" data-action="petunjuk" aria-label="Petunjuk" title="Petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span></button>
       </div>
       ${quizNavHtml(round, order.length, slotStatus)}
       <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
@@ -1860,7 +1860,7 @@ function runTantanganPatternMain(container: HTMLElement, topic: GrammarPatternTo
       container.innerHTML = `
         <div class="latihan-head no-wrap">
           <span class="stage-badge tab-dup">🔎 Lihat &amp; Dengar, Pilih yang Pas</span>
-          <button class="ghost-btn hint-chip" type="button" data-action="petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span> Petunjuk</button>
+          <button class="ghost-btn hint-chip icon-only" type="button" data-action="petunjuk" aria-label="Petunjuk" title="Petunjuk" ${revealed ? 'disabled' : ''}><span class="hint-bulb">💡</span></button>
         </div>
         ${quizNavHtml(round, order.length, slotStatus)}
         <div class="id-text">Soal ${round + 1} dari ${order.length}</div>
@@ -1998,7 +1998,7 @@ function transformOptionsHtml(options: string[]): string {
 /** Tier Lanjut (Trailblazer): 🔒 terkunci sampai 1x coba (pembeda level,
  *  `materi/pembeda_level.md` § Grammar #5). */
 function transformHintButtonHtml(locked: boolean): string {
-  return `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="hint" ${locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> Petunjuk</button>`;
+  return `<button class="ghost-btn hint-chip icon-only" type="button" id="hintBtn" data-action="hint" aria-label="Petunjuk" title="Petunjuk" ${locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span></button>`;
 }
 
 /** Jumlah opsi salah yang dicoret Petunjuk: 2 dari 4 (sisa 50/50) —

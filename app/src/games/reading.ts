@@ -133,6 +133,34 @@ const TEXT_GAME_SLOT_BASE = 100;
  *  format lama (tombol jangan tampil "sudah" padahal belum ditap). */
 const TEXT_PAGE_SLOT_BASE = 200;
 
+const PIC_STOPWORDS = new Set(['the', 'and', 'my', 'is', 'are', 'a', 'an', 'i', 'we', 'it', 'this', 'that', 'see', 'have', 'has', 'on', 'in', 'at', 'to', 'of', 'you', 'she', 'he', 'they', 'our', 'his', 'her', 'with', 'some', 'there', 'here', 'can', 'like', 'look', 'am']);
+const picWords = (s: string): string[] =>
+  s.toLowerCase().replace(/[^a-z\s']/g, ' ').split(/\s+/).filter((w) => w.length >= 3 && !PIC_STOPWORDS.has(w));
+
+/** 🔒 Jumlah opsi WAJIB genap (2/4/6). Soal gambar buku mini yang datanya 3
+ *  gambar ditambah 1 gambar LAIN dari buku yang sama (pola 🎮 Tunjuk di
+ *  Gambar) — dilewati kalau kalimat/label gambar itu berbagi kata isi dgn
+ *  kalimat soal (cegah 2 jawaban benar, mis. 🧼 "wash" utk "I wash my
+ *  feet"). Tidak ada kandidat aman → 1 gambar salah dibuang (jadi 2). */
+export function evenPictureQuestion(text: ReadingText, q: ReadingTextQuestion): ReadingTextQuestion {
+  if (q.kind !== 'picture' || q.options.length % 2 === 0) return q;
+  const right = q.options[q.answer];
+  const said = new Set(picWords(text.lines[q.about ?? 0]?.en ?? ''));
+  const extra = shuffle(
+    (text.pictures ?? [])
+      .map((p, pi) => ({ p, pi }))
+      .filter(({ p }) => !q.options.includes(p.emoji) && ![...right].some((ch) => ch.trim() && /\p{Extended_Pictographic}/u.test(ch) && p.emoji.includes(ch)))
+      .filter(({ p, pi }) => ![p.label ?? '', ...text.lines.filter((l) => l.pic === pi).map((l) => l.en)].some((s) => picWords(s).some((w) => said.has(w))))
+  )[0];
+  const options = [...q.options];
+  if (extra) options.push(extra.p.emoji);
+  else {
+    const wrong = options.map((_, i) => i).filter((i) => i !== q.answer);
+    options.splice(shuffle(wrong)[0], 1);
+  }
+  return { ...q, options, answer: options.indexOf(right) };
+}
+
 type TextAudio = 'auto' | 'button' | 'none';
 interface TextTier {
   latihanAudio: TextAudio;
@@ -380,7 +408,7 @@ export function renderKenalanText(container: HTMLElement, topic: ReadingTextTopi
         <button class="rt-act${doneCls('listen')}" type="button" data-action="rtListen">${isBook ? '🔊 Dengar' : '🔊 Dengar Semua'}</button>
         ${game ? `<button class="rt-act${doneCls('game')}" type="button" data-action="rtGame">${game}</button>` : ''}
       </div>
-      ${atEnd ? `<div class="round-actions"><button class="primary-btn" type="button" data-action="rtNext" style="margin-top:0">Lanjut ke Latihan Inti →</button></div>` : ''}
+      ${atEnd ? `<div class="round-actions"><button class="primary-btn" type="button" data-action="rtNext" style="margin-top:0">Lanjut ke Latihan →</button></div>` : ''}
     `;
     wireSay();
     wireQuizNav((i) => {
@@ -445,9 +473,11 @@ function runTextPointGame(container: HTMLElement, topic: ReadingTextTopic, start
     const r = rounds[current];
     const text = topic.texts[r.ti];
     // Maks 4 gambar (1 benar + 3 pengecoh acak) — grid 2×2 rapi, tanpa kartu
-    // ganjil sendirian di baris terakhir (CLAUDE.md "Desain Mobile & Desktop").
+    // ganjil (CLAUDE.md "Desain Mobile & Desktop" & opsi wajib genap).
     const all = (text.pictures ?? []).map((p, i) => ({ emoji: p.emoji, lbl: p.label, ok: i === r.pic }));
-    const pics = shuffle([...all.filter((o) => o.ok), ...shuffle(all.filter((o) => !o.ok)).slice(0, 3)]);
+    // 🔒 Jumlah opsi WAJIB genap: buku 3 gambar → 1 benar + 1 pengecoh.
+    const wrongPics = all.filter((o) => !o.ok);
+    const pics = shuffle([...all.filter((o) => o.ok), ...shuffle(wrongPics).slice(0, wrongPics.length >= 3 ? 3 : 1)]);
     container.innerHTML = `
       <span class="stage-badge">🎮 Main · Tunjuk di Gambar</span>
       ${quizNavHtml(current, total, status)}
@@ -605,7 +635,7 @@ function runTextQuizSet(
   reverse = false
 ): void {
   const tier = textTier(contentLevel);
-  const items: { text: ReadingText; q: ReadingTextQuestion }[] = texts.flatMap((text) => text.questions.map((q) => ({ text, q })));
+  const items: { text: ReadingText; q: ReadingTextQuestion }[] = texts.flatMap((text) => text.questions.map((q) => ({ text, q: evenPictureQuestion(text, q) })));
   const total = items.length;
   const status = (i: number): 0 | 1 | 2 => getSlot('reading', topic.id, section, i)?.st ?? 0;
   let round = firstUnansweredSlot('reading', topic.id, section, total);
@@ -645,7 +675,7 @@ function runTextQuizSet(
     if (!tier.hintGate || hintStep >= hintSteps(q)) return;
     fb.insertAdjacentHTML('beforeend', '<span class="fb-hint-nudge">Masih bingung? Buka 💡 Petunjuk dulu, yuk!</span>');
   };
-  const hintLabel = (q: ReadingTextQuestion): string => (hintSteps(q) === 2 && hintStep === 1 ? 'Petunjuk 2' : 'Petunjuk');
+  const hintLabel = (q: ReadingTextQuestion): string => (hintSteps(q) === 2 && hintStep === 1 ? '<sup class="hint-step">2</sup>' : '');
 
   /** Pengecoh = kalimat buku yang gambarnya jadi pengecoh di data; kalau
    *  gambar pengecoh tidak punya kalimat (mis. topik angka), ambil kalimat
@@ -685,9 +715,15 @@ function runTextQuizSet(
     eliminated = -1;
     const { text, q } = items[round];
     revOpts = isRev(q) ? reverseOptions(text, q) : [];
-    order = q.kind === 'truefalse' ? [0, 1] : q.kind === 'tfn' ? [0, 1, 2] : shuffle((isRev(q) ? revOpts : q.options).map((_, i) => i));
+    order = q.kind === 'truefalse' || q.kind === 'tfn' ? [0, 1] : shuffle((isRev(q) ? revOpts : q.options).map((_, i) => i));
     // Explorer: 2 opsi saja — jawaban benar + 1 pengecoh acak dari data.
     if ((isTwoStepText(q) && !(!reverse && tier.latihanFour)) || (twoOpts(q) && !isRev(q)) || (isMovers(q) && ((q.kind ?? 'text') === 'text' || q.kind === 'reply'))) order = shuffle([q.answer, shuffle(q.options.map((_, i) => i).filter((i) => i !== q.answer))[0]]);
+    // 🔒 Jumlah opsi WAJIB genap (2/4/6) — sisa ganjil (mis. 3 opsi detail
+    // Tantangan) → 1 opsi salah dibuang.
+    if (order.length % 2 === 1) {
+      const drop = shuffle(order.filter((oi) => oi !== answerIdx(q)))[0];
+      order = order.filter((oi) => oi !== drop);
+    }
     redraw();
     const scope = container.querySelector<HTMLElement>('.rt-book-text');
     if (audio === 'auto' && scope) readAlong(scope, sentenceOf(items[round]));
@@ -720,7 +756,7 @@ function runTextQuizSet(
     const hintedLines = revealed && tier.hint === 'evidence' && !isTwoStepText(q) ? q.evidence : [];
     const hintMode = isRev(q) ? 'eliminate' : isTwoStepText(q) || isSpecial(q) ? 'question' : tier.hint;
     const showHintText = revealed && hintMode !== 'eliminate' && (tier.hint === 'translate' || tier.hint === 'question' || (tier.hint === 'evidence' && !q.evidence.length));
-    const hintBtn = `<button class="ghost-btn hint-chip" type="button" id="hintBtn" data-action="rtHint" ${hintStep >= hintSteps(q) || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span> ${hintLabel(q)}</button>`;
+    const hintBtn = `<button class="ghost-btn hint-chip icon-only" type="button" id="hintBtn" data-action="rtHint" aria-label="Petunjuk" title="Petunjuk" ${hintStep >= hintSteps(q) || locked ? 'disabled' : ''}><span class="hint-bulb">${locked ? '🔒' : '💡'}</span>${hintLabel(q)}</button>`;
     const listenBtn = audio !== 'none' ? `<div class="speak-row"><button class="speak-btn pt-cta" type="button" data-action="rtListenQ">🔊 Dengar</button></div>` : '';
     // Soal kalimat buku (Little Stars/Starter): terjemahan tampil DI DALAM
     // kartu, tepat di bawah kalimat Inggrisnya (bukan di bawah tombol Dengar).
@@ -775,14 +811,13 @@ function runTextQuizSet(
         <div class="rt-find-ask">👆 Tap kata di teks yang dimaksud.</div>`;
       optionsHtml = '';
     } else if (kind === 'tfn') {
-      // ✅❓ Benar, Salah, atau Tidak Disebut? (pernyataan tentang teks).
+      // ✅❌ Benar atau Salah? (pernyataan tentang teks — 2 opsi, wajib genap).
       stimulus = `
         ${textCardHtml(text, { showId: hintStep >= 2 })}
         <div class="rt-statement"><span class="rt-statement-label">Pernyataan</span>${q.q}${hintStep >= 1 ? `<span class="rt-id">${q.qId}</span>` : ''}</div>`;
       optionsHtml = `<div class="opt-grid rt-tfn">
         <button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="0">✅ Benar</button>
         <button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="1">❌ Salah</button>
-        <button class="opt-btn opt-btn-text" type="button" data-action="rtPick" data-payload="2">🤷 Tidak Disebut</button>
       </div>`;
     } else if (kind === 'missing') {
       // 🧩 Kalimat yang Hilang (PET Part 4): pilih kalimat yang pas di rumpang.
@@ -908,7 +943,7 @@ function runTextQuizSet(
       hintNudge(fb, q);
       if (hb && hintStep < hintSteps(q)) {
         hb.disabled = false;
-        hb.innerHTML = `<span class="hint-bulb">💡</span> ${hintLabel(q)}`;
+        hb.innerHTML = `<span class="hint-bulb">💡</span>${hintLabel(q)}`;
       }
     }
     container.querySelector('#rtEvidence')!.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(total, status)));
@@ -953,7 +988,7 @@ function runTextQuizSet(
       hintNudge(fb, q);
       if (hb && hintStep < hintSteps(q)) {
         hb.disabled = false;
-        hb.innerHTML = `<span class="hint-bulb">💡</span> ${hintLabel(q)}`;
+        hb.innerHTML = `<span class="hint-bulb">💡</span>${hintLabel(q)}`;
       }
     }
     container.querySelector('#rtEvidence')!.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(total, status)));
@@ -1023,7 +1058,7 @@ function runTextQuizSet(
       const hb = container.querySelector<HTMLButtonElement>('#hintBtn');
       if (hb && hintStep < hintSteps(q)) {
         hb.disabled = false;
-        hb.innerHTML = `<span class="hint-bulb">💡</span> ${hintLabel(q)}`;
+        hb.innerHTML = `<span class="hint-bulb">💡</span>${hintLabel(q)}`;
       }
     }
     container.querySelector('#rtEvidence')!.insertAdjacentHTML('afterend', roundActionsHtml(allSlotsDone(total, status)));

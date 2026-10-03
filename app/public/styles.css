@@ -149,7 +149,7 @@ svg.ico-sm{ width:18px; height:18px; }
 .lede{ color:var(--ink-2); font-size:var(--fs-body); max-width:52ch; }
 .eyebrow{
   display:inline-block; font-size:var(--fs-eyebrow); font-weight:800;
-  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
+  letter-spacing:.02em; color:var(--ink-3);
 }
 /* Sub-judul di DALAM 1 kartu (Rapor: "Skor Belajar & Game" digabung dari 2
    kartu terpisah, permintaan user — kurangi jumlah kartu biar rapor tidak
@@ -228,6 +228,11 @@ body.is-game-play .tabbar,
 body.is-boss-play .topline,
 body.is-boss-play .rail,
 body.is-boss-play .tabbar{ display:none; }
+
+/* Halaman Belajar + sub-halamannya: header mobile (logo + "Hi nama level")
+   disembunyikan (permintaan user 2026-10-03), rail & tabbar tetap. */
+body.is-belajar .topline{ display:none; }
+body.is-belajar .topics-compact-bar{ top:0; }
 
 /* 🔒 Latar kelap-kelip bintang Map Kerajaan tiap Raja (`GAME_STAR_FIELD`,
    scenery.ts) — permintaan user "analisis /game/raja-kata... background
@@ -521,6 +526,18 @@ body.is-boss-play .tabbar{ display:none; }
    di markup (`renderGame()`) jadi tidak perlu override lagi (boleh dibiarkan
    nempel di class list, harmless, tapi CSS-nya dihapus krn sudah redundan). */
 .spark.compact .spark-art{ width:76px; height:76px; font-size:36px; box-shadow:0 0 0 4px rgba(255,255,255,.14), 0 10px 20px -10px rgba(6,51,58,.85); }
+/* Menu Belajar: lebih slim lagi (permintaan user 2026-10-03) — tombol &
+   progres sebaris (`.spark-row`), judul/ikon/bukit dikecilkan. Beranda tetap
+   `.spark.compact` biasa. */
+.spark.slim{ padding:12px 14px 16px; gap:12px; }
+.spark.slim .spark-title{ font-size:1.0625rem; line-height:1.25; margin:0 0 2px; }
+.spark.slim .spark-sub{ font-size:.8125rem; margin-bottom:10px; }
+.spark-row{ display:flex; align-items:center; gap:8px 12px; flex-wrap:wrap; }
+.spark.slim .cta{ padding:8px 16px; font-size:.875rem; }
+.spark.slim .spark-progress{ margin-top:0; flex:1 1 120px; }
+.spark.slim .spark-art{ width:56px; height:56px; font-size:28px; box-shadow:0 0 0 3px rgba(255,255,255,.14), 0 8px 16px -8px rgba(6,51,58,.85); }
+.spark.slim .trail-hills{ height:34px; }
+.spark.slim .cloud{ width:80px; }
 
 /* Board "Semua Markas" (permintaan user: "tiru yang relevan" dari section
    Jalur Petualangan Beranda) — REUSE PERSIS `.map-board`/`.map-sky` (sky
@@ -779,6 +796,19 @@ body.is-boss-play .tabbar{ display:none; }
   padding:7px 14px; font-size:var(--fs-meta);
 }
 
+/* Header Daftar Materi lebih slim (permintaan user 2026-10-03): tagline 1
+   baris (terpotong "…" kalau kepanjangan), jumlah materi pindah ke label
+   progres, & progres selebar header penuh (baris sendiri di bawah). */
+.topics-head{ flex-wrap:wrap; align-items:center; row-gap:10px; }
+.topics-head .cara-main-btn{ align-self:center; }
+.topics-head .txt h1{ font-size:1.25rem; line-height:1.2; }
+.topics-head .topics-tagline{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+.topics-progress{ flex:1 1 100%; display:flex; align-items:center; gap:10px; }
+.topics-progress .progress-track{ flex:1; margin-top:0; }
+.topics-progress .meta{ flex:none; font-weight:800; white-space:nowrap; }
+.topics-head .topics-count{ flex:1 1 100%; margin-bottom:-6px; font-weight:700; }
+@media (max-width:560px){ .topics-head .tl-extra{ display:none; } }
+
 /* Dropdown level sendirian di bawah header (Cara Main sudah pindah ke atas,
    lihat `.topics-head .cara-main-btn`) — kalau `renderLevelSwitcher()`
    balikin string kosong (cuma 1 level yang bisa dijelajahi), `app.ts` SAMA
@@ -829,11 +859,17 @@ body.is-boss-play .tabbar{ display:none; }
 .topic-card .info{ flex:1; min-width:0; }
 .topic-card .info b{ display:block; font-family:var(--font-head); font-size:var(--fs-h3); }
 .topic-card .info span{ font-size:var(--fs-meta); color:var(--ink-3); font-weight:700; }
-/* Persentase per materi (permintaan user) — inline di akhir judul (bukan
-   block terpisah) supaya "Judul - 80%" kebaca senapas, sama palet dgn
-   .skill-pct (ok/hijau cuma pas genap 100%). */
-.topic-card .info .topic-pct{ font-size:var(--fs-meta); font-weight:800; color:var(--ink-3); }
-.topic-card .info .topic-pct.done{ color:var(--ok); }
+/* Persentase per materi — pojok kanan atas spt kartu game (permintaan user
+   2026-10-03, REUSE `.skill-pct`), warna ikut skill (`--accent`); hijau +
+   ⭐ begitu 100%. Tombol Mulai turun ke kanan bawah supaya tidak menabrak
+   badge, judul tetap di kolom tengah. */
+.topic-card{ position:relative; }
+.topic-card .topic-pct{ background:var(--accent-bg); color:var(--accent); }
+.topic-card .topic-pct.done{ background:#fff; color:var(--ok); box-shadow:inset 0 0 0 1.5px var(--ok); }
+.topic-card .topic-pct{ top:8px; right:10px; }
+/* Mulai tetap di tengah-kanan; margin-top 24px menggeser tombol ±12px ke
+   bawah (masih tengah) supaya tidak menabrak badge persen di atasnya. */
+.topic-card .go{ align-self:center; margin-top:24px; }
 .topic-card .go{
   flex:none; background:var(--accent); color:#fff; border-radius:var(--r-pill);
   padding:9px 16px; font-weight:800; font-size:var(--fs-meta);
@@ -845,6 +881,24 @@ body.is-boss-play .tabbar{ display:none; }
 .topic-card.done{ background:var(--ok-bg); border-color:var(--ok); }
 .topic-card.done .num{ background:#fff; color:var(--ok); }
 .topic-card.done .go{ background:var(--ok); }
+
+/* Latar kelap-kelip Daftar Materi (scenery.ts `TOPICS_SKY`) — fixed di
+   belakang konten; konten dinaikkan z-index:1 supaya selalu di atas. */
+.topics-sky{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+.topics-sky .game-star{ opacity:.5; }
+.topics-bubble{
+  position:absolute; display:block; border-radius:50%; opacity:.12; filter:blur(2px);
+  animation:bubbleFloat 9s ease-in-out infinite;
+}
+@keyframes bubbleFloat{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(14px,-22px) scale(1.08); }
+}
+.topics-sky ~ .topics-head,
+.topics-sky ~ .topics-toolbar,
+.topics-sky ~ .two-col{ position:relative; z-index:1; }
+@media (min-width:768px){ .topics-sky{ left:92px; } }
+@media (min-width:1080px){ .topics-sky{ left:252px; } }
 
 /* ============================== PETA LEVEL ================================ */
 /* Dulu: daftar vertikal 6 kartu dengan garis penghubung — jujur, tapi kebaca
@@ -966,7 +1020,7 @@ body.is-boss-play .tabbar{ display:none; }
 }
 .trail-place{
   display:block; font-size:.75rem; font-weight:800; letter-spacing:.13em;
-  text-transform:uppercase; color:var(--ink-sand);
+  color:var(--ink-sand);
 }
 .trail-card h3{
   font-family:var(--font-head); font-size:1.125rem; margin-top:2px;
@@ -1685,7 +1739,7 @@ body.is-boss-play .tabbar{ display:none; }
 .voice-panel-row{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
 .voice-panel-label{ font-size:var(--fs-meta); font-weight:800; color:var(--ink-2); flex:none; }
 .voice-panel-group{
-  font-size:var(--fs-meta); font-weight:800; color:var(--ink); text-transform:uppercase; letter-spacing:.04em;
+  font-size:var(--fs-meta); font-weight:800; color:var(--ink); letter-spacing:.04em;
 }
 .voice-panel-group ~ .voice-panel-group{ margin-top:6px; padding-top:12px; border-top:1px dashed var(--line); }
 .voice-panel-pills{ display:inline-flex; background:var(--muted); border-radius:var(--r-pill); padding:4px; gap:2px; }
@@ -1748,9 +1802,9 @@ body.is-boss-play .tabbar{ display:none; }
 .boss-arena + .boss-stage{ border-top-left-radius:0; border-top-right-radius:0; border-top-color:#F3DDA8; }
 
 .stage-badge{
-  display:inline-block; font-size:var(--fs-eyebrow); font-weight:800; letter-spacing:.08em;
+  display:inline-block; font-size:var(--fs-eyebrow); font-weight:800; letter-spacing:.02em;
   padding:6px 13px; border-radius:var(--r-pill); margin-bottom:var(--s3);
-  background:var(--accent-bg); color:var(--accent); text-transform:uppercase;
+  background:var(--accent-bg); color:var(--accent);
 }
 
 /* Baris judul soal + tombol di ujung kanan (Speaking "Ngobrol Yuk!" & "Giliranmu Bertanya": 💡 Petunjuk). */
@@ -2029,13 +2083,9 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 .opt-grid.g-choose > *:last-child:nth-child(odd){ grid-column:auto; }
 .opt-grid.g-choose .opt-btn{ min-width:0; overflow-wrap:anywhere; }
 .opt-grid.g-choose.long .opt-btn{ font-size:1.0625rem; padding:16px 10px; line-height:1.25; }
-/* 🔒 5 opsi (Latihan Inti Achiever/Trailblazer, `latihanDistractorCount`) —
-   kartu TERAKHIR yang sekaligus JUMLAH GANJIL (selector `:last-child:nth-
-   child(odd)` — cuma match kalau total anak ganjil, mis. 3 atau 5) melebar
-   1 baris penuh, bukan nyisa sendirian di kolom kiri dgn ruang kosong di
-   kanan (CLAUDE.md "hitung kolom yang bikin jumlah item rapi"). Kasus 4
-   kartu (paling umum) TIDAK kena selector ini (kartu ke-4 genap), tetap
-   2×2 spt sebelumnya. */
+/* Pengaman tampilan: opsi jawaban WAJIB genap (2/4/6, CLAUDE.md "Opsi
+   Jawaban Wajib Genap") — kalau suatu saat ada jumlah ganjil, kartu
+   TERAKHIR melebar 1 baris penuh, bukan nyisa sendirian di kolom kiri. */
 .opt-grid > *:last-child:nth-child(odd){ grid-column:1 / -1; }
 /* `.opt-grid.three` = PERSIS 3 opsi dalam 1 baris — aturan "kartu ganjil
    terakhir melebar" di atas TIDAK berlaku (kalau berlaku, kartu ke-3 turun
@@ -2236,6 +2286,17 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 #tantanganStage .stage-badge.tab-dup{ display:none; }
 #tantanganStage :is(.stage-head,.latihan-head):has(> .stage-badge.tab-dup){ justify-content:flex-end; }
 .hint-chip{ display:inline-block; width:auto; margin-top:0; padding:7px 14px; font-size:.8125rem; }
+/* Petunjuk ikon saja 💡 di SEMUA skill (permintaan user 2026-10-03) — teks
+   "Petunjuk" dihapus (tetap ada aria-label), Petunjuk 2 tahap ditandai
+   angka kecil. Badge di sebelahnya dirapatkan, tidak turun baris, & huruf
+   kapital di awal kata saja (bukan HURUF BESAR semua). */
+.icon-only{ line-height:1; }
+.hint-chip.icon-only,
+.speak-btn-ghost.icon-only{ padding:6px 10px; font-size:1.05rem; border-radius:var(--r-pill); flex-shrink:0; width:auto; }
+.letter-actions .ghost-btn.slim.icon-only{ flex:0 0 auto; padding:8px 12px; font-size:1.05rem; }
+.hint-step{ font-family:var(--font-head); font-weight:800; font-size:.6875rem; margin-left:1px; vertical-align:super; }
+:is(.latihan-head,.stage-head):has(> .icon-only){ flex-wrap:nowrap; }
+:is(.latihan-head,.stage-head) > .stage-badge{ min-width:0; letter-spacing:.02em; padding:5px 11px; text-transform:none; }
 
 /* Tombol wajib "Coba Lagi"/"Lanjut" di tiap soal (permintaan user, CLAUDE.md
    "Format Wajib Materi Vocabulary") — muncul SETELAH jawaban, ganti
@@ -2278,17 +2339,15 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
    sbg penguat fokus, bukan satu-satunya pembeda lagi. */
 .quiz-dot.current{ background:var(--brand-500); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
 .quiz-dot.current.done{ background:var(--ok); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
-/* HP: 9–12 nomor tidak muat 1 baris & dulu pecah timpang (8+2) — dibagi
-   rata 2 baris (5+5 / 6+6) sekaligus dibesarkan jadi target ketuk 36px
-   (audit UI 2026-10). Lebar = n×36 + (n−1)×10. */
+/* HP: 9–12 nomor dulu dibagi 2 baris (5+5 / 6+6) — permintaan user
+   (2026-10-03): cukup 1 baris, bullet mengecil menyesuaikan lebar kartu
+   (maks 30px, min 20px). 13+ nomor tetap boleh turun baris. */
 @media (max-width:560px){
   .quiz-dots:not(.dense):has(> .quiz-dot:nth-child(9)):not(:has(> .quiz-dot:nth-child(13))){
-    gap:10px; margin-inline:auto;
+    flex-wrap:nowrap; gap:5px;
   }
-  .quiz-dots:not(.dense):has(> .quiz-dot:nth-child(9)):not(:has(> .quiz-dot:nth-child(11))){ max-width:220px; }
-  .quiz-dots:not(.dense):has(> .quiz-dot:nth-child(11)):not(:has(> .quiz-dot:nth-child(13))){ max-width:266px; }
   .quiz-dots:not(.dense):has(> .quiz-dot:nth-child(9)):not(:has(> .quiz-dot:nth-child(13))) > .quiz-dot{
-    width:36px; height:36px;
+    flex:0 1 30px; width:auto; height:auto; min-width:20px; aspect-ratio:1; font-size:.75rem;
   }
 }
 
@@ -2308,11 +2367,14 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
    Pindah tab kapan saja, dua-duanya resume dari cursor masing-masing. */
 .tantangan-tabs{ display:flex; gap:8px; margin-bottom:var(--s4); }
 .tantangan-tab{
-  flex:1; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
+  flex:1; white-space:nowrap; min-width:0; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md);
   padding:10px 8px; font-family:var(--font-head); font-size:var(--fs-meta); font-weight:800;
   color:var(--ink-3); text-align:center; cursor:pointer;
 }
 .tantangan-tab.active{ background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:var(--sh-1); }
+/* Tab Tantangan 1 baris tanpa ikon (permintaan user 2026-10-03) — HP sempit dirapatkan. */
+@media (max-width:400px){ .tantangan-tabs{ gap:6px; } .tantangan-tab{ padding:10px 4px; font-size:.75rem; } }
+@media (max-width:340px){ .tantangan-tab{ white-space:normal; } }
 
 @keyframes pop{ 0%{transform:scale(1);} 50%{transform:scale(1.1);} 100%{transform:scale(1);} }
 @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
@@ -2725,7 +2787,7 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 /* Halaman Daftar bagian marketing (di atas bagian beli). */
 .mk-hero{ text-align:center; padding:8px 0 16px; }
 .mk-mascot{ display:inline-block; font-size:56px; line-height:1; }
-.mk-eyebrow{ margin-top:12px; font-size:.8125rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--brand-700); }
+.mk-eyebrow{ margin-top:12px; font-size:.8125rem; font-weight:800; letter-spacing:.04em; color:var(--brand-700); }
 .mk-h1{ margin:8px auto 0; max-width:22ch; font-family:var(--font-head); font-size:2rem; font-weight:800; line-height:1.15; color:var(--ink); text-wrap:balance; }
 .mk-lede{ margin:12px auto 0; max-width:46ch; font-size:1rem; line-height:1.55; color:var(--ink-2); text-wrap:pretty; }
 .buy-note-access{ margin-top:12px; font-weight:700; color:var(--ink-2); }
@@ -3341,7 +3403,7 @@ body:has(.mk-sticky:not(.is-hidden)) .wa-float{ bottom:96px; }
 }
 .rt-hint-text{ margin:-4px auto 12px; max-width:520px; }
 /* ✅❓ Benar / Salah / Tidak Disebut (Tantangan Achiever): 3 tombol sebaris. */
-.opt-grid.rt-tfn{ grid-template-columns:repeat(3,1fr); gap:10px; max-width:640px; }
+.opt-grid.rt-tfn{ grid-template-columns:repeat(2,1fr); gap:10px; max-width:640px; }
 .opt-grid.rt-tfn > *:last-child:nth-child(odd){ grid-column:auto; }
 .opt-grid.rt-tfn .opt-btn.opt-btn-text{ min-height:60px; padding:8px 6px; font-size:1rem; line-height:1.2; display:flex; align-items:center; justify-content:center; text-align:center; }
 .rt-statement{
@@ -3349,7 +3411,7 @@ body:has(.mk-sticky:not(.is-hidden)) .wa-float{ bottom:96px; }
   background:var(--sun-100); border:2px dashed var(--sun-400);
   font-family:var(--font-head); font-weight:700; font-size:clamp(1.0625rem,1rem + .4vw,1.25rem); color:var(--ink); text-align:center;
 }
-.rt-statement-label{ display:block; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; color:var(--sun-600); margin-bottom:2px; }
+.rt-statement-label{ display:block; font-size:.75rem; letter-spacing:.06em; color:var(--sun-600); margin-bottom:2px; }
 .rt-statement .rt-id{ display:block; font-size:.875rem; font-weight:600; color:var(--ink-3); margin-top:2px; font-family:var(--font-body, inherit); }
 /* Explorer: arti soal (💡 tahap 1) langsung di bawah pertanyaan — ukuran & gaya SAMA dgn arti kalimat teks (.rt-line .rt-id). */
 .rt-gap-chip{ display:inline-block; min-width:64px; padding:0 8px; margin:0 2px; border-bottom:3px dashed var(--sun-500); color:var(--sun-600); text-align:center; }
@@ -3549,15 +3611,16 @@ body:has(.mk-sticky:not(.is-hidden)) .wa-float{ bottom:96px; }
 .stat-list-label .can-do::before{ content:'✓ '; }
 
 /* Raja Kelompok (games/kelompok.ts) — kata/gambar yang dikelompokkan &
-   keranjang berlabel Inggris. Jumlah keranjang 2 atau 3 → kolom sama
-   dengan jumlahnya (1 baris rapi di HP & desktop). */
+   keranjang berlabel Inggris. Jumlah keranjang 2 atau 4 (wajib genap) —
+   2 = 1 baris; 4 = 2×2 di HP, 1 baris di desktop. */
 .kl-item{ display:flex; flex-direction:column; align-items:center; gap:6px; margin:var(--s3) 0; }
 .kl-pic{ font-size:clamp(56px, 16vw, 84px); line-height:1; }
 .kl-word{ font-family:var(--font-head); font-weight:800; font-size:clamp(1.75rem, 7vw, 2.25rem); color:var(--ink); letter-spacing:.02em; }
 .kl-meaning{ font-weight:700; color:var(--ink-2); font-size:.875rem; }
 .kl-baskets{ display:grid; gap:10px; margin:var(--s4) auto 0; max-width:560px; }
 .kl-baskets.kl-n2{ grid-template-columns:repeat(2, minmax(0,1fr)); }
-.kl-baskets.kl-n3{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+.kl-baskets.kl-n4{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+@media (min-width:720px){ .kl-baskets.kl-n4{ grid-template-columns:repeat(4, minmax(0,1fr)); max-width:720px; } }
 .opt-btn.kl-basket{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; min-width:0; min-height:112px; padding:14px 8px; }
 .kl-basket-icon{ font-size:clamp(34px, 9vw, 46px); line-height:1; }
 .kl-basket-label{ font-family:var(--font-head); font-weight:800; font-size:clamp(.9375rem, 3.6vw, 1.0625rem); overflow-wrap:anywhere; text-align:center; }
