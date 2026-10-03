@@ -1,3 +1,4 @@
+import { kenalanRowClass } from '../kenalan-layout';
 import { readingPicHtml as picHtml } from '../reading-pic';
 import type {
   GrammarContrastVisual,
@@ -144,6 +145,7 @@ export function renderKenalanSentence(container: HTMLElement, topic: GrammarSent
   // ikon tetap dapat kotak kosong (permintaan user "buat UI yang rapih").
   const anyIcon = topic.sentences.some((s) => !!s.emoji);
   const showRule = grammarTier(contentLevel) === 'lanjut' && !!topic.rule;
+  const rowCls = kenalanRowClass(topic.sentences.map((s) => [s.en]));
   container.innerHTML = `
     <div class="id-text" style="margin-bottom:10px;">Perhatikan kata yang disorot di tiap kalimat</div>
     ${showRule ? `<div class="g-rule"><span aria-hidden="true">💡</span> ${topic.rule}</div>` : ''}
@@ -151,7 +153,7 @@ export function renderKenalanSentence(container: HTMLElement, topic: GrammarSent
       ${topic.sentences
         .map(
           (s, i) => `
-        <div class="primer-item">
+        <div class="primer-item${rowCls}">
           ${s.emoji ? `<div class="primer-ic">${picHtml(s.emoji)}</div>` : anyIcon ? '<div class="primer-ic" aria-hidden="true"></div>' : ''}
           <div class="txt"><b>${highlightedSentence(s)}</b><span class="g-id">${s.id}</span></div>
           <div class="mini-play" data-action="play" data-payload="${i}">🔊</div>
@@ -1401,7 +1403,7 @@ export function renderKenalanPattern(container: HTMLElement, topic: GrammarPatte
         ${topic.items
           .map(
             (it, i) => `
-          <div class="primer-item" style="align-items:flex-start">
+          <div class="primer-item${kenalanRowClass([[it.formA.en, it.formB.en]])}" style="align-items:flex-start">
             <div class="primer-ic">${it.emoji}</div>
             <div class="txt">
               <b>${it.formA.en}</b><span>${it.formA.id}</span>
@@ -2048,7 +2050,7 @@ export function renderKenalanTransform(container: HTMLElement, topic: GrammarTra
         .map((t, i) => {
           const correct = t.reportedOptions.find((o) => o.ok)!;
           return `
-        <div class="primer-item" style="align-items:flex-start">
+        <div class="primer-item${kenalanRowClass([[sourceText(t), correct.text]])}" style="align-items:flex-start">
           <div class="primer-ic">${picHtml(t.emoji)}</div>
           <div class="txt">
             <b>${sourceText(t)}</b>

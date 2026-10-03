@@ -1,3 +1,4 @@
+import { kenalanRowClass } from '../kenalan-layout';
 import { readingPicHtml as picHtml } from '../reading-pic';
 import type { LevelKey, OnDone, VocabItem, VocabTopic } from '../types';
 import { setHandlers } from '../interaction';
@@ -233,6 +234,7 @@ export function renderKenalan(container: HTMLElement, topic: VocabTopic, level: 
   drawWordList();
 
   function drawWordList(): void {
+    const rowCls = kenalanRowClass(topic.items.map((it) => [it.en]));
     container.innerHTML = `
       <div class="id-text" style="margin-bottom:10px;">Dengarkan kata-katanya dulu, tap 🔊 untuk mengulang${showMic ? ', tap 🎤 buat coba ucapkan' : ''}, atau tap 🎮 buat main sama kata itu</div>
       <div class="primer-list">
@@ -244,7 +246,7 @@ export function renderKenalan(container: HTMLElement, topic: VocabTopic, level: 
               ? `<span class="opp">↔ ${itemGlyph(topic.id, opp)} <b>${opp.en}</b> (${opp.id})</span>`
               : '';
             return `
-          <div class="primer-item">
+          <div class="primer-item${rowCls}">
             ${primerIconHtml(topic, it)}
             <div class="txt"><b>${it.en}</b><span>${it.id}</span>${oppHtml}</div>
             <div class="mini-play${doneCls(i, 'listen')}" data-action="playWord" data-payload="${i}">🔊</div>

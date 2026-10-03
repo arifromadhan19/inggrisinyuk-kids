@@ -296,6 +296,15 @@ body.is-belajar .topics-compact-bar{ top:0; }
   padding:6px 12px; font-weight:800; font-size:var(--fs-meta);
 }
 .level-chip b{ font-family:var(--font-head); }
+.level-chip.has-name{ padding:4px 14px 4px 4px; gap:8px; min-width:0; max-width:62vw; }
+.lc-avatar{
+  flex:none; width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
+  background:#fff; box-shadow:inset 0 0 0 1.5px var(--brand-100); font-size:20px; line-height:1;
+}
+.lc-txt{ display:flex; flex-direction:column; min-width:0; line-height:1.15; }
+.lc-txt b{ font-size:.875rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.lc-txt small{ font-size:.75rem; font-weight:800; color:var(--brand-600, var(--brand-700)); opacity:.85; white-space:nowrap; }
+#topLevel{ min-width:0; display:flex; justify-content:flex-end; }
 
 /* ------------------------------------------------------ rail (desktop) --- */
 .rail{ display:none; }
@@ -1375,6 +1384,13 @@ body.is-belajar .topics-compact-bar{ top:0; }
    gelap (bukan brand teal yang lebur dgn latar). */
 .game-progress-dot.current{ background:rgba(255,255,255,.32); box-shadow:0 0 0 3px rgba(255,255,255,.4); }
 .game-progress-label{ font-size:var(--fs-meta); font-weight:700; color:rgba(255,255,255,.78); margin-left:4px; }
+/* Lebih slim (permintaan user 2026-10-03): padding & judul dikecilkan,
+   titik 22px, label "Selesai x dari y" di ujung kanan baris titik. */
+.card.game-progress-card{ padding:12px 16px; margin-bottom:var(--s4); }
+.game-progress-card h2{ font-size:.9375rem; line-height:1.25; margin:0 0 8px; }
+.game-progress-dot{ width:22px; height:22px; font-size:.6875rem; }
+.game-progress-dot.current{ box-shadow:0 0 0 2px rgba(255,255,255,.4); }
+.game-progress-label{ margin-left:auto; font-size:.75rem; white-space:nowrap; }
 
 /* 🔒 "Cara Main" (permintaan user, referensi screenshot: judul tengah +
    kartu daftar bernomor) — GANTIKAN pesan penutup custom "Itu semua
@@ -1959,6 +1975,7 @@ body.is-belajar .topics-compact-bar{ top:0; }
   .primer-item.is-sentence{ flex-wrap:wrap; row-gap:8px; }
   .primer-item.is-sentence > .txt{ flex:1 1 calc(100% - 64px); }
   .primer-item.is-sentence > .txt + .mini-play{ margin-left:auto; }
+  .primer-item.is-sentence > .txt:first-child{ flex-basis:100%; }
 }
 .primer-item .txt b{ font-family:var(--font-head); font-size:1.0625rem; display:block; }
 .primer-item .txt span{ font-size:var(--fs-meta); color:var(--ink-2); font-weight:700; }
@@ -2339,17 +2356,18 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
    sbg penguat fokus, bukan satu-satunya pembeda lagi. */
 .quiz-dot.current{ background:var(--brand-500); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
 .quiz-dot.current.done{ background:var(--ok); color:#fff; box-shadow:0 0 0 3px var(--brand-100); }
-/* HP: 9–12 nomor dulu dibagi 2 baris (5+5 / 6+6) — permintaan user
-   (2026-10-03): cukup 1 baris, bullet mengecil menyesuaikan lebar kartu
-   (maks 30px, min 20px). 13+ nomor tetap boleh turun baris. */
+/* 🔒 Bullet progress WAJIB 1 baris di semua layar & jumlah soal (aturan
+   user 2026-10-03, CLAUDE.md "Bullet Progress Wajib 1 Baris"): tidak pernah
+   turun baris; tiap bullet mengecil mengikuti lebar (maks `--qd`, default
+   30px, min 16px). Varian lain cukup ganti `--qd`, JANGAN set width tetap. */
+.quiz-dots{ flex-wrap:nowrap; }
+.quiz-dot{ flex:0 1 var(--qd, 30px); width:auto; height:auto; min-width:16px; aspect-ratio:1; }
 @media (max-width:560px){
-  .quiz-dots:not(.dense):has(> .quiz-dot:nth-child(9)):not(:has(> .quiz-dot:nth-child(13))){
-    flex-wrap:nowrap; gap:5px;
-  }
-  .quiz-dots:not(.dense):has(> .quiz-dot:nth-child(9)):not(:has(> .quiz-dot:nth-child(13))) > .quiz-dot{
-    flex:0 1 30px; width:auto; height:auto; min-width:20px; aspect-ratio:1; font-size:.75rem;
-  }
+  .quiz-dots{ gap:5px; }
+  .quiz-dot{ font-size:.75rem; }
 }
+.quiz-dots:has(> .quiz-dot:nth-child(13)){ gap:3px; }
+.quiz-dots:has(> .quiz-dot:nth-child(13)) > .quiz-dot{ font-size:.625rem; }
 
 /* "⌫ Hapus Huruf"/"⌫ Hapus Kata" berdampingan dgn "🔄 Ulang Susunan"/
    "🔄 Bersihkan" (permintaan user, Tantangan). */
@@ -2534,6 +2552,10 @@ button:disabled .hint-bulb{ animation:none; filter:none; transform:none; }
 /* Baris Kenalan Speaking: baris cerita & pertanyaan kecil di atas kalimat utama. */
 .primer-item .txt .sp-ctx{ display:block; font-size:var(--fs-meta); color:var(--ink-3); }
 .primer-item .txt .sp-q{ display:block; font-size:var(--fs-meta); color:var(--accent); font-weight:700; margin:2px 0; }
+.primer-item .txt .sp-speaker{
+  display:inline-block; margin:4px 0 2px; padding:2px 10px; border-radius:var(--r-pill);
+  background:#fff; color:var(--ink-2); font-size:.75rem; font-weight:800;
+}
 /* Tantangan Speaking "🎁 Tebak Isi Kotak" (Starter): pilihan gambar yang boleh ditanyakan. */
 .guess-box.solved{ animation:ctaPulse 1.2s ease-in-out 2; }
 .guess-word{ font-size:32px; font-weight:800; color:var(--accent); }
@@ -3300,7 +3322,7 @@ body:has(.mk-sticky:not(.is-hidden)) .wa-float{ bottom:96px; }
    10) — di HP titik dikecilkan supaya muat 1 baris, bukan 8 + 2 timpang. */
 @media (max-width: 480px){
   .rt-page-nav .quiz-dots{ gap:5px; }
-  .rt-page-nav .quiz-dot{ width:26px; height:26px; font-size:.75rem; }
+  .rt-page-nav .quiz-dot{ --qd:26px; font-size:.75rem; }
 }
 /* Grid 2 kolom: 4 tombol = 2×2 rapi di HP & desktop (flex-wrap sempat
    jadi 3+1 di desktop). */
@@ -3550,7 +3572,7 @@ body:has(.mk-sticky:not(.is-hidden)) .wa-float{ bottom:96px; }
 .boss-playing .boss-arena{ display:none; }
 .boss-playing .boss-arena + .boss-stage{ border-top-left-radius:var(--r-lg); border-top-right-radius:var(--r-lg); border-top-color:#F3DDA8; }
 .quiz-dots.dense{ gap:6px; }
-.quiz-dots.dense .quiz-dot{ width:26px; height:26px; font-size:.75rem; }
+.quiz-dots.dense .quiz-dot{ --qd:26px; font-size:.75rem; }
 .boss-list{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
 .opt-btn.boss-list-opt{
   display:flex; align-items:center; gap:12px; text-align:left; padding:12px 14px;
@@ -3710,7 +3732,7 @@ body:has(.mk-sticky:not(.is-hidden)) .wa-float{ bottom:96px; }
 /* Jejak progres di dalam markas — bullet bernomor diganti langkah bergambar
    (⭐ sudah lewat, 👣 posisi sekarang), disambung garis seperti jalan. */
 .raja-stage .quiz-nav .quiz-dots{ gap:6px; background:linear-gradient(var(--line),var(--line)) center/100% 3px no-repeat; }
-.raja-stage .quiz-dot.static{ width:22px; height:22px; font-size:0; }
+.raja-stage .quiz-dot.static{ --qd:22px; font-size:0; }
 .raja-stage .quiz-dot.static.done::after{ content:'⭐'; font-size:13px; }
 .raja-stage .quiz-dot.static.current:not(.done)::after{ content:'👣'; font-size:12px; }
 .raja-stage .quiz-dot.static.done{ background:#FFF4C8; box-shadow:inset 0 0 0 1.5px #F5C542; }
@@ -3753,6 +3775,10 @@ body:has(.mk-sticky:not(.is-hidden)) .wa-float{ bottom:96px; }
 }
 .today-dot.is-active{ background:var(--sun-400); color:var(--brand-900); }
 .today-dot.is-today{ border-color:#fff; }
+/* Sangat slim (permintaan user 2026-10-03): ikut `.spark.slim`, 7 hari
+   jadi titik kecil 1 baris. */
+.today-card .today-week{ gap:4px; margin-top:0; flex-wrap:nowrap; }
+.today-card .today-dot{ width:24px; height:24px; font-size:.5625rem; border-width:1.5px; flex:none; }
 
 /* Rapor: tombol "Detail Rapor" sejajar judul Progresmu + layar Detail Rapor */
 .progress-panel-head{ display:flex; align-items:center; justify-content:space-between; gap:var(--s2); }

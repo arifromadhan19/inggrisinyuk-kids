@@ -1,3 +1,4 @@
+import { kenalanRowClass } from '../kenalan-layout';
 import { readingPicHtml as picHtml } from '../reading-pic';
 import type {
   LevelKey,
@@ -658,13 +659,14 @@ export function renderKenalanSentence(
   drawList();
 
   function drawList(): void {
+    const rowCls = kenalanRowClass(topic.items.map((it) => [it.example.en]));
     container.innerHTML = `
       <div class="id-text" style="margin-bottom:10px;">Dengarkan kalimatnya dulu, tap 🔊 untuk mengulang${sttSupported ? ', tap 🎤 buat coba ucapkan' : ''}, atau tap 🎮 buat main sama kalimat itu</div>
       <div class="primer-list">
         ${topic.items
           .map(
             (it, i) => `
-          <div class="primer-item is-sentence">
+          <div class="primer-item${rowCls}">
             <div class="primer-ic">${picHtml(it.emoji)}</div>
             <div class="txt"><b>${it.example.en}</b><span>${it.example.id}</span></div>
             <div class="mini-play${doneCls(i, 'listen')}" data-action="playSentence" data-payload="${i}">🔊</div>

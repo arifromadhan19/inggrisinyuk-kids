@@ -1,3 +1,4 @@
+import { kenalanRowClass } from '../kenalan-layout';
 import { readingPicHtml as picHtml } from '../reading-pic';
 import type { AnySpeakingTopic, LevelKey, OnDone, SpeakingLine, SpeakingPhraseItem, SpeakingPhraseTopic, SpeakingStoryItem } from '../types';
 import { setHandlers } from '../interaction';
@@ -526,6 +527,10 @@ function loadPlan(topicId: string, section: string, build: () => LatihanPlanSlot
 export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, _onNext: OnDone, level: LevelKey, contentLevel: LevelKey): void {
   const { rows } = flowOf(topic);
   const doneCls = (i: number, action: 'listen' | 'mic'): string => (hasWordInteraction('speaking', topic.id, i, action) ? ' done' : '');
+  // Di HP tombol 🔊/🎤 turun ke kanan bawah kalimat (pola Kenalan Listening,
+  // permintaan user 2026-10-03) — diputuskan per TOPIK supaya 1 daftar
+  // seragam: topik frasa pendek (Little Stars/Starter) tetap 1 baris.
+  const rowCls = kenalanRowClass(rows.map((r) => [...(r.context ?? []).map((c) => c.en), ...(r.prompt ? [r.prompt.en] : []), r.line.en]));
 
   drawList();
 
@@ -536,12 +541,13 @@ export function renderKenalan(container: HTMLElement, topic: AnySpeakingTopic, _
         ${rows
           .map(
             (r, i) => `
-          <div class="primer-item">
+          <div class="primer-item${rowCls}">
             ${r.emoji ? `<div class="primer-ic">${picHtml(r.emoji)}</div>` : ''}
             <div class="txt">
               ${r.context ? r.context.map((c) => `<span class="sp-ctx">${c.en}</span>`).join('') : ''}
               ${r.prompt ? `<span class="sp-q">💬 ${r.prompt.en}</span>` : ''}
-              <b>${r.speaker ? `${r.speaker}: ` : ''}${r.line.en}</b><span>${r.line.id}</span>
+              ${r.speaker ? `<span class="sp-speaker">🗣️ ${r.speaker}</span>` : ''}
+              <b>${r.line.en}</b><span>${r.line.id}</span>
             </div>
             <div class="mini-play${doneCls(i, 'listen')}" data-action="playRow" data-payload="${i}">🔊</div>
             ${sttSupported ? `<div class="mini-play${doneCls(i, 'mic')}" id="micMini${i}" data-action="micRow" data-payload="${i}">🎤</div>` : ''}

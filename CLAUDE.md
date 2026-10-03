@@ -134,6 +134,17 @@ Permintaan user: begitu section ber-quiz-dot dibuka, soal default = soal TERKECI
 2. **Section/game BARU dgn quiz-dot**: init pakai `firstUnansweredSlot(...)`, JANGAN `Math.min(Math.max(section.cursor, 0), total - 1)` lagi. Syaratnya slot index = index soal (sama dgn `statusOf` yang dikirim ke `quizNavHtml`).
 3. **Pengecualian**: Kenalan 🎮 Main (`runWordMiniGame` Vocab, `runItemMiniGame` Listening) — dibuka dari tombol 🎮 kata TERTENTU, jadi mulai di kata yang ditap anak, bukan soal terkecil.
 
+## 🔒 Aturan Wajib: Bullet Progress (Quiz-Dot) WAJIB 1 Baris
+
+Permintaan user (2026-10-03, contoh acuan Vocab): deret bullet progress (`.quiz-dots`/`.quiz-dot`, semua skill, Tantangan Raja, Game Hub, halaman buku Reading) TIDAK BOLEH turun ke baris kedua di lebar mana pun (HP 320px s.d. desktop). Implementasi (`styles.css`, blok "Bullet progress WAJIB 1 baris"): `.quiz-dots{flex-wrap:nowrap}` + tiap bullet `flex:0 1 var(--qd,30px)` dgn `aspect-ratio:1`, min 16px — mengecil otomatis mengikuti lebar kartu; ≥13 bullet jarak & huruf dirapatkan.
+1. Varian ukuran baru → set `--qd` (mis. `.dense` 26px, peta Raja 22px), JANGAN `width`/`height` tetap (mematikan penyusutan & bikin luber).
+2. Jangan pasang `flex-wrap:wrap` lagi di `.quiz-dots` mana pun, dan jangan bagi bullet jadi 2 baris "biar rapi" (aturan lama 5+5/6+6 di HP sudah dicabut).
+3. Soal/section baru dgn bullet → pakai `quizNavHtml` yang sudah ada (class sama), cek di 320px & 1280px.
+
+## 🔒 Aturan Wajib: Kartu Kenalan "Gendut" → Tombol 🔊/🎤/🎮 Turun ke Bawah (HP)
+
+Permintaan user (2026-10-03, trigger Speaking "Rencana Masa Depan" & Grammar "Satu atau Banyak?"): baris Kenalan (`.primer-item`) yang isinya ≥2 kalimat ATAU kalimat > 24 huruf WAJIB pakai class `.is-sentence` — di HP (≤560px) tombol pindah ke kanan bawah & teks dapat lebar penuh; desktop tetap 1 baris. Diputuskan per TOPIK (1 daftar seragam) lewat `kenalanRowClass(rows)` (`app/src/kenalan-layout.ts`), sudah dipasang di Vocab/Listening/Speaking/Grammar (3 format). Daftar Kenalan BARU di skill mana pun WAJIB memanggil helper ini, jangan tulis `primer-item` polos untuk kalimat panjang.
+
 ## 🔒 Aturan Wajib: Kenalan "🎮 Main" & Latihan Inti TIDAK Boleh Sama 100%
 
 Permintaan user, trigger: Grammar "Satu atau Banyak?" — Kenalan Main & Latihan Inti sempat IDENTIK (dengar kalimat → pilih 1 dari 2 gambar yang sama). Berlaku SEMUA skill/level/topik: dalam 1 topik, soal 🎮 Main di Kenalan dan soal Latihan Inti WAJIB beda secara nyata — minimal beda di salah satu: **bentuk tugas** (pilih / nilai benar-salah / susun / ucapkan), **arah** (dengar→gambar vs gambar→kalimat), **jenis & jumlah pilihan** (mis. 2 kartu berlabel konsep vs 4–6 kartu tanpa label), atau **tuntutan** (1 hal vs beberapa hal sekaligus). Beda kemasan/warna/judul saja TIDAK cukup. Acuan Grammar Little Stars/Starter: Main = pertanyaan topik ("Satu atau banyak?") + 2 kartu 1 benda berlabel; Latihan Inti = 4 kartu (2 benda × 2 bentuk, SEMUA level — permintaan user "cukup 4 opsi", dulu Starter 6) (label konsep cuma utk lencana yang tidak langsung terbaca, lihat di bawah), anak harus cocokkan benda DAN bentuk (`buildContrastCards`, benda pembanding tidak diambil dari tetangga dekat di daftar topik supaya tidak mirip). Tiap menambah/mengubah Main atau Latihan Inti, bandingkan keduanya dulu — kalau anak bisa merasa "ini soal yang sama", ubah salah satunya.

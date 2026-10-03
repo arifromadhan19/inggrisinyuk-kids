@@ -575,10 +575,14 @@ function paintLevelChips(): void {
   const name = getName();
   const avatar = getAvatar();
   const level = userLevelMeta();
-  const chipText = name ? `${avatar} Hi ${escapeHtml(name)} ${level.emoji} ${level.name}` : `${level.emoji} ${level.name}`;
-  qs<HTMLElement>(document, '#topLevel').innerHTML = `
-    <span class="level-chip"><b>${chipText}</b></span>
-  `;
+  // Mobile (permintaan user 2026-10-03 "buat lebih rapih"): avatar bulat +
+  // 2 baris tetap ("Hi nama" / level), nama panjang dipotong "…".
+  qs<HTMLElement>(document, '#topLevel').innerHTML = name
+    ? `<span class="level-chip has-name">
+        <span class="lc-avatar" aria-hidden="true">${avatar}</span>
+        <span class="lc-txt"><b>Hi ${escapeHtml(name)}</b><small>${level.emoji} ${level.name}</small></span>
+      </span>`
+    : `<span class="level-chip"><b>${level.emoji} ${level.name}</b></span>`;
   qs<HTMLElement>(document, '#railFoot').innerHTML = `
     <div class="rail-level">
       <span class="eyebrow">Level</span>
@@ -1340,14 +1344,15 @@ function buildTodayCard(m: TodayMission): string {
   }
 
   return `
-    <article class="spark compact today-card"${accent}>
+    <article class="spark compact slim today-card"${accent}>
       <span class="cloud c1" aria-hidden="true">${CLOUD}</span><span class="cloud c2" aria-hidden="true">${CLOUD}</span>${HILLS_SHORE}
       <div class="spark-body">
-        <span class="eyebrow">Hari Ini</span>
         <h2 class="spark-title">${title}</h2>
         <p class="spark-sub">${sub}</p>
-        <button class="cta" type="button" data-action="todayMission">${ICON_PLAY} ${cta}</button>
-        <div class="today-week" aria-label="${activeCount} dari 7 hari terakhir kamu main">${dots}</div>
+        <div class="spark-row">
+          <button class="cta" type="button" data-action="todayMission">${ICON_PLAY} ${cta}</button>
+          <div class="today-week" aria-label="${activeCount} dari 7 hari terakhir kamu main">${dots}</div>
+        </div>
       </div>
       <div class="spark-art" aria-hidden="true"><span class="mascot-idle">${art}</span></div>
     </article>`;
